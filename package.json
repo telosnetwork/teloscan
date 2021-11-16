@@ -1,0 +1,56 @@
+{
+  "name": "telos-template",
+  "version": "0.0.1",
+  "description": "A template for using Vue+Quasar to build a Telos webapp",
+  "productName": "Telos Quasar Template",
+  "author": "Jesse Schulman <jesse@caleos.io>",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ext .js,.vue ./",
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "dependencies": {
+    "@eosrio/hyperion-stream-client": "^0.4.0-beta.5",
+    "@quasar/extras": "^1.0.0",
+    "@smontero/ual-sqrl": "^0.1.22",
+    "@telosnetwork/telosevm-js": "^0.2.6",
+    "@telosnetwork/ual-telos-keycat": "1.10.3",
+    "axios": "^0.20.0",
+    "babel-loader": "^8.1.0",
+    "core-js": "^3.6.5",
+    "dotenv": "^8.2.0",
+    "eosjs": "^21.0.3",
+    "eosjs-ecc": "^4.0.7",
+    "moment": "^2.27.0",
+    "quasar": "^1.0.0",
+    "ual-anchor": "^1.0.0",
+    "ual-ledger": "^0.3.0",
+    "ual-scatter": "^0.3.0",
+    "ual-wombat": "^0.3.3",
+    "universal-authenticator-library": "^0.3.0"
+  },
+  "devDependencies": {
+    "@quasar/app": "^2.0.0",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-loader": "^3.0.3",
+    "eslint-plugin-vue": "^6.1.2"
+  },
+  "browserslist": [
+    "last 10 Chrome versions",
+    "last 10 Firefox versions",
+    "last 4 Edge versions",
+    "last 7 Safari versions",
+    "last 8 Android versions",
+    "last 8 ChromeAndroid versions",
+    "last 8 FirefoxAndroid versions",
+    "last 10 iOS versions",
+    "last 5 Opera versions"
+  ],
+  "engines": {
+    "node": ">= 10.18.1",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  }
+}
