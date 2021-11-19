@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="q-px-xl">
     <h4>
-      {{address}}
+      Account: {{address}}
     </h4>
     <TransactionTable :title="address" :filter="{address}"></TransactionTable>
   </div>

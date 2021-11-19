@@ -8,7 +8,8 @@
       @request="onRequest"
     )
       q-tr( slot="body" slot-scope="props" :props="props" )
-        q-td( key="hash" ) {{ props.row.hash }}
+        q-td( key="hash" )
+          transaction-field( :transaction-hash="props.row.hash" )
         q-td( key="block" )
           block-field( :block="props.row.block" )
         q-td( key="date" )
@@ -17,13 +18,14 @@
           address-field( :address="props.row.from" )
         q-td( key="to" )
           address-field( :address="props.row.to" )
-        q-td( key="value" ) {{ (props.row.value / 1000000000000000000).toFixed(5) }}  TLOS
+        q-td( key="value" ) {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
 </template>
 
 <script>
 import AddressField from "components/AddressField";
 import BlockField from "components/BlockField";
 import DateField from "components/DateField";
+import TransactionField from "components/TransactionField";
 
 const columns = [
   {
@@ -56,7 +58,7 @@ const columns = [
 
 export default {
   name: "TransactionTable",
-  components: {DateField, BlockField, AddressField },
+  components: {TransactionField, DateField, BlockField, AddressField },
   props: {
     title: {
       type: String,

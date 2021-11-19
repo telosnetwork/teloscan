@@ -1,5 +1,5 @@
 <template lang="pug">
-  a(:href="`/address/${this.address}`") {{ address.slice(0,20) }}...
+  a(:href="`/tx/${this.transactionHash}`") {{ transactionHash.slice(0,20) }}...
 </template>
 
 <script>
@@ -7,16 +7,16 @@
 import { copyToClipboard } from 'quasar'
 
 export default {
-  name: "AddressField",
+  name: "TransactionField",
   props: {
-    address: {
+    transactionHash: {
       type: String,
       required: true
     }
   },
   methods: {
     goToAddress() {
-      this.$router.push(`/address/${this.address}`);
+      this.$router.push(`/tx/${this.transactionHash}`);
     }
   }
 }
