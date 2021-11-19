@@ -1,7 +1,7 @@
 [build]
   publish = "dist/spa"
   command = "quasar build"
-  
+
 [context.production.environment]
   APP_NAME = "Teloscan"
   NODE_VERSION = "14"
@@ -10,7 +10,7 @@
   NETWORK_PORT = "443"
   NETWORK_PROTOCOL = "https"
   NETWORK_EVM_RPC = "https://mainnet.telos.net/evm"
-  NETWORK_EVM_ENDPOINT = "https://telos.caleos.io"
+  NETWORK_EVM_ENDPOINT = "https://mainnet.telos.net"
   NETWORK_EVM_CONTRACT = "telos.evm"
   NETWORK_EVM_CHAIN_ID = "40"
   NETWORK_EXPLORER = "https://telos.bloks.io"
