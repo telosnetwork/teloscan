@@ -1,16 +1,15 @@
 <template>
   <q-page class="column justify-center items-center">
     <img class="logo" alt="Telos logo" src="~assets/telos-logo-full.png" />
-    <h6 class="description">
-      Use this template as a starting point for your app and save the time of writing all the boilerplate code.
-      It has an implementation of UAL (Universal
-      Authenticator Library) which you can test with the Login button.  There are other examples and essential quasar links in the side menu.
-    </h6>
+    <search></search>
+
   </q-page>
 </template>
 
 <script>
+import Search from 'components/Search'
 export default {
+  components: { Search },
   name: "Index"
 };
 </script>

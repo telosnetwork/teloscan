@@ -5,16 +5,16 @@ const routes = [
     children: [{ path: "", component: () => import("pages/Index.vue") }]
   },
   {
-    path: "/account/:accountName",
+    path: "/address/:address",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/Account.vue") }]
+    children: [{ path: "", component: () => import("pages/Address.vue") }]
   },
   {
-    path: "/transfer",
+    path: "/tx",
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", component: () => import("pages/Transfer.vue") }]
   },{
-    path: "/streaming",
+    path: "/block",
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", component: () => import("pages/Streaming.vue") }]
   },
