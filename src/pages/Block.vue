@@ -1,19 +1,19 @@
 <template lang="pug">
   .q-px-xl
     div()
-      h4() Account: {{address}}
-    transaction-table( :title="address" :filter="{address}" )
+      h4() Block: {{block}}
+    transaction-table( :title="block" :filter="{block}" )
 </template>
 
 <script>
 import TransactionTable from "components/TransactionTable";
 
 export default {
-  name: "Address",
+  name: "Block",
   components: { TransactionTable },
   data() {
     return {
-      address: this.$route.params.address
+      block: this.$route.params.block
     }
   }
 

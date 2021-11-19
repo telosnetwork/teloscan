@@ -10,13 +10,13 @@ const routes = [
     children: [{ path: "", component: () => import("pages/Address.vue") }]
   },
   {
-    path: "/tx",
+    path: "/tx/:hash",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/Transfer.vue") }]
+    children: [{ path: "", component: () => import("pages/Transaction.vue") }]
   },{
-    path: "/block",
+    path: "/block/:block",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/Streaming.vue") }]
+    children: [{ path: "", component: () => import("pages/Block.vue") }]
   },
 
   // Always leave this as last one,
