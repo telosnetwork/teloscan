@@ -2,7 +2,7 @@
   <q-page class="column justify-center items-center">
     <img class="logo" alt="Telos logo" src="~assets/telos-logo-full.png" />
     <search></search>
-    <transaction-table></transaction-table>
+    <transaction-table title="Recent transactions"></transaction-table>
   </q-page>
 </template>
 

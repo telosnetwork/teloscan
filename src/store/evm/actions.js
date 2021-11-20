@@ -25,6 +25,10 @@ export async function doRPC ({ commit, dispatch },{method, params}) {
 }
 
 export async function getContract ({ commit, dispatch}, {address}) {
+  if (!address) {
+    return;
+  }
+
   if (!tokenFile) {
     const results = await tokenListAxios.get(tokenList);
     tokenFile = results.data;

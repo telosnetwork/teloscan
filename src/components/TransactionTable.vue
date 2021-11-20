@@ -65,7 +65,7 @@ export default {
       required: true
     },
     filter: {
-      type: Object
+      type: Object,
     },
     initialPageSize: {
       type: Number
@@ -130,6 +130,9 @@ export default {
     getPath(props) {
       const { page, rowsPerPage, descending } = props.pagination
       let path = `/v2/evm/get_transactions?limit=${rowsPerPage === 0 ? 500 : rowsPerPage}`
+      if (!this.filter) {
+        this.filter = {}
+      }
       if (this.filter.address)
         path += `&address=${this.filter.address}`
 
