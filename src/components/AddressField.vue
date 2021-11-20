@@ -1,5 +1,5 @@
 <template lang="pug">
-  a(:href="`/address/${this.address}`") {{ address.slice(0,20) }}...
+  a(:href="`/address/${this.address}`") {{ truncate > 0 ? `${address.slice(0,truncate)}...` : address }}
 </template>
 
 <script>
@@ -12,6 +12,11 @@ export default {
     address: {
       type: String,
       required: true
+    },
+    truncate: {
+      type: Number,
+      required: false,
+      default: 20
     }
   },
   methods: {

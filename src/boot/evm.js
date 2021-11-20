@@ -16,9 +16,8 @@ const hyperion = axios.create({
 });
 
 export default ({ Vue, store }) => {
-  Vue.prototype.$evm = evm;
-  Vue.prototype.$evmEndpoint = hyperion;
-  store.$evm = evm;
+  store.$evm = Vue.prototype.$evm = evm;
+  store.$evmEndpoint = Vue.prototype.$evmEndpoint = hyperion;
 };
 
 export { evm };

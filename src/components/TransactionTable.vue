@@ -79,6 +79,7 @@ export default {
       pageSize: this.initialPageSize,
       total: null,
       loading: false,
+      // TODO: either don't allow "all" as an option for page size... or make it work somehow?  Seems unlikey to work when there's 1000's of rows
       pagination: {
         sortBy: 'date',
         descending: true,
@@ -131,6 +132,12 @@ export default {
       let path = `/v2/evm/get_transactions?limit=${rowsPerPage === 0 ? 500 : rowsPerPage}`
       if (this.filter.address)
         path += `&address=${this.filter.address}`
+
+      if (this.filter.block)
+        path += `&block=${this.filter.block}`
+
+      if (this.filter.hash)
+        path += `&hash=${this.filter.hash}`
 
       path += `&skip=${(page - 1) * rowsPerPage}`;
       path += `&sort=${descending ? 'desc' : 'asc'}`;
