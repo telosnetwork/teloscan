@@ -2,14 +2,15 @@
   <q-page class="column justify-center items-center">
     <img class="logo" alt="Telos logo" src="~assets/telos-logo-full.png" />
     <search></search>
-
+    <transaction-table></transaction-table>
   </q-page>
 </template>
 
 <script>
 import Search from 'components/Search'
+import TransactionTable from "components/TransactionTable";
 export default {
-  components: { Search },
+  components: { TransactionTable, Search },
   name: "Index"
 };
 </script>
