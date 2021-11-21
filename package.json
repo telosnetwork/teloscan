@@ -28,7 +28,8 @@
     "ual-ledger": "^0.3.0",
     "ual-scatter": "^0.3.0",
     "ual-wombat": "^0.3.3",
-    "universal-authenticator-library": "^0.3.0"
+    "universal-authenticator-library": "^0.3.0",
+    "web3": "^1.6.1"
   },
   "devDependencies": {
     "@quasar/app": "^2.0.0",

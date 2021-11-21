@@ -35,7 +35,7 @@ export default {
     },
     getDisplay() {
       if (this.contract) {
-        return this.contract.name;
+        return this.contract.getName();
       }
 
       return this.truncate > 0 ? `${this.address.slice(0, this.truncate)}...` : this.address;

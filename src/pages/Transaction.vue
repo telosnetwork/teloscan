@@ -31,6 +31,10 @@
               strong() {{ `To: ` }}
               address-field( :address="trx.to" :truncate=0 )
             br()
+            div(v-if="isContract" )
+              strong() {{ `Contract function: ` }}
+              span() {{ getFunctionName() }}
+            br(v-if="isContract")
             div(v-if="trx.createdaddress")
               strong() {{ `Deployed contract: ` }}
               span() {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
@@ -67,8 +71,7 @@
               strong() {{ `Output: ` }}
               span() {{ trx.output }}
           q-tab-panel( name="logs" )
-            pre()
-              div() {{ JSON.stringify(trx.logs, null, 4) }}
+            logs-viewer( :logs="trx.logs" )
           q-tab-panel( name="internal" )
             pre()
               div() {{ JSON.stringify(trx.itxs, null, 4) }}
@@ -79,17 +82,20 @@
 import DateField from "components/DateField";
 import BlockField from "components/BlockField";
 import AddressField from "components/AddressField";
+import LogsViewer from "components/LogsViewer";
 
 export default {
   name: "Transaction",
-  components: {AddressField, BlockField, DateField },
+  components: {LogsViewer, AddressField, BlockField, DateField },
   data() {
     return {
       hash: this.$route.params.hash,
       blockData: null,
       trxNotFound: false,
       trx: null,
-      tab: 'general'
+      tab: 'general',
+      isContract: false,
+      contract: null
     }
   },
   mounted() {
@@ -104,6 +110,18 @@ export default {
       }
 
       this.trx = trxResponse.data.transactions[0];
+      await this.loadContract();
+    },
+    async loadContract() {
+      const contract = await this.$contractManager.getContract(this.trx.to);
+      if (!contract)
+        return;
+
+      this.contract = contract;
+      this.isContract = true;
+    },
+    getFunctionName() {
+      return this.contract.getFunctionSignature(this.trx.input_data);
     },
     getGasFee() {
       return ((this.trx.charged_gas_price * this.trx.gasused) / 1000000000000000000).toFixed(5);
