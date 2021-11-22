@@ -1,4 +1,4 @@
-import Web3 from "web3";
+import { ethers } from "ethers";
 
 export default class Contract {
 
@@ -6,31 +6,22 @@ export default class Contract {
     this.address = address
     this.name = name
     this.abi = abi
-    this.functionSigMap = {};
-    this.web3 = new Web3();
-    this.generateFunctionSigs();
+    this.iface = new ethers.utils.Interface(abi);
   }
 
   getName() {
     return this.name;
   }
 
-  generateFunctionSigs() {
-    if (!this.abi)
-      return;
-
-    for (let i = 0; i < this.abi.length; i++) {
-      const thisType = this.abi[i];
-      this.functionSigMap[this.web3.eth.abi.encodeFunctionSignature(thisType)] = thisType;
-    }
+  parseTransaction(data) {
+    return this.iface.parseTransaction({data});
   }
 
-  // TODO: somehow do fall backs to sourcify or https://www.4byte.directory/ or our own solution
-  getFunctionSignature(data) {
-    let type = this.functionSigMap[data.slice(0, 10)];
-    if (type)
-      return type.name;
+  parseLogs(logsArray) {
+    let parsed = logsArray.map(log => {
+      return this.iface.parseLog(log)
+    });
+    return parsed;
   }
-
 
 }

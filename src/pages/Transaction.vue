@@ -35,6 +35,10 @@
               strong() {{ `Contract function: ` }}
               span() {{ getFunctionName() }}
             br(v-if="isContract")
+            div(v-if="isContract" )
+              strong() {{ `Contract parameters: ` }}
+              pre() {{ getFunctionParams() }}
+            br(v-if="isContract")
             div(v-if="trx.createdaddress")
               strong() {{ `Deployed contract: ` }}
               span() {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
@@ -71,7 +75,7 @@
               strong() {{ `Output: ` }}
               span() {{ trx.output }}
           q-tab-panel( name="logs" )
-            logs-viewer( :logs="trx.logs" )
+            logs-viewer( :logs="getLogs()" )
           q-tab-panel( name="internal" )
             pre()
               div() {{ JSON.stringify(trx.itxs, null, 4) }}
@@ -84,6 +88,7 @@ import BlockField from "components/BlockField";
 import AddressField from "components/AddressField";
 import LogsViewer from "components/LogsViewer";
 
+// TODO: The tabs reload every component when you click the tab... seems wasteful although that shouldn't trigger any extra network calls
 export default {
   name: "Transaction",
   components: {LogsViewer, AddressField, BlockField, DateField },
@@ -95,7 +100,8 @@ export default {
       trx: null,
       tab: 'general',
       isContract: false,
-      contract: null
+      contract: null,
+      parsedTransaction: null
     }
   },
   mounted() {
@@ -119,9 +125,27 @@ export default {
 
       this.contract = contract;
       this.isContract = true;
+      this.parsedTransaction = this.contract.parseTransaction(this.trx.input_data);
     },
     getFunctionName() {
-      return this.contract.getFunctionSignature(this.trx.input_data);
+      if (this.parsedTransaction)
+        return this.parsedTransaction.name;
+    },
+    getFunctionParams() {
+      let params = {
+        function: this.parsedTransaction.signature,
+        args: this.parsedTransaction.args
+      }
+      return JSON.stringify(params, null, 4);
+    },
+    getLogs() {
+      if (this.contract) {
+        return this.contract.parseLogs(this.trx.logs).map(log => {
+          return { name: log.signature, args: log.args };
+        });
+      }
+
+      return this.trx.logs;
     },
     getGasFee() {
       return ((this.trx.charged_gas_price * this.trx.gasused) / 1000000000000000000).toFixed(5);
