@@ -9,7 +9,7 @@
           q-tab(name="logs" label="Logs")
           q-tab(name="internal" label="Internal")
         q-separator()
-        q-tab-panels( v-model="tab" animated )
+        q-tab-panels( v-model="tab" animated keep-alive )
           q-tab-panel( name="general" )
             div()
               strong() {{ `Block Number: ` }}
@@ -77,8 +77,7 @@
           q-tab-panel( name="logs" )
             logs-viewer( :logs="getLogs()" )
           q-tab-panel( name="internal" )
-            pre()
-              div() {{ JSON.stringify(trx.itxs, null, 4) }}
+            internal-txns( :itxs="trx.itxs" )
 
 </template>
 
@@ -86,13 +85,13 @@
 import DateField from "components/DateField";
 import BlockField from "components/BlockField";
 import AddressField from "components/AddressField";
-import LogsViewer from "components/LogsViewer";
+import LogsViewer from "components/Transaction/LogsViewer";
+import InternalTxns from "components/Transaction/InternalTxns";
 
-// TODO: The tabs reload every component when you click the tab... seems wasteful although that shouldn't trigger any extra network calls
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
   name: "Transaction",
-  components: {LogsViewer, AddressField, BlockField, DateField },
+  components: {LogsViewer, InternalTxns, AddressField, BlockField, DateField },
   data() {
     return {
       hash: this.$route.params.hash,

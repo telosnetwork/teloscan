@@ -1,11 +1,16 @@
 <template lang="pug">
   pre()
-    div() {{ JSON.stringify(logs, null, 4) }}
+    //- div() {{ JSON.stringify(logs, null, 4) }}
+    <json-viewer :value="logs"></json-viewer>
 </template>
 
 <script>
+import JsonViewer from 'vue-json-viewer'
 export default {
   name: "LogsViewer",
+  components: {
+    JsonViewer
+  },
   props: {
     logs: {
       type: Array

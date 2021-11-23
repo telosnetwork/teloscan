@@ -7,6 +7,8 @@
           Teloscan
         </q-toolbar-title>
 
+        <search></search>
+
       </q-toolbar>
     </q-header>
 
@@ -17,10 +19,10 @@
 </template>
 
 <script>
-
+import Search from 'components/Search'
 export default {
   name: "MainLayout",
-  components: { },
+  components: { Search},
   data() {
     return {
     };
