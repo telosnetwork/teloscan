@@ -117,6 +117,9 @@ export default {
       // TODO: some better logic here, if you change from 10 to 50 per page, it ends up with a messed up order...
       //  like we append/push when we should be replacing here
       //  maybe need to use a map for transactions to ensure they're unique and then sort them in setRows?
+
+      // TODO: if you click the >| to the end, you get an empty list and no more navigation arrows, so you have to refresh
+      //   the last page should always have items
       this.transactions.push(...result.data.transactions);
       for (const transaction of this.transactions) {
         try {
