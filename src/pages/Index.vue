@@ -9,7 +9,6 @@
 <script>
 import Search from 'components/Search'
 import TransactionTable from "components/TransactionTable";
-// TODO: should search when someone presses enter
 export default {
   components: { TransactionTable, Search },
   name: "Index"
