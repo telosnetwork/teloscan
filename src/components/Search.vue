@@ -1,5 +1,5 @@
 <template>
-  <q-input bottom-slots :placeholder="searchHint" v-model="searchTerm" >
+  <q-input bottom-slots :placeholder="searchHint" v-model="searchTerm" @keydown.enter="search">
     <template v-slot:append>
       <q-icon v-if="text !== ''" name="close" @click="text = ''" class="cursor-pointer" />
       <q-icon name="search" @click="search"/>
