@@ -25,11 +25,11 @@
             br()
             div()
               strong() {{ `From: ` }}
-              address-field( :address="trx.from" :truncate=0 )
+              address-field( :address="trx.from" :truncate=0 :is-contract-trx="!!contract" )
             br()
             div()
               strong() {{ `To: ` }}
-              address-field( :address="trx.to" :truncate=0 )
+              address-field( :address="trx.to" :truncate=0 :is-contract-trx="!!contract" )
             br()
             div(v-if="isContract" )
               strong() {{ `Contract function: ` }}
@@ -89,6 +89,7 @@ import AddressField from "components/AddressField";
 import LogsViewer from "components/LogsViewer";
 
 // TODO: The tabs reload every component when you click the tab... seems wasteful although that shouldn't trigger any extra network calls
+// TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
   name: "Transaction",
   components: {LogsViewer, AddressField, BlockField, DateField },
@@ -101,7 +102,8 @@ export default {
       tab: 'general',
       isContract: false,
       contract: null,
-      parsedTransaction: null
+      parsedTransaction: null,
+      parsedLogs: null
     }
   },
   mounted() {
@@ -119,19 +121,26 @@ export default {
       await this.loadContract();
     },
     async loadContract() {
+      if (this.trx.input_data === '0x')
+        return;
+
       const contract = await this.$contractManager.getContract(this.trx.to);
       if (!contract)
         return;
 
       this.contract = contract;
       this.isContract = true;
-      this.parsedTransaction = this.contract.parseTransaction(this.trx.input_data);
+      this.parsedTransaction = await this.contract.parseTransaction(this.trx.input_data);
+      this.parsedLogs = await this.contract.parseLogs(this.trx.logs);
     },
     getFunctionName() {
       if (this.parsedTransaction)
         return this.parsedTransaction.name;
     },
     getFunctionParams() {
+      if (!this.parsedTransaction)
+        return;
+
       let params = {
         function: this.parsedTransaction.signature,
         args: this.parsedTransaction.args
@@ -139,10 +148,15 @@ export default {
       return JSON.stringify(params, null, 4);
     },
     getLogs() {
-      if (this.contract) {
-        return this.contract.parseLogs(this.trx.logs).map(log => {
-          return { name: log.signature, args: log.args };
+      if (this.parsedLogs) {
+        const logsObj = this.parsedLogs.map(log => {
+          if (log.signature && log.args)
+            return {name: log.signature, args: log.args};
+
+          return log;
         });
+
+        return logsObj;
       }
 
       return this.trx.logs;

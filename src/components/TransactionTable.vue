@@ -14,10 +14,11 @@
           block-field( :block="props.row.block" )
         q-td( key="date" )
           date-field( :epoch="props.row.epoch" )
+        q-td( key="method" ) {{ props.row.method ? props.row.method : '' }}
         q-td( key="from" )
           address-field( :address="props.row.from" )
         q-td( key="to" )
-          address-field( :address="props.row.to" )
+          address-field( :address="props.row.to" :is-contract-trx="props.row.input_data !== '0x'" )
         q-td( key="value" ) {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
 </template>
 
@@ -41,12 +42,16 @@ const columns = [
     label: 'Date',
     align: 'left'
   },{
+    name: 'method',
+    label: 'Method',
+    align: 'left'
+  },{
     name: 'from',
     label: 'From',
     align: 'left'
   },{
     name: 'to',
-    label: 'To',
+    label: 'To / Interacted with',
     align: 'left'
   },{
     name: 'value',
@@ -113,7 +118,22 @@ export default {
       //  like we append/push when we should be replacing here
       //  maybe need to use a map for transactions to ensure they're unique and then sort them in setRows?
       this.transactions.push(...result.data.transactions);
-      console.dir(props);
+      for (const transaction of this.transactions) {
+        try {
+          if (transaction.input_data === '0x')
+            continue;
+
+          const contract = await this.$contractManager.getContract(transaction.to);
+          if (!contract)
+            continue;
+
+          const parsedTransaction = await contract.parseTransaction(transaction.input_data);
+          if (parsedTransaction)
+            transaction.method = parsedTransaction.name;
+        } catch {
+          console.error(`Failed to set method for transaction, error was: ${e.message}`);
+        }
+      }
       this.setRows(page, rowsPerPage);
       this.loading = false;
     },

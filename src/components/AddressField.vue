@@ -18,6 +18,10 @@ export default {
       type: Number,
       required: false,
       default: 20
+    },
+    isContractTrx: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -41,6 +45,12 @@ export default {
       return this.truncate > 0 ? `${this.address.slice(0, this.truncate)}...` : this.address;
     },
     async loadContract() {
+      if (!this.isContractTrx)
+        return;
+
+      // TODO: check if this is a contract, account lookup via telosevm-js?
+      // TODO: if this is linked to a Telos account, display the Telos account name and link it to bloks
+      //   for now if we ask for a contract, we'll get one back and it'll be labeled as undefined
       let contract = await this.getContract({address: this.address});
       if (contract) {
         this.contract = contract;

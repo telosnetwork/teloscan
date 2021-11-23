@@ -8,7 +8,7 @@ export default {
   name: "LogsViewer",
   props: {
     logs: {
-      type: Object
+      type: Array
     },
     contract: {
       type: Object
