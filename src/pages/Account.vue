@@ -88,6 +88,7 @@
 import { mapGetters, mapActions } from "vuex";
 import moment from "moment";
 
+// TODO: Add the balance of this account, if it's a contract and it's Telos account name if it's linked, should be able to get all that from telosevm-js
 const historyColumns = [
   {
     name: "block",
