@@ -17,6 +17,7 @@
     "@telosnetwork/ual-telos-keycat": "1.10.3",
     "axios": "^0.20.0",
     "babel-loader": "^8.1.0",
+    "bn.js": "^5.2.0",
     "core-js": "^3.6.5",
     "dotenv": "^8.2.0",
     "eosjs": "^21.0.3",

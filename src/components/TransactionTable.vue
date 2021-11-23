@@ -142,17 +142,15 @@ export default {
     getPath(props) {
       const { page, rowsPerPage, descending } = props.pagination
       let path = `/v2/evm/get_transactions?limit=${rowsPerPage === 0 ? 500 : rowsPerPage}`
-      if (!this.filter) {
-        this.filter = {}
-      }
-      if (this.filter.address)
-        path += `&address=${this.filter.address}`
+      const filter = Object.assign({}, this.filter ? this.filter : {});
+      if (filter.address)
+        path += `&address=${filter.address}`
 
-      if (this.filter.block)
-        path += `&block=${this.filter.block}`
+      if (filter.block)
+        path += `&block=${filter.block}`
 
-      if (this.filter.hash)
-        path += `&hash=${this.filter.hash}`
+      if (filter.hash)
+        path += `&hash=${filter.hash}`
 
       path += `&skip=${(page - 1) * rowsPerPage}`;
       path += `&sort=${descending ? 'desc' : 'asc'}`;

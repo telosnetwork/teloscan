@@ -29,8 +29,8 @@ export default {
       contract: null
     }
   },
-  mounted() {
-    this.loadContract();
+  async mounted() {
+    await this.loadContract();
   },
   methods: {
     ...mapActions("evm", ["getContract"]),
@@ -39,14 +39,16 @@ export default {
     },
     getDisplay() {
       if (this.contract) {
-        return this.contract.getName();
+        return `${this.contract.getName()}`;
       }
 
       return this.truncate > 0 ? `${this.address.slice(0, this.truncate)}...` : this.address;
     },
     async loadContract() {
-      if (!this.isContractTrx)
+      this.contract = null;
+      if (!this.isContractTrx) {
         return;
+      }
 
       // TODO: check if this is a contract, account lookup via telosevm-js?
       // TODO: if this is linked to a Telos account, display the Telos account name and link it to bloks

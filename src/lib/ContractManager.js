@@ -73,7 +73,7 @@ export default class ContractManager {
     }
 
     return new Contract({
-      name: "Unknown Contract",
+      name: `Contract (${address.slice(0,16)}...)`,
       address,
       abi: undefined,
       manager: this
