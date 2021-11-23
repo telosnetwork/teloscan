@@ -130,7 +130,7 @@ export default {
           const parsedTransaction = await contract.parseTransaction(transaction.input_data);
           if (parsedTransaction)
             transaction.method = parsedTransaction.name;
-        } catch {
+        } catch (e) {
           console.error(`Failed to set method for transaction, error was: ${e.message}`);
         }
       }
