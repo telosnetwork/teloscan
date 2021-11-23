@@ -25,7 +25,7 @@
             br()
             div()
               strong() {{ `From: ` }}
-              address-field( :address="trx.from" :truncate=0 :is-contract-trx="!!contract" )
+              address-field( :address="trx.from" :truncate=0 )
             br()
             div()
               strong() {{ `To: ` }}
