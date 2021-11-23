@@ -2,7 +2,6 @@ import Contract from "src/lib/Contract";
 import { ethers } from "ethers";
 
 const tokenList = `https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json`;
-const sigDirUrl = `https://www.4byte.directory`
 
 import axios from "axios";
 import erc20Abi from "erc-20-abi";
@@ -11,17 +10,14 @@ const tokenListAxios = axios.create({
   baseURL: tokenList
 });
 
-const sigDirectoryAxios = axios.create({
-  baseURL: sigDirUrl
-});
-
 export default class ContractManager {
 
-  constructor() {
+  constructor(evmEndpoint) {
     this.tokenList = null;
     this.contracts = {};
     this.functionInterfaces = {};
     this.eventInterfaces = {};
+    this.evmEndpoint = evmEndpoint;
   }
 
   async init() {
@@ -33,14 +29,14 @@ export default class ContractManager {
     if (this.functionInterfaces.hasOwnProperty(prefix))
       return this.functionInterfaces[prefix];
 
-    const dirResponse = await sigDirectoryAxios.get(`/api/v1/signatures/?hex_signature=${prefix}`)
-    if (dirResponse) {
-      if (!dirResponse.data || !dirResponse.data.results || !dirResponse.data.results.length > 0) {
-        console.error(`Unable to find function signature from 4bytes.directory for sig: ${prefix}`);
+    const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`)
+    if (abiResponse) {
+      if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
+        console.error(`Unable to find function signature for sig: ${prefix}`);
         return;
       }
 
-      const iface = new ethers.utils.Interface([`function ${dirResponse.data.results[0].text_signature}`]);
+      const iface = new ethers.utils.Interface([`function ${abiResponse.data.text_signature}`]);
       this.functionInterfaces[prefix] = iface;
       return iface;
     }
@@ -50,14 +46,14 @@ export default class ContractManager {
     if (this.eventInterfaces.hasOwnProperty(data))
       return this.eventInterfaces[data];
 
-    const dirResponse = await sigDirectoryAxios.get(`/api/v1/event-signatures/?hex_signature=${data}`)
-    if (dirResponse) {
-      if (!dirResponse.data || !dirResponse.data.results || !dirResponse.data.results.length > 0) {
-        console.error(`Unable to find event signature from 4bytes.directory for event: ${data}`);
+    const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`)
+    if (abiResponse) {
+      if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
+        console.error(`Unable to find event signature for event: ${data}`);
         return;
       }
 
-      const iface = new ethers.utils.Interface([`event ${dirResponse.data.results[0].text_signature}`]);
+      const iface = new ethers.utils.Interface([`event ${abiResponse.data.text_signature}`]);
       this.eventInterfaces[data] = iface;
       return iface;
     }

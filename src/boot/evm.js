@@ -12,12 +12,13 @@ const evm = new TelosEvmApi({
   fetch
 });
 
-const contractManager = new ContractManager();
-contractManager.init();
 
 const hyperion = axios.create({
   baseURL: process.env.NETWORK_EVM_ENDPOINT
 });
+
+const contractManager = new ContractManager(hyperion);
+contractManager.init();
 
 export default ({ Vue, store }) => {
   store.$evm = Vue.prototype.$evm = evm;
