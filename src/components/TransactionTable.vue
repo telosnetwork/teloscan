@@ -72,6 +72,7 @@ export default {
     },
     filter: {
       type: Object,
+      default: () => ({})
     },
     initialPageSize: {
       type: Number
@@ -106,7 +107,6 @@ export default {
       const { page, rowsPerPage, sortBy, descending } = props.pagination
 
       let result = await this.$evmEndpoint.get(this.getPath(props))
-      console.log(result.data)
       if (this.total == null)
         this.pagination.rowsNumber = result.data.total.value;
 
@@ -115,9 +115,6 @@ export default {
       this.pagination.sortBy = sortBy
       this.pagination.descending = descending
 
-      // TODO: if you click the >| to the end, you get an empty list and no more navigation arrows, so you have to refresh
-      //   the last page should always have items
-      // this.transactions.push(...result.data.transactions);
       this.transactions.splice(0, this.transactions.length, ...result.data.transactions);
       for (const transaction of this.transactions) {
         try {
