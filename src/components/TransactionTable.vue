@@ -6,6 +6,7 @@
       :pagination.sync="pagination"
       :loading="loading"
       @request="onRequest"
+      :rows-per-page-options="[10, 20, 50]"
     )
       q-tr( slot="body" slot-scope="props" :props="props" )
         q-td( key="hash" )
@@ -84,7 +85,6 @@ export default {
       pageSize: this.initialPageSize,
       total: null,
       loading: false,
-      // TODO: either don't allow "all" as an option for page size... or make it work somehow?  Seems unlikey to work when there's 1000's of rows
       pagination: {
         sortBy: 'date',
         descending: true,
@@ -106,6 +106,7 @@ export default {
       const { page, rowsPerPage, sortBy, descending } = props.pagination
 
       let result = await this.$evmEndpoint.get(this.getPath(props))
+      console.log(result.data)
       if (this.total == null)
         this.pagination.rowsNumber = result.data.total.value;
 
@@ -114,13 +115,10 @@ export default {
       this.pagination.sortBy = sortBy
       this.pagination.descending = descending
 
-      // TODO: some better logic here, if you change from 10 to 50 per page, it ends up with a messed up order...
-      //  like we append/push when we should be replacing here
-      //  maybe need to use a map for transactions to ensure they're unique and then sort them in setRows?
-
       // TODO: if you click the >| to the end, you get an empty list and no more navigation arrows, so you have to refresh
       //   the last page should always have items
-      this.transactions.push(...result.data.transactions);
+      // this.transactions.push(...result.data.transactions);
+      this.transactions.splice(0, this.transactions.length, ...result.data.transactions);
       for (const transaction of this.transactions) {
         try {
           if (transaction.input_data === '0x')
@@ -141,14 +139,8 @@ export default {
       this.loading = false;
     },
     setRows(page, rowsPerPage) {
-      // TODO: make it work when you click directly to last page, sometimes it goes to an empty page
-      if (page == Math.floor(this.pagination.rowsNumber / rowsPerPage)) {
-        const start = (page - 1) * rowsPerPage;
-        this.rows = this.transactions.slice(start, this.pagination.rowsNumber);
-      } else {
-        const start = (page - 1) * rowsPerPage;
-        this.rows = this.transactions.slice(start, start + rowsPerPage);
-      }
+      // TODO: do this differently?
+        this.rows = this.transactions;
     },
     getPath(props) {
       const { page, rowsPerPage, descending } = props.pagination
