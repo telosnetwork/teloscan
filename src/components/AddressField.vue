@@ -19,7 +19,7 @@ export default {
     truncate: {
       type: Number,
       required: false,
-      default: 19
+      default: 18
     },
     isContractTrx: {
       type: Boolean,

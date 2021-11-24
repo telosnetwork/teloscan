@@ -19,13 +19,13 @@
             v-if="col.name==='date'"
             class=""
           )
-            q-tooltip() Click to change format          
+            q-tooltip(anchor="bottom middle" self="bottom middle") Click to change format          
           | {{ col.label }}    
           template(
             v-if="col.name==='method'"
             )              
             q-icon(name="fas fa-info-circle")
-              q-tooltip() Function executed based on decoded input data. For unidentified function, method ID is displayed instead.         
+              q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.         
 
 
       q-tr( slot="body" slot-scope="props" :props="props" )
@@ -35,7 +35,9 @@
           block-field( :block="props.row.block" )
         q-td( key="date" )
           date-field( :epoch="props.row.epoch", :showAge="showAge")
-        q-td( key="method" ) {{ props.row.method ? props.row.method : '' }}
+        q-td( key="method" ) {{ props.row.method ? `${props.row.method.slice(0,8)}...` : '' }}
+          q-tooltip(anchor="center middle" self="center middle")
+            | {{ props.row.method ? props.row.method : '' }}
         q-td( key="from" )
           address-field( :address="props.row.from" )
         q-td( key="to" )
