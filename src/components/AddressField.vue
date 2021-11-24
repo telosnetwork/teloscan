@@ -1,5 +1,7 @@
 <template lang="pug">
-  a(:href="`/address/${this.address}`") {{ getDisplay() }}
+  div()
+    q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs")
+    router-link(:to="`/address/${this.address}`") {{ getDisplay() }}
 </template>
 
 <script>
@@ -17,7 +19,7 @@ export default {
     truncate: {
       type: Number,
       required: false,
-      default: 20
+      default: 19
     },
     isContractTrx: {
       type: Boolean,

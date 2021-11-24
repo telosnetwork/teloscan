@@ -17,10 +17,15 @@
         )
           template(
             v-if="col.name==='date'"
-            class="date-column"
+            class=""
           )
-            q-tooltip() Click to change format
-          | {{ col.label }}            
+            q-tooltip() Click to change format          
+          | {{ col.label }}    
+          template(
+            v-if="col.name==='method'"
+            )              
+            q-icon(name="fas fa-info-circle")
+              q-tooltip() Function executed based on decoded input data. For unidentified function, method ID is displayed instead.         
 
 
       q-tr( slot="body" slot-scope="props" :props="props" )

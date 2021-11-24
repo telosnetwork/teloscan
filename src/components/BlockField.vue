@@ -1,5 +1,5 @@
 <template lang="pug">
-  a(:href="`/block/${this.block}`") {{ block }}
+  router-link(:to="`/block/${this.block}`") {{ block }}
 </template>
 
 <script>

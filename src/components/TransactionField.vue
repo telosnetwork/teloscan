@@ -1,5 +1,5 @@
 <template lang="pug">
-  a(:href="`/tx/${this.transactionHash}`") {{ transactionHash.slice(0,20) }}...
+  router-link(:to="`/tx/${this.transactionHash}`") {{ transactionHash.slice(0,20) }}...
 </template>
 
 <script>
