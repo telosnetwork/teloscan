@@ -11,11 +11,18 @@ export default {
     epoch: {
       type: Number,
       required: true
+    },
+    showAge: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
     friendlyDate ()  {
-      return moment.unix(this.epoch).fromNow() + ` (${ moment.unix(this.epoch).format("MMMM Do YYYY, h:mm:ss a")})`
+      if (this.showAge) {
+        return moment.unix(this.epoch).fromNow()
+      } 
+      return  `${ moment.unix(this.epoch).format("YYYY-MM-DD h:mm:ss")}`
     }
   }
 }

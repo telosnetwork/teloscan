@@ -4,10 +4,10 @@
       h6() Transaction Hash: {{hash}}
     div(v-if="trx")
         q-tabs( v-model="tab" dense active-color="primary" inactive-color="secondary" align="justify" narrow-indicator )
-          q-tab(name="general" label="General")
-          q-tab(name="details" label="Details")
-          q-tab(name="logs" label="Logs")
-          q-tab(name="internal" label="Internal")
+          q-route-tab(name="general" :to="{ hash: '' }" exact replace label="General")
+          q-route-tab(name="details" :to="{ hash: 'details' }" exact replace label="Details")
+          q-route-tab(name="logs" :to="{ hash: 'eventlog' }" exact replace label="Logs")
+          q-route-tab(name="internal" :to="{ hash: 'internal' }" exact replace label="Internal Txns")
         q-separator()
         q-tab-panels( v-model="tab" animated keep-alive )
           q-tab-panel( name="general" )
@@ -109,6 +109,15 @@ export default {
   },
   mounted() {
     this.loadTransaction();
+    if (this.$route.hash === "internal") {
+      this.tab = "internal";
+    } else if (this.$route.hash === "eventlog") {
+      this.tab = "logs";
+    } else if (this.$route.hash === "details") {
+      this.tab = "details";
+    } else {
+      this.tab = "general";
+    }
   },
   methods: {
     async loadTransaction() {
