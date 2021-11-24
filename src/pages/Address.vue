@@ -42,6 +42,11 @@ export default {
 
       return `${process.env.NETWORK_EXPLORER}/account/${this.telosAccount}`
     }
+  },
+  watch: {
+    $route(to, from) {
+      this.loadAccount();
+    }
   }
 }
 </script>
