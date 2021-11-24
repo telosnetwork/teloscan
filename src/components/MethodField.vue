@@ -1,7 +1,13 @@
 <template lang="pug">
   div(v-if="trx.parsedTransaction" )
-    div() {{ trx.parsedTransaction.name }}
-      div() {{ transferAmount }}
+    div() {{ `${trx.parsedTransaction.name.slice(0,8)}...` }}
+    div() {{ transferAmount }}
+    q-tooltip(anchor="center middle" self="center middle")
+      | {{ trx.parsedTransaction.name }}
+  div(v-else)
+    div() {{  `${trx.input_data.slice(0,8)}...`}}  
+    q-tooltip(anchor="center middle" self="center middle")
+      | {{ trx.input_data.slice(0,8) }}
 </template>
 
 <script>
