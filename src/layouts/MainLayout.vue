@@ -3,7 +3,7 @@
     <q-header elevated>
       <q-toolbar>
 
-        <q-toolbar-title @click="$router.push('/')">
+        <q-toolbar-title style="cursor: pointer" @click="$router.push('/')">
           Teloscan
         </q-toolbar-title>
 

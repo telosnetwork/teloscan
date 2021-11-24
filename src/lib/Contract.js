@@ -18,6 +18,22 @@ export default class Contract {
     return this.name;
   }
 
+  getContractInstance(provider) {
+    if (!this.abi){
+      console.log("Cannot create contract instance without ABI!");
+      return;
+    }
+
+    if (!this.contract)
+      this.contract = new ethers.Contract(this.address, this.abi, provider ? provider : this.manager.getEthersProvider());
+
+    return this.contract;
+  }
+
+  call(functionName, args) {
+
+  }
+
   async parseTransaction(data) {
     if (this.iface) {
       try {

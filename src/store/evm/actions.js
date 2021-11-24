@@ -2,19 +2,7 @@
 export function someAction (context) {
 }
 */
-import Contract from "src/lib/Contract";
-
 let rpcId = 0;
-
-let tokenList = `https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json`;
-let tokenFile;
-import axios from "axios";
-import erc20Abi from "erc-20-abi";
-const contracts = {};
-
-const tokenListAxios = axios.create({
-  baseURL: tokenList
-});
 
 export async function doRPC ({ commit, dispatch },{method, params}) {
   const rpcPayload = {

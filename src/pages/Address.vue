@@ -5,23 +5,34 @@
       h6(v-if="!!telosAccount") {{ `Native account: ` }}
         a(:href="getAddressBloksURL()" target="_blank") {{ telosAccount }}
       h6(v-if="!!balance" ) Balance: {{balance}}
-    transaction-table( :title="address" :filter="{address}" )
+      q-tabs( v-model="tab" dense active-color="primary" inactive-color="secondary" align="justify" narrow-indicator )
+        q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
+        q-route-tab(name="tokens" :to="{ hash: 'tokens' }" exact replace label="Tokens")
+      q-separator()
+      q-tab-panels( v-model="tab" animated keep-alive )
+        q-tab-panel( name="transactions" )
+          transaction-table( :title="address" :filter="{address}" )
+        q-tab-panel( name="tokens" )
+          token-list( :address="address" )
 </template>
 
 <script>
 import TransactionTable from "components/TransactionTable";
+import TokenList from "components/TokenList";
 import Web3 from "web3";
 
 const web3 = new Web3();
 export default {
   name: "Address",
-  components: { TransactionTable },
+  components: {TokenList, TransactionTable },
   data() {
     return {
       address: this.$route.params.address,
       telosAccount: null,
       balance: null,
-      isContract: false
+      isContract: false,
+      tab: 'transactions',
+      tokens: null
     }
   },
   mounted() {
