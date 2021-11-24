@@ -41,7 +41,7 @@ export default {
       if (!this.trx.parsedTransaction)
         return;
 
-      if (this.trx.parsedTransaction.sighash === ERC20_SIGHASH) {
+      if (this.trx.parsedTransaction.sighash === ERC20_SIGHASH && this.contract) {
         const amount = BigNumber.from(this.trx.parsedTransaction.args["amount"]);
         this.transferAmount = `${(amount / Math.pow(10, this.contract.token.decimals)).toFixed(5)} ${this.contract.token.symbol}`;
       }
