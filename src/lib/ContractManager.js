@@ -96,12 +96,12 @@ export default class ContractManager {
       for (let i = 0; i < this.tokenList.tokens.length; i++) {
         let token = this.tokenList.tokens[i];
         if (token.address.toLowerCase() === address.toLowerCase()) {
-          return new Contract(
-          {
+          return new Contract({
             name: `${token.name} (${token.symbol})`,
             address,
             abi: erc20Abi,
-            manager: this
+            manager: this,
+            token
           });
         }
       }

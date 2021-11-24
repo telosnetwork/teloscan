@@ -12,6 +12,7 @@
 import TransactionTable from "components/TransactionTable";
 import Web3 from "web3";
 
+const web3 = new Web3();
 export default {
   name: "Address",
   components: { TransactionTable },
@@ -20,8 +21,7 @@ export default {
       address: this.$route.params.address,
       telosAccount: null,
       balance: null,
-      isContract: false,
-      web3: new Web3()
+      isContract: false
     }
   },
   mounted() {
@@ -30,7 +30,7 @@ export default {
   methods: {
     async loadAccount() {
       const account = await this.$evm.telos.getEthAccount(this.address);
-      let strBalance = this.web3.utils.fromWei(account.balance);
+      let strBalance = web3.utils.fromWei(account.balance);
       strBalance = `${strBalance.substring(0, (strBalance.indexOf('.') + 5))} TLOS`;
       this.balance = strBalance;
       this.telosAccount = account.account;

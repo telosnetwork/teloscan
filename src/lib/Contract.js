@@ -2,13 +2,16 @@ import { ethers } from "ethers";
 
 export default class Contract {
 
-  constructor({address, name, abi, manager}) {
+  constructor({address, name, abi, manager, token}) {
     this.address = address
     this.name = name
     this.abi = abi
     this.manager = manager;
     if (abi)
       this.iface = new ethers.utils.Interface(abi);
+
+    if (token)
+      this.token = token;
   }
 
   getName() {

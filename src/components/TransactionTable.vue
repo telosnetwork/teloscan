@@ -15,7 +15,8 @@
           block-field( :block="props.row.block" )
         q-td( key="date" )
           date-field( :epoch="props.row.epoch" )
-        q-td( key="method" ) {{ props.row.method ? props.row.method : '' }}
+        q-td( key="method" )
+          method-field( v-if="props.row.parsedTransaction" :trx="props.row" )
         q-td( key="from" )
           address-field( :address="props.row.from" )
         q-td( key="to" )
@@ -28,6 +29,7 @@ import AddressField from "components/AddressField";
 import BlockField from "components/BlockField";
 import DateField from "components/DateField";
 import TransactionField from "components/TransactionField";
+import MethodField from "components/MethodField";
 
 const columns = [
   {
@@ -64,7 +66,7 @@ const columns = [
 
 export default {
   name: "TransactionTable",
-  components: {TransactionField, DateField, BlockField, AddressField },
+  components: {TransactionField, DateField, BlockField, AddressField, MethodField },
   props: {
     title: {
       type: String,
@@ -126,10 +128,12 @@ export default {
             continue;
 
           const parsedTransaction = await contract.parseTransaction(transaction.input_data);
-          if (parsedTransaction)
-            transaction.method = parsedTransaction.name;
+          if (parsedTransaction) {
+            transaction.parsedTransaction = parsedTransaction;
+            transaction.contract = contract;
+          }
         } catch (e) {
-          console.error(`Failed to set method for transaction, error was: ${e.message}`);
+          console.error(`Failed to parse data for transaction, error was: ${e.message}`);
         }
       }
       this.setRows(page, rowsPerPage);

@@ -1,8 +1,8 @@
 {
   "name": "telos-template",
   "version": "0.0.1",
-  "description": "A template for using Vue+Quasar to build a Telos webapp",
-  "productName": "Telos Quasar Template",
+  "description": "Teloscan block explorer",
+  "productName": "Teloscan",
   "author": "Jesse Schulman <jesse@caleos.io>",
   "private": true,
   "scripts": {

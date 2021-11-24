@@ -33,7 +33,7 @@
             br()
             div(v-if="isContract" )
               strong() {{ `Contract function: ` }}
-              span() {{ getFunctionName() }}
+              method-field( :contract="contract" :trx="methodTrx")
             br(v-if="isContract")
             div(v-if="isContract" )
               strong() {{ `Contract parameters: ` }}
@@ -87,11 +87,12 @@ import BlockField from "components/BlockField";
 import AddressField from "components/AddressField";
 import LogsViewer from "components/Transaction/LogsViewer";
 import InternalTxns from "components/Transaction/InternalTxns";
+import MethodField from "components/MethodField";
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
   name: "Transaction",
-  components: {LogsViewer, InternalTxns, AddressField, BlockField, DateField },
+  components: {LogsViewer, InternalTxns, AddressField, BlockField, DateField, MethodField },
   data() {
     return {
       hash: this.$route.params.hash,
@@ -102,7 +103,8 @@ export default {
       isContract: false,
       contract: null,
       parsedTransaction: null,
-      parsedLogs: null
+      parsedLogs: null,
+      methodTrx: null
     }
   },
   mounted() {
@@ -128,9 +130,10 @@ export default {
         return;
 
       this.contract = contract;
-      this.isContract = true;
       this.parsedTransaction = await this.contract.parseTransaction(this.trx.input_data);
       this.parsedLogs = await this.contract.parseLogs(this.trx.logs);
+      this.methodTrx = Object.assign({parsedTransaction: this.parsedTransaction}, this.trx);
+      this.isContract = true;
     },
     getFunctionName() {
       if (this.parsedTransaction)
