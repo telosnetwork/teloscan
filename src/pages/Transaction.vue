@@ -15,6 +15,11 @@
               strong() {{ `Block Number: ` }}
               block-field( :block="trx.block" )
             br()
+            div( @click="showAge = !showAge" )
+              strong() {{ `Date: ` }}
+              date-field( :epoch="trx.epoch" :show-age="showAge" )
+              q-tooltip(self="left") Click to change date format
+            br()
             div()
               strong() {{ `Transaction index: ` }}
               span() {{ trx.trx_index }}
@@ -104,7 +109,8 @@ export default {
       contract: null,
       parsedTransaction: null,
       parsedLogs: null,
-      methodTrx: null
+      methodTrx: null,
+      showAge: true
     }
   },
   mounted() {
