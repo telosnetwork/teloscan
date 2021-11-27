@@ -35,6 +35,11 @@ export default {
   async mounted() {
     await this.loadContract();
   },
+  watch: {
+    address () {
+      this.loadContract();
+    }
+  },
   methods: {
     ...mapActions("evm", ["getContract"]),
     goToAddress() {
