@@ -1,5 +1,6 @@
 import Contract from "src/lib/Contract";
 import { ethers } from "ethers";
+import Web3 from "web3";
 
 const tokenList = `https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json`;
 
@@ -18,10 +19,20 @@ export default class ContractManager {
     this.functionInterfaces = {};
     this.eventInterfaces = {};
     this.evmEndpoint = evmEndpoint;
+    this.web3 = new Web3(process.env.NETWORK_EVM_RPC);
+    this.ethersProvider = new ethers.providers.JsonRpcProvider(process.env.NETWORK_EVM_RPC);
   }
 
   async init() {
     await this.loadTokenList();
+  }
+
+  getWeb3Provider() {
+    return this.web3;
+  }
+
+  getEthersProvider() {
+    return this.ethersProvider;
   }
 
   async getFunctionIface(data) {
@@ -85,6 +96,11 @@ export default class ContractManager {
       const results = await tokenListAxios.get(tokenList);
       this.tokenList = results.data;
     }
+  }
+
+  async getTokenList() {
+    await this.loadTokenList();
+    return this.tokenList;
   }
 
 
