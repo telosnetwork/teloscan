@@ -1,14 +1,109 @@
 <template>
-    <q-card class="my-card">
-      <q-card-section>
-        <div class="row">
-            <div class="col-xs-12 col-sm-9 col-md-6">
-              
-            <div class="text-h6">Our Changing Planet</div>
-            <div class="text-subtitle2">by John Doe</div>
+    <q-card class="infoCard">
+      <q-card-section class="q-pa-lg infoCardSection">
+
+        <div class="row ">
+
+          <div class="col-xs-12 col-md-4 q-pa-md">
+            <div class="row items-center">
+
+              <div class="col-xs-6 col-md-12 items-center">
+                  <div class="column items-center text-subtitle2">Our Changing Planet</div>
+                
+                
+              </div>
+
+              <div class="col-xs-6 col-md-12">
+                <div class="column items-center text-h6 text-weight-bold">by John Doe</div>
+              </div>
+
+            </div>
           </div>
+
+          <div class="col-xs-12 col-md-4 q-pa-md">
+            <div class="row items-center">
+
+              <div class="col-xs-6 col-md-12 items-center">
+                  <div class="column items-center text-subtitle2">Our Changing Planet</div>
+                
+                
+              </div>
+
+              <div class="col-xs-6 col-md-12">
+                <div class="column items-center text-h6 text-weight-bold">by John Doe</div>
+              </div>
+
+            </div>
+          </div>
+
+         <div class="col-xs-12 col-md-4 q-pa-md">
+            <div class="row items-center">
+
+              <div class="col-xs-6 col-md-12 items-center">
+                  <div class="column items-center text-subtitle2">Our Changing Planet</div>
+                
+                
+              </div>
+
+              <div class="col-xs-6 col-md-12">
+                <div class="column items-center text-h6 text-weight-bold">by John Doe</div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-md-4 q-pa-md">
+            <div class="row items-center">
+
+              <div class="col-xs-6 col-md-12 items-center">
+                  <div class="column items-center text-subtitle2">Our Changing Planet</div>
+                
+                
+              </div>
+
+              <div class="col-xs-6 col-md-12">
+                <div class="column items-center text-h6 text-weight-bold">by John Doe</div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-md-4 q-pa-md">
+            <div class="row items-center">
+
+              <div class="col-xs-6 col-md-12 items-center">
+                  <div class="column items-center text-subtitle2">Our Changing Planet</div>
+                
+                
+              </div>
+
+              <div class="col-xs-6 col-md-12">
+                <div class="column items-center text-h6 text-weight-bold">by John Doe</div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-md-4 q-pa-md">
+            <div class="row items-center">
+
+              <div class="col-xs-6 col-md-12 items-center">
+                  <div class="column items-center text-subtitle2">Our Changing Planet</div>
+                
+                
+              </div>
+
+              <div class="col-xs-6 col-md-12">
+                <div class="column items-center text-h6 text-weight-bold">by John Doe</div>
+              </div>
+
+            </div>
+          </div>
+
         </div>
+
       </q-card-section>
+
     </q-card>
 </template>
 
@@ -19,5 +114,5 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped>
+<style lang="scss" scoped>
 </style>

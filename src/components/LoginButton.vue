@@ -114,8 +114,9 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped>
-.account-name
-    color: white
-    font-size: 20px
+<style lang="scss" scoped>
+.account-name{
+    color: "white";
+    font-size: 20px;
+}
 </style>
