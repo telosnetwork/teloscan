@@ -1,31 +1,106 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
-      <q-toolbar>
+    
+    <q-header class="transparent">
+      <q-toolbar class="bg-primary glossy text-white toolbar">
 
-        <q-toolbar-title style="cursor: pointer" @click="$router.push('/')">
-          Teloscan
+        <q-toolbar-title>
+          <q-btn flat stretch to="/">
+            <img alt="Telos logo" src="~assets/Teloscan_logo.svg"  />
+          </q-btn>
         </q-toolbar-title>
 
-        <search></search>
+        <q-btn stretch flat class="desktop-only" label="Blocks" />
+
+        <q-separator dark vertical class="desktop-only" />
+
+        <q-btn stretch flat class="desktop-only" label="Transactions" />
+
+        <q-separator dark vertical class="desktop-only" />
+
+        <q-btn
+          stretch 
+          flat
+          @click="toggleDarkMode()"
+          :icon="$q.dark.isActive ? 'fas fa-sun' : 'fas fa-moon'">
+        </q-btn>
+
+        <q-separator dark vertical class="desktop-only" />
+
+        <q-btn-dropdown stretch flat >
+          <template v-slot:label>
+
+          <q-avatar flat stretch dense >
+            <img alt="Telos logo" src="~assets/telos_acorn.png" />
+          </q-avatar>
+
+        </template>
+          
+          <q-list style="width : 200px">
+
+            <q-item-label header>Network</q-item-label>
+            <q-item clickable v-close-popup to="/">
+              <q-item-section>
+                <q-item-label>Mainnet</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item clickable v-close-popup to="/">
+              <q-item-section>
+                <q-item-label>Testnet</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-separator inset spaced />
+            <q-item-label header>Blockchain</q-item-label>
+            <q-item clickable v-close-popup to="/">
+              <q-item-section>
+                <q-item-label>Blocks</q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item clickable v-close-popup to="/">
+              <q-item-section>
+                <q-item-label>Transactions</q-item-label>
+              </q-item-section>
+            </q-item>
+
+          </q-list>
+
+        </q-btn-dropdown>
 
       </q-toolbar>
     </q-header>
 
-    <q-page-container>
-      <router-view />
-    </q-page-container>
+    <div class="row justify-center items-center">
+      <q-page-container class="pageContainer">
+        <router-view />
+      </q-page-container>
+    </div>
+
   </q-layout>
 </template>
 
 <script>
-import Search from 'components/Search'
 export default {
   name: "MainLayout",
-  components: { Search},
+  components: { },
+  methods: {
+    toggleDarkMode() {
+      this.$q.dark.toggle();
+      localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
+    }
+  },
   data() {
     return {
     };
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.pageContainer {
+  flex: 0 1 1200px;
+  padding: 1rem;
+}
+</style>

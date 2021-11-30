@@ -1,4 +1,88 @@
-// app global css in Sass form
+
 a:visited {
   color: blue;
+}
+
+.toolbar{
+  background: $purpleDarkMode;
+}
+
+// Light/Dark Theme
+body.body--light {
+ // background-image: radial-gradient(circle at 52% 100%, rgba(195, 248, 255, 1) 16%, rgba(213, 182, 243, 1) 98%);
+  background: #fafafa ;
+  .toolbar {
+    color: $purpleDarkMode;
+  };
+
+  .searchCard{
+    padding: 1px;
+    background: radial-gradient(circle at 50% 50%, rgba(97, 8, 183, 1) 1%, rgba(0, 188, 212, 1) 53%, rgba(213, 109, 213, 1) 100%);
+    border-radius: 10px;
+
+    .searchCardSection{
+      padding: 10px;
+      background: #FFFFFF;
+      border-radius: 10px;
+      
+    }
+  }
+
+}
+
+body.body--dark {
+  color: $white;
+
+  background-image: linear-gradient(
+    to right bottom,
+    $blueDarkMode 30%,
+    $purpleDarkMode 90%
+  );
+
+};
+
+// Defines
+.slim-scrollbar {
+  /* custom scrollbar */
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    // background-color: #d6dee1;
+    background-color: rgba($white, 0.5);
+    border-radius: 1rem;
+    border: 0.1rem solid transparent;
+    background-clip: content-box;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: rgba($white, 0.9);
+  }
+}
+
+// Cards & Dialogs
+
+
+.q-dialog__inner > div {
+  border-radius: 20px;
+}
+
+.q-input {
+  width: 100%;
+  font-size: 1.3rem;
+}
+
+@media only screen and (max-width: 550px) {
+  .selectorContainer .text-h6 {
+    font-size: 0.8rem;
+  }
+  .q-input {
+    font-size: 1.2rem;
+  }
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
