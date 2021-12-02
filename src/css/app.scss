@@ -1,24 +1,27 @@
 
-a:visited {
-  color: blue;
+a {
+  color: rgb(100, 111, 211);
 }
 
 .toolbar{
   background: $purpleDarkMode;
+  color:white;
 }
 
 // Light/Dark Theme
 body.body--light {
  // background-image: radial-gradient(circle at 52% 100%, rgba(195, 248, 255, 1) 16%, rgba(213, 182, 243, 1) 98%);
   background: #fafafa ;
-  .toolbar {
-    color: $purpleDarkMode;
-  };
 
   .searchCard{
     padding: 1px;
     background: radial-gradient(circle at 50% 50%, rgba(97, 8, 183, 1) 1%, rgba(0, 188, 212, 1) 53%, rgba(213, 109, 213, 1) 100%);
     border-radius: 10px;
+
+    .q-input {
+      width: 100%;
+      font-size: 1.3rem;
+    }
 
     .searchCardSection{
       padding: 10px;
@@ -27,11 +30,34 @@ body.body--light {
       
     }
   }
-
 }
 
 body.body--dark {
   color: $white;
+
+  .q-card{
+    padding: 10px;
+      background: $dark;
+      border-radius: 10px;
+  }
+
+  .searchCard{
+    padding: 1px;
+    background: radial-gradient(circle at 50% 50%, rgba(97, 8, 183, 1) 1%, rgba(0, 188, 212, 1) 53%, rgba(213, 109, 213, 1) 100%);
+    border-radius: 10px;
+
+    .q-input {
+      width: 100%;
+      font-size: 1.3rem;
+    }
+
+    .searchCardSection{
+      padding: 10px;
+      background: $dark;
+      border-radius: 10px;
+      
+    }
+  }
 
   background-image: linear-gradient(
     to right bottom,
@@ -40,6 +66,7 @@ body.body--dark {
   );
 
 };
+
 
 // Defines
 .slim-scrollbar {
@@ -69,11 +96,6 @@ body.body--dark {
   border-radius: 20px;
 }
 
-.q-input {
-  width: 100%;
-  font-size: 1.3rem;
-}
-
 @media only screen and (max-width: 550px) {
   .selectorContainer .text-h6 {
     font-size: 0.8rem;
@@ -85,4 +107,22 @@ body.body--dark {
 
 ::-webkit-scrollbar {
   display: none;
+}
+
+.taskbarSearch{
+  max-width: 300px;
+  max-height: 50px;
+  color:white;
+  padding-right: 10px;
+  font-size: 1rem;
+
+  input{
+    color: white;
+  }
+  .q-icon{
+    color: white;
+  }
+
+
+  
 }

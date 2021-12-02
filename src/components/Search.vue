@@ -1,15 +1,10 @@
 <template>
-<q-card class="searchCard">
-  <q-card-section class="q-pa-lg searchCardSection">
-  <q-input bottom-slots :placeholder="searchHint" v-model="searchTerm" @keydown.enter="search" class="searchInput">
+  <q-input bottom-slots :placeholder="searchHint" v-model="searchTerm" @keydown.enter="search" >
     <template v-slot:append>
       <q-icon v-if="searchTerm !== null" name="close" @click="searchTerm = null" class="cursor-pointer" />
       <q-icon name="search" @click="search"/>
     </template>
-
   </q-input>
-  </q-card-section>
-</q-card>
 </template>
 
 <script>
