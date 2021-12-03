@@ -103,7 +103,6 @@ export default {
       localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
     },
     goTo(url) {
-      debugger;
       window.open(url, '_blank');
     }
   }
