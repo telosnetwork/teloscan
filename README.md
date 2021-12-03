@@ -1,10 +1,12 @@
 # Telos Quasar Template (telos-template)
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/1a750b68-90d9-4e80-8ac9-74084bc475ae/deploy-status)](https://app.netlify.com/sites/teloscan/deploys)
+
 A template for using Vue+Quasar to build a Telos webapp
 
 ## Install the dependencies
 
-### Install yarn package manager 
+### Install yarn package manager
 Follow the installation instructions at:
 https://classic.yarnpkg.com/en/
 
