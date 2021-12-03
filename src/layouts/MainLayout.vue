@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    
+
     <q-header class="transparent">
       <q-toolbar class="bg-primary glossy text-white toolbar">
 
@@ -19,11 +19,11 @@
         <!-- <q-separator dark vertical class="desktop-only" /> -->
 
         <search class="taskbarSearch"></search>
-        
+
         <q-separator dark vertical class="desktop-only" />
 
         <q-btn
-          stretch 
+          stretch
           flat
           @click="toggleDarkMode()"
           :icon="$q.dark.isActive ? 'fas fa-sun' : 'fas fa-moon'">
@@ -39,18 +39,18 @@
           </q-avatar>
 
         </template>
-          
+
           <q-list style="width : 200px">
 
             <q-item-label header>Network</q-item-label>
 
-            <q-item v-if="!mainnet"  clickable v-close-popup to="https://www.teloscan.io/">
+            <q-item v-if="!mainnet" v-close-popup @click.native="goTo('https://www.teloscan.io/')">
               <q-item-section>
                 <q-item-label> Mainnet </q-item-label>
               </q-item-section>
             </q-item>
 
-            <q-item v-if="mainnet" clickable v-close-popup to="https://testnet.teloscan.io/">
+            <q-item v-if="mainnet" v-close-popup @click.native="goTo('https://testnet.teloscan.io/')">
               <q-item-section>
                 <q-item-label>Testnet</q-item-label>
               </q-item-section>
@@ -101,6 +101,10 @@ export default {
     toggleDarkMode() {
       this.$q.dark.toggle();
       localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
+    },
+    goTo(url) {
+      debugger;
+      window.open(url, '_blank');
     }
   }
 };
