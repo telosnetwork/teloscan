@@ -94,7 +94,7 @@ export default {
   components: { Search },
   data(){
     return{
-      mainnet : process.env.NETWORK_EVM_ENDPOINT == "https://mainnet.telos.net" ? true : false,
+      mainnet : process.env.NETWORK_EVM_CHAIN_ID === "40",
     };
   },
   methods: {
