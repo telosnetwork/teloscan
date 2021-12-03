@@ -133,7 +133,7 @@ module.exports = function(/* ctx */) {
       manifest: {
         name: `Teloscan`,
         short_name: `Teloscan`,
-        description: `A template for using Vue+Quasar to build a Telos webapp`,
+        description: `Telos EVM Block Explorer`,
         display: "standalone",
         orientation: "portrait",
         background_color: "#ffffff",
