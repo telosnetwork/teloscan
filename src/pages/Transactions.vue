@@ -3,25 +3,9 @@
 
     <div class="row q-pa-lg">
       <div class="text-h4">
-        Explore Telos EVM
+        Explore Transactions
       </div>
     </div>
-
-    <div class="row fit">
-      <div class="col-xs-12 col-md-6 offset-md-3 q-px-sm">
-        <q-card class="searchCard">
-          <q-card-section class="q-pa-lg searchCardSection">      
-            <search/>
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
-    
-    <!-- <div class="row q-pt-xl q-pb-md">
-      <div class="col-sm-12 col-md-10 offset-md-1 ">
-        <home-info/>
-      </div>
-    </div> -->
 
     <div class="row">
       <div class="col-12 q-px-sm">
@@ -38,8 +22,6 @@ import TransactionTable from "components/TransactionTable";
 import HomeInfo from "components/HomeInfo.vue";
 export default {
   components: { 
-    Search,
-    // HomeInfo,
     TransactionTable
   },
   name: "Index"
