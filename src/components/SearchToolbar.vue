@@ -1,6 +1,6 @@
 <template>
 
-  <q-input dark dense standout v-model="searchTerm" input-class="text-right" @keydown.enter="search" class="q-ml-md">
+  <q-input dark dense standout :placeholder="searchHint" v-model="searchTerm" input-class="text-right" @keydown.enter="search" class="q-ml-md">
     <template v-slot:append>
       <q-icon v-if="searchTerm == null" name="search" />
       <q-icon v-else name="clear" class="cursor-pointer" @click="searchTerm = null" />
