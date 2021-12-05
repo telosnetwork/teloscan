@@ -2,7 +2,8 @@
   <q-layout view="lHh Lpr lFf">
     
     <q-header class="transparent">
-      <q-toolbar class="bg-primary glossy text-white toolbar">
+      
+      <q-toolbar class="text-white toolbar">
 
         <q-toolbar-title>
           <q-btn flat stretch to="/">
@@ -18,9 +19,8 @@
 
         <!-- <q-separator dark vertical class="desktop-only" /> -->
 
-        <search class="taskbarSearch"></search>
-        
-        <q-separator dark vertical class="desktop-only" />
+        <search class="taskbarSearch desktop-only"></search>
+        <q-space />
 
         <q-btn
           stretch 
@@ -34,9 +34,7 @@
         <q-btn-dropdown stretch flat >
           <template v-slot:label>
 
-          <q-avatar flat stretch dense >
-            <img alt="Telos logo" src="~assets/telos_acorn.png" />
-          </q-avatar>
+          {{mainnet? "Mainnet":"Testnet"}}
 
         </template>
           
@@ -88,7 +86,7 @@
 </template>
 
 <script>
-import Search from 'src/components/Search.vue';
+import Search from 'src/components/SearchToolbar.vue';
 export default {
   name: "MainLayout",
   components: { Search },
@@ -110,5 +108,6 @@ export default {
 .pageContainer {
   flex: 0 1 1200px;
   padding: 1rem;
+  max-width: 100%;
 }
 </style>

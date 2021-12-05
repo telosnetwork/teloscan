@@ -23,7 +23,7 @@
       </div>
     </div> -->
 
-    <div class="row">
+    <div class="column">
       <div class="col-12 q-px-sm">
         <transaction-table title="Recent transactions"></transaction-table>
       </div>

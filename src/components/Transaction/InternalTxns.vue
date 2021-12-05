@@ -1,7 +1,7 @@
 <template lang="pug">
   pre()
     //- div() {{ JSON.stringify(itxs, null, 4) }}
-    <json-viewer :value="itxs"></json-viewer>
+    <json-viewer :value="itxs" theme="jsonViewer"></json-viewer>
 </template>
 
 <script>

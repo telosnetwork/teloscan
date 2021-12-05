@@ -1,17 +1,27 @@
 
 a {
   color: rgb(100, 111, 211);
+  text-decoration: none;
 }
 
 .toolbar{
-  background: $purpleDarkMode;
-  color:white;
+  background: radial-gradient(circle at 50% 50%, rgba(97, 8, 183, 1) 1%, rgba(0, 188, 212, 1) 53%, rgba(213, 109, 213, 1) 100%);
+  color:$purpleDarkMode;
 }
 
 // Light/Dark Theme
 body.body--light {
  // background-image: radial-gradient(circle at 52% 100%, rgba(195, 248, 255, 1) 16%, rgba(213, 182, 243, 1) 98%);
   background: #fafafa ;
+
+  .jsonViewer{
+    color:$purpleDarkMode;
+  }
+
+  .toolbar{
+    background:rgb(127, 99, 255);
+    color:$purpleDarkMode;
+  }
 
   .searchCard{
     padding: 1px;
@@ -34,6 +44,10 @@ body.body--light {
 
 body.body--dark {
   color: $white;
+
+  .toolbar{
+    background:#282828;
+  }
 
   .q-card{
     padding: 10px;
@@ -59,14 +73,9 @@ body.body--dark {
     }
   }
 
-  background-image: linear-gradient(
-    to right bottom,
-    $blueDarkMode 30%,
-    $purpleDarkMode 90%
-  );
+  background: #1a1a1a;
 
 };
-
 
 // Defines
 .slim-scrollbar {
@@ -93,7 +102,19 @@ body.body--dark {
 
 
 .q-dialog__inner > div {
-  border-radius: 20px;
+  border-radius: 15px;
+}
+
+.ContentContainer {
+  border-radius: 15px;
+}
+
+.topRounded {
+  border-radius: 15px 15px 0px 0px;
+}
+
+.botRounded {
+  border-radius: 0px 0px 15px 15px;
 }
 
 @media only screen and (max-width: 550px) {
@@ -112,17 +133,9 @@ body.body--dark {
 .taskbarSearch{
   max-width: 300px;
   max-height: 50px;
-  color:white;
   padding-right: 10px;
   font-size: 1rem;
-
-  input{
-    color: white;
-  }
-  .q-icon{
-    color: white;
-  }
-
-
+  width:400px;
   
 }
+
