@@ -44,13 +44,13 @@
 
             <q-item-label header>Network</q-item-label>
 
-            <q-item v-if="!mainnet" v-close-popup @click.native="goTo('https://www.teloscan.io/')">
+            <q-item v-close-popup @click.native="goTo('https://www.teloscan.io/')">
               <q-item-section>
                 <q-item-label> Mainnet </q-item-label>
               </q-item-section>
             </q-item>
 
-            <q-item v-if="mainnet" v-close-popup @click.native="goTo('https://testnet.teloscan.io/')">
+            <q-item v-close-popup @click.native="goTo('https://testnet.teloscan.io/')">
               <q-item-section>
                 <q-item-label>Testnet</q-item-label>
               </q-item-section>
