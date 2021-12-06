@@ -2,8 +2,8 @@
   <q-page class="column justify-center items-center">
 
     <div class="row q-pa-lg">
-      <div class="text-h4">
-        Explore Telos EVM
+      <div class="text-h4 text-deep-purple-2">
+        Telos EVM Explorer
       </div>
     </div>
 
