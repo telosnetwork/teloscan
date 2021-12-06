@@ -2,8 +2,8 @@
   <q-page class="column justify-center items-center">
 
     <div class="row q-pa-lg">
-      <div class="text-h4">
-        Explore Telos EVM
+      <div class="text-h4 text-deep-purple-2">
+        Telos EVM Explorer
       </div>
     </div>
 
@@ -23,7 +23,7 @@
       </div>
     </div> -->
 
-    <div class="row">
+    <div class="column">
       <div class="col-12 q-px-sm">
         <transaction-table title="Recent transactions"></transaction-table>
       </div>

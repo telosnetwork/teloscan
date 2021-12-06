@@ -1,11 +1,11 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-
+    
     <q-header class="transparent">
       
-      <q-toolbar class="text-white toolbar">
+      <q-toolbar class="text-white toolbar transparent">
 
-        <q-toolbar-title>
+        <q-toolbar-title >
           <q-btn flat stretch to="/">
             <img alt="Telos logo" src="~assets/Teloscan_logo.svg"  />
           </q-btn>
@@ -19,33 +19,36 @@
 
         <!-- <q-separator dark vertical class="desktop-only" /> -->
 
-        <search class="taskbarSearch desktop-only"></search>
+        <search class="taskbarSearch desktop-only text-center "></search>
 
         <q-btn
           flat
-          class="q-px-md"
+           dark 
+           standout
+           class="q-px-md"
           @click="toggleDarkMode()"
           :icon="$q.dark.isActive ? 'fas fa-sun' : 'fas fa-moon'">
         </q-btn>
 
-        <q-btn-dropdown flat >
+
+        <q-btn-dropdown  flat >
           <template v-slot:label>
 
           {{mainnet? "Mainnet":"Testnet"}}
 
         </template>
-
+          
           <q-list style="width : 200px">
 
             <q-item-label header>Network</q-item-label>
 
-            <q-item v-close-popup @click.native="goTo('https://www.teloscan.io/')">
+            <q-item v-if="!mainnet"  clickable v-close-popup to="https://www.teloscan.io/">
               <q-item-section>
                 <q-item-label> Mainnet </q-item-label>
               </q-item-section>
             </q-item>
 
-            <q-item v-close-popup @click.native="goTo('https://testnet.teloscan.io/')">
+            <q-item v-if="mainnet" clickable v-close-popup to="https://testnet.teloscan.io/">
               <q-item-section>
                 <q-item-label>Testnet</q-item-label>
               </q-item-section>
@@ -72,8 +75,19 @@
 
       </q-toolbar>
     </q-header>
+    <div class="homepageImage">
+      <!-- <img alt="Telos background" src="~assets/background1.jpg" class="homepageImage" > -->
+      <div class="bg"></div>
+      <div class="bgNormal"></div>
 
-    <div class="row justify-center items-center">
+    <div class="star-field">
+    <div class="layer"></div>
+    <div class="layer"></div>
+    <div class="layer"></div>
+    </div>
+    </div>
+
+    <div class="row justify-center items-center onTop">
       <q-page-container class="pageContainer">
         <router-view />
       </q-page-container>
@@ -86,19 +100,16 @@
 import Search from 'src/components/SearchToolbar.vue';
 export default {
   name: "MainLayout",
-  components: { Search },
+  components: { Search,  },
   data(){
     return{
-      mainnet : process.env.NETWORK_EVM_CHAIN_ID === "40",
+      mainnet : process.env.NETWORK_EVM_ENDPOINT == "https://mainnet.telos.net" ? true : false,
     };
   },
   methods: {
     toggleDarkMode() {
       this.$q.dark.toggle();
       localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
-    },
-    goTo(url) {
-      window.open(url, '_blank');
     }
   }
 };
