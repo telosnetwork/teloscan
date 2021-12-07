@@ -1,11 +1,11 @@
 
 <template >
 
-  <div class="row"  >
+  <div class="row q-pt-xl"  >
     <div class="col-12 q-py-lg" >
     
     <div style="width=100%" class="shadow-2 ContentContainer" v-if="trx" >
-        <q-tabs v-model="tab" dense inactive-color="secondary" align="justify" narrow-indicator >
+        <q-tabs class="tabsBar topRounded" v-model="tab" dense inactive-color="secondary" align="justify" narrow-indicator >
           <q-route-tab class="topRounded"  name="general" :to="{ hash: '' }" exact replace label="General"/>
           <q-route-tab class="topRounded"  name="details" :to="{ hash: 'details' }" exact replace label="Details"/>
           <q-route-tab class="topRounded"  name="logs" :to="{ hash: 'eventlog' }" exact replace label="Logs"/>

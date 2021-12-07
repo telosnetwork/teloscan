@@ -3,7 +3,7 @@
 
     <q-header class="transparent">
       
-      <q-toolbar class="text-white toolbar">
+      <q-toolbar class="text-white toolbar transparent">
 
         <q-toolbar-title>
           <q-btn flat stretch to="/">
@@ -73,6 +73,8 @@
       </q-toolbar>
     </q-header>
 
+    <div class="banner"></div>
+
     <div class="row justify-center items-center">
       <q-page-container class="pageContainer">
         <router-view />
@@ -109,5 +111,15 @@ export default {
   flex: 0 1 1200px;
   padding: 1rem;
   max-width: 100%;
+}
+
+.banner {
+  z-index: 0;
+  height: 250px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: linear-gradient(#252a5e 27.19%, #2d4684 65.83%);
 }
 </style>
