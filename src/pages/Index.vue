@@ -1,6 +1,6 @@
 <template>
   <q-page class="column items-center">
-    <div class="row q-pa-lg">
+    <div class="row q-py-lg">
       <div class="text-h4 text-primary">
         Telos EVM Explorer
       </div>
@@ -12,7 +12,7 @@
       </div>
     </div> 
 
-    <div class="row fit">
+    <div class="row fit q-px-sm">
       <div class="col-xs-12 col-md-6 offset-md-3 q-px-sm">
         <q-card class="searchCard">
           <q-card-section class="q-pa-lg searchCardSection">
@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <div class="column">
+    <div class="row">
       <div class="col-12  tableWrapper">
         <transaction-table title="Recent transactions"></transaction-table>
       </div>
