@@ -2,7 +2,7 @@
   <q-page class="column justify-center items-center">
 
     <div class="row q-pa-lg">
-      <div class="text-h4 text-deep-purple-2">
+      <div class="text-h4 text-blue-5">
         Telos EVM Explorer
       </div>
     </div>
