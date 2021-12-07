@@ -2,11 +2,12 @@
   <q-layout view="lhh Lpr lFf">
     <q-header class="transparent">
       <q-toolbar class="text-white toolbar transparent">
-        <q-toolbar-title>
-          <q-btn flat stretch to="/">
-            <img alt="Telos logo" src="~assets/Teloscan_logo.svg" />
-          </q-btn>
-        </q-toolbar-title>
+        <div class="q-py-sm">
+          <router-link to="/">
+            <img alt="Telos EVM logo" src="~assets/evm_logo.png" width="45" />
+          </router-link>
+        </div>
+        <q-toolbar-title> </q-toolbar-title>
 
         <!-- <q-btn stretch flat class="desktop-only" label="Blocks" /> -->
 
