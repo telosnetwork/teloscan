@@ -3,8 +3,9 @@
     <q-header class="transparent">
       <q-toolbar class="text-white toolbar transparent">
         <div class="q-py-sm">
-          <router-link to="/">
+          <router-link to="/" class="row items-center q-gutter-x-xs">
             <img alt="Telos EVM logo" src="~assets/evm_logo.png" width="45" />
+            <div class="text-h5 text-white">Teloscan</div>
           </router-link>
         </div>
         <q-toolbar-title> </q-toolbar-title>

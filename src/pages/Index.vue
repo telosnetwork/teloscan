@@ -23,7 +23,7 @@
     </div> -->
 
     <div class="column">
-      <div class="col-12 q-px-sm">
+      <div class="col-12 q-px-sm tableWrapper">
         <transaction-table title="Recent transactions"></transaction-table>
       </div>
     </div>
@@ -44,4 +44,8 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped></style>
+<style lang="scss" scoped>
+.tableWrapper {
+  max-width: 100vw;
+}
+</style>
