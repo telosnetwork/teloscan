@@ -1,3 +1,4 @@
+
 <template >
 
   <div class="row"  >
@@ -55,7 +56,7 @@
             <br v-if="isContract"/>
             <div v-if="isContract" >
               <strong> {{ `Contract parameters: ` }}</strong>
-              <pre> {{ getFunctionParams() }}</pre>
+              <json-viewer :value="getFunctionParams()"/>
             </div>
             <br v-if="isContract"/>
             <div v-if="trx.createdaddress">
@@ -125,11 +126,12 @@ import AddressField from "components/AddressField";
 import LogsViewer from "components/Transaction/LogsViewer";
 import InternalTxns from "components/Transaction/InternalTxns";
 import MethodField from "components/MethodField";
+import JsonViewer from 'vue-json-viewer'
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
   name: "Transaction",
-  components: {LogsViewer, InternalTxns, AddressField, BlockField, DateField, MethodField },
+  components: {LogsViewer, InternalTxns, AddressField, BlockField, DateField, MethodField, JsonViewer },
   data() {
     return {
       hash: this.$route.params.hash,
@@ -194,7 +196,7 @@ export default {
         function: this.parsedTransaction.signature,
         args: this.parsedTransaction.args
       }
-      return JSON.stringify(params, null, 4);
+      return params;
     },
     getLogs() {
       if (this.parsedLogs) {

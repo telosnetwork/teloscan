@@ -36,7 +36,7 @@
         q-td( key="date" )
           date-field( :epoch="props.row.epoch", :showAge="showAge" )
         q-td( key="method" )
-          method-field( v-if="props.row.parsedTransaction" :trx="props.row" )
+          method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shorten="true" )
         q-td( key="from" )
           address-field( :address="props.row.from" )
         q-td( key="to" )

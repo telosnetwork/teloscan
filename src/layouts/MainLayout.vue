@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    
+
     <q-header class="transparent">
       
       <q-toolbar class="text-white toolbar">
@@ -20,35 +20,32 @@
         <!-- <q-separator dark vertical class="desktop-only" /> -->
 
         <search class="taskbarSearch desktop-only"></search>
-        <q-space />
 
         <q-btn
-          stretch 
           flat
+          class="q-px-md"
           @click="toggleDarkMode()"
           :icon="$q.dark.isActive ? 'fas fa-sun' : 'fas fa-moon'">
         </q-btn>
 
-        <q-separator dark vertical class="desktop-only" />
-
-        <q-btn-dropdown stretch flat >
+        <q-btn-dropdown flat >
           <template v-slot:label>
 
           {{mainnet? "Mainnet":"Testnet"}}
 
         </template>
-          
+
           <q-list style="width : 200px">
 
             <q-item-label header>Network</q-item-label>
 
-            <q-item v-if="!mainnet"  clickable v-close-popup to="https://www.teloscan.io/">
+            <q-item v-close-popup @click.native="goTo('https://www.teloscan.io/')">
               <q-item-section>
                 <q-item-label> Mainnet </q-item-label>
               </q-item-section>
             </q-item>
 
-            <q-item v-if="mainnet" clickable v-close-popup to="https://testnet.teloscan.io/">
+            <q-item v-close-popup @click.native="goTo('https://testnet.teloscan.io/')">
               <q-item-section>
                 <q-item-label>Testnet</q-item-label>
               </q-item-section>
@@ -92,13 +89,16 @@ export default {
   components: { Search },
   data(){
     return{
-      mainnet : process.env.NETWORK_EVM_ENDPOINT == "https://mainnet.telos.net" ? true : false,
+      mainnet : process.env.NETWORK_EVM_CHAIN_ID === "40",
     };
   },
   methods: {
     toggleDarkMode() {
       this.$q.dark.toggle();
       localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
+    },
+    goTo(url) {
+      window.open(url, '_blank');
     }
   }
 };
