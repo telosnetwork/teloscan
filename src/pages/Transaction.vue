@@ -1,7 +1,7 @@
 <template>
   <div class="pageContainer row q-pt-xl">
     <div class="text-h4 text-primary q-mb-lg">
-      Transaction
+      Transaction Details
     </div>
     <div class="col-12 q-py-lg">
       <div class=" ContentContainer" v-if="trx">

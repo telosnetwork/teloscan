@@ -23,8 +23,8 @@
     </div> -->
 
     <div class="row">
-      <div class="col-12  tableWrapper q-pb-lg">
-          <q-card>
+      <div class="col-12 q-pb-lg">
+          <q-card class="tableWrapper q-px-sm">
             <search class="q-mx-md q-px-md " />
             <q-separator color="blue-9" />
             <transaction-table title="Recent transactions"></transaction-table>
