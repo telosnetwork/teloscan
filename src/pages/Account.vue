@@ -1,5 +1,5 @@
 <template>
-  <q-page class="column justify-center items-center">
+  <q-page class="pageContainer">
     <q-input
       class="q-py-lg"
       outlined
@@ -103,7 +103,8 @@ const historyColumns = [
     required: true,
     label: "Timestamp",
     align: "left",
-    field: row => moment.utc(row.timestamp).format("dddd, MMMM Do YYYY, h:mm:ss a"),
+    field: row =>
+      moment.utc(row.timestamp).format("dddd, MMMM Do YYYY, h:mm:ss a"),
     sortable: true
   },
   {

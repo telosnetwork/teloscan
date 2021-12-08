@@ -51,7 +51,4 @@ export default {
 .tableWrapper {
   max-width: 100vw;
 }
-.pageContainer {
-  flex: 0 1 1200px;
-}
 </style>
