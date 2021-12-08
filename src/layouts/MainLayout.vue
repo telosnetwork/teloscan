@@ -133,8 +133,8 @@ export default {
 
 <style lang="scss" scoped>
 .banner {
-  z-index: 0;
-  height: 250px;
+  z-index: -1;
+  height: 280px;
   position: absolute;
   left: 0;
   right: 0;
