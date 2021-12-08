@@ -8,7 +8,7 @@
             <div class="text-h5 text-white">Teloscan</div>
           </router-link>
         </div>
-        <q-space/>
+        <q-space />
         <!-- <q-btn stretch flat class="desktop-only" label="Blocks" /> -->
 
         <!-- <q-separator dark vertical class="desktop-only" />
@@ -80,11 +80,9 @@
 
     <div class="banner"></div>
 
-    <div class="row justify-center items-center pageContainer">
-      <q-page-container class="pageContainer ">
-        <router-view />
-      </q-page-container>
-    </div>
+    <q-page-container class="flex flex-center ">
+      <router-view />
+    </q-page-container>
   </q-layout>
 </template>
 
@@ -111,9 +109,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.pageContainer {
-  flex: 0 1 1200px;
-}
 .banner {
   z-index: 0;
   height: 400px;

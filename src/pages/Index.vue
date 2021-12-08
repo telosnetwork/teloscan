@@ -1,6 +1,6 @@
 <template>
-  <q-page class="column items-center">
-    <div class="row q-py-lg">
+  <q-page class="pageContainer">
+    <div class="row justify-center q-py-lg">
       <div class="text-h4 text-primary">
         Telos EVM Explorer
       </div>
@@ -50,5 +50,8 @@ export default {
 <style lang="scss" scoped>
 .tableWrapper {
   max-width: 100vw;
+}
+.pageContainer {
+  flex: 0 1 1200px;
 }
 </style>
