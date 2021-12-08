@@ -1,18 +1,27 @@
-
 a {
   color: rgb(100, 111, 211);
   text-decoration: none;
 }
 
-.toolbar{
-  background: radial-gradient(circle at 50% 50%, rgba(97, 8, 183, 1) 1%, rgba(0, 188, 212, 1) 53%, rgba(213, 109, 213, 1) 100%);
-  color:$purpleDarkMode;
+.toolbar {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(97, 8, 183, 1) 1%,
+    rgba(0, 188, 212, 1) 53%,
+    rgba(213, 109, 213, 1) 100%
+  );
+  color: $purpleDarkMode;
+}
+
+// Fonts
+body {
+  font-family: "silkaregular";
 }
 
 // Light/Dark Theme
 body.body--light {
- // background-image: radial-gradient(circle at 52% 100%, rgba(195, 248, 255, 1) 16%, rgba(213, 182, 243, 1) 98%);
-  background: #fafafa ;
+  // background-image: radial-gradient(circle at 52% 100%, rgba(195, 248, 255, 1) 16%, rgba(213, 182, 243, 1) 98%);
+  background: #fafafa;
 
   .bgNormal {
     background: white;
@@ -26,18 +35,23 @@ body.body--light {
     z-index: 0;
   }
 
-  .jsonViewer{
-    color:$purpleDarkMode;
+  .jsonViewer {
+    color: $purpleDarkMode;
   }
 
-  .toolbar{
-    background:rgb(127, 99, 255);
-    color:$purpleDarkMode;
+  .toolbar {
+    background: rgb(127, 99, 255);
+    color: $purpleDarkMode;
   }
 
-  .searchCard{
+  .searchCard {
     padding: 1px;
-    background: radial-gradient(circle at 50% 50%, rgba(97, 8, 183, 1) 1%, rgba(0, 188, 212, 1) 53%, rgba(213, 109, 213, 1) 100%);
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(97, 8, 183, 1) 1%,
+      rgba(0, 188, 212, 1) 53%,
+      rgba(213, 109, 213, 1) 100%
+    );
     border-radius: 10px;
 
     .q-input {
@@ -45,11 +59,10 @@ body.body--light {
       font-size: 1.3rem;
     }
 
-    .searchCardSection{
+    .searchCardSection {
       padding: 10px;
-      background: #FFFFFF;
+      background: #ffffff;
       border-radius: 10px;
-      
     }
   }
 }
@@ -69,19 +82,24 @@ body.body--dark {
     z-index: 0;
   }
 
-  .toolbar{
-    background:#282828;
+  .toolbar {
+    background: #282828;
   }
 
-  .q-card{
+  .q-card {
     padding: 10px;
-      background: $dark;
-      border-radius: 10px;
+    background: $dark;
+    border-radius: 10px;
   }
 
-  .searchCard{
+  .searchCard {
     padding: 1px;
-    background: radial-gradient(circle at 50% 50%, rgba(97, 8, 183, 1) 1%, rgba(0, 188, 212, 1) 53%, rgba(213, 109, 213, 1) 100%);
+    background: radial-gradient(
+      circle at 50% 50%,
+      rgba(97, 8, 183, 1) 1%,
+      rgba(0, 188, 212, 1) 53%,
+      rgba(213, 109, 213, 1) 100%
+    );
     border-radius: 10px;
 
     .q-input {
@@ -89,17 +107,15 @@ body.body--dark {
       font-size: 1.3rem;
     }
 
-    .searchCardSection{
+    .searchCardSection {
       padding: 10px;
       background: $dark;
       border-radius: 10px;
-      
     }
   }
 
   background: #1a1a1a;
-
-};
+}
 
 // Defines
 .slim-scrollbar {
@@ -153,22 +169,18 @@ body.body--dark {
   display: none;
 }
 
-.taskbarSearch{
+.taskbarSearch {
   max-width: 300px;
   max-height: 50px;
   padding-right: 10px;
   font-size: 1rem;
-  width:400px;
-  
+  width: 400px;
 }
 
-.tabsBar{
-  color: rgb(133,145,253);
+.tabsBar {
+  color: rgb(133, 145, 253);
 }
 
-.homeInfo{
-  color:white;
+.homeInfo {
+  color: white;
 }
-
-
-
