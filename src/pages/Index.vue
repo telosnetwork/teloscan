@@ -8,11 +8,11 @@
 
     <div class="row q-pt-xl q-pb-md">
       <div class="col-sm-12 col-md-10 offset-md-1 ">
-        <home-info/>
+        <home-info />
       </div>
-    </div> 
+    </div>
 
-    <div class="row fit q-px-sm">
+    <!-- <div class="row fit q-px-sm">
       <div class="col-xs-12 col-md-6 offset-md-3 q-px-sm">
         <q-card class="searchCard">
           <q-card-section class="q-pa-lg searchCardSection">
@@ -20,10 +20,13 @@
           </q-card-section>
         </q-card>
       </div>
-    </div>
+    </div> -->
 
     <div class="row">
       <div class="col-12  tableWrapper">
+        <q-card class="q-mx-md q-px-md ">
+          <search />
+        </q-card>
         <transaction-table title="Recent transactions"></transaction-table>
       </div>
     </div>
@@ -37,7 +40,7 @@ import HomeInfo from "components/HomeInfo.vue";
 export default {
   components: {
     Search,
-     HomeInfo,
+    HomeInfo,
     TransactionTable
   },
   name: "Index"
