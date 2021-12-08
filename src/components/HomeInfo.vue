@@ -7,7 +7,7 @@
         </div>
 
         <div class="col-12">
-          <div class="column items-center text-h6 text-weight-bold">$1.15</div>
+          <div class="column items-center text-h6 text-weight-bold">$ {{tlosPrice}}</div>
         </div>
       </div>
     </div>
@@ -59,8 +59,16 @@
 </template>
 
 <script>
+import {mapGetters, mapActions} from "vuex"
+
 export default {
-  components: {}
+  name:"HomeInfo",
+  computed: mapGetters("general",['tlosPrice']),
+  methods: {...mapActions("general", ["fetchTlosPrice"])},
+  components: {},
+  created(){
+    this.fetchTlosPrice();
+  }
 };
 </script>
 
