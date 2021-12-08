@@ -23,11 +23,12 @@
     </div> -->
 
     <div class="row">
-      <div class="col-12  tableWrapper">
-        <q-card class="q-mx-md q-px-md ">
-          <search />
-        </q-card>
-        <transaction-table title="Recent transactions"></transaction-table>
+      <div class="col-12  tableWrapper q-pb-lg">
+          <q-card>
+            <search class="q-mx-md q-px-md " />
+            <q-separator color="blue-9" />
+            <transaction-table title="Recent transactions"></transaction-table>
+          </q-card>
       </div>
     </div>
   </q-page>

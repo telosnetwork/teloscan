@@ -1,5 +1,4 @@
 <template lang="pug">
-  .q-pb-md.q-pt-sm
     q-table(
       :data="rows"
       :columns="columns"
@@ -7,6 +6,7 @@
       :loading="loading"
       @request="onRequest"
       :rows-per-page-options="[10, 20, 50]"
+      flat
     ) 
       q-tr( slot="header" slot-scope="props", :props="props" )
         q-th(
