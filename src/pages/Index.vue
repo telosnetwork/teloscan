@@ -47,8 +47,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.tableWrapper {
-  max-width: 100vw;
-}
-</style>
+<style lang="scss" scoped></style>

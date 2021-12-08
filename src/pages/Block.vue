@@ -18,7 +18,8 @@
             .dataCardTile 
               date-field( :epoch="blockData.timestamp" )
           //div() {{ blockData }}
-    transaction-table( :title="block" :filter="{block}" )
+    .tableWrapper 
+      transaction-table( :title="block" :filter="{block}" )
 </template>
 
 <script>
