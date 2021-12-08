@@ -1,5 +1,5 @@
 <template lang="pug">
-  .q-px-md.q-pb-md.q-pt-sm
+  .q-pb-md.q-pt-sm
     q-table(
       :data="rows"
       :columns="columns"
