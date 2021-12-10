@@ -127,6 +127,9 @@ export default {
     goTo(url) {
       window.open(url, "_blank");
     }
+  },
+  created() {
+    this.$q.dark.set(localStorage.getItem("darkModeEnabled") !== "false");
   }
 };
 </script>
