@@ -10,6 +10,3 @@ export const setIsLoading = (state, isLoading) => {
   state.isLoading = isLoading;
 };
 
-export const setTlosPrice = (state, tlosPrice) => {
-  state.tlosPrice = tlosPrice;
-};

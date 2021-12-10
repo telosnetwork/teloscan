@@ -68,13 +68,11 @@ export default {
   name: "HomeInfo",
   data() {
     return {
-      gasPrice: "0",
-      latestBlock: "0",
       polling: false
     };
   },
   computed: {
-    ...mapGetters("general", ["tlosPrice"]),
+    ...mapGetters("evm", ["tlosPrice", "gasPrice", "latestBlock"]),
     gasPriceGwei() {
       let gweiStr = ethers.utils.formatUnits(this.gasPrice, "gwei");
       gweiStr = (+gweiStr).toFixed(0);
@@ -82,19 +80,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions("general", ["fetchTlosPrice"]),
-    async fetchGasPrice() {
-      this.ethersProvider = new ethers.providers.JsonRpcProvider(
-        process.env.NETWORK_EVM_RPC
-      );
-      this.gasPrice = await this.ethersProvider.getGasPrice();
-    },
-    async fetchLatestBlock() {
-      this.ethersProvider = new ethers.providers.JsonRpcProvider(
-        process.env.NETWORK_EVM_RPC
-      );
-      this.latestBlock = (await this.ethersProvider.getBlock()).number;
-    }
+    ...mapActions("evm", ["fetchTlosPrice", "fetchGasPrice", "fetchLatestBlock"]),
   },
   components: {},
   async created() {
@@ -106,7 +92,7 @@ export default {
       this.fetchTlosPrice();
       await this.fetchGasPrice();
       await this.fetchLatestBlock();
-    }, 10000);
+    }, 3000);
   }
 };
 </script>
