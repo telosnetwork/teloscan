@@ -70,10 +70,10 @@
               <q-tooltip> Click to change date format </q-tooltip>
             </div>
             <br />
-            <div>
+            <!-- <div>
               <strong> {{ `Transaction index: ` }}</strong>
               <span> {{ trx.trx_index }}</span>
-            </div>
+            </div> -->
             <div>
               <strong> {{ `Status: ` }}</strong>
               <span>{{ trx.status == 1 ? "Success" : "Failure" }} </span>
@@ -124,7 +124,7 @@
             <br />
             <div>
               <strong> {{ `Gas Fee: ` }}</strong>
-              <span> {{ getGasFee() }} > TLOS </span>
+              <span> {{ getGasFee() }} TLOS </span>
             </div>
             <br />
             <div>

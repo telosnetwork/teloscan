@@ -85,13 +85,13 @@ export default {
   components: {},
   async created() {
     this.fetchTlosPrice();
-    await this.fetchGasPrice();
-    await this.fetchLatestBlock();
+    this.fetchGasPrice();
+    this.fetchLatestBlock();
     // poll every 10 seconds
     this.polling = setInterval(async () => {
       this.fetchTlosPrice();
-      await this.fetchGasPrice();
-      await this.fetchLatestBlock();
+      this.fetchGasPrice();
+      this.fetchLatestBlock();
     }, 3000);
   }
 };
