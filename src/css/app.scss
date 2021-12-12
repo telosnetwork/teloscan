@@ -226,8 +226,8 @@ body.body--dark {
   overflow: scroll !important;
 }
 
-.mobile{
-  ::-webkit-scrollbar {
-    display: none;
-  }
+
+::-webkit-scrollbar {
+  display: none;
 }
+

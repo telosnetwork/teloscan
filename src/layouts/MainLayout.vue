@@ -101,14 +101,18 @@
     <q-page-container class="flex flex-center ">
       <router-view />
     </q-page-container>
+
+    <footer-main/>
+    
   </q-layout>
 </template>
 
 <script>
 import Search from "src/components/SearchToolbar.vue";
+import FooterMain from "src/components/Footer.vue";
 export default {
   name: "MainLayout",
-  components: { Search },
+  components: { Search,FooterMain },
   data() {
     return {
       mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40"
