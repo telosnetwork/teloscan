@@ -1,5 +1,5 @@
 <template>
-  <div class="row q-px-lg q-mb-lg">
+  <div class="row q-mb-lg  relative-bottom">
     <div class="col-xs-12 col-md-6 " >
         <div class="column items-center">
             <span >
