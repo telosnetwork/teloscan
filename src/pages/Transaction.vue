@@ -1,15 +1,15 @@
 <template>
-  <div class="pageContainer row q-pt-xl">
+  <div class="pageContainer row q-pt-xl tableWrapper">
     <div class="text-h4 text-primary q-mb-lg">
       Transaction Details
     </div>
     <div class="col-12 q-py-lg">
       <div class=" ContentContainer" v-if="trx">
         <q-tabs
-          class="tabsBar topRounded"
+          class="ContentContainer text-white"
           v-model="tab"
           dense
-          inactive-color="secondary"
+          active-color="secondary"
           align="justify"
           narrow-indicator
         >
@@ -38,7 +38,7 @@
             label="Logs"
           />
           <q-route-tab
-            class="topRounded"
+            class="ContentContainer"
             name="internal"
             :to="{ hash: 'internal' }"
             exact
@@ -46,9 +46,8 @@
             label="Internal Txns"
           />
         </q-tabs>
-        <q-separator />
         <q-tab-panels
-          class="column botRounded"
+          class="column ContentContainer shadow-2"
           v-model="tab"
           animated
           keep-alive
@@ -100,7 +99,7 @@
             <br v-if="isContract" />
             <div v-if="isContract">
               <strong> {{ `Contract parameters: ` }}</strong>
-              <json-viewer :value="getFunctionParams()" />
+              <json-viewer :value="getFunctionParams() " theme="jsonViewer" />
             </div>
             <br v-if="isContract" />
             <div v-if="trx.createdaddress">
@@ -154,7 +153,9 @@
             </div>
           </q-tab-panel>
           <q-tab-panel name="logs">
-            <logs-viewer :logs="getLogs()" />
+            <div class="jsonViewer"> 
+              <logs-viewer :logs="getLogs()" />
+            </div>
           </q-tab-panel>
           <q-tab-panel name="internal">
             <internal-txns :itxs="trx.itxs" />

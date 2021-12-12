@@ -6,7 +6,7 @@
       </div>
     </div>
 
-    <div class="row q-pt-xl q-pb-md">
+    <div class="row q-pt-xl q-pb-md tableWrapper">
       <div class="col-sm-12 col-md-10 offset-md-1 ">
         <home-info />
       </div>
@@ -22,9 +22,9 @@
       </div>
     </div> -->
 
-    <div class="row">
+    <div class="row tableWrapper">
       <div class="col-12 q-pb-lg">
-          <q-card class="tableWrapper q-px-sm">
+          <q-card >
             <search class="q-mx-md q-px-md " />
             <q-separator color="blue-9" />
             <transaction-table title="Recent transactions"></transaction-table>

@@ -8,6 +8,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    border-radius: 10px;
   }
   .dataCardTile {
     color: $white;
@@ -17,5 +18,8 @@
     color: $primary;
     font-size: 1.3rem;
     line-height: 1.5rem;
+  }
+  .balance{
+    width: fit-content;
   }
 }
