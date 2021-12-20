@@ -1,4 +1,1 @@
-/*
-export function someAction (context) {
-}
-*/
+

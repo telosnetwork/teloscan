@@ -1,5 +1,4 @@
 <template lang="pug">
-  .q-pa-md
     q-table(
       :data="rows"
       :columns="columns"
@@ -7,6 +6,7 @@
       :loading="loading"
       @request="onRequest"
       :rows-per-page-options="[10, 20, 50]"
+      flat
     ) 
       q-tr( slot="header" slot-scope="props", :props="props" )
         q-th(
@@ -36,7 +36,7 @@
         q-td( key="date" )
           date-field( :epoch="props.row.epoch", :showAge="showAge" )
         q-td( key="method" )
-          method-field( v-if="props.row.parsedTransaction" :trx="props.row" )
+          method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shorten="true" )
         q-td( key="from" )
           address-field( :address="props.row.from" )
         q-td( key="to" )
@@ -91,7 +91,13 @@ const columns = [
 
 export default {
   name: "TransactionTable",
-  components: {TransactionField, DateField, BlockField, AddressField, MethodField },
+  components: {
+    TransactionField,
+    DateField,
+    BlockField,
+    AddressField,
+    MethodField
+  },
   props: {
     title: {
       type: String,
@@ -150,20 +156,24 @@ export default {
       );
       for (const transaction of this.transactions) {
         try {
-          if (transaction.input_data === '0x')
-            continue;
+          if (transaction.input_data === "0x") continue;
 
-          const contract = await this.$contractManager.getContract(transaction.to);
-          if (!contract)
-            continue;
+          const contract = await this.$contractManager.getContract(
+            transaction.to
+          );
+          if (!contract) continue;
 
-          const parsedTransaction = await contract.parseTransaction(transaction.input_data);
+          const parsedTransaction = await contract.parseTransaction(
+            transaction.input_data
+          );
           if (parsedTransaction) {
             transaction.parsedTransaction = parsedTransaction;
             transaction.contract = contract;
-          } 
+          }
         } catch (e) {
-          console.error(`Failed to parse data for transaction, error was: ${e.message}`);
+          console.error(
+            `Failed to parse data for transaction, error was: ${e.message}`
+          );
         }
       }
       this.setRows(page, rowsPerPage);
@@ -194,6 +204,4 @@ export default {
 };
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

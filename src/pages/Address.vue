@@ -1,19 +1,27 @@
 <template lang="pug">
-  .q-px-xl
+  .pageContainer.q-pt-xl
     div()
-      h6() {{ isContract ? "Contract" : "Account" }}: {{ address }}
-      h6(v-if="!!telosAccount") {{ `Native account: ` }}
-        a(:href="getAddressBloksURL()" target="_blank") {{ telosAccount }}
-      h6(v-if="!!balance" ) Balance: {{balance}}
-      q-tabs( v-model="tab" dense active-color="primary" inactive-color="secondary" align="justify" narrow-indicator )
+      .row(class="tableWrapper").justify-between
+        div(class="homeInfo")
+          .text-primary.text-h4 {{ isContract ? "Contract" : "Account" }}
+          .text-white {{ address }}
+        .dataCardsContainer()
+          .dataCardItem(v-if="!!telosAccount") 
+            .dataCardTile Native account
+            .dataCardData  
+              a(:href="getAddressBloksURL()" target="_blank") {{ telosAccount }}
+          .dataCardItem(v-if="!!balance" class="balance ")
+            .dataCardTile Balance 
+            .dataCardData {{balance}}
+      q-tabs( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar ContentContainer text-white tableWrapper" )
         q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
         q-route-tab(name="tokens" :to="{ hash: 'tokens' }" exact replace label="Tokens")
-      q-separator()
-      q-tab-panels( v-model="tab" animated keep-alive )
-        q-tab-panel( name="transactions" )
-          transaction-table( :title="address" :filter="{address}" )
-        q-tab-panel( name="tokens" )
-          token-list( :address="address" )
+      .q-mb-md.tableWrapper
+        q-tab-panels( v-model="tab" animated keep-alive class="shadow-2 ContentContainer" )
+          q-tab-panel( name="transactions" )
+            transaction-table( :title="address" :filter="{address}" )
+          q-tab-panel( name="tokens" )
+            token-list( :address="address" )
 </template>
 
 <script>
@@ -24,16 +32,16 @@ import Web3 from "web3";
 const web3 = new Web3();
 export default {
   name: "Address",
-  components: {TokenList, TransactionTable },
+  components: { TokenList, TransactionTable },
   data() {
     return {
       address: this.$route.params.address,
       telosAccount: null,
       balance: null,
       isContract: false,
-      tab: 'transactions',
+      tab: "transactions",
       tokens: null
-    }
+    };
   },
   mounted() {
     this.loadAccount();
@@ -42,16 +50,18 @@ export default {
     async loadAccount() {
       const account = await this.$evm.telos.getEthAccount(this.address);
       let strBalance = web3.utils.fromWei(account.balance);
-      strBalance = `${strBalance.substring(0, (strBalance.indexOf('.') + 5))} TLOS`;
+      strBalance = `${strBalance.substring(
+        0,
+        strBalance.indexOf(".") + 5
+      )} TLOS`;
       this.balance = strBalance;
       this.telosAccount = account.account;
       this.isContract = account.code.length > 0;
     },
     getAddressBloksURL() {
-      if (!this.telosAccount)
-        return '';
+      if (!this.telosAccount) return "";
 
-      return `${process.env.NETWORK_EXPLORER}/account/${this.telosAccount}`
+      return `${process.env.NETWORK_EXPLORER}/account/${this.telosAccount}`;
     }
   },
   watch: {
@@ -59,9 +69,11 @@ export default {
       this.loadAccount();
     }
   }
-}
+};
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+.q-tab-panel {
+  padding: 0;
+}
 </style>

@@ -2,7 +2,9 @@ const routes = [
   {
     path: "/",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", name: "home",  component: () => import("pages/Index.vue") }]
+    children: [
+      { path: "", name: "home", component: () => import("pages/Index.vue") }
+    ]
   },
   {
     path: "/address/:address",
@@ -13,7 +15,8 @@ const routes = [
     path: "/tx/:hash",
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", component: () => import("pages/Transaction.vue") }]
-  },{
+  },
+  {
     path: "/block/:block",
     component: () => import("layouts/MainLayout.vue"),
     children: [{ path: "", component: () => import("pages/Block.vue") }]
@@ -21,7 +24,13 @@ const routes = [
   {
     path: "/transactions",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", name: "transactions",  component: () => import("pages/Transactions.vue") }]
+    children: [
+      {
+        path: "",
+        name: "transactions",
+        component: () => import("pages/Transactions.vue")
+      }
+    ]
   },
 
   // Always leave this as last one,

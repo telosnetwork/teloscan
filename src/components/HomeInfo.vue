@@ -1,106 +1,100 @@
 <template>
-    <q-card class="infoCard">
-      <q-card-section class="q-pa-lg infoCardSection">
-
-        <div class="row ">
-
-          <div class="col-xs-12 col-md-4 q-pa-md">
-            <div class="row items-center">
-
-              <div class="col-xs-6 col-md-12 items-center">
-                  <div class="column items-center text-subtitle2">TLOS Price</div>
-              </div>
-
-              <div class="col-xs-6 col-md-12">
-                <div class="column items-center text-h6 text-weight-bold">$1.15</div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="col-xs-12 col-md-4 q-pa-md">
-            <div class="row items-center">
-
-              <div class="col-xs-6 col-md-12 items-center">
-                  <div class="column items-center text-subtitle2">TLOS Market Cap</div>
-              </div>
-
-              <div class="col-xs-6 col-md-12">
-                <div class="column items-center text-h6 text-weight-bold">$270,171,568.58</div>
-              </div>
-
-            </div>
-          </div>
-
-         <div class="col-xs-12 col-md-4 q-pa-md">
-            <div class="row items-center">
-
-              <div class="col-xs-6 col-md-12 items-center">
-                  <div class="column items-center text-subtitle2">Transaction Count</div>
-              </div>
-
-              <div class="col-xs-6 col-md-12">
-                <div class="column items-center text-h6 text-weight-bold">45,487,249,587</div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="col-xs-12 col-md-4 q-pa-md">
-            <div class="row items-center">
-
-              <div class="col-xs-6 col-md-12 items-center">
-                  <div class="column items-center text-subtitle2">Blocks</div>
-              </div>
-
-              <div class="col-xs-6 col-md-12">
-                <div class="column items-center text-h6 text-weight-bold">186,427,544</div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="col-xs-12 col-md-4 q-pa-md">
-            <div class="row items-center">
-
-              <div class="col-xs-6 col-md-12 items-center">
-                  <div class="column items-center text-subtitle2">Addresses</div>
-              </div>
-
-              <div class="col-xs-6 col-md-12">
-                <div class="column items-center text-h6 text-weight-bold">59,265</div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="col-xs-12 col-md-4 q-pa-md">
-            <div class="row items-center">
-
-              <div class="col-xs-6 col-md-12 items-center">
-                  <div class="column items-center text-subtitle2">Transactions 24h</div>
-              </div>
-
-              <div class="col-xs-6 col-md-12">
-                <div class="column items-center text-h6 text-weight-bold">500,000</div>
-              </div>
-
-            </div>
-          </div>
-
+  <div class="row homeInfo">
+    <div class="col q-pa-md">
+      <div class="row items-center">
+        <div class="col-12 items-center">
+          <div class="column items-center text-subtitle2">TLOS Price</div>
         </div>
 
-      </q-card-section>
+        <div class="col-12">
+          <div class="column items-center text-h6 text-weight-bold">
+            $ {{ tlosPrice }}
+          </div>
+        </div>
+      </div>
+    </div>
 
-    </q-card>
+    <div class="col q-pa-md">
+      <div class="row items-center">
+        <div class="col-12 items-center">
+          <div class="column items-center text-subtitle2">Gas Price</div>
+        </div>
+
+        <div class="col-12">
+          <div class="column items-center text-h6 text-weight-bold">
+            {{ gasPriceGwei }} Gwei
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col q-pa-md">
+      <div class="row items-center">
+        <div class="col-12 items-center">
+          <div class="column items-center text-subtitle2">
+            Latest Block
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="column items-center text-h6 text-weight-bold">
+            {{ latestBlock }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="col-xs-6 col-md-3 q-pa-md">
+      <div class="row items-center">
+        <div class="col-12 items-center">
+          <div class="column items-center text-subtitle2">Blocks</div>
+        </div>
+
+        <div class="col-12">
+          <div class="column items-center text-h6 text-weight-bold">
+            186,427,544
+          </div>
+        </div>
+      </div>
+    </div> -->
+  </div>
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+import { ethers } from "ethers";
+
 export default {
-  components: { },
-  name: "Home Info"
+  name: "HomeInfo",
+  data() {
+    return {
+      polling: false
+    };
+  },
+  computed: {
+    ...mapGetters("evm", ["tlosPrice", "gasPrice", "latestBlock"]),
+    gasPriceGwei() {
+      let gweiStr = ethers.utils.formatUnits(this.gasPrice, "gwei");
+      gweiStr = (+gweiStr).toFixed(0);
+      return gweiStr;
+    }
+  },
+  methods: {
+    ...mapActions("evm", ["fetchTlosPrice", "fetchGasPrice", "fetchLatestBlock"]),
+  },
+  components: {},
+  async created() {
+    this.fetchTlosPrice();
+    this.fetchGasPrice();
+    this.fetchLatestBlock();
+    // poll every 10 seconds
+    this.polling = setInterval(async () => {
+      this.fetchTlosPrice();
+      this.fetchGasPrice();
+      this.fetchLatestBlock();
+    }, 3000);
+  }
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

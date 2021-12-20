@@ -1,15 +1,14 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-
+  <q-layout view="lhh Lpr lFf">
     <q-header class="transparent">
-      <q-toolbar class="bg-primary glossy text-white toolbar">
-
-        <q-toolbar-title>
-          <q-btn flat stretch to="/">
-            <img alt="Telos logo" src="~assets/Teloscan_logo.svg"  />
-          </q-btn>
-        </q-toolbar-title>
-
+      <q-toolbar class="text-white toolbar transparent">
+        <div class="q-py-sm">
+          <router-link to="/" class="row items-center q-gutter-x-xs">
+            <img alt="Telos EVM logo" src="~assets/evm_logo.png" width="45" />
+            <div class="text-h5 text-white">Teloscan</div>
+          </router-link>
+        </div>
+        <q-space />
         <!-- <q-btn stretch flat class="desktop-only" label="Blocks" /> -->
 
         <!-- <q-separator dark vertical class="desktop-only" />
@@ -18,39 +17,61 @@
 
         <!-- <q-separator dark vertical class="desktop-only" /> -->
 
-        <search class="taskbarSearch"></search>
-
-        <q-separator dark vertical class="desktop-only" />
+        <search class="taskbarSearch desktop-only text-center "></search>
 
         <q-btn
-          stretch
           flat
+          dark
+          standout
+          class="q-px-md"
           @click="toggleDarkMode()"
-          :icon="$q.dark.isActive ? 'fas fa-sun' : 'fas fa-moon'">
+          :icon="$q.dark.isActive ? 'fas fa-sun' : 'fas fa-moon'"
+        >
         </q-btn>
 
-        <q-separator dark vertical class="desktop-only" />
-
-        <q-btn-dropdown stretch flat >
+        <q-btn-dropdown flat>
           <template v-slot:label>
-
-          <q-avatar flat stretch dense >
-            <img alt="Telos logo" src="~assets/telos_acorn.png" />
-          </q-avatar>
-
-        </template>
+            {{ mainnet ? "Mainnet" : "Testnet" }}
+          </template>
 
           <q-list style="width : 200px">
-
             <q-item-label header>Network</q-item-label>
 
-            <q-item v-if="!mainnet" v-close-popup @click.native="goTo('https://www.teloscan.io/')">
+            <!-- <q-item
+              v-close-popup
+              @click.native="goTo('https://www.teloscan.io/')"
+            >
               <q-item-section>
                 <q-item-label> Mainnet </q-item-label>
               </q-item-section>
             </q-item>
 
-            <q-item v-if="mainnet" v-close-popup @click.native="goTo('https://testnet.teloscan.io/')">
+            <q-item
+              v-close-popup
+              @click.native="goTo('https://testnet.teloscan.io/')"
+            >
+              <q-item-section>
+                <q-item-label>Testnet</q-item-label>
+              </q-item-section>
+            </q-item> -->
+
+            <q-item
+              v-if="!mainnet"
+              clickable
+              v-close-popup
+              @click.native="goTo('https://www.teloscan.io/')"
+            >
+              <q-item-section>
+                <q-item-label> Mainnet </q-item-label>
+              </q-item-section>
+            </q-item>
+
+            <q-item
+              v-if="mainnet"
+              clickable
+              v-close-popup
+              @click.native="goTo('https://testnet.teloscan.io/')"
+            >
               <q-item-section>
                 <q-item-label>Testnet</q-item-label>
               </q-item-section>
@@ -70,32 +91,37 @@
                 <q-item-label>Transactions</q-item-label>
               </q-item-section>
             </q-item> -->
-
           </q-list>
-
         </q-btn-dropdown>
-
       </q-toolbar>
     </q-header>
 
-    <div class="row justify-center items-center">
-      <q-page-container class="pageContainer">
-        <router-view />
-      </q-page-container>
-    </div>
+    <div :class="`banner ${onHomePage ? 'home' : ''}`"></div>
 
+    <q-page-container class="flex flex-center ">
+      <router-view />
+    </q-page-container>
+
+    <footer-main/>
+    
   </q-layout>
 </template>
 
 <script>
-import Search from 'src/components/Search.vue';
+import Search from "src/components/SearchToolbar.vue";
+import FooterMain from "src/components/Footer.vue";
 export default {
   name: "MainLayout",
-  components: { Search },
-  data(){
-    return{
-      mainnet : process.env.NETWORK_EVM_CHAIN_ID === "40",
+  components: { Search,FooterMain },
+  data() {
+    return {
+      mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40"
     };
+  },
+  computed: {
+    onHomePage() {
+      return this.$route.name === "home";
+    }
   },
   methods: {
     toggleDarkMode() {
@@ -103,15 +129,26 @@ export default {
       localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
     },
     goTo(url) {
-      window.open(url, '_blank');
+      window.open(url, "_blank");
     }
+  },
+  created() {
+    this.$q.dark.set(localStorage.getItem("darkModeEnabled") !== "false");
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.pageContainer {
-  flex: 0 1 1200px;
-  padding: 1rem;
+.banner {
+  z-index: -1;
+  height: 280px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: linear-gradient(#252a5e 27.19%, #2d4684 65.83%);
+  &.home {
+    height: 400px;
+  }
 }
 </style>

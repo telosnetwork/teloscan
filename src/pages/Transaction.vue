@@ -1,89 +1,169 @@
-<template lang="pug">
-  .q-px-xl
-    div()
-      h6() Transaction Hash: {{hash}}
-    div(v-if="trx")
-        q-tabs( v-model="tab" dense active-color="primary" inactive-color="secondary" align="justify" narrow-indicator )
-          q-route-tab(name="general" :to="{ hash: '' }" exact replace label="General")
-          q-route-tab(name="details" :to="{ hash: 'details' }" exact replace label="Details")
-          q-route-tab(name="logs" :to="{ hash: 'eventlog' }" exact replace label="Logs")
-          q-route-tab(name="internal" :to="{ hash: 'internal' }" exact replace label="Internal Txns")
-        q-separator()
-        q-tab-panels( v-model="tab" animated keep-alive )
-          q-tab-panel( name="general" )
-            div()
-              strong() {{ `Block Number: ` }}
-              block-field( :block="trx.block" )
-            br()
-            div( @click="showAge = !showAge" )
-              strong() {{ `Date: ` }}
-              date-field( :epoch="trx.epoch" :show-age="showAge" )
-              q-tooltip(self="left") Click to change date format
-            br()
-            div()
-              strong() {{ `Transaction index: ` }}
-              span() {{ trx.trx_index }}
-            br()
-            div()
-              strong() {{ `Status: ` }}
-              span() {{ trx.status == 1 ? 'Success' : 'Failure' }}
-            br()
-            div()
-              strong() {{ `From: ` }}
-              address-field( :address="trx.from" :truncate=0 )
-            br()
-            div()
-              strong() {{ `To: ` }}
-              address-field( :address="trx.to" :truncate=0 :is-contract-trx="!!contract" )
-            br()
-            div(v-if="isContract" )
-              strong() {{ `Contract function: ` }}
-              method-field( :contract="contract" :trx="methodTrx")
-            br(v-if="isContract")
-            div(v-if="isContract" )
-              strong() {{ `Contract parameters: ` }}
-              pre() {{ getFunctionParams() }}
-            br(v-if="isContract")
-            div(v-if="trx.createdaddress")
-              strong() {{ `Deployed contract: ` }}
-              span() {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
-              br()
-            div()
-              strong() {{ `Value: ` }}
-              span() {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
-            br()
-            div()
-              strong() {{ `Gas Price Charged: ` }}
-              span() {{ getGasChargedGWEI() }} GWEI
-            br()
-            div()
-              strong() {{ `Gas Fee: ` }}
-              span() {{ getGasFee() }} TLOS
-            br()
-            div()
-              strong() {{ `Gas Used: ` }}
-              span() {{ trx.gasused }}
-            br()
-            div()
-              strong() {{ `Gas Limit: ` }}
-              span() {{ trx.gas_limit }}
-            br()
-            div()
-              strong() {{ `Nonce: ` }}
-              span() {{ trx.nonce }}
-          q-tab-panel( name="details" )
-            div()
-              strong() {{ `Input: ` }}
-              span() {{ trx.input_data }}
-            br()
-            div()
-              strong() {{ `Output: ` }}
-              span() {{ trx.output }}
-          q-tab-panel( name="logs" )
-            logs-viewer( :logs="getLogs()" )
-          q-tab-panel( name="internal" )
-            internal-txns( :itxs="trx.itxs" )
-
+<template>
+  <div class="pageContainer row q-pt-xl tableWrapper">
+    <div class="text-h4 text-primary q-mb-lg">
+      Transaction Details
+    </div>
+    <div class="col-12 q-py-lg">
+      <div class=" ContentContainer" v-if="trx">
+        <q-tabs
+          class="ContentContainer text-white"
+          v-model="tab"
+          dense
+          active-color="secondary"
+          align="justify"
+          narrow-indicator
+        >
+          <q-route-tab
+            class="topRounded"
+            name="general"
+            :to="{ hash: '' }"
+            exact
+            replace
+            label="General"
+          />
+          <q-route-tab
+            class="topRounded"
+            name="details"
+            :to="{ hash: 'details' }"
+            exact
+            replace
+            label="Details"
+          />
+          <q-route-tab
+            class="topRounded"
+            name="logs"
+            :to="{ hash: 'eventlog' }"
+            exact
+            replace
+            label="Logs"
+          />
+          <q-route-tab
+            class="ContentContainer"
+            name="internal"
+            :to="{ hash: 'internal' }"
+            exact
+            replace
+            label="Internal Txns"
+          />
+        </q-tabs>
+        <q-tab-panels
+          class="column ContentContainer shadow-2"
+          v-model="tab"
+          animated
+          keep-alive
+        >
+          <q-tab-panel name="general">
+            <div class="col">
+              <strong class="wrapStrong">Transaction Hash: </strong>
+              <span> {{ hash }}</span>
+            </div>
+            <br />
+            <div>
+              <strong>{{ `Block Number: ` }}</strong>
+              <block-field :block="trx.block" />
+            </div>
+            <br />
+            <div @click="showAge = !showAge">
+              <strong>{{ `Date: ` }} </strong>
+              <date-field :epoch="trx.epoch" :show-age="showAge" />
+              <q-tooltip> Click to change date format </q-tooltip>
+            </div>
+            <br />
+            <!-- <div>
+              <strong> {{ `Transaction index: ` }}</strong>
+              <span> {{ trx.trx_index }}</span>
+            </div> -->
+            <div>
+              <strong> {{ `Status: ` }}</strong>
+              <span>{{ trx.status == 1 ? "Success" : "Failure" }} </span>
+            </div>
+            <br />
+            <div>
+              <strong> {{ `From: ` }}</strong>
+              <address-field :address="trx.from" :truncate="0" />
+            </div>
+            <br />
+            <div>
+              <strong> {{ `To: ` }}</strong>
+              <address-field
+                :address="trx.to"
+                :truncate="0"
+                :is-contract-trx="!!contract"
+              />
+            </div>
+            <br />
+            <div v-if="isContract">
+              <strong> {{ `Contract function: ` }}</strong>
+              <method-field :contract="contract" :trx="methodTrx" />
+            </div>
+            <br v-if="isContract" />
+            <div v-if="isContract">
+              <strong> {{ `Contract parameters: ` }}</strong>
+              <json-viewer :value="getFunctionParams() " theme="jsonViewer" />
+            </div>
+            <br v-if="isContract" />
+            <div v-if="trx.createdaddress">
+              <strong>{{ `Deployed contract: ` }} </strong>
+              <span>
+                {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
+              </span>
+            </div>
+            <br />
+            <div>
+              <strong> {{ `Value: ` }}</strong>
+              <span>
+                {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
+              </span>
+            </div>
+            <br />
+            <div>
+              <strong> {{ `Gas Price Charged: ` }}</strong>
+              <span> {{ getGasChargedGWEI() }} GWEI</span>
+            </div>
+            <br />
+            <div>
+              <strong> {{ `Gas Fee: ` }}</strong>
+              <span> {{ getGasFee() }} TLOS </span>
+            </div>
+            <br />
+            <div>
+              <strong> {{ `Gas Used: ` }}</strong>
+              <span> {{ trx.gasused }}</span>
+            </div>
+            <br />
+            <div>
+              <strong> {{ `Gas Limit: ` }}</strong>
+              <span> {{ trx.gas_limit }}</span>
+            </div>
+            <br />
+            <div>
+              <strong> {{ `Nonce: ` }}</strong>
+              <span> {{ trx.nonce }}</span>
+            </div>
+          </q-tab-panel>
+          <q-tab-panel name="details">
+            <div>
+              <strong> {{ `Input: ` }}</strong>
+              <span> {{ trx.input_data }}</span>
+            </div>
+            <br />
+            <div>
+              <strong> {{ `Output: ` }} </strong>
+              <span> {{ trx.output }}</span>
+            </div>
+          </q-tab-panel>
+          <q-tab-panel name="logs">
+            <div class="jsonViewer"> 
+              <logs-viewer :logs="getLogs()" />
+            </div>
+          </q-tab-panel>
+          <q-tab-panel name="internal">
+            <internal-txns :itxs="trx.itxs" />
+          </q-tab-panel>
+        </q-tab-panels>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -93,25 +173,34 @@ import AddressField from "components/AddressField";
 import LogsViewer from "components/Transaction/LogsViewer";
 import InternalTxns from "components/Transaction/InternalTxns";
 import MethodField from "components/MethodField";
+import JsonViewer from "vue-json-viewer";
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
   name: "Transaction",
-  components: {LogsViewer, InternalTxns, AddressField, BlockField, DateField, MethodField },
+  components: {
+    LogsViewer,
+    InternalTxns,
+    AddressField,
+    BlockField,
+    DateField,
+    MethodField,
+    JsonViewer
+  },
   data() {
     return {
       hash: this.$route.params.hash,
       blockData: null,
       trxNotFound: false,
       trx: null,
-      tab: 'general',
+      tab: "general",
       isContract: false,
       contract: null,
       parsedTransaction: null,
       parsedLogs: null,
       methodTrx: null,
       showAge: true
-    }
+    };
   },
   mounted() {
     this.loadTransaction();
@@ -127,7 +216,9 @@ export default {
   },
   methods: {
     async loadTransaction() {
-      const trxResponse = await this.$evmEndpoint.get(`/v2/evm/get_transactions?hash=${this.hash}`)
+      const trxResponse = await this.$evmEndpoint.get(
+        `/v2/evm/get_transactions?hash=${this.hash}`
+      );
       if (trxResponse.data.transactions.length < 1) {
         this.trxNotFound = true;
         return;
@@ -137,38 +228,39 @@ export default {
       await this.loadContract();
     },
     async loadContract() {
-      if (this.trx.input_data === '0x')
-        return;
+      if (this.trx.input_data === "0x") return;
 
       const contract = await this.$contractManager.getContract(this.trx.to);
-      if (!contract)
-        return;
+      if (!contract) return;
 
       this.contract = contract;
-      this.parsedTransaction = await this.contract.parseTransaction(this.trx.input_data);
+      this.parsedTransaction = await this.contract.parseTransaction(
+        this.trx.input_data
+      );
       this.parsedLogs = await this.contract.parseLogs(this.trx.logs);
-      this.methodTrx = Object.assign({parsedTransaction: this.parsedTransaction}, this.trx);
+      this.methodTrx = Object.assign(
+        { parsedTransaction: this.parsedTransaction },
+        this.trx
+      );
       this.isContract = true;
     },
     getFunctionName() {
-      if (this.parsedTransaction)
-        return this.parsedTransaction.name;
+      if (this.parsedTransaction) return this.parsedTransaction.name;
     },
     getFunctionParams() {
-      if (!this.parsedTransaction)
-        return;
+      if (!this.parsedTransaction) return;
 
       let params = {
         function: this.parsedTransaction.signature,
         args: this.parsedTransaction.args
-      }
-      return JSON.stringify(params, null, 4);
+      };
+      return params;
     },
     getLogs() {
       if (this.parsedLogs) {
         const logsObj = this.parsedLogs.map(log => {
           if (log.signature && log.args)
-            return {name: log.signature, args: log.args};
+            return { name: log.signature, args: log.args };
 
           return log;
         });
@@ -179,15 +271,20 @@ export default {
       return this.trx.logs;
     },
     getGasFee() {
-      return ((this.trx.charged_gas_price * this.trx.gasused) / 1000000000000000000).toFixed(5);
+      return (
+        (this.trx.charged_gas_price * this.trx.gasused) /
+        1000000000000000000
+      ).toFixed(5);
     },
     getGasChargedGWEI() {
-      return (this.trx.charged_gas_price  / 1000000000).toFixed(2);
+      return (this.trx.charged_gas_price / 1000000000).toFixed(2);
     }
   }
-}
+};
 </script>
 
-<style scoped>
-
+<style scoped lang="scss">
+span {
+  word-wrap: break-word;
+}
 </style>

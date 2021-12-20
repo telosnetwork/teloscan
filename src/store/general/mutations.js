@@ -9,3 +9,4 @@ export const setSuccessMsg = (state, successMsg) => {
 export const setIsLoading = (state, isLoading) => {
   state.isLoading = isLoading;
 };
+

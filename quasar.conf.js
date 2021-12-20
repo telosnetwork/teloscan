@@ -23,13 +23,13 @@ module.exports = function(/* ctx */) {
     boot: ["ual", "hyperion", "api", "evm"],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
-    css: ["app.scss"],
+    css: ["fonts/silka/silka.css", "app.scss"],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
       // 'ionicons-v4',
       // 'mdi-v5',
-      'fontawesome-v5',
+      "fontawesome-v5",
       // 'eva-icons',
       // 'themify',
       // 'line-awesome',
@@ -83,7 +83,7 @@ module.exports = function(/* ctx */) {
 
         cfg.module.rules.push({
           test: /\.pug$/,
-          loader: 'pug-plain-loader'
+          loader: "pug-plain-loader"
         });
       }
     },

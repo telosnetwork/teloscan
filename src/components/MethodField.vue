@@ -1,12 +1,12 @@
 <template lang="pug">
-  div(v-if="trx.parsedTransaction" )
-    div() {{ `${trx.parsedTransaction.name.slice(0,8)}...` }}
+  span(v-if="trx.parsedTransaction" )
+    div() {{ trx.parsedTransaction.name.length > 8 && shorten ? `${trx.parsedTransaction.name.slice(0,8)}...` : trx.parsedTransaction.name  }}
     div() {{ transferAmount }}
-    q-tooltip(anchor="center middle" self="center middle")
+    q-tooltip(v-if="shorten" anchor="center middle" self="center middle")
       | {{ trx.parsedTransaction.name }}
-  div(v-else)
-    div() {{  `${trx.input_data.slice(0,8)}...`}}
-    q-tooltip(anchor="center middle" self="center middle")
+  span(v-else)
+    div() {{trx.input_data.length > 8 && shorten ? `${trx.input_data.slice(0,8)}...` : trx.input_data}}
+    q-tooltip( v-if="shorten" anchor="center middle" self="center middle")
       | {{ trx.input_data.slice(0,8) }}
 </template>
 
@@ -25,6 +25,10 @@ export default {
     },
     contract: {
       type: Object
+    },
+    shorten: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
