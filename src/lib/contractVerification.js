@@ -7,7 +7,12 @@ var input = {
     sources: {
       'test.sol': {
         content: `pragma solidity ^0.8.11;
-            contract C { 
+            contract A { 
+                function set(uint _value) public { value = _value; }
+                function get() public view returns (uint) { return value; }
+                uint value;
+            }
+            contract B { 
                 function set(uint _value) public { value = _value; }
                 function get() public view returns (uint) { return value; }
                 uint value;
@@ -30,5 +35,5 @@ var input = {
     const bytecode = output.contracts['test.sol'][contractName].evm.bytecode.object;
     console.log("contract: ",contractName);
     console.log("bytecode: ", bytecode);
-    console.dir("abi: ", abi);
+    console.log("abi: ", abi);
   }
