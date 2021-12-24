@@ -19,7 +19,7 @@ var input = {
             contract B { 
                 function set(uint _value) public { myValue= _value; }
                 function get() public view returns (uint) { return value + myValue; }
-                constructor(uint _constructorArg) public {
+                constructor(uint _constructorArg, uint32 _test) public {
                     value = _constructorArg;
                 }
                 uint value;
