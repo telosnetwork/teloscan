@@ -4,6 +4,7 @@ const solc = require('solc');
 const util = require('util');
 const Web3EthAbi = require('web3-eth-abi');
 
+const NO_ARGS = '0x0';
 const fileName = 'test.sol';
 const fileContent = `pragma solidity ^0.8.11;
 contract A { 
@@ -20,17 +21,23 @@ contract B {
     uint value;
     uint myValue;
 }`;
+const constructorArgs = [42,"0x46ef48e06ff160f311d17151e118c504d015ec6e"]
   
 processFile(fileName, fileContent);
 
 function processFile(fileName, fileContent){
     const output = compileFile(fileName, fileContent);
     for (let contractName in output.contracts['test.sol']) {
+        const encodedConstructorArgs = 'n/a'; 
+        const decodedConstructorArgs = 'n/a';
         const bytecode = output.contracts['test.sol'][contractName].evm.bytecode.object;
         const abi = output.contracts['test.sol'][contractName].abi;
-    
-        const encodedConstructorArgs = getEncodedConstructorArgs(abi, 42,"0x46ef48e06ff160f311d17151e118c504d015ec6e");
-        const decodedConstructorArgs = getDecodedConstructorArgs(abi, encodedConstructorArgs);
+        const argTypes = getArgTypes(abi);
+
+        if (argTypes.length) {
+            encodedConstructorArgs = Web3EthAbi.encodeParameters(argTypes, constructorArgs)
+            decodedConstructorArgs = Web3EthAbi.decodeParameters(typesArr, encodedHex) 
+        }
     
         console.log("contract: ",contractName);
         console.log("bytecode: ", bytecode);
@@ -57,16 +64,6 @@ function compileFile(contractName, contractContent){
     output = JSON.parse(solc.compile(JSON.stringify(input)));
 
     return output
-}
-
-function getEncodedConstructorArgs(abi, ...args){
-    const typesArr = getArgTypes(abi)
-    return typesArr.length ? Web3EthAbi.encodeParameters(typesArr, args) : null;
-}
-
-function getDecodedConstructorArgs(abi, encodedHex){
-    const typesArr = getArgTypes(abi);
-    return typesArr.length ? Web3EthAbi.decodeParameters(typesArr, encodedHex) : null;
 }
 
 function getArgTypes(abi){
