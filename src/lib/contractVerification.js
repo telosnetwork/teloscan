@@ -21,8 +21,24 @@ contract B {
     uint myValue;
 }`;
   
-const output = compileFile(fileName, fileContent);
-processFile(output);
+processFile(fileName, fileContent);
+
+function processFile(fileName, fileContent){
+    const output = compileFile(fileName, fileContent);
+    for (let contractName in output.contracts['test.sol']) {
+        const bytecode = output.contracts['test.sol'][contractName].evm.bytecode.object;
+        const abi = output.contracts['test.sol'][contractName].abi;
+    
+        const encodedConstructorArgs = getEncodedConstructorArgs(abi, 42,"0x46ef48e06ff160f311d17151e118c504d015ec6e");
+        const decodedConstructorArgs = getDecodedConstructorArgs(abi, encodedConstructorArgs);
+    
+        console.log("contract: ",contractName);
+        console.log("bytecode: ", bytecode);
+        console.log("abi: ", util.inspect(abi, false, null, true));
+        console.log("encoded args: ", encodedConstructorArgs);
+        console.log("decoded args: ",decodedConstructorArgs);
+    }
+}
 
 function compileFile(contractName, contractContent){
     let output;
@@ -43,36 +59,19 @@ function compileFile(contractName, contractContent){
     return output
 }
 
-function processFile(output){
-    for (let contractName in output.contracts['test.sol']) {
-        const bytecode = output.contracts['test.sol'][contractName].evm.bytecode.object;
-        const abi = output.contracts['test.sol'][contractName].abi;
-    
-        const encodedConstructorArgs = getEncodedConstructorArgs(abi, 42,"0x46ef48e06ff160f311d17151e118c504d015ec6e");
-        const decodedConstructorArgs = getDecodedConstructorArgs(abi, encodedConstructorArgs);
-    
-        console.log("contract: ",contractName);
-        console.log("bytecode: ", bytecode);
-        console.log("abi: ", util.inspect(abi, false, null, true));
-        console.log("encoded args: ", encodedConstructorArgs);
-        console.log("decoded args: ",decodedConstructorArgs);
-      }
-}
-
 function getEncodedConstructorArgs(abi, ...args){
-    const typesArr = getTypes(abi)
+    const typesArr = getArgTypes(abi)
     return typesArr.length ? Web3EthAbi.encodeParameters(typesArr, args) : null;
 }
 
 function getDecodedConstructorArgs(abi, encodedHex){
-    const typesArr = getTypes(abi);
+    const typesArr = getArgTypes(abi);
     return typesArr.length ? Web3EthAbi.decodeParameters(typesArr, encodedHex) : null;
 }
 
-function getTypes(abi){
+function getArgTypes(abi){
     const typesArr = [];
     const constructorObj = abi.find(obj => { return obj.type === 'constructor' });
-    console.log("constructorObj: ",constructorObj);
     if (constructorObj && constructorObj.inputs.length > 0){
         for (let i=0; i<constructorObj.inputs.length; i++){
             typesArr.push(constructorObj.inputs[i].type);
