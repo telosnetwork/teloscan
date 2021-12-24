@@ -29,16 +29,16 @@
             class="q-pr-sm"
           />
           by
-          <router-link
+          <a
             href="https://telos.bloks.io/vote?producers=bp.yknot,caleosblocks"
             target="_blank"
-            >Yknot</router-link
+            >Yknot</a
           >
           &
-          <router-link
+          <a
             href="https://telos.bloks.io/vote?producers=bp.yknot,caleosblocks"
             target="_blank"
-            >Caleos</router-link
+            >Caleos</a
           >
         </span>
       </div>
