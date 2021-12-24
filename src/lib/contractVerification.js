@@ -21,8 +21,8 @@ contract B {
     uint myValue;
 }`;
   
-  const output = compileFile(fileName, fileContent);
-  processFile(output);
+const output = compileFile(fileName, fileContent);
+processFile(output);
 
 function compileFile(contractName, contractContent){
     let output;
@@ -60,29 +60,24 @@ function processFile(output){
 }
 
 function getEncodedConstructorArgs(abi, ...args){
-    const typesArr = [];
-    const constructorObj = abi.find(obj => { return obj.type === 'constructor' });
-    if (!constructorObj || constructorObj.inputs.length != args.length){
-        return;
-    }
-    for (let i=0; i<constructorObj.inputs.length; i++){
-        typesArr.push(constructorObj.inputs[i].type);
-    }
-    const encoded = Web3EthAbi.encodeParameters(typesArr, args)
-
-    return encoded;
+    const typesArr = getTypes(abi)
+    return typesArr.length ? Web3EthAbi.encodeParameters(typesArr, args) : null;
 }
 
 function getDecodedConstructorArgs(abi, encodedHex){
+    const typesArr = getTypes(abi);
+    return typesArr.length ? Web3EthAbi.decodeParameters(typesArr, encodedHex) : null;
+}
+
+function getTypes(abi){
     const typesArr = [];
     const constructorObj = abi.find(obj => { return obj.type === 'constructor' });
-    if (!constructorObj || constructorObj.inputs.length < 1){
-        return;
+    console.log("constructorObj: ",constructorObj);
+    if (constructorObj && constructorObj.inputs.length > 0){
+        for (let i=0; i<constructorObj.inputs.length; i++){
+            typesArr.push(constructorObj.inputs[i].type);
+        }
     }
-    for (let i=0; i<constructorObj.inputs.length; i++){
-        typesArr.push(constructorObj.inputs[i].type);
-    }
-    const decoded = Web3EthAbi.decodeParameters(typesArr, encodedHex)
 
-    return decoded;
+    return typesArr;
 }
