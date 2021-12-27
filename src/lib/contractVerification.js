@@ -46,12 +46,12 @@ function processFile(fileName, fileContent){
     
         console.log("contract: ",contractName);
         console.log("bytecode: ", bytecode);
-        if (encodedConstructorArgs !== NONE){
-            console.log("bytecode w/constructor args:")
-        }
         console.log("abi: ", util.inspect(abi, false, null, true));
         console.log("encoded args: ", encodedConstructorArgs);
         console.log("decoded args: ",decodedConstructorArgs);
+        if (encodedConstructorArgs !== NONE){
+            console.log("bytecode w/constructor args: ", bytecode + encodedConstructorArgs.substring(2))
+        }
     }
 }
 
