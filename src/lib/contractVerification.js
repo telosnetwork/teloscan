@@ -1,3 +1,6 @@
+// https://ethereum.github.io/solc-bin/bin/list.json #use this to get compiler version list
+// web3.eth.getCode("0xd5677cf67b5aa051bb40496e68ad359eb97cfbf8") #example to get bytecode for deployed contract
+
 // const path = require('path');
 // const fs = require('fs');
 const solc = require('solc');
@@ -5,9 +8,10 @@ const util = require('util');
 const Web3EthAbi = require('web3-eth-abi');
 
 const NONE = 'n/a';
+const versionString = "v0.7.1+commit.f4a555be";
 const fileName = 'test.sol';
 const fileContent = 
-`pragma solidity ^0.8.11;
+`pragma solidity ^0.7.1;
 contract A { 
     uint value;
     function get() public view returns (uint) { return value; }
@@ -16,23 +20,39 @@ contract A {
 contract B { 
     uint value;
     uint myValue;
-    constructor(uint _constructorArg, address _test) public {
+    address initAddress;
+    constructor(uint _constructorArg, address _address) {
         value = _constructorArg;
+        initAddress = _address;
     }
     function set(uint _value) public { myValue= _value; }
     function get() public view returns (uint) { return value + myValue; }
 }`;
-const constructorArgs = [42,"0x46ef48e06ff160f311d17151e118c504d015ec6e"]
+const constructorArgs = [42,"0x46ef48e06ff160f311d17151e118c504d015ec6e"];
   
-processFile(fileName, fileContent);
 
-function processFile(fileName, fileContent){
-    const output = compileFile(fileName, fileContent);
-    for (let contractName in output.contracts['test.sol']) {
+processFile = async (fileName, fileContent) => {
+    const input = {
+        language: 'Solidity',
+        sources: {},
+        settings: {
+          outputSelection: {
+            '*': {
+              '*': ['*']
+            }
+          }
+        }
+      };
+    input.sources[fileName] = { content: fileContent };
+
+    const output = await compileFile(input);
+
+    for (let contractName in output.contracts[fileName]) {
         let encodedConstructorArgs = NONE; 
         let decodedConstructorArgs = NONE;
-        const bytecode = output.contracts['test.sol'][contractName].evm.bytecode.object;
-        const abi = output.contracts['test.sol'][contractName].abi;
+
+        const bytecode = output.contracts[fileName][contractName].evm.bytecode.object;
+        const abi = output.contracts[fileName][contractName].abi;
         const argTypes = getArgTypes(abi);
 
         if (argTypes.length) {
@@ -49,37 +69,22 @@ function processFile(fileName, fileContent){
         console.log("abi: ", util.inspect(abi, false, null, true));
         console.log("encoded args: ", encodedConstructorArgs);
         console.log("decoded args: ",decodedConstructorArgs);
+        
         if (encodedConstructorArgs !== NONE){
             console.log("bytecode w/constructor args: ", bytecode + encodedConstructorArgs.substring(2))
         }
     }
 }
 
-function compileFile(contractName, contractContent){
-    let output;
-    const input = {
-        language: 'Solidity',
-        sources: {},
-        settings: {
-          outputSelection: {
-            '*': {
-              '*': ['*']
-            }
-          }
-        }
-      };
-    input.sources[contractName] = { content: contractContent };
-
-    try{
-        output = JSON.parse(solc.compile(JSON.stringify(input)));
-    }catch(e){
-        console.error(e);
-    }
-
-    return output;
+compileFile = async (input) => {
+    return await new Promise((resolve,reject) => {
+        solc.loadRemoteVersion(versionString, (e, solcVersion) => {
+            e ? reject(e) : resolve(JSON.parse(solcVersion.compile(JSON.stringify(input))));
+        });
+    })
 }
 
-function getArgTypes(abi){
+getArgTypes = (abi) => {
     const typesArr = [];
     const constructorObj = abi.find(obj => { return obj.type === 'constructor' });
     if (constructorObj && constructorObj.inputs.length > 0){
@@ -90,3 +95,5 @@ function getArgTypes(abi){
 
     return typesArr;
 }
+
+( async () => { await processFile(fileName, fileContent) })();
