@@ -11,11 +11,25 @@
         narrow-indicator
       )
         q-route-tab.topRounded(
-          name="general"
+          name="options"
           :to="{ hash: '' }"
           exact
           replace
-          label="General"
+          label="Options"
+        )
+        q-route-tab.topRounded(
+          name="results"
+          :to="{ hash: '' }"
+          exact
+          replace
+          label="Results"
+        )
+        q-route-tab.topRounded(
+          name="details"
+          :to="{ hash: '' }"
+          exact
+          replace
+          label="details"
         )
 
       q-tab-panels.column.ContentContainer.shadow-2(
@@ -23,8 +37,8 @@
         animated
         keep-alive
       )
-        q-tab-panel(name="general")
-          q-btn-dropdown(color="primary" label="Dropdown Button")
+        q-tab-panel(name="options")
+          q-btn-dropdown(color="primary" label="Compiler Version")
               q-list
                   q-item(v-for="option in compilerOptions" :key='option' clickable v-close-popup @click="setCompiler(option)")
                       q-item-section()
