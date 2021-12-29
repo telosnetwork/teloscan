@@ -32,9 +32,14 @@ const routes = [
       }
     ]
   },
-
-  // Always leave this as last one,
-  // but you can also remove it
+  {
+    path: "/verify",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [{ 
+      path: "",
+      name: "verify", 
+      component: () => import("pages/ContractVerification.vue") }]
+  },
   {
     path: "*",
     component: () => import("pages/Error404.vue")
