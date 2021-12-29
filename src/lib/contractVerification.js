@@ -1,9 +1,15 @@
 // https://ethereum.github.io/solc-bin/bin/list.json #use this to get compiler version list
+const compilerVersionEndpoint = 'https://raw.githubusercontent.com/ethereum/solc-bin/gh-pages/emscripten-wasm32/list.json' //use this to get the list and parse for end of string
 // web3.eth.getCode("0xd5677cf67b5aa051bb40496e68ad359eb97cfbf8") #example to get bytecode for deployed contract
 
 // const path = require('path');
 // const fs = require('fs');
+// import axios from 'axios';
+// import solc from 'solc';
+// import util from 'util';
+// import Web3EthAbi from 'web3-eth-abi';
 const solc = require('solc');
+const axios = require('axios');
 const util = require('util');
 const Web3EthAbi = require('web3-eth-abi');
 
@@ -29,9 +35,28 @@ contract B {
     function get() public view returns (uint) { return value + myValue; }
 }`;
 const constructorArgs = [42,"0x46ef48e06ff160f311d17151e118c504d015ec6e"];
-  
+
+const compilerAxios = axios.create({
+    baseURL: compilerVersionEndpoint
+  });
+
+getCompilerList = async () => {
+    const results = await compilerAxios.get();
+    const compilerList = parseCompilerList(results.data.builds);
+    return compilerList;
+}  
+
+parseCompilerList = (buildArray) => {
+    const versionStringArr = [];
+    for (let build of buildArray){
+        versionStringArr.unshift(build.longVersion);
+    }
+    return versionStringArr;
+}
 
 processFile = async (fileName, fileContent) => {
+    const compilerOptions = await getCompilerList();
+    console.log(compilerOptions)
     const input = {
         language: 'Solidity',
         sources: {},
@@ -69,7 +94,7 @@ processFile = async (fileName, fileContent) => {
         console.log("abi: ", util.inspect(abi, false, null, true));
         console.log("encoded args: ", encodedConstructorArgs);
         console.log("decoded args: ",decodedConstructorArgs);
-        
+
         if (encodedConstructorArgs !== NONE){
             console.log("bytecode w/constructor args: ", bytecode + encodedConstructorArgs.substring(2))
         }
@@ -95,5 +120,7 @@ getArgTypes = (abi) => {
 
     return typesArr;
 }
+
+module.exports = processFile;
 
 ( async () => { await processFile(fileName, fileContent) })();
