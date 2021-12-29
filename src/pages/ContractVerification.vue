@@ -26,26 +26,26 @@
         q-tab-panel(name="general")
           q-btn-dropdown(color="primary" label="Dropdown Button")
               q-list
-                  q-item(clickable v-close-popup @click="setCompiler")
-                      q-item-section
-                          q-item-label(v-for="option in compilerOptions" :key='option') {{option}}
+                  q-item(v-for="option in compilerOptions" :key='option' clickable v-close-popup @click="setCompiler(option)")
+                      q-item-section()
+                          q-item-label() {{option}}
 </template>
 
 <script>
+import { getCompilerOptions } from 'src/lib/contractVerification';
 
-// import { getCompilerOptions } from '';
 export default {
   name: "ContractVerification",
   data() {
     return {
       tab: "general",
-      compilerOptions: [ '1.0', '2.0'],
+      compilerOptions: [],
       compilerVersion: ''
     };
   },
-  // async mounted() {
-      // this.compilerOptions = await getCompilerOptions();
-  // },
+  async mounted() {
+      this.compilerOptions = await getCompilerOptions();
+  },
   methods: {
     setCompiler(option){
       this.compilerVersion = option;
