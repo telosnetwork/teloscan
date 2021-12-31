@@ -43,6 +43,15 @@
                   q-item(v-for="option in compilerOptions" :key='option' clickable v-close-popup @click="setCompiler(option)")
                       q-item-section()
                           q-item-label() {{option}}
+          q-uploader(
+            url="http://localhost:4444/upload"
+            label="upload solidity files"
+            multiple
+            batch
+            style="max-width: 300px"
+            accept=".sol"
+            @rejected="onRejected"
+          )
 </template>
 
 <script>
@@ -63,12 +72,23 @@ export default {
   methods: {
     setCompiler(option){
       this.compilerVersion = option;
+    },
+    onRejected(e){
+      const errorMessage = JSON.stringify(e);
+      this.$q.notify({
+          type: "negative",
+          position: 'top',
+          message: `Error: ${errorMessage}`
+      });
     }
   }
 }
 </script>
 
 <style scoped lang="scss">
+.q-uploader{
+  margin-top: 1rem;
+}
 span {
   word-wrap: break-word;
 }
