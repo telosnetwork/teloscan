@@ -37,7 +37,8 @@
         animated
         keep-alive
       )
-        q-tab-panel(name="options")
+        q-tab-panel.inputs-container(name="options")
+          q-input.input-field(v-model="contractAddress" label="Contract Address" placeholder="Please enter contract address '0x0123...'")
           q-btn-dropdown(color="primary" label="Select Compiler Version" )
               q-list
                   q-item(v-for="option in compilerOptions" :key='option' clickable v-close-popup @click='setCompiler(option)')
@@ -46,7 +47,7 @@
           .compiler-version(v-show='compilerSelected') Selected: {{ compilerVersion }}
           q-uploader(
             :factory='uploadFiles'
-            :disabled='!compilerSelected'
+            :disabled='!hasRequired'
             label="upload solidity files"
             no-thumbnails=true
             :form-fields='getFormData'
@@ -56,6 +57,8 @@
             accept='.sol'
             @rejected="onRejected"
           )
+          q-toggle( v-model="optimized" label="Optimization")
+          q-input.input-field(v-model="runs" label="Runs value for optimization" )
 </template>
 
 <script>
@@ -69,15 +72,17 @@ export default {
       tab: "general",
       compilerOptions: [],
       compilerVersion: '',
-      
+      contractAddress: '',
+      optimized: false,
+      runs: 200
     };
   },
   async mounted() {
       this.compilerOptions = await getCompilerOptions();
   },
   computed: {
-    compilerSelected(){
-      return this.compilerVersion.length;
+    hasRequired(){
+      return this.compilerVersion.length && this.contractAddress.length;
     }
   },
   methods: {
@@ -105,7 +110,8 @@ export default {
         formData.append('files', file)
       }
       formData.append('compilerVersion', this.compilerVersion);
-      debugger;
+      formData.append('optimized', this.optimized);
+      formData.append('runs', this.runs);
       try{
         await axios.post( 'http://localhost:9999/v1/contracts/verify',
           formData,
@@ -130,5 +136,11 @@ export default {
 }
 span {
   word-wrap: break-word;
+}
+.inputs-container {
+  max-width: 22rem;
+}
+.input-field{
+  margin:1rem;
 }
 </style>
