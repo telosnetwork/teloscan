@@ -99,16 +99,19 @@ export default {
       });
     },
     async uploadFiles(fileArray){
-      const fd = new FormData();
-      for (let file of fileArray){
-        fd.append(file.name, file)
+      debugger;
+      const formData = new FormData();
+      for (const file of fileArray){
+        formData.append('files', file)
       }
-      fd.append('compilerVersion', this.compilerVersion);
+      formData.append('compilerVersion', this.compilerVersion);
+      debugger;
       try{
-        await axios.post( 'http://localhost:9999/v1/contracts/upload',
-          fd,
+        await axios.post( 'http://localhost:9999/v1/contracts/verify',
+          formData,
           {
             onUploadProgress: (progressEvent) => {
+              debugger;
               //@TODO update progress method: updateProgress(Math.round((progressEvent.loaded / progressEvent.total) * 100) / 100)
             }
           });
