@@ -44,7 +44,7 @@
                   q-item(v-for="option in compilerOptions" :key='option' clickable v-close-popup @click='setCompiler(option)')
                       q-item-section()
                           q-item-label() {{option}}
-          .compiler-version(v-show='compilerSelected') Selected: {{ compilerVersion }}
+          .compiler-version(v-show='compilerVersion.length') Selected: {{ compilerVersion }}
           q-uploader(
             :factory='uploadFiles'
             :disabled='!hasRequired'
@@ -90,9 +90,11 @@ export default {
       this.compilerVersion = option;
     },
     getFormData(){
-      debugger;
       return [
-        { name: 'compilerVersion', value: this.compilerVersion}
+        {name: 'compilerVersion', value: this.compilerVersion},
+        {name: 'contractAddress', value: this.contractAddress},
+        {name: 'optimized', value: this.optimized},
+        {name: 'runs', value: this.runs}
       ]
     },
     onRejected(e){
@@ -109,6 +111,7 @@ export default {
       for (const file of fileArray){
         formData.append('files', file)
       }
+      formData.append('contractAddress', this.contractAddress);
       formData.append('compilerVersion', this.compilerVersion);
       formData.append('optimized', this.optimized);
       formData.append('runs', this.runs);
@@ -138,7 +141,7 @@ span {
   word-wrap: break-word;
 }
 .inputs-container {
-  max-width: 22rem;
+  max-width: 27rem;
 }
 .input-field{
   margin:1rem;
