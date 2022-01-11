@@ -51,8 +51,8 @@
             label="upload solidity files"
             no-thumbnails=true
             :form-fields='getFormData'
-            multiple
-            batch
+            :max-files="1"
+            :max-file-size='contractLimit'
             style="max-width: 300px"
             accept='.sol'
             @rejected="onRejected"
@@ -62,6 +62,8 @@
 </template>
 
 <script>
+//@TODO add `batch` and `multiple` attributes to q-uploader component when multiple files enabled
+
 import axios from 'axios';
 import { getCompilerOptions } from 'src/lib/contractVerification';
 
@@ -74,7 +76,9 @@ export default {
       compilerVersion: '',
       contractAddress: '',
       optimized: false,
-      runs: 200
+      runs: 200,
+      constructorArgs: [],
+      contractByteLimit: 24577 
     };
   },
   async mounted() {
@@ -90,11 +94,13 @@ export default {
       this.compilerVersion = option;
     },
     getFormData(){
+      debugger;
       return [
         {name: 'compilerVersion', value: this.compilerVersion},
         {name: 'contractAddress', value: this.contractAddress},
         {name: 'optimized', value: this.optimized},
-        {name: 'runs', value: this.runs}
+        {name: 'runs', value: this.runs},
+        {name: 'constructorArgs', value: this.constructorArgs}
       ]
     },
     onRejected(e){
@@ -115,12 +121,12 @@ export default {
       formData.append('compilerVersion', this.compilerVersion);
       formData.append('optimized', this.optimized);
       formData.append('runs', this.runs);
+      formData.append('constructorArgs', this.constructorArgs)
       try{
         await axios.post( 'http://localhost:9999/v1/contracts/verify',
           formData,
           {
             onUploadProgress: (progressEvent) => {
-              debugger;
               //@TODO update progress method: updateProgress(Math.round((progressEvent.loaded / progressEvent.total) * 100) / 100)
             }
           });
