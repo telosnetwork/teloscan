@@ -52,7 +52,7 @@
             no-thumbnails=true
             :form-fields='getFormData'
             :max-files="1"
-            :max-file-size='contractLimit'
+            :max-file-size='contractByteLimit'
             style="max-width: 300px"
             accept='.sol'
             @rejected="onRejected"
