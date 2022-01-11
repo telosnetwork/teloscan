@@ -110,17 +110,21 @@ export default {
       formData.append('runs', this.runs);
       formData.append('constructorArgs', this.constructorArgs)
       try{
-        await axios.post( 'http://localhost:9999/v1/contracts/verify',
+        const result = await axios.post( 'http://localhost:9999/v1/contracts/verify',
           formData,
           {
             onUploadProgress: (progressEvent) => {
               //@TODO update progress method: updateProgress(Math.round((progressEvent.loaded / progressEvent.total) * 100) / 100)
             }
           });
+        this.$q.notify({
+          type: "info",
+          position: 'top',
+          message: result.data
+        });
       }catch(e){
-        console.log(e);
+        this.onRejected(e);
       }
-
     }
   }
 }
