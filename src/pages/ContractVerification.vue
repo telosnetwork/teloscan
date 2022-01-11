@@ -50,7 +50,6 @@
             :disabled='!hasRequired'
             label="upload solidity files"
             no-thumbnails=true
-            :form-fields='getFormData'
             :max-files="1"
             :max-file-size='contractByteLimit'
             style="max-width: 300px"
@@ -92,16 +91,6 @@ export default {
   methods: {
     setCompiler(option){
       this.compilerVersion = option;
-    },
-    getFormData(){
-      debugger;
-      return [
-        {name: 'compilerVersion', value: this.compilerVersion},
-        {name: 'contractAddress', value: this.contractAddress},
-        {name: 'optimized', value: this.optimized},
-        {name: 'runs', value: this.runs},
-        {name: 'constructorArgs', value: this.constructorArgs}
-      ]
     },
     onRejected(e){
       const errorMessage = JSON.stringify(e);
