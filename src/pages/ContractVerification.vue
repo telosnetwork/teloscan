@@ -51,12 +51,11 @@
             label="upload solidity files"
             no-thumbnails=true
             :max-files="1"
-            :max-file-size='contractByteLimit'
             style="max-width: 300px"
             accept='.sol'
             @rejected="onRejected"
           )
-          q-toggle( v-model="optimized" label="Optimization")
+          q-toggle( v-model="optimizer" label="Optimization")
           q-input.input-field(v-model="runs" label="Runs value for optimization" )
 </template>
 
@@ -74,10 +73,9 @@ export default {
       compilerOptions: [],
       compilerVersion: '',
       contractAddress: '',
-      optimized: false,
+      optimizer: false,
       runs: 200,
-      constructorArgs: [],
-      contractByteLimit: 24577 
+      constructorArgs: []
     };
   },
   async mounted() {
@@ -108,7 +106,7 @@ export default {
       }
       formData.append('contractAddress', this.contractAddress);
       formData.append('compilerVersion', this.compilerVersion);
-      formData.append('optimized', this.optimized);
+      formData.append('optimizer', this.optimizer);
       formData.append('runs', this.runs);
       formData.append('constructorArgs', this.constructorArgs)
       try{
