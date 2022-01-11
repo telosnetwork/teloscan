@@ -11,7 +11,7 @@ const getCompilerOptions = async () => {
 const parseCompilerList = (buildArray) => {
     const versionStringArr = [];
     for (let build of buildArray){
-        versionStringArr.unshift(build.longVersion);
+        versionStringArr.unshift(`v${build.longVersion}`);
     }
     return versionStringArr;
 }
