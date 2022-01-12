@@ -44,7 +44,15 @@
                   q-item(v-for="option in compilerOptions" :key='option' clickable v-close-popup @click='setCompiler(option)')
                       q-item-section()
                           q-item-label() {{option}}
-          .compiler-version(v-show='compilerVersion.length') Selected: {{ compilerVersion }}
+          .dropdown-selection(v-show='compilerVersion.length') Selected: {{ compilerVersion }}
+          q-btn-dropdown(color="primary" label="Select Target Evm" )
+              q-list
+                  q-item(v-for="option in evmOptions" :key='option' clickable v-close-popup @click='setEvm(option)')
+                      q-item-section()
+                          q-item-label() {{option}}
+          .dropdown-selection(v-show='targetEvm.length') Selected: {{ targetEvm }}
+          q-toggle( v-model="optimizer" label="Optimization")
+          q-input.input-field(v-model="runs" label="Runs value for optimization" )
           q-uploader(
             :factory='uploadFiles'
             :disabled='!hasRequired'
@@ -53,10 +61,9 @@
             :max-files="1"
             style="max-width: 300px"
             accept='.sol'
-            @rejected="onRejected"
+            @rejected="onNotify"
           )
-          q-toggle( v-model="optimizer" label="Optimization")
-          q-input.input-field(v-model="runs" label="Runs value for optimization" )
+
 </template>
 
 <script>
@@ -75,7 +82,10 @@ export default {
       contractAddress: '',
       optimizer: false,
       runs: 200,
-      constructorArgs: []
+      constructorArgs: [],
+      evmOptions: [ 'byzantium', 'tangerineWhistle', 'spuriousDragon', 'constantinople', 'petersburg', 'istanbul', 'berlin', 'london'],
+      targetEvm: '',
+      TEN_SECONDS: 10000
     };
   },
   async mounted() {
@@ -90,12 +100,18 @@ export default {
     setCompiler(option){
       this.compilerVersion = option;
     },
-    onRejected(e){
-      const errorMessage = JSON.stringify(e);
+    setEvm(option){
+      this.targetEvm = option;
+    },
+    onNotify(notification){
+      if (typeof notification !== 'object' || !notification.hasOwnProperty('message')){
+        notification = { message: JSON.stringify(notification), type: 'negative'};
+      }
       this.$q.notify({
-          type: "negative",
+          type: notification.type,
           position: 'top',
-          message: `Error: ${errorMessage}`
+          message: notification.message,
+          timeout: this.TEN_SECONDS
       });
     },
     async uploadFiles(fileArray){
@@ -108,7 +124,8 @@ export default {
       formData.append('compilerVersion', this.compilerVersion);
       formData.append('optimizer', this.optimizer);
       formData.append('runs', this.runs);
-      formData.append('constructorArgs', this.constructorArgs)
+      formData.append('constructorArgs', this.constructorArgs);
+      formData.append('targetEvm', this.targetEvm);
       try{
         const result = await axios.post( 'http://localhost:9999/v1/contracts/verify',
           formData,
@@ -117,13 +134,9 @@ export default {
               //@TODO update progress method: updateProgress(Math.round((progressEvent.loaded / progressEvent.total) * 100) / 100)
             }
           });
-        this.$q.notify({
-          type: "info",
-          position: 'top',
-          message: result.data
-        });
+        this.onNotify(result.data);
       }catch(e){
-        this.onRejected(e);
+        this.onNotify({ message: e, type: 'negative'});
       }
     }
   }
@@ -133,6 +146,8 @@ export default {
 <style scoped lang="scss">
 .q-uploader{
   margin-top: 1rem;
+  max-width: unset;
+  width:100%;
 }
 span {
   word-wrap: break-word;
@@ -141,6 +156,13 @@ span {
   max-width: 27rem;
 }
 .input-field{
-  margin:1rem;
+  margin: 1rem;
+}
+.q-btn-dropdown, .q-uploader, .dropdown-selection{
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+.q-btn {
+    width: 100%;
 }
 </style>
