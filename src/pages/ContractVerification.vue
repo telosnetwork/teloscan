@@ -38,26 +38,31 @@
         keep-alive
       )
         q-tab-panel.inputs-container(name="options")
-          q-form
+          q-form(
+            @submit='verifyContract'
+            @reset='resetForm'
+          )
             q-input.input-field(
               v-model="contractAddress" 
-              label="Contract Address" 
+              name='contractAddress'
+              label="Contract Address *" 
               placeholder="Please enter contract address '0x0123...'"
+              :rules="[val => isValidAddressFormat(val) || 'invalid address format' ]"
             )
-            q-btn-dropdown(color="primary" label="Select Compiler Version" )
-                q-list
-                    q-item(v-for="option in compilerOptions" :key='option' clickable v-close-popup @click='setCompiler(option)')
-                        q-item-section()
-                            q-item-label() {{option}}
-            .dropdown-selection(v-show='compilerVersion.length') Selected: {{ compilerVersion }}
-            q-btn-dropdown(color="primary" label="Select Target Evm" )
-                q-list
-                    q-item(v-for="option in evmOptions" :key='option' clickable v-close-popup @click='setEvm(option)')
-                        q-item-section()
-                            q-item-label() {{option}}
-            .dropdown-selection(v-show='targetEvm.length') Selected: {{ targetEvm }}
+            q-select( 
+              v-model="compilerVersion" 
+              :options="compilerOptions" 
+              label="Compiler Version *" 
+              :rules="[val => val.length || 'select compiler version']"
+            )
+            q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM")
             q-toggle( v-model="optimizer" label="Optimization" )
-            q-input.input-field(v-model="runs" label="Runs value for optimization" :disable='!optimizer')
+            q-input.input-field(
+              v-model="runs" 
+              type="number" 
+              label="Runs value for optimization" 
+              :disable='!optimizer'
+            )
             q-toggle( 
               v-model="inputMethod"
               false-value="text"
@@ -69,15 +74,22 @@
               color='primary'
               keep-color
             )
-            q-input(
-              v-if='inputMethod == "text"' 
-              type="textarea" 
-              rows="15"  
-              square 
-              outlined 
-              v-model='contractInput' 
-              placeholder='copy & paste contract code here...'
-            )
+            div(v-if='inputMethod == "text"')
+              q-input.input-field(
+                v-model="sourceName" 
+                label="Source file name (e.g.,contract.sol, contracts/contract.sol, etc.)"               
+                :rules="[val => val.length || 'enter source name']"
+              )
+              q-input(
+                type="textarea" 
+                name='contractInput'
+                rows="15"  
+                square 
+                outlined 
+                v-model='contractInput' 
+                placeholder='copy & paste contract code here...'
+                :rules="[val => val.length || 'enter or paste contract text']"
+              )
             q-uploader(
               v-else
               ref="uploader"
@@ -89,19 +101,23 @@
               hide-upload-btn=true
               @rejected="onNotify"
             )
-            q-btn(label="Verify Contract" @click="verifyContract" :disable='!hasRequiredInputs')
+            div
+              q-btn(label="Verify Contract" type="submit" color='primary' :disable='hasRequiredInputs')
+              q-btn(label="Reset" type="reset" color='primary' )
 </template>
 
 <script>
 //@TODO add `batch` and `multiple` attributes to q-uploader component when multiple files enabled
 import axios from 'axios';
 import { getCompilerOptions } from 'src/lib/contractVerification';
+import { isValidAddressFormat } from "src/lib/utils";
+
 
 export default {
   name: "ContractVerification",
   data() {
     return {
-      tab: "general",
+      tab: "options",
       compilerOptions: [],
       compilerVersion: '',
       contractAddress: '',
@@ -113,6 +129,7 @@ export default {
       targetEvm: '',
       TEN_SECONDS: 10000,
       inputMethod: 'file',
+      sourceName: '',
       contractInput: ''
     };
   },
@@ -128,6 +145,7 @@ export default {
     }
   },
   methods: {
+    isValidAddressFormat,
     setCompiler(option){
       this.compilerVersion = option;
     },
@@ -145,15 +163,20 @@ export default {
           timeout: this.TEN_SECONDS
       });
     },
-    async verifyContract(){
+    async verifyContract(test){
+      
+      debugger;
       const formData = new FormData();
-      const fileArray = this.$refs.uploader.files;
-      if (fileArray.length > 0 ){
-        for (const file of fileArray){
-          formData.append('files', file)
+      if (this.$refs.uploader){
+        if (this.$refs.uploader.files.length === 0){
+          this.onNotify({type: 'info', message: 'you must select a file for upload or toggle input to paste contract contents'});
+          return;
+        }
+        for (const file of this.$refs.uploader.files){
+          formData.append('files', file);
         }
       }else{
-        formData.append('files', this.contractInput)
+        formData.append('files', this.contractInput);
       }
       formData.append('contractAddress', this.contractAddress);
       formData.append('compilerVersion', this.compilerVersion);
@@ -175,6 +198,18 @@ export default {
       }catch(e){
         this.onNotify({ message: e, type: 'negative'});
       }
+    }, 
+    resetForm(){
+      this.contractAddress = '';
+      this.compilerVersion = '';
+      this.sourceName = '';
+      this.contractInput = '';  
+      this.rawInput = false;
+      this.optimizer = false;
+      this.runs = 200;
+      if (this.$refs.uploader){
+        this.$refs.uploader.files = []
+      }
     }
   }
 }
@@ -185,11 +220,12 @@ span {
   word-wrap: break-word;
 }
 .q-btn {
-    width: 100%;
+    width: 45%;
 }
 .q-btn-dropdown, .q-uploader, .q-toggle, .q-field,.q-btn, .dropdown-selection{
   margin-top: 1rem;
   margin-left: 1rem;
+  margin-right: 1rem;
 }
 .q-uploader{
   margin-top: 1rem;
@@ -200,7 +236,7 @@ span {
     cursor:not-allowed;
 }
 .inputs-container {
-  max-width: 27rem;
+  max-width: 100%;
 }
 .input-field{
   margin: 1rem;
