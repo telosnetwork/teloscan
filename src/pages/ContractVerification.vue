@@ -70,7 +70,7 @@
               checked-icon='file_upload'
               unchecked-icon='article'
               left-label
-              :label="`Contract Input: ${inputMethod}`"
+              :label="`Contract Input *: ${inputMethod}`"
               color='primary'
               keep-color
             )
@@ -102,7 +102,7 @@
               @rejected="onNotify"
             )
             div
-              q-btn(label="Verify Contract" type="submit" color='primary' :disable='hasRequiredInputs')
+              q-btn(label="Verify Contract" type="submit" color='primary')
               q-btn(label="Reset" type="reset" color='primary' )
 </template>
 
@@ -136,14 +136,6 @@ export default {
   async mounted() {
       this.compilerOptions = await getCompilerOptions();
   },
-  computed: {
-    hasRequiredInputs(){
-      debugger;
-      return this.contractAddress.length > 0 && 
-             this.compilerVersion.length > 0 && 
-             (this.contractInput.length > 0 || this.$refs.uploader.files.length > 0) 
-    }
-  },
   methods: {
     isValidAddressFormat,
     setCompiler(option){
@@ -176,6 +168,7 @@ export default {
           formData.append('files', file);
         }
       }else{
+        formData.append('sourceName', this.sourceName);
         formData.append('files', this.contractInput);
       }
       formData.append('contractAddress', this.contractAddress);
