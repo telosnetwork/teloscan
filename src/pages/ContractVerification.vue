@@ -140,8 +140,8 @@ export default {
       optimizer: false,
       runs: 200,
       constructorArgs: [],
-      evmOptions: [ 'byzantium', 'tangerineWhistle', 'spuriousDragon', 'constantinople', 'petersburg', 'istanbul', 'berlin', 'london'],
-      targetEvm: '',
+      evmOptions: [ 'telos mainnet', 'telos testnet' ],
+      targetEvm: 'telos mainnet',
       TEN_SECONDS: 10000,
       inputMethod: true,
       sourceName: '',
@@ -243,9 +243,6 @@ span {
   margin-top: 1rem;
   max-width: unset !important;
   width:100%;
-}
-.disabled input{
-    cursor:not-allowed;
 }
 .inputs-container {
   max-width: 100%;
