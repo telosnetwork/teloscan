@@ -63,44 +63,59 @@
               label="Runs value for optimization" 
               :disable='!optimizer'
             )
-            q-toggle( 
+            q-radio( 
               v-model="inputMethod"
-              false-value="text"
-              true-value="file"
-              checked-icon='file_upload'
-              unchecked-icon='article'
-              left-label
-              :label="`Contract Input *: ${inputMethod}`"
+              label="upload file"
+              :val='true'
               color='primary'
-              keep-color
             )
-            div(v-if='inputMethod == "text"')
-              q-input.input-field(
-                v-model="sourceName" 
-                label="Source file name (e.g.,contract.sol, contracts/contract.sol, etc.)"               
-                :rules="[val => val.length || 'enter source name']"
-              )
-              q-input(
-                type="textarea" 
-                name='contractInput'
-                rows="15"  
-                square 
-                outlined 
-                v-model='contractInput' 
-                placeholder='copy & paste contract code here...'
-                :rules="[val => val.length || 'enter or paste contract text']"
-              )
-            q-uploader(
-              v-else
-              ref="uploader"
-              label="upload .sol contract file"
-              no-thumbnails=true
-              :max-files="1"
-              style="max-width: 300px"
-              accept='.sol'
-              hide-upload-btn=true
-              @rejected="onNotify"
+            q-radio( 
+              v-model="inputMethod"
+              label="text input"
+              :val='false'
+              color='primary'
             )
+            q-input.input-field(
+              v-if='requiresFileName'
+              v-model="sourceName" 
+              label="Source path & file name *"
+              placeholder="name used for deployment (e.g.,contract.sol, contracts/contract.sol, etc.)"               
+              :rules="[val => val.length || 'enter source name']"
+            )
+            q-input(
+              v-if='!inputMethod'
+              type="textarea" 
+              name='contractInput'
+              rows="10"  
+              square 
+              outlined 
+              v-model='contractInput' 
+              placeholder='copy & paste contract code here...'
+              :rules="[val => val.length || 'enter or paste contract text']"
+            )
+            div(v-else)
+              q-radio( 
+                v-model="fileType"
+                label=".sol"
+                :val='true'
+                color='primary'
+              )
+              q-radio( 
+                v-model="fileType"
+                label=".json"
+                :val='false'
+                color='primary'
+              )
+              q-uploader(
+                ref="uploader"
+                label="upload .sol contract or .json input file"
+                no-thumbnails=true
+                :max-files="1"
+                style="max-width: 300px"
+                accept='.sol, .json'
+                hide-upload-btn=true
+                @rejected="onNotify"
+              )
             div
               q-btn(label="Verify Contract" type="submit" color='primary')
               q-btn(label="Reset" type="reset" color='primary' )
@@ -128,13 +143,19 @@ export default {
       evmOptions: [ 'byzantium', 'tangerineWhistle', 'spuriousDragon', 'constantinople', 'petersburg', 'istanbul', 'berlin', 'london'],
       targetEvm: '',
       TEN_SECONDS: 10000,
-      inputMethod: 'file',
+      inputMethod: true,
       sourceName: '',
-      contractInput: ''
+      contractInput: '',
+      fileType: true
     };
   },
   async mounted() {
       this.compilerOptions = await getCompilerOptions();
+  },
+  computed: {
+    requiresFileName() {
+      return !this.inputMethod || (this.inputMethod && this.fileType);
+    }
   },
   methods: {
     isValidAddressFormat,
@@ -156,8 +177,6 @@ export default {
       });
     },
     async verifyContract(test){
-      
-      debugger;
       const formData = new FormData();
       if (this.$refs.uploader){
         if (this.$refs.uploader.files.length === 0){
@@ -168,9 +187,9 @@ export default {
           formData.append('files', file);
         }
       }else{
-        formData.append('sourceName', this.sourceName);
         formData.append('files', this.contractInput);
       }
+      formData.append('sourceName', this.sourceName);
       formData.append('contractAddress', this.contractAddress);
       formData.append('compilerVersion', this.compilerVersion);
       formData.append('optimizer', this.optimizer);
