@@ -55,7 +55,7 @@
               label="Compiler Version *" 
               :rules="[val => val.length || 'select compiler version']"
             )
-            q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM")
+            q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM" disable)
             q-toggle( v-model="optimizer" label="Optimization" )
             q-input.input-field(
               v-model="runs" 
