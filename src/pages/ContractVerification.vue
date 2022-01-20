@@ -67,36 +67,37 @@
                   q-toggle( v-model="optimizer" label="Optimization" )
                 q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM" disable)
 
-              q-radio( 
-                v-model="inputMethod"
-                label="upload file"
-                :val='true'
-                color='primary'
-              )
-              q-radio( 
-                v-model="inputMethod"
-                label="text input"
-                :val='false'
-                color='primary'
-              )
+  
               q-input(
-                v-if='requiresFileName'
+                :disable='!requiresFileName'
                 v-model="sourceName" 
                 label="Source path & file name *"
                 placeholder="name used for deployment (e.g.,contract.sol, contracts/contract.sol, etc.)"               
                 :rules="[val => val.length || 'enter source name']"
-              )
+              )  
+                q-radio( 
+                  v-model="inputMethod"
+                  label="upload file"
+                  :val='true'
+                  color='primary'
+                )
+                q-radio( 
+                  v-model="inputMethod"
+                  label="text input"
+                  :val='false'
+                  color='primary'
+                )
               q-input(
                 v-if='!inputMethod'
                 type="textarea" 
                 name='contractInput'
-                rows="10"  
+                rows="8"  
                 square 
                 outlined 
                 v-model='contractInput' 
                 placeholder='copy & paste contract code here...'
                 :rules="[val => val.length || 'enter or paste contract text']"
-              )
+              )     
               div(v-else)
                 q-radio( 
                   v-model="fileType"
@@ -112,7 +113,7 @@
                 )
                 q-uploader(
                   ref="uploader"
-                  label="upload .sol contract or .json input file"
+                  :label='uploaderLabel'
                   no-thumbnails=true
                   :max-files="1"
                   style="max-width: 300px"
@@ -120,6 +121,7 @@
                   hide-upload-btn=true
                   @rejected="onNotify"
                 )
+
               .button-container
                 q-btn(label="Verify Contract" type="submit" color='primary')
                 q-btn(label="Reset" type="reset" color='primary' )
@@ -159,6 +161,11 @@ export default {
   computed: {
     requiresFileName() {
       return !this.inputMethod || (this.inputMethod && this.fileType);
+    },
+    uploaderLabel() {
+      const solFile = `Select .sol contract file for upload`;
+      const jsonFile = 'Select standard JSON input object file for upload';
+      return  this.fileType ? solFile : jsonFile;
     }
   },
   methods: {
@@ -251,8 +258,15 @@ span
 .q-select
   height: 3rem
 
+.q-textarea
+  margin-top:1.5rem
+
 .q-toggle
   margin-left: 1rem
+
+.q-tab-panel
+  margin-bottom: 1.5rem
+  margin-top: 1.5rem
 
 .button-container
   display: flex
