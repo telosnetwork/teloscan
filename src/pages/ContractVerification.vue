@@ -42,83 +42,87 @@
             @submit='verifyContract'
             @reset='resetForm'
           )
-            q-input.input-field(
-              v-model="contractAddress" 
-              name='contractAddress'
-              label="Contract Address *" 
-              placeholder="Please enter contract address '0x0123...'"
-              :rules="[val => isValidAddressFormat(val) || 'invalid address format' ]"
-            )
-            q-select( 
-              v-model="compilerVersion" 
-              :options="compilerOptions" 
-              label="Compiler Version *" 
-              :rules="[val => val.length || 'select compiler version']"
-            )
-            q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM" disable)
-            q-toggle( v-model="optimizer" label="Optimization" )
-            q-input.input-field(
-              v-model="runs" 
-              type="number" 
-              label="Runs value for optimization" 
-              :disable='!optimizer'
-            )
-            q-radio( 
-              v-model="inputMethod"
-              label="upload file"
-              :val='true'
-              color='primary'
-            )
-            q-radio( 
-              v-model="inputMethod"
-              label="text input"
-              :val='false'
-              color='primary'
-            )
-            q-input.input-field(
-              v-if='requiresFileName'
-              v-model="sourceName" 
-              label="Source path & file name *"
-              placeholder="name used for deployment (e.g.,contract.sol, contracts/contract.sol, etc.)"               
-              :rules="[val => val.length || 'enter source name']"
-            )
-            q-input(
-              v-if='!inputMethod'
-              type="textarea" 
-              name='contractInput'
-              rows="10"  
-              square 
-              outlined 
-              v-model='contractInput' 
-              placeholder='copy & paste contract code here...'
-              :rules="[val => val.length || 'enter or paste contract text']"
-            )
-            div(v-else)
+            .inputs-container-row
+              .inputs-container-col.inputs-container-padding-right
+                q-input(
+                  v-model="contractAddress" 
+                  name='contractAddress'
+                  label="Contract Address *" 
+                  placeholder="Please enter contract address '0x0123...'"
+                  :rules="[val => isValidAddressFormat(val) || 'invalid address format' ]"
+                )
+                q-select( 
+                  v-model="compilerVersion" 
+                  :options="compilerOptions" 
+                  label="Compiler Version *" 
+                  :rules="[val => val.length || 'select compiler version']"
+                )
+              .inputs-container-col
+                q-input.q-field--with-bottom(
+                  v-model="runs" 
+                  type="number" 
+                  label="Runs value for optimization" 
+                  :class="!optimizer ? 'disabled-input' : ''"
+                )
+                  q-toggle( v-model="optimizer" label="Optimization" )
+                q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM" disable)
+
               q-radio( 
-                v-model="fileType"
-                label=".sol"
+                v-model="inputMethod"
+                label="upload file"
                 :val='true'
                 color='primary'
               )
               q-radio( 
-                v-model="fileType"
-                label=".json"
+                v-model="inputMethod"
+                label="text input"
                 :val='false'
                 color='primary'
               )
-              q-uploader(
-                ref="uploader"
-                label="upload .sol contract or .json input file"
-                no-thumbnails=true
-                :max-files="1"
-                style="max-width: 300px"
-                accept='.sol, .json'
-                hide-upload-btn=true
-                @rejected="onNotify"
+              q-input(
+                v-if='requiresFileName'
+                v-model="sourceName" 
+                label="Source path & file name *"
+                placeholder="name used for deployment (e.g.,contract.sol, contracts/contract.sol, etc.)"               
+                :rules="[val => val.length || 'enter source name']"
               )
-            div
-              q-btn(label="Verify Contract" type="submit" color='primary')
-              q-btn(label="Reset" type="reset" color='primary' )
+              q-input(
+                v-if='!inputMethod'
+                type="textarea" 
+                name='contractInput'
+                rows="10"  
+                square 
+                outlined 
+                v-model='contractInput' 
+                placeholder='copy & paste contract code here...'
+                :rules="[val => val.length || 'enter or paste contract text']"
+              )
+              div(v-else)
+                q-radio( 
+                  v-model="fileType"
+                  label=".sol"
+                  :val='true'
+                  color='primary'
+                )
+                q-radio( 
+                  v-model="fileType"
+                  label=".json"
+                  :val='false'
+                  color='primary'
+                )
+                q-uploader(
+                  ref="uploader"
+                  label="upload .sol contract or .json input file"
+                  no-thumbnails=true
+                  :max-files="1"
+                  style="max-width: 300px"
+                  accept='.sol, .json'
+                  hide-upload-btn=true
+                  @rejected="onNotify"
+                )
+              .button-container
+                q-btn(label="Verify Contract" type="submit" color='primary')
+                q-btn(label="Reset" type="reset" color='primary' )
 </template>
 
 <script>
@@ -227,27 +231,48 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-span {
-  word-wrap: break-word;
-}
-.q-btn {
-    width: 45%;
-}
-.q-btn-dropdown, .q-uploader, .q-toggle, .q-field,.q-btn, .dropdown-selection{
-  margin-top: 1rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
-}
-.q-uploader{
-  margin-top: 1rem;
-  max-width: unset !important;
-  width:100%;
-}
-.inputs-container {
-  max-width: 100%;
-}
-.input-field{
-  margin: 1rem;
-}
+<style scoped lang="sass">
+span 
+  word-wrap: break-word
+
+.q-btn 
+  width: 40%
+  margin:auto
+
+.q-uploader
+  margin-top: 1rem
+  max-width: unset !important
+  width:100%
+
+.q-form
+  width: 60rem
+  margin: auto
+
+.q-select
+  height: 3rem
+
+.q-toggle
+  margin-left: 1rem
+
+.button-container
+  display: flex
+  margin: 1rem
+  padding-top: 1rem
+  justify-content: space-around
+
+.inputs-container-padding-right
+  padding-right: 2rem
+
+.inputs-container-col
+  display: inline-flex
+  flex-direction: column
+  width: 48%
+  height:10rem
+  margin: auto
+
+.inputs-container-row
+  display:flex
+  margin: auto
+  justify-content: space-around
+
 </style>
