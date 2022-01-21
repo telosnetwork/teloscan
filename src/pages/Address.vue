@@ -3,7 +3,8 @@
     div()
       .row(class="tableWrapper").justify-between
         div(class="homeInfo")
-          .text-primary.text-h4 {{ isContract ? "Contract" : "Account" }}
+          .text-primary.text-h4 {{ isContract ? "Contract" : "Account" }}       
+          q-icon( name="warning" class="text-red" size='1.5rem' v-if='isContract')
           .text-white {{ address }}
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount") 
@@ -72,8 +73,13 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-.q-tab-panel {
-  padding: 0;
-}
+<style scoped lang="sass">
+.q-tab-panel 
+  padding: 0
+
+.q-icon
+  padding-bottom: .75rem
+
+.text-primary
+  display: inline-block
 </style>
