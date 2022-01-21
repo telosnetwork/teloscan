@@ -208,7 +208,7 @@ export default {
       formData.append('constructorArgs', this.constructorArgs);
       formData.append('targetEvm', this.targetEvm);
       try{
-        const result = await axios.post( 'http://localhost:9999/v1/contracts/verify',
+        const result = await this.$telosApi.post('contracts/verify',
           formData,
           {
             onUploadProgress: (progressEvent) => {

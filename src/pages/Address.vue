@@ -3,8 +3,9 @@
     div()
       .row(class="tableWrapper").justify-between
         div(class="homeInfo")
-          .text-primary.text-h4 {{ isContract ? "Contract" : "Account" }}       
-          q-icon( name="warning" class="text-red" size='1.5rem' v-if='isContract')
+          .text-primary.text-h4( v-if='!isContract') Account   
+          .text-primary.text-h4( v-else ) Contract  
+            q-icon(:name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' )
           .text-white {{ address }}
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount") 
@@ -40,6 +41,7 @@ export default {
       telosAccount: null,
       balance: null,
       isContract: false,
+      isVerified: false,
       tab: "transactions",
       tokens: null
     };
@@ -50,6 +52,14 @@ export default {
   methods: {
     async loadAccount() {
       const account = await this.$evm.telos.getEthAccount(this.address);
+      if (account.code.length > 0){
+        this.isContract = true;
+        const response = await this.$telosApi.get(`contracts/status?contractAddress=${this.address}`);
+        if (response.status) {
+          this.isVerified = true;
+          this.verificationDate = response.message;
+        }
+      }
       let strBalance = web3.utils.fromWei(account.balance);
       strBalance = `${strBalance.substring(
         0,
