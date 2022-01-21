@@ -33,7 +33,7 @@ const routes = [
     ]
   },
   {
-    path: "/verify",
+    path: "/verify/:address?",
     component: () => import("layouts/MainLayout.vue"),
     children: [{ 
       path: "",
