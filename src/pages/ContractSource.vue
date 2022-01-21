@@ -69,5 +69,6 @@ export default {
 </script>
 
 <style scoped lang="sass">
-
+    .code-container
+        white-space: pre-wrap
 </style>
