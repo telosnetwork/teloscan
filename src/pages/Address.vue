@@ -5,7 +5,8 @@
         div(class="homeInfo")
           .text-primary.text-h4( v-if='!isContract') Account   
           .text-primary.text-h4( v-else ) Contract  
-            q-icon(:name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' )
+          q-icon(:name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
+          ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" :date="verificationDate" @dialog='confirmationDialog = false')
           .text-white {{ address }}
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount") 
@@ -29,12 +30,13 @@
 <script>
 import TransactionTable from "components/TransactionTable";
 import TokenList from "components/TokenList";
+import ConfirmationDialog from "components/ConfirmationDialog";
 import Web3 from "web3";
 
 const web3 = new Web3();
 export default {
   name: "Address",
-  components: { TokenList, TransactionTable },
+  components: { TokenList, TransactionTable, ConfirmationDialog },
   data() {
     return {
       address: this.$route.params.address,
@@ -42,8 +44,10 @@ export default {
       balance: null,
       isContract: false,
       isVerified: false,
+      verificationDate: '',
       tab: "transactions",
-      tokens: null
+      tokens: null,
+      confirmationDialog: false
     };
   },
   mounted() {
@@ -55,9 +59,10 @@ export default {
       if (account.code.length > 0){
         this.isContract = true;
         const response = await this.$telosApi.get(`contracts/status?contractAddress=${this.address}`);
-        if (response.status) {
+        if (response.data.status) {
+          debugger;
           this.isVerified = true;
-          this.verificationDate = response.message;
+          this.verificationDate = response.data.message;
         }
       }
       let strBalance = web3.utils.fromWei(account.balance);
