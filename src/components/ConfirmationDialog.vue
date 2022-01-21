@@ -46,7 +46,7 @@ export default {
   },
   computed: {
     navRoute(){
-      return `/verify/${this.address}`
+      return `/contract/verify/${this.address}`
     }
   },
   watch: {

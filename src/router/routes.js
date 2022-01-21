@@ -33,12 +33,18 @@ const routes = [
     ]
   },
   {
-    path: "/verify/:address?",
+    path: "/contract",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ 
-      path: "",
-      name: "verify", 
-      component: () => import("pages/ContractVerification.vue") }]
+    children: [
+      { 
+        path: "verify/:address?",
+        name: "verify", 
+        component: () => import("pages/ContractVerification.vue") 
+      },
+      { path: "source/:address",
+        component: () => import("pages/ContractSource.vue") 
+      }
+  ]
   },
   {
     path: "*",
