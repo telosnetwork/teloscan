@@ -38,8 +38,11 @@
         keep-alive
       )
         q-tab-panel(name="contract")
+            .code-container {{ this.contract }}
         q-tab-panel(name="metadata")
+            .code-container {{ this.metadata }}
         q-tab-panel(name="abi")
+            .code-container {{ this.abi }}
 </template>
 
 <script>
@@ -49,10 +52,14 @@ export default {
   data() {
     return {
         tab: "contract",
+        contract: '',
+        metadata: '',
+        abi:''
     };
   },
   async mounted() {
-    //  this.$telosApi.getSourceFiles(this.$route.params.address); 
+    const response = await this.$telosApi.get(`contracts/source?contractAddress=${this.$route.params.address}`);
+    [this.contract, this.abi, this.metadata] = response.data;
   },
   computed: {
   },
