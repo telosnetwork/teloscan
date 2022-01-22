@@ -71,7 +71,9 @@ export default class ContractManager {
   }
 
 
-  async getContract(address) {
+  // suspectedToken is so we don't try to check for ERC20 info via eth_call unless we think this is a token...
+  //    this is coming from the token transfer page where we're looking for a contract based on a token transfer event
+  async getContract(address, suspectedToken) {
     const addressLower = address.toLowerCase();
     if (this.contracts[addressLower])
       return this.contracts[addressLower];
@@ -83,12 +85,49 @@ export default class ContractManager {
       return contract;
     }
 
+    if (suspectedToken) {
+      console.log(addressLower);
+      const erc20Data = await this.getErc20Data(address);
+      if (erc20Data) {
+        const contract = new Contract({
+          name: `${erc20Data.name} (${erc20Data.symbol})`,
+          address,
+          abi: erc20Abi,
+          manager: this,
+          token: Object.assign({
+            address,
+          }, erc20Data)
+        });
+
+        this.contracts[addressLower] = contract;
+        return contract;
+      }
+    }
+
     return new Contract({
       name: `${address.slice(0,16)}...`,
       address,
       abi: undefined,
       manager: this
     })
+  }
+
+  async getErc20Data(address) {
+    const contract = new ethers.Contract(address, erc20Abi, this.getEthersProvider());
+    try {
+      const decimals = await contract.decimals();
+      if (!decimals)
+        return;
+
+      const name = await contract.name.call();
+      const symbol = await contract.symbol.call();
+      if (!symbol || !name)
+        return;
+
+      return {name, symbol, decimals};
+    } catch (e) {
+      return;
+    }
   }
 
   async loadTokenList() {
