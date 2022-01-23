@@ -38,17 +38,34 @@
         keep-alive
       )
         q-tab-panel(name="contract")
-            .code-container {{ this.contract }}
+            JsonViewer.code-solidity(
+              :value="contract"
+              copyable
+              theme="jsonViewer"
+              ) 
         q-tab-panel(name="metadata")
-            .code-container {{ this.metadata }}
+            JsonViewer(
+              :value="metadata"
+              copyable
+              theme="jsonViewer"
+              ) 
         q-tab-panel(name="abi")
-            .code-container {{ this.abi }}
+            JsonViewer(
+              :value="abi"
+              :expand-depth=4
+              copyable
+              theme="jsonViewer"
+              ) 
 </template>
 
 <script>
+import JsonViewer from 'vue-json-viewer';
 
 export default {
   name: "ContractSource",
+  components: {
+    JsonViewer
+  },
   data() {
     return {
         tab: "contract",
@@ -60,6 +77,8 @@ export default {
   async mounted() {
     const response = await this.$telosApi.get(`contracts/source?contractAddress=${this.$route.params.address}`);
     [this.contract, this.abi, this.metadata] = response.data;
+    debugger;
+    this.abi = JSON.parse(this.abi);
   },
   computed: {
   },
@@ -69,6 +88,7 @@ export default {
 </script>
 
 <style scoped lang="sass">
-    .code-container
-        white-space: pre-wrap
+.jv-container 
+  max-height: 35rem
+  overflow: auto
 </style>

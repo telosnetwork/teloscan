@@ -31,7 +31,7 @@
     "ual-scatter": "^0.3.0",
     "ual-wombat": "^0.3.3",
     "universal-authenticator-library": "^0.3.0",
-    "vue-json-viewer": "^2.2.20",
+    "vue-json-viewer": "2",
     "web3": "^1.6.1"
   },
   "devDependencies": {
