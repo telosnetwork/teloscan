@@ -38,29 +38,33 @@
         keep-alive
       )
         q-tab-panel(name="contract")
-          pre
-            code {{ contract }}
+          pre( v-html='contract')
         q-tab-panel(name="metadata")
           JsonViewer(
             :value="metadata"
             copyable
-            theme="jsonViewer"
+            expanded
+            :expand-depth=5
+            theme="custom-theme"
           ) 
         q-tab-panel(name="abi")
-          JsonViewer(
-            :value="abi"
-            :expand-depth=4
+          JsonViewer( 
+            :value='abi'
             copyable
-            theme="jsonViewer"
-          ) 
+            expanded
+            :expand-depth=5
+            theme="custom-theme"
+          )
 </template>
 
-<script>
+<script lang="javascript">
 import JsonViewer from 'vue-json-viewer';
 import hljs from 'highlight.js/lib/core';
 import hljsDefineSolidity from 'highlightjs-solidity';
 import 'highlight.js/styles/default.css';
+import json from 'highlight.js/lib/languages/json';
 
+hljs.registerLanguage('json', json);
 hljsDefineSolidity(hljs);
 
 export default {
@@ -78,9 +82,10 @@ export default {
   },
   async mounted() {
     const response = await this.$telosApi.get(`contracts/source?contractAddress=${this.$route.params.address}`);
-    this.contract = hljs.highlight(this.contract, { language: 'solidity'}).value; 
+    debugger;
+    this.contract = hljs.highlight(response.data.contract, { language: 'solidity'}).value; 
     this.abi = response.data.abi;
-    this.metadata = response.data.metadata;
+    this.metadata = JSON.parse(response.data.metadata);
     debugger;
   },
   computed: {
@@ -90,8 +95,4 @@ export default {
 }
 </script>
 
-<style scoped lang="sass">
-.jv-container 
-  max-height: 35rem
-  overflow: auto
-</style>
+<style scoped lang="scss"></style>
