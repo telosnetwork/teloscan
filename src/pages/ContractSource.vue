@@ -38,29 +38,30 @@
         keep-alive
       )
         q-tab-panel(name="contract")
-            JsonViewer.code-solidity(
-              :value="contract"
-              copyable
-              theme="jsonViewer"
-              ) 
+          pre
+            code(class="language-solidity") {{ contract }}
         q-tab-panel(name="metadata")
-            JsonViewer(
-              :value="metadata"
-              copyable
-              theme="jsonViewer"
-              ) 
+          JsonViewer(
+            :value="metadata"
+            copyable
+            theme="jsonViewer"
+          ) 
         q-tab-panel(name="abi")
             JsonViewer(
               :value="abi"
               :expand-depth=4
               copyable
               theme="jsonViewer"
-              ) 
+            ) 
 </template>
 
 <script>
 import JsonViewer from 'vue-json-viewer';
+import hljs from 'highlight.js/lib/core';
+import hljsDefineSolidity from 'highlightjs-solidity';
 
+hljsDefineSolidity(hljs);
+hljs.high
 export default {
   name: "ContractSource",
   components: {
@@ -78,7 +79,6 @@ export default {
     const response = await this.$telosApi.get(`contracts/source?contractAddress=${this.$route.params.address}`);
     [this.contract, this.abi, this.metadata] = response.data;
     debugger;
-    this.abi = JSON.parse(this.abi);
   },
   computed: {
   },
