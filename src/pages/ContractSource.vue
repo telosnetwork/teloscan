@@ -38,7 +38,7 @@
         keep-alive
       )
         q-tab-panel(name="contract")
-          pre( v-html='contract')
+          pre( v-for='(item, key, index) in sources'  v-html='item.content')
         q-tab-panel(name="metadata")
           JsonViewer(
             :value="metadata"
@@ -74,25 +74,22 @@ export default {
   },
   data() {
     return {
-        tab: "contract",
-        contract: '',
-        metadata: '',
-        abi:''
+        tab:"sources",
+        sources: {},
+        metadata: {},
+        abi:{}
     };
   },
   async mounted() {
     const response = await this.$telosApi.get(`contracts/source?contractAddress=${this.$route.params.address}`);
-    debugger;
-    this.contract = hljs.highlight(response.data.contract, { language: 'solidity'}).value; 
+    this.sources = response.data.sources;
+    for (let key in this.sources){
+      if (this.sources.hasOwnProperty(key)){
+        this.sources[key].content = hljs.highlight(this.sources[key].content, { language: 'solidity' }).value;
+      }
+    }
     this.abi = response.data.abi;
-    this.metadata = JSON.parse(response.data.metadata);
-    debugger;
-  },
-  computed: {
-  },
-  methods: {
+    this.metadata = response.data.metadata;
   }
 }
 </script>
-
-<style scoped lang="scss"></style>
