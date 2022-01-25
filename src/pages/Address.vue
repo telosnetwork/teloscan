@@ -30,8 +30,7 @@
             .verify-source(v-else)
               q-icon(v-if='isContract' name='warning' class='text-red' size='1.25rem')
               | This contract source has not been verified. CLick  
-              router-link( name="'verify', params: { address: address }")
-                | here 
+              router-link( :to="`/contract/verify/${this.address}`") here
               | to upload source files and verify contract.
 </template>
 

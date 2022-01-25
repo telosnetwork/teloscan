@@ -245,7 +245,7 @@ span
 
 .q-btn 
   width: 40%
-  margin:auto
+  margin: auto
 
 .q-uploader
   margin-top: 1rem
