@@ -2,20 +2,35 @@
 body.body--dark{
     .custom-theme {
         color: $white;
+        background-color: black;        
     }
 }
 body.body--light{
     .custom-theme {
         color: $purpleDarkMode;
+        background-color: #eee;
     }
 }
+
+body.body--dark{
+    .source-container {
+        background-color: black;        
+    }
+}
+
+body.body--light{
+    .source-container{
+        background-color: #eee;
+    }
+}
+
 .custom-theme { 
     white-space: nowrap;
     font-size: 14px;
     font-family: Consolas, Menlo, Courier, monospace;
 
     &.jv-container{ 
-        max-height: 35rem;
+        max-height: 15rem;
         overflow: auto;
     }
   

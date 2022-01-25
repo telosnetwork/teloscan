@@ -9,7 +9,9 @@ const routes = [
   {
     path: "/address/:address",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/Address.vue") }]
+    children: [
+      { path: "", component: () => import("pages/Address.vue") }
+    ]
   },
   {
     path: "/tx/:hash",
@@ -40,9 +42,6 @@ const routes = [
         path: "verify/:address?",
         name: "verify", 
         component: () => import("pages/ContractVerification.vue") 
-      },
-      { path: "source/:address",
-        component: () => import("pages/ContractSource.vue") 
       }
   ]
   },

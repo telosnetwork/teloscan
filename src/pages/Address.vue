@@ -3,9 +3,8 @@
     div()
       .row(class="tableWrapper").justify-between
         div(class="homeInfo")
-          .text-primary.text-h4( v-if='!isContract') Account   
-          .text-primary.text-h4( v-else ) Contract  
-          q-icon(:name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
+          .text-primary.text-h4 {{ isContract ? 'Contract' : 'Account' }}    
+          q-icon(v-if='isContract' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
           ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" :date="verificationDate" @dialog='confirmationDialog = false')
           .text-white {{ address }}
         .dataCardsContainer()
@@ -19,24 +18,34 @@
       q-tabs( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar ContentContainer text-white tableWrapper" )
         q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
         q-route-tab(name="tokens" :to="{ hash: 'tokens' }" exact replace label="Tokens")
+        q-route-tab(name="contract" :to="{ hash: 'contract' }" exact replace label="Contract")
       .q-mb-md.tableWrapper
         q-tab-panels( v-model="tab" animated keep-alive class="shadow-2 ContentContainer" )
           q-tab-panel( name="transactions" )
             transaction-table( :title="address" :filter="{address}" )
           q-tab-panel( name="tokens" )
             token-list( :address="address" )
+          q-tab-panel( name="contract" )
+            ContractSource(v-if='isVerified')
+            .verify-source(v-else)
+              q-icon(v-if='isContract' name='warning' class='text-red' size='1.25rem')
+              | This contract source has not been verified. CLick  
+              router-link( name="'verify', params: { address: address }")
+                | here 
+              | to upload source files and verify contract.
 </template>
 
 <script>
+import Web3 from "web3";
 import TransactionTable from "components/TransactionTable";
 import TokenList from "components/TokenList";
 import ConfirmationDialog from "components/ConfirmationDialog";
-import Web3 from "web3";
+import ContractSource from 'components/ContractSource.vue';
 
 const web3 = new Web3();
 export default {
   name: "Address",
-  components: { TokenList, TransactionTable, ConfirmationDialog },
+  components: { TokenList, TransactionTable, ConfirmationDialog, ContractSource },
   data() {
     return {
       address: this.$route.params.address,
@@ -97,4 +106,9 @@ export default {
 
 .text-primary
   display: inline-block
+
+.verify-source
+  height: 25rem
+  line-height: 25rem
+  margin-left: 2rem
 </style>
