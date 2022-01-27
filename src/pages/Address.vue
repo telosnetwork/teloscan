@@ -18,7 +18,7 @@
       q-tabs( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar ContentContainer text-white tableWrapper" )
         q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
         q-route-tab(name="tokens" :to="{ hash: 'tokens' }" exact replace label="Tokens")
-        q-route-tab(name="contract" :to="{ hash: 'contract' }" exact replace label="Contract")
+        q-route-tab(v-if="isContract" name="contract" :to="{ hash: 'contract' }" exact replace label="Contract")
       .q-mb-md.tableWrapper
         q-tab-panels( v-model="tab" animated keep-alive class="shadow-2 ContentContainer" )
           q-tab-panel( name="transactions" )
