@@ -186,37 +186,24 @@ export default {
         }
         await this.$refs.uploader.upload(); //trigger uploader to call factory with files arg
       }else{
-        await this.uploadFiles();
+        await this.uploadForm();
       }
     },
 
-    async uploadFiles(files){
+    async uploadForm(){
       debugger;
-      const formData = this.setFormData();
-      if (Array.isArray(files) && files.length > 0){
-        for (const file of files){
-          formData.append('files', file);
-        }
-      }else{
-        formData.append('files', this.contractInput);
-      }
+      const formData = this.getFormData();
+      formData.append('files', this.contractInput);
 
       try{
-        const result = await this.$telosApi.post('contracts/verify',
-          formData,
-          {
-            onUploadProgress: (progressEvent) => {
-              // const calculatedProgress = Math.round((progressEvent.loaded / progressEvent.total) * 100) / 100;
-              debugger;
-              this.$refs.uploader.uploadedSize = progressEvent.loaded;
-            }
-          });
+        const result = await this.$telosApi.post('contracts/verify', formData);
         this.onNotify(result.data);
-        debugger; 
-        return files;
-        // if (result.data.type === "positive"){
-        //   this.$$router.push({ name: 'address', params: { address: this.contractAddress}})
-        // }
+        debugger;
+        if (result.data.type === "positive"){
+          setTimeout(() => {
+            this.$$router.push({ name: 'address', params: { address: this.contractAddress}})
+          },5000);
+        }
       }catch(e){
         this.onNotify({ message: e, type: 'negative'});
       }
@@ -235,16 +222,12 @@ export default {
       ]
     },
 
-    setFormData(){
+    getFormData(){
+      let formFields = getFormFields();
       const formData = new FormData();
-      formData.append('sourcePath', this.sourcePath);
-      formData.append('contractAddress', this.contractAddress);
-      formData.append('compilerVersion', this.compilerVersion);
-      formData.append('optimizer', this.optimizer);
-      formData.append('runs', this.runs);
-      formData.append('constructorArgs', this.constructorArgs);
-      formData.append('targetEvm', this.targetEvm);
-      formData.append('fileType', this.fileType);
+      for (let i in formFields){
+        formData.append(formFields[i].name, formFields[i].value)
+      }
       return formData
     },
 
@@ -256,6 +239,7 @@ export default {
       this.rawInput = false;
       this.optimizer = false;
       this.runs = 200;
+      this.fileType = true;
       if (this.$refs.uploader){
         this.$refs.uploader.files = []
       }
