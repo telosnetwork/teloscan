@@ -25,13 +25,13 @@
             transaction-table( :title="address" :filter="{address}" )
           q-tab-panel( name="tokens" )
             token-list( :address="address" )
-          q-tab-panel( name="contract" )
+          q-tab-panel( v-if="isContract" name="contract" )
             ContractSource(v-if='isVerified')
             .verify-source(v-else)
-              q-icon(v-if='isContract' name='warning' class='text-red' size='1.25rem')
+              q-icon( name='warning' class='text-red' size='1.25rem')
               | This contract source has not been verified. CLick  
               router-link( :to="`/contract/verify/${this.address}`") here
-              | to upload source files and verify contract.
+              | to upload source files and verify this contract.
 </template>
 
 <script>
