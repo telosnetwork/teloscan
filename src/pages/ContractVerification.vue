@@ -72,10 +72,10 @@
               q-input(
                 :disable='!requiresFileName'
                 v-model="sourcePath" 
-                label="path to source file(s), leave blank if there is no prepended file path for sources"
+                label="path to source file(s), leave blank if none"
                 placeholder="path to source file(s) e.g., 'contracts/'"      
                 debounce="500"
-                :rules="[val => (val.length && val.charAt(val.length - 1) === '/') || 'path must end with a forward slash /']"
+                :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) === '/') ) || 'path must end with a forward slash /']"
               )  
                 q-radio( 
                   v-model="inputMethod"
@@ -205,7 +205,7 @@ export default {
           this.onNotify({type: 'info', message: 'you must select a file for upload or toggle input to paste contract contents'});
           return;
         }
-        await this.$refs.uploader.upload(); //trigger uploader to call override verifyContract with files arg
+        await this.$refs.uploader.upload(); //trigger uploader to call factory with files arg
       }else{
         await this.verifyContract();
       }
