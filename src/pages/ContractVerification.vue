@@ -39,7 +39,7 @@
       )
         q-tab-panel.inputs-container(name="options")
           q-form(
-            @submit='verifyContract'
+            @submit='submitFormHandler'
             @reset='resetForm'
           )
             .inputs-container-row
@@ -71,9 +71,9 @@
               q-input(
                 :disable='!requiresFileName'
                 v-model="sourceName" 
-                label="Source path & file name *"
-                placeholder="name used for deployment (e.g.,contract.sol, contracts/contract.sol, etc.)"               
-                :rules="[val => val.length || 'enter source name']"
+                label="path to source file(s), leave blank if there is no prepended file path for sources"
+                placeholder="path to source file(s) e.g., 'contracts/'"               
+                :rules="[val => (val.length && val.charAt(val.length - 1) === '/') || 'path must end with a forward slash /']"
               )  
                 q-radio( 
                   v-model="inputMethod"
@@ -113,11 +113,15 @@
                 )
                 q-uploader(
                   ref="uploader"
+                  multiple
+                  batch
+                  :factory='verifyContract'
                   :label='uploaderLabel'
                   no-thumbnails=true
-                  multiple
                   style="max-width: 300px"
                   accept='.sol, .json'
+                  @uploading='uploading'
+                  @uploaded='uploaded'
                   hide-upload-btn=true
                   @rejected="onNotify"
                 )
@@ -175,6 +179,12 @@ export default {
     setEvm(option){
       this.targetEvm = option;
     },
+    uploading(e){
+      debugger;
+    },
+    uploaded(e){
+      debugger;
+    },
     onNotify(notification){
       if (typeof notification !== 'object' || !notification.hasOwnProperty('message')){
         notification = { message: JSON.stringify(notification), type: 'negative'};
@@ -186,33 +196,38 @@ export default {
           timeout: this.TEN_SECONDS
       });
     },
-    async verifyContract(test){
-      const formData = new FormData();
+
+    async submitFormHandler() {
       if (this.$refs.uploader){
         if (this.$refs.uploader.files.length === 0){
           this.onNotify({type: 'info', message: 'you must select a file for upload or toggle input to paste contract contents'});
           return;
         }
-        for (const file of this.$refs.uploader.files){
+        await this.$refs.uploader.upload(); //trigger uploader to call override verifyContract with files arg
+      }else{
+        await this.verifyContract();
+      }
+    },
+
+    async verifyContract(files){
+      debugger;
+      const formData = this.setFormData();
+      if (Array.isArray(files) && files.length > 0){
+        for (const file of files){
           formData.append('files', file);
         }
       }else{
         formData.append('files', this.contractInput);
       }
-      formData.append('sourceName', this.sourceName);
-      formData.append('contractAddress', this.contractAddress);
-      formData.append('compilerVersion', this.compilerVersion);
-      formData.append('optimizer', this.optimizer);
-      formData.append('runs', this.runs);
-      formData.append('constructorArgs', this.constructorArgs);
-      formData.append('targetEvm', this.targetEvm);
+
       try{
         const result = await this.$telosApi.post('contracts/verify',
           formData,
           {
             onUploadProgress: (progressEvent) => {
               debugger;
-              // Math.round((progressEvent.loaded / progressEvent.total) * 100) / 100)
+              const calculatedProgress = Math.round((progressEvent.loaded / progressEvent.total) * 100) / 100;
+              updateProgress(calculatedProgress);
               // this.$refs.uploader.uploaded = progressEvent.loaded;
             }
           });
@@ -221,6 +236,19 @@ export default {
         this.onNotify({ message: e, type: 'negative'});
       }
     }, 
+
+    setFormData(){
+      const formData = new FormData();
+      formData.append('sourceName', this.sourceName);
+      formData.append('contractAddress', this.contractAddress);
+      formData.append('compilerVersion', this.compilerVersion);
+      formData.append('optimizer', this.optimizer);
+      formData.append('runs', this.runs);
+      formData.append('constructorArgs', this.constructorArgs);
+      formData.append('targetEvm', this.targetEvm);
+      return formData
+    },
+
     resetForm(){
       this.contractAddress = '';
       this.compilerVersion = '';
