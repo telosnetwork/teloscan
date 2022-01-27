@@ -71,7 +71,7 @@
   
               q-input(
                 :disable='!requiresFileName'
-                v-model="sourceName" 
+                v-model="sourcePath" 
                 label="path to source file(s), leave blank if there is no prepended file path for sources"
                 placeholder="path to source file(s) e.g., 'contracts/'"      
                 debounce="500"
@@ -154,7 +154,7 @@ export default {
       targetEvm: 'telos mainnet',
       TEN_SECONDS: 10000,
       inputMethod: true,
-      sourceName: '',
+      sourcePath: '',
       contractInput: '',
       fileType: true
     };
@@ -241,7 +241,7 @@ export default {
 
     setFormData(){
       const formData = new FormData();
-      formData.append('sourceName', this.sourceName);
+      formData.append('sourcePath', this.sourcePath);
       formData.append('contractAddress', this.contractAddress);
       formData.append('compilerVersion', this.compilerVersion);
       formData.append('optimizer', this.optimizer);
@@ -254,7 +254,7 @@ export default {
     resetForm(){
       this.contractAddress = '';
       this.compilerVersion = '';
-      this.sourceName = '';
+      this.sourcePath = '';
       this.contractInput = '';  
       this.rawInput = false;
       this.optimizer = false;
