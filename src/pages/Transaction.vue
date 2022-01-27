@@ -4,9 +4,9 @@
       Transaction Details
     </div>
     <div class="col-12 q-py-lg">
-      <div class=" ContentContainer" v-if="trx">
+      <div class=" content-container" v-if="trx">
         <q-tabs
-          class="ContentContainer text-white"
+          class="content-container text-white"
           v-model="tab"
           dense
           active-color="secondary"
@@ -38,7 +38,7 @@
             label="Logs"
           />
           <q-route-tab
-            class="ContentContainer"
+            class="content-container"
             name="internal"
             :to="{ hash: 'internal' }"
             exact
@@ -47,7 +47,7 @@
           />
         </q-tabs>
         <q-tab-panels
-          class="column ContentContainer shadow-2"
+          class="column content-container shadow-2"
           v-model="tab"
           animated
           keep-alive

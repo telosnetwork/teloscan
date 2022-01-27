@@ -2,7 +2,7 @@
 .pageContainer.row.q-pt-xl.tableWrapper
   .text-h4.text-primary.q-mb-lg Verify Contract
   .col-12.q-py-lg
-    .ContentContainer
+    .content-container
           q-form(
             @submit='submitFormHandler'
             @reset='resetForm'
@@ -295,7 +295,7 @@ span
   margin-top: 1.5rem
 
 .content-container
-  margin-top 8rem
+  margin-top: 8rem
 
 .button-container
   display: flex

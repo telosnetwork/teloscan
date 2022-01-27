@@ -15,12 +15,12 @@
           .dataCardItem(v-if="!!balance" class="balance ")
             .dataCardTile Balance 
             .dataCardData {{balance}}
-      q-tabs( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar ContentContainer text-white tableWrapper" )
+      q-tabs( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar content-container text-white tableWrapper" )
         q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
         q-route-tab(name="tokens" :to="{ hash: 'tokens' }" exact replace label="Tokens")
         q-route-tab(v-if="isContract" name="contract" :to="{ hash: 'contract' }" exact replace label="Contract")
       .q-mb-md.tableWrapper
-        q-tab-panels( v-model="tab" animated keep-alive class="shadow-2 ContentContainer" )
+        q-tab-panels( v-model="tab" animated keep-alive class="shadow-2 content-container" )
           q-tab-panel( name="transactions" )
             transaction-table( :title="address" :filter="{address}" )
           q-tab-panel( name="tokens" )
