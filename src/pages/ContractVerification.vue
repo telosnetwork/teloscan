@@ -23,6 +23,27 @@
                   label="Compiler Version *" 
                   :rules="[val => val.length || 'select compiler version']"
                 )
+                q-input(
+                  :disable='!requiresFileName'
+                  v-model="sourcePath" 
+                  label="Contract File(s) Directory Path (leave blank if none)"
+                  placeholder="e.g., 'contracts/'"      
+                  debounce="500"
+                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) === '/') ) || 'path must end with a forward slash /']"
+                )
+                .radio-container
+                  q-radio( 
+                    v-model="inputMethod"
+                    label="upload file"
+                    :val='true'
+                    color='primary'
+                  )
+                  q-radio( 
+                    v-model="inputMethod"
+                    label="text input"
+                    :val='false'
+                    color='primary'
+                  )   
               .inputs-container-col
                 q-input.q-field--with-bottom(
                   v-model="runs" 
@@ -32,70 +53,55 @@
                 )
                   q-toggle( v-model="optimizer" label="Optimization" )
                 q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM" disable)
+                q-input(
+                  style="padding-bottom:1rem"
+                  v-model="constructorArgs" 
+                  label="Constructor Arguments"
+                  placeholder="comma seperated values e.g., 'test', 123, '0x02...'"      
+                )
+                .radio-container
+                  q-radio( 
+                    v-if="inputMethod"
+                    v-model="fileType"
+                    label=".sol"
+                    :val="true"
+                    color='primary'
+                  )
+                  q-radio( 
+                    v-if="inputMethod"
+                    v-model="fileType"
+                    label=".json"
+                    :val="false"
+                    color='primary'
+                  ) 
 
-  
-              q-input(
-                :disable='!requiresFileName'
-                v-model="sourcePath" 
-                label="path to source file(s), leave blank if none"
-                placeholder="path to source file(s) e.g., 'contracts/'"      
-                debounce="500"
-                :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) === '/') ) || 'path must end with a forward slash /']"
-              )  
-                q-radio( 
-                  v-model="inputMethod"
-                  label="upload file"
-                  :val='true'
-                  color='primary'
-                )
-                q-radio( 
-                  v-model="inputMethod"
-                  label="text input"
-                  :val='false'
-                  color='primary'
-                )
-              q-input(
+              q-input.border-radius(
                 v-if='!inputMethod'
                 type="textarea" 
                 name='contractInput'
-                rows="8"  
+                rows="5"  
                 square 
                 outlined 
                 v-model='contractInput' 
                 placeholder='copy & paste contract code here...'
                 :rules="[val => val.length || 'enter or paste contract text']"
               )     
-              div(v-else)
-                q-radio( 
-                  v-model="fileType"
-                  label=".sol"
-                  :val="true"
-                  color='primary'
-                )
-                q-radio( 
-                  v-model="fileType"
-                  label=".json"
-                  :val="false"
-                  color='primary'
-                )
-                q-uploader(
-                  ref="uploader"
-                  :url='getUrl'
-                  multiple
-                  batch
-                  :label='uploaderLabel'
-                  :form-fields='getFormFields'
-                  field-name='files'
-                  no-thumbnails=true
-                  style="max-width: 300px"
-                  accept='.sol, .json'
-                  hide-upload-btn=true
-                  @uploading='uploading'
-                  @uploaded='uploaded'
-                  @rejected="onNotify"
-                  @start='start'
-                  @finish='finish'
-                )
+              q-uploader(
+                v-else
+                ref="uploader"
+                :url='getUrl'
+                multiple
+                batch
+                :label='uploaderLabel'
+                :form-fields='getFormFields'
+                field-name='files'
+                no-thumbnails=true
+                style="max-width: 300px"
+                accept='.sol, .json'
+                hide-upload-btn=true
+                @uploaded='uploaded'
+                @rejected="onNotify"
+              )
 
               .button-container
                 q-btn(label="Verify Contract" type="submit" color='primary')
@@ -121,7 +127,7 @@ export default {
       constructorArgs: [],
       evmOptions: [ 'telos mainnet', 'telos testnet' ],
       targetEvm: 'telos mainnet',
-      TEN_SECONDS: 10000,
+      SIX_SECONDS: 6000,
       inputMethod: true,
       sourcePath: '',
       contractInput: '',
@@ -150,17 +156,9 @@ export default {
     setEvm(option){
       this.targetEvm = option;
     },
-    uploading(e){
-      debugger;
-    },
-    uploaded(e){
-      debugger;
-    },
-    start(e){
-      debugger;
-    },
-    finish(e){
-      debugger;
+    uploaded(uploadedObj){
+      this.onNotify(JSON.parse(uploadedObj.xhr.response));
+      this.navToAddress();
     },
     onNotify(notification){
       if (typeof notification !== 'object' || !notification.hasOwnProperty('message')){
@@ -170,39 +168,37 @@ export default {
           type: notification.type,
           position: 'top',
           message: notification.message,
-          timeout: this.TEN_SECONDS
+          timeout: this.SIX_SECONDS
       });
+    },
+    navToAddress(){
+      setTimeout(() => {
+        this.$router.push({ name: 'address', params: { address: this.contractAddress}})
+      },5000);
     },
     getUrl() {
       return `${process.env.TELOS_API_ENDPOINT}/contracts/verify`;
     },
     async submitFormHandler() {
-      debugger;
-      console.log(this.$refs.up)
       if (this.$refs.uploader){
         if (this.$refs.uploader.files.length === 0){
           this.onNotify({type: 'info', message: 'you must select a file for upload or toggle input to paste contract contents'});
           return;
         }
-        await this.$refs.uploader.upload(); //trigger uploader to call factory with files arg
+        await this.$refs.uploader.upload(); 
       }else{
         await this.uploadForm();
       }
     },
 
     async uploadForm(){
-      debugger;
       const formData = this.getFormData();
       formData.append('files', this.contractInput);
-
       try{
         const result = await this.$telosApi.post('contracts/verify', formData);
         this.onNotify(result.data);
-        debugger;
         if (result.data.type === "positive"){
-          setTimeout(() => {
-            this.$$router.push({ name: 'address', params: { address: this.contractAddress}})
-          },5000);
+          this.navToAddress();
         }
       }catch(e){
         this.onNotify({ message: e, type: 'negative'});
@@ -267,9 +263,13 @@ span
 
 .q-select
   height: 3rem
+  margin-bottom: 2rem
 
-.q-textarea
-  margin-top:1.5rem
+.q-textarea, .q-uploader
+  -webkit-border-radius: 12px
+  -moz-border-radius: 12px
+  border-radius: 12px
+  margin-top: 10rem
 
 .q-toggle
   margin-left: 1rem
@@ -302,4 +302,6 @@ span
   margin: auto
   justify-content: space-around
 
+.radio-container
+  margin-top: 1rem
 </style>
