@@ -115,7 +115,7 @@
                   ref="uploader"
                   :label='uploaderLabel'
                   no-thumbnails=true
-                  :max-files="1"
+                  multiple
                   style="max-width: 300px"
                   accept='.sol, .json'
                   hide-upload-btn=true
@@ -128,8 +128,6 @@
 </template>
 
 <script>
-//@TODO add `batch` and `multiple` attributes to q-uploader component when multiple files enabled
-import axios from 'axios';
 import { getCompilerOptions } from 'src/lib/contractVerification';
 import { isValidAddressFormat } from "src/lib/utils";
 
