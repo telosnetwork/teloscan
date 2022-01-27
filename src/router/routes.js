@@ -8,6 +8,7 @@ const routes = [
   },
   {
     path: "/address/:address",
+    name: 'address',
     component: () => import("layouts/MainLayout.vue"),
     children: [
       { path: "", component: () => import("pages/Address.vue") }

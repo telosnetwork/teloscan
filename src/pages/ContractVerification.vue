@@ -3,41 +3,6 @@
   .text-h4.text-primary.q-mb-lg Verify Contract
   .col-12.q-py-lg
     .ContentContainer
-      q-tabs.ContentContainer.text-white(
-        v-model="tab"
-        dense
-        active-color="secondary"
-        align="justify"
-        narrow-indicator
-      )
-        q-route-tab.topRounded(
-          name="options"
-          :to="{ hash: '' }"
-          exact
-          replace
-          label="Options"
-        )
-        q-route-tab.topRounded(
-          name="results"
-          :to="{ hash: '' }"
-          exact
-          replace
-          label="Results"
-        )
-        q-route-tab.topRounded(
-          name="details"
-          :to="{ hash: '' }"
-          exact
-          replace
-          label="details"
-        )
-
-      q-tab-panels.column.ContentContainer.shadow-2(
-        v-model="tab"
-        animated
-        keep-alive
-      )
-        q-tab-panel.inputs-container(name="options")
           q-form(
             @submit='submitFormHandler'
             @reset='resetForm'
@@ -104,28 +69,32 @@
                 q-radio( 
                   v-model="fileType"
                   label=".sol"
-                  :val='true'
+                  :val="true"
                   color='primary'
                 )
                 q-radio( 
                   v-model="fileType"
                   label=".json"
-                  :val='false'
+                  :val="false"
                   color='primary'
                 )
                 q-uploader(
                   ref="uploader"
+                  :url='getUrl'
                   multiple
                   batch
-                  :factory='verifyContract'
                   :label='uploaderLabel'
+                  :form-fields='getFormFields'
+                  field-name='files'
                   no-thumbnails=true
                   style="max-width: 300px"
                   accept='.sol, .json'
+                  hide-upload-btn=true
                   @uploading='uploading'
                   @uploaded='uploaded'
-                  hide-upload-btn=true
                   @rejected="onNotify"
+                  @start='start'
+                  @finish='finish'
                 )
 
               .button-container
@@ -187,6 +156,12 @@ export default {
     uploaded(e){
       debugger;
     },
+    start(e){
+      debugger;
+    },
+    finish(e){
+      debugger;
+    },
     onNotify(notification){
       if (typeof notification !== 'object' || !notification.hasOwnProperty('message')){
         notification = { message: JSON.stringify(notification), type: 'negative'};
@@ -198,8 +173,12 @@ export default {
           timeout: this.TEN_SECONDS
       });
     },
-
+    getUrl() {
+      return `${process.env.TELOS_API_ENDPOINT}/contracts/verify`;
+    },
     async submitFormHandler() {
+      debugger;
+      console.log(this.$refs.up)
       if (this.$refs.uploader){
         if (this.$refs.uploader.files.length === 0){
           this.onNotify({type: 'info', message: 'you must select a file for upload or toggle input to paste contract contents'});
@@ -207,11 +186,11 @@ export default {
         }
         await this.$refs.uploader.upload(); //trigger uploader to call factory with files arg
       }else{
-        await this.verifyContract();
+        await this.uploadFiles();
       }
     },
 
-    async verifyContract(files){
+    async uploadFiles(files){
       debugger;
       const formData = this.setFormData();
       if (Array.isArray(files) && files.length > 0){
@@ -227,17 +206,34 @@ export default {
           formData,
           {
             onUploadProgress: (progressEvent) => {
+              // const calculatedProgress = Math.round((progressEvent.loaded / progressEvent.total) * 100) / 100;
               debugger;
-              const calculatedProgress = Math.round((progressEvent.loaded / progressEvent.total) * 100) / 100;
-              updateProgress(calculatedProgress);
-              // this.$refs.uploader.uploaded = progressEvent.loaded;
+              this.$refs.uploader.uploadedSize = progressEvent.loaded;
             }
           });
         this.onNotify(result.data);
+        debugger; 
+        return files;
+        // if (result.data.type === "positive"){
+        //   this.$$router.push({ name: 'address', params: { address: this.contractAddress}})
+        // }
       }catch(e){
         this.onNotify({ message: e, type: 'negative'});
       }
     }, 
+
+    getFormFields(){
+      return [
+        { name: 'sourcePath', value: this.sourcePath },
+        { name: 'contractAddress', value: this.contractAddress },
+        { name: 'compilerVersion', value: this.compilerVersion },
+        { name: 'optimizer', value: this.optimizer },
+        { name: 'runs', value: this.runs },
+        { name: 'constructorArgs', value: this.constructorArgs},
+        { name: 'targetEvm', value: this.targetEvm },
+        { name: 'fileType', value: this.fileType }
+      ]
+    },
 
     setFormData(){
       const formData = new FormData();
@@ -248,6 +244,7 @@ export default {
       formData.append('runs', this.runs);
       formData.append('constructorArgs', this.constructorArgs);
       formData.append('targetEvm', this.targetEvm);
+      formData.append('fileType', this.fileType);
       return formData
     },
 
@@ -296,6 +293,9 @@ span
 .q-tab-panel
   margin-bottom: 1.5rem
   margin-top: 1.5rem
+
+.content-container
+  margin-top 8rem
 
 .button-container
   display: flex
