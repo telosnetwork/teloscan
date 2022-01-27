@@ -49,6 +49,7 @@
                   name='contractAddress'
                   label="Contract Address *" 
                   placeholder="Please enter contract address '0x0123...'"
+                  debounce="500"
                   :rules="[val => isValidAddressFormat(val) || 'invalid address format' ]"
                 )
                 q-select( 
@@ -72,7 +73,8 @@
                 :disable='!requiresFileName'
                 v-model="sourceName" 
                 label="path to source file(s), leave blank if there is no prepended file path for sources"
-                placeholder="path to source file(s) e.g., 'contracts/'"               
+                placeholder="path to source file(s) e.g., 'contracts/'"      
+                debounce="500"
                 :rules="[val => (val.length && val.charAt(val.length - 1) === '/') || 'path must end with a forward slash /']"
               )  
                 q-radio( 
