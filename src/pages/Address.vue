@@ -68,10 +68,11 @@ export default {
   methods: {
     async loadAccount() {
       const account = await this.$evm.telos.getEthAccount(this.address);
+      debugger;
       if (account.code.length > 0){
         this.isContract = true;
         const response = await this.$telosApi.get(`contracts/status?contractAddress=${this.address}`);
-        if (response.data.status) {
+        if (response.data.status && response.data.status !== 404) {
           this.isVerified = true;
           this.verificationDate = response.data.message;
         }
