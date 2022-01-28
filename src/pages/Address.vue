@@ -4,8 +4,8 @@
       .row(class="tableWrapper").justify-between
         div(class="homeInfo")
           .text-primary.text-h4 {{ isContract ? 'Contract' : 'Account' }}    
-          q-icon(v-if='isContract' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
-          ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" :date="verificationDate" @dialog='confirmationDialog = false')
+          q-icon.cursor(v-if='isContract' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
+          ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" :date="verificationDate" @dialog='disableConfirmation')
           .text-white {{ address }}
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount")
@@ -89,6 +89,9 @@ export default {
       if (!this.telosAccount) return "";
 
       return `${process.env.NETWORK_EXPLORER}/account/${this.telosAccount}`;
+    },
+    disableConfirmation(){
+      this.confirmationDialog = false;
     }
   },
   watch: {
@@ -105,6 +108,9 @@ export default {
 
 .q-icon
   padding-bottom: .75rem
+
+.cursor
+  cursor: pointer
 
 .text-primary
   display: inline-block

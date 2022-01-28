@@ -12,5 +12,5 @@ export function isValidAddressFormat(ethAddressString) {
 }
 
 export function formatIsoDateTime(dateTimezone){
- return moment(dateTimezone).utc().format('DD/MM/YYYY HH:SS');
+ return moment(dateTimezone).utc().format('DD/MM/YYYY');
 }

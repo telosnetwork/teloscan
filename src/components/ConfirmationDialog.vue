@@ -6,11 +6,14 @@
           span.q-ml-sm {{ dialogMessage }} 
         q-card-actions(align="right")
           q-btn(flat label="Dismiss" color="primary" v-close-popup)
-          q-btn(flat label="Verify Contract" color="primary" v-close-popup @click="navigate")
+          q-btn(v-if="!status" flat label="Verify Contract" color="primary" v-close-popup @click="navigate")
 </template>
 <script lang="ts">
-let VIEW_SOURCE_PROMPT = `You can view the source code & settings in the 'contract' tab`;
-const VERIFY_PROMPT = 'This contract has not been verified.  Upload contract to verify source now?'
+
+import { formatIsoDateTime } from "src/lib/utils";
+const VIEW_SOURCE_PROMPT = `You can view the source code & settings in the 'contract' tab`;
+const VERIFY_PROMPT = 'This contract has not been verified.  Upload contract to verify source now?';
+
 export default {
   name: "ConfirmationDialog",
   components: {},
@@ -56,7 +59,7 @@ export default {
       if (val) {
         this.icon = 'verified';
         this.color = 'text-green';
-        this.dialogMessage = `This contract was verified on ${this.date}. ${VIEW_SOURCE_PROMPT}`; 
+        this.dialogMessage = `This contract was verified on ${formatIsoDateTime(this.date)}. ${VIEW_SOURCE_PROMPT}`; 
       }else{
         this.icon = 'warning',
         this.color = 'text-red',
