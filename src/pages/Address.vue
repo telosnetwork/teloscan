@@ -6,33 +6,37 @@
           .text-primary.text-h4 {{ isContract ? "Contract" : "Account" }}
           .text-white {{ address }}
         .dataCardsContainer()
-          .dataCardItem(v-if="!!telosAccount") 
+          .dataCardItem(v-if="!!telosAccount")
             .dataCardTile Native account
-            .dataCardData  
+            .dataCardData
               a(:href="getAddressBloksURL()" target="_blank") {{ telosAccount }}
           .dataCardItem(v-if="!!balance" class="balance ")
-            .dataCardTile Balance 
+            .dataCardTile Balance
             .dataCardData {{balance}}
       q-tabs( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar ContentContainer text-white tableWrapper" )
         q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
+        q-route-tab(name="erc20transfers" :to="{ hash: 'erc20' }" exact replace label="ERC20 Transfers")
         q-route-tab(name="tokens" :to="{ hash: 'tokens' }" exact replace label="Tokens")
       .q-mb-md.tableWrapper
         q-tab-panels( v-model="tab" animated keep-alive class="shadow-2 ContentContainer" )
           q-tab-panel( name="transactions" )
             transaction-table( :title="address" :filter="{address}" )
+          q-tab-panel( name="erc20transfers" )
+            transfer-table( title="ERC-20 Transfers" token-type="erc20" :address="address" )
           q-tab-panel( name="tokens" )
             token-list( :address="address" )
 </template>
 
 <script>
 import TransactionTable from "components/TransactionTable";
+import TransferTable from "components/TransferTable";
 import TokenList from "components/TokenList";
 import Web3 from "web3";
 
 const web3 = new Web3();
 export default {
   name: "Address",
-  components: { TokenList, TransactionTable },
+  components: { TokenList, TransactionTable, TransferTable },
   data() {
     return {
       address: this.$route.params.address,
