@@ -9,7 +9,11 @@ const routes = [
   {
     path: "/address/:address",
     component: () => import("layouts/MainLayout.vue"),
-    children: [{ path: "", component: () => import("pages/Address.vue") }]
+    children: [
+      { path: "",    
+      name: 'address',
+      component: () => import("pages/Address.vue") }
+    ]
   },
   {
     path: "/tx/:hash",
@@ -32,9 +36,17 @@ const routes = [
       }
     ]
   },
-
-  // Always leave this as last one,
-  // but you can also remove it
+  {
+    path: "/contract",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      { 
+        path: "verify/:address?",
+        name: "verify", 
+        component: () => import("pages/ContractVerification.vue") 
+      }
+  ]
+  },
   {
     path: "*",
     component: () => import("pages/Error404.vue")

@@ -20,7 +20,7 @@ module.exports = function(/* ctx */) {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://quasar.dev/quasar-cli/boot-files
-    boot: ["ual", "hyperion", "api", "evm"],
+    boot: ["ual", "hyperion", "api", "telosApi", "evm"],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
     css: ["fonts/silka/silka.css", "app.scss"],
@@ -53,7 +53,8 @@ module.exports = function(/* ctx */) {
         NETWORK_EVM_RPC: process.env.NETWORK_EVM_RPC,
         NETWORK_EVM_CONTRACT: process.env.NETWORK_EVM_CONTRACT,
         NETWORK_EVM_CHAIN_ID: process.env.NETWORK_EVM_CHAIN_ID,
-        NETWORK_EVM_ENDPOINT: process.env.NETWORK_EVM_ENDPOINT
+        NETWORK_EVM_ENDPOINT: process.env.NETWORK_EVM_ENDPOINT,
+        TELOS_API_ENDPOINT: process.env.TELOS_API_ENDPOINT
       },
 
       // transpile: false,
