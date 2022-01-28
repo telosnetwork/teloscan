@@ -299,7 +299,7 @@ span
   margin: auto
 
 .inputs-container-row
-  display:flex
+  display: flex
   margin: auto
   justify-content: space-around
 
