@@ -24,7 +24,7 @@
                   :rules="[val => val.length || 'select compiler version']"
                 )
                 q-input(
-                  :disable='!requiresFileName'
+                  :disable='!pathInput'
                   v-model="sourcePath" 
                   label="Contract File(s) Directory Path (leave blank if none)"
                   placeholder="e.g., 'contracts/'"      
@@ -127,11 +127,11 @@ export default {
       constructorArgs: [],
       evmOptions: [ 'telos mainnet', 'telos testnet' ],
       targetEvm: 'telos mainnet',
-      SIX_SECONDS: 6000,
       inputMethod: true,
       sourcePath: '',
       contractInput: '',
-      fileType: true
+      fileType: true,
+      TIME_DELAY: 6000
     };
   },
   async mounted() {
@@ -139,7 +139,7 @@ export default {
       if (this.$route.params.address) this.contractAddress = this.$route.params.address; 
   },
   computed: {
-    requiresFileName() {
+    pathInput() {
       return !this.inputMethod || (this.inputMethod && this.fileType);
     },
     uploaderLabel() {
@@ -158,6 +158,7 @@ export default {
     },
     uploaded(uploadedObj){
       this.onNotify(JSON.parse(uploadedObj.xhr.response));
+      this.resetForm();
       this.navToAddress();
     },
     onNotify(notification){
@@ -168,13 +169,13 @@ export default {
           type: notification.type,
           position: 'top',
           message: notification.message,
-          timeout: this.SIX_SECONDS
+          timeout: this.TIME_DELAY
       });
     },
     navToAddress(){
       setTimeout(() => {
         this.$router.push({ name: 'address', params: { address: this.contractAddress}})
-      },5000);
+      },this.TIME_DELAY);
     },
     getUrl() {
       return `${process.env.TELOS_API_ENDPOINT}/contracts/verify`;
