@@ -9,8 +9,8 @@
           q-btn(flat label="Verify Contract" color="primary" v-close-popup @click="navigate")
 </template>
 <script lang="ts">
-
-
+let VIEW_SOURCE_PROMPT = `You can view the source code & settings in the 'contract' tab`;
+const VERIFY_PROMPT = 'This contract has not been verified.  Upload contract to verify source now?'
 export default {
   name: "ConfirmationDialog",
   components: {},
@@ -19,8 +19,7 @@ export default {
       showDialog: false,
       icon: 'warning',
       color: 'text-red',
-      dialogMessage: `This contract has not been verified. 
-          Upload contract to verify source now?`
+      dialogMessage: VERIFY_PROMPT
     }
   },
   props: {
@@ -51,20 +50,17 @@ export default {
   },
   watch: {
     flag(val){
-      debugger;
       this.showDialog = val;
     },
     status(val){
       if (val) {
         this.icon = 'verified';
         this.color = 'text-green';
-        this.dialogMessage = `This contract was verified on ${this.date}. 
-          Would you like to view contract source code?`;
+        this.dialogMessage = `This contract was verified on ${this.date}. ${VIEW_SOURCE_PROMPT}`; 
       }else{
         this.icon = 'warning',
         this.color = 'text-red',
-        this.dialogMessage = `This contract has not been verified. 
-          Upload contract to verify source now?`
+        this.dialogMessage = VERIFY_PROMPT;
       }
     },
     showDialog(val){

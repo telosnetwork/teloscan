@@ -72,7 +72,6 @@ export default {
         this.isContract = true;
         const response = await this.$telosApi.get(`contracts/status?contractAddress=${this.address}`);
         if (response.data.status) {
-          debugger;
           this.isVerified = true;
           this.verificationDate = response.data.message;
         }
