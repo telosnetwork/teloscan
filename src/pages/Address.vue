@@ -68,7 +68,6 @@ export default {
   methods: {
     async loadAccount() {
       const account = await this.$evm.telos.getEthAccount(this.address);
-      debugger;
       if (account.code.length > 0){
         this.isContract = true;
         const response = await this.$telosApi.get(`contracts/status?contractAddress=${this.address}`);
