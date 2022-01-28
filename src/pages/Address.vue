@@ -8,21 +8,24 @@
           ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" :date="verificationDate" @dialog='confirmationDialog = false')
           .text-white {{ address }}
         .dataCardsContainer()
-          .dataCardItem(v-if="!!telosAccount") 
+          .dataCardItem(v-if="!!telosAccount")
             .dataCardTile Native account
-            .dataCardData  
+            .dataCardData
               a(:href="getAddressBloksURL()" target="_blank") {{ telosAccount }}
           .dataCardItem(v-if="!!balance" class="balance ")
-            .dataCardTile Balance 
+            .dataCardTile Balance
             .dataCardData {{balance}}
       q-tabs( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar content-container text-white tableWrapper" )
         q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
+        q-route-tab(name="erc20transfers" :to="{ hash: 'erc20' }" exact replace label="ERC20 Transfers")
         q-route-tab(name="tokens" :to="{ hash: 'tokens' }" exact replace label="Tokens")
         q-route-tab(v-if="isContract" name="contract" :to="{ hash: 'contract' }" exact replace label="Contract")
       .q-mb-md.tableWrapper
         q-tab-panels( v-model="tab" animated keep-alive class="shadow-2 content-container" )
           q-tab-panel( name="transactions" )
             transaction-table( :title="address" :filter="{address}" )
+          q-tab-panel( name="erc20transfers" )
+            transfer-table( title="ERC-20 Transfers" token-type="erc20" :address="address" )
           q-tab-panel( name="tokens" )
             token-list( :address="address" )
           q-tab-panel( v-if="isContract" name="contract" )
@@ -37,14 +40,15 @@
 <script>
 import Web3 from "web3";
 import TransactionTable from "components/TransactionTable";
+import TransferTable from "components/TransferTable";
 import TokenList from "components/TokenList";
 import ConfirmationDialog from "components/ConfirmationDialog";
-import ContractSource from 'components/ContractSource.vue';
+import ContractSource from 'components/ContractSource';
 
 const web3 = new Web3();
 export default {
   name: "Address",
-  components: { TokenList, TransactionTable, ConfirmationDialog, ContractSource },
+  components: { TokenList, TransactionTable, TransferTable, ConfirmationDialog, ContractSource },
   data() {
     return {
       address: this.$route.params.address,

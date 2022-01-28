@@ -9,6 +9,7 @@
 // TODO: add copy icon and use this...
 import { copyToClipboard } from 'quasar'
 import { mapActions } from "vuex";
+import { ethers } from "ethers";
 
 export default {
   name: "AddressField",
@@ -16,6 +17,9 @@ export default {
     address: {
       type: String,
       required: true
+    },
+    name: {
+      type: String
     },
     truncate: {
       type: Number,
@@ -46,11 +50,17 @@ export default {
       this.$router.push(`/address/${this.address}`);
     },
     getDisplay() {
+      if (this.name) {
+        return this.name;
+      }
+
       if (this.contract) {
         return `${this.contract.getName()}`;
       }
 
-      return this.truncate > 0 ? `${this.address.slice(0, this.truncate)}...` : this.address;
+      // This formats the address for us and handles zero padding we get from log events
+      const address = ethers.utils.getAddress(this.address);
+      return this.truncate > 0 ? `${address.slice(0, this.truncate)}...` : address;
     },
     async loadContract() {
       this.contract = null;
