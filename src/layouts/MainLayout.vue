@@ -103,7 +103,7 @@
     </q-page-container>
 
     <footer-main/>
-    
+
   </q-layout>
 </template>
 
