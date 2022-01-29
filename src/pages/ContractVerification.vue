@@ -28,7 +28,7 @@
                   v-model="sourcePath" 
                   label="Contract File(s) Directory Path (leave blank if none)"
                   placeholder="e.g., 'contracts/'"      
-                  debounce="500"
+                  debounce="750"
                   :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) === '/') ) || 'path must end with a forward slash /']"
                 )
                 .radio-container
@@ -57,7 +57,9 @@
                   style="padding-bottom:1rem"
                   v-model="constructorArgs" 
                   label="Constructor Arguments"
-                  placeholder="comma seperated values e.g., 'test', 123, '0x02...'"      
+                  placeholder="comma seperated values e.g., Bob,123,0x12345...'"  
+                  debounce="750"
+                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',') ) || 'no trailing commas']"
                 )
                 .radio-container
                   q-radio( 
@@ -124,7 +126,7 @@ export default {
       rawInput: false,
       optimizer: false,
       runs: 200,
-      constructorArgs: [],
+      constructorArgs: '',
       evmOptions: [ 'telos mainnet', 'telos testnet' ],
       targetEvm: 'telos mainnet',
       inputMethod: true,
