@@ -206,6 +206,15 @@ export default {
       }
     }, 
 
+    getFormData(){
+      let formFields = getFormFields();
+      const formData = new FormData();
+      for (let i in formFields){
+        formData.append(formFields[i].name, formFields[i].value)
+      }
+      return formData
+    },
+
     getFormFields(){
       return [
         { name: 'sourcePath', value: this.sourcePath },
@@ -217,15 +226,6 @@ export default {
         { name: 'targetEvm', value: this.targetEvm },
         { name: 'fileType', value: this.fileType }
       ]
-    },
-
-    getFormData(){
-      let formFields = getFormFields();
-      const formData = new FormData();
-      for (let i in formFields){
-        formData.append(formFields[i].name, formFields[i].value)
-      }
-      return formData
     },
 
     resetForm(){
