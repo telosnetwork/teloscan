@@ -209,7 +209,7 @@ export default {
     }, 
 
     getFormData(){
-      let formFields = getFormFields();
+      let formFields = this.getFormFields();
       const formData = new FormData();
       for (let i in formFields){
         formData.append(formFields[i].name, formFields[i].value)
