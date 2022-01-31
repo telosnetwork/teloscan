@@ -231,7 +231,6 @@ export default {
     },
 
     getFormFields(){
-      debugger;
       return [
         { name: 'sourcePath', value: this.sourcePath },
         { name: 'contractAddress', value: this.contractAddress },
