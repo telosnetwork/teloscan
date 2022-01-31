@@ -52,7 +52,7 @@
                   :class="!optimizer ? 'disabled-input' : ''"
                 )
                   q-toggle( v-model="optimizer" label="Optimization" )
-                q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM" disable)
+                q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM" )
                 q-input(
                   style="padding-bottom:1rem"
                   v-model="constructorArgs" 
@@ -127,8 +127,19 @@ export default {
       optimizer: false,
       runs: 200,
       constructorArgs: '',
-      evmOptions: [ 'telos mainnet', 'telos testnet' ],
-      targetEvm: 'telos mainnet',
+      evmOptions: [ 
+        'compiler default', 
+        'homestead', 
+        'tangerineWhistle', 
+        'spuriousDragon', 
+        'byzantium', 
+        'constantinople', 
+        'petersburg', 
+        'istanbul',
+        'berlin', 
+        'london'
+        ],
+      targetEvm: 'compiler default',
       inputMethod: true,
       sourcePath: '',
       contractInput: '',
@@ -228,7 +239,8 @@ export default {
         { name: 'runs', value: this.runs },
         { name: 'constructorArgs', value: this.constructorArgs},
         { name: 'targetEvm', value: this.targetEvm },
-        { name: 'fileType', value: this.fileType }
+        { name: 'fileType', value: this.fileType },
+        { name: 'targetEvm', value: this.targetEvm}
       ]
     },
 
