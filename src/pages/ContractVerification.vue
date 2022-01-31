@@ -28,7 +28,7 @@
                   v-model="sourcePath" 
                   label="Contract File(s) Directory Path (leave blank if none)"
                   placeholder="e.g., 'contracts/'"      
-                  debounce="500"
+                  debounce="750"
                   :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) === '/') ) || 'path must end with a forward slash /']"
                 )
                 .radio-container
@@ -52,12 +52,14 @@
                   :class="!optimizer ? 'disabled-input' : ''"
                 )
                   q-toggle( v-model="optimizer" label="Optimization" )
-                q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM" disable)
+                q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM" )
                 q-input(
                   style="padding-bottom:1rem"
                   v-model="constructorArgs" 
                   label="Constructor Arguments"
-                  placeholder="comma seperated values e.g., 'test', 123, '0x02...'"      
+                  placeholder="comma seperated values e.g., Bob,123,0x12345...'"  
+                  debounce="750"
+                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',') ) || 'no trailing commas']"
                 )
                 .radio-container
                   q-radio( 
@@ -124,9 +126,20 @@ export default {
       rawInput: false,
       optimizer: false,
       runs: 200,
-      constructorArgs: [],
-      evmOptions: [ 'telos mainnet', 'telos testnet' ],
-      targetEvm: 'telos mainnet',
+      constructorArgs: '',
+      evmOptions: [ 
+        'default', 
+        'homestead', 
+        'tangerineWhistle', 
+        'spuriousDragon', 
+        'byzantium', 
+        'constantinople', 
+        'petersburg', 
+        'istanbul',
+        'berlin', 
+        'london'
+        ],
+      targetEvm: 'default',
       inputMethod: true,
       sourcePath: '',
       contractInput: '',
@@ -158,8 +171,10 @@ export default {
     },
     uploaded(uploadedObj){
       this.onNotify(JSON.parse(uploadedObj.xhr.response));
-      this.resetForm();
-      this.navToAddress();
+      if (uploadedObj.xhr.response.type === "positive"){
+        this.resetForm();
+        this.navToAddress();
+      }
     },
     onNotify(notification){
       if (typeof notification !== 'object' || !notification.hasOwnProperty('message')){
@@ -206,6 +221,15 @@ export default {
       }
     }, 
 
+    getFormData(){
+      let formFields = this.getFormFields();
+      const formData = new FormData();
+      for (let i in formFields){
+        formData.append(formFields[i].name, formFields[i].value)
+      }
+      return formData
+    },
+
     getFormFields(){
       return [
         { name: 'sourcePath', value: this.sourcePath },
@@ -217,15 +241,6 @@ export default {
         { name: 'targetEvm', value: this.targetEvm },
         { name: 'fileType', value: this.fileType }
       ]
-    },
-
-    getFormData(){
-      let formFields = getFormFields();
-      const formData = new FormData();
-      for (let i in formFields){
-        formData.append(formFields[i].name, formFields[i].value)
-      }
-      return formData
     },
 
     resetForm(){
