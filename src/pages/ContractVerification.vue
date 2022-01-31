@@ -160,8 +160,10 @@ export default {
     },
     uploaded(uploadedObj){
       this.onNotify(JSON.parse(uploadedObj.xhr.response));
-      this.resetForm();
-      this.navToAddress();
+      if (uploadedObj.xhr.response.type === "positive"){
+        this.resetForm();
+        this.navToAddress();
+      }
     },
     onNotify(notification){
       if (typeof notification !== 'object' || !notification.hasOwnProperty('message')){
