@@ -128,7 +128,7 @@ export default {
       runs: 200,
       constructorArgs: '',
       evmOptions: [ 
-        'compiler default', 
+        'default', 
         'homestead', 
         'tangerineWhistle', 
         'spuriousDragon', 
@@ -139,7 +139,7 @@ export default {
         'berlin', 
         'london'
         ],
-      targetEvm: 'compiler default',
+      targetEvm: 'default',
       inputMethod: true,
       sourcePath: '',
       contractInput: '',
@@ -231,6 +231,7 @@ export default {
     },
 
     getFormFields(){
+      debugger;
       return [
         { name: 'sourcePath', value: this.sourcePath },
         { name: 'contractAddress', value: this.contractAddress },
@@ -239,8 +240,7 @@ export default {
         { name: 'runs', value: this.runs },
         { name: 'constructorArgs', value: this.constructorArgs},
         { name: 'targetEvm', value: this.targetEvm },
-        { name: 'fileType', value: this.fileType },
-        { name: 'targetEvm', value: this.targetEvm}
+        { name: 'fileType', value: this.fileType }
       ]
     },
 
