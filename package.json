@@ -6,6 +6,7 @@
   "author": "Jesse Schulman <jesse@caleos.io>",
   "private": true,
   "scripts": {
+    "dev": "quasar dev",
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0"
   },
