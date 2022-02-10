@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
-
+import { getSource, isVerified } from './aws.mjs';
 export default class Contract {
 
-  constructor({address, name, abi, manager, token}) {
+  constructor({address, name, abi, manager, token, verified = false}) {
     this.address = address
     this.name = name
     this.abi = abi
@@ -12,10 +12,32 @@ export default class Contract {
 
     if (token)
       this.token = token;
+    this.verified = verified;
+    this.sources = []
+  }
+
+  static async getVerificationStatus(address){
+    return await isVerified(address);
   }
 
   getName() {
     return this.name;
+  }
+
+  setVerified(status) {
+    this.verified = status;
+  }
+
+  isVerified() {
+    return this.verified;
+  }
+
+  async fetchSources(){
+    this.sources = await getSource(this.address);
+  }
+
+  getSources(){
+    return this.sources;
   }
 
   getContractInstance(provider) {

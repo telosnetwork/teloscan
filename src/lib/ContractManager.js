@@ -1,6 +1,7 @@
 import Contract from "src/lib/Contract";
 import { ethers } from "ethers";
 import Web3 from "web3";
+import { getMetadata } from './aws.mjs';
 
 const tokenList = `https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json`;
 
@@ -77,7 +78,22 @@ export default class ContractManager {
     const addressLower = address.toLowerCase();
     if (this.contracts[addressLower])
       return this.contracts[addressLower];
-
+    
+    const verified = await Contract.getVerificationStatus(address);
+    const verfiedBool = verfied !== 404;
+    if (verified.status !== 404){
+        const metadata = await getMetadata(address);
+        const token = getToken(address);
+        this.contracts[adddressLower] =
+        new Contract({
+          name: `${address.slice(0,16)}...`,
+          address,
+          abi: metadata.output.abi,
+          manager: this,
+          token,
+          verfied: verfiedBool
+        })
+    }
     // TODO: there's some in this list that are not ERC20... they have extra stuff like the Swapin method
     const contract = await this.getContractFromTokenList(address);
     if (contract) {
@@ -131,36 +147,35 @@ export default class ContractManager {
   }
 
   async loadTokenList() {
-    if (!this.tokenList) {
-      const results = await tokenListAxios.get(tokenList);
-      this.tokenList = results.data;
-    }
+    const results = await tokenListAxios.get(tokenList);
+    this.tokenList = results.data;
   }
 
   async getTokenList() {
-    await this.loadTokenList();
+    if (!this.tokenList){
+      await this.loadTokenList();
+    }
     return this.tokenList;
   }
 
-
-  async getContractFromTokenList(address) {
-    if (!this.tokenList)
-      await this.loadTokenList();
-
-    if (this.tokenList) {
-      for (let i = 0; i < this.tokenList.tokens.length; i++) {
-        let token = this.tokenList.tokens[i];
-        if (token.address.toLowerCase() === address.toLowerCase()) {
-          return new Contract({
-            name: `${token.name} (${token.symbol})`,
-            address,
-            abi: erc20Abi,
-            manager: this,
-            token
-          });
-        }
+  getToken(address){
+    let i = this.tokenList.tokens.length;
+    while (i--) {
+      if (this.tokenList.tokens[i].address.toLowerCase() === address.toLowerCase()){
+        return this.tokenList.tokens[i];
       }
     }
+    return null;
   }
 
+  async getContractFromTokenList(address) {
+    const token = this.getToken(address);
+    return new Contract({
+      name: `${token.name} (${token.symbol})`,
+      address,
+      abi: erc20Abi,
+      manager: this,
+      token
+    });
+  }
 }
