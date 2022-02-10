@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { isVerified, uploadObject, SOURCE_FILENAME, METADATA_FILENAME } from './aws.mjs';
+import { isVerified, uploadObject, SOURCE_FILENAME, METADATA_FILENAME } from './aws.js';
 const EVM_CHAIN_ID = 40;
 
 async function getVerifiedContracts(){
@@ -44,8 +44,8 @@ async function updateVerifiedContractsData(verifiedList){
   return newCount;
 }
 
-(async function() { 
-  const verifiedList = await getVerifiedContracts();
-  const updateCount = await updateVerifiedContractsData(verifiedList.data.full);
-  console.log(`Added ${updateCount} new verified contracts!`)
-})();
+// (async function() { 
+//   const verifiedList = await getVerifiedContracts();
+//   const updateCount = await updateVerifiedContractsData(verifiedList.data.full);
+//   console.log(`Added ${updateCount} new verified contracts!`)
+// })();

@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { getSource, isVerified } from './aws.mjs';
+import { getSource, isVerified } from './aws.js';
 export default class Contract {
 
   constructor({address, name, abi, manager, token, verified = false}) {

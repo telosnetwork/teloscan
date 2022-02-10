@@ -1,7 +1,7 @@
 import Contract from "src/lib/Contract";
 import { ethers } from "ethers";
 import Web3 from "web3";
-import { getMetadata } from './aws.mjs';
+import { getMetadata } from './aws.js';
 
 const tokenList = `https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json`;
 

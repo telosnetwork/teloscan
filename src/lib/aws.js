@@ -1,11 +1,13 @@
+
 import AWS from "aws-sdk";
+const clientS3 = new AWS.S3();
 const Bucket = 'verified-evm-contracts';
 export const SOURCE_FILENAME = 'source.json';
 export const METADATA_FILENAME = 'metadata.json';
-const clientS3 = new AWS.S3();
 
 export async function isVerified(contractAddress){
   let headInfo;
+  AWS.config.credentials = new AWS.Credentials(process.env.AWS_ACCESS_KEY,process.env.AWS_SECRET_KEY)
   const params = { Bucket , Key: `${contractAddress}/${METADATA_FILENAME}`};
   try{
       await clientS3.headObject(params).promise(); 
