@@ -39,6 +39,7 @@
 
 <script>
 import Web3 from "web3";
+import axios from 'axios';
 import TransactionTable from "components/TransactionTable";
 import TransferTable from "components/TransferTable";
 import TokenList from "components/TokenList";
@@ -71,7 +72,7 @@ export default {
       const account = await this.$evm.telos.getEthAccount(this.address);
       if (account.code.length > 0){
         this.isContract = true;
-        const response = await this.$telosApi.get(`contracts/status?contractAddress=${this.address}`);
+        const response = await (`https://sourcify.dev/check-by-addresses?addresses=${this.address}&chainIds=${process.env.EVM_CHAIN_ID}`)      //`contracts/status?contractAddress=${this.address}`);
         debugger;
         if (response.data.status && response.data.status !== 404) {
           debugger;
