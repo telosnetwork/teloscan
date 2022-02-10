@@ -76,22 +76,24 @@ export default class ContractManager {
   //    this is coming from the token transfer page where we're looking for a contract based on a token transfer event
   async getContract(address, suspectedToken) {
     const addressLower = address.toLowerCase();
-    if (this.contracts[addressLower])
-      return this.contracts[addressLower];
-    
     const verified = await Contract.getVerificationStatus(address);
-    const verfiedBool = verfied !== 404;
-    if (verified.status !== 404){
+
+    if (this.contracts[addressLower]){
+      if (verified) this.contracts[addressLower].setVerified(verified);
+      return this.contracts[addressLower];
+    }
+
+    if (verified){
         const metadata = await getMetadata(address);
         const token = getToken(address);
         this.contracts[adddressLower] =
         new Contract({
-          name: `${address.slice(0,16)}...`,
+          name: Object.values(metadata.settings.compilationTarget)[0],
           address,
           abi: metadata.output.abi,
           manager: this,
           token,
-          verfied: verfiedBool
+          verified
         })
     }
     // TODO: there's some in this list that are not ERC20... they have extra stuff like the Swapin method
@@ -170,12 +172,14 @@ export default class ContractManager {
 
   async getContractFromTokenList(address) {
     const token = this.getToken(address);
-    return new Contract({
-      name: `${token.name} (${token.symbol})`,
-      address,
-      abi: erc20Abi,
-      manager: this,
-      token
-    });
+    if (token) {
+      return new Contract({
+        name: `${token.name} (${token.symbol})`,
+        address,
+        abi: erc20Abi,
+        manager: this,
+        token
+      });
+    }
   }
 }

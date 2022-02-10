@@ -5,7 +5,7 @@
         div(class="homeInfo")
           .text-primary.text-h4 {{ isContract ? 'Contract' : 'Account' }}    
           q-icon.cursor(v-if='isContract' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
-          ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" :date="verificationDate" @dialog='disableConfirmation')
+          ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
           .text-white {{ address }}
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount")
@@ -68,19 +68,11 @@ export default {
   },
   methods: {
     async loadAccount() {
-      debugger;
       const account = await this.$evm.telos.getEthAccount(this.address);
       if (account.code.length > 0){
         this.isContract = true;
-        const response = await (`https://sourcify.dev/check-by-addresses?addresses=${this.address}&chainIds=${process.env.EVM_CHAIN_ID}`)      //`contracts/status?contractAddress=${this.address}`);
-        debugger;
-        if (response.data.status && response.data.status !== 404) {
-          debugger;
-          this.isVerified = true;
-          this.verificationDate = response.data.message;
-        }else {
-          this.isVerified = false;
-        }
+        const contract = await this.$contractManager.getContract(this.address);
+        this.isVerified = contract.verified;
       }
       let strBalance = web3.utils.fromWei(account.balance);
       strBalance = `${strBalance.substring(

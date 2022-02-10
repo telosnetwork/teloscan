@@ -27,7 +27,7 @@ async function updateVerifiedContractsData(verifiedList){
   let newCount = 0;
   for (let address of verifiedList){
     const verified = await isVerified(address);
-    if (verified.status === 404){
+    if (verified){
       const source = await getSource(address);   
       const metadata = source.data.find(file => file.name === 'metadata.json');
       try{

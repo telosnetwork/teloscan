@@ -11,7 +11,7 @@
 <script lang="ts">
 
 import { formatIsoDateTime } from "src/lib/utils";
-const VIEW_SOURCE_PROMPT = `You can view the source code & settings in the 'contract' tab`;
+const VIEW_SOURCE_PROMPT = `This contract has been verified. You can view the source code & settings in the 'contract' tab`;
 const VERIFY_PROMPT = 'This contract has not been verified.  Upload contract to verify source now?';
 
 export default {
@@ -37,10 +37,6 @@ export default {
     status: {
       type: Boolean,
       default: false
-    },
-    date: {
-      type: String,
-      default: ''
     }
   },
   mounted() {
@@ -59,7 +55,7 @@ export default {
       if (val) {
         this.icon = 'verified';
         this.color = 'text-green';
-        this.dialogMessage = `This contract was verified on ${formatIsoDateTime(this.date)}. ${VIEW_SOURCE_PROMPT}`; 
+        this.dialogMessage = VIEW_SOURCE_PROMPT; 
       }else{
         this.icon = 'warning',
         this.color = 'text-red',

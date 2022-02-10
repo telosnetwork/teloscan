@@ -1,19 +1,20 @@
-import S3 from 'aws-sdk/clients/s3.js';
-const clientS3 = new S3();
+import AWS from "aws-sdk";
 const Bucket = 'verified-evm-contracts';
 export const SOURCE_FILENAME = 'source.json';
 export const METADATA_FILENAME = 'metadata.json';
+const clientS3 = new AWS.S3();
 
 export async function isVerified(contractAddress){
   let headInfo;
-  const params = { Bucket , Key: `${contractAddress}/${METADATA_FILENAME}` };
+  const params = { Bucket , Key: `${contractAddress}/${METADATA_FILENAME}`};
   try{
-      headInfo = await clientS3.headObject(params).promise();  
+      await clientS3.headObject(params).promise(); 
+      return true; 
   }catch(e){
       //aws returns 404 if key isn't found
-      return { status: 404, message: 'contract has not been verified' };
+      console.log(e)
+      return false;
   }
-  return { status: true, message: headInfo.LastModified};    
 }
 
 export async function getMetadata(contractAddress){
