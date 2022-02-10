@@ -55,7 +55,7 @@ export default {
       telosAccount: null,
       balance: null,
       isContract: false,
-      isVerified: false,
+      isVerified: null,
       verificationDate: '',
       tab: "transactions",
       tokens: null,
@@ -67,13 +67,18 @@ export default {
   },
   methods: {
     async loadAccount() {
+      debugger;
       const account = await this.$evm.telos.getEthAccount(this.address);
       if (account.code.length > 0){
         this.isContract = true;
         const response = await this.$telosApi.get(`contracts/status?contractAddress=${this.address}`);
+        debugger;
         if (response.data.status && response.data.status !== 404) {
+          debugger;
           this.isVerified = true;
           this.verificationDate = response.data.message;
+        }else {
+          this.isVerified = false;
         }
       }
       let strBalance = web3.utils.fromWei(account.balance);

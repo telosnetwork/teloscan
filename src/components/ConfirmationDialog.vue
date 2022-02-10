@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     async navigate(){
-      await this.$router.push(this.navRoute);
+      await this.$router.push({name:'sourcify'});
     }
   } 
 }
