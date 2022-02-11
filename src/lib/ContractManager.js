@@ -95,7 +95,7 @@ export default class ContractManager {
       }
     }
 
-    return await getEmptyContract(addressLower);
+    return await this.getEmptyContract(addressLower);
   }
 
   async getVerifiedContract(address) {
