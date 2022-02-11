@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { getSource, isVerified } from './aws.js';
 export default class Contract {
 
   constructor({address, name, abi, manager, token, verified = false}) {
@@ -16,10 +15,6 @@ export default class Contract {
     this.sources = []
   }
 
-  static async getVerificationStatus(address){
-    return await isVerified(address);
-  }
-
   getName() {
     return this.name;
   }
@@ -32,12 +27,8 @@ export default class Contract {
     return this.verified;
   }
 
-  async fetchSources(){
-    this.sources = await getSource(this.address);
-  }
-
   getSources(){
-    return this.sources;
+    return this.sources;    //@TODO axios/api getSource
   }
 
   getContractInstance(provider) {

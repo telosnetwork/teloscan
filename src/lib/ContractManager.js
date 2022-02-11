@@ -1,7 +1,6 @@
 import Contract from "src/lib/Contract";
 import { ethers } from "ethers";
 import Web3 from "web3";
-import { getMetadata } from './aws.js';
 
 const tokenList = `https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json`;
 
@@ -76,15 +75,15 @@ export default class ContractManager {
   //    this is coming from the token transfer page where we're looking for a contract based on a token transfer event
   async getContract(address, suspectedToken) {
     const addressLower = address.toLowerCase();
-    const verified = await Contract.getVerificationStatus(address);
-
+    const verified = await getVerificationStatus(address); //@TODO axios/api call
+    this.contracts[addressLower].setVerified(verified);
     if (this.contracts[addressLower]){
       if (verified) this.contracts[addressLower].setVerified(verified);
       return this.contracts[addressLower];
     }
 
     if (verified){
-        const metadata = await getMetadata(address);
+        const metadata = await getMetadata(address); //@TODO axios/api 
         const token = getToken(address);
         this.contracts[adddressLower] =
         new Contract({
