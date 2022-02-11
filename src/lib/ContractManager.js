@@ -1,16 +1,14 @@
 import Contract from "src/lib/Contract";
 import { ethers } from "ethers";
 import Web3 from "web3";
-
-const tokenList = `https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json`;
-
 import axios from "axios";
 import erc20Abi from "erc-20-abi";
 
-const tokenListAxios = axios.create({
-  baseURL: tokenList
+const contractsApi = axios.create({
+  baseURL: `${process.env.TELOS_API_ENDPOINT}/contracts`
 });
 
+const tokenList = `https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json`;
 export default class ContractManager {
 
   constructor(evmEndpoint) {
@@ -74,26 +72,15 @@ export default class ContractManager {
   // suspectedToken is so we don't try to check for ERC20 info via eth_call unless we think this is a token...
   //    this is coming from the token transfer page where we're looking for a contract based on a token transfer event
   async getContract(address, suspectedToken) {
+    debugger;
     const addressLower = address.toLowerCase();
-    const verified = await getVerificationStatus(address); //@TODO axios/api call
-    this.contracts[addressLower].setVerified(verified);
+    const verified = (await contractsApi.get(`status?contractAddress=${address}`)).data;
     if (this.contracts[addressLower]){
-      if (verified) this.contracts[addressLower].setVerified(verified);
+      this.contracts[addressLower].setVerified(verified);
       return this.contracts[addressLower];
     }
-
     if (verified){
-        const metadata = await getMetadata(address); //@TODO axios/api 
-        const token = getToken(address);
-        this.contracts[adddressLower] =
-        new Contract({
-          name: Object.values(metadata.settings.compilationTarget)[0],
-          address,
-          abi: metadata.output.abi,
-          manager: this,
-          token,
-          verified
-        })
+        return await this.getVerifiedContract(addressLower)
     }
     // TODO: there's some in this list that are not ERC20... they have extra stuff like the Swapin method
     const contract = await this.getContractFromTokenList(address);
@@ -120,13 +107,31 @@ export default class ContractManager {
         return contract;
       }
     }
-
-    return new Contract({
+    contract = new Contract({
       name: `${address.slice(0,16)}...`,
       address,
       abi: undefined,
       manager: this
-    })
+    });
+    this.contracts[addressLower] = contract;
+    return contract;
+    return 
+  }
+
+  async getVerifiedContract(address) {
+    const metadata = await contractsApi.getSource(`source?contractAddress=${address}&file=metadata.json`);
+    const token = this.getToken(address);
+    const contract = 
+    new Contract({
+      name: Object.values(metadata.settings.compilationTarget)[0],
+      address,
+      abi: metadata.output.abi,
+      manager: this,
+      token,
+      verified
+    });
+    this.contracts[adddressLower] = contract;
+    return contract;
   }
 
   async getErc20Data(address) {
@@ -148,7 +153,7 @@ export default class ContractManager {
   }
 
   async loadTokenList() {
-    const results = await tokenListAxios.get(tokenList);
+    const results = await axios.get(tokenList);
     this.tokenList = results.data;
   }
 
