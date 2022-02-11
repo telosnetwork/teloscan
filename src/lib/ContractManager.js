@@ -108,7 +108,7 @@ export default class ContractManager {
       abi: metadata.output.abi,
       manager: this,
       token,
-      verified
+      verified: true
     });
     this.contracts[adddress] = contract;
     return contract;
