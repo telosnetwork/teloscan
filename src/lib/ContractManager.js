@@ -68,7 +68,6 @@ export default class ContractManager {
     }
   }
 
-
   // suspectedToken is so we don't try to check for ERC20 info via eth_call unless we think this is a token...
   //    this is coming from the token transfer page where we're looking for a contract based on a token transfer event
   async getContract(address, suspectedToken) {
@@ -90,32 +89,13 @@ export default class ContractManager {
     }
 
     if (suspectedToken) {
-      console.log(addressLower);
       const erc20Data = await this.getErc20Data(address);
       if (erc20Data) {
-        const contract = new Contract({
-          name: `${erc20Data.name} (${erc20Data.symbol})`,
-          address,
-          abi: erc20Abi,
-          manager: this,
-          token: Object.assign({
-            address,
-          }, erc20Data)
-        });
-
-        this.contracts[addressLower] = contract;
-        return contract;
+        return await this.getTokenContract(addressLower);
       }
     }
-    contract = new Contract({
-      name: `${address.slice(0,16)}...`,
-      address,
-      abi: undefined,
-      manager: this
-    });
-    this.contracts[addressLower] = contract;
-    return contract;
-    return 
+
+    return await getEmptyContract(addressLower);
   }
 
   async getVerifiedContract(address) {
@@ -130,7 +110,33 @@ export default class ContractManager {
       token,
       verified
     });
-    this.contracts[adddressLower] = contract;
+    this.contracts[adddress] = contract;
+    return contract;
+  }
+
+  async getTokenContract(address){
+    const contract = new Contract({
+      name: `${erc20Data.name} (${erc20Data.symbol})`,
+      address,
+      abi: erc20Abi,
+      manager: this,
+      token: Object.assign({
+        address,
+      }, erc20Data)
+    });
+
+    this.contracts[address] = contract;
+    return contract;
+  }
+
+  async getEmptyContract(address){
+    contract = new Contract({
+      name: `${address.slice(0,16)}...`,
+      address,
+      abi: undefined,
+      manager: this
+    });
+    this.contracts[address] = contract;
     return contract;
   }
 
