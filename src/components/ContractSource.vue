@@ -55,7 +55,9 @@ export default {
     };
   },
   async mounted() {
+    debugger;
     const response = await this.$telosApi.get(`contracts/source?contractAddress=${this.$route.params.address}`);
+    debugger;
     this.sources = response.data.sources;
     for (let key in this.sources){
       if (this.sources.hasOwnProperty(key)){
