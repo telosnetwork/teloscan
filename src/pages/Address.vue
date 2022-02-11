@@ -4,7 +4,7 @@
       .row(class="tableWrapper").justify-between
         div(class="homeInfo")
           .text-primary.text-h4 {{ isContract ? 'Contract' : 'Account' }}    
-          q-icon.cursor(v-if='isContract' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
+          q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
           ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
           .text-white {{ address }}
         .dataCardsContainer()
@@ -69,10 +69,10 @@ export default {
   methods: {
     async loadAccount() {
       const account = await this.$evm.telos.getEthAccount(this.address);
+      debugger;
       if (account.code.length > 0){
         this.isContract = true;
-        const contract = await this.$contractManager.getContract(this.address);
-        this.isVerified = contract.verified;
+        this.isVerified = await this.$telosApi.get(`contracts/status?contractAddress=${this.address}`);
       }
       let strBalance = web3.utils.fromWei(account.balance);
       strBalance = `${strBalance.substring(
