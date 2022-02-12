@@ -27,7 +27,7 @@ export default {
   },
   props: {
     flag: {
-      type: Boolean || Object,
+      type: Boolean,
       required: true
     },
     address: { 
