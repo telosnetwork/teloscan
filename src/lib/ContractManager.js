@@ -3,9 +3,10 @@ import { ethers } from "ethers";
 import Web3 from "web3";
 import axios from "axios";
 import erc20Abi from "erc-20-abi";
+import { toChecksumAddress } from "./utils";
 
-const contractsApi = axios.create({
-  baseURL: `${process.env.TELOS_API_ENDPOINT}/contracts`
+const contractsBucket = axios.create({
+  baseURL: `https://verified-evm-contracts.s3.amazonaws.com`
 });
 
 const tokenList = `https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json`;
@@ -72,13 +73,14 @@ export default class ContractManager {
   //    this is coming from the token transfer page where we're looking for a contract based on a token transfer event
   async getContract(address, suspectedToken) {
     const addressLower = address.toLowerCase();
-    const verified = (await contractsApi.get(`status?contractAddress=${address}`)).data;
+
     if (this.contracts[addressLower]){
-      this.contracts[addressLower].setVerified(verified);
       return this.contracts[addressLower];
     }
-    if (verified){
-        return await this.getVerifiedContract(addressLower)
+
+    const metadata = await this.checkBucket(address);
+    if (metadata){
+      return await this.getVerifiedContract(addressLower, metadata)
     }
     // TODO: there's some in this list that are not ERC20... they have extra stuff like the Swapin method
     const contract = await this.getContractFromTokenList(address);
@@ -97,8 +99,18 @@ export default class ContractManager {
     return await this.getEmptyContract(addressLower);
   }
 
-  async getVerifiedContract(address) {
-    const metadata = await contractsApi.getSource(`source?contractAddress=${address}&file=metadata.json`);
+  async checkBucket(address){
+    let checksumAddress = toChecksumAddress(address);
+    try{
+      let responseData = (await contractsBucket.get(`${checksumAddress}/metadata.json`)).data;
+      return JSON.parse(responseData.content);
+    }catch(e){
+      console.log(e);
+      return false;
+    }
+  }
+
+  async getVerifiedContract(address, metadata) {
     const token = this.getToken(address);
     const contract = 
     new Contract({
@@ -109,7 +121,7 @@ export default class ContractManager {
       token,
       verified: true
     });
-    this.contracts[adddress] = contract;
+    this.contracts[address] = contract;
     return contract;
   }
 

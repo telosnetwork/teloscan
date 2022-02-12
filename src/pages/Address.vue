@@ -70,7 +70,7 @@ export default {
       const account = await this.$evm.telos.getEthAccount(this.address);
       if (account.code.length > 0){
         this.isContract = true;
-        this.isVerified = (await this.$telosApi.get(`contracts/status?contractAddress=${this.address}`)).data;
+        this.isVerified = (await this.$contractManager.getContract(this.address)).verified;
       }
       let strBalance = web3.utils.fromWei(account.balance);
       strBalance = `${strBalance.substring(

@@ -27,10 +27,6 @@ export default class Contract {
     return this.verified;
   }
 
-  getSources(){
-    return this.sources;    //@TODO axios/api getSource
-  }
-
   getContractInstance(provider) {
     if (!this.abi){
       console.log("Cannot create contract instance without ABI!");
