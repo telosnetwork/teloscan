@@ -39,7 +39,6 @@
 
 <script>
 import Web3 from "web3";
-import axios from 'axios';
 import TransactionTable from "components/TransactionTable";
 import TransferTable from "components/TransferTable";
 import TokenList from "components/TokenList";

@@ -25,6 +25,7 @@
 </template>
 
 <script lang="javascript">
+import axios from 'axios';
 import JsonViewer from 'vue-json-viewer';
 import hljs from 'highlight.js/lib/core';
 import hljsDefineSolidity from 'highlightjs-solidity';
@@ -55,22 +56,31 @@ export default {
     };
   },
   async mounted() {
+    try{
+      this.sources = 
+        await axios.get(`https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com/${this.$route.params.address}/source.json`);
+    }catch(e){
+      console.log(e);
+    }
     debugger;
-    const response = await this.$telosApi.get(`contracts/source?contractAddress=${this.$route.params.address}`);
-    debugger;
-    this.sources = response.data.sources;
-    for (let key in this.sources){
-      if (this.sources.hasOwnProperty(key)){
-        this.sources[key].content = hljs.highlight(this.sources[key].content, { language: 'solidity' }).value;
+      for (let key in this.sources){
+        if (this.sources.hasOwnProperty(key)){
+          this.sources[key].content = 
+            hljs.highlight(this.sources[key].content, { language: 'solidity' }).value;
+        }
       }
-    }
-    this.abi = response.data.abi;
-    this.metadata = {
-      name: Object.values(response.data.metadata.settings.compilationTarget)[0],
-      compilerVersion : response.data.metadata.compiler.version,
-      optimization: { enabled: response.data.metadata.settings.optimizer.enabled, runs: response.data.metadata.settings.optimizer.runs },
-      evmVersion: response.data.metadata.settings.evmVersion
-    }
+      debugger;
+      this.abi = response.data.abi;
+      this.metadata = {
+        name: Object.values(response.data.metadata.settings.compilationTarget)[0],
+        compilerVersion : response.data.metadata.compiler.version,
+        optimization: { 
+          enabled: response.data.metadata.settings.optimizer.enabled, 
+          runs: response.data.metadata.settings.optimizer.runs 
+        },
+        evmVersion: response.data.metadata.settings.evmVersion
+      }
+      debugger;
   }
 }
 </script>

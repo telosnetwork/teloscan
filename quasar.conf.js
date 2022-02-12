@@ -54,7 +54,8 @@ module.exports = function(/* ctx */) {
         NETWORK_EVM_CONTRACT: process.env.NETWORK_EVM_CONTRACT,
         NETWORK_EVM_CHAIN_ID: process.env.NETWORK_EVM_CHAIN_ID,
         NETWORK_EVM_ENDPOINT: process.env.NETWORK_EVM_ENDPOINT,
-        TELOS_API_ENDPOINT: process.env.TELOS_API_ENDPOINT
+        TELOS_API_ENDPOINT: process.env.TELOS_API_ENDPOINT,
+        VERIFIED_CONTRACTS_BUCKET: process.env.VERIFIED_CONTRACTS_BUCKET
       },
 
       // transpile: false,
