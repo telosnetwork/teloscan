@@ -6,11 +6,12 @@ export default class Contract {
     this.name = name
     this.abi = abi
     this.manager = manager;
-    if (abi)
+    if (abi){
       this.iface = new ethers.utils.Interface(abi);
-
-    if (token)
+    }
+    if (token){
       this.token = token;
+    }
     this.verified = verified;
     this.sources = []
   }
@@ -33,9 +34,9 @@ export default class Contract {
       return;
     }
 
-    if (!this.contract)
+    if (!this.contract){
       this.contract = new ethers.Contract(this.address, this.abi, provider ? provider : this.manager.getEthersProvider());
-
+    }
     return this.contract;
   }
 

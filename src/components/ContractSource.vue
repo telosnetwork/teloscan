@@ -34,16 +34,7 @@ export default {
     return {
         tab:"sources",
         contracts: [],
-        json: [],
-        metadata: {
-          optimization: {
-            enabled: false,
-            runs: 200
-          },
-          name: '',
-          compilerVersion: ''
-        },
-        abi:{}
+        json: []
     };
   },
   async mounted() {
