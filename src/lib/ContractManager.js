@@ -71,7 +71,6 @@ export default class ContractManager {
   // suspectedToken is so we don't try to check for ERC20 info via eth_call unless we think this is a token...
   //    this is coming from the token transfer page where we're looking for a contract based on a token transfer event
   async getContract(address, suspectedToken) {
-    debugger;
     const addressLower = address.toLowerCase();
     const verified = (await contractsApi.get(`status?contractAddress=${address}`)).data;
     if (this.contracts[addressLower]){
