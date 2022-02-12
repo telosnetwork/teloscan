@@ -92,7 +92,7 @@ export default class ContractManager {
     if (suspectedToken) {
       const erc20Data = await this.getErc20Data(address);
       if (erc20Data) {
-        return await this.getTokenContract(addressLower);
+        return await this.getTokenContract(addressLower, erc20Data);
       }
     }
 
@@ -125,7 +125,7 @@ export default class ContractManager {
     return contract;
   }
 
-  async getTokenContract(address){
+  async getTokenContract(address, erc20Data){
     const contract = new Contract({
       name: `${erc20Data.name} (${erc20Data.symbol})`,
       address,
