@@ -102,10 +102,10 @@
               <json-viewer :value="getFunctionParams() " theme="jsonViewer" />
             </div>
             <br v-if="isContract" />
-            <div v-if="trx.createdaddress">
+            <div v-if="trx.createdaddr">
               <strong>{{ `Deployed contract: ` }} </strong>
               <span>
-                {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
+                <address-field :address="trx.createdaddr"/>
               </span>
             </div>
             <br />
@@ -153,7 +153,7 @@
             </div>
           </q-tab-panel>
           <q-tab-panel name="logs">
-            <div class="jsonViewer"> 
+            <div class="jsonViewer">
               <logs-viewer :logs="getLogs()" />
             </div>
           </q-tab-panel>
