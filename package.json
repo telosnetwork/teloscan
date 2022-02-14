@@ -6,6 +6,7 @@
   "author": "Jesse Schulman <jesse@caleos.io>",
   "private": true,
   "scripts": {
+    "dev": "quasar dev",
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0"
   },
@@ -24,6 +25,8 @@
     "eosjs-ecc": "^4.0.7",
     "erc-20-abi": "^1.0.0",
     "ethers": "^5.5.1",
+    "highlight.js": "10",
+    "highlightjs-solidity": "^2.0.3",
     "moment": "^2.29.1",
     "quasar": "^1.0.0",
     "ual-anchor": "^1.0.0",
@@ -31,7 +34,7 @@
     "ual-scatter": "^0.3.0",
     "ual-wombat": "^0.3.3",
     "universal-authenticator-library": "^0.3.0",
-    "vue-json-viewer": "^2.2.20",
+    "vue-json-viewer": "2",
     "web3": "^1.6.1"
   },
   "devDependencies": {

@@ -6191,6 +6191,16 @@ hex-color-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/hex-color-regex/-/hex-color-regex-1.1.0.tgz#4c06fccb4602fe2602b3c93df82d7e7dbf1a8a8e"
   integrity sha512-l9sfDFsuqtOqKDsQdqrMRk0U85RZc0RtOR9yPI7mRVOa4FsR/BVnZ0shmQRM96Ji99kYZP/7hn1cedc1+ApsTQ==
 
+highlight.js@10:
+  version "10.7.3"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-10.7.3.tgz#697272e3991356e40c3cac566a74eef681756531"
+  integrity sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==
+
+highlightjs-solidity@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/highlightjs-solidity/-/highlightjs-solidity-2.0.3.tgz#c89b6eca7d462f849acfb3a94c18f7db2b6d0c69"
+  integrity sha512-tjFm5dtIE61VQBzjlZmkCtY5fLs3CaEABbVuUNyXeW+UuOCsxMg3MsPFy0kCelHP74hPpkoqDejLrbnV1axAIw==
+
 hmac-drbg@^1.0.0, hmac-drbg@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/hmac-drbg/-/hmac-drbg-1.0.1.tgz#d2745701025a6c775a6c545793ed502fc0c649a1"
@@ -11338,7 +11348,7 @@ vue-hot-reload-api@^2.3.0:
   resolved "https://registry.yarnpkg.com/vue-hot-reload-api/-/vue-hot-reload-api-2.3.4.tgz#532955cc1eb208a3d990b3a9f9a70574657e08f2"
   integrity sha512-BXq3jwIagosjgNVae6tkHzzIk6a8MHFtzAdwhnV5VlvPTFxDCvIttgSiHWjdGoTJvXtmRu5HacExfdarRcFhog==
 
-vue-json-viewer@^2.2.20:
+vue-json-viewer@2:
   version "2.2.21"
   resolved "https://registry.yarnpkg.com/vue-json-viewer/-/vue-json-viewer-2.2.21.tgz#3240f1972ec2f832b4e6001328d4d6158e3587ae"
   integrity sha512-FZL5pZM63nJjAWqOIkiA9KtAesIhUwmFkAaBZ4eCIPb0jDczL59bHgbdJOkvP7rsFVuQox5SHAxj7O7SrJrTvw==
