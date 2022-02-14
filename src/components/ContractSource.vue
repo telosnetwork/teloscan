@@ -44,7 +44,6 @@ export default {
       const checkSumAddress = toChecksumAddress(this.$route.params.address)
       sources = 
         (await axios.get(`https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com/${checkSumAddress}/source.json`)).data.files;
-        debugger;
     }catch(e){
       console.log(e);
     }
