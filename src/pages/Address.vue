@@ -32,8 +32,9 @@
             ContractSource(v-if='isVerified')
             .verify-source(v-else)
               q-icon( name='warning' class='text-red' size='1.25rem')
-              | This contract source has not been verified. Click  
-              router-link( :to="{name: 'sourcify'}") here
+              | This contract source has not been verified. <br/>
+              | Click 
+              router-link( :to="{name: 'sourcify'}") here 
               | to upload source files and verify this contract.
 </template>
 
@@ -113,6 +114,7 @@ export default {
 
 .verify-source
   height: 25rem
-  line-height: 25rem
+  line-height: 2rem
   margin-left: 2rem
+  padding-top: 10rem
 </style>
