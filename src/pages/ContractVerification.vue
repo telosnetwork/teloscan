@@ -170,9 +170,9 @@ export default {
       this.targetEvm = option;
     },
     uploaded(uploadedObj){
-      this.onNotify(JSON.parse(uploadedObj.xhr.response));
-      if (uploadedObj.xhr.response.type === "positive"){
-        this.resetForm();
+      const verifyResponse = JSON.parse(uploadedObj.xhr.response);
+      this.onNotify(verifyResponse);
+      if (verifyResponse.type === "positive"){
         this.navToAddress();
       }
     },

@@ -4,8 +4,8 @@
       .row(class="tableWrapper").justify-between
         div(class="homeInfo")
           .text-primary.text-h4 {{ isContract ? 'Contract' : 'Account' }}    
-          q-icon.cursor(v-if='isContract' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
-          ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" :date="verificationDate" @dialog='disableConfirmation')
+          q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
+          ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
           .text-white {{ address }}
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount")
@@ -32,8 +32,9 @@
             ContractSource(v-if='isVerified')
             .verify-source(v-else)
               q-icon( name='warning' class='text-red' size='1.25rem')
-              | This contract source has not been verified. CLick  
-              router-link( :to="`/contract/verify/${this.address}`") here
+              | This contract source has not been verified. <br/>
+              | Click 
+              router-link( :to="{name: 'sourcify'}") here 
               | to upload source files and verify this contract.
 </template>
 
@@ -55,7 +56,7 @@ export default {
       telosAccount: null,
       balance: null,
       isContract: false,
-      isVerified: false,
+      isVerified: null,
       verificationDate: '',
       tab: "transactions",
       tokens: null,
@@ -70,11 +71,7 @@ export default {
       const account = await this.$evm.telos.getEthAccount(this.address);
       if (account.code.length > 0){
         this.isContract = true;
-        const response = await this.$telosApi.get(`contracts/status?contractAddress=${this.address}`);
-        if (response.data.status && response.data.status !== 404) {
-          this.isVerified = true;
-          this.verificationDate = response.data.message;
-        }
+        this.isVerified = (await this.$contractManager.getContract(this.address)).verified;
       }
       let strBalance = web3.utils.fromWei(account.balance);
       strBalance = `${strBalance.substring(
@@ -117,6 +114,7 @@ export default {
 
 .verify-source
   height: 25rem
-  line-height: 25rem
+  line-height: 2rem
   margin-left: 2rem
+  padding-top: 10rem
 </style>

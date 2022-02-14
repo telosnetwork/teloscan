@@ -16,6 +16,7 @@
   NETWORK_EXPLORER = "https://telos.eosauthority.com"
   HYPERION_ENDPOINT = "https://mainnet.telos.net"
   TELOS_API_ENDPOINT = "https://api.telos.net"
+  VERIFIED_CONTRACTS_BUCKET = "verified-evm-contracts"
 
 [context.dev.environment]
   APP_NAME = "Teloscan Testnet"
@@ -31,6 +32,7 @@
   NETWORK_EXPLORER = "https://telostest.eosauthority.com"
   HYPERION_ENDPOINT = "https://testnet.telos.net"
   TELOS_API_ENDPOINT = "https://api-dev.telos.net"
+  VERIFIED_CONTRACTS_BUCKET = "verified-evm-contracts-testnet"
 
 [context.deploy-preview.environment]
   APP_NAME = "Teloscan Testnet"
@@ -46,6 +48,7 @@
   NETWORK_EXPLORER = "https://telostest.eosauthority.com"
   HYPERION_ENDPOINT = "https://testnet.telos.net"
   TELOS_API_ENDPOINT = "https://api-dev.telos.net"
+  VERIFIED_CONTRACTS_BUCKET = "verified-evm-contracts-testnet"
 
 [[redirects]]
   from = "/*"

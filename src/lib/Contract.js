@@ -1,21 +1,31 @@
 import { ethers } from "ethers";
-
 export default class Contract {
 
-  constructor({address, name, abi, manager, token}) {
+  constructor({address, name, abi, manager, token, verified = false}) {
     this.address = address
     this.name = name
     this.abi = abi
     this.manager = manager;
-    if (abi)
+    if (abi){
       this.iface = new ethers.utils.Interface(abi);
-
-    if (token)
+    }
+    if (token){
       this.token = token;
+    }
+    this.verified = verified;
+    this.sources = []
   }
 
   getName() {
     return this.name;
+  }
+
+  setVerified(status) {
+    this.verified = status;
+  }
+
+  isVerified() {
+    return this.verified;
   }
 
   getContractInstance(provider) {
@@ -24,9 +34,9 @@ export default class Contract {
       return;
     }
 
-    if (!this.contract)
+    if (!this.contract){
       this.contract = new ethers.Contract(this.address, this.abi, provider ? provider : this.manager.getEthersProvider());
-
+    }
     return this.contract;
   }
 

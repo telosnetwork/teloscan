@@ -48,6 +48,13 @@ const routes = [
   ]
   },
   {
+    name: "sourcify",
+    path: "",
+    beforeEnter() {
+      window.open('https://sourcify.dev', '_blank')
+    }
+  },
+  {
     path: "*",
     component: () => import("pages/Error404.vue")
   }
