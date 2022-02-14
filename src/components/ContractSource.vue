@@ -21,6 +21,7 @@ import hljs from 'highlight.js/lib/core';
 import hljsDefineSolidity from 'highlightjs-solidity';
 import 'highlight.js/styles/default.css';
 import json from 'highlight.js/lib/languages/json';
+import { toChecksumAddress } from "src/lib/utils";
 
 hljs.registerLanguage('json', json);
 hljsDefineSolidity(hljs);
@@ -40,8 +41,10 @@ export default {
   async mounted() {
     let sources;
     try{
+      const checkSumAddress = toChecksumAddress(this.$route.params.address)
       sources = 
-        (await axios.get(`https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com/${this.$route.params.address}/source.json`)).data;
+        (await axios.get(`https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com/${checkSumAddress}/source.json`)).data.files;
+        debugger;
     }catch(e){
       console.log(e);
     }
