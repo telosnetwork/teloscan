@@ -1,17 +1,17 @@
 <template lang='pug'>
 .contract-source
-  p.file-label Metadata:
-  JsonViewer.source-container( 
-    v-for='(item, key, index) in json'
-    :value='item.content'
-    :key='key'
-    copyable
-    expanded
-    :expand-depth=1
-    theme="custom-theme"
-  )
-  p.file-label Contracts:
-  pre.source-container( v-for='(item, key, index) in contracts'  v-html='item.content')
+  div(    v-for='(item, key, index) in json' :key='key')
+    p.file-label {{ item.name }}
+    JsonViewer.source-container( 
+      :value='item.content'
+      copyable
+      expanded
+      :expand-depth=1
+      theme="custom-theme"
+    )
+  div( v-for='(item, key, index) in contracts')
+    p.file-label {{ item.name }}
+    pre.source-container(v-html='item.content')
 </template>
 
 <script lang="javascript">
@@ -55,7 +55,7 @@ export default {
         if (this.isContract(file.name)){
           file.content = 
             hljs.highlight(file.content, { language: 'solidity' }).value;
-          this.contracts.push(file);
+          this.contracts.unshift(file);
         }else{
           if (this.isJson(file.name)){
             file.content = JSON.parse(file.content);
