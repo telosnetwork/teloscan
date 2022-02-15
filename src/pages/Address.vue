@@ -3,7 +3,7 @@
     div()
       .row(class="tableWrapper").justify-between
         div(class="homeInfo")
-          .text-primary.text-h4 {{ isContract ? 'Contract' : 'Account' }}    
+          .text-primary.text-h4 {{ getTitle() }}
           q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
           ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
           .text-white {{ address }}
@@ -33,9 +33,9 @@
             .verify-source(v-else)
               q-icon( name='warning' class='text-red' size='1.25rem')
               | This contract source has not been verified. <br/>
-              | Click 
-              router-link( :to="{name: 'sourcify'}") here 
-              | to upload source files and verify this contract.
+              | Click&nbsp
+              router-link( :to="{name: 'sourcify'}") here
+              | &nbspto upload source files and verify this contract.
 </template>
 
 <script>
@@ -57,6 +57,7 @@ export default {
       balance: null,
       isContract: false,
       isVerified: null,
+      contract: null,
       verificationDate: '',
       tab: "transactions",
       tokens: null,
@@ -71,7 +72,8 @@ export default {
       const account = await this.$evm.telos.getEthAccount(this.address);
       if (account.code.length > 0){
         this.isContract = true;
-        this.isVerified = (await this.$contractManager.getContract(this.address)).verified;
+        this.contract = await this.$contractManager.getContract(this.address)
+        this.isVerified = this.contract.verified;
       }
       let strBalance = web3.utils.fromWei(account.balance);
       strBalance = `${strBalance.substring(
@@ -81,6 +83,17 @@ export default {
       this.balance = strBalance;
       this.telosAccount = account.account;
       this.isContract = account.code.length > 0;
+    },
+    getTitle() {
+      if (this.isContract) {
+        let name = this.contract.getName();
+        if (!name || name.startsWith('0x'))
+          return 'Contract';
+
+        return name;
+      }
+
+      return 'Account';
     },
     getAddressBloksURL() {
       if (!this.telosAccount) return "";
@@ -100,7 +113,7 @@ export default {
 </script>
 
 <style scoped lang="sass">
-.q-tab-panel 
+.q-tab-panel
   padding: 0
 
 .q-icon
