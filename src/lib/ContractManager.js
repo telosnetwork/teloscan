@@ -6,7 +6,7 @@ import erc20Abi from "erc-20-abi";
 import { toChecksumAddress } from "./utils";
 
 const contractsBucket = axios.create({
-  baseURL: `https://verified-evm-contracts.s3.amazonaws.com`
+  baseURL: `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com`
 });
 
 const tokenList = `https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json`;
