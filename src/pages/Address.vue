@@ -86,11 +86,10 @@ export default {
     },
     getTitle() {
       if (this.isContract) {
-        let name = this.contract.getName();
-        if (!name || name.startsWith('0x'))
-          return 'Contract';
-
-        return name;
+        if (this.isVerified){
+          return this.contract.getName();
+        }
+        return 'Contract';
       }
 
       return 'Account';
