@@ -11,8 +11,8 @@
 <script lang="ts">
 
 import { formatIsoDateTime } from "src/lib/utils";
-const VIEW_SOURCE_PROMPT = `This contract has been verified. You can view the source code & settings in the 'contract' tab`;
-const VERIFY_PROMPT = 'This contract has not been verified.  Upload contract to verify source now?';
+const VIEW_SOURCE_PROMPT = `This contract has been verified. You can view the source code & metadata in the 'contract' tab`;
+const VERIFY_PROMPT = 'This contract has not been verified.  Would you like to upload the contract(s) and metadata to verify source now?';
 
 export default {
   name: "ConfirmationDialog",
@@ -37,14 +37,6 @@ export default {
     status: {
       type: Boolean,
       default: false
-    }
-  },
-  mounted() {
-
-  },
-  computed: {
-    navRoute(){
-      return `/contract/verify/${this.address}`
     }
   },
   watch: {
