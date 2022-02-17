@@ -39,9 +39,6 @@ export default {
       default: false
     }
   },
-  mounted() {
-
-  },
   watch: {
     flag(val){
       this.showDialog = val;
