@@ -2680,6 +2680,11 @@ aws4@^1.8.0:
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.11.0.tgz#d61f46d83b2519250e2784daf5b09479a8b41c59"
   integrity sha512-xh1Rl34h6Fi1DC2WWKfxUTVqRsNnr6LsKz2+hfwDxQJWmrx8+c7ylaqBMcHfl1U1r2dsifOvKX3LQuLNZ+XSvA==
 
+axios-time@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/axios-time/-/axios-time-1.0.0.tgz#0dd482c7537ef662f29a50cb6fa5375cc60a2b57"
+  integrity sha512-5xY1ScOeZZgZ44TIffioYlknROdsI107kJtC1Pc/wrDEvYg7w+VfkRI49pxXDgPP/W+aQPKAs8anjvpiyEvfOQ==
+
 axios@^0.20.0:
   version "0.20.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-0.20.0.tgz#057ba30f04884694993a8cd07fa394cff11c50bd"
