@@ -10,7 +10,7 @@ const routes = [
     path: "/address/:address",
     component: () => import("layouts/MainLayout.vue"),
     children: [
-      { path: "",    
+      { path: "",
       name: 'address',
       component: () => import("pages/Address.vue") }
     ]
@@ -40,12 +40,17 @@ const routes = [
     path: "/contract",
     component: () => import("layouts/MainLayout.vue"),
     children: [
-      { 
+      {
         path: "verify/:address?",
-        name: "verify", 
-        component: () => import("pages/ContractVerification.vue") 
+        name: "verify",
+        component: () => import("pages/ContractVerification.vue")
       }
   ]
+  },
+  {
+    path: "/endpoints",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [{ path: "", component: () => import("pages/Endpoints.vue") }]
   },
   {
     name: "sourcify",
