@@ -2,17 +2,17 @@
 .pageContainer.q-pt-xl
   div
     .homeInfo
-        .text-primary.text-h4 RPC ENDPOINTS
+        .text-primary.text-h6 RPC ENDPOINTS
     .q-mb-md.tableWrapper
       q-list
         q-item(v-for="endpoint in endpoints" :key="endpoint.endpoint")
-          q-item-section
+          q-item-section(:no-wrap='false').full-width
             q-item-label.text-weight-medium
               span {{ endpoint.name }}
             q-item-label(v-if="endpoint.description" caption) {{ endpoint.description }}
-          q-item-section
+          q-item-section(:no-wrap='false').full-width
             q-item-label.q-mt-sm {{ endpoint.http }}
-          q-item-section
+          q-item-section(:no-wrap='false').full-width
             q-item-label(v-if="endpoint.latency" side top)
               span Latency: {{ endpoint.latency }}ms
               q-icon(name="wifi" :color="getLatencyColor(endpoint.latency)")
@@ -87,4 +87,8 @@ export default {
   padding: left 5px
   padding-right: 5px
   border-radius: 10px
+  @media only screen and (max-width: 600px)
+    .full-width
+      min-width: 100%
+      margin-top: .25rem
 </style>
