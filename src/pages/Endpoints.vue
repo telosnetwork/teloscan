@@ -89,10 +89,10 @@ export default {
   border-radius: 10px
 .text-primary
   margin-left: .25rem
-  @media only screen and (max-width: 600px)
-    .full-width
-      min-width: 100%
-      margin-top: .25rem
-    .no-wrap 
-      flex-wrap: wrap
+@media only screen and (max-width: 600px)
+  .full-width
+    min-width: 100%
+    margin-top: .25rem
+  .no-wrap 
+    flex-wrap: wrap
 </style>
