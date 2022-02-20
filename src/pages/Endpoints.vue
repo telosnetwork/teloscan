@@ -1,10 +1,9 @@
 <template lang="pug">
 .pageContainer.q-pt-xl
-  div
     .homeInfo
-        .text-primary.text-h4 RPC ENDPOINTS
+        .text-primary.text-h6 RPC ENDPOINTS
     .q-mb-md.tableWrapper
-      q-list
+      q-card
         q-item(v-for="endpoint in endpoints" :key="endpoint.endpoint")
           q-item-section
             q-item-label.text-weight-medium
@@ -78,7 +77,6 @@ export default {
 
 <style scoped lang='sass'>
 .q-list  
-  background-color: #1a1a1a
   border-radius: 10px
   box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%)
 .tableWrapper
