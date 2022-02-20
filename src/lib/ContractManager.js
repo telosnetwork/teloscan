@@ -112,7 +112,7 @@ export default class ContractManager {
 
   async getVerifiedContract(address, metadata) {
     const token = this.getToken(address);
-    const contract = 
+    const contract =
     new Contract({
       name: Object.values(metadata.settings.compilationTarget)[0],
       address,
@@ -155,7 +155,7 @@ export default class ContractManager {
     const contract = new ethers.Contract(address, erc20Abi, this.getEthersProvider());
     try {
       const decimals = await contract.decimals();
-      if (!decimals)
+      if (typeof decimals !== 'number')
         return;
 
       const name = await contract.name.call();
