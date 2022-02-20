@@ -184,7 +184,7 @@ export default {
             let token = contract.token;
             let valueBn = BigNumber.from(log.data);
             let valueDisplay;
-            if (token && token.decimals) {
+            if (token && typeof token.decimals === 'number') {
               let valueStr = ethers.utils.formatUnits(valueBn, token.decimals)
               let decimalIndex = valueStr.indexOf('.');
               if (decimalIndex >= 0) {
