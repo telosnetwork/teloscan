@@ -75,10 +75,11 @@ export default {
         }
       } else if (this.searchTerm.match(/(^[a-z1-5.]{1,11}[a-z1-5]$)|(^[a-z1-5.]{12}[a-j1-5]$)/)) {
         try {
-          let account = await this.$evm.telos.getEthAccountByTelosAccount(this.searchTerm);
+          const account = await this.$evm.telos.getEthAccountByTelosAccount(this.searchTerm);
           this.$router.push(`/address/${account.address}`);
           return;
         } catch (e) {
+          // in case this was a block that looked like an account name let's try it as a block
           if (!isNaN(this.searchTerm)) {
             this.$router.push(`/block/${this.searchTerm}`);
             return;
