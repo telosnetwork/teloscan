@@ -17,7 +17,7 @@
 
         <!-- <q-separator dark vertical class="desktop-only" /> -->
 
-        <search class="taskbarSearch desktop-only text-center "></search>
+        <search class="taskbarSearch desktop-only text-center " toolbar="true" ></search>
 
         <q-btn
           flat
@@ -108,7 +108,7 @@
 </template>
 
 <script>
-import Search from "src/components/SearchToolbar.vue";
+import Search from "src/components/Search.vue";
 import FooterMain from "src/components/Footer.vue";
 export default {
   name: "MainLayout",

@@ -178,29 +178,33 @@ export default {
 
             const contract = await this.$contractManager.getContract(
               ethers.utils.getAddress(address),
-              true
+              this.tokenType
             );
 
-            let token = contract.token;
-            let valueBn = BigNumber.from(log.data);
+            const token = contract.token;
             let valueDisplay;
-            if (token && typeof token.decimals === 'number') {
-              let valueStr = ethers.utils.formatUnits(valueBn, token.decimals)
-              let decimalIndex = valueStr.indexOf('.');
-              if (decimalIndex >= 0) {
-                // TODO: what if the value is .0000000000234 then it becomes .000000??
-                valueStr = valueStr.substring(0, decimalIndex + 6);
+            if (this.tokenType === 'erc20') {
+              const valueBn = BigNumber.from(log.data);
+              if (token && typeof token.decimals === 'number') {
+                let valueStr = ethers.utils.formatUnits(valueBn, token.decimals)
+                let decimalIndex = valueStr.indexOf('.');
+                if (decimalIndex >= 0) {
+                  // TODO: what if the value is .0000000000234 then it becomes .000000??
+                  valueStr = valueStr.substring(0, decimalIndex + 6);
+                }
+
+                if (valueStr.length > 50)
+                  valueStr = `${valueStr.slice(0, 20)} ...`
+
+                valueDisplay = valueStr + " " + token.symbol
+              } else {
+                valueDisplay = "Unknown precision";
               }
-
-              if (valueStr.length > 50)
-                valueStr = `${valueStr.slice(0, 20)} ...`
-
-              valueDisplay = valueStr + " " + token.symbol
             } else {
-              valueDisplay = "Unknown precision";
+              valueDisplay = `Id #${parseInt(log.topics[3], 16)}`
             }
 
-            let transfer = {
+            const transfer = {
               hash: transaction.hash,
               epoch: transaction.epoch,
               valueDisplay, address, from, to, ...contract,

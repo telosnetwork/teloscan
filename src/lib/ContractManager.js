@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import Web3 from "web3";
 import axios from "axios";
 import erc20Abi from "erc-20-abi";
+import erc721Abi from  "./erc721";
 import { toChecksumAddress } from "./utils";
 
 const contractsBucket = axios.create({
@@ -90,9 +91,9 @@ export default class ContractManager {
     }
 
     if (suspectedToken) {
-      const erc20Data = await this.getErc20Data(address);
-      if (erc20Data) {
-        return await this.getTokenContract(addressLower, erc20Data);
+      const tokenData = await this.getTokenData(address, suspectedToken);
+      if (tokenData) {
+        return await this.getTokenContract(addressLower, tokenData);
       }
     }
 
@@ -125,15 +126,15 @@ export default class ContractManager {
     return contract;
   }
 
-  async getTokenContract(address, erc20Data){
+  async getTokenContract(address, tokenData){
     const contract = new Contract({
-      name: `${erc20Data.name} (${erc20Data.symbol})`,
+      name: tokenData.symbol ? `${tokenData.name} (${tokenData.symbol})` : tokenData.name,
       address,
       abi: erc20Abi,
       manager: this,
       token: Object.assign({
         address,
-      }, erc20Data)
+      }, tokenData)
     });
 
     this.contracts[address] = contract;
@@ -151,19 +152,28 @@ export default class ContractManager {
     return contract;
   }
 
-  async getErc20Data(address) {
-    const contract = new ethers.Contract(address, erc20Abi, this.getEthersProvider());
+  async getTokenData(address, type) {
+    const contract = new ethers.Contract(address, type === 'erc20' ? erc20Abi : erc721Abi, this.getEthersProvider());
     try {
-      const decimals = await contract.decimals();
-      if (typeof decimals !== 'number')
+      let tokenData = {};
+      tokenData.name = await contract.name.call();
+      if (!tokenData.name)
         return;
 
-      const name = await contract.name.call();
-      const symbol = await contract.symbol.call();
-      if (!symbol || !name)
+      tokenData.symbol = await contract.symbol.call();
+
+      if (!tokenData.symbol)
         return;
 
-      return {name, symbol, decimals};
+      if (type == 'erc20') {
+        tokenData.decimals = await contract.decimals();
+      }
+
+      // TODO: if this is erc721, could we get more info about it and maybe read the metadata to link to the image?
+      // can't be sure if this contract would support ERC721Metadata, but something like:
+      // if (type == 'erc721') tokenData.baseURI = await contract.baseURI();
+
+      return tokenData;
     } catch (e) {
       return;
     }
