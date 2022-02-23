@@ -18,6 +18,7 @@
       q-tabs( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar content-container text-white tableWrapper" )
         q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
         q-route-tab(name="erc20transfers" :to="{ hash: 'erc20' }" exact replace label="ERC20 Transfers")
+        q-route-tab(name="erc721transfers" :to="{ hash: 'erc721' }" exact replace label="ERC721 Transfers")
         q-route-tab(name="tokens" :to="{ hash: 'tokens' }" exact replace label="Tokens")
         q-route-tab(v-if="isContract" name="contract" :to="{ hash: 'contract' }" exact replace label="Contract")
       .q-mb-md.tableWrapper
@@ -26,6 +27,8 @@
             transaction-table( :title="address" :filter="{address}" )
           q-tab-panel( name="erc20transfers" )
             transfer-table( title="ERC-20 Transfers" token-type="erc20" :address="address" )
+          q-tab-panel( name="erc721transfers" )
+            transfer-table( title="ERC-721 Transfers" token-type="erc721" :address="address" )
           q-tab-panel( name="tokens" )
             token-list( :address="address" )
           q-tab-panel( v-if="isContract" name="contract" )
