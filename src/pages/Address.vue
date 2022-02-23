@@ -107,8 +107,17 @@ export default {
     }
   },
   watch: {
-    $route(to, from) {
-      this.loadAccount();
+    '$route.params': {
+      handler(newValue) {
+        const { address } = newValue
+        if (this.address === address) {
+          return;
+        }
+
+        this.address = address;
+        this.loadAccount();
+      },
+      immediate: true,
     }
   }
 };
