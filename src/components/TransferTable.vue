@@ -181,10 +181,10 @@ export default {
               this.tokenType
             );
 
-            let token = contract.token;
+            const token = contract.token;
             let valueDisplay;
             if (this.tokenType === 'erc20') {
-              let valueBn = BigNumber.from(log.data);
+              const valueBn = BigNumber.from(log.data);
               if (token && typeof token.decimals === 'number') {
                 let valueStr = ethers.utils.formatUnits(valueBn, token.decimals)
                 let decimalIndex = valueStr.indexOf('.');
@@ -204,7 +204,7 @@ export default {
               valueDisplay = `Id #${parseInt(log.topics[3], 16)}`
             }
 
-            let transfer = {
+            const transfer = {
               hash: transaction.hash,
               epoch: transaction.epoch,
               valueDisplay, address, from, to, ...contract,

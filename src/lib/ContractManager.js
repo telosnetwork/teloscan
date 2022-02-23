@@ -162,15 +162,16 @@ export default class ContractManager {
 
       tokenData.symbol = await contract.symbol.call();
 
+      if (!tokenData.symbol)
+        return;
+
       if (type == 'erc20') {
         tokenData.decimals = await contract.decimals();
-      } else if (type == 'erc721') {
-        // can't be sure if this contract would support ERC721Metadata
-        //tokenData.baseURI = await contract.baseURI();
       }
 
-      if (!tokenData.symbol || !tokenData.name)
-        return;
+      // TODO: if this is erc721, could we get more info about it and maybe read the metadata to link to the image?
+      // can't be sure if this contract would support ERC721Metadata, but something like:
+      // if (type == 'erc721') tokenData.baseURI = await contract.baseURI();
 
       return tokenData;
     } catch (e) {
