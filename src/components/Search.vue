@@ -92,6 +92,9 @@ export default {
           });
           return;
         }
+      } else if (!isNaN(this.searchTerm)) {
+        this.$router.push(`/block/${this.searchTerm}`);
+        return;
       }
 
       this.$q.notify({
