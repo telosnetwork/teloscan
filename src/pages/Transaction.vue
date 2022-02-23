@@ -204,15 +204,6 @@ export default {
   },
   mounted() {
     this.loadTransaction();
-    if (this.$route.hash === "internal") {
-      this.tab = "internal";
-    } else if (this.$route.hash === "eventlog") {
-      this.tab = "logs";
-    } else if (this.$route.hash === "details") {
-      this.tab = "details";
-    } else {
-      this.tab = "general";
-    }
   },
   methods: {
     async loadTransaction() {
@@ -226,6 +217,7 @@ export default {
 
       this.trx = trxResponse.data.transactions[0];
       await this.loadContract();
+      this.setTab();
     },
     async loadContract() {
       if (this.trx.input_data === "0x") return;
@@ -243,6 +235,17 @@ export default {
         this.trx
       );
       this.isContract = true;
+    },
+    setTab() {
+      if (this.$route.hash === "internal") {
+        this.tab = "internal";
+      } else if (this.$route.hash === "eventlog") {
+        this.tab = "logs";
+      } else if (this.$route.hash === "details") {
+        this.tab = "details";
+      } else {
+        this.tab = "general";
+      }
     },
     getFunctionName() {
       if (this.parsedTransaction) return this.parsedTransaction.name;
@@ -278,6 +281,20 @@ export default {
     },
     getGasChargedGWEI() {
       return (this.trx.charged_gas_price / 1000000000).toFixed(2);
+    }
+  },
+  watch: {
+    '$route.params': {
+      handler(newValue) {
+        const { hash } = newValue
+        if (this.hash === hash) {
+          return;
+        }
+
+        this.hash = hash;
+        this.loadTransaction();
+      },
+      immediate: true,
     }
   }
 };
