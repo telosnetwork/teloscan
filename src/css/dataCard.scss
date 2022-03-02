@@ -26,26 +26,10 @@
 }
 
 @media screen and (max-width: 650px) {
-  .homeInfo {
-      color: white;
-      max-width: 100vw;
-      overflow: scroll;
-      font-size: 12px !important;
-  }
+
   .dataCardItem{
     padding: 10px !important;
     margin-top:-12px;
   }
 
-  .text-h4.text-primary.q-mb-lg {
-    line-height: 0rem !important;
-  }
-
-  .q-header{
-    margin: 0px 0px !important;
-  }
-  
-  .q-btn__wrapper {
-    padding: 4px !important
-}
 }
