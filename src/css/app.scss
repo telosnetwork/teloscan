@@ -49,11 +49,38 @@ a {
   margin-top: 0px !important;
 }
 
+.q-table--dark .q-table__bottom, .q-table--dark thead, .q-table--dark tr, .q-table--dark th, .q-table--dark td {
+  border-color: rgba(0, 0, 0, 0.3);
+  border-radius: 0px !important;
+}
+
+.q-dark {
+  color: #fff;
+  background: #1d1d1d;
+  background: #171717;
+}
+
+.q-card--dark {
+  padding: 0px;
+  background: #120f2741 !important;
+  border-radius: 10px;
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
 //@DUMMY MODS END
 
-.q-table--dark .q-table__bottom, .q-table--dark thead, .q-table--dark tr, .q-table--dark th, .q-table--dark td {
-  border-color: rgb(0 0 0 / 50%);
-}
+
 
 // Fonts
 body {
@@ -76,7 +103,6 @@ body.body--light {
     left: 0;
     z-index: 0;
   }
-
   .jsonViewer {
     color: $purpleDarkMode;
     max-width: 100vw;
@@ -259,7 +285,7 @@ body.body--dark {
   max-width: 100vw;
   padding-left: 5px;
   padding-right: 5px;
-  margin-top:17.5px;
+  margin-top:17px;
 }
 
 .jv-code{
