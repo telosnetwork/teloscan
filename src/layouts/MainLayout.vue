@@ -139,7 +139,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-//@dummy genesis gradient = background: linear-gradient(#252a5e 27.19%, #2d4684 65.83%);
 .banner {
   z-index: -1;
   height: 280px;
