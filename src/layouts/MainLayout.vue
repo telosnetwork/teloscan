@@ -35,6 +35,16 @@
           </template>
 
           <q-list style="width : 200px">
+            <q-item
+              clickable
+              v-close-popup
+              @click.native="addNetwork()"
+            >
+              <q-item-section>
+                <q-item-label> {{ `Add to Metamask` }} </q-item-label>
+              </q-item-section>
+            </q-item>
+
             <q-item-label header>Network</q-item-label>
 
             <!-- <q-item
@@ -138,8 +148,8 @@ export default {
       // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own, this should remove it
       if(window.navigator && navigator.serviceWorker) {
         navigator.serviceWorker.getRegistrations()
-          .then(function(registrations) {
-            for(let registration of registrations) {
+          .then(function (registrations) {
+            for (let registration of registrations) {
               registration.unregister();
             }
           });
