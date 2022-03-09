@@ -35,6 +35,16 @@
           </template>
 
           <q-list style="width : 200px">
+            <q-item
+              clickable
+              v-close-popup
+              @click.native="addNetwork()"
+            >
+              <q-item-section>
+                <q-item-label> {{ `Add to Metamask` }} </q-item-label>
+              </q-item-section>
+            </q-item>
+
             <q-item-label header>Network</q-item-label>
 
             <!-- <q-item
@@ -130,6 +140,41 @@ export default {
     },
     goTo(url) {
       window.open(url, "_blank");
+    },
+    async addNetwork() {
+      const provider = window.ethereum;
+      if (provider) {
+        const chainId = parseInt(process.env.NETWORK_EVM_CHAIN_ID, 10);
+        const mainnet = chainId === 40;
+        try {
+          await provider.request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: `0x${chainId.toString(16)}`,
+                chainName: `Telos EVM ${mainnet ? 'Mainnet' : 'Testnet'}`,
+                nativeCurrency: {
+                  name: `Telos`,
+                  symbol: `TLOS`,
+                  decimals: 18,
+                },
+                rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
+                blockExplorerUrls: [`https://${mainnet ? '' : 'testnet'}.teloscan.io`],
+              },
+            ],
+          });
+          return true;
+
+        } catch (error) {
+          console.error(error);
+          return false;
+        }
+      } else {
+        console.error(
+          "Can't setup the network on metamask because window.ethereum is undefined"
+        );
+        return false;
+      }
     }
   },
   created() {
