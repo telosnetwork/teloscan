@@ -31,14 +31,14 @@
 
         <q-btn-dropdown flat>
           <template v-slot:label>
-            {{ mainnet ? "Mainnet" : "Testnet" }}
+            <q-icon name='circle' class='connection' :style="{ color: accountConnected ? '#7FFF00' : 'red'}"></q-icon>  {{ mainnet ? "Mainnet" : "Testnet" }}
           </template>
 
           <q-list style="width : 200px">
             <q-item
               clickable
               v-close-popup
-              @click.native="switchEthereumChain()"
+              @click.native="connectAccount()"
             >
               <q-item-section>
                 <q-item-label> Connect Account</q-item-label>
@@ -120,14 +120,18 @@
 <script>
 import Search from "src/components/Search.vue";
 import FooterMain from "src/components/Footer.vue";
-import { switchEthereumChain } from 'src/lib/provider';
+import { switchEthereumChain, isConnected, requestAccounts } from 'src/lib/provider';
 export default {
   name: "MainLayout",
   components: { Search,FooterMain },
   data() {
     return {
-      mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40"
+      mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40",
+      accountConnected: false
     };
+  },
+  async mounted(){
+    this.accountConnected = await this.isConnected();
   },
   computed: {
     onHomePage() {
@@ -135,7 +139,14 @@ export default {
     }
   },
   methods: {
+    isConnected,
+    requestAccounts,
     switchEthereumChain,
+    async connectAccount() {
+      await this.switchEthereumChain();
+      const connected = await this.requestAccounts();
+      this.accountConnected = connected;
+    },
     toggleDarkMode() {
       this.$q.dark.toggle();
       localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
@@ -162,5 +173,9 @@ export default {
   &.home {
     height: 400px;
   }
+}
+.connection {
+  font-size: .5rem;
+  margin-right: 0.2rem;
 }
 </style>

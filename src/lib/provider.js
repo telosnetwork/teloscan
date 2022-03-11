@@ -1,3 +1,5 @@
+const { ethers } = require("ethers");
+
 const switchEthereumChain = async () => {
     const provider = getProvider();
 
@@ -10,6 +12,7 @@ const switchEthereumChain = async () => {
                 method: 'wallet_switchEthereumChain',
                 params: [{ chainId: chainIdParam }],
             });
+            return true;
         } catch (e) {
             if (e.code === 4902) {  // "Chain <hex chain id> hasn't been added"
                 try {
@@ -27,6 +30,7 @@ const switchEthereumChain = async () => {
                             blockExplorerUrls: [`https://${mainnet ? '' : 'testnet'}.teloscan.io`]
                         }],
                     });
+                    return true;
                 } catch (e) {
                     console.error(e);
                 }
@@ -86,6 +90,18 @@ const addNetwork = async () => {
         return false;
     }
 }
- 
 
-module.exports = { switchEthereumChain, addNetwork, getProvider }
+const isConnected = async () => {
+    const provider = getProvider();
+    const checkProvider = new ethers.providers.Web3Provider(provider);
+    const accounts = await checkProvider.listAccounts();
+    return accounts.length > 0;
+}
+
+const requestAccounts = async () => {
+    const provider = getProvider();
+    const accessGranted =  await provider.request({ method: 'eth_requestAccounts' })
+    return accessGranted > 0;
+}
+
+module.exports = { switchEthereumChain, addNetwork, getProvider, isConnected, requestAccounts }
