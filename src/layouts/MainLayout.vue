@@ -125,7 +125,6 @@ export default {
       });
     },
     async connectAccount() {
-      debugger;
       const connection = await this.switchEthereumChain();
       if (connection !== false) {
         this.accountConnected = await this.requestAccounts();
