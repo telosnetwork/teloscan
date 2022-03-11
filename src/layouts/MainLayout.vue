@@ -10,7 +10,7 @@
         </div>
         <q-space />
 
-        <search class="taskbarSearch desktop-only text-center " toolbar="true" ></search>
+        <search class="taskbarSearch desktop-only text-center " :toolbar="true" ></search>
 
         <q-btn
           flat
@@ -88,9 +88,7 @@ import {
   switchEthereumChain, 
   isConnected, 
   requestAccounts, 
-  getProvider,
-  unsupportedError,
-  providersError
+  getProvider
    } from 'src/lib/provider';
 export default {
   name: "MainLayout",
@@ -102,9 +100,6 @@ export default {
     };
   },
   async mounted(){
-    if (window.ethereum.providers){
-      this.$q.notify(providersError);
-    }
     this.accountConnected = await this.isConnected();
     if (this.accountConnected){
       this.addAccountsListener();
