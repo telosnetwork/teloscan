@@ -47,7 +47,7 @@ const getProvider = () => {
     const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
         window.ethereum :
         false; 
-        
+
     if (!provider){
         console.error(
             "Current ethereum provider is not supported."
@@ -58,7 +58,6 @@ const getProvider = () => {
 
 const addNetwork = async () => {
     const provider = getProvider();
-    debugger;
     if (provider) {
         const chainId = parseInt(process.env.NETWORK_EVM_CHAIN_ID, 10);
         const chainIdParam = `0x${chainId.toString(16)}`
@@ -84,9 +83,6 @@ const addNetwork = async () => {
             return false;
         }
     } else {
-        console.error(
-            "Can't setup the network on metamask because window.ethereum is undefined"
-        );
         return false;
     }
 }
