@@ -41,7 +41,7 @@
               @click.native="addNetwork()"
             >
               <q-item-section>
-                <q-item-label> {{ `Add to Metamask` }} </q-item-label>
+                <q-item-label> Add to Metamask </q-item-label>
               </q-item-section>
             </q-item>
 
@@ -142,7 +142,8 @@ export default {
       window.open(url, "_blank");
     },
     async addNetwork() {
-      const provider = window.ethereum;
+      // if more than one provider is active, use metamask
+      const provider = window.ethereum.providers ? window.ethereum.providers.find((provider) => provider.isMetaMask) : window.ethereum; 
       if (provider) {
         const chainId = parseInt(process.env.NETWORK_EVM_CHAIN_ID, 10);
         const mainnet = chainId === 40;
