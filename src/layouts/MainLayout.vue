@@ -125,9 +125,13 @@ export default {
       });
     },
     async connectAccount() {
-      await this.switchEthereumChain();
-      this.accountConnected = await this.requestAccounts();
-      this.addAccountsListener();
+      const connection = await this.switchEthereumChain();
+      if (connection) {
+        this.accountConnected = await this.requestAccounts();
+        this.addAccountsListener();
+      }else{
+        this.$q.notify({ position: 'top', type: 'warning', message: 'No provider detected. Enable an ethereum provider such as MetaMask to connect account.'})
+      }
     },
     toggleDarkMode() {
       this.$q.dark.toggle();
