@@ -41,11 +41,11 @@
               @click.native="switchEthereumChain()"
             >
               <q-item-section>
-                <q-item-label> Add to Metamask </q-item-label>
+                <q-item-label> Connect Account</q-item-label>
               </q-item-section>
             </q-item>
 
-            <q-item-label header>Network</q-item-label>
+            <q-item-label header>Select Network</q-item-label>
 
             <!-- <q-item
               v-close-popup
@@ -128,9 +128,6 @@ export default {
     return {
       mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40"
     };
-  },
-  async mounted(){
-    await this.switchEthereumChain();
   },
   computed: {
     onHomePage() {
