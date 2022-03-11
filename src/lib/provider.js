@@ -44,17 +44,9 @@ const switchEthereumChain = async () => {
 };
 
 const getProvider = () => {
-    if (window.ethereum.providers){
-        console.error(providersError);
-        return false;
-    }
     const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
-        window.ethereum :
-        false; 
-
-    if (!provider){
-        console.error(unsupportedError);
-    }
+        window.ethereum : 
+        null
     return provider;
 }
 
@@ -90,10 +82,19 @@ const addNetwork = async () => {
 }
 
 const isConnected = async () => {
+    debugger;
     const provider = getProvider();
+    debugger;
     const checkProvider = new ethers.providers.Web3Provider(provider);
     const accounts = await checkProvider.listAccounts();
-    return accounts.length > 0 ? accounts[0] : false;
+    if (accounts.length > 0){
+        const { chainId } = await checkProvider.getNetwork();
+        if (chainId != process.env.NETWORK_EVM_CHAIN_ID){
+            await switchEthereumChain();
+        }
+        return accounts[0];
+    }
+    return false;
 }
 
 const requestAccounts = async () => {
