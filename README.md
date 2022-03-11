@@ -1,8 +1,8 @@
 # Telos EVM Explorer
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/1a750b68-90d9-4e80-8ac9-74084bc475ae/deploy-status)](https://app.netlify.com/sites/teloscan/deploys)Main Net: [https://www.teloscan.io/](https://www.teloscan.io/)  
+Main Net: [![Netlify Status](https://api.netlify.com/api/v1/badges/1a750b68-90d9-4e80-8ac9-74084bc475ae/deploy-status)](https://app.netlify.com/sites/teloscan/deploys) [https://www.teloscan.io/](https://www.teloscan.io/)  
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/21a714ec-2847-458f-880e-67ffaf31b89a/deploy-status)](https://app.netlify.com/sites/testnet-teloscan/deploys)Test Net: [https://testnet.teloscan.io/](https://testnet.teloscan.io/)
+Test Net: [![Netlify Status](https://api.netlify.com/api/v1/badges/21a714ec-2847-458f-880e-67ffaf31b89a/deploy-status)](https://app.netlify.com/sites/testnet-teloscan/deploys) [https://testnet.teloscan.io/](https://testnet.teloscan.io/)
 
 ## Install the dependencies
 
