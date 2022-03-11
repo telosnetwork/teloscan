@@ -104,18 +104,20 @@ const requestAccounts = async () => {
     return accessGranted > 0;
 }
 
-const disconnectAccount = async () => {
-    debugger;
-    const provider = getProvider();
-    await provider.request({
-        method: 'wallet_requestPermissions',
-        params: [
-            {
-                eth_accounts: {}
-            }
-        ]
-    });
-}
+// const disconnectAccount = async () => {
+//     debugger;
+//     const provider = getProvider();
+//     await provider.request({
+//         method: 'wallet_requestPermissions',
+//         params: [
+//             {
+//                 eth_accounts: {}
+//             }
+//         ]
+//     }).then(() => ethereum.request({
+//         method: 'eth_requestAccounts'
+//     }))
+// }
 
 module.exports = { 
     switchEthereumChain, 
@@ -123,5 +125,5 @@ module.exports = {
     getProvider, 
     isConnected, 
     requestAccounts,
-    disconnectAccount
+    // disconnectAccount
 }
