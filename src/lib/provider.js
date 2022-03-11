@@ -32,13 +32,27 @@ const switchEthereumChain = async () => {
                 }
             }
         }
+    }else{
+        return false;
     }
 };
 
 const getProvider = () => {
-    const provider = window.ethereum.providers ? 
-        window.ethereum.providers.find((provider) => provider.isMetaMask) :
-        window.ethereum; 
+    if (window.ethereum.providers){
+        console.error(
+            "More than one active provider, disable additional providers."
+        );
+        return false;
+    }
+    const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
+        window.ethereum :
+        false; 
+        
+    if (!provider){
+        console.error(
+            "Current ethereum provider is not supported."
+        );
+    }
     return provider;
 }
 
