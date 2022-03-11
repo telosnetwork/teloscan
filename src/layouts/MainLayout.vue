@@ -9,13 +9,6 @@
           </router-link>
         </div>
         <q-space />
-        <!-- <q-btn stretch flat class="desktop-only" label="Blocks" /> -->
-
-        <!-- <q-separator dark vertical class="desktop-only" />
-
-        <q-btn stretch flat class="desktop-only" label="Transactions" to="/transactions" /> -->
-
-        <!-- <q-separator dark vertical class="desktop-only" /> -->
 
         <search class="taskbarSearch desktop-only text-center " toolbar="true" ></search>
 
@@ -31,10 +24,12 @@
 
         <q-btn-dropdown flat>
           <template v-slot:label>
-            <q-icon name='circle' class='connection' :style="{ color: accountConnected ? '#7FFF00' : 'red'}"></q-icon>  {{ mainnet ? "Mainnet" : "Testnet" }}
+
+            <q-icon name='circle' class='connection' :style="{ color: accountConnected ? '#7FFF00' : 'red'}"></q-icon> 
+            <span class='account'>{{ accountConnected ? accountConnected : mainnet ? "Mainnet" : "Testnet" }}</span>
           </template>
 
-          <q-list style="width : 200px">
+          <q-list>
             <q-item
               :disabled='accountConnected'
               clickable
@@ -42,39 +37,11 @@
               @click.native="connectAccount()"
             >
               <q-item-section>
-                <q-item-label> Connect Account</q-item-label>
+                <q-item-label> {{ accountConnected ?  `Connected to ${mainnet ? "Mainnet" : "Testnet"}` : 'Connect Account' }}</q-item-label>
               </q-item-section>
             </q-item>
-            <!-- <q-item
-              v-else
-              clickable
-              v-close-popup
-              @click.native="disconnectAccount()"
-            >
-              <q-item-section>
-                <q-item-label> Disconnect Account</q-item-label>
-              </q-item-section>
-            </q-item> -->
 
             <q-item-label header>Select Network</q-item-label>
-
-            <!-- <q-item
-              v-close-popup
-              @click.native="goTo('https://www.teloscan.io/')"
-            >
-              <q-item-section>
-                <q-item-label> Mainnet </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              v-close-popup
-              @click.native="goTo('https://testnet.teloscan.io/')"
-            >
-              <q-item-section>
-                <q-item-label>Testnet</q-item-label>
-              </q-item-section>
-            </q-item> -->
 
             <q-item
               v-if="!mainnet"
@@ -98,20 +65,6 @@
               </q-item-section>
             </q-item>
 
-            <!-- <q-separator inset spaced />
-            <q-item-label header>Blockchain</q-item-label>
-
-            <q-item clickable v-close-popup to="/">
-              <q-item-section>
-                <q-item-label>Blocks</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable v-close-popup to="/transactions">
-              <q-item-section>
-                <q-item-label>Transactions</q-item-label>
-              </q-item-section>
-            </q-item> -->
           </q-list>
         </q-btn-dropdown>
       </q-toolbar>
@@ -136,7 +89,8 @@ import {
   isConnected, 
   requestAccounts, 
   getProvider,
-  disconnectAccount
+  unsupportedError,
+  providersError
    } from 'src/lib/provider';
 export default {
   name: "MainLayout",
@@ -148,6 +102,9 @@ export default {
     };
   },
   async mounted(){
+    if (window.ethereum.providers){
+      this.$q.notify(providersError);
+    }
     this.accountConnected = await this.isConnected();
     if (this.accountConnected){
       this.addAccountsListener();
@@ -163,7 +120,6 @@ export default {
     isConnected,
     requestAccounts,
     switchEthereumChain,
-    disconnectAccount,
     addAccountsListener() {
       const provider = this.getProvider();
       provider.on('accountsChanged', (accountsArr) => {
@@ -175,8 +131,7 @@ export default {
     },
     async connectAccount() {
       await this.switchEthereumChain();
-      const connected = await this.requestAccounts();
-      this.accountConnected = connected;
+      this.accountConnected = await this.requestAccounts();
       this.addAccountsListener();
     },
     toggleDarkMode() {
@@ -206,8 +161,17 @@ export default {
     height: 400px;
   }
 }
+
 .connection {
   font-size: .5rem;
   margin-right: 0.2rem;
 }
+
+.account {
+  width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 </style>

@@ -1,4 +1,6 @@
 const { ethers } = require("ethers");
+const providersError = "More than one provider is active, disable additional providers.";
+const unsupportedError ="Current ethereum provider is not supported.";
 
 const switchEthereumChain = async () => {
     const provider = getProvider();
@@ -43,9 +45,7 @@ const switchEthereumChain = async () => {
 
 const getProvider = () => {
     if (window.ethereum.providers){
-        console.error(
-            "More than one active provider, disable additional providers."
-        );
+        console.error(providersError);
         return false;
     }
     const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
@@ -53,9 +53,7 @@ const getProvider = () => {
         false; 
 
     if (!provider){
-        console.error(
-            "Current ethereum provider is not supported."
-        );
+        console.error(unsupportedError);
     }
     return provider;
 }
@@ -95,29 +93,14 @@ const isConnected = async () => {
     const provider = getProvider();
     const checkProvider = new ethers.providers.Web3Provider(provider);
     const accounts = await checkProvider.listAccounts();
-    return accounts.length > 0;
+    return accounts.length > 0 ? accounts[0] : false;
 }
 
 const requestAccounts = async () => {
     const provider = getProvider();
     const accessGranted =  await provider.request({ method: 'eth_requestAccounts' })
-    return accessGranted > 0;
+    return accessGranted > 0 ? accessGranted[0] : false;
 }
-
-// const disconnectAccount = async () => {
-//     debugger;
-//     const provider = getProvider();
-//     await provider.request({
-//         method: 'wallet_requestPermissions',
-//         params: [
-//             {
-//                 eth_accounts: {}
-//             }
-//         ]
-//     }).then(() => ethereum.request({
-//         method: 'eth_requestAccounts'
-//     }))
-// }
 
 module.exports = { 
     switchEthereumChain, 
@@ -125,5 +108,6 @@ module.exports = {
     getProvider, 
     isConnected, 
     requestAccounts,
-    // disconnectAccount
+    providersError,
+    unsupportedError
 }
