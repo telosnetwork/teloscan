@@ -38,7 +38,7 @@
             <q-item
               clickable
               v-close-popup
-              @click.native="addNetwork()"
+              @click.native="switchEthereumChain()"
             >
               <q-item-section>
                 <q-item-label> Add to Metamask </q-item-label>
@@ -120,6 +120,7 @@
 <script>
 import Search from "src/components/Search.vue";
 import FooterMain from "src/components/Footer.vue";
+import { switchEthereumChain } from 'src/lib/provider';
 export default {
   name: "MainLayout",
   components: { Search,FooterMain },
@@ -128,54 +129,22 @@ export default {
       mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40"
     };
   },
+  async mounted(){
+    await this.switchEthereumChain();
+  },
   computed: {
     onHomePage() {
       return this.$route.name === "home";
     }
   },
   methods: {
+    switchEthereumChain,
     toggleDarkMode() {
       this.$q.dark.toggle();
       localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
     },
     goTo(url) {
       window.open(url, "_blank");
-    },
-    async addNetwork() {
-      // if more than one provider is active, use metamask
-      const provider = window.ethereum.providers ? window.ethereum.providers.find((provider) => provider.isMetaMask) : window.ethereum; 
-      if (provider) {
-        const chainId = parseInt(process.env.NETWORK_EVM_CHAIN_ID, 10);
-        const mainnet = chainId === 40;
-        try {
-          await provider.request({
-            method: "wallet_addEthereumChain",
-            params: [
-              {
-                chainId: `0x${chainId.toString(16)}`,
-                chainName: `Telos EVM ${mainnet ? 'Mainnet' : 'Testnet'}`,
-                nativeCurrency: {
-                  name: `Telos`,
-                  symbol: `TLOS`,
-                  decimals: 18,
-                },
-                rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
-                blockExplorerUrls: [`https://${mainnet ? '' : 'testnet'}.teloscan.io`],
-              },
-            ],
-          });
-          return true;
-
-        } catch (error) {
-          console.error(error);
-          return false;
-        }
-      } else {
-        console.error(
-          "Can't setup the network on metamask because window.ethereum is undefined"
-        );
-        return false;
-      }
     }
   },
   created() {
