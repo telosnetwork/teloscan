@@ -125,10 +125,12 @@ export default {
       });
     },
     async connectAccount() {
+      debugger;
       const connection = await this.switchEthereumChain();
-      if (connection) {
+      if (connection !== false) {
         this.accountConnected = await this.requestAccounts();
         this.addAccountsListener();
+        this.$router.push(`/address/${this.accountConnected}`);
       }else{
         this.$q.notify({ position: 'top', type: 'warning', message: 'No provider detected. Enable an ethereum provider such as MetaMask to connect account.'})
       }
