@@ -36,7 +36,7 @@
 
           <q-list style="width : 200px">
             <q-item
-              v-if="!accountConnected"
+              :disabled='accountConnected'
               clickable
               v-close-popup
               @click.native="connectAccount()"
@@ -45,7 +45,7 @@
                 <q-item-label> Connect Account</q-item-label>
               </q-item-section>
             </q-item>
-            <q-item
+            <!-- <q-item
               v-else
               clickable
               v-close-popup
@@ -54,7 +54,7 @@
               <q-item-section>
                 <q-item-label> Disconnect Account</q-item-label>
               </q-item-section>
-            </q-item>
+            </q-item> -->
 
             <q-item-label header>Select Network</q-item-label>
 
@@ -149,6 +149,9 @@ export default {
   },
   async mounted(){
     this.accountConnected = await this.isConnected();
+    if (this.accountConnected){
+      this.addAccountsListener();
+    }
   },
   computed: {
     onHomePage() {
