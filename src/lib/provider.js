@@ -48,7 +48,7 @@ const getProvider = () => {
         window.ethereum : 
         null
     if (!provider){
-        console.error(providersError, 'or', unsupportedError)
+        console.error(providersError, 'or', unsupportedError);
     }
     return provider;
 }
