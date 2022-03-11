@@ -36,12 +36,22 @@
 
           <q-list style="width : 200px">
             <q-item
+              v-if="!accountConnected"
               clickable
               v-close-popup
               @click.native="connectAccount()"
             >
               <q-item-section>
                 <q-item-label> Connect Account</q-item-label>
+              </q-item-section>
+            <q-item
+              v-else
+              clickable
+              v-close-popup
+              @click.native="disconnectAccount()"
+            >
+              <q-item-section>
+                <q-item-label> Disconnect Account</q-item-label>
               </q-item-section>
             </q-item>
 
@@ -120,7 +130,13 @@
 <script>
 import Search from "src/components/Search.vue";
 import FooterMain from "src/components/Footer.vue";
-import { switchEthereumChain, isConnected, requestAccounts, getProvider } from 'src/lib/provider';
+import { 
+  switchEthereumChain, 
+  isConnected, 
+  requestAccounts, 
+  getProvider,
+  disconnectAccount
+   } from 'src/lib/provider';
 export default {
   name: "MainLayout",
   components: { Search,FooterMain },
@@ -143,6 +159,7 @@ export default {
     isConnected,
     requestAccounts,
     switchEthereumChain,
+    disconnectAccount,
     addAccountsListener() {
       const provider = this.getProvider();
       provider.on('accountsChanged', (accountsArr) => {
