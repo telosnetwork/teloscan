@@ -9,15 +9,8 @@
           </router-link>
         </div>
         <q-space />
-        <!-- <q-btn stretch flat class="desktop-only" label="Blocks" /> -->
 
-        <!-- <q-separator dark vertical class="desktop-only" />
-
-        <q-btn stretch flat class="desktop-only" label="Transactions" to="/transactions" /> -->
-
-        <!-- <q-separator dark vertical class="desktop-only" /> -->
-
-        <search class="taskbarSearch desktop-only text-center " toolbar="true" ></search>
+        <search class="taskbarSearch desktop-only text-center " :toolbar="true" ></search>
 
         <q-btn
           flat
@@ -31,39 +24,24 @@
 
         <q-btn-dropdown flat>
           <template v-slot:label>
-            {{ mainnet ? "Mainnet" : "Testnet" }}
+
+            <q-icon name='circle' class='connection' :style="{ color: accountConnected ? '#7FFF00' : 'red'}"></q-icon> 
+            <span class='account'>{{ accountConnected ? accountConnected : mainnet ? "Mainnet" : "Testnet" }}</span>
           </template>
 
-          <q-list style="width : 200px">
+          <q-list>
             <q-item
+              :disabled='accountConnected'
               clickable
               v-close-popup
-              @click.native="addNetwork()"
+              @click.native="connectAccount()"
             >
               <q-item-section>
-                <q-item-label> Add to Metamask </q-item-label>
+                <q-item-label> {{ accountConnected ?  `Connected to ${mainnet ? "Mainnet" : "Testnet"}` : 'Connect Account' }}</q-item-label>
               </q-item-section>
             </q-item>
 
-            <q-item-label header>Network</q-item-label>
-
-            <!-- <q-item
-              v-close-popup
-              @click.native="goTo('https://www.teloscan.io/')"
-            >
-              <q-item-section>
-                <q-item-label> Mainnet </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              v-close-popup
-              @click.native="goTo('https://testnet.teloscan.io/')"
-            >
-              <q-item-section>
-                <q-item-label>Testnet</q-item-label>
-              </q-item-section>
-            </q-item> -->
+            <q-item-label header>Select Network</q-item-label>
 
             <q-item
               v-if="!mainnet"
@@ -87,20 +65,6 @@
               </q-item-section>
             </q-item>
 
-            <!-- <q-separator inset spaced />
-            <q-item-label header>Blockchain</q-item-label>
-
-            <q-item clickable v-close-popup to="/">
-              <q-item-section>
-                <q-item-label>Blocks</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable v-close-popup to="/transactions">
-              <q-item-section>
-                <q-item-label>Transactions</q-item-label>
-              </q-item-section>
-            </q-item> -->
           </q-list>
         </q-btn-dropdown>
       </q-toolbar>
@@ -120,13 +84,26 @@
 <script>
 import Search from "src/components/Search.vue";
 import FooterMain from "src/components/Footer.vue";
+import { 
+  switchEthereumChain, 
+  isConnected, 
+  requestAccounts, 
+  getProvider
+   } from 'src/lib/provider';
 export default {
   name: "MainLayout",
   components: { Search,FooterMain },
   data() {
     return {
-      mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40"
+      mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40",
+      accountConnected: false
     };
+  },
+  async mounted(){
+    this.accountConnected = await this.isConnected();
+    if (this.accountConnected){
+      this.addAccountsListener();
+    }
   },
   computed: {
     onHomePage() {
@@ -134,48 +111,30 @@ export default {
     }
   },
   methods: {
+    getProvider,
+    isConnected,
+    requestAccounts,
+    switchEthereumChain,
+    addAccountsListener() {
+      const provider = this.getProvider();
+      provider.on('accountsChanged', (accountsArr) => {
+        if (!accountsArr.length){
+          this.accountConnected = false;
+          provider.removeAllListeners('accountsChanged');
+        }
+      });
+    },
+    async connectAccount() {
+      await this.switchEthereumChain();
+      this.accountConnected = await this.requestAccounts();
+      this.addAccountsListener();
+    },
     toggleDarkMode() {
       this.$q.dark.toggle();
       localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
     },
     goTo(url) {
       window.open(url, "_blank");
-    },
-    async addNetwork() {
-      // if more than one provider is active, use metamask
-      const provider = window.ethereum.providers ? window.ethereum.providers.find((provider) => provider.isMetaMask) : window.ethereum; 
-      if (provider) {
-        const chainId = parseInt(process.env.NETWORK_EVM_CHAIN_ID, 10);
-        const mainnet = chainId === 40;
-        try {
-          await provider.request({
-            method: "wallet_addEthereumChain",
-            params: [
-              {
-                chainId: `0x${chainId.toString(16)}`,
-                chainName: `Telos EVM ${mainnet ? 'Mainnet' : 'Testnet'}`,
-                nativeCurrency: {
-                  name: `Telos`,
-                  symbol: `TLOS`,
-                  decimals: 18,
-                },
-                rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
-                blockExplorerUrls: [`https://${mainnet ? '' : 'testnet'}.teloscan.io`],
-              },
-            ],
-          });
-          return true;
-
-        } catch (error) {
-          console.error(error);
-          return false;
-        }
-      } else {
-        console.error(
-          "Can't setup the network on metamask because window.ethereum is undefined"
-        );
-        return false;
-      }
     }
   },
   created() {
@@ -197,4 +156,17 @@ export default {
     height: 400px;
   }
 }
+
+.connection {
+  font-size: .5rem;
+  margin-right: 0.2rem;
+}
+
+.account {
+  width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 </style>
