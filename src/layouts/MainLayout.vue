@@ -41,7 +41,7 @@
               @click.native="addNetwork()"
             >
               <q-item-section>
-                <q-item-label> {{ `Add to Metamask` }} </q-item-label>
+                <q-item-label> Add to Metamask </q-item-label>
               </q-item-section>
             </q-item>
 
@@ -133,9 +133,6 @@ export default {
       return this.$route.name === "home";
     }
   },
-  mounted() {
-    this.removeOldAngularCache();
-  },
   methods: {
     toggleDarkMode() {
       this.$q.dark.toggle();
@@ -144,15 +141,40 @@ export default {
     goTo(url) {
       window.open(url, "_blank");
     },
-    removeOldAngularCache() {
-      // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own, this should remove it
-      if(window.navigator && navigator.serviceWorker) {
-        navigator.serviceWorker.getRegistrations()
-          .then(function (registrations) {
-            for (let registration of registrations) {
-              registration.unregister();
-            }
+    async addNetwork() {
+      // if more than one provider is active, use metamask
+      const provider = window.ethereum.providers ? window.ethereum.providers.find((provider) => provider.isMetaMask) : window.ethereum; 
+      if (provider) {
+        const chainId = parseInt(process.env.NETWORK_EVM_CHAIN_ID, 10);
+        const mainnet = chainId === 40;
+        try {
+          await provider.request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: `0x${chainId.toString(16)}`,
+                chainName: `Telos EVM ${mainnet ? 'Mainnet' : 'Testnet'}`,
+                nativeCurrency: {
+                  name: `Telos`,
+                  symbol: `TLOS`,
+                  decimals: 18,
+                },
+                rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
+                blockExplorerUrls: [`https://${mainnet ? '' : 'testnet'}.teloscan.io`],
+              },
+            ],
           });
+          return true;
+
+        } catch (error) {
+          console.error(error);
+          return false;
+        }
+      } else {
+        console.error(
+          "Can't setup the network on metamask because window.ethereum is undefined"
+        );
+        return false;
       }
     }
   },
