@@ -120,7 +120,7 @@
 <script>
 import Search from "src/components/Search.vue";
 import FooterMain from "src/components/Footer.vue";
-import { switchEthereumChain, isConnected, requestAccounts } from 'src/lib/provider';
+import { switchEthereumChain, isConnected, requestAccounts, getProvider } from 'src/lib/provider';
 export default {
   name: "MainLayout",
   components: { Search,FooterMain },
@@ -139,13 +139,24 @@ export default {
     }
   },
   methods: {
+    getProvider,
     isConnected,
     requestAccounts,
     switchEthereumChain,
+    addAccountsListener() {
+      const provider = this.getProvider();
+      provider.on('accountsChanged', (accountsArr) => {
+        if (!accountsArr.length){
+          this.accountConnected = false;
+          provider.removeAllListeners('accountsChanged');
+        }
+      });
+    },
     async connectAccount() {
       await this.switchEthereumChain();
       const connected = await this.requestAccounts();
       this.accountConnected = connected;
+      this.addAccountsListener();
     },
     toggleDarkMode() {
       this.$q.dark.toggle();
