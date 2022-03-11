@@ -105,6 +105,7 @@ const requestAccounts = async () => {
 }
 
 const disconnectAccount = async () => {
+    debugger;
     const provider = getProvider();
     await provider.request({
         method: 'wallet_requestPermissions',
@@ -114,7 +115,6 @@ const disconnectAccount = async () => {
             }
         ]
     });
-    provider.removeAllListeners('accountsChanged');
 }
 
 module.exports = { 

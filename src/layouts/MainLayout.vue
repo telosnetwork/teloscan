@@ -44,6 +44,7 @@
               <q-item-section>
                 <q-item-label> Connect Account</q-item-label>
               </q-item-section>
+            </q-item>
             <q-item
               v-else
               clickable
