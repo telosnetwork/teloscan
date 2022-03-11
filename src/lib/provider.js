@@ -85,9 +85,7 @@ const addNetwork = async () => {
 }
 
 const isConnected = async () => {
-    debugger;
     const provider = getProvider();
-    debugger;
     const checkProvider = new ethers.providers.Web3Provider(provider);
     const accounts = await checkProvider.listAccounts();
     if (accounts.length > 0){
@@ -111,7 +109,5 @@ module.exports = {
     addNetwork, 
     getProvider, 
     isConnected, 
-    requestAccounts,
-    providersError,
-    unsupportedError
+    requestAccounts
 }
