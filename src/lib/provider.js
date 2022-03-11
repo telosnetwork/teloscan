@@ -1,6 +1,6 @@
 const { ethers } = require("ethers");
 const providersError = "More than one provider is active, disable additional providers.";
-const unsupportedError ="Current ethereum provider is not supported.";
+const unsupportedError ="current ethereum provider is not supported.";
 
 const switchEthereumChain = async () => {
     const provider = getProvider();
@@ -47,6 +47,9 @@ const getProvider = () => {
     const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
         window.ethereum : 
         null
+    if (!provider){
+        console.error(providersError, 'or', unsupportedError)
+    }
     return provider;
 }
 
