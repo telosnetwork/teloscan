@@ -36,10 +36,10 @@ export default {
   },
   methods: {
     getLatencyColor(latency) {
-      if (latency < 250)
+      if (latency < 375)
         return 'green';
 
-      if (latency < 500)
+      if (latency < 650)
         return 'yellow';
 
       return 'red';
