@@ -102,9 +102,39 @@ export default {
       }
       this.showLogin = false;
     },
-    ualLogin(wallet) {
+    async ualLogin(wallet, account) {
       //localStorage.setItem("loginData", authenticator.constructor.name);
-      debugger;
+      await wallet.init();
+      if (!account) {
+        const requestAccount = await authenticator.shouldRequestAccountName();
+        if (requestAccount) {
+          await dispatch("fetchAvailableAccounts", idx);
+          commit("setRequestAccount", true);
+          return;
+        }
+      }
+      const users = await wallet.login(account);
+      if (users.length) {
+        const account = users[0];
+        const accountName = await account.getAccountName();
+        const evmAccount = await this.$evm.telos.getEthAccountByTelosAccount(accountName);
+        if (!evmAccount) {
+          this.$q.notify({
+            position: 'top',
+            message: `Search for EVM address linked to ${this.searchTerm} native account failed.  You can create one at wallet.telos.net`,
+            timeout: this.TIME_DELAY
+          });
+          authenticator.logout();
+          return;
+        }
+        this.setLogin({
+          address,
+          nativeAccount: accountName
+        })
+        this.$providerManager.setProvider(account);
+        localStorage.setItem("loginData", JSON.stringify({type: LOGIN_NATIVE, provider: wallet.getName()}));
+      }
+      this.showLogin = false;
     },
     async getInjectedAddress() {
       const provider = this.getInjectedProvider();
