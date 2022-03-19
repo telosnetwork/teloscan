@@ -22,15 +22,17 @@
         >
         </q-btn>
 
-        <q-btn-dropdown flat>
-          <template v-slot:label>
-
-            <q-icon name='circle' class='connection' :style="{ color: accountConnected ? '#7FFF00' : 'red'}"></q-icon> 
-            <span class='account'>{{ accountConnected ? accountConnected : mainnet ? "Mainnet" : "Testnet" }}</span>
-          </template>
-
+        <connect-button/>
+        <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
+        <q-drawer
+          side="right"
+          v-model="drawer"
+          :width="200"
+          :breakpoint="500"
+          overlay
+          bordered>
           <q-list>
-            <q-item
+            <!--<q-item
               :disabled='accountConnected'
               clickable
               v-close-popup
@@ -40,17 +42,25 @@
                 <q-item-label> {{ accountConnected ?  `Connected to ${mainnet ? "Mainnet" : "Testnet"}` : 'Connect Account' }}</q-item-label>
               </q-item-section>
             </q-item>
-
-            <q-item-label header>Select Network</q-item-label>
+              --->
+            <q-item
+              clickable
+              v-close-popup
+              @click.native="routerTo('/endpoints')"
+            >
+              <q-item-section>
+                <q-item-label>RPC Endpoints</q-item-label>
+              </q-item-section>
+            </q-item>
 
             <q-item
               v-if="!mainnet"
               clickable
               v-close-popup
-              @click.native="goTo('https://www.teloscan.io/')"
+              @click.native="goTo('https://teloscan.io/')"
             >
               <q-item-section>
-                <q-item-label> Mainnet </q-item-label>
+                <q-item-label> Teloscan Mainnet </q-item-label>
               </q-item-section>
             </q-item>
 
@@ -61,12 +71,25 @@
               @click.native="goTo('https://testnet.teloscan.io/')"
             >
               <q-item-section>
-                <q-item-label>Testnet</q-item-label>
+                <q-item-label> Teloscan Testnet </q-item-label>
               </q-item-section>
             </q-item>
 
+
+
           </q-list>
+        </q-drawer>
+        <!--
+        <q-btn-dropdown flat>
+          <template v-slot:label>
+
+            <q-icon name='circle' class='connection' :style="{ color: isLoggedIn ? '#7FFF00' : 'red'}"></q-icon>
+            <span class='account'>{{ accountConnected ? accountConnected : mainnet ? "Mainnet" : "Testnet" }}</span>
+          </template>
+
+
         </q-btn-dropdown>
+        -->
       </q-toolbar>
     </q-header>
 
@@ -84,37 +107,48 @@
 <script>
 import Search from "src/components/Search.vue";
 import FooterMain from "src/components/Footer.vue";
-import { 
-  switchEthereumChain, 
-  isConnected, 
-  requestAccounts, 
+import ConnectButton from "components/ConnectButton";
+import {
+  switchEthereumChain,
+  requestAccounts,
   getProvider
    } from 'src/lib/provider';
+import {mapGetters} from "vuex";
+
 export default {
   name: "MainLayout",
-  components: { Search,FooterMain },
+  components: { Search, ConnectButton, FooterMain },
   data() {
     return {
       mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40",
-      accountConnected: false
+      accountConnected: false,
+      drawer: false
     };
   },
   async mounted(){
-    this.accountConnected = await this.isConnected();
-    if (this.accountConnected){
+    if (this.isLoggedIn && !this.isNative){
       this.addAccountsListener();
     }
   },
   computed: {
+    ...mapGetters('login', [
+      'isLoggedIn',
+      'isNative',
+      'address',
+      'nativeAccount'
+    ]),
     onHomePage() {
       return this.$route.name === "home";
     }
   },
   methods: {
     getProvider,
-    isConnected,
     requestAccounts,
     switchEthereumChain,
+    getLoginDisplay() {
+      if (this.isLoggedIn)
+        return this.isNative ? this.nativeAccount : this.address;
+    },
     addAccountsListener() {
       const provider = this.getProvider();
       provider.on('accountsChanged', (accountsArr) => {
@@ -140,6 +174,11 @@ export default {
     },
     goTo(url) {
       window.open(url, "_blank");
+      this.drawer = false;
+    },
+    routerTo(path) {
+      this.$router.push(path);
+      this.drawer = false;
     }
   },
   created() {

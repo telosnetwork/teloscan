@@ -7,11 +7,16 @@
           q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
           ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
           .text-white {{ address }}
+          span(v-if='contract')
+            .text-white Created at trx&nbsp
+              TransactionField(:transaction-hash="contract.getCreationTrx()" )
+              .text-white by address&nbsp
+                AddressField(:address="contract.getCreator()")
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount")
             .dataCardTile Native account
             .dataCardData
-              a(:href="getAddressBloksURL()" target="_blank") {{ telosAccount }}
+              a(:href="getAddressNativeExplorerURL()" target="_blank") {{ telosAccount }}
           .dataCardItem(v-if="!!balance" class="balance ")
             .dataCardTile Balance
             .dataCardData {{balance}}
@@ -32,7 +37,7 @@
           q-tab-panel( name="tokens" )
             token-list( :address="address" )
           q-tab-panel( v-if="isContract" name="contract" )
-            ContractSource(v-if='isVerified')
+            ContractTab(v-if='isVerified')
             .verify-source(v-else)
               q-icon( name='warning' class='text-red' size='1.25rem')
               | This contract source has not been verified. <br/>
@@ -47,12 +52,16 @@ import TransactionTable from "components/TransactionTable";
 import TransferTable from "components/TransferTable";
 import TokenList from "components/TokenList";
 import ConfirmationDialog from "components/ConfirmationDialog";
-import ContractSource from 'components/ContractSource';
+import ContractTab from 'components/ContractTab/ContractTab';
+import TransactionField from "components/TransactionField";
+import AddressField from "components/AddressField";
 
 const web3 = new Web3();
 export default {
   name: "Address",
-  components: { TokenList, TransactionTable, TransferTable, ConfirmationDialog, ContractSource },
+  components: {
+    AddressField,
+    TransactionField, TokenList, TransactionTable, TransferTable, ConfirmationDialog, ContractTab },
   data() {
     return {
       address: this.$route.params.address,
@@ -97,7 +106,7 @@ export default {
 
       return 'Account';
     },
-    getAddressBloksURL() {
+    getAddressNativeExplorerURL() {
       if (!this.telosAccount) return "";
 
       return `${process.env.NETWORK_EXPLORER}/account/${this.telosAccount}`;

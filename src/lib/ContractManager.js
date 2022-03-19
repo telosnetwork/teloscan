@@ -70,6 +70,15 @@ export default class ContractManager {
     }
   }
 
+  async getContractCreation(address) {
+    try {
+      const v2ContractResponse = await this.evmEndpoint.get(`/v2/evm/get_contract?contract=${address}`)
+      return v2ContractResponse.data
+    } catch (e) {
+      console.error(e.message);
+    }
+  }
+
   // suspectedToken is so we don't try to check for ERC20 info via eth_call unless we think this is a token...
   //    this is coming from the token transfer page where we're looking for a contract based on a token transfer event
   async getContract(address, suspectedToken) {
@@ -79,12 +88,14 @@ export default class ContractManager {
       return this.contracts[addressLower];
     }
 
+    const creationInfo = await this.getContractCreation(addressLower);
+
     const metadata = await this.checkBucket(address);
     if (metadata){
-      return await this.getVerifiedContract(addressLower, metadata)
+      return await this.getVerifiedContract(addressLower, metadata, creationInfo)
     }
     // TODO: there's some in this list that are not ERC20... they have extra stuff like the Swapin method
-    const contract = await this.getContractFromTokenList(address);
+    const contract = await this.getContractFromTokenList(address, creationInfo);
     if (contract) {
       this.contracts[addressLower] = contract;
       return contract;
@@ -93,11 +104,11 @@ export default class ContractManager {
     if (suspectedToken) {
       const tokenData = await this.getTokenData(address, suspectedToken);
       if (tokenData) {
-        return await this.getTokenContract(addressLower, tokenData);
+        return await this.getTokenContract(addressLower, tokenData, creationInfo);
       }
     }
 
-    return await this.getEmptyContract(addressLower);
+    return await this.getEmptyContract(addressLower, creationInfo);
   }
 
   async checkBucket(address){
@@ -111,7 +122,7 @@ export default class ContractManager {
     }
   }
 
-  async getVerifiedContract(address, metadata) {
+  async getVerifiedContract(address, metadata, creationInfo) {
     const token = this.getToken(address);
     const contract =
     new Contract({
@@ -119,19 +130,20 @@ export default class ContractManager {
       address,
       abi: metadata.output.abi,
       manager: this,
-      token,
+      token, creationInfo,
       verified: true
     });
     this.contracts[address] = contract;
     return contract;
   }
 
-  async getTokenContract(address, tokenData){
+  async getTokenContract(address, tokenData, creationInfo){
     const contract = new Contract({
       name: tokenData.symbol ? `${tokenData.name} (${tokenData.symbol})` : tokenData.name,
       address,
       abi: erc20Abi,
       manager: this,
+      creationInfo,
       token: Object.assign({
         address,
       }, tokenData)
@@ -141,10 +153,10 @@ export default class ContractManager {
     return contract;
   }
 
-  async getEmptyContract(address){
+  async getEmptyContract(address, creationInfo){
     const contract = new Contract({
       name: `${address.slice(0,16)}...`,
-      address,
+      address, creationInfo,
       abi: undefined,
       manager: this
     });
@@ -201,12 +213,12 @@ export default class ContractManager {
     return null;
   }
 
-  async getContractFromTokenList(address) {
+  async getContractFromTokenList(address, creationInfo) {
     const token = this.getToken(address);
     if (token) {
       return new Contract({
         name: `${token.name} (${token.symbol})`,
-        address,
+        address, creationInfo,
         abi: erc20Abi,
         manager: this,
         token

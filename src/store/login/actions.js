@@ -62,59 +62,19 @@ const getAuthenticator = function(ual, wallet = null) {
   };
 };
 
-export const logout = async function({ commit }) {
-  const { authenticator } = getAuthenticator(this.$ual);
-  try {
-    authenticator && (await authenticator.logout());
-  } catch (error) {
-    console.log("Authenticator logout error", error);
-  }
-  commit("setProfile", undefined);
-  commit("setAccountName");
-  localStorage.removeItem("autoLogin");
+export const logout = async function({ commit, getters }) {
+  if (getters.isNative) {
+    const {authenticator} = getAuthenticator(this.$ual);
+    try {
+      authenticator && (await authenticator.logout());
+    } catch (error) {
+      console.log("Authenticator logout error", error);
+    }
 
-  if (this.$router.currentRoute.path !== "/") {
-    this.$router.push({ path: "/" });
-  }
-};
+    localStorage.removeItem("autoLogin");
 
-export const getUserProfile = async function({ commit }, accountName) {
-  try {
-    const profileResult = await this.$api.getTableRows({
-      code: "profiles",
-      scope: "profiles",
-      table: "profiles",
-      limit: 1,
-      index_position: 1,
-      key_type: "i64",
-      lower_bound: accountName,
-      upper_bound: accountName
-    });
-
-    const profile = profileResult.rows[0];
-    //const evmAccount = await this.$evm.telos.getEthAccountByTelosAccount(accountName)
-    commit("setProfile", profile);
-  } catch (error) {
-    commit("general/setErrorMsg", error.message || error, { root: true });
+    if (this.$router.currentRoute.path !== "/") {
+      this.$router.push({path: "/"});
+    }
   }
 };
-
-export const getAccountProfile = async function({ commit, dispatch }) {
-  if (!this.state.account.accountName) {
-    return;
-  }
-
-  dispatch(
-    "getUserProfile",
-    this.state.account.accountName
-  );
-};
-
-export const accountExists = async function ({ commit, dispatch }, accountName) {
-  try {
-    const account = await this.$api.getAccount(accountName);
-    return !!account;
-  } catch (e) {
-    return false;
-  }
-}
