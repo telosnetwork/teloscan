@@ -105,14 +105,6 @@ export default {
     async ualLogin(wallet, account) {
       //localStorage.setItem("loginData", authenticator.constructor.name);
       await wallet.init();
-      if (!account) {
-        const requestAccount = await authenticator.shouldRequestAccountName();
-        if (requestAccount) {
-          await dispatch("fetchAvailableAccounts", idx);
-          commit("setRequestAccount", true);
-          return;
-        }
-      }
       const users = await wallet.login(account);
       if (users.length) {
         const account = users[0];
@@ -128,7 +120,7 @@ export default {
           return;
         }
         this.setLogin({
-          address,
+          address: evmAccount.address,
           nativeAccount: accountName
         })
         this.$providerManager.setProvider(account);
