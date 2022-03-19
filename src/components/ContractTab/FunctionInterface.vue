@@ -113,10 +113,11 @@ export default {
     },
     getFormattedParams() {
       const formatted = [];
-      for (let i = 0; i < abi.inputs.length; i++) {
-        let param = abi.inputs[i];
+      for (let i = 0; i < this.abi.inputs.length; i++) {
+        let param = this.abi.inputs[i];
         formatted.push(this.formatValue(this.params[i], param.type));
       }
+      return formatted;
     },
     formatValue(value, type) {
       switch (type) {
@@ -128,10 +129,24 @@ export default {
     },
     async run() {
       try {
+        debugger;
+        const opts = {};
+        if (this.abi.payable) {
+          opts.value = this.formatValue(this.value, 'uint256');
+        }
+
+        if (this.abi.stateMutability === 'view') {
+          const contractInstance = await this.contract.getContractInstance();
+          const func = contractInstance[`${this.abi.name}(${this.abi.inputs.map(i => i.type).join(',')})`];
+          this.result = await func(...this.getFormattedParams(), opts);
+          return;
+        }
+
         const contractInstance = await this.contract.getContractInstance(this.$providerManager.getEthersProvider().getSigner());
         // TODO: if payable and value > 0, add opts with value in it
+        // TODO: deal with UAL/native logins here
         const func = contractInstance[`${this.abi.name}(${this.abi.inputs.map(i => i.type).join(',')})`];
-        this.result = await func(...this.params);
+        this.result = await func(...this.getFormattedParams(), opts);
       } catch (e) {
         this.result = e.message;
       }
