@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 export default class Contract {
 
-  constructor({address, name, abi, manager, token, verified = false}) {
+  constructor({address, creationInfo, name, abi, manager, token, verified = false}) {
     this.address = address
     this.name = name
     this.abi = abi
@@ -13,7 +13,8 @@ export default class Contract {
       this.token = token;
     }
     this.verified = verified;
-    this.sources = []
+    this.sources = [];
+    this.creationInfo = creationInfo;
   }
 
   getName() {
@@ -26,6 +27,20 @@ export default class Contract {
 
   isVerified() {
     return this.verified;
+  }
+
+  getCreationTrx() {
+    if (!this.creationInfo)
+      return;
+
+    return this.creationInfo.creation_trx;
+  }
+
+  getCreator() {
+    if (!this.creationInfo)
+      return;
+
+    return this.creationInfo.creator;
   }
 
   getContractInstance(provider) {
