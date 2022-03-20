@@ -22,8 +22,8 @@
               div() Metamask
           q-tab-panel( name="native" )
             q-card( v-for="(wallet, idx) in $ual.authenticators"
-                    :key="wallet.getStyle().text"
-                    @click="ualLogin(wallet)" )
+              :key="wallet.getStyle().text"
+              @click="ualLogin(wallet)" )
               q-img( :src="wallet.getStyle().icon" )
               div() {{ wallet.getStyle().text }}
 </template>
@@ -60,9 +60,12 @@ export default {
           this.injectedWeb3Login();
           break;
         default:
-          console.error(`Unknown web3 login type: ${loginObj.provider}`)
+          console.error(`Unknown web3 login type: ${loginObj.provider}`);
           break;
       }
+    } else if (loginObj.type === LOGIN_NATIVE) {
+      const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
+      this.ualLogin(wallet);
     }
   },
   computed: {
@@ -84,6 +87,16 @@ export default {
       this.showLogin = true;
     },
     disconnect() {
+      if (this.isNative) {
+        const loginData = localStorage.getItem("loginData");
+        if (!loginData)
+          return;
+
+        const loginObj = JSON.parse(loginData);
+        const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
+        wallet.logout();
+      }
+
       this.setLogin({});
       localStorage.removeItem('loginData');
       this.$providerManager.setProvider(null);
@@ -103,7 +116,6 @@ export default {
       this.showLogin = false;
     },
     async ualLogin(wallet, account) {
-      //localStorage.setItem("loginData", authenticator.constructor.name);
       await wallet.init();
       const users = await wallet.login(account);
       if (users.length) {
@@ -132,9 +144,9 @@ export default {
       const provider = this.getInjectedProvider();
       const checkProvider = new ethers.providers.Web3Provider(provider);
       const accounts = await checkProvider.listAccounts();
-      if (accounts.length > 0){
-        const { chainId } = await checkProvider.getNetwork();
-        if (chainId !== process.env.NETWORK_EVM_CHAIN_ID){
+      if (accounts.length > 0) {
+        const {chainId} = await checkProvider.getNetwork();
+        if (chainId !== process.env.NETWORK_EVM_CHAIN_ID) {
           await this.switchChainInjected();
         }
         return accounts[0];
