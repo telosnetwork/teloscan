@@ -171,7 +171,10 @@ export default {
       unsignedTrx.nonce = nonce;
       unsignedTrx.gasLimit = gasLimit;
       unsignedTrx.gasPrice = gasPrice;
-      unsignedTrx.chainId = this.$evm.chainId;
+
+      // DO NOT INCLUDE CHAINID, EIP155 is only for replay attacks and you cannot replay a Telos native signed trx
+      // this can however break stuff that trys to decode this trx
+      //unsignedTrx.chainId = this.$evm.chainId;
 
       if (opts.value) {
         unsignedTrx.value = opts.value;
