@@ -61,8 +61,10 @@ export default {
   },
   computed: {
     ...mapGetters('login', [
+      'address',
       'isLoggedIn',
-      'isNative'
+      'isNative',
+      'nativeAccount'
     ]),
     enableRun() {
       return this.isLoggedIn || this.abi.stateMutability === 'view'
@@ -73,7 +75,7 @@ export default {
       decimalOptions,
       result: null,
       enterAmount: false,
-      amountInput: 17,
+      amountInput: 0,
       amountParam: null,
       amountDecimals: 0,
       selectDecimals: decimalOptions[0],
@@ -122,34 +124,92 @@ export default {
     formatValue(value, type) {
       switch (type) {
         case 'uint256':
-          return BigNumber.from(type);
+          return BigNumber.from(value);
         default:
           return value;
       }
     },
     async run() {
       try {
-        debugger;
         const opts = {};
         if (this.abi.payable) {
           opts.value = this.formatValue(this.value, 'uint256');
         }
 
         if (this.abi.stateMutability === 'view') {
-          const contractInstance = await this.contract.getContractInstance();
-          const func = contractInstance[`${this.abi.name}(${this.abi.inputs.map(i => i.type).join(',')})`];
-          this.result = await func(...this.getFormattedParams(), opts);
-          return;
+          return this.runRead();
         }
 
-        const contractInstance = await this.contract.getContractInstance(this.$providerManager.getEthersProvider().getSigner());
-        // TODO: if payable and value > 0, add opts with value in it
-        // TODO: deal with UAL/native logins here
-        const func = contractInstance[`${this.abi.name}(${this.abi.inputs.map(i => i.type).join(',')})`];
-        this.result = await func(...this.getFormattedParams(), opts);
+        if (this.isNative) {
+          return this.runNative(opts);
+        }
+
+        return this.runEVM(opts);
       } catch (e) {
         this.result = e.message;
       }
+    },
+    getFunctionAbi() {
+      return `${this.abi.name}(${this.abi.inputs.map(i => i.type).join(',')})`;
+    },
+    async getEthersFunction(provider) {
+      const contractInstance = await this.contract.getContractInstance(provider);
+      return contractInstance[this.getFunctionAbi()];
+    },
+    async runRead(opts) {
+      const func = this.getEthersFunction();
+      this.result = await func(...this.getFormattedParams(), opts);
+    },
+    async runNative(opts) {
+      const contractInstance = await this.contract.getContractInstance();
+      const func = contractInstance.populateTransaction[this.getFunctionAbi()];
+      const gasEstimater = contractInstance.estimateGas[this.getFunctionAbi()];
+      const gasLimit = await gasEstimater(...this.getFormattedParams(), Object.assign({from: this.address}, opts));
+      const unsignedTrx = await func(...this.getFormattedParams(), opts);
+      const nonce = parseInt(await this.$evm.telos.getNonce(this.address), 16);
+      const gasPrice = BigNumber.from(`0x${await this.$evm.telos.getGasPrice()}`);
+      unsignedTrx.nonce = nonce;
+      unsignedTrx.gasLimit = gasLimit;
+      unsignedTrx.gasPrice = gasPrice;
+      unsignedTrx.chainId = this.$evm.chainId;
+
+      if (opts.value) {
+        unsignedTrx.value = opts.value;
+      }
+
+      const raw = ethers.utils.serializeTransaction(unsignedTrx);
+
+      let user = this.$providerManager.getProvider();
+      const trx = await user.signTransaction(
+        {
+          actions: [{
+            account: "eosio.evm",
+            name: "raw",
+            authorization: [
+              {
+                actor: this.nativeAccount,
+                permission: "active"
+              }
+            ],
+            data: {
+              ram_payer: "eosio.evm",
+              tx: raw.replace(/^0x/, ''),
+              estimate_gas: false,
+              sender: this.address.replace(/^0x/, '').toLowerCase()
+            }
+          }],
+        },
+        {
+          blocksBehind: 3,
+          expireSeconds: 30
+        }
+      );
+
+      const hash = ethers.utils.keccak256(raw);
+    },
+    async runEVM(opts) {
+      const func = this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
+      this.result = await func(...this.getFormattedParams(), opts);
     }
   }
 }
