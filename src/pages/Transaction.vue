@@ -4,9 +4,9 @@
       Transaction Details
     </div>
     <div class="col-12 q-py-lg">
-      <div class=" content-container" v-if="trx">
+      <div class="content-container" v-if="trx">
         <q-tabs
-          class="content-container text-white"
+          class="text-white"
           v-model="tab"
           dense
           active-color="secondary"
@@ -38,7 +38,7 @@
             label="Logs"
           />
           <q-route-tab
-            class="content-container"
+            class="topRounded"
             name="internal"
             :to="{ hash: 'internal' }"
             exact
