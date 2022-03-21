@@ -1,7 +1,7 @@
 <template lang="pug">
   div()
     q-btn( v-if="!isLoggedIn" label="Connect Wallet" @click="connect()" )
-    q-btn-dropdown( v-if="isLoggedIn" :label="`0x...${address.slice(address.length - 4)}`" )
+    q-btn-dropdown( v-if="isLoggedIn" :label="getLoginDisplay()" )
       q-list()
         q-item( clickable v-close-popup @click="goToAddress()" )
           q-item-section()
@@ -81,7 +81,8 @@ export default {
       'setLogin'
     ]),
     getLoginDisplay() {
-      return this.isLoggedIn ? "Disconnect wallet" : "Connect Wallet";
+      debugger;
+      return this.isNative ? this.nativeAccount : `0x...${this.address.slice(this.address.length - 4)}`;
     },
     connect() {
       this.showLogin = true;
