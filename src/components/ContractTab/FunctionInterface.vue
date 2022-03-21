@@ -22,6 +22,8 @@
         template( v-if="param.type === 'uint256'" v-slot:append )
           q-icon( name="pin" @click="showAmountDialog(idx)" ).cursor-pointer
     div( v-if="result" ) Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
+    div( v-if="hash" ) Transaction hash:&nbsp
+      transaction-field( :transaction-hash="hash" )
 </template>
 
 <script>
@@ -29,6 +31,8 @@ import FunctionParameter from "components/ContractTab/FunctionParameter";
 import {mapGetters} from "vuex";
 import {BigNumber} from "ethers";
 import {ethers} from "ethers";
+import {Transaction} from '@ethereumjs/tx';
+import TransactionField from "components/TransactionField";
 
 const decimalOptions = [
   {
@@ -54,7 +58,7 @@ const decimalOptions = [
 ]
 export default {
   name: "FunctionInterface",
-  components: { FunctionParameter },
+  components: {TransactionField, FunctionParameter },
   props: {
     contract: null,
     abi: null
@@ -74,6 +78,7 @@ export default {
     return {
       decimalOptions,
       result: null,
+      hash: null,
       enterAmount: false,
       amountInput: 0,
       amountParam: null,
@@ -156,9 +161,9 @@ export default {
       const contractInstance = await this.contract.getContractInstance(provider);
       return contractInstance[this.getFunctionAbi()];
     },
-    async runRead(opts) {
-      const func = this.getEthersFunction();
-      this.result = await func(...this.getFormattedParams(), opts);
+    async runRead() {
+      const func = await this.getEthersFunction();
+      this.result = await func(...this.getFormattedParams());
     },
     async runNative(opts) {
       const contractInstance = await this.contract.getContractInstance();
@@ -208,11 +213,24 @@ export default {
         }
       );
 
-      const hash = ethers.utils.keccak256(raw);
+      const trxBuffer = Buffer.from(raw.replace(/^0x/, ''), 'hex');
+
+      const tx = Transaction.fromSerializedTx(trxBuffer,  {
+        common: this.$evm.chainConfig
+      });
+
+      this.hash = `0x${tx.hash().toString('hex')}`;
+
+      // TODO: this isn't right, it calculated 0x38e26d652f172c6d7cbc3b7c09edd6e37ba73926426aa0fc8a5735896be52795
+      //  but on chain hash was:               0x77b403e792cb7a454ce19428629b58f1eb9f3a7632ac301df36237dfe1f8e095
+      //  likely need to pass something that's not a string, it wants aBytesLike
+      //     ethers.utils.keccak256( aBytesLike ) ⇒ string< DataHexString< 32 > >
+      //this.hash = ethers.utils.keccak256(raw);
     },
     async runEVM(opts) {
-      const func = this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
-      this.result = await func(...this.getFormattedParams(), opts);
+      const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
+      const result = await func(...this.getFormattedParams(), opts);
+      this.hash = result.hash;
     }
   }
 }
