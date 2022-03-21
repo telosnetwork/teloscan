@@ -25,7 +25,7 @@
         <q-btn-dropdown flat>
           <template v-slot:label>
 
-            <q-icon name='circle' class='connection' :style="{ color: accountConnected ? '#7FFF00' : 'red'}"></q-icon> 
+            <q-icon name='circle' class='connection' :style="{ color: accountConnected ? '#7FFF00' : 'red'}"></q-icon>
             <span class='account'>{{ accountConnected ? accountConnected : mainnet ? "Mainnet" : "Testnet" }}</span>
           </template>
 
@@ -84,10 +84,10 @@
 <script>
 import Search from "src/components/Search.vue";
 import FooterMain from "src/components/Footer.vue";
-import { 
-  switchEthereumChain, 
-  isConnected, 
-  requestAccounts, 
+import {
+  switchEthereumChain,
+  isConnected,
+  requestAccounts,
   getProvider
    } from 'src/lib/provider';
 export default {
@@ -144,6 +144,18 @@ export default {
   },
   created() {
     this.$q.dark.set(localStorage.getItem("darkModeEnabled") !== "false");
+    this.removeOldAngularCache();
+  },
+  removeOldAngularCache() {
+    // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own, this should remove it
+    if(window.navigator && navigator.serviceWorker) {
+      navigator.serviceWorker.getRegistrations()
+        .then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          }
+        });
+    }
   }
 };
 </script>
