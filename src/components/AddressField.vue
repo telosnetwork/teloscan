@@ -1,5 +1,5 @@
 <template lang="pug">
-  div()
+  div.inline-div
     q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs")
     //- router-link(:to="`/address/${this.address}`") {{ getDisplay() }}
     a(:href="`/address/${this.address}`") {{ getDisplay() }}
@@ -81,6 +81,7 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang='sass' scoped>
+.inline-div
+  display: inline
 </style>
