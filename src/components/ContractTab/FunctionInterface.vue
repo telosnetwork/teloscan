@@ -213,6 +213,10 @@ export default {
         }
       );
 
+      // This doesn't produce the right hash... but would be nice to use ethers here instead of ethereumjs/tx
+      //  maybe just need to have signed transaction with an empty signature?  What is etherumjs/tx doing differently?
+      //this.hash = ethers.utils.keccak256(raw);
+
       const trxBuffer = Buffer.from(raw.replace(/^0x/, ''), 'hex');
 
       const tx = Transaction.fromSerializedTx(trxBuffer,  {
@@ -220,12 +224,6 @@ export default {
       });
 
       this.hash = `0x${tx.hash().toString('hex')}`;
-
-      // TODO: this isn't right, it calculated 0x38e26d652f172c6d7cbc3b7c09edd6e37ba73926426aa0fc8a5735896be52795
-      //  but on chain hash was:               0x77b403e792cb7a454ce19428629b58f1eb9f3a7632ac301df36237dfe1f8e095
-      //  likely need to pass something that's not a string, it wants aBytesLike
-      //     ethers.utils.keccak256( aBytesLike ) ⇒ string< DataHexString< 32 > >
-      //this.hash = ethers.utils.keccak256(raw);
     },
     async runEVM(opts) {
       const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
