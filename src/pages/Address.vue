@@ -10,8 +10,8 @@
           span(v-if='contract')
             .text-white Created at trx&nbsp
               TransactionField(:transaction-hash="contract.getCreationTrx()" )
-              .text-white by address&nbsp
-                AddressField(:address="contract.getCreator()")
+            .text-white by address&nbsp
+              AddressField(:address="contract.getCreator()")
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount")
             .dataCardTile Native account
@@ -20,7 +20,7 @@
           .dataCardItem(v-if="!!balance" class="balance ")
             .dataCardTile Balance
             .dataCardData {{balance}}
-      q-tabs( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar content-container text-white tableWrapper" )
+      q-tabs.q-dark( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar content-container text-white tableWrapper" )
         q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
         q-route-tab(name="erc20transfers" :to="{ hash: 'erc20' }" exact replace label="ERC20 Transfers")
         q-route-tab(name="erc721transfers" :to="{ hash: 'erc721' }" exact replace label="ERC721 Transfers")

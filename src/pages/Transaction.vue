@@ -1,10 +1,10 @@
 <template>
-  <div class="pageContainer row q-pt-xl tableWrapper">
+  <div class="pageContainer q-pt-xl">  
     <div class="text-h4 text-primary q-mb-lg">
       Transaction Details
     </div>
     <div class="col-12 q-py-lg">
-      <div class="content-container" v-if="trx">
+      <div class="content-container topRounded" v-if="trx">
         <q-tabs
           class="text-white"
           v-model="tab"

@@ -82,8 +82,6 @@ export default {
 .tableWrapper
   min-width: 50vw
   max-width: 100vw
-  padding: left 5px
-  padding-right: 5px
   border-radius: 10px
 .text-primary
   margin-left: .25rem
