@@ -134,6 +134,18 @@ export default {
   },
   created() {
     this.$q.dark.set(localStorage.getItem("darkModeEnabled") !== "false");
+    this.removeOldAngularCache();
+  },
+  removeOldAngularCache() {
+    // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own, this should remove it
+    if(window.navigator && navigator.serviceWorker) {
+      navigator.serviceWorker.getRegistrations()
+        .then(function(registrations) {
+          for(let registration of registrations) {
+            registration.unregister();
+          }
+        });
+    }
   }
 };
 </script>
