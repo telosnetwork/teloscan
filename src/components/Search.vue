@@ -1,39 +1,3 @@
-<template>
-  <div>
-  <q-input v-if="this.toolbar"
-           dark dense standout
-           class="q-ml-md"
-           input-class="text-right"
-           :placeholder="searchHint"
-           v-model="searchTerm"
-           @keydown.enter="search"
-  >
-    <template v-slot:append>
-      <q-icon v-if="searchTerm == null" name="search" />
-      <q-icon v-else name="clear" class="cursor-pointer" @click="searchTerm = null" />
-    </template>
-  </q-input>
-
-  <q-input
-    v-if="!this.toolbar"
-    borderless
-    :placeholder="searchHint"
-    v-model="searchTerm"
-    @keydown.enter="search"
-  >
-    <template v-slot:append>
-      <q-icon
-        v-if="searchTerm !== null"
-        name="close"
-        @click="searchTerm = null"
-        class="cursor-pointer"
-      />
-      <q-icon name="search" @click="search" />
-    </template>
-  </q-input>
-  </div>
-</template>
-
 <script>
 const searchHints = ["Transaction", "Address", "Block"];
 
@@ -107,4 +71,33 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<template lang='pug'>
+div
+  q-input.q-ml-md( 
+    v-if="this.toolbar"
+    dark 
+    dense 
+    standout
+    input-class="text-right"
+    :placeholder="searchHint"
+    v-model="searchTerm"
+    @keydown.enter="search"
+  )
+    template( v-slot:append )
+      q-icon( v-if="searchTerm == null" name="search" )
+      q-icon.cursor-pointer( v-else name="clear" @click="searchTerm = null" )
+  q-input(
+    v-if="!this.toolbar"
+    borderless
+    :placeholder="searchHint"
+    v-model="searchTerm"
+    @keydown.enter="search"
+  )
+    template( v-slot:append )
+      q-icon.cursor-pointer(
+        v-if="searchTerm !== null"
+        name="close"
+        @click="searchTerm = null"
+      )
+      q-icon( name="search" @click="search" )
+</template>

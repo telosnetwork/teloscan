@@ -1,31 +1,3 @@
-<template lang="pug">
-  div()
-    q-dialog( v-model="enterAmount" )
-      q-card()
-        div() Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256
-        q-select( :options="decimalOptions" v-model="selectDecimals" @input="updateDecimals()")
-        q-input( v-if="selectDecimals.value === 'custom'" v-model.number="customDecimals" type="number" label="Custom decimals" @change="updateDecimals()")
-        q-input( label="Amount" v-model="amountInput" type="number" )
-        q-card-actions( align="right" )
-          q-btn( flat label="Ok" color="primary" @click="setAmount" v-close-popup )
-          q-btn( flat label="Cancel" color="primary" @click="clearAmount" v-close-popup )
-    q-btn( v-if="enableRun" label="Run" icon="send" @click="run()" )
-    div( v-if="!enableRun" ) Connect wallet to run
-    //function-parameter( v-if="abi.stateMutability === 'payable'" :abi-param="valueParam", :position="0" )
-    //function-parameter( v-for="(param, idx) in abi.inputs" :abi-param="param" :position="idx" :key="idx" )
-    div( v-if="abi.stateMutability === 'payable'" )
-      q-input( label="Value (amount)" v-model="value" )
-        template( v-slot:append )
-          q-icon( name="pin" @click="showAmountDialog('value')" ).cursor-pointer
-    div( v-for="(param, idx) in abi.inputs" :key="idx" )
-      q-input( :label="makeLabel(param, idx)" v-model.string="params[idx]" )
-        template( v-if="param.type === 'uint256'" v-slot:append )
-          q-icon( name="pin" @click="showAmountDialog(idx)" ).cursor-pointer
-    div( v-if="result" ) Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
-    div( v-if="hash" ) Transaction hash:&nbsp
-      transaction-field( :transaction-hash="hash" )
-</template>
-
 <script>
 import FunctionParameter from "components/ContractTab/FunctionParameter";
 import {mapGetters} from "vuex";
@@ -236,6 +208,30 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<template lang="pug">
+  div()
+    q-dialog( v-model="enterAmount" )
+      q-card()
+        div() Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256
+        q-select( :options="decimalOptions" v-model="selectDecimals" @input="updateDecimals()")
+        q-input( v-if="selectDecimals.value === 'custom'" v-model.number="customDecimals" type="number" label="Custom decimals" @change="updateDecimals()")
+        q-input( label="Amount" v-model="amountInput" type="number" )
+        q-card-actions( align="right" )
+          q-btn( flat label="Ok" color="primary" @click="setAmount" v-close-popup )
+          q-btn( flat label="Cancel" color="primary" @click="clearAmount" v-close-popup )
+    q-btn( v-if="enableRun" label="Run" icon="send" @click="run()" )
+    div( v-if="!enableRun" ) Connect wallet to run
+    //function-parameter( v-if="abi.stateMutability === 'payable'" :abi-param="valueParam", :position="0" )
+    //function-parameter( v-for="(param, idx) in abi.inputs" :abi-param="param" :position="idx" :key="idx" )
+    div( v-if="abi.stateMutability === 'payable'" )
+      q-input( label="Value (amount)" v-model="value" )
+        template( v-slot:append )
+          q-icon( name="pin" @click="showAmountDialog('value')" ).cursor-pointer
+    div( v-for="(param, idx) in abi.inputs" :key="idx" )
+      q-input( :label="makeLabel(param, idx)" v-model.string="params[idx]" )
+        template( v-if="param.type === 'uint256'" v-slot:append )
+          q-icon( name="pin" @click="showAmountDialog(idx)" ).cursor-pointer
+    div( v-if="result" ) Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
+    div( v-if="hash" ) Transaction hash:&nbsp
+      transaction-field( :transaction-hash="hash" )
+</template>

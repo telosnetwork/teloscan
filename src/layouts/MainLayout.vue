@@ -32,17 +32,6 @@
           overlay
           bordered>
           <q-list>
-            <!--<q-item
-              :disabled='accountConnected'
-              clickable
-              v-close-popup
-              @click.native="connectAccount()"
-            >
-              <q-item-section>
-                <q-item-label> {{ accountConnected ?  `Connected to ${mainnet ? "Mainnet" : "Testnet"}` : 'Connect Account' }}</q-item-label>
-              </q-item-section>
-            </q-item>
-              --->
             <q-item
               clickable
               v-close-popup
@@ -79,17 +68,6 @@
 
           </q-list>
         </q-drawer>
-        <!--
-        <q-btn-dropdown flat>
-          <template v-slot:label>
-
-            <q-icon name='circle' class='connection' :style="{ color: isLoggedIn ? '#7FFF00' : 'red'}"></q-icon>
-            <span class='account'>{{ accountConnected ? accountConnected : mainnet ? "Mainnet" : "Testnet" }}</span>
-          </template>
-
-
-        </q-btn-dropdown>
-        -->
       </q-toolbar>
     </q-header>
 
@@ -187,30 +165,25 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.banner {
-  z-index: -1;
-  height: 280px;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  background: linear-gradient(#252a5e 27.19%, #2d4684 65.83%);
-  &.home {
-    height: 400px;
-  }
-}
+<style lang="sass" scoped>
+.banner
+  z-index: -1
+  height: 280px
+  position: absolute
+  left: 0
+  right: 0
+  top: 0
+  background: linear-gradient(#252a5e 27.19%, #2d4684 65.83%)
+  &.home
+    height: 400px
 
-.connection {
-  font-size: .5rem;
-  margin-right: 0.2rem;
-}
+.connection
+  font-size: .5rem
+  margin-right: 0.2rem
 
-.account {
-  width: 120px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
+.account
+  width: 120px
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
 </style>

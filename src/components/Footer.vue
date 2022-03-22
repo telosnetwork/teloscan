@@ -1,51 +1,3 @@
-<template>
-  <div class="row q-mb-lg  relative-bottom">
-    <div class="col-xs-12 col-md-6 ">
-      <div class="column items-center">
-        <span>
-          COPYRIGHT © {{ currentFullYear() }}
-          <a href="/" target="_blank" rel="noopener noreferrer">
-            Teloscan
-          </a>
-          <span className="d-none d-sm-inline-block"
-            >, All rights Reserved</span
-          >
-        </span>
-      </div>
-    </div>
-    <div class="col-xs-12 col-md-6 ">
-      <div class="column items-center">
-        <span className="float-md-right d-none d-md-block" class="float-right">
-          Made with
-          <q-icon
-            name="fas fa-heart red"
-            style="font-size:15px;color:red;padding-bottom:4px"
-            class="q-pl-sm"
-          />
-          +
-          <q-icon
-            name="fas fa-coffee red"
-            style="font-size:15px;color:brown;padding-bottom:4px"
-            class="q-pr-sm"
-          />
-          by
-          <a
-            href="https://telos.bloks.io/vote?producers=bp.yknot,caleosblocks"
-            target="_blank"
-            >Yknot</a
-          >
-          &
-          <a
-            href="https://telos.bloks.io/vote?producers=bp.yknot,caleosblocks"
-            target="_blank"
-            >Caleos</a
-          >
-        </span>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script>
 export default {
   methods: {
@@ -56,3 +8,35 @@ export default {
   }
 };
 </script>
+
+<template lang='pug'>
+  .row.q-mb-lg.relative-bottom
+    .col-xs-12.col-md-6
+      .column.items-center
+        span COPYRIGHT © {{ currentFullYear() }} 
+          a( href="/" target="_blank" rel="noopener noreferrer")
+            | Teloscan 
+          span.d-none.d-sm-inline-block All rights Reserved
+    .col-xs-12.col-md-6
+      .column.items-center
+        span.float-md-right.d-none.d-md-block.float-right
+          | Made with
+          q-icon.q-pl-sm(
+            name="fas fa-heart red"
+            style="font-size:15px;color:red;padding-bottom:4px"
+          )
+          | +
+          q-icon.q-pr-sm(
+            name="fas fa-coffee red"
+            style="font-size:15px;color:brown;padding-bottom:4px"
+          )
+          | by 
+          a(
+            href="https://eosauthority.com/vote/producers?network=telos"
+            target="_blank"
+          ) Yknot & 
+          a(
+            href="https://eosauthority.com/vote/producers?network=telos"
+            target="_blank"
+          ) Caleos
+</template>
