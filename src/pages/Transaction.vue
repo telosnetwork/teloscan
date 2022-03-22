@@ -12,6 +12,7 @@
           active-color="secondary"
           align="justify"
           narrow-indicator
+          :class="$q.dark.isActive ? 'q-dark' : 'q-light'"
         >
           <q-route-tab
             class="topRounded"
@@ -300,8 +301,7 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-span {
-  word-wrap: break-word;
-}
+<style scoped lang="sass">
+span 
+  word-wrap: break-word
 </style>
