@@ -1,27 +1,3 @@
-<template lang="pug">
-  .pageContainer.q-pt-xl
-    div()
-      .row.justify-between
-        div()
-          .text-primary.text-h4
-            div() Block
-          .text-white 
-            div() {{block}}
-        .dataCardsContainer(v-if="blockData")
-          .dataCardItem() 
-            .dataCardTile Gas used
-            .dataCardData {{ parseInt(blockData.gasUsed, 16) }}
-          .dataCardItem()
-            .dataCardTile Transactions 
-            .dataCardData {{ blockData.transactions.length || 0 }}
-          .dataCardItem()
-            .dataCardTile 
-              date-field( :epoch="blockData.timestamp" )
-          //div() {{ blockData }}
-    .tableWrapper(class="shadow-2 content-container q-mt-lg") 
-      transaction-table( :title="block" :filter="{block}" )
-</template>
-
 <script>
 import TransactionTable from "components/TransactionTable";
 import DateField from "components/DateField";
@@ -51,3 +27,27 @@ export default {
   }
 };
 </script>
+
+<template lang="pug">
+  .pageContainer.q-pt-xl
+    div
+      .row.justify-between
+        div
+          .text-primary.text-h4
+            div Block
+          .text-white 
+            div {{block}}
+        .dataCardsContainer(v-if="blockData")
+          .dataCardItem 
+            .dataCardTile Gas used
+            .dataCardData {{ parseInt(blockData.gasUsed, 16) }}
+          .dataCardItem
+            .dataCardTile Transactions 
+            .dataCardData {{ blockData.transactions.length || 0 }}
+          .dataCardItem
+            .dataCardTile 
+              date-field( :epoch="blockData.timestamp" )
+          //div() {{ blockData }}
+    .tableWrapper.shadow-2.content-container.q-mt-lg 
+      transaction-table( :title="block" :filter="{block}" )
+</template>
