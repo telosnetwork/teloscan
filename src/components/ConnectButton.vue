@@ -50,7 +50,6 @@ export default {
       'setLogin'
     ]),
     getLoginDisplay() {
-      debugger;
       return this.isNative ? this.nativeAccount : `0x...${this.address.slice(this.address.length - 4)}`;
     },
     connect() {
