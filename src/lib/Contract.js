@@ -78,7 +78,12 @@ export default class Contract {
   async parseLogs(logsArray) {
     if (this.iface) {
       let parsed = logsArray.map(log => {
-        return this.iface.parseLog(log)
+        try {
+          return this.iface.parseLog(log)
+        } catch (e) {
+          console.log(`Failed parsing log event: ${e.message}`)
+          return log;
+        }
       });
       return parsed;
     }
