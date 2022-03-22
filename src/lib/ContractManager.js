@@ -123,7 +123,7 @@ export default class ContractManager {
   }
 
   async getVerifiedContract(address, metadata, creationInfo) {
-    const token = this.getToken(address);
+    const token = await this.getToken(address);
     const contract =
     new Contract({
       name: Object.values(metadata.settings.compilationTarget)[0],
@@ -203,7 +203,10 @@ export default class ContractManager {
     return this.tokenList;
   }
 
-  getToken(address){
+  async getToken(address){
+    if (!this.tokenList)
+      await this.loadTokenList();
+
     let i = this.tokenList.tokens.length;
     while (i--) {
       if (this.tokenList.tokens[i].address.toLowerCase() === address.toLowerCase()){
@@ -214,7 +217,7 @@ export default class ContractManager {
   }
 
   async getContractFromTokenList(address, creationInfo) {
-    const token = this.getToken(address);
+    const token = await this.getToken(address);
     if (token) {
       return new Contract({
         name: `${token.name} (${token.symbol})`,
