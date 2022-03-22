@@ -23,7 +23,7 @@ module.exports = function(/* ctx */) {
     boot: ["ual", "hyperion", "api", "telosApi", "evm"],
 
     // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
-    css: ["fonts/silka/silka.css", "app.scss"],
+    css: ["fonts/silka/silka.css", "app.sass"],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
