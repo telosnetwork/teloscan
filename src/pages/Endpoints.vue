@@ -1,22 +1,3 @@
-<template lang="pug">
-.pageContainer.q-pt-xl
-    .homeInfo
-        .text-primary.text-h6 RPC ENDPOINTS
-    .q-mb-md.tableWrapper
-      q-card
-        q-item(v-for="endpoint in endpoints" :key="endpoint.endpoint")
-          q-item-section.full-width
-            q-item-label.text-weight-medium
-              span {{ endpoint.name }}
-            q-item-label(v-if="endpoint.description" caption) {{ endpoint.description }}
-          q-item-section.full-width
-            q-item-label.q-mt-sm {{ endpoint.http }}
-          q-item-section.full-width
-            q-item-label(v-if="endpoint.latency" side top)
-              span Latency: {{ endpoint.latency }}ms
-              q-icon(name="wifi" :color="getLatencyColor(endpoint.latency)")
-            q-item-label(v-if="endpoint.block" side top) Block height: {{ endpoint.block }}
-</template>
 <script>
 import axios from "axios";
 import axiosTime from "axios-time";
@@ -74,6 +55,26 @@ export default {
   }
 };
 </script>
+
+<template lang="pug">
+.pageContainer.q-pt-xl
+    .homeInfo
+        .text-primary.text-h6 RPC ENDPOINTS
+    .q-mb-md.tableWrapper
+      q-card
+        q-item(v-for="endpoint in endpoints" :key="endpoint.endpoint")
+          q-item-section.full-width
+            q-item-label.text-weight-medium
+              span {{ endpoint.name }}
+            q-item-label(v-if="endpoint.description" caption) {{ endpoint.description }}
+          q-item-section.full-width
+            q-item-label.q-mt-sm {{ endpoint.http }}
+          q-item-section.full-width
+            q-item-label(v-if="endpoint.latency" side top)
+              span Latency: {{ endpoint.latency }}ms
+              q-icon(name="wifi" :color="getLatencyColor(endpoint.latency)")
+            q-item-label(v-if="endpoint.block" side top) Block height: {{ endpoint.block }}
+</template>
 
 <style scoped lang='sass'>
 .q-list  
