@@ -1,7 +1,3 @@
-<template lang="pug">
-  router-link(:to="`/block/${this.block}`") {{ block }}
-</template>
-
 <script>
 export default {
   name: "BlockField",
@@ -14,6 +10,6 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<template lang="pug">
+  router-link(:to="`/block/${this.block}`") {{ block }}
+</template>

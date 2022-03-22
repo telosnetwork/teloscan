@@ -1,19 +1,3 @@
-<template lang='pug'>
-.contract-source
-  div(    v-for='(item, key, index) in json' :key='key')
-    p.file-label {{ item.name }}
-    JsonViewer.source-container( 
-      :value='item.content'
-      copyable
-      expanded
-      :expand-depth=1
-      theme="custom-theme"
-    )
-  div( v-for='(item, key, index) in contracts')
-    p.file-label {{ item.name }}
-    pre.source-container(v-html='item.content')
-</template>
-
 <script lang="javascript">
 import axios from 'axios';
 import JsonViewer from 'vue-json-viewer';
@@ -75,6 +59,23 @@ export default {
   }
 }
 </script>
+
+<template lang='pug'>
+.contract-source
+  div(    v-for='(item, key, index) in json' :key='key')
+    p.file-label {{ item.name }}
+    JsonViewer.source-container( 
+      :value='item.content'
+      copyable
+      expanded
+      :expand-depth=1
+      theme="custom-theme"
+    )
+  div( v-for='(item, key, index) in contracts')
+    p.file-label {{ item.name }}
+    pre.source-container(v-html='item.content')
+</template>
+
 <style lang='sass'>
 .contract-source
   margin: 2rem

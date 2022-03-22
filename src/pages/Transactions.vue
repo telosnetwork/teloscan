@@ -27,6 +27,3 @@ export default {
   name: "Index"
 };
 </script>
-
-<style lang="sass" scoped>
-</style>

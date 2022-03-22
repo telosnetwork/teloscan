@@ -1,10 +1,3 @@
-<template lang="pug">
-  div()
-    q-input( v-model="value" :label="label" )
-      template( v-slot:prepend )
-        q-icon( :name="typeIcon" )
-</template>
-
 <script>
 export default {
   name: "FunctionParameter",
@@ -25,6 +18,9 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<template lang="pug">
+  div
+    q-input( v-model="value" :label="label" )
+      template( v-slot:prepend )
+        q-icon( :name="typeIcon" )
+</template>

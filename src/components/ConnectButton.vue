@@ -1,40 +1,9 @@
-<template lang="pug">
-  div()
-    q-btn( v-if="!isLoggedIn" label="Connect Wallet" @click="connect()" )
-    q-btn-dropdown( v-if="isLoggedIn" :label="`0x...${address.slice(address.length - 4)}`" )
-      q-list()
-        q-item( clickable v-close-popup @click="goToAddress()" )
-          q-item-section()
-            q-item-label() View address
-        q-item( clickable v-close-popup @click="disconnect()" )
-          q-item-section()
-            q-item-label() Disconnect
-    q-dialog( v-model="showLogin" )
-      q-card( rounded )
-        q-tabs( v-model="tab" )
-          q-tab( name="web3" label="EVM Wallets" )
-          q-tab( name="native" label="Native Wallets" )
-        q-separator()
-        q-tab-panels( v-model="tab" animated )
-          q-tab-panel( name="web3" )
-            q-card( @click="injectedWeb3Login()" )
-              q-img( :src="metamaskLogo" )
-              div() Metamask
-          q-tab-panel( name="native" )
-            q-card( v-for="(wallet, idx) in $ual.authenticators"
-              :key="wallet.getStyle().text"
-              @click="ualLogin(wallet)" )
-              q-img( :src="wallet.getStyle().icon" )
-              div() {{ wallet.getStyle().text }}
-</template>
-
 <script>
 import MetamaskLogo from 'src/assets/metamask-fox.svg'
 import { mapGetters, mapMutations } from 'vuex';
 import { ethers } from "ethers";
 const providersError = "More than one provider is active, disable additional providers.";
 const unsupportedError ="current EVM wallet provider is not supported.";
-
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
 const PROVIDER_WEB3_INJECTED = 'injectedWeb3'
@@ -206,6 +175,32 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<template lang="pug">
+  div()
+    q-btn( v-if="!isLoggedIn" label="Connect Wallet" @click="connect()" )
+    q-btn-dropdown( v-if="isLoggedIn" :label="`0x...${address.slice(address.length - 4)}`" )
+      q-list()
+        q-item( clickable v-close-popup @click="goToAddress()" )
+          q-item-section()
+            q-item-label() View address
+        q-item( clickable v-close-popup @click="disconnect()" )
+          q-item-section()
+            q-item-label() Disconnect
+    q-dialog( v-model="showLogin" )
+      q-card( rounded )
+        q-tabs( v-model="tab" )
+          q-tab( name="web3" label="EVM Wallets" )
+          q-tab( name="native" label="Native Wallets" )
+        q-separator()
+        q-tab-panels( v-model="tab" animated )
+          q-tab-panel( name="web3" )
+            q-card( @click="injectedWeb3Login()" )
+              q-img( :src="metamaskLogo" )
+              div() Metamask
+          q-tab-panel( name="native" )
+            q-card( v-for="(wallet, idx) in $ual.authenticators"
+              :key="wallet.getStyle().text"
+              @click="ualLogin(wallet)" )
+              q-img( :src="wallet.getStyle().icon" )
+              div() {{ wallet.getStyle().text }}
+</template>

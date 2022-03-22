@@ -1,9 +1,3 @@
-<template lang="pug">
-  pre()
-    //- div() {{ JSON.stringify(itxs, null, 4) }}
-    <json-viewer :value="itxs" theme="jsonViewer"></json-viewer>
-</template>
-
 <script>
 import JsonViewer from 'vue-json-viewer'
 export default {
@@ -24,3 +18,9 @@ export default {
   }
 }
 </script>
+
+<template lang="pug">
+  pre
+    //- div() {{ JSON.stringify(itxs, null, 4) }}
+    <json-viewer :value="itxs" theme="jsonViewer"></json-viewer>
+</template>

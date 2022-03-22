@@ -1,17 +1,3 @@
-<template lang="pug">
-  .q-pa-md.row.items-start.q-gutter-md
-     div(v-for="token in tokens" :key="token.address" )
-       .col
-         q-card()
-          q-card-section()
-            q-avatar()
-              img( :src="token.logoURI" )
-            .text-h6
-              div() {{ token.name }}
-            address-field( :address="token.address" )
-            div() Balance: {{ token.balance }}
-</template>
-
 <script>
 import AddressField from "components/AddressField";
 import {formatBN} from "src/lib/utils";
@@ -52,6 +38,20 @@ export default {
   }
 }
 </script>
+
+<template lang="pug">
+  .q-pa-md.row.items-start.q-gutter-md
+     div(v-for="token in tokens" :key="token.address" )
+       .col
+         q-card()
+          q-card-section()
+            q-avatar()
+              img( :src="token.logoURI" )
+            .text-h6
+              div() {{ token.name }}
+            address-field( :address="token.address" )
+            div() Balance: {{ token.balance }}
+</template>
 
 <style lang="sass" scoped>
 .token-card
