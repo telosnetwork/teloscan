@@ -28,6 +28,9 @@ export default {
   },
   methods: {
     async search() {
+      if (!this.searchTerm)
+        return;
+
       this.searchTerm = this.searchTerm.trim().replace(/\s/, '');
       if (this.searchTerm.startsWith("0x")) {
         if (this.searchTerm.length == 42) {
@@ -44,7 +47,7 @@ export default {
           return;
         } catch (e) {
           // in case this was a block that looked like an account name let's try it as a block
-          if (!isNaN(this.searchTerm)) {
+          if (this.searchTerm && !isNaN(this.searchTerm)) {
             this.$router.push(`/block/${this.searchTerm}`);
             return;
           }
@@ -57,6 +60,7 @@ export default {
           return;
         }
       } else if (!isNaN(this.searchTerm)) {
+        debugger;
         this.$router.push(`/block/${this.searchTerm}`);
         return;
       }
@@ -73,10 +77,10 @@ export default {
 
 <template lang='pug'>
 div
-  q-input.q-ml-md( 
+  q-input.q-ml-md(
     v-if="this.toolbar"
-    dark 
-    dense 
+    dark
+    dense
     standout
     input-class="text-right"
     :placeholder="searchHint"
