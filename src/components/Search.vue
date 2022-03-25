@@ -60,7 +60,6 @@ export default {
           return;
         }
       } else if (!isNaN(this.searchTerm)) {
-        debugger;
         this.$router.push(`/block/${this.searchTerm}`);
         return;
       }
