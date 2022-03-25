@@ -119,6 +119,9 @@ export default {
           await this.switchChainInjected();
         }
         return accounts[0];
+      } else {
+        const accessGranted =  await provider.request({ method: 'eth_requestAccounts' })
+        return accessGranted > 0 ? accessGranted[0] : false;
       }
       return false
     },
