@@ -120,10 +120,19 @@ export default {
         }
         return accounts[0];
       } else {
-        const accessGranted =  await provider.request({ method: 'eth_requestAccounts' })
-        return accessGranted > 0 ? accessGranted[0] : false;
+        const accessGranted = await provider.request({ method: 'eth_requestAccounts' })
+
+        if (accessGranted.length < 1) {
+          return false;
+        }
+
+        const {chainId} = await checkProvider.getNetwork();
+        if (chainId !== process.env.NETWORK_EVM_CHAIN_ID) {
+          await this.switchChainInjected();
+        }
+
+        return accessGranted[0];
       }
-      return false
     },
     getInjectedProvider() {
       const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
