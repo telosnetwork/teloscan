@@ -24,52 +24,53 @@
 
         <connect-button/>
         <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
-        <q-drawer
-          side="right"
-          v-model="drawer"
-          :width="200"
-          :breakpoint="500"
-          overlay
-          bordered>
-          <q-list>
-            <q-item
-              clickable
-              v-close-popup
-              @click.native="routerTo('/endpoints')"
-            >
-              <q-item-section>
-                <q-item-label>RPC Endpoints</q-item-label>
-              </q-item-section>
-            </q-item>
 
-            <q-item
-              v-if="!mainnet"
-              clickable
-              v-close-popup
-              @click.native="goTo('https://teloscan.io/')"
-            >
-              <q-item-section>
-                <q-item-label> Teloscan Mainnet </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              v-if="mainnet"
-              clickable
-              v-close-popup
-              @click.native="goTo('https://testnet.teloscan.io/')"
-            >
-              <q-item-section>
-                <q-item-label> Teloscan Testnet </q-item-label>
-              </q-item-section>
-            </q-item>
-
-
-
-          </q-list>
-        </q-drawer>
       </q-toolbar>
     </q-header>
+
+    <q-drawer
+      side="right"
+      v-model="drawer"
+      :width="200"
+      :breakpoint="500"
+      overlay
+      bordered
+    >
+      <q-list>
+        <q-item
+          clickable
+          v-close-popup
+          @click.native="routerTo('/endpoints')"
+        >
+          <q-item-section>
+            <q-item-label>RPC Endpoints</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          v-if="!mainnet"
+          clickable
+          v-close-popup
+          @click.native="goTo('https://teloscan.io/')"
+        >
+          <q-item-section>
+            <q-item-label> Teloscan Mainnet </q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          v-if="mainnet"
+          clickable
+          v-close-popup
+          @click.native="goTo('https://testnet.teloscan.io/')"
+        >
+          <q-item-section>
+            <q-item-label> Teloscan Testnet </q-item-label>
+          </q-item-section>
+        </q-item>
+
+      </q-list>
+    </q-drawer>
 
     <div :class="`banner ${onHomePage ? 'home' : ''}`"></div>
 
@@ -169,4 +170,5 @@ export default {
   white-space: nowrap
   overflow: hidden
   text-overflow: ellipsis
+
 </style>
