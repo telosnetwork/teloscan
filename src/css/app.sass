@@ -1,0 +1,219 @@
+@import './dataCard.sass'
+
+a
+ color: rgb(100, 111, 211)
+ text-decoration: none
+
+.toolbar 
+  background: radial-gradient( circle at 50% 50%, rgba(97, 8, 183, 1) 1%, rgba(0, 188, 212, 1) 53%, rgba(213, 109, 213, 1) 100%)
+  color: $purpleDarkMode
+
+.q-header
+  margin:10px
+
+.q-table thead tr, .q-table tbody td
+  height:60px
+
+.q-tabs
+  border-bottom-width: 1px
+
+.q-tabs--dense .q-tab
+  min-height: 53px
+
+.q-mb-lg
+  margin-top:20px
+
+.text-h4
+  line-height: 2rem
+
+.shadow-2
+  box-shadow: none !important
+
+.q-mb-md 
+  margin-bottom: auto
+  margin-top: 0px !important
+
+.q-light
+  background: white
+  .q-tab
+    color: black
+
+.q-table--dark .q-table__bottom, .q-table--dark thead, .q-table--dark tr, .q-table--dark th, .q-table--dark td 
+  border-color: rgb(0 0 0 / 50%)
+
+body 
+  font-family: "silkaregular"
+
+body.body--light 
+  background: #fafafa
+
+  .bgNormal 
+    background: white
+    background-size: cover
+    margin-top: 400px
+    height: 100%
+    width: 100%
+    position: fixed
+    top: 0
+    left: 0
+    z-index: 0
+  
+  .jsonViewer 
+    color: $purpleDarkMode
+    max-width: 100vw
+    overflow: scroll
+
+  .toolbar 
+    background: rgb(127, 99, 255)
+    color: $purpleDarkMode
+
+  .searchCard 
+    padding: 1px
+    background: radial-gradient(circle at 50% 50%, rgba(97, 8, 183, 1) 1%, rgba(0, 188, 212, 1) 53%, rgba(213, 109, 213, 1) 100%)
+    border-radius: 10px
+
+    .q-input 
+      width: 100%
+      font-size: 1.3rem
+
+    .searchCardSection
+      padding: 10px
+      background: #ffffff
+      border-radius: 10px
+
+body.body--dark 
+  color: $white
+
+  .bgNormal 
+    background: #1a1a1a
+    background-size: cover
+    margin-top: 400px
+    height: 100%
+    width: 100%
+    position: fixed
+    top: 0
+    left: 0
+    z-index: 0
+
+  .toolbar 
+    background: #282828
+
+  .q-card 
+    padding: 0px
+    background: $dark
+    border-radius: 10px
+
+  .searchCard 
+    padding: 1px
+    background: radial-gradient(circle at 50% 50%, rgba(97, 8, 183, 1) 1%, rgba(0, 188, 212, 1) 53%, rgba(213, 109, 213, 1) 100%)
+    border-radius: 10px
+
+    .q-input 
+      width: 100%
+      font-size: 1.3rem
+
+    .searchCardSection 
+      padding: 10px
+      background: $dark
+      border-radius: 10px
+
+  background: #1a1a1a
+
+.pageContainer 
+  flex: 0 1 1200px
+  max-width: 1200px
+
+.slim-scrollbar 
+  &::-webkit-scrollbar 
+    width: 0.5rem
+
+  &::-webkit-scrollbar-track 
+    background-color: transparent
+
+  &::-webkit-scrollbar-thumb 
+    background-color: rgba($white, 0.5)
+    border-radius: 1rem
+    border: 0.1rem solid transparent
+    background-clip: content-box
+  
+  &::-webkit-scrollbar-thumb:hover 
+    background-color: rgba($white, 0.9)
+
+.scroll 
+  &::-webkit-scrollbar 
+    width: 0.5rem
+
+  &::-webkit-scrollbar-track 
+    background-color: transparent
+  
+  &::-webkit-scrollbar-thumb 
+    background-color: rgba($white, 0.5)
+    border-radius: 1rem
+    border: 0.1rem solid transparent
+    background-clip: content-box
+
+  &::-webkit-scrollbar-thumb:hover 
+    background-color: rgba($white, 0.9)
+  
+.q-dialog__inner > div 
+  border-radius: 10px
+
+.tableWrapper .content-container 
+  border-radius: 10px
+
+.q-tabs.topRounded 
+  border-radius: 10px 10px 0 0
+  border-bottom: 1px solid black
+
+.topLeftRounded
+  border-radius: 10px 0 0 0
+
+.topRightRounded 
+  border-radius: 0 10px 0 0
+
+.taskbarSearch
+  max-width: 300px
+  max-height: 50px
+  padding-right: 10px
+  font-size: 1rem
+  width: 400px
+
+.tabsBar
+  color: rgb(133, 145, 253)
+
+.homeInfo
+  color: white
+  max-width: 100vw
+  overflow: scroll
+
+.tableWrapper
+  max-width: 100vw
+  margin-top:17.5px
+
+.jv-code
+  overflow: scroll !important
+
+::-webkit-scrollbar 
+  display: none
+
+@media only screen and (max-width: 550px)
+  .selectorContainer .text-h6
+    font-size: 0.8rem
+  .q-input 
+    font-size: 1.2rem
+
+@media screen and (max-width: 650px) 
+  .homeInfo 
+      color: white
+      max-width: 100vw
+      overflow: scroll
+      font-size: 12px !important
+
+  .text-h4.text-primary.q-mb-lg 
+    line-height: 0rem !important
+
+  .q-header
+    margin: 0px 0px !important
+  
+  .q-btn__wrapper 
+    padding: 4px !important

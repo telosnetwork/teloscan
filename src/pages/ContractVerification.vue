@@ -1,119 +1,6 @@
-<template lang='pug'>
-.pageContainer.row.q-pt-xl.tableWrapper
-  .text-h4.text-primary.q-mb-lg Verify Contract
-  .col-12.q-py-lg
-    .content-container
-          q-form(
-            @submit='submitFormHandler'
-            @reset='resetForm'
-          )
-            .inputs-container-row
-              .inputs-container-col.inputs-container-padding-right
-                q-input(
-                  v-model="contractAddress" 
-                  name='contractAddress'
-                  label="Contract Address *" 
-                  placeholder="Please enter contract address '0x0123...'"
-                  debounce="500"
-                  :rules="[val => isValidAddressFormat(val) || 'invalid address format' ]"
-                )
-                q-select( 
-                  v-model="compilerVersion" 
-                  :options="compilerOptions" 
-                  label="Compiler Version *" 
-                  :rules="[val => val.length || 'select compiler version']"
-                )
-                q-input(
-                  :disable='!pathInput'
-                  v-model="sourcePath" 
-                  label="Contract File(s) Directory Path (leave blank if none)"
-                  placeholder="e.g., 'contracts/'"      
-                  debounce="750"
-                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) === '/') ) || 'path must end with a forward slash /']"
-                )
-                .radio-container
-                  q-radio( 
-                    v-model="inputMethod"
-                    label="upload file"
-                    :val='true'
-                    color='primary'
-                  )
-                  q-radio( 
-                    v-model="inputMethod"
-                    label="text input"
-                    :val='false'
-                    color='primary'
-                  )   
-              .inputs-container-col
-                q-input.q-field--with-bottom(
-                  v-model="runs" 
-                  type="number" 
-                  label="Runs value for optimization" 
-                  :class="!optimizer ? 'disabled-input' : ''"
-                )
-                  q-toggle( v-model="optimizer" label="Optimization" )
-                q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM" )
-                q-input(
-                  style="padding-bottom:1rem"
-                  v-model="constructorArgs" 
-                  label="Constructor Arguments"
-                  placeholder="comma seperated values e.g., Bob,123,0x12345...'"  
-                  debounce="750"
-                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',') ) || 'no trailing commas']"
-                )
-                .radio-container
-                  q-radio( 
-                    v-if="inputMethod"
-                    v-model="fileType"
-                    label=".sol"
-                    :val="true"
-                    color='primary'
-                  )
-                  q-radio( 
-                    v-if="inputMethod"
-                    v-model="fileType"
-                    label=".json"
-                    :val="false"
-                    color='primary'
-                  ) 
-
-              q-input.border-radius(
-                v-if='!inputMethod'
-                type="textarea" 
-                name='contractInput'
-                rows="5"  
-                square 
-                outlined 
-                v-model='contractInput' 
-                placeholder='copy & paste contract code here...'
-                :rules="[val => val.length || 'enter or paste contract text']"
-              )     
-              q-uploader(
-                v-else
-                ref="uploader"
-                :url='getUrl'
-                multiple
-                batch
-                :label='uploaderLabel'
-                :form-fields='getFormFields'
-                field-name='files'
-                no-thumbnails=true
-                style="max-width: 300px"
-                accept='.sol, .json'
-                hide-upload-btn=true
-                @uploaded='uploaded'
-                @rejected="onNotify"
-              )
-
-              .button-container
-                q-btn(label="Verify Contract" type="submit" color='primary')
-                q-btn(label="Reset" type="reset" color='primary' )
-</template>
-
 <script>
 import { getCompilerOptions } from 'src/lib/contractVerification';
 import { isValidAddressFormat } from "src/lib/utils";
-
 
 export default {
   name: "ContractVerification",
@@ -259,6 +146,118 @@ export default {
   }
 }
 </script>
+
+<template lang='pug'>
+.pageContainer.row.q-pt-xl.tableWrapper
+  .text-h4.text-primary.q-mb-lg Verify Contract
+  .col-12.q-py-lg
+    .content-container
+          q-form(
+            @submit='submitFormHandler'
+            @reset='resetForm'
+          )
+            .inputs-container-row
+              .inputs-container-col.inputs-container-padding-right
+                q-input(
+                  v-model="contractAddress" 
+                  name='contractAddress'
+                  label="Contract Address *" 
+                  placeholder="Please enter contract address '0x0123...'"
+                  debounce="500"
+                  :rules="[val => isValidAddressFormat(val) || 'invalid address format' ]"
+                )
+                q-select( 
+                  v-model="compilerVersion" 
+                  :options="compilerOptions" 
+                  label="Compiler Version *" 
+                  :rules="[val => val.length || 'select compiler version']"
+                )
+                q-input(
+                  :disable='!pathInput'
+                  v-model="sourcePath" 
+                  label="Contract File(s) Directory Path (leave blank if none)"
+                  placeholder="e.g., 'contracts/'"      
+                  debounce="750"
+                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) === '/') ) || 'path must end with a forward slash /']"
+                )
+                .radio-container
+                  q-radio( 
+                    v-model="inputMethod"
+                    label="upload file"
+                    :val='true'
+                    color='primary'
+                  )
+                  q-radio( 
+                    v-model="inputMethod"
+                    label="text input"
+                    :val='false'
+                    color='primary'
+                  )   
+              .inputs-container-col
+                q-input.q-field--with-bottom(
+                  v-model="runs" 
+                  type="number" 
+                  label="Runs value for optimization" 
+                  :class="!optimizer ? 'disabled-input' : ''"
+                )
+                  q-toggle( v-model="optimizer" label="Optimization" )
+                q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM" )
+                q-input(
+                  style="padding-bottom:1rem"
+                  v-model="constructorArgs" 
+                  label="Constructor Arguments"
+                  placeholder="comma seperated values e.g., Bob,123,0x12345...'"  
+                  debounce="750"
+                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',') ) || 'no trailing commas']"
+                )
+                .radio-container
+                  q-radio( 
+                    v-if="inputMethod"
+                    v-model="fileType"
+                    label=".sol"
+                    :val="true"
+                    color='primary'
+                  )
+                  q-radio( 
+                    v-if="inputMethod"
+                    v-model="fileType"
+                    label=".json"
+                    :val="false"
+                    color='primary'
+                  ) 
+
+              q-input.border-radius(
+                v-if='!inputMethod'
+                type="textarea" 
+                name='contractInput'
+                rows="5"  
+                square 
+                outlined 
+                v-model='contractInput' 
+                placeholder='copy & paste contract code here...'
+                :rules="[val => val.length || 'enter or paste contract text']"
+              )     
+              q-uploader(
+                v-else
+                ref="uploader"
+                :url='getUrl'
+                multiple
+                batch
+                :label='uploaderLabel'
+                :form-fields='getFormFields'
+                field-name='files'
+                no-thumbnails=true
+                style="max-width: 300px"
+                accept='.sol, .json'
+                hide-upload-btn=true
+                @uploaded='uploaded'
+                @rejected="onNotify"
+              )
+
+              .button-container
+                q-btn(label="Verify Contract" type="submit" color='primary')
+                q-btn(label="Reset" type="reset" color='primary' )
+</template>
 
 <style scoped lang="sass">
 span 

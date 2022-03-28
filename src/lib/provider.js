@@ -1,6 +1,6 @@
 const { ethers } = require("ethers");
 const providersError = "More than one provider is active, disable additional providers.";
-const unsupportedError ="current ethereum provider is not supported.";
+const unsupportedError ="current EVM wallet provider is not supported.";
 
 const switchEthereumChain = async () => {
     const provider = getProvider();
@@ -45,7 +45,7 @@ const switchEthereumChain = async () => {
 
 const getProvider = () => {
     const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
-        window.ethereum : 
+        window.ethereum :
         null
     if (!provider){
         console.error(providersError, 'or', unsupportedError);
@@ -71,7 +71,7 @@ const addNetwork = async () => {
                         decimals: 18,
                     },
                     rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
-                    blockExplorerUrls: [`https://${mainnet ? '' : 'testnet'}.teloscan.io`],
+                    blockExplorerUrls: [`https://${mainnet ? '' : 'testnet.'}teloscan.io`],
                 }]
             });
             return true;
@@ -90,7 +90,7 @@ const isConnected = async () => {
     const accounts = await checkProvider.listAccounts();
     if (accounts.length > 0){
         const { chainId } = await checkProvider.getNetwork();
-        if (chainId != process.env.NETWORK_EVM_CHAIN_ID){
+        if (chainId !== process.env.NETWORK_EVM_CHAIN_ID){
             await switchEthereumChain();
         }
         return accounts[0];
@@ -104,10 +104,10 @@ const requestAccounts = async () => {
     return accessGranted > 0 ? accessGranted[0] : false;
 }
 
-module.exports = { 
-    switchEthereumChain, 
-    addNetwork, 
-    getProvider, 
-    isConnected, 
+module.exports = {
+    switchEthereumChain,
+    addNetwork,
+    getProvider,
+    isConnected,
     requestAccounts
 }

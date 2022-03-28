@@ -1,61 +1,3 @@
-<template>
-  <q-page class="column justify-center items-center">
-    <h2>Send some TLOS!</h2>
-    <div v-if="isAuthenticated">
-      <q-input
-        outlined
-        autocapitalize="off"
-        bottom-slots
-        v-model="to"
-        label="To"
-        counter
-        maxlength="12"
-      />
-      <q-input
-        outlined
-        bottom-slots
-        suffix="TLOS"
-        v-model="amount"
-        label="Amount"
-        counter
-        type="number"
-        maxlength="12"
-      >
-      </q-input>
-      <q-input
-        outlined
-        bottom-slots
-        v-model="memo"
-        label="Memo"
-        counter
-      />
-      <q-btn size="xl" round dense flat icon="send" @click="send" />
-      <q-dialog v-model="showTransaction" confirm>
-        <q-card >
-          <q-card-section class="row">
-            <q-avatar icon="arrow_forward" color="primary" text-color="white" />
-            <span class="q-ml-sm">
-              Transaction sent, click to view in block explorer.
-            </span>
-            <q-item
-              clickable
-              tag="a"
-              target="_blank"
-              :href="`${explorerUrl}/transaction/${transaction}`"
-              class="q-ml-sm"
-              >{{ transaction }}</q-item
-            >
-          </q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat label="Ok" color="primary" v-close-popup></q-btn>
-          </q-card-actions>
-        </q-card>
-      </q-dialog>
-    </div>
-    <div v-else>Please login to do a transfer!</div>
-  </q-page>
-</template>
-
 <script>
 import { mapGetters, mapActions } from "vuex";
 
@@ -105,3 +47,51 @@ export default {
   }
 };
 </script>
+
+<template lang='pug'>
+  q-page.column.justify-center.items-center
+    h2 Send some TLOS!
+    div( v-if="isAuthenticated" )
+      q-input(
+        outlined
+        autocapitalize="off"
+        bottom-slots
+        v-model="to"
+        label="To"
+        counter
+        maxlength="12"
+      )
+      q-input(
+        outlined
+        bottom-slots
+        suffix="TLOS"
+        v-model="amount"
+        label="Amount"
+        counter
+        type="number"
+        maxlength="12"
+      )
+      q-input(
+        outlined
+        bottom-slots
+        v-model="memo"
+        label="Memo"
+        counter
+      )
+      q-btn( size="xl" round dense flat icon="send" @click="send" )
+      q-dialog( v-model="showTransaction" confirm)
+        q-card 
+          q-card-section.row 
+            q-avatar( icon="arrow_forward" color="primary" text-color="white" )
+            span.q-ml-sm
+              | Transaction sent, click to view in block explorer.
+            q-item.q-ml-sm(
+              clickable
+              tag="a"
+              target="_blank"
+              :href="`${explorerUrl}/transaction/${transaction}`"
+            ) {{ transaction }}
+          q-card-actions( align="right" )
+            q-btn( flat label="Ok" color="primary" v-close-popup )
+    div( v-else ) Please login to do a transfer!
+</template>

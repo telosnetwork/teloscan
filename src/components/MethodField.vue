@@ -1,15 +1,3 @@
-<template lang="pug">
-  span(v-if="trx.parsedTransaction" )
-    div() {{ trx.parsedTransaction.name.length > 8 && shorten ? `${trx.parsedTransaction.name.slice(0,8)}...` : trx.parsedTransaction.name  }}
-    div() {{ transferAmount }}
-    q-tooltip(v-if="shorten" anchor="center middle" self="center middle")
-      | {{ trx.parsedTransaction.name }}
-  span(v-else)
-    div() {{trx.input_data.length > 8 && shorten ? `${trx.input_data.slice(0,8)}...` : trx.input_data}}
-    q-tooltip( v-if="shorten" anchor="center middle" self="center middle")
-      | {{ trx.input_data.slice(0,8) }}
-</template>
-
 <script>
 
 import { formatBN } from "src/lib/utils";
@@ -54,6 +42,14 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<template lang="pug">
+  span(v-if="trx.parsedTransaction" )
+    div() {{ trx.parsedTransaction.name.length > 8 && shorten ? `${trx.parsedTransaction.name.slice(0,8)}...` : trx.parsedTransaction.name  }}
+    div() {{ transferAmount }}
+    q-tooltip(v-if="shorten" anchor="center middle" self="center middle")
+      | {{ trx.parsedTransaction.name }}
+  span(v-else)
+    div() {{trx.input_data.length > 8 && shorten ? `${trx.input_data.slice(0,8)}...` : trx.input_data}}
+    q-tooltip( v-if="shorten" anchor="center middle" self="center middle")
+      | {{ trx.input_data.slice(0,8) }}
+</template>
