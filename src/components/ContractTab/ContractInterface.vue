@@ -46,11 +46,27 @@ export default {
 
 <template lang='pug'>
   div
-    q-list(v-if='write')
-      q-expansion-item( v-for="func in functions.write" :label="func.name" :key="func.name" )
-        FunctionInterface( :abi="func" :contract="contract" group="write" )
-    q-list(v-else )
-      q-expansion-item( v-for="func in functions.read" :label="func.name" :key="func.name" )
-        FunctionInterface( :abi="func" :contract="contract" group="read" )
-
+    q-list.interface-list(v-if='write')
+      q-expansion-item.interface-item( v-for="func in functions.write" :label="func.name" :key="func.name" )
+        FunctionInterface.interface-input( :abi="func" :contract="contract" group="write" )
+    q-list.interface-list(v-else )
+      q-expansion-item.interface-item( v-for="func in functions.read" :label="func.name" :key="func.name" )
+        FunctionInterface.interface-input( :abi="func" :contract="contract" group="read" )
 </template>
+
+<style lang='sass'>
+.interface-list
+  margin-bottom: 1.5rem
+
+.interface-item .q-item
+  border: .125rem solid grey
+  border-radius: .25rem .25rem 0 0
+  margin-top: 1rem
+
+.interface-input
+  border-width: 0 .125rem .125rem .125rem 
+  border-style: solid
+  border-color: gray
+  border-radius: 0 0 .25rem .25rem
+
+</style>

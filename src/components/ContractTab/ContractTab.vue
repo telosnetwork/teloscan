@@ -15,7 +15,7 @@ export default {
 </script>
 
 <template lang="pug">
-  div
+  div.contract-tab
     q-btn-group( push )
       q-btn( push label="Code" @click="source=true")
       q-btn( push label="Read" @click="source=false; write=false")
@@ -23,3 +23,9 @@ export default {
     ContractSource( v-if="source" )
     ContractInterface( v-else :write='write' )
 </template>
+
+<style lang='sass'>
+.contract-tab
+  margin-left: 2rem
+  margin-right: 2rem
+</style>
