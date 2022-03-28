@@ -78,7 +78,8 @@ export default {
 
 <style lang='sass'>
 .contract-source
-  margin: 2rem
+  margin-top: 1rem
+  
 .source-container
   max-height: 20rem
   overflow-y: auto
