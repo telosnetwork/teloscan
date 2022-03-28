@@ -1,48 +1,3 @@
-<template lang="pug">
-  q-table(
-    :data="rows"
-    :columns="columns"
-    :pagination.sync="pagination"
-    :loading="loading"
-    @request="onRequest"
-    :rows-per-page-options="[10, 20, 50]"
-    flat
-  )
-    q-tr( slot="header" slot-scope="props", :props="props" )
-      q-th(
-        v-for="col in props.cols"
-        :key="col.name"
-        :props="props"
-        @click="col.name==='date' ? showAge=!showAge : null"
-      )
-        template(
-          v-if="col.name==='date'"
-          class=""
-        )
-          q-tooltip(anchor="bottom middle" self="bottom middle") Click to change format
-        | {{ col.label }}
-        template(
-          v-if="col.name==='method'"
-        )
-          q-icon(name="fas fa-info-circle")
-            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
-
-
-    q-tr( slot="body" slot-scope="props" :props="props" )
-      q-td( key="hash" )
-        transaction-field( :transaction-hash="props.row.hash" )
-      q-td( key="date" )
-        date-field( :epoch="props.row.epoch", :showAge="showAge" )
-      q-td( key="from" )
-        address-field( :address="props.row.from" )
-      q-td( key="to" )
-        address-field( :address="props.row.to" )
-      q-td( key="value" ) {{ props.row.valueDisplay }}
-      q-td( key="token" )
-        q-img.coin-icon( :src="getIcon(props.row)" )
-        address-field.token-name( :address="props.row.address" :name="props.row.name" )
-</template>
-
 <script>
 import AddressField from "components/AddressField";
 import DateField from "components/DateField";
@@ -258,13 +213,56 @@ export default {
   }
 };
 </script>
-<style scoped>
-.coin-icon {
-  width: 20px;
-  margin-right: .25rem;
-}
+<style lang='sass'scoped>
+.coin-icon
+  width: 20px
+  margin-right: .25rem
 
-.token-name {
-  display: inline-block;
-}
+.token-name
+  display: inline-block
 </style>
+
+<template lang="pug">
+  q-table(
+    :data="rows"
+    :columns="columns"
+    :pagination.sync="pagination"
+    :loading="loading"
+    @request="onRequest"
+    :rows-per-page-options="[10, 20, 50]"
+    flat
+  )
+    q-tr( slot="header" slot-scope="props", :props="props" )
+      q-th(
+        v-for="col in props.cols"
+        :key="col.name"
+        :props="props"
+        @click="col.name==='date' ? showAge=!showAge : null"
+      )
+        template(
+          v-if="col.name==='date'"
+          class=""
+        )
+          q-tooltip(anchor="bottom middle" self="bottom middle") Click to change format
+        | {{ col.label }}
+        template(
+          v-if="col.name==='method'"
+        )
+          q-icon(name="fas fa-info-circle")
+            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
+
+
+    q-tr( slot="body" slot-scope="props" :props="props" )
+      q-td( key="hash" )
+        transaction-field( :transaction-hash="props.row.hash" )
+      q-td( key="date" )
+        date-field( :epoch="props.row.epoch", :showAge="showAge" )
+      q-td( key="from" )
+        address-field( :address="props.row.from" )
+      q-td( key="to" )
+        address-field( :address="props.row.to" )
+      q-td( key="value" ) {{ props.row.valueDisplay }}
+      q-td( key="token" )
+        q-img.coin-icon( :src="getIcon(props.row)" )
+        address-field.token-name( :address="props.row.address" :name="props.row.name" )
+</template>
