@@ -50,7 +50,7 @@ export default {
       if (decimalIndex > 0) {
         strBalance = `${strBalance.substring(
           0,
-          strBalance.indexOf(".") + 5
+          decimalIndex + 5
         )}`;
       }
       return `${strBalance} TLOS`;
