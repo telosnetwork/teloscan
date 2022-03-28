@@ -38,6 +38,16 @@ export default {
     this.loadTransaction();
   },
   methods: {
+    resetTransaction() {
+      this.blockData = null;
+      this.trx = null;
+      this.tab = "general";
+      this.isContract = false;
+      this.contract = null;
+      this.parsedTransaction = null;
+      this.parsedLogs = null;
+      this.methodTrx = null;
+    },
     async loadTransaction() {
       const trxResponse = await this.$evmEndpoint.get(
         `/v2/evm/get_transactions?hash=${this.hash}`
@@ -123,6 +133,7 @@ export default {
           return;
         }
 
+        this.resetTransaction();
         this.hash = hash;
         this.loadTransaction();
       },
@@ -133,9 +144,11 @@ export default {
 </script>
 
 <template lang='pug'>
-  .pageContainer.q-pt-xl 
+  .pageContainer.q-pt-xl
     .text-h4.text-primary.q-mb-lg
       | Transaction Details
+    .text-h6.q-mb-lg( v-if="trxNotFound" )
+      | Not found: {{ hash }}
     .col-12.q-py-lg
       .content-container( v-if="trx" )
         q-tabs.text-white.topRounded(
@@ -181,7 +194,7 @@ export default {
         )
           q-tab-panel( name="general" )
             .col
-              strong.wrapStrong Transaction Hash: 
+              strong.wrapStrong Transaction Hash:&nbsp;
               span {{ hash }}
             br
             div
@@ -195,7 +208,7 @@ export default {
             br
             div
               strong {{ `Status: ` }}
-              span {{ trx.status == 1 ? "Success" : "Failure" }} 
+              span {{ trx.status == 1 ? "Success" : "Failure" }}
             br
             div
               strong {{ `From: ` }}
@@ -207,7 +220,7 @@ export default {
                 :address="trx.to"
                 :truncate="0"
                 :is-contract-trx="!!contract"
-              )            
+              )
             br
             div( v-if="isContract" )
               strong {{ `Contract function: ` }}
@@ -215,15 +228,15 @@ export default {
             br(v-if="isContract")
             div( v-if="isContract")
               strong {{ `Contract parameters: ` }}
-              json-viewer( :value="getFunctionParams() " theme="jsonViewer" ) 
+              json-viewer( :value="getFunctionParams() " theme="jsonViewer" )
             br( v-if="isContract" )
             div( v-if="trx.createdaddr" )
               strong {{ `Deployed contract: ` }}
               span
-                AddressField( :address="trx.createdaddr" )             
+                AddressField( :address="trx.createdaddr" )
             br
             div
-              strong {{ `Value: ` }} 
+              strong {{ `Value: ` }}
               span {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
             br
             div
@@ -232,11 +245,11 @@ export default {
             br
             div
               strong {{ `Gas Fee: ` }}
-              span {{ getGasFee() }} TLOS 
+              span {{ getGasFee() }} TLOS
             br
             div
               strong {{ `Gas Used: ` }}
-              span {{ trx.gasused }}            
+              span {{ trx.gasused }}
             br
             div
               strong {{ `Gas Limit: ` }}
@@ -261,6 +274,6 @@ export default {
 </template>
 
 <style scoped lang="sass">
-span 
+span
   word-wrap: break-word
 </style>
