@@ -78,14 +78,21 @@ export default {
         this.contract = await this.$contractManager.getContract(this.address)
         this.isVerified = this.contract.verified;
       }
-      let strBalance = web3.utils.fromWei(account.balance);
-      strBalance = `${strBalance.substring(
-        0,
-        strBalance.indexOf(".") + 5
-      )} TLOS`;
-      this.balance = strBalance;
+
+      this.balance = this.getBalanceDisplay(account.balance);
       this.telosAccount = account.account;
       this.isContract = account.code.length > 0;
+    },
+    getBalanceDisplay(balance) {
+      let strBalance = web3.utils.fromWei(balance);
+      const decimalIndex = strBalance.indexOf(".");
+      if (decimalIndex > 0) {
+        strBalance = `${strBalance.substring(
+          0,
+          strBalance.indexOf(".") + 5
+        )}`;
+      }
+      return `${strBalance} TLOS`;
     },
     getTitle() {
       if (this.isContract) {
