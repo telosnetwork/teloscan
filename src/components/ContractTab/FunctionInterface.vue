@@ -227,9 +227,18 @@ export default {
       q-input( :label="makeLabel(param, idx)" v-model.string="params[idx]" )
         template( v-if="param.type === 'uint256'" v-slot:append )
           q-icon( name="pin" @click="showAmountDialog(idx)" ).cursor-pointer
-    q-btn( v-if="enableRun" :label="runLabel" icon="send" @click="run()" )
+    q-btn.run-button( color='primary' v-if="enableRun" :label="runLabel" icon="send" @click="run()" )
     div( v-else ) Connect wallet to execute write
-    div( v-if="result" ) Result: ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
-    div( v-if="hash" ) Transaction hash:&nbsp
+    .output-container( v-if="result" ) Result: ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
+    .output-container( v-if="hash" ) Transaction hash:&nbsp
       transaction-field( :transaction-hash="hash" )
 </template>
+
+<style lang='sass'>
+.output-container
+  margin: 1rem
+
+.run-button
+  margin: 1rem
+  border-radius: .25rem
+</style>
