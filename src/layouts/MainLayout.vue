@@ -86,11 +86,6 @@
 import Search from "src/components/Search.vue";
 import FooterMain from "src/components/Footer.vue";
 import ConnectButton from "components/ConnectButton";
-import {
-  switchEthereumChain,
-  requestAccounts,
-  getProvider
-   } from 'src/lib/provider';
 import {mapGetters} from "vuex";
 
 export default {
@@ -104,9 +99,7 @@ export default {
     };
   },
   async mounted(){
-    if (this.isLoggedIn && !this.isNative){
-      this.addAccountsListener();
-    }
+    this.removeOldAngularCache();
   },
   computed: {
     ...mapGetters('login', [
@@ -120,32 +113,11 @@ export default {
     }
   },
   methods: {
-    getProvider,
-    requestAccounts,
-    switchEthereumChain,
     getLoginDisplay() {
       if (this.isLoggedIn)
         return this.isNative ? this.nativeAccount : this.address;
     },
-    addAccountsListener() {
-      const provider = this.getProvider();
-      provider.on('accountsChanged', (accountsArr) => {
-        if (!accountsArr.length){
-          this.accountConnected = false;
-          provider.removeAllListeners('accountsChanged');
-        }
-      });
-    },
-    async connectAccount() {
-      const connection = await this.switchEthereumChain();
-      if (connection !== false) {
-        this.accountConnected = await this.requestAccounts();
-        this.addAccountsListener();
-        this.$router.push(`/address/${this.accountConnected}`);
-      }else{
-        this.$q.notify({ position: 'top', type: 'warning', message: 'No provider detected. Enable an ethereum provider such as MetaMask to connect account.'})
-      }
-    },
+
     toggleDarkMode() {
       this.$q.dark.toggle();
       localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
@@ -157,6 +129,17 @@ export default {
     routerTo(path) {
       this.$router.push(path);
       this.drawer = false;
+    },
+    removeOldAngularCache() {
+      // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own, this should remove it
+      if(window.navigator && navigator.serviceWorker) {
+        navigator.serviceWorker.getRegistrations()
+          .then(function(registrations) {
+            for(let registration of registrations) {
+              registration.unregister();
+            }
+          });
+      }
     }
   },
   created() {

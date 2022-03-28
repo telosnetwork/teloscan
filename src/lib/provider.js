@@ -104,6 +104,18 @@ const requestAccounts = async () => {
     return accessGranted > 0 ? accessGranted[0] : false;
 }
 
+const addAccountsListener = () => {
+  const provider = getProvider();
+  provider.on('accountsChanged', (accountsArr) => {
+    if (!accountsArr.length){
+      this.accountConnected = false;
+      provider.removeAllListeners('accountsChanged');
+    }
+  });
+}
+
+/*
+// TODO: delete this whole file, leaving it behind for reference later
 module.exports = {
     switchEthereumChain,
     addNetwork,
@@ -111,3 +123,4 @@ module.exports = {
     isConnected,
     requestAccounts
 }
+ */
