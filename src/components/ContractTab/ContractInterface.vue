@@ -48,10 +48,10 @@ export default {
   div
     q-list.interface-list(v-if='write')
       q-expansion-item.interface-item( v-for="func in functions.write" :label="func.name" :key="func.name" )
-        FunctionInterface.interface-input( :abi="func" :contract="contract" group="write" )
+        FunctionInterface.interface-input( :abi="func" :contract="contract" group="write" runLabel='Write')
     q-list.interface-list(v-else )
       q-expansion-item.interface-item( v-for="func in functions.read" :label="func.name" :key="func.name" )
-        FunctionInterface.interface-input( :abi="func" :contract="contract" group="read" )
+        FunctionInterface.interface-input( :abi="func" :contract="contract" group="read" runLabel='Query' )
 </template>
 
 <style lang='sass'>
