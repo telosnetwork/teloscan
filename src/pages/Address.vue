@@ -113,7 +113,7 @@ export default {
           .dataCardItem(v-if="!!balance" class="balance ")
             .dataCardTile Balance
             .dataCardData {{balance}}
-      q-tabs.q-dark( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar topRounded text-white tableWrapper" )
+      q-tabs.tabs-header( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar topRounded text-white tableWrapper" :class='{"q-dark": $q.dark.isActive}' )
         q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
         q-route-tab(name="erc20transfers" :to="{ hash: 'erc20' }" exact replace label="ERC20 Transfers")
         q-route-tab(name="erc721transfers" :to="{ hash: 'erc721' }" exact replace label="ERC721 Transfers")
@@ -148,6 +148,13 @@ export default {
 
 .cursor
   cursor: pointer
+
+.tabs-header
+  background: white
+  color: black !important
+  &.q-dark
+    background: var(--q-color-dark)
+    color: white !important
 
 .text-primary
   display: inline-block
