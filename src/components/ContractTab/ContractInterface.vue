@@ -58,15 +58,21 @@ export default {
 .interface-list
   margin-bottom: 1.5rem
 
-.interface-item .q-item
+.interface-item.q-expansion-item 
   border: .125rem solid grey
-  border-radius: .25rem .25rem 0 0
+  border-radius: .25rem
   margin-top: 1rem
+  &.q-expansion-item--expanded .q-item
+    border-bottom: .125rem solid grey
 
-.interface-input
-  border-width: 0 .125rem .125rem .125rem 
+.interface-input .q-input
+  border-width: .125rem 
   border-style: solid
   border-color: gray
-  border-radius: 0 0 .25rem .25rem
+  border-radius: .25rem
+  margin: 1rem
+  padding-bottom: 1rem
+  padding-right: 1rem
+  padding-left: 1rem
 
 </style>
