@@ -240,7 +240,7 @@ export default {
           q-icon( name="pin" @click="showAmountDialog(idx)" ).cursor-pointer
     q-btn.run-button( color='primary' v-if="enableRun" :label="runLabel" icon="send" @click="run()" :loading='loading' :disabled='missingInputs')
     div( v-else ) Connect wallet to execute write
-    .output-container( v-if="result" ) Result: ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
+    .output-container( v-if="result" ) Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
     .output-container( v-if="hash" ) Transaction hash:&nbsp
       transaction-field( :transaction-hash="hash" )
 </template>
@@ -248,9 +248,11 @@ export default {
 <style lang='sass'>
 .amount-dialog.q-card
   padding: 1.5rem !important
-  
+
 .output-container
   margin: 0 1rem 1rem 1rem
+  font-weight: 500
+  font-size: .75rem
 
 .run-button
   margin: 0 1rem 1rem 1rem

@@ -62,6 +62,7 @@ export default {
   border: .125rem solid grey
   border-radius: .25rem
   margin-top: 1rem
+  font-size: .70rem
   &.q-expansion-item--expanded .q-item
     border-bottom: .125rem solid grey
     margin-bottom: 1rem
