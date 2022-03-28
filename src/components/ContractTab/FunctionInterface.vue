@@ -64,7 +64,8 @@ export default {
         "name": "value",
         "type": "amount",
         "internalType": "amount"
-      }
+      },
+      loading: false
     }
   },
   methods: {
@@ -108,6 +109,7 @@ export default {
       }
     },
     async run() {
+      this.loading = true;
       try {
         const opts = {};
         if (this.abi.payable) {
@@ -137,6 +139,7 @@ export default {
     async runRead() {
       const func = await this.getEthersFunction();
       this.result = await func(...this.getFormattedParams());
+      this.endLoading();
     },
     async runNative(opts) {
       const contractInstance = await this.contract.getContractInstance();
@@ -197,11 +200,16 @@ export default {
       });
 
       this.hash = `0x${tx.hash().toString('hex')}`;
+      this.endLoading();
     },
     async runEVM(opts) {
       const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
       const result = await func(...this.getFormattedParams(), opts);
       this.hash = result.hash;
+      this.endLoading();
+    },
+    endLoading(){
+      this.loading = false;
     }
   }
 }
@@ -227,7 +235,7 @@ export default {
       q-input( :label="makeLabel(param, idx)" v-model.string="params[idx]" )
         template( v-if="param.type === 'uint256'" v-slot:append )
           q-icon( name="pin" @click="showAmountDialog(idx)" ).cursor-pointer
-    q-btn.run-button( color='primary' v-if="enableRun" :label="runLabel" icon="send" @click="run()" )
+    q-btn.run-button( color='primary' v-if="enableRun" :label="runLabel" icon="send" @click="run()" :loading='loading')
     div( v-else ) Connect wallet to execute write
     .output-container( v-if="result" ) Result: ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
     .output-container( v-if="hash" ) Transaction hash:&nbsp
