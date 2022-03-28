@@ -64,13 +64,14 @@ export default {
   margin-top: 1rem
   &.q-expansion-item--expanded .q-item
     border-bottom: .125rem solid grey
+    margin-bottom: 1rem
 
 .interface-input .q-input
   border-width: .125rem 
   border-style: solid
   border-color: gray
   border-radius: .25rem
-  margin: 1rem
+  margin: 0 1rem 1rem 1rem
   padding-bottom: 1rem
   padding-right: 1rem
   padding-left: 1rem
