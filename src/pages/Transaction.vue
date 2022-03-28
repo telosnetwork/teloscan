@@ -147,7 +147,7 @@ export default {
   .pageContainer.q-pt-xl
     .text-h4.text-primary.q-mb-lg
       | Transaction Details
-    .text-h6.q-mb-lg( v-if="trxNotFound" )
+    .text-h6.q-mb-lg.text-white( v-if="trxNotFound" )
       | Not found: {{ hash }}
     .col-12.q-py-lg
       .content-container( v-if="trx" )
