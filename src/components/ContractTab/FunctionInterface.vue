@@ -219,10 +219,10 @@ export default {
 </script>
 
 <template lang="pug">
-  div()
+  div
     q-dialog( v-model="enterAmount" )
-      q-card()
-        div() Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256
+      q-card.amount-dialog
+        div Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256
         q-select( :options="decimalOptions" v-model="selectDecimals" @input="updateDecimals()")
         q-input( v-if="selectDecimals.value === 'custom'" v-model.number="customDecimals" type="number" label="Custom decimals" @change="updateDecimals()")
         q-input( label="Amount" v-model="amountInput" type="number" )
@@ -246,10 +246,13 @@ export default {
 </template>
 
 <style lang='sass'>
+.amount-dialog.q-card
+  padding: 1.5rem !important
+  
 .output-container
-  margin: 1rem
+  margin: 0 1rem 1rem 1rem
 
 .run-button
-  margin: 1rem
+  margin: 0 1rem 1rem 1rem
   border-radius: .25rem
 </style>
