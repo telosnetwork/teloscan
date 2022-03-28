@@ -90,14 +90,15 @@ export default {
       if (users.length) {
         const account = users[0];
         const accountName = await account.getAccountName();
-        const evmAccount = await this.$evm.telos.getEthAccountByTelosAccount(accountName);
-        if (!evmAccount) {
+        try {
+          const evmAccount = await this.$evm.telos.getEthAccountByTelosAccount(accountName);
+        } catch (e) {
           this.$q.notify({
             position: 'top',
-            message: `Search for EVM address linked to ${this.searchTerm} native account failed.  You can create one at wallet.telos.net`,
-            timeout: this.TIME_DELAY
+            message: `Search for EVM address linked to ${accountName} native account failed.  You can create one at wallet.telos.net`,
+            timeout: 6000
           });
-          authenticator.logout();
+          wallet.logout();
           return;
         }
         this.setLogin({
