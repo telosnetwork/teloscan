@@ -111,13 +111,12 @@ export default {
     },
     async getInjectedAddress() {
       const provider = this.getInjectedProvider();
-      const checkProvider = new ethers.providers.Web3Provider(provider);
+      let checkProvider = new ethers.providers.Web3Provider(provider);
+
+      checkProvider = await this.ensureCorrectChain(checkProvider);
       const accounts = await checkProvider.listAccounts();
       if (accounts.length > 0) {
-        const {chainId} = await checkProvider.getNetwork();
-        if (chainId !== process.env.NETWORK_EVM_CHAIN_ID) {
-          await this.switchChainInjected();
-        }
+        checkProvider = await this.ensureCorrectChain(checkProvider);
         return accounts[0];
       } else {
         const accessGranted = await provider.request({ method: 'eth_requestAccounts' })
@@ -126,12 +125,16 @@ export default {
           return false;
         }
 
-        const {chainId} = await checkProvider.getNetwork();
-        if (chainId !== process.env.NETWORK_EVM_CHAIN_ID) {
-          await this.switchChainInjected();
-        }
-
+        checkProvider = await this.ensureCorrectChain(checkProvider);
         return accessGranted[0];
+      }
+    },
+    async ensureCorrectChain(checkProvider) {
+      const {chainId} = await checkProvider.getNetwork();
+      if (chainId !== process.env.NETWORK_EVM_CHAIN_ID) {
+        await this.switchChainInjected();
+        const provider = this.getInjectedProvider();
+        return new ethers.providers.Web3Provider(provider);
       }
     },
     getInjectedProvider() {
