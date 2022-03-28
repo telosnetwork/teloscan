@@ -47,7 +47,12 @@ export default {
       return this.isLoggedIn || this.abi.stateMutability === 'view'
     },
     missingInputs() {
-      return this.getFormattedParams().length !== this.params.length;
+      this.abi.inputs.forEach((i) => {
+        if (!this.params[i]) {
+          return true;
+        }
+      });
+      return false;
     }
   },
   data() {
@@ -241,7 +246,7 @@ export default {
     q-btn.run-button( color='primary' v-if="enableRun" :label="runLabel" icon="send" @click="run()" :loading='loading' :disabled='missingInputs')
     div( v-else ) Connect wallet to execute write
     .output-container( v-if="result" ) Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
-    .output-container( v-if="hash" ) Transaction hash:&nbsp
+    .output-container( v-if="hash" ) View Transaction:&nbsp
       transaction-field( :transaction-hash="hash" )
 </template>
 
