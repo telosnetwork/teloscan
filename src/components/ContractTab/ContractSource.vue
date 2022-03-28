@@ -62,7 +62,7 @@ export default {
 
 <template lang='pug'>
 .contract-source
-  div(    v-for='(item, key, index) in json' :key='key')
+  div( v-for='(item, key, index) in json' :key='key')
     p.file-label {{ item.name }}
     JsonViewer.source-container( 
       :value='item.content'
@@ -79,7 +79,7 @@ export default {
 <style lang='sass'>
 .contract-source
   margin-top: 1rem
-  
+
 .source-container
   max-height: 20rem
   overflow-y: auto
