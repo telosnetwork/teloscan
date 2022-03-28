@@ -33,7 +33,8 @@ export default {
   components: {TransactionField, FunctionParameter },
   props: {
     contract: null,
-    abi: null
+    abi: null,
+    runLabel: null
   },
   computed: {
     ...mapGetters('login', [
@@ -217,6 +218,7 @@ export default {
         q-card-actions( align="right" )
           q-btn( flat label="Ok" color="primary" @click="setAmount" v-close-popup )
           q-btn( flat label="Cancel" color="primary" @click="clearAmount" v-close-popup )
+    
     div( v-if="abi.stateMutability === 'payable'" )
       q-input( label="Value (amount)" v-model="value" )
         template( v-slot:append )
@@ -225,9 +227,9 @@ export default {
       q-input( :label="makeLabel(param, idx)" v-model.string="params[idx]" )
         template( v-if="param.type === 'uint256'" v-slot:append )
           q-icon( name="pin" @click="showAmountDialog(idx)" ).cursor-pointer
-    q-btn( v-if="enableRun" label="Run" icon="send" @click="run()" )
-    div( v-else ) Connect wallet to run
-    div( v-if="result" ) Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
+    q-btn( v-if="enableRun" :label="runLabel" icon="send" @click="run()" )
+    div( v-else ) Connect wallet to execute write
+    div( v-if="result" ) Result: ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
     div( v-if="hash" ) Transaction hash:&nbsp
       transaction-field( :transaction-hash="hash" )
 </template>
