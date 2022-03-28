@@ -7,8 +7,8 @@ export default {
   components: { ContractSource, ContractInterface },
   data() {
     return {
-      "show": "source",
-      "address": ""
+      source: true,
+      write: false
     }
   }
 }
@@ -17,8 +17,9 @@ export default {
 <template lang="pug">
   div
     q-btn-group( push )
-      q-btn( push label="Code" @click="show='source'")
-      q-btn( push label="Read/Write" @click="show='interface'")
-    contract-source( v-if="show === 'source'" )
-    contract-interface( v-if="show === 'interface'" )
+      q-btn( push label="Code" @click="source=true")
+      q-btn( push label="Read" @click="source=false; write=false")
+      q-btn( push label="Write" @click="source=false; write=true")
+    ContractSource( v-if="source" )
+    ContractInterface( v-else :write='write' )
 </template>

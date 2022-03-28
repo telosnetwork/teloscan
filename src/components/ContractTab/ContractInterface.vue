@@ -4,10 +4,11 @@ import FunctionInterface from "components/ContractTab/FunctionInterface";
 export default {
   name: "ContractInterface",
   components: { FunctionInterface },
+  props: ['write'],
   data() {
     return {
-      functions: null,
-      contract: null
+      functions: [],
+      contract: []
     };
   },
   async mounted() {
@@ -45,11 +46,11 @@ export default {
 
 <template lang='pug'>
   div
-    q-list
-      q-expansion-item( v-if="functions" label="Read" :content-inset-level="1" )
-        q-expansion-item( v-for="func in functions.read" :label="func.name" :key="func.name" )
-          function-interface( :abi="func" :contract="contract" group="read" )
-      q-expansion-item( v-if="functions" label="Write" :content-inset-level="1" )
-        q-expansion-item( v-for="func in functions.write" :label="func.name" :key="func.name" )
-          function-interface( :abi="func" :contract="contract" group="write" )
+    q-list(v-if='write')
+      q-expansion-item( v-for="func in functions.write" :label="func.name" :key="func.name" )
+        FunctionInterface( :abi="func" :contract="contract" group="write" )
+    q-list(v-else )
+      q-expansion-item( v-for="func in functions.read" :label="func.name" :key="func.name" )
+        FunctionInterface( :abi="func" :contract="contract" group="read" )
+
 </template>
