@@ -47,11 +47,16 @@ export default {
       return this.isLoggedIn || this.abi.stateMutability === 'view'
     },
     missingInputs() {
-      this.abi.inputs.forEach((i) => {
+      if (this.abi.inputs.length !== this.params.length) {
+        return true;
+      }
+
+      for (let i = 0; i < this.abi.inputs.length; i++) {
         if (!this.params[i]) {
           return true;
         }
-      });
+      }
+
       return false;
     }
   },
@@ -234,7 +239,7 @@ export default {
         q-card-actions( align="right" )
           q-btn( flat label="Ok" color="primary" @click="setAmount" v-close-popup )
           q-btn( flat label="Cancel" color="primary" @click="clearAmount" v-close-popup )
-    
+
     div( v-if="abi.stateMutability === 'payable'" )
       q-input( label="Value (amount)" v-model="value" )
         template( v-slot:append )
