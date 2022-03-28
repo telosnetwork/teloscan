@@ -107,6 +107,7 @@ export default {
     if (this.isLoggedIn && !this.isNative){
       this.addAccountsListener();
     }
+    this.removeOldAngularCache();
   },
   computed: {
     ...mapGetters('login', [
