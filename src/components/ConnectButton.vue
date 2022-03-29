@@ -210,13 +210,29 @@ export default {
         q-separator()
         q-tab-panels( v-model="tab" animated )
           q-tab-panel( name="web3" )
-            q-card( @click="injectedWeb3Login()" )
-              q-img( :src="metamaskLogo" )
-              div() Metamask
+            q-card.wallet-icon( @click="injectedWeb3Login()" )
+              q-img.wallet-img( :src="metamaskLogo" )
+              p Metamask
           q-tab-panel( name="native" )
-            q-card( v-for="(wallet, idx) in $ual.authenticators"
+            q-card.wallet-icon( v-for="(wallet, idx) in $ual.authenticators"
               :key="wallet.getStyle().text"
               @click="ualLogin(wallet)" )
-              q-img( :src="wallet.getStyle().icon" )
-              div() {{ wallet.getStyle().text }}
+              q-img.wallet-img( :src="wallet.getStyle().icon" )
+              p {{ wallet.getStyle().text }}
 </template>
+
+<style lang='sass'>
+.wallet-icon
+  width: 4.5rem
+  display: inline-block
+  margin: .5rem
+  padding: .5rem
+  text-align: center
+  p
+    margin: .25rem
+
+.wallet-img
+  width: 3.5rem
+  margin: .5rem .5rem 0 .5rem
+
+</style>
