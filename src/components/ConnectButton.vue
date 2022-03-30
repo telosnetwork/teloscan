@@ -211,11 +211,11 @@ export default {
         q-separator()
         q-tab-panels( v-model="tab" animated )
           q-tab-panel( name="web3" )
-            q-card.wallet-icon( @click="injectedWeb3Login()" )
+            q-card.wallet-icon.cursor-pointer( @click="injectedWeb3Login()" )
               q-img.wallet-img( :src="metamaskLogo" )
               p Metamask
           q-tab-panel( name="native" )
-            q-card.wallet-icon( v-for="(wallet, idx) in $ual.authenticators"
+            q-card.wallet-icon.cursor-pointer( v-for="(wallet, idx) in $ual.authenticators"
               :key="wallet.getStyle().text"
               @click="ualLogin(wallet)" )
               q-img.wallet-img( :src="wallet.getStyle().icon" )
