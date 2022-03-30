@@ -90,8 +90,9 @@ export default {
       if (users.length) {
         const account = users[0];
         const accountName = await account.getAccountName();
+        let evmAccount;
         try {
-          const evmAccount = await this.$evm.telos.getEthAccountByTelosAccount(accountName);
+          evmAccount = await this.$evm.telos.getEthAccountByTelosAccount(accountName);
         } catch (e) {
           this.$q.notify({
             position: 'top',
