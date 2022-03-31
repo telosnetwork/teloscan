@@ -9,15 +9,8 @@
           </router-link>
         </div>
         <q-space />
-        <!-- <q-btn stretch flat class="desktop-only" label="Blocks" /> -->
 
-        <!-- <q-separator dark vertical class="desktop-only" />
-
-        <q-btn stretch flat class="desktop-only" label="Transactions" to="/transactions" /> -->
-
-        <!-- <q-separator dark vertical class="desktop-only" /> -->
-
-        <search class="taskbarSearch desktop-only text-center " toolbar="true" ></search>
+        <search class="taskbarSearch desktop-only text-center " :toolbar="true" ></search>
 
         <q-btn
           flat
@@ -29,72 +22,55 @@
         >
         </q-btn>
 
-        <q-btn-dropdown flat>
-          <template v-slot:label>
-            {{ mainnet ? "Mainnet" : "Testnet" }}
-          </template>
+        <connect-button/>
+        <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
 
-          <q-list style="width : 200px">
-            <q-item-label header>Network</q-item-label>
-
-            <!-- <q-item
-              v-close-popup
-              @click.native="goTo('https://www.teloscan.io/')"
-            >
-              <q-item-section>
-                <q-item-label> Mainnet </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              v-close-popup
-              @click.native="goTo('https://testnet.teloscan.io/')"
-            >
-              <q-item-section>
-                <q-item-label>Testnet</q-item-label>
-              </q-item-section>
-            </q-item> -->
-
-            <q-item
-              v-if="!mainnet"
-              clickable
-              v-close-popup
-              @click.native="goTo('https://www.teloscan.io/')"
-            >
-              <q-item-section>
-                <q-item-label> Mainnet </q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              v-if="mainnet"
-              clickable
-              v-close-popup
-              @click.native="goTo('https://testnet.teloscan.io/')"
-            >
-              <q-item-section>
-                <q-item-label>Testnet</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <!-- <q-separator inset spaced />
-            <q-item-label header>Blockchain</q-item-label>
-
-            <q-item clickable v-close-popup to="/">
-              <q-item-section>
-                <q-item-label>Blocks</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item clickable v-close-popup to="/transactions">
-              <q-item-section>
-                <q-item-label>Transactions</q-item-label>
-              </q-item-section>
-            </q-item> -->
-          </q-list>
-        </q-btn-dropdown>
       </q-toolbar>
     </q-header>
+
+    <q-drawer
+      side="right"
+      v-model="drawer"
+      :width="200"
+      :breakpoint="500"
+      overlay
+      bordered
+    >
+      <q-list>
+        <q-item
+          clickable
+          v-close-popup
+          @click.native="routerTo('/endpoints')"
+        >
+          <q-item-section>
+            <q-item-label>RPC Endpoints</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          v-if="!mainnet"
+          clickable
+          v-close-popup
+          @click.native="goTo('https://teloscan.io/')"
+        >
+          <q-item-section>
+            <q-item-label> Teloscan Mainnet </q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          v-if="mainnet"
+          clickable
+          v-close-popup
+          @click.native="goTo('https://testnet.teloscan.io/')"
+        >
+          <q-item-section>
+            <q-item-label> Teloscan Testnet </q-item-label>
+          </q-item-section>
+        </q-item>
+
+      </q-list>
+    </q-drawer>
 
     <div :class="`banner ${onHomePage ? 'home' : ''}`"></div>
 
@@ -110,29 +86,50 @@
 <script>
 import Search from "src/components/Search.vue";
 import FooterMain from "src/components/Footer.vue";
+import ConnectButton from "components/ConnectButton";
+import {mapGetters} from "vuex";
+
 export default {
   name: "MainLayout",
-  components: { Search,FooterMain },
+  components: { Search, ConnectButton, FooterMain },
   data() {
     return {
-      mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40"
+      mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40",
+      accountConnected: false,
+      drawer: false
     };
   },
+  async mounted(){
+    this.removeOldAngularCache();
+  },
   computed: {
+    ...mapGetters('login', [
+      'isLoggedIn',
+      'isNative',
+      'address',
+      'nativeAccount'
+    ]),
     onHomePage() {
       return this.$route.name === "home";
     }
   },
-  mounted() {
-    this.removeOldAngularCache();
-  },
   methods: {
+    getLoginDisplay() {
+      if (this.isLoggedIn)
+        return this.isNative ? this.nativeAccount : this.address;
+    },
+
     toggleDarkMode() {
       this.$q.dark.toggle();
       localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
     },
     goTo(url) {
       window.open(url, "_blank");
+      this.drawer = false;
+    },
+    routerTo(path) {
+      this.$router.push(path);
+      this.drawer = false;
     },
     removeOldAngularCache() {
       // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own, this should remove it
@@ -152,17 +149,26 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.banner {
-  z-index: -1;
-  height: 280px;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  background: linear-gradient(#252a5e 27.19%, #2d4684 65.83%);
-  &.home {
-    height: 400px;
-  }
-}
+<style lang="sass" scoped>
+.banner
+  z-index: -1
+  height: 280px
+  position: absolute
+  left: 0
+  right: 0
+  top: 0
+  background: linear-gradient(#252a5e 27.19%, #2d4684 65.83%)
+  &.home
+    height: 400px
+
+.connection
+  font-size: .5rem
+  margin-right: 0.2rem
+
+.account
+  width: 120px
+  white-space: nowrap
+  overflow: hidden
+  text-overflow: ellipsis
+
 </style>

@@ -1,7 +1,3 @@
-<template lang="pug">
-  div() {{ friendlyDate }}
-</template>
-
 <script>
 const moment = require('moment');
 
@@ -28,6 +24,6 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<template lang="pug">
+  div {{ friendlyDate }}
+</template>

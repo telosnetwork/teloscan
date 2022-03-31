@@ -1,10 +1,3 @@
-<template lang="pug">
-  div()
-    q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs")
-    //- router-link(:to="`/address/${this.address}`") {{ getDisplay() }}
-    a(:href="`/address/${this.address}`") {{ getDisplay() }}
-</template>
-
 <script>
 // TODO: add copy icon and use this...
 import { copyToClipboard } from 'quasar'
@@ -81,6 +74,14 @@ export default {
 }
 </script>
 
-<style scoped>
+<template lang="pug">
+  div.inline-div
+    q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs")
+    //- router-link(:to="`/address/${this.address}`") {{ getDisplay() }}
+    a(:href="`/address/${this.address}`") {{ getDisplay() }}
+</template>
 
+<style lang='sass' scoped>
+.inline-div
+  display: inline
 </style>

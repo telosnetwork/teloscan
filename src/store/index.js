@@ -1,7 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-import account from "./account";
+import login from "./login";
 import general from "./general";
 import evm from "./evm";
 
@@ -11,7 +11,7 @@ export default function() {
   const Store = new Vuex.Store({
     modules: {
       general,
-      account,
+      login,
       evm,
     },
 

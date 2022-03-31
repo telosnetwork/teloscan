@@ -1,23 +1,3 @@
-<template>
-  <q-item clickable
-    @click="goTo(path)"
-  >
-    <q-item-section
-      v-if="icon"
-      avatar
-    >
-      <q-icon :name="icon" />
-    </q-item-section>
-
-    <q-item-section>
-      <q-item-label>{{ title }}</q-item-label>
-      <q-item-label caption>
-        {{ caption }}
-      </q-item-label>
-    </q-item-section>
-  </q-item>
-</template>
-
 <script>
 export default {
   name: 'EssentialLink',
@@ -51,3 +31,20 @@ export default {
   }
 }
 </script>
+
+<template lang='pug'>
+  q-item( 
+    clickable
+    @click="goTo(path)
+    )
+    q-item-section(
+      v-if="icon"
+      avatar
+    )
+      q-icon( :name="icon" )
+    q-item-section(
+      q-item-label {{ title }}
+      q-item-label( caption )
+        {{ caption }}
+    )
+</template>
