@@ -6,6 +6,7 @@ import LogsViewer from "components/Transaction/LogsViewer";
 import InternalTxns from "components/Transaction/InternalTxns";
 import MethodField from "components/MethodField";
 import JsonViewer from "vue-json-viewer";
+import {parseErrorMessage} from "src/lib/utils";
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
@@ -24,6 +25,7 @@ export default {
       hash: this.$route.params.hash,
       blockData: null,
       trxNotFound: false,
+      errorMessage: null,
       trx: null,
       tab: "general",
       isContract: false,
@@ -58,6 +60,7 @@ export default {
       }
 
       this.trx = trxResponse.data.transactions[0];
+      this.setErrorMessage();
       await this.loadContract();
       this.setTab();
     },
@@ -88,6 +91,12 @@ export default {
       } else {
         this.tab = "general";
       }
+    },
+    setErrorMessage() {
+      if (this.trx.status !== 0)
+        return;
+
+      this.errorMessage = parseErrorMessage(this.trx.output);
     },
     getFunctionName() {
       if (this.parsedTransaction) return this.parsedTransaction.name;
@@ -210,6 +219,10 @@ export default {
               strong {{ `Status: ` }}
               span {{ trx.status == 1 ? "Success" : "Failure" }}
             br
+            div( v-if="errorMessage" )
+              strong {{ `Error message: ` }}
+              span.text-red-5 {{ errorMessage }}
+            br( v-if="errorMessage" )
             div
               strong {{ `From: ` }}
               address-field(:address="trx.from" :truncate="0")
