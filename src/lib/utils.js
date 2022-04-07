@@ -1,6 +1,8 @@
 import {BigNumber} from "ethers";
 import moment from "moment";
 const createKeccakHash = require('keccak')
+const REVERT_FUNCTION_SELECTOR = '0x08c379a0'
+const REVERT_PANIC_SELECTOR = '0x4e487b71'
 
 export function formatBN(bn, tokenDecimals, displayDecimals) {
   const amount = BigNumber.from(bn);
@@ -36,4 +38,63 @@ export function toChecksumAddress(address) {
   }
 
   return ret
+}
+
+export function parseErrorMessage(output) {
+  if (!output)
+    return;
+
+  if (output.startsWith(REVERT_FUNCTION_SELECTOR))
+    return parseRevertReason(output);
+
+  if (output.startsWith(REVERT_PANIC_SELECTOR))
+    return parsePanicReason(output);
+}
+
+export function parseRevertReason(revertOutput) {
+  if (!revertOutput || revertOutput.length < 138) {
+    return '';
+  }
+
+  let reason = '';
+  let trimmedOutput = revertOutput.substr(138);
+  for (let i = 0; i < trimmedOutput.length; i += 2) {
+    reason += String.fromCharCode(parseInt(trimmedOutput.substr(i, 2), 16));
+  }
+  return reason;
+}
+
+export function parsePanicReason(revertOutput) {
+  let trimmedOutput = revertOutput.slice(-2)
+  let reason;
+
+  switch (trimmedOutput) {
+    case "01":
+      reason = "If you call assert with an argument that evaluates to false.";
+      break;
+    case "11":
+      reason = "If an arithmetic operation results in underflow or overflow outside of an unchecked { ... } block.";
+      break;
+    case "12":
+      reason = "If you divide or modulo by zero (e.g. 5 / 0 or 23 % 0).";
+      break;
+    case "21":
+      reason = "If you convert a value that is too big or negative into an enum type.";
+      break;
+    case "31":
+      reason = "If you call .pop() on an empty array.";
+      break;
+    case "32":
+      reason = "If you access an array, bytesN or an array slice at an out-of-bounds or negative index (i.e. x[i] where i >= x.length or i < 0).";
+      break;
+    case "41":
+      reason = "If you allocate too much memory or create an array that is too large.";
+      break;
+    case "51":
+      reason = "If you call a zero-initialized variable of internal function type.";
+      break;
+    default:
+      reason = "Default panic message";
+  }
+  return reason;
 }
