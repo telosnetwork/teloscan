@@ -154,137 +154,142 @@ export default {
 
 <template lang='pug'>
   .pageContainer.q-pt-xl
-    .text-h4.text-primary.q-mb-lg
-      | Transaction Details
-    .text-h6.q-mb-lg.text-white( v-if="trxNotFound" )
-      | Not found: {{ hash }}
-    .col-12.q-py-lg
-      .content-container( v-if="trx" )
-        q-tabs.text-white.topRounded(
-          v-model="tab"
-          dense
-          active-color="secondary"
-          align="justify"
-          narrow-indicator
-          :class="$q.dark.isActive ? 'q-dark' : 'q-light'"
-        )
-          q-route-tab.topLeftRounded(
-            name="general"
-            :to="{ hash: '' }"
-            exact
-            replace
-            label="General"
+    .row
+      .col-12.q-px-md
+        .text-h4.text-primary.q-mb-lg
+          | Transaction Details
+        .text-h6.q-mb-lg.text-white( v-if="trxNotFound" )
+          | Not found: {{ hash }}
+
+    .row.tableWrapper
+      .col-12.q-py-lg
+        .content-container( v-if="trx" )
+          q-tabs.text-white.topRounded(
+            v-model="tab"
+            dense
+            active-color="secondary"
+            align="justify"
+            narrow-indicator
+            :class="$q.dark.isActive ? 'q-dark' : 'q-light'"
           )
-          q-route-tab(
-            name="details"
-            :to="{ hash: 'details' }"
-            exact
-            replace
-            label="Details"
+            q-route-tab.topLeftRounded(
+              name="general"
+              :to="{ hash: '' }"
+              exact
+              replace
+              label="General"
+            )
+            q-route-tab(
+              name="details"
+              :to="{ hash: 'details' }"
+              exact
+              replace
+              label="Details"
+            )
+            q-route-tab(
+              name="logs"
+              :to="{ hash: 'eventlog' }"
+              exact
+              replace
+              label="Logs"
+            )
+            q-route-tab.topRightRounded(
+              name="internal"
+              :to="{ hash: 'internal' }"
+              exact
+              replace
+              label="Internal Txns"
+            )
+          q-tab-panels.column.shadow-2(
+            v-model="tab"
+            animated
+            keep-alive
           )
-          q-route-tab(
-            name="logs"
-            :to="{ hash: 'eventlog' }"
-            exact
-            replace
-            label="Logs"
-          )
-          q-route-tab.topRightRounded(
-            name="internal"
-            :to="{ hash: 'internal' }"
-            exact
-            replace
-            label="Internal Txns"
-          )
-        q-tab-panels.column.shadow-2(
-          v-model="tab"
-          animated
-          keep-alive
-        )
-          q-tab-panel( name="general" )
-            .col
-              strong.wrapStrong Transaction Hash:&nbsp;
-              span {{ hash }}
-            br
-            div
-              strong {{ `Block Number: ` }}
-              block-field( :block="trx.block" )
-            br
-            div( @click="showAge = !showAge" )
-              strong {{ `Date: ` }}
-              date-field( :epoch="trx.epoch" :show-age="showAge" )
-              q-tooltip Click to change date format
-            br
-            div
-              strong {{ `Status: ` }}
-              span {{ trx.status == 1 ? "Success" : "Failure" }}
-            br
-            div( v-if="errorMessage" )
-              strong {{ `Error message: ` }}
-              span.text-red-5 {{ errorMessage }}
-            br( v-if="errorMessage" )
-            div
-              strong {{ `From: ` }}
-              address-field(:address="trx.from" :truncate="0")
-            br
-            div
-              strong {{ `To: ` }}
-              address-field(
-                :address="trx.to"
-                :truncate="0"
-                :is-contract-trx="!!contract"
-              )
-            br
-            div( v-if="isContract" )
-              strong {{ `Contract function: ` }}
-              MethodField( :contract="contract" :trx="methodTrx" )
-            br(v-if="isContract")
-            div( v-if="isContract")
-              strong {{ `Contract parameters: ` }}
-              json-viewer( :value="getFunctionParams() " theme="jsonViewer" )
-            br( v-if="isContract" )
-            div( v-if="trx.createdaddr" )
-              strong {{ `Deployed contract: ` }}
-              span
-                AddressField( :address="trx.createdaddr" )
-            br
-            div
-              strong {{ `Value: ` }}
-              span {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
-            br
-            div
-              strong {{ `Gas Price Charged: ` }}
-              span {{ getGasChargedGWEI() }} GWEI
-            br
-            div
-              strong {{ `Gas Fee: ` }}
-              span {{ getGasFee() }} TLOS
-            br
-            div
-              strong {{ `Gas Used: ` }}
-              span {{ trx.gasused }}
-            br
-            div
-              strong {{ `Gas Limit: ` }}
-              span {{ trx.gas_limit }}
-            br
-            div
-              strong {{ `Nonce: ` }}
-              span {{ trx.nonce }}
-          q-tab-panel( name="details" )
-            div
-              strong {{ `Input: ` }}
-              span {{ trx.input_data }}
-            br
-            div
-              strong {{ `Output: ` }}
-              span {{ trx.output }}
-          q-tab-panel( name="logs" )
-            .jsonViewer
-              logs-viewer( :logs="getLogs()" )
-          q-tab-panel( name="internal" )
-            InternalTxns( :itxs="trx.itxs" )
-</template>
+            q-tab-panel( name="general" )
+              .col
+                strong.wrapStrong Transaction Hash:&nbsp;
+                br
+                span {{ hash }}
+              br
+              div
+                strong {{ `Block Number: ` }}
+                block-field( :block="trx.block" )
+              br
+              div( @click="showAge = !showAge" )
+                strong {{ `Date: ` }}
+                date-field( :epoch="trx.epoch" :show-age="showAge" )
+                q-tooltip Click to change date format
+              br
+              div
+                strong {{ `Status: ` }}
+                span {{ trx.status == 1 ? "Success" : "Failure" }}
+              br
+              div( v-if="errorMessage" )
+                strong {{ `Error message: ` }}
+                span.text-red-5 {{ errorMessage }}
+              br( v-if="errorMessage" )
+              div
+                strong {{ `From: ` }}
+                address-field(:address="trx.from" :truncate="0")
+              br
+              div
+                strong {{ `To: ` }}
+                address-field(
+                  :address="trx.to"
+                  :truncate="0"
+                  :is-contract-trx="!!contract"
+                )
+              br
+              div( v-if="isContract" )
+                strong {{ `Contract function: ` }}
+                MethodField( :contract="contract" :trx="methodTrx" )
+              br(v-if="isContract")
+              div( v-if="isContract")
+                strong {{ `Contract parameters: ` }}
+                json-viewer( :value="getFunctionParams() " theme="jsonViewer" )
+              br( v-if="isContract" )
+              div( v-if="trx.createdaddr" )
+                strong {{ `Deployed contract: ` }}
+                span
+                  AddressField( :address="trx.createdaddr" )
+              br
+              div
+                strong {{ `Value: ` }}
+                span {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
+              br
+              div
+                strong {{ `Gas Price Charged: ` }}
+                span {{ getGasChargedGWEI() }} GWEI
+              br
+              div
+                strong {{ `Gas Fee: ` }}
+                span {{ getGasFee() }} TLOS
+              br
+              div
+                strong {{ `Gas Used: ` }}
+                span {{ trx.gasused }}
+              br
+              div
+                strong {{ `Gas Limit: ` }}
+                span {{ trx.gas_limit }}
+              br
+              div
+                strong {{ `Nonce: ` }}
+                span {{ trx.nonce }}
+            q-tab-panel( name="details" )
+              div
+                strong {{ `Input: ` }}
+                span {{ trx.input_data }}
+              br
+              div
+                strong {{ `Output: ` }}
+                span {{ trx.output }}
+            q-tab-panel( name="logs" )
+              .jsonViewer
+                logs-viewer( :logs="getLogs()" )
+            q-tab-panel( name="internal" )
+              InternalTxns( :itxs="trx.itxs" )
+    </template>
 
 <style scoped lang="sass">
 span
