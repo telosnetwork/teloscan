@@ -160,7 +160,6 @@ export default {
           | Transaction Details
         .text-h6.q-mb-lg.text-white( v-if="trxNotFound" )
           | Not found: {{ hash }}
-
     .row.tableWrapper
       .col-12.q-py-lg
         .content-container( v-if="trx" )
