@@ -7,13 +7,21 @@ import ConfirmationDialog from "components/ConfirmationDialog";
 import ContractTab from 'components/ContractTab/ContractTab';
 import TransactionField from "components/TransactionField";
 import AddressField from "components/AddressField";
+import CopyButton from "components/CopyButton";
 
 const web3 = new Web3();
 export default {
   name: "Address",
   components: {
     AddressField,
-    TransactionField, TokenList, TransactionTable, TransferTable, ConfirmationDialog, ContractTab },
+    ConfirmationDialog,
+    ContractTab,
+    CopyButton,
+    TokenList,
+    TransactionField,
+    TransactionTable,
+    TransferTable,
+  },
   data() {
     return {
       address: this.$route.params.address,
@@ -100,6 +108,7 @@ export default {
           q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
           ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
           .text-white {{ address }}
+            CopyButton(:text="address" description="address")
           span(v-if='contract')
             .text-white Created at trx&nbsp
               TransactionField(:transaction-hash="contract.getCreationTrx()" )
