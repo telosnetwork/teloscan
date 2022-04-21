@@ -10,8 +10,6 @@
         >
             <q-tooltip>{{ hint }}</q-tooltip>
         </q-icon>
-            
-
     </div>
 </template>
 
