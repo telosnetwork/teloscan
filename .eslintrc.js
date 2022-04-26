@@ -16,32 +16,14 @@ module.exports = {
 
   // Rules order is important, please avoid shuffling them
   extends: [
-    // Base ESLint recommended rules
-    // 'eslint:recommended',
-
-
-    // Uncomment any of the lines below to choose desired strictness,
-    // but leave only one uncommented!
-    // See https://eslint.vuejs.org/rules/#available-rules
-    'plugin:vue/essential', // Priority A: Essential (Error Prevention)
-    // 'plugin:vue/strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
-    // 'plugin:vue/recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
-
-    // https://github.com/prettier/eslint-config-prettier#installation
-    // usage with Prettier, provided by 'eslint-config-prettier'.
-    'prettier',
-    
-    'prettier/vue'
+    'airbnb-base',
+    'plugin:vue/recommended'
   ],
 
   plugins: [
     // https://eslint.vuejs.org/user-guide/#why-doesn-t-it-work-on-vue-file
     // required to lint *.vue files
     'vue',
-
-    // https://github.com/typescript-eslint/typescript-eslint/issues/389#issuecomment-509292674
-    // Prettier has not been included as plugin to avoid performance impact
-    // add it as an extension for your IDE
   ],
 
   globals: {
@@ -55,10 +37,32 @@ module.exports = {
 
   // add your custom rules here
   rules: {
+    indent: ['error', 4],
+    // allow debugger during development only
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    // Max length of 100 characters in source code
+    'max-len': ['error', { code: 100, ignoreUrls: true }],
+    // allow wearn ande rror consoles
+    'no-console': ['error', { allow: ['warn', 'error'] }],
+    // Allow dangling underscores
+    'no-underscore-dangle': ['off'],
+    // Allow ++ and --
+    'no-plusplus': 'off',
+    // Put operators atrm  the end of the line (?, :, &&, ||)
+    'operator-linebreak': ['error', 'after'],
+    // Don't enforce promises being rejected with Error objects
     'prefer-promise-reject-errors': 'off',
 
-
-    // allow debugger during development only
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off'
+    // Use 4 space indents in templates
+    'vue/html-indent': ['error', 4],
+    // Allow max 2 attributes on a single line element, but once the
+    // element is spread across multiple, require one attribute per line
+    'vue/max-attributes-per-line': ['error', {
+        singleline: 3,
+        multiline: {
+            max: 1,
+            allowFirstLine: false,
+        },
+    }],
   }
 }

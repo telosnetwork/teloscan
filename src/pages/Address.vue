@@ -8,6 +8,7 @@ import ContractTab from 'components/ContractTab/ContractTab';
 import TransactionField from "components/TransactionField";
 import AddressField from "components/AddressField";
 import CopyButton from "components/CopyButton";
+import GenericTokenInterface from "components/ContractTab/GenericTokenInterface.vue";
 
 const web3 = new Web3();
 export default {
@@ -17,6 +18,7 @@ export default {
     ConfirmationDialog,
     ContractTab,
     CopyButton,
+    GenericTokenInterface,
     TokenList,
     TransactionField,
     TransactionTable,
@@ -140,12 +142,7 @@ export default {
             token-list( :address="address" )
           q-tab-panel( v-if="isContract" name="contract" )
             ContractTab(v-if='isVerified')
-            .verify-source(v-else)
-              q-icon( name='warning' class='text-red' size='1.25rem')
-              | This contract source has not been verified. <br/>
-              | Click&nbsp
-              router-link( :to="{name: 'sourcify'}") here
-              | &nbspto upload source files and verify this contract.
+            GenericTokenInterface(v-else)
 </template>
 
 <style scoped lang="sass">
@@ -167,10 +164,4 @@ export default {
 
 .text-primary
   display: inline-block
-
-.verify-source
-  height: 25rem
-  line-height: 2rem
-  margin-left: 2rem
-  padding-top: 10rem
 </style>
