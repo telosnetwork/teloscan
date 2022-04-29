@@ -8,7 +8,7 @@ import ContractTab from 'components/ContractTab/ContractTab';
 import TransactionField from "components/TransactionField";
 import AddressField from "components/AddressField";
 import CopyButton from "components/CopyButton";
-import GenericTokenInterface from "components/ContractTab/GenericTokenInterface.vue";
+import GenericContractInterface from "components/ContractTab/GenericContractInterface.vue";
 
 const web3 = new Web3();
 export default {
@@ -18,7 +18,7 @@ export default {
     ConfirmationDialog,
     ContractTab,
     CopyButton,
-    GenericTokenInterface,
+    GenericContractInterface,
     TokenList,
     TransactionField,
     TransactionTable,
@@ -142,7 +142,7 @@ export default {
             token-list( :address="address" )
           q-tab-panel( v-if="isContract" name="contract" )
             ContractTab(v-if='isVerified')
-            GenericTokenInterface(v-else)
+            GenericContractInterface(v-else)
 </template>
 
 <style scoped lang="sass">

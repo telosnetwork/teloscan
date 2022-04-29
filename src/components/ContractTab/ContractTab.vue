@@ -17,9 +17,9 @@ export default {
 <template lang="pug">
   div.contract-tab
     q-btn-group( push )
-      q-btn( push label="Code" @click="source=true")
-      q-btn( push label="Read" @click="source=false; write=false")
-      q-btn( push label="Write" @click="source=false; write=true")
+      q-btn( push label="Code" @click="source=true" :outline="source===true")
+      q-btn( push label="Read" @click="source=false; write=false" :outline="source===false && write===false")
+      q-btn( push label="Write" @click="source=false; write=true" :outline="source===false && write===true")
     ContractSource( v-if="source" )
     ContractInterface( v-else :write='write' )
 </template>
