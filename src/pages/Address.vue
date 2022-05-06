@@ -27,6 +27,7 @@ export default {
   data() {
     return {
       address: this.$route.params.address,
+      title: '',
       telosAccount: null,
       balance: null,
       isContract: false,
@@ -53,6 +54,17 @@ export default {
       this.balance = this.getBalanceDisplay(account.balance);
       this.telosAccount = account.account;
       this.isContract = account.code.length > 0;
+
+      const isVerifiedContract = this.isContract && this.isVerified;
+      const isKnownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address === this.address);
+
+      if (isVerifiedContract || isKnownToken) {
+        this.title = this.contract.getName();
+      } else if (this.isContract) {
+        this.title = 'Contract';
+      } else {
+        this.title = 'Account';
+      }
     },
     getBalanceDisplay(balance) {
       let strBalance = web3.utils.fromWei(balance);
@@ -64,16 +76,6 @@ export default {
         )}`;
       }
       return `${strBalance} TLOS`;
-    },
-    getTitle() {
-      if (this.isContract) {
-        if (this.isVerified){
-          return this.contract.getName();
-        }
-        return 'Contract';
-      }
-
-      return 'Account';
     },
     getAddressNativeExplorerURL() {
       if (!this.telosAccount) return "";
@@ -106,7 +108,7 @@ export default {
     div
       .row(class="tableWrapper").justify-between
         div(class="homeInfo")
-          .text-primary.text-h4 {{ getTitle() }}
+          .text-primary.text-h4 {{ title }}
           q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
           ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
           .text-white {{ address }}

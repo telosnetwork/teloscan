@@ -31,7 +31,6 @@ export default {
       } else {
         write.push(a);
       }
-
     })
 
     this.functions = {
