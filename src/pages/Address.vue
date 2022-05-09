@@ -56,10 +56,12 @@ export default {
       this.isContract = account.code.length > 0;
 
       const isVerifiedContract = this.isContract && this.isVerified;
-      const isKnownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address === this.address);
+      const knownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address === this.address);
 
-      if (isVerifiedContract || isKnownToken) {
+      if (isVerifiedContract) {
         this.title = this.contract.getName();
+      } else if (!!knownToken) {
+        this.title = knownToken.name;
       } else if (this.isContract) {
         this.title = 'Contract';
       } else {
@@ -108,7 +110,7 @@ export default {
     div
       .row(class="tableWrapper").justify-between
         div(class="homeInfo")
-          .text-primary.text-h4 {{ title }}
+          .text-primary.text-h4.q-pr-xs {{ title }}
           q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
           ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
           .text-white {{ address }}
