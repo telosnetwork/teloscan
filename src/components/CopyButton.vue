@@ -1,22 +1,30 @@
 <template>
-    <div class="c-copy-button">
-        <q-icon
-            :class="iconClasses"
-            :aria-label="hint"
-            aria-role="button"
-            tabindex="0"
-            @keydown.space.enter="handleClick"
-            @click="handleClick"
+    <div
+        :class="containerClasses"
+        :aria-label="hint"
+        aria-role="button"
+        tabindex="0"
+        @click="handleClick"
+        @keydown.space.enter="handleClick"
+    >
+        <q-tooltip
+            :offset="[0,0]"
+            anchor="center end"
+            self="center left"
         >
-            <q-tooltip>{{ hint }}</q-tooltip>
-        </q-icon>
+            {{ hint }}
+        </q-tooltip>
+
+        {{ accompanyingText }}
+
+        <q-icon :class="iconClasses" />
     </div>
 </template>
 
 <script>
 const icons = {
     copy: 'far fa-copy',
-    success: 'fas fa-check'
+    success: 'fas fa-check',
 };
 
 export default {
@@ -30,18 +38,26 @@ export default {
             type: String,
             default: '',
         },
+        accompanyingText: {
+            type: String,
+            default: '',
+        },
     },
     data: () => ({
         iconClass: icons.copy,
-        hint: ''
+        hint: '',
     }),
     computed: {
+        containerClasses() {
+            const extraClass = this.accompanyingText ? 'c-copy-button--block' : '';
+            return `c-copy-button ${extraClass}`;
+        },
         iconClasses() {
-            return `c-copy-button__icon ${this.iconClass} q-pa-sm`;
+            return `${this.iconClass} q-pa-sm`;
         },
         defaultHint() {
             return `Copy ${this.description} to clipboard`;
-        }
+        },
     },
     created() {
         this.hint = this.defaultHint;
@@ -56,7 +72,7 @@ export default {
                 this.iconClass = icons.copy;
                 this.hint = this.defaultHint;
             }, 1500);
-        }
+        },
     }
 }
 </script>
@@ -66,9 +82,11 @@ export default {
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 
-    &__icon {
-        cursor: pointer;
+    &--block {
+        display: flex;
+        width: max-content;
     }
 }
 </style>

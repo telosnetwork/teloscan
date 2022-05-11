@@ -113,8 +113,7 @@ export default {
           .text-primary.text-h4.q-pr-xs {{ title }}
           q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
           ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
-          .text-white {{ address }}
-            CopyButton(:text="address" description="address")
+          CopyButton(:text="address" :accompanyingText="address" description="address")
           span(v-if='contract')
             .text-white Created at trx&nbsp
               TransactionField(:transaction-hash="contract.getCreationTrx()" )
@@ -145,7 +144,7 @@ export default {
           q-tab-panel( name="tokens" )
             token-list( :address="address" )
           q-tab-panel( v-if="isContract" name="contract" )
-            ContractTab(v-if='isVerified')
+            ContractTab(v-if='isVerified' :contract="contract")
             GenericContractInterface(v-else)
 </template>
 
