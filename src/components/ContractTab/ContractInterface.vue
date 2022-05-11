@@ -1,7 +1,7 @@
 <script lang="javascript">
 import FunctionInterface from "components/ContractTab/FunctionInterface";
 
-import { sortFunctionsByName } from "src/lib/utils";
+import { sortAbiFunctionsByName } from "src/lib/utils";
 
 export default {
   name: "ContractInterface",
@@ -34,8 +34,8 @@ export default {
     })
 
     this.functions = {
-      read: sortFunctionsByName(read),
-      write: sortFunctionsByName(write)
+      read: sortAbiFunctionsByName(read),
+      write: sortAbiFunctionsByName(write)
     }
   }
 }

@@ -69,7 +69,7 @@
                         theme="custom-theme"
                     />
                     <p v-if="!showAbiFunctions" class="text-red">
-                        Provided ABI is either invalid or contains no function definitions <!-- EZtodo update this err msg -->
+                        Provided ABI is either invalid or contains no function definitions
                     </p>
                 </template>
                 <p v-else class="text-red">
@@ -144,7 +144,7 @@ import Contract from 'src/lib/Contract';
 import erc721Abi from 'src/lib/erc721';
 import erc20Abi from "erc-20-abi";
 
-import { sortFunctionsByName } from "src/lib/utils";
+import { sortAbiFunctionsByName } from "src/lib/utils";
 
 import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
 
@@ -208,31 +208,24 @@ export default {
                 abi = erc20Abi;
             } else if (this.selectedAbi === erc721) {
                 abi = erc721Abi;
+            } else {
+                return;
             }
-
-            // eztodo what to do if no abi?
-
-            // debugger;
-
 
             this.contract = new Contract({
                 name: 'Unverified contract',
                 address: this.address,
                 abi,
                 manager: this.$contractManager,
-
-                // creationInfo,
-                // token
             });
 
             let read = [];
             let write = [];
 
-            //  eztodo pull out into util, share w/ contractinterface.vue
             (this.contract?.abi ?? []).forEach(a => {
-                if(a.type !== 'function') return;
+                if (a.type !== 'function') return;
 
-                if(a.stateMutability === 'view') {
+                if (a.stateMutability === 'view') {
                     read.push(a);
                 } else {
                     write.push(a);
@@ -240,8 +233,8 @@ export default {
             });
 
             this.functions = {
-                read: sortFunctionsByName(read),
-                write: sortFunctionsByName(write)
+                read: sortAbiFunctionsByName(read),
+                write: sortAbiFunctionsByName(write)
             };
         },
     },

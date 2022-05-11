@@ -58,7 +58,6 @@
     <p class="text-red output-container">
         {{ errorMessage }}
     </p>
-    <!-- <div v-else="v-else">Connect wallet to execute write</div> EZTODO figure out-->
     <div class="output-container" v-if="result">
         Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
     </div>
@@ -187,8 +186,9 @@ export default {
                     return value;
             }
         },
-        async run() { // eztodo does this need to be async?
+        async run() {
             this.loading = true;
+
             try {
                 const opts = {};
                 if (this.abi.payable) {
@@ -196,19 +196,19 @@ export default {
                 }
 
                 if (this.abi.stateMutability === 'view') {
-                    return this.runRead();
+                    return await this.runRead();
                 }
 
                 if (this.isNative) {
-                    return this.runNative(opts);
-                    // eztodo error handling?
+                    return await this.runNative(opts);
                 }
 
-                return this.runEVM(opts);
-                // eztodo error handling?
+                return await this.runEVM(opts);
             } catch (e) {
                 this.result = e.message;
             }
+
+            this.endLoading();
         },
         getFunctionAbi() {
             return `${this.abi.name}(${this.abi.inputs.map(i => i.type).join(',')})`;
