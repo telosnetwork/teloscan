@@ -1,34 +1,29 @@
 {
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "vue"
-  ],
-  "prettier.arrowParens": "avoid",
-  "prettier.endOfLine": "auto",
-  "prettier.singleQuote": true,
-  "prettier.tabWidth": 4,
-  "vetur.experimental.templateInterpolationService": true,
-  "vetur.format.defaultFormatter.js": "vscode-typescript",
-  "vetur.format.defaultFormatter.less": "none",
-  "vetur.format.defaultFormatter.postcss": "none",
-  "vetur.format.defaultFormatter.scss": "none",
-  "vetur.format.defaultFormatter.stylus": "none",
-  "vetur.format.defaultFormatter.ts": "vscode-typescript",
-  "vetur.format.defaultFormatterOptions": {
-    "js-beautify-html": {
-      "wrap_attributes": "force-expand-multiline"
-    },
-    "prettyhtml": {
-      "printWidth": 100,
-      "singleQuote": false,
-      "wrapAttributes": false,
-      "sortAttributes": false
-    }
+  "eslint.enable": true,
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.formatOnSave": false,
   },
-  "vetur.format.enable": false,
-  "vetur.format.options.tabSize": 4,
-  "vetur.validation.template": false,
-  "vetur.validation.templateProps": true,
+  "[vue]": {
+    "editor.formatOnSave": false,
+  },
+  "eslint.alwaysShowStatus": true,
+  "eslint.validate": [
+    {
+      "language": "javascript",
+      "autoFix": true
+    },
+    {
+      "language": "javascriptreact",
+      "autoFix": true
+    },
+    {
+      "language": "vue",
+      "autoFix": true
+    },
+  ],
+  "path-autocomplete.pathMappings": {
+    "~": "${folder}/src",
+    "@": "${folder}/src",
+  }
 }
