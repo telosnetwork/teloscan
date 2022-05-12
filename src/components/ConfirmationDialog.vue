@@ -3,54 +3,54 @@ const VIEW_SOURCE_PROMPT = `This contract has been verified. You can view the so
 const VERIFY_PROMPT = 'This contract has not been verified.  Would you like to upload the contract(s) and metadata to verify source now?';
 
 export default {
-  name: "ConfirmationDialog",
-  components: {},
-  props: {
-    flag: {
-      type: Boolean,
-      required: true
+    name: "ConfirmationDialog",
+    components: {},
+    props: {
+        flag: {
+            type: Boolean,
+            required: true
+        },
+        address: { 
+            type: String,
+            required: true
+        },
+        status: {
+            type: Boolean,
+            default: false
+        }
     },
-    address: { 
-      type: String,
-      required: true
+    data() {
+        return {
+            showDialog: false,
+            icon: 'warning',
+            color: 'text-red',
+            dialogMessage: VERIFY_PROMPT
+        }
     },
-    status: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      showDialog: false,
-      icon: 'warning',
-      color: 'text-red',
-      dialogMessage: VERIFY_PROMPT
-    }
-  },
-  watch: {
-    flag(val){
-      this.showDialog = val;
+    watch: {
+        flag(val){
+            this.showDialog = val;
+        },
+        status(val){
+            if (val) {
+                this.icon = 'verified';
+                this.color = 'text-green';
+                this.dialogMessage = VIEW_SOURCE_PROMPT; 
+            }else{
+                this.icon = 'warning',
+                this.color = 'text-red',
+                this.dialogMessage = VERIFY_PROMPT;
+            }
+        },
+        showDialog(val){
+            if (!val) this.$emit('dialog', val);
+        }
     },
-    status(val){
-      if (val) {
-        this.icon = 'verified';
-        this.color = 'text-green';
-        this.dialogMessage = VIEW_SOURCE_PROMPT; 
-      }else{
-        this.icon = 'warning',
-        this.color = 'text-red',
-        this.dialogMessage = VERIFY_PROMPT;
-      }
-    },
-    showDialog(val){
-      if (!val) this.$emit('dialog', val);
-    }
-  },
-  methods: {
-    async navigate(){
-      await this.$router.push({name:'sourcify'});
-    }
-  } 
+    methods: {
+        async navigate(){
+            await this.$router.push({name:'sourcify'});
+        }
+    } 
 }
 </script>
 

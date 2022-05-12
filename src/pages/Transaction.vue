@@ -10,145 +10,145 @@ import {parseErrorMessage} from "src/lib/utils";
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
-  name: 'TransactionPage',
-  components: {
-    LogsViewer,
-    InternalTxns,
-    AddressField,
-    BlockField,
-    DateField,
-    MethodField,
-    JsonViewer
-  },
-  data() {
-    return {
-      hash: this.$route.params.hash,
-      blockData: null,
-      trxNotFound: false,
-      errorMessage: null,
-      trx: null,
-      tab: "general",
-      isContract: false,
-      contract: null,
-      parsedTransaction: null,
-      parsedLogs: null,
-      methodTrx: null,
-      showAge: true
-    };
-  },
-  watch: {
-    '$route.params': {
-      handler(newValue) {
-        const { hash } = newValue
-        if (this.hash === hash) {
-          return;
+    name: 'TransactionPage',
+    components: {
+        LogsViewer,
+        InternalTxns,
+        AddressField,
+        BlockField,
+        DateField,
+        MethodField,
+        JsonViewer
+    },
+    data() {
+        return {
+            hash: this.$route.params.hash,
+            blockData: null,
+            trxNotFound: false,
+            errorMessage: null,
+            trx: null,
+            tab: "general",
+            isContract: false,
+            contract: null,
+            parsedTransaction: null,
+            parsedLogs: null,
+            methodTrx: null,
+            showAge: true
+        };
+    },
+    watch: {
+        '$route.params': {
+            handler(newValue) {
+                const { hash } = newValue
+                if (this.hash === hash) {
+                    return;
+                }
+
+                this.resetTransaction();
+                this.hash = hash;
+                this.loadTransaction();
+            },
+            immediate: true,
         }
-
-        this.resetTransaction();
-        this.hash = hash;
+    },
+    mounted() {
         this.loadTransaction();
-      },
-      immediate: true,
-    }
-  },
-  mounted() {
-    this.loadTransaction();
-  },
-  methods: {
-    resetTransaction() {
-      this.blockData = null;
-      this.trx = null;
-      this.tab = "general";
-      this.isContract = false;
-      this.contract = null;
-      this.parsedTransaction = null;
-      this.parsedLogs = null;
-      this.methodTrx = null;
     },
-    async loadTransaction() {
-      const trxResponse = await this.$evmEndpoint.get(
-        `/v2/evm/get_transactions?hash=${this.hash}`
-      );
-      if (trxResponse.data.transactions.length < 1) {
-        this.trxNotFound = true;
-        return;
-      }
+    methods: {
+        resetTransaction() {
+            this.blockData = null;
+            this.trx = null;
+            this.tab = "general";
+            this.isContract = false;
+            this.contract = null;
+            this.parsedTransaction = null;
+            this.parsedLogs = null;
+            this.methodTrx = null;
+        },
+        async loadTransaction() {
+            const trxResponse = await this.$evmEndpoint.get(
+                `/v2/evm/get_transactions?hash=${this.hash}`
+            );
+            if (trxResponse.data.transactions.length < 1) {
+                this.trxNotFound = true;
+                return;
+            }
 
-      this.trx = trxResponse.data.transactions[0];
-      this.setErrorMessage();
-      await this.loadContract();
-      this.setTab();
-    },
-    async loadContract() {
-      if (this.trx.input_data === "0x") return;
+            this.trx = trxResponse.data.transactions[0];
+            this.setErrorMessage();
+            await this.loadContract();
+            this.setTab();
+        },
+        async loadContract() {
+            if (this.trx.input_data === "0x") return;
 
-      const contract = await this.$contractManager.getContract(this.trx.to);
-      if (!contract) return;
+            const contract = await this.$contractManager.getContract(this.trx.to);
+            if (!contract) return;
 
-      this.contract = contract;
-      this.parsedTransaction = await this.contract.parseTransaction(
-        this.trx.input_data
-      );
-      this.parsedLogs = await this.contract.parseLogs(this.trx.logs);
-      this.methodTrx = Object.assign(
-        { parsedTransaction: this.parsedTransaction },
-        this.trx
-      );
-      this.isContract = true;
-    },
-    setTab() {
-      if (this.$route.hash === "internal") {
-        this.tab = "internal";
-      } else if (this.$route.hash === "eventlog") {
-        this.tab = "logs";
-      } else if (this.$route.hash === "details") {
-        this.tab = "details";
-      } else {
-        this.tab = "general";
-      }
-    },
-    setErrorMessage() {
-      if (this.trx.status !== 0)
-        return;
+            this.contract = contract;
+            this.parsedTransaction = await this.contract.parseTransaction(
+                this.trx.input_data
+            );
+            this.parsedLogs = await this.contract.parseLogs(this.trx.logs);
+            this.methodTrx = Object.assign(
+                { parsedTransaction: this.parsedTransaction },
+                this.trx
+            );
+            this.isContract = true;
+        },
+        setTab() {
+            if (this.$route.hash === "internal") {
+                this.tab = "internal";
+            } else if (this.$route.hash === "eventlog") {
+                this.tab = "logs";
+            } else if (this.$route.hash === "details") {
+                this.tab = "details";
+            } else {
+                this.tab = "general";
+            }
+        },
+        setErrorMessage() {
+            if (this.trx.status !== 0)
+                return;
 
-      this.errorMessage = parseErrorMessage(this.trx.output);
-    },
-    getFunctionName() {
-      if (this.parsedTransaction) return this.parsedTransaction.name;
-    },
-    getFunctionParams() {
-      if (!this.parsedTransaction) return;
+            this.errorMessage = parseErrorMessage(this.trx.output);
+        },
+        getFunctionName() {
+            if (this.parsedTransaction) return this.parsedTransaction.name;
+        },
+        getFunctionParams() {
+            if (!this.parsedTransaction) return;
 
-      let params = {
-        function: this.parsedTransaction.signature,
-        args: this.parsedTransaction.args
-      };
-      return params;
-    },
-    getLogs() {
-      if (this.parsedLogs) {
-        const logsObj = this.parsedLogs.map(log => {
-          if (log.signature && log.args)
-            return { name: log.signature, args: log.args };
+            let params = {
+                function: this.parsedTransaction.signature,
+                args: this.parsedTransaction.args
+            };
+            return params;
+        },
+        getLogs() {
+            if (this.parsedLogs) {
+                const logsObj = this.parsedLogs.map(log => {
+                    if (log.signature && log.args)
+                        return { name: log.signature, args: log.args };
 
-          return log;
-        });
+                    return log;
+                });
 
-        return logsObj;
-      }
+                return logsObj;
+            }
 
-      return this.trx.logs;
-    },
-    getGasFee() {
-      return (
-        (this.trx.charged_gas_price * this.trx.gasused) /
+            return this.trx.logs;
+        },
+        getGasFee() {
+            return (
+                (this.trx.charged_gas_price * this.trx.gasused) /
         1000000000000000000
-      ).toFixed(5);
-    },
-    getGasChargedGWEI() {
-      return (this.trx.charged_gas_price / 1000000000).toFixed(2);
+            ).toFixed(5);
+        },
+        getGasChargedGWEI() {
+            return (this.trx.charged_gas_price / 1000000000).toFixed(2);
+        }
     }
-  }
 };
 </script>
 

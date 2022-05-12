@@ -104,62 +104,62 @@ import ConnectButton from "components/ConnectButton";
 import {mapGetters} from "vuex";
 
 export default {
-  name: "MainLayout",
-  components: { Search, ConnectButton, FooterMain },
-  data() {
-    return {
-      mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40",
-      accountConnected: false,
-      drawer: false
-    };
-  },
-  computed: {
-    ...mapGetters('login', [
-      'isLoggedIn',
-      'isNative',
-      'address',
-      'nativeAccount'
-    ]),
-    onHomePage() {
-      return this.$route.name === "home";
-    }
-  },
-  async mounted(){
-    this.removeOldAngularCache();
-  },
-  created() {
-    this.$q.dark.set(localStorage.getItem("darkModeEnabled") !== "false");
-  },
-  methods: {
-    getLoginDisplay() {
-      if (this.isLoggedIn)
-        return this.isNative ? this.nativeAccount : this.address;
+    name: "MainLayout",
+    components: { Search, ConnectButton, FooterMain },
+    data() {
+        return {
+            mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40",
+            accountConnected: false,
+            drawer: false
+        };
     },
+    computed: {
+        ...mapGetters('login', [
+            'isLoggedIn',
+            'isNative',
+            'address',
+            'nativeAccount'
+        ]),
+        onHomePage() {
+            return this.$route.name === "home";
+        }
+    },
+    async mounted(){
+        this.removeOldAngularCache();
+    },
+    created() {
+        this.$q.dark.set(localStorage.getItem("darkModeEnabled") !== "false");
+    },
+    methods: {
+        getLoginDisplay() {
+            if (this.isLoggedIn)
+                return this.isNative ? this.nativeAccount : this.address;
+        },
 
-    toggleDarkMode() {
-      this.$q.dark.toggle();
-      localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
-    },
-    goTo(url) {
-      window.open(url, "_blank");
-      this.drawer = false;
-    },
-    routerTo(path) {
-      this.$router.push(path);
-      this.drawer = false;
-    },
-    removeOldAngularCache() {
-      // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own, this should remove it
-      if(window.navigator && navigator.serviceWorker) {
-        navigator.serviceWorker.getRegistrations()
-          .then(function(registrations) {
-            for(let registration of registrations) {
-              registration.unregister();
+        toggleDarkMode() {
+            this.$q.dark.toggle();
+            localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
+        },
+        goTo(url) {
+            window.open(url, "_blank");
+            this.drawer = false;
+        },
+        routerTo(path) {
+            this.$router.push(path);
+            this.drawer = false;
+        },
+        removeOldAngularCache() {
+            // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own, this should remove it
+            if(window.navigator && navigator.serviceWorker) {
+                navigator.serviceWorker.getRegistrations()
+                    .then(function(registrations) {
+                        for(let registration of registrations) {
+                            registration.unregister();
+                        }
+                    });
             }
-          });
-      }
+        }
     }
-  }
 };
 </script>
 

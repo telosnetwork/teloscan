@@ -1,26 +1,26 @@
 <script>
 export default {
-  name: "FunctionParameter",
-  props: {
-    abiParam: {
-      type: Object,
-      default: null,
+    name: "FunctionParameter",
+    props: {
+        abiParam: {
+            type: Object,
+            default: null,
+        },
+        position: {
+            type: String,
+            default: null,
+        },
     },
-    position: {
-      type: String,
-      default: null,
+    data() {
+        return {
+            label: null,
+            value: null,
+            typeIcon: null
+        }
     },
-  },
-  data() {
-    return {
-      label: null,
-      value: null,
-      typeIcon: null
+    mounted() {
+        this.label = `${this.abiParam.name ? this.abiParam.name : `Param ${this.position}`} (${this.abiParam.type})`
     }
-  },
-  mounted() {
-    this.label = `${this.abiParam.name ? this.abiParam.name : `Param ${this.position}`} (${this.abiParam.type})`
-  }
 }
 </script>
 

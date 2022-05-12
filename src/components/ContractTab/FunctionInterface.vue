@@ -133,16 +133,16 @@ export default {
     },
     props: {
         contract: {
-          type: Object,
-          default: null,
+            type: Object,
+            default: null,
         },
         abi: {
-          type: Object,
-          default: null,
+            type: Object,
+            default: null,
         },
         runLabel: {
-          type: String,
-          default: null,
+            type: String,
+            default: null,
         }
     },
     data : () => ({
@@ -223,10 +223,10 @@ export default {
         },
         formatValue(value, type) {
             switch (type) {
-                case 'uint256':
-                    return BigNumber.from(value);
-                default:
-                    return value;
+            case 'uint256':
+                return BigNumber.from(value);
+            default:
+                return value;
             }
         },
         async run() {
@@ -263,12 +263,12 @@ export default {
         runRead() {
             return this.getEthersFunction()
                 .then(func => func(...this.getFormattedParams())
-                .then(response => { this.result = response })
-                .catch((msg) => {
-                    this.errorMessage = msg;
-                })
-                .finally(() => this.endLoading())
-            );
+                    .then(response => { this.result = response })
+                    .catch((msg) => {
+                        this.errorMessage = msg;
+                    })
+                    .finally(() => this.endLoading())
+                );
         },
         async runNative(opts) {
             const contractInstance = await this.contract.getContractInstance();
@@ -294,28 +294,28 @@ export default {
 
             let user = this.$providerManager.getProvider();
             await user.signTransaction(
-              {
-                  actions: [{
-                      account: "eosio.evm",
-                      name: "raw",
-                      authorization: [
-                          {
-                              actor: this.nativeAccount,
-                              permission: "active"
-                          }
-                      ],
-                      data: {
-                          ram_payer: "eosio.evm",
-                          tx: raw.replace(/^0x/, ''),
-                          estimate_gas: false,
-                          sender: this.address.replace(/^0x/, '').toLowerCase()
-                      }
-                  }],
-              },
-              {
-                  blocksBehind: 3,
-                  expireSeconds: 30
-              }
+                {
+                    actions: [{
+                        account: "eosio.evm",
+                        name: "raw",
+                        authorization: [
+                            {
+                                actor: this.nativeAccount,
+                                permission: "active"
+                            }
+                        ],
+                        data: {
+                            ram_payer: "eosio.evm",
+                            tx: raw.replace(/^0x/, ''),
+                            estimate_gas: false,
+                            sender: this.address.replace(/^0x/, '').toLowerCase()
+                        }
+                    }],
+                },
+                {
+                    blocksBehind: 3,
+                    expireSeconds: 30
+                }
             );
 
             // This doesn't produce the right hash... but would be nice to use ethers here instead of ethereumjs/tx

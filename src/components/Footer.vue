@@ -1,12 +1,12 @@
 <script>
 export default {
-  name: 'AppFooter',
-  methods: {
-    currentFullYear() {
-      const current = new Date();
-      return current.getFullYear();
+    name: 'AppFooter',
+    methods: {
+        currentFullYear() {
+            const current = new Date();
+            return current.getFullYear();
+        }
     }
-  }
 };
 </script>
 

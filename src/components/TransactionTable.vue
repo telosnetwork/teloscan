@@ -6,156 +6,156 @@ import TransactionField from "components/TransactionField";
 import MethodField from "components/MethodField";
 
 const columns = [
-  {
-    name: "hash",
-    label: "TX Hash",
-    align: "left"
-  },
-  {
-    name: "block",
-    label: "Block",
-    align: "left"
-  },
-  {
-    name: "date",
-    label: "Date",
-    align: "left"
-  },
-  {
-    name: "method",
-    label: "Method",
-    align: "left"
-  },
-  {
-    name: "from",
-    label: "From",
-    align: "left"
-  },
-  {
-    name: "to",
-    label: "To / Interacted with",
-    align: "left"
-  },
-  {
-    name: "value",
-    label: "Value",
-    align: "left"
-  }
+    {
+        name: "hash",
+        label: "TX Hash",
+        align: "left"
+    },
+    {
+        name: "block",
+        label: "Block",
+        align: "left"
+    },
+    {
+        name: "date",
+        label: "Date",
+        align: "left"
+    },
+    {
+        name: "method",
+        label: "Method",
+        align: "left"
+    },
+    {
+        name: "from",
+        label: "From",
+        align: "left"
+    },
+    {
+        name: "to",
+        label: "To / Interacted with",
+        align: "left"
+    },
+    {
+        name: "value",
+        label: "Value",
+        align: "left"
+    }
 ];
 
 export default {
-  name: "TransactionTable",
-  components: {
-    TransactionField,
-    DateField,
-    BlockField,
-    AddressField,
-    MethodField
-  },
-  props: {
-    title: {
-      type: String,
-      required: true
+    name: "TransactionTable",
+    components: {
+        TransactionField,
+        DateField,
+        BlockField,
+        AddressField,
+        MethodField
     },
-    filter: {
-      type: Object,
-      default: () => ({})
-    },
-    initialPageSize: {
-      type: Number,
-      required: true,
-    }
-  },
-  data() {
-    return {
-      rows: [],
-      columns,
-      transactions: [],
-      pageSize: this.initialPageSize,
-      total: null,
-      loading: false,
-      pagination: {
-        sortBy: "date",
-        descending: true,
-        page: 1,
-        rowsPerPage: 10,
-        rowsNumber: 0
-      },
-      showAge: true
-    };
-  },
-  mounted() {
-    this.onRequest({
-      pagination: this.pagination
-    });
-  },
-  methods: {
-    async onRequest(props) {
-      this.loading = true;
-
-      const { page, rowsPerPage, sortBy, descending } = props.pagination;
-
-      let result = await this.$evmEndpoint.get(this.getPath(props));
-      if (this.total == null)
-        this.pagination.rowsNumber = result.data.total.value;
-
-      this.pagination.page = page;
-      this.pagination.rowsPerPage = rowsPerPage;
-      this.pagination.sortBy = sortBy;
-      this.pagination.descending = descending;
-
-      this.transactions.splice(
-        0,
-        this.transactions.length,
-        ...result.data.transactions
-      );
-      for (const transaction of this.transactions) {
-        try {
-          if (transaction.input_data === "0x") continue;
-
-          const contract = await this.$contractManager.getContract(
-            transaction.to
-          );
-          if (!contract) continue;
-
-          const parsedTransaction = await contract.parseTransaction(
-            transaction.input_data
-          );
-          if (parsedTransaction) {
-            transaction.parsedTransaction = parsedTransaction;
-            transaction.contract = contract;
-          }
-        } catch (e) {
-          console.error(
-            `Failed to parse data for transaction, error was: ${e.message}`
-          );
+    props: {
+        title: {
+            type: String,
+            required: true
+        },
+        filter: {
+            type: Object,
+            default: () => ({})
+        },
+        initialPageSize: {
+            type: Number,
+            required: true,
         }
-      }
-      this.setRows(page, rowsPerPage);
-      this.loading = false;
     },
-    setRows() {
-      // TODO: do this differently?
-      this.rows = this.transactions;
+    data() {
+        return {
+            rows: [],
+            columns,
+            transactions: [],
+            pageSize: this.initialPageSize,
+            total: null,
+            loading: false,
+            pagination: {
+                sortBy: "date",
+                descending: true,
+                page: 1,
+                rowsPerPage: 10,
+                rowsNumber: 0
+            },
+            showAge: true
+        };
     },
-    getPath(props) {
-      const { page, rowsPerPage, descending } = props.pagination;
-      let path = `/v2/evm/get_transactions?limit=${
-        rowsPerPage === 0 ? 500 : rowsPerPage
-      }`;
-      const filter = Object.assign({}, this.filter ? this.filter : {});
-      if (filter.address) path += `&address=${filter.address}`;
+    mounted() {
+        this.onRequest({
+            pagination: this.pagination
+        });
+    },
+    methods: {
+        async onRequest(props) {
+            this.loading = true;
 
-      if (filter.block) path += `&block=${filter.block}`;
+            const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
-      if (filter.hash) path += `&hash=${filter.hash}`;
+            let result = await this.$evmEndpoint.get(this.getPath(props));
+            if (this.total == null)
+                this.pagination.rowsNumber = result.data.total.value;
 
-      path += `&skip=${(page - 1) * rowsPerPage}`;
-      path += `&sort=${descending ? "desc" : "asc"}`;
+            this.pagination.page = page;
+            this.pagination.rowsPerPage = rowsPerPage;
+            this.pagination.sortBy = sortBy;
+            this.pagination.descending = descending;
 
-      return path;
+            this.transactions.splice(
+                0,
+                this.transactions.length,
+                ...result.data.transactions
+            );
+            for (const transaction of this.transactions) {
+                try {
+                    if (transaction.input_data === "0x") continue;
+
+                    const contract = await this.$contractManager.getContract(
+                        transaction.to
+                    );
+                    if (!contract) continue;
+
+                    const parsedTransaction = await contract.parseTransaction(
+                        transaction.input_data
+                    );
+                    if (parsedTransaction) {
+                        transaction.parsedTransaction = parsedTransaction;
+                        transaction.contract = contract;
+                    }
+                } catch (e) {
+                    console.error(
+                        `Failed to parse data for transaction, error was: ${e.message}`
+                    );
+                }
+            }
+            this.setRows(page, rowsPerPage);
+            this.loading = false;
+        },
+        setRows() {
+            // TODO: do this differently?
+            this.rows = this.transactions;
+        },
+        getPath(props) {
+            const { page, rowsPerPage, descending } = props.pagination;
+            let path = `/v2/evm/get_transactions?limit=${
+                rowsPerPage === 0 ? 500 : rowsPerPage
+            }`;
+            const filter = Object.assign({}, this.filter ? this.filter : {});
+            if (filter.address) path += `&address=${filter.address}`;
+
+            if (filter.block) path += `&block=${filter.block}`;
+
+            if (filter.hash) path += `&hash=${filter.hash}`;
+
+            path += `&skip=${(page - 1) * rowsPerPage}`;
+            path += `&sort=${descending ? "desc" : "asc"}`;
+
+            return path;
+        }
     }
-  }
 };
 </script>
 

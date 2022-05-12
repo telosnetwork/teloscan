@@ -1,34 +1,34 @@
 <script>
 export default {
-  name: 'EssentialLink',
-  props: {
-    title: {
-      type: String,
-      required: true
-    },
+    name: 'EssentialLink',
+    props: {
+        title: {
+            type: String,
+            required: true
+        },
 
-    caption: {
-      type: String,
-      default: ''
-    },
+        caption: {
+            type: String,
+            default: ''
+        },
 
-    path: {
-      type: String,
-      default: '/'
-    },
+        path: {
+            type: String,
+            default: '/'
+        },
 
-    icon: {
-      type: String,
-      default: ''
-    }
-  },
-  methods: {
-    goTo(path) {
-        if (this.$router.currentRoute.path !== path) {
-          this.$router.push({ path: path });
+        icon: {
+            type: String,
+            default: ''
+        }
+    },
+    methods: {
+        goTo(path) {
+            if (this.$router.currentRoute.path !== path) {
+                this.$router.push({ path: path });
+            }
         }
     }
-  }
 }
 </script>
 

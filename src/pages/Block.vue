@@ -4,27 +4,27 @@ import DateField from "components/DateField";
 import { mapActions } from "vuex";
 
 export default {
-  name: 'BlockPage',
-  components: { DateField, TransactionTable },
-  data() {
-    return {
-      block: this.$route.params.block,
-      blockData: null
-    };
-  },
-  mounted() {
-    this.loadBlock();
-  },
-  methods: {
-    ...mapActions("evm", ["doRPC"]),
-    async loadBlock() {
-      const blockResponse = await this.doRPC({
-        method: "eth_getBlockByNumber",
-        params: [parseInt(this.block).toString(16), false]
-      });
-      this.blockData = blockResponse.result;
+    name: 'BlockPage',
+    components: { DateField, TransactionTable },
+    data() {
+        return {
+            block: this.$route.params.block,
+            blockData: null
+        };
+    },
+    mounted() {
+        this.loadBlock();
+    },
+    methods: {
+        ...mapActions("evm", ["doRPC"]),
+        async loadBlock() {
+            const blockResponse = await this.doRPC({
+                method: "eth_getBlockByNumber",
+                params: [parseInt(this.block).toString(16), false]
+            });
+            this.blockData = blockResponse.result;
+        }
     }
-  }
 };
 </script>
 

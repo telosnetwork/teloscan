@@ -8,15 +8,15 @@ import evm from "./evm";
 Vue.use(Vuex);
 
 export default function() {
-  const Store = new Vuex.Store({
-    modules: {
-      general,
-      login,
-      evm,
-    },
+    const Store = new Vuex.Store({
+        modules: {
+            general,
+            login,
+            evm,
+        },
 
-    strict: process.env.DEV
-  });
+        strict: process.env.DEV
+    });
 
-  return Store;
+    return Store;
 }

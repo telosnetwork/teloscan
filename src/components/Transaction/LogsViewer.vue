@@ -1,20 +1,20 @@
 <script>
 import JsonViewer from 'vue-json-viewer'
 export default {
-  name: "LogsViewer",
-  components: {
-    JsonViewer
-  },
-  props: {
-    logs: {
-      type: Array,
-      required: true,
+    name: "LogsViewer",
+    components: {
+        JsonViewer
     },
-    contract: {
-      type: Object,
-      required: true,
+    props: {
+        logs: {
+            type: Array,
+            required: true,
+        },
+        contract: {
+            type: Object,
+            required: true,
+        }
     }
-  }
 }
 </script>
 

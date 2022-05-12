@@ -3,147 +3,147 @@ import { getCompilerOptions } from 'src/lib/contractVerification';
 import { isValidAddressFormat } from "src/lib/utils";
 
 export default {
-  name: 'ContractVerification',
-  data() {
-    return {
-      tab: 'options',
-      compilerOptions: [],
-      compilerVersion: '',
-      contractAddress: '',
-      rawInput: false,
-      optimizer: false,
-      runs: 200,
-      constructorArgs: '',
-      evmOptions: [
-        'default',
-        'homestead',
-        'tangerineWhistle',
-        'spuriousDragon',
-        'byzantium',
-        'constantinople',
-        'petersburg',
-        'istanbul',
-        'berlin',
-        'london'
-        ],
-      targetEvm: 'default',
-      inputMethod: true,
-      sourcePath: '',
-      contractInput: '',
-      fileType: true,
-      TIME_DELAY: 6000
-    };
-  },
-  computed: {
-    pathInput() {
-      return !this.inputMethod || (this.inputMethod && this.fileType);
+    name: 'ContractVerification',
+    data() {
+        return {
+            tab: 'options',
+            compilerOptions: [],
+            compilerVersion: '',
+            contractAddress: '',
+            rawInput: false,
+            optimizer: false,
+            runs: 200,
+            constructorArgs: '',
+            evmOptions: [
+                'default',
+                'homestead',
+                'tangerineWhistle',
+                'spuriousDragon',
+                'byzantium',
+                'constantinople',
+                'petersburg',
+                'istanbul',
+                'berlin',
+                'london'
+            ],
+            targetEvm: 'default',
+            inputMethod: true,
+            sourcePath: '',
+            contractInput: '',
+            fileType: true,
+            TIME_DELAY: 6000
+        };
     },
-    uploaderLabel() {
-      const solFile = `Select .sol contract file for upload`;
-      const jsonFile = 'Select standard JSON input object file for upload';
-      return  this.fileType ? solFile : jsonFile;
-    }
-  },
-  async mounted() {
-      this.compilerOptions = await getCompilerOptions();
-      if (this.$route.params.address) this.contractAddress = this.$route.params.address;
-  },
-  methods: {
-    isValidAddressFormat,
-    setCompiler(option){
-      this.compilerVersion = option;
-    },
-    setEvm(option){
-      this.targetEvm = option;
-    },
-    uploaded(uploadedObj){
-      const verifyResponse = JSON.parse(uploadedObj.xhr.response);
-      this.onNotify(verifyResponse);
-      if (verifyResponse.type === "positive"){
-        this.navToAddress();
-      }
-    },
-    onNotify(notification){
-      if (typeof notification !== 'object' || !Object.prototype.hasOwnProperty.call(notification, 'message')){
-        notification = { message: JSON.stringify(notification), type: 'negative'};
-      }
-      this.$q.notify({
-          type: notification.type,
-          position: 'top',
-          message: notification.message,
-          timeout: this.TIME_DELAY
-      });
-    },
-    navToAddress(){
-      setTimeout(() => {
-        this.$router.push({ name: 'address', params: { address: this.contractAddress}})
-      },this.TIME_DELAY);
-    },
-    getUrl() {
-      return `${process.env.TELOS_API_ENDPOINT}/contracts/verify`;
-    },
-    async submitFormHandler() {
-      if (this.$refs.uploader){
-        if (this.$refs.uploader.files.length === 0){
-          this.onNotify({type: 'info', message: 'you must select a file for upload or toggle input to paste contract contents'});
-          return;
+    computed: {
+        pathInput() {
+            return !this.inputMethod || (this.inputMethod && this.fileType);
+        },
+        uploaderLabel() {
+            const solFile = `Select .sol contract file for upload`;
+            const jsonFile = 'Select standard JSON input object file for upload';
+            return  this.fileType ? solFile : jsonFile;
         }
-        await this.$refs.uploader.upload();
-      }else{
-        await this.uploadForm();
-      }
     },
+    async mounted() {
+        this.compilerOptions = await getCompilerOptions();
+        if (this.$route.params.address) this.contractAddress = this.$route.params.address;
+    },
+    methods: {
+        isValidAddressFormat,
+        setCompiler(option){
+            this.compilerVersion = option;
+        },
+        setEvm(option){
+            this.targetEvm = option;
+        },
+        uploaded(uploadedObj){
+            const verifyResponse = JSON.parse(uploadedObj.xhr.response);
+            this.onNotify(verifyResponse);
+            if (verifyResponse.type === "positive"){
+                this.navToAddress();
+            }
+        },
+        onNotify(notification){
+            if (typeof notification !== 'object' || !Object.prototype.hasOwnProperty.call(notification, 'message')){
+                notification = { message: JSON.stringify(notification), type: 'negative'};
+            }
+            this.$q.notify({
+                type: notification.type,
+                position: 'top',
+                message: notification.message,
+                timeout: this.TIME_DELAY
+            });
+        },
+        navToAddress(){
+            setTimeout(() => {
+                this.$router.push({ name: 'address', params: { address: this.contractAddress}})
+            },this.TIME_DELAY);
+        },
+        getUrl() {
+            return `${process.env.TELOS_API_ENDPOINT}/contracts/verify`;
+        },
+        async submitFormHandler() {
+            if (this.$refs.uploader){
+                if (this.$refs.uploader.files.length === 0){
+                    this.onNotify({type: 'info', message: 'you must select a file for upload or toggle input to paste contract contents'});
+                    return;
+                }
+                await this.$refs.uploader.upload();
+            }else{
+                await this.uploadForm();
+            }
+        },
 
-    async uploadForm(){
-      const formData = this.getFormData();
-      formData.append('files', this.contractInput);
-      try{
-        const result = await this.$telosApi.post('contracts/verify', formData);
-        this.onNotify(result.data);
-        if (result.data.type === "positive"){
-          this.navToAddress();
+        async uploadForm(){
+            const formData = this.getFormData();
+            formData.append('files', this.contractInput);
+            try{
+                const result = await this.$telosApi.post('contracts/verify', formData);
+                this.onNotify(result.data);
+                if (result.data.type === "positive"){
+                    this.navToAddress();
+                }
+            }catch(e){
+                this.onNotify({ message: e, type: 'negative'});
+            }
+        },
+
+        getFormData(){
+            let formFields = this.getFormFields();
+            const formData = new FormData();
+            for (let i in formFields){
+                formData.append(formFields[i].name, formFields[i].value)
+            }
+            return formData
+        },
+
+        getFormFields(){
+            return [
+                { name: 'sourcePath', value: this.sourcePath },
+                { name: 'contractAddress', value: this.contractAddress },
+                { name: 'compilerVersion', value: this.compilerVersion },
+                { name: 'optimizer', value: this.optimizer },
+                { name: 'runs', value: this.runs },
+                { name: 'constructorArgs', value: this.constructorArgs},
+                { name: 'targetEvm', value: this.targetEvm },
+                { name: 'fileType', value: this.fileType }
+            ]
+        },
+
+        resetForm(){
+            this.contractAddress = '';
+            this.compilerVersion = '';
+            this.sourcePath = '';
+            this.contractInput = '';
+            this.rawInput = false;
+            this.optimizer = false;
+            this.runs = 200;
+            this.fileType = true;
+            if (this.$refs.uploader){
+                this.$refs.uploader.files = []
+            }
         }
-      }catch(e){
-        this.onNotify({ message: e, type: 'negative'});
-      }
-    },
-
-    getFormData(){
-      let formFields = this.getFormFields();
-      const formData = new FormData();
-      for (let i in formFields){
-        formData.append(formFields[i].name, formFields[i].value)
-      }
-      return formData
-    },
-
-    getFormFields(){
-      return [
-        { name: 'sourcePath', value: this.sourcePath },
-        { name: 'contractAddress', value: this.contractAddress },
-        { name: 'compilerVersion', value: this.compilerVersion },
-        { name: 'optimizer', value: this.optimizer },
-        { name: 'runs', value: this.runs },
-        { name: 'constructorArgs', value: this.constructorArgs},
-        { name: 'targetEvm', value: this.targetEvm },
-        { name: 'fileType', value: this.fileType }
-      ]
-    },
-
-    resetForm(){
-      this.contractAddress = '';
-      this.compilerVersion = '';
-      this.sourcePath = '';
-      this.contractInput = '';
-      this.rawInput = false;
-      this.optimizer = false;
-      this.runs = 200;
-      this.fileType = true;
-      if (this.$refs.uploader){
-        this.$refs.uploader.files = []
-      }
     }
-  }
 }
 </script>
 

@@ -8,9 +8,9 @@ import * as actions from './actions'
 //actions.getContract({}, {address: '0xdead'});
 
 export default {
-  namespaced: true,
-  state,
-  getters,
-  mutations,
-  actions
+    namespaced: true,
+    state,
+    getters,
+    mutations,
+    actions
 }
