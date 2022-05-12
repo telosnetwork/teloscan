@@ -4,7 +4,7 @@ import DateField from "components/DateField";
 import { mapActions } from "vuex";
 
 export default {
-  name: "Block",
+  name: 'BlockPage',
   components: { DateField, TransactionTable },
   data() {
     return {
@@ -35,19 +35,19 @@ export default {
         div
           .text-primary.text-h4
             div Block
-          .text-white 
+          .text-white
             div {{block}}
         .dataCardsContainer(v-if="blockData")
-          .dataCardItem 
+          .dataCardItem
             .dataCardTile Gas used
             .dataCardData {{ parseInt(blockData.gasUsed, 16) }}
           .dataCardItem
-            .dataCardTile Transactions 
+            .dataCardTile Transactions
             .dataCardData {{ blockData.transactions.length || 0 }}
           .dataCardItem
-            .dataCardTile 
+            .dataCardTile
               date-field( :epoch="blockData.timestamp" )
           //div() {{ blockData }}
-    .tableWrapper.shadow-2.content-container.q-mt-lg 
+    .tableWrapper.shadow-2.content-container.q-mt-lg
       transaction-table( :title="block" :filter="{block}" )
 </template>

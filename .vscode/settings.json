@@ -1,29 +1,2 @@
 {
-  "eslint.enable": true,
-  "editor.formatOnSave": true,
-  "[javascript]": {
-    "editor.formatOnSave": false,
-  },
-  "[vue]": {
-    "editor.formatOnSave": false,
-  },
-  "eslint.alwaysShowStatus": true,
-  "eslint.validate": [
-    {
-      "language": "javascript",
-      "autoFix": true
-    },
-    {
-      "language": "javascriptreact",
-      "autoFix": true
-    },
-    {
-      "language": "vue",
-      "autoFix": true
-    },
-  ],
-  "path-autocomplete.pathMappings": {
-    "~": "${folder}/src",
-    "@": "${folder}/src",
-  }
 }

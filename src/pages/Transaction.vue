@@ -10,7 +10,7 @@ import {parseErrorMessage} from "src/lib/utils";
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
-  name: "Transaction",
+  name: 'TransactionPage',
   components: {
     LogsViewer,
     InternalTxns,
@@ -35,6 +35,21 @@ export default {
       methodTrx: null,
       showAge: true
     };
+  },
+  watch: {
+    '$route.params': {
+      handler(newValue) {
+        const { hash } = newValue
+        if (this.hash === hash) {
+          return;
+        }
+
+        this.resetTransaction();
+        this.hash = hash;
+        this.loadTransaction();
+      },
+      immediate: true,
+    }
   },
   mounted() {
     this.loadTransaction();
@@ -132,21 +147,6 @@ export default {
     },
     getGasChargedGWEI() {
       return (this.trx.charged_gas_price / 1000000000).toFixed(2);
-    }
-  },
-  watch: {
-    '$route.params': {
-      handler(newValue) {
-        const { hash } = newValue
-        if (this.hash === hash) {
-          return;
-        }
-
-        this.resetTransaction();
-        this.hash = hash;
-        this.loadTransaction();
-      },
-      immediate: true,
     }
   }
 };

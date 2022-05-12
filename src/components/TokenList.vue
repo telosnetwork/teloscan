@@ -7,7 +7,8 @@ export default {
   components: {AddressField},
   props: {
     address: {
-      type: String
+      type: String,
+      required: true,
     }
   },
   data() {

@@ -1,6 +1,4 @@
 <script>
-// TODO: add copy icon and use this...
-import { copyToClipboard } from 'quasar'
 import { mapActions } from "vuex";
 import { ethers } from "ethers";
 
@@ -12,7 +10,8 @@ export default {
       required: true
     },
     name: {
-      type: String
+      type: String,
+      default: '',
     },
     truncate: {
       type: Number,
@@ -29,13 +28,13 @@ export default {
       contract: null
     }
   },
-  async mounted() {
-    await this.loadContract();
-  },
   watch: {
     address () {
       this.loadContract();
     }
+  },
+  async mounted() {
+    await this.loadContract();
   },
   methods: {
     ...mapActions("evm", ["getContract"]),

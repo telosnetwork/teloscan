@@ -3,34 +3,50 @@
     <q-header class="transparent">
       <q-toolbar class="text-white toolbar transparent">
         <div class="q-py-sm">
-          <router-link to="/" class="row items-center q-gutter-x-xs">
-            <img alt="Telos EVM logo" src="~assets/evm_logo.png" width="45" />
-            <div class="text-h5 text-white">Teloscan</div>
+          <router-link
+            to="/"
+            class="row items-center q-gutter-x-xs"
+          >
+            <img
+              alt="Telos EVM logo"
+              src="~assets/evm_logo.png"
+              width="45"
+            >
+            <div class="text-h5 text-white">
+              Teloscan
+            </div>
           </router-link>
         </div>
         <q-space />
 
-        <search class="taskbarSearch desktop-only text-center " :toolbar="true" ></search>
+        <search
+          class="taskbarSearch desktop-only text-center "
+          :toolbar="true"
+        />
 
         <q-btn
           flat
           dark
           standout
           class="q-px-md"
-          @click="toggleDarkMode()"
           :icon="$q.dark.isActive ? 'fas fa-sun' : 'fas fa-moon'"
-        >
-        </q-btn>
+          @click="toggleDarkMode()"
+        />
 
-        <connect-button/>
-        <q-btn flat @click="drawer = !drawer" round dense icon="menu" />
-
+        <connect-button />
+        <q-btn
+          flat
+          round
+          dense
+          icon="menu"
+          @click="drawer = !drawer"
+        />
       </q-toolbar>
     </q-header>
 
     <q-drawer
-      side="right"
       v-model="drawer"
+      side="right"
       :width="200"
       :breakpoint="500"
       overlay
@@ -38,8 +54,8 @@
     >
       <q-list>
         <q-item
-          clickable
           v-close-popup
+          clickable
           @click.native="routerTo('/endpoints')"
         >
           <q-item-section>
@@ -49,8 +65,8 @@
 
         <q-item
           v-if="!mainnet"
-          clickable
           v-close-popup
+          clickable
           @click.native="goTo('https://teloscan.io/')"
         >
           <q-item-section>
@@ -60,26 +76,24 @@
 
         <q-item
           v-if="mainnet"
-          clickable
           v-close-popup
+          clickable
           @click.native="goTo('https://testnet.teloscan.io/')"
         >
           <q-item-section>
             <q-item-label> Teloscan Testnet </q-item-label>
           </q-item-section>
         </q-item>
-
       </q-list>
     </q-drawer>
 
-    <div :class="`banner ${onHomePage ? 'home' : ''}`"></div>
+    <div :class="`banner ${onHomePage ? 'home' : ''}`" />
 
     <q-page-container class="flex flex-center ">
       <router-view />
     </q-page-container>
 
-    <footer-main/>
-
+    <footer-main />
   </q-layout>
 </template>
 
@@ -99,9 +113,6 @@ export default {
       drawer: false
     };
   },
-  async mounted(){
-    this.removeOldAngularCache();
-  },
   computed: {
     ...mapGetters('login', [
       'isLoggedIn',
@@ -112,6 +123,12 @@ export default {
     onHomePage() {
       return this.$route.name === "home";
     }
+  },
+  async mounted(){
+    this.removeOldAngularCache();
+  },
+  created() {
+    this.$q.dark.set(localStorage.getItem("darkModeEnabled") !== "false");
   },
   methods: {
     getLoginDisplay() {
@@ -142,9 +159,6 @@ export default {
           });
       }
     }
-  },
-  created() {
-    this.$q.dark.set(localStorage.getItem("darkModeEnabled") !== "false");
   }
 };
 </script>

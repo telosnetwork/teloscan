@@ -17,6 +17,14 @@ export default {
       metamaskLogo: MetamaskLogo
     }
   },
+  computed: {
+    ...mapGetters('login', [
+      'isLoggedIn',
+      'isNative',
+      'address',
+      'nativeAccount'
+    ])
+  },
   mounted() {
     const loginData = localStorage.getItem("loginData");
     if (!loginData)
@@ -36,14 +44,6 @@ export default {
       const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
       this.ualLogin(wallet);
     }
-  },
-  computed: {
-    ...mapGetters('login', [
-      'isLoggedIn',
-      'isNative',
-      'address',
-      'nativeAccount'
-    ])
   },
   methods: {
     ...mapMutations('login', [

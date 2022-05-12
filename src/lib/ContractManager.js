@@ -37,7 +37,7 @@ export default class ContractManager {
 
   async getFunctionIface(data) {
     let prefix = data.toLowerCase().slice(0, 10);
-    if (this.functionInterfaces.hasOwnProperty(prefix))
+    if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, prefix))
       return this.functionInterfaces[prefix];
 
     const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`)
@@ -54,7 +54,7 @@ export default class ContractManager {
   }
 
   async getEventIface(data) {
-    if (this.eventInterfaces.hasOwnProperty(data))
+    if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, data))
       return this.eventInterfaces[data];
 
     const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`)

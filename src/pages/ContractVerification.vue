@@ -3,10 +3,10 @@ import { getCompilerOptions } from 'src/lib/contractVerification';
 import { isValidAddressFormat } from "src/lib/utils";
 
 export default {
-  name: "ContractVerification",
+  name: 'ContractVerification',
   data() {
     return {
-      tab: "options",
+      tab: 'options',
       compilerOptions: [],
       compilerVersion: '',
       contractAddress: '',
@@ -14,16 +14,16 @@ export default {
       optimizer: false,
       runs: 200,
       constructorArgs: '',
-      evmOptions: [ 
-        'default', 
-        'homestead', 
-        'tangerineWhistle', 
-        'spuriousDragon', 
-        'byzantium', 
-        'constantinople', 
-        'petersburg', 
+      evmOptions: [
+        'default',
+        'homestead',
+        'tangerineWhistle',
+        'spuriousDragon',
+        'byzantium',
+        'constantinople',
+        'petersburg',
         'istanbul',
-        'berlin', 
+        'berlin',
         'london'
         ],
       targetEvm: 'default',
@@ -34,10 +34,6 @@ export default {
       TIME_DELAY: 6000
     };
   },
-  async mounted() {
-      this.compilerOptions = await getCompilerOptions();
-      if (this.$route.params.address) this.contractAddress = this.$route.params.address; 
-  },
   computed: {
     pathInput() {
       return !this.inputMethod || (this.inputMethod && this.fileType);
@@ -47,6 +43,10 @@ export default {
       const jsonFile = 'Select standard JSON input object file for upload';
       return  this.fileType ? solFile : jsonFile;
     }
+  },
+  async mounted() {
+      this.compilerOptions = await getCompilerOptions();
+      if (this.$route.params.address) this.contractAddress = this.$route.params.address;
   },
   methods: {
     isValidAddressFormat,
@@ -64,7 +64,7 @@ export default {
       }
     },
     onNotify(notification){
-      if (typeof notification !== 'object' || !notification.hasOwnProperty('message')){
+      if (typeof notification !== 'object' || !Object.prototype.hasOwnProperty.call(notification, 'message')){
         notification = { message: JSON.stringify(notification), type: 'negative'};
       }
       this.$q.notify({
@@ -88,7 +88,7 @@ export default {
           this.onNotify({type: 'info', message: 'you must select a file for upload or toggle input to paste contract contents'});
           return;
         }
-        await this.$refs.uploader.upload(); 
+        await this.$refs.uploader.upload();
       }else{
         await this.uploadForm();
       }
@@ -106,7 +106,7 @@ export default {
       }catch(e){
         this.onNotify({ message: e, type: 'negative'});
       }
-    }, 
+    },
 
     getFormData(){
       let formFields = this.getFormFields();
@@ -134,7 +134,7 @@ export default {
       this.contractAddress = '';
       this.compilerVersion = '';
       this.sourcePath = '';
-      this.contractInput = '';  
+      this.contractInput = '';
       this.rawInput = false;
       this.optimizer = false;
       this.runs = 200;
@@ -159,84 +159,84 @@ export default {
             .inputs-container-row
               .inputs-container-col.inputs-container-padding-right
                 q-input(
-                  v-model="contractAddress" 
+                  v-model="contractAddress"
                   name='contractAddress'
-                  label="Contract Address *" 
+                  label="Contract Address *"
                   placeholder="Please enter contract address '0x0123...'"
                   debounce="500"
                   :rules="[val => isValidAddressFormat(val) || 'invalid address format' ]"
                 )
-                q-select( 
-                  v-model="compilerVersion" 
-                  :options="compilerOptions" 
-                  label="Compiler Version *" 
+                q-select(
+                  v-model="compilerVersion"
+                  :options="compilerOptions"
+                  label="Compiler Version *"
                   :rules="[val => val.length || 'select compiler version']"
                 )
                 q-input(
                   :disable='!pathInput'
-                  v-model="sourcePath" 
+                  v-model="sourcePath"
                   label="Contract File(s) Directory Path (leave blank if none)"
-                  placeholder="e.g., 'contracts/'"      
+                  placeholder="e.g., 'contracts/'"
                   debounce="750"
                   :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) === '/') ) || 'path must end with a forward slash /']"
                 )
                 .radio-container
-                  q-radio( 
+                  q-radio(
                     v-model="inputMethod"
                     label="upload file"
                     :val='true'
                     color='primary'
                   )
-                  q-radio( 
+                  q-radio(
                     v-model="inputMethod"
                     label="text input"
                     :val='false'
                     color='primary'
-                  )   
+                  )
               .inputs-container-col
                 q-input.q-field--with-bottom(
-                  v-model="runs" 
-                  type="number" 
-                  label="Runs value for optimization" 
+                  v-model="runs"
+                  type="number"
+                  label="Runs value for optimization"
                   :class="!optimizer ? 'disabled-input' : ''"
                 )
                   q-toggle( v-model="optimizer" label="Optimization" )
                 q-select( v-model="targetEvm" :options="evmOptions" label="Target EVM" )
                 q-input(
                   style="padding-bottom:1rem"
-                  v-model="constructorArgs" 
+                  v-model="constructorArgs"
                   label="Constructor Arguments"
-                  placeholder="comma seperated values e.g., Bob,123,0x12345...'"  
+                  placeholder="comma seperated values e.g., Bob,123,0x12345...'"
                   debounce="750"
                   :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',') ) || 'no trailing commas']"
                 )
                 .radio-container
-                  q-radio( 
+                  q-radio(
                     v-if="inputMethod"
                     v-model="fileType"
                     label=".sol"
                     :val="true"
                     color='primary'
                   )
-                  q-radio( 
+                  q-radio(
                     v-if="inputMethod"
                     v-model="fileType"
                     label=".json"
                     :val="false"
                     color='primary'
-                  ) 
+                  )
 
               q-input.border-radius(
                 v-if='!inputMethod'
-                type="textarea" 
+                type="textarea"
                 name='contractInput'
-                rows="5"  
-                square 
-                outlined 
-                v-model='contractInput' 
+                rows="5"
+                square
+                outlined
+                v-model='contractInput'
                 placeholder='copy & paste contract code here...'
                 :rules="[val => val.length || 'enter or paste contract text']"
-              )     
+              )
               q-uploader(
                 v-else
                 ref="uploader"
@@ -260,10 +260,10 @@ export default {
 </template>
 
 <style scoped lang="sass">
-span 
+span
   word-wrap: break-word
 
-.q-btn 
+.q-btn
   width: 40%
   margin: auto
 

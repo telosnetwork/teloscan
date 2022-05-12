@@ -1,6 +1,6 @@
 export const login = async function(
   { commit, dispatch },
-  { idx, account, returnUrl }
+  { idx, account }
 ) {
   const authenticator = this.$ual.authenticators[idx];
   try {
@@ -62,7 +62,7 @@ const getAuthenticator = function(ual, wallet = null) {
   };
 };
 
-export const logout = async function({ commit, getters }) {
+export const logout = async function({ getters }) {
   if (getters.isNative) {
     const {authenticator} = getAuthenticator(this.$ual);
     try {

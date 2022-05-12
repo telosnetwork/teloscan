@@ -13,6 +13,9 @@ export default {
       "isAutoLoading"
     ])
   },
+  async mounted() {
+    await this.autoLogin(this.$route.query.returnUrl);
+  },
   methods: {
     ...mapActions("account", ["login", "logout", "autoLogin"]),
     async onLogin(idx) {
@@ -34,9 +37,6 @@ export default {
       }
     }
   },
-  async mounted() {
-    await this.autoLogin(this.$route.query.returnUrl);
-  }
 };
 </script>
 
@@ -50,7 +50,7 @@ export default {
         label="Login"
       )
     </div>
-    .q-px-md.row( v-if="isAuthenticated" ) 
+    .q-px-md.row( v-if="isAuthenticated" )
       .account-name.q-px-md( @click="goToAccountPage" )
         | {{ accountName }}
       q-btn(

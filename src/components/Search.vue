@@ -2,7 +2,7 @@
 const searchHints = ["Transaction", "Address", "Block"];
 
 export default {
-  name: "Search",
+  name: 'SearchBar',
   props: {
     toolbar: {
       type: Boolean,

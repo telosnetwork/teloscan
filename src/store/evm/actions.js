@@ -2,7 +2,7 @@ import { BigNumber } from "ethers";
 
 let rpcId = 0;
 
-export async function doRPC({ commit, dispatch }, { method, params }) {
+export async function doRPC(_, { method, params }) {
   const rpcPayload = {
     jsonrpc: "2.0",
     id: ++rpcId,
@@ -15,11 +15,11 @@ export async function doRPC({ commit, dispatch }, { method, params }) {
 }
 
 // TODO: make sure we're not using this and remove... should be using the $contractManager that's on prototype (this.$contractManager)
-export async function getContract({ commit, dispatch }, { address }) {
+export async function getContract(_, { address }) {
   return await this.$contractManager.getContract(address);
 }
 
-export const fetchTlosPrice = async function({ dispatch, commit }) {
+export const fetchTlosPrice = async function({ commit }) {
   try {
     const response = await this.$api.getTableRows({
       code: "delphioracle",
@@ -36,7 +36,7 @@ export const fetchTlosPrice = async function({ dispatch, commit }) {
   }
 };
 
-export const fetchGasPrice = async function({ dispatch, commit }) {
+export const fetchGasPrice = async function({ commit }) {
   try {
     const response = await this.$api.getTableRows({
       code: "eosio.evm",
@@ -54,7 +54,7 @@ export const fetchGasPrice = async function({ dispatch, commit }) {
   }
 };
 
-export const fetchLatestBlock = async function({ dispatch, commit }) {
+export const fetchLatestBlock = async function({ commit }) {
   try {
     const response = await this.$api.getTableRows({
       code: "eosio.evm",

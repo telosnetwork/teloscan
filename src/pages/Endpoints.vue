@@ -6,7 +6,7 @@ const ENDPOINT_LIST = 'https://raw.githubusercontent.com/telosnetwork/evm-rpc-li
 const TIMEOUT_MS = 2000;
 
 export default {
-  name: "Endpoints",
+  name: 'EndpointsPage',
   data() {
     return {
       endpoints: [],
@@ -77,7 +77,7 @@ export default {
 </template>
 
 <style scoped lang='sass'>
-.q-list  
+.q-list
   border-radius: 10px
   box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%)
 .tableWrapper
@@ -90,6 +90,6 @@ export default {
   .full-width
     min-width: 100%
     margin-top: .25rem
-  .no-wrap 
+  .no-wrap
     flex-wrap: wrap
 </style>

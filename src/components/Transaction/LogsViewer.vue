@@ -7,10 +7,12 @@ export default {
   },
   props: {
     logs: {
-      type: Array
+      type: Array,
+      required: true,
     },
     contract: {
-      type: Object
+      type: Object,
+      required: true,
     }
   }
 }

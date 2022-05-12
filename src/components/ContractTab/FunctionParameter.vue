@@ -2,8 +2,14 @@
 export default {
   name: "FunctionParameter",
   props: {
-    abiParam: null,
-    position: null
+    abiParam: {
+      type: Object,
+      default: null,
+    },
+    position: {
+      type: String,
+      default: null,
+    },
   },
   data() {
     return {

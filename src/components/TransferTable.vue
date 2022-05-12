@@ -61,7 +61,8 @@ export default {
       required: true
     },
     initialPageSize: {
-      type: Number
+      type: Number,
+      required: true,
     }
   },
   data() {
@@ -184,7 +185,7 @@ export default {
       this.setRows(page, rowsPerPage);
       this.loading = false;
     },
-    setRows(page, rowsPerPage) {
+    setRows() {
       // TODO: do this differently?
       this.rows = this.transfers;
     },
@@ -213,15 +214,6 @@ export default {
   }
 };
 </script>
-<style lang='sass'scoped>
-.coin-icon
-  width: 20px
-  margin-right: .25rem
-
-.token-name
-  display: inline-block
-</style>
-
 <template lang="pug">
   q-table(
     :data="rows"
@@ -266,3 +258,12 @@ export default {
         q-img.coin-icon( :src="getIcon(props.row)" )
         address-field.token-name( :address="props.row.address" :name="props.row.name" )
 </template>
+
+<style lang='sass'scoped>
+.coin-icon
+  width: 20px
+  margin-right: .25rem
+
+.token-name
+  display: inline-block
+</style>

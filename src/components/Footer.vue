@@ -1,5 +1,6 @@
 <script>
 export default {
+  name: 'AppFooter',
   methods: {
     currentFullYear() {
       const current = new Date();
@@ -13,9 +14,9 @@ export default {
   .row.q-mb-lg.relative-bottom
     .col-xs-12.col-md-6
       .column.items-center
-        span COPYRIGHT © {{ currentFullYear() }} 
+        span COPYRIGHT © {{ currentFullYear() }}
           a( href="/" target="_blank" rel="noopener noreferrer")
-            | Teloscan 
+            | Teloscan
           span.d-none.d-sm-inline-block All rights Reserved
     .col-xs-12.col-md-6
       .column.items-center
@@ -30,11 +31,11 @@ export default {
             name="fas fa-coffee red"
             style="font-size:15px;color:brown;padding-bottom:4px"
           )
-          | by 
+          | by
           a(
             href="https://eosauthority.com/vote/producers?network=telos"
             target="_blank"
-          ) Yknot & 
+          ) Yknot &
           a(
             href="https://eosauthority.com/vote/producers?network=telos"
             target="_blank"

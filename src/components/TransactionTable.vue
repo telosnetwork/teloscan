@@ -62,7 +62,8 @@ export default {
       default: () => ({})
     },
     initialPageSize: {
-      type: Number
+      type: Number,
+      required: true,
     }
   },
   data() {
@@ -133,7 +134,7 @@ export default {
       this.setRows(page, rowsPerPage);
       this.loading = false;
     },
-    setRows(page, rowsPerPage) {
+    setRows() {
       // TODO: do this differently?
       this.rows = this.transactions;
     },
@@ -159,46 +160,46 @@ export default {
 </script>
 
 <template lang="pug">
-    q-table(
-      :data="rows"
-      :columns="columns"
-      :pagination.sync="pagination"
-      :loading="loading"
-      @request="onRequest"
-      :rows-per-page-options="[10, 20, 50]"
-      flat
-    ) 
-      q-tr( slot="header" slot-scope="props", :props="props" )
-        q-th(
-          v-for="col in props.cols"
-          :key="col.name"
-          :props="props"
-          @click="col.name==='date' ? showAge=!showAge : null"
+q-table(
+  :data="rows"
+  :columns="columns"
+  :pagination.sync="pagination"
+  :loading="loading"
+  @request="onRequest"
+  :rows-per-page-options="[10, 20, 50]"
+  flat
+)
+  q-tr( slot="header" slot-scope="props", :props="props" )
+    q-th(
+      v-for="col in props.cols"
+      :key="col.name"
+      :props="props"
+      @click="col.name==='date' ? showAge=!showAge : null"
+    )
+      template(
+        v-if="col.name==='date'"
+        class=""
+      )
+        q-tooltip(anchor="bottom middle" self="bottom middle") Click to change format
+      | {{ col.label }}
+      template(
+        v-if="col.name==='method'"
         )
-          template(
-            v-if="col.name==='date'"
-            class=""
-          )
-            q-tooltip(anchor="bottom middle" self="bottom middle") Click to change format          
-          | {{ col.label }}    
-          template(
-            v-if="col.name==='method'"
-            )              
-            q-icon(name="fas fa-info-circle")
-              q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.      
+        q-icon(name="fas fa-info-circle")
+          q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
 
-      q-tr( slot="body" slot-scope="props" :props="props" )
-        q-td( key="hash" )
-          transaction-field( :transaction-hash="props.row.hash" )
-        q-td( key="block" )
-          block-field( :block="props.row.block" )
-        q-td( key="date" )
-          date-field( :epoch="props.row.epoch", :showAge="showAge" )
-        q-td( key="method" )
-          method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shorten="true" )
-        q-td( key="from" )
-          address-field( :address="props.row.from" )
-        q-td( key="to" )
-          address-field( :address="props.row.to" :is-contract-trx="props.row.input_data !== '0x'" )
-        q-td( key="value" ) {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
+  q-tr( slot="body" slot-scope="props" :props="props" )
+    q-td( key="hash" )
+      transaction-field( :transaction-hash="props.row.hash" )
+    q-td( key="block" )
+      block-field( :block="props.row.block" )
+    q-td( key="date" )
+      date-field( :epoch="props.row.epoch", :showAge="showAge" )
+    q-td( key="method" )
+      method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shorten="true" )
+    q-td( key="from" )
+      address-field( :address="props.row.from" )
+    q-td( key="to" )
+      address-field( :address="props.row.to" :is-contract-trx="props.row.input_data !== '0x'" )
+    q-td( key="value" ) {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
 </template>

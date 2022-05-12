@@ -7,10 +7,12 @@ export default {
   },
   props: {
     itxs: {
-      type: Array
+      type: Array,
+      required: true,
     },
     contract: {
-      type: Object
+      type: Object,
+      required: true,
     }
   },
   data () {

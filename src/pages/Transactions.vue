@@ -1,10 +1,10 @@
 <script>
 import TransactionTable from "components/TransactionTable";
 export default {
-  components: { 
+  name: 'TransactionsPage',
+  components: {
     TransactionTable
-  },
-  name: "Index"
+  }
 };
 </script>
 

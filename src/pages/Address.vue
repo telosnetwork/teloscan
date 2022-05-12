@@ -12,7 +12,7 @@ import GenericContractInterface from "components/ContractTab/GenericContractInte
 
 const web3 = new Web3();
 export default {
-  name: "Address",
+  name: 'AddressPage',
   components: {
     AddressField,
     ConfirmationDialog,
@@ -39,6 +39,20 @@ export default {
       confirmationDialog: false
     };
   },
+  watch: {
+    '$route.params': {
+      handler(newValue) {
+        const { address } = newValue
+        if (this.address === address) {
+          return;
+        }
+
+        this.address = address;
+        this.loadAccount();
+      },
+      immediate: true,
+    }
+  },
   mounted() {
     this.loadAccount();
   },
@@ -60,7 +74,7 @@ export default {
 
       if (isVerifiedContract) {
         this.title = this.contract.getName();
-      } else if (!!knownToken) {
+      } else if (knownToken) {
         this.title = knownToken.name;
       } else if (this.isContract) {
         this.title = 'Contract';
@@ -86,20 +100,6 @@ export default {
     },
     disableConfirmation(){
       this.confirmationDialog = false;
-    }
-  },
-  watch: {
-    '$route.params': {
-      handler(newValue) {
-        const { address } = newValue
-        if (this.address === address) {
-          return;
-        }
-
-        this.address = address;
-        this.loadAccount();
-      },
-      immediate: true,
     }
   }
 };

@@ -5,14 +5,6 @@ const VERIFY_PROMPT = 'This contract has not been verified.  Would you like to u
 export default {
   name: "ConfirmationDialog",
   components: {},
-  data() {
-    return {
-      showDialog: false,
-      icon: 'warning',
-      color: 'text-red',
-      dialogMessage: VERIFY_PROMPT
-    }
-  },
   props: {
     flag: {
       type: Boolean,
@@ -25,6 +17,14 @@ export default {
     status: {
       type: Boolean,
       default: false
+    }
+  },
+  data() {
+    return {
+      showDialog: false,
+      icon: 'warning',
+      color: 'text-red',
+      dialogMessage: VERIFY_PROMPT
     }
   },
   watch: {

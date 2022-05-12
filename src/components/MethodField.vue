@@ -1,7 +1,6 @@
 <script>
 
 import { formatBN } from "src/lib/utils";
-import {BigNumber} from "ethers";
 
 const ERC20_SIGHASH = '0xa9059cbb';
 
@@ -9,10 +8,12 @@ export default {
   name: "MethodField",
   props: {
     trx: {
-      type: Object
+      type: Object,
+      required: true,
     },
     contract: {
-      type: Object
+      type: Object,
+      required: true,
     },
     shorten: {
       type: Boolean,
@@ -34,7 +35,6 @@ export default {
         return;
 
       if (this.trx.parsedTransaction.sighash === ERC20_SIGHASH && this.contract) {
-        const amount = BigNumber.from(this.trx.parsedTransaction.args["amount"]);
         this.transferAmount = `${formatBN(this.trx.parsedTransaction.args["amount"], this.contract.token.decimals, 5)} ${this.contract.token.symbol}`;
       }
     }

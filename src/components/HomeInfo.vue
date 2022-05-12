@@ -4,11 +4,9 @@ import { ethers } from "ethers";
 
 export default {
   name: "HomeInfo",
-  data() {
-    return {
+  data: () => ({
       polling: false
-    };
-  },
+  }),
   computed: {
     ...mapGetters("evm", ["tlosPrice", "gasPrice", "latestBlock"]),
     gasPriceGwei() {
@@ -17,10 +15,6 @@ export default {
       return gweiStr;
     }
   },
-  methods: {
-    ...mapActions("evm", ["fetchTlosPrice", "fetchGasPrice", "fetchLatestBlock"]),
-  },
-  components: {},
   async created() {
     this.fetchTlosPrice();
     this.fetchGasPrice();
@@ -30,7 +24,10 @@ export default {
       this.fetchGasPrice();
       this.fetchLatestBlock();
     }, 3000);
-  }
+  },
+  methods: {
+    ...mapActions("evm", ["fetchTlosPrice", "fetchGasPrice", "fetchLatestBlock"]),
+  },
 };
 </script>
 
