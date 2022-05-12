@@ -1,4 +1,4 @@
-import { Api, JsonRpc } from "eosjs";
+import { Api, JsonRpc } from 'eosjs';
 
 const signTransaction = async function(actions) {
     actions.forEach(action => {
@@ -6,22 +6,22 @@ const signTransaction = async function(actions) {
             action.authorization = [
                 {
                     actor: this.state.account.accountName,
-                    permission: "active"
-                }
+                    permission: 'active',
+                },
             ];
         }
     });
     let transaction = null;
     try {
-        if (this.$type === "ual") {
+        if (this.$type === 'ual') {
             transaction = await this.$ualUser.signTransaction(
                 {
-                    actions
+                    actions,
                 },
                 {
                     blocksBehind: 3,
-                    expireSeconds: 30
-                }
+                    expireSeconds: 30,
+                },
             );
         }
     } catch (e) {
@@ -32,14 +32,14 @@ const signTransaction = async function(actions) {
 };
 
 const getRpc = function () {
-    return this.$type === "ual" ? this.$ualUser.rpc : this.$defaultApi.rpc;
+    return this.$type === 'ual' ? this.$ualUser.rpc : this.$defaultApi.rpc;
 }
 
 const getTableRows = async function(options) {
     const rpc = this.$api.getRpc();
     return await rpc.get_table_rows({
         json: true,
-        ...options
+        ...options,
     });
 };
 
@@ -50,18 +50,18 @@ const getAccount = async function (accountName) {
 
 export default ({ store }) => {
     const rpc = new JsonRpc(
-        `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}:${process.env.NETWORK_PORT}`
+        `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}:${process.env.NETWORK_PORT}`,
     );
-    store["$defaultApi"] = new Api({
+    store['$defaultApi'] = new Api({
         rpc,
         textDecoder: new TextDecoder(),
-        textEncoder: new TextEncoder()
+        textEncoder: new TextEncoder(),
     });
 
-    store["$api"] = {
+    store['$api'] = {
         signTransaction: signTransaction.bind(store),
         getTableRows: getTableRows.bind(store),
         getAccount: getAccount.bind(store),
-        getRpc: getRpc.bind(store)
+        getRpc: getRpc.bind(store),
     };
 };

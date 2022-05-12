@@ -98,19 +98,19 @@
 </template>
 
 <script>
-import Search from "src/components/Search.vue";
-import FooterMain from "src/components/Footer.vue";
-import ConnectButton from "components/ConnectButton";
-import {mapGetters} from "vuex";
+import Search from 'src/components/Search.vue';
+import FooterMain from 'src/components/Footer.vue';
+import ConnectButton from 'components/ConnectButton';
+import {mapGetters} from 'vuex';
 
 export default {
-    name: "MainLayout",
+    name: 'MainLayout',
     components: { Search, ConnectButton, FooterMain },
     data() {
         return {
-            mainnet: process.env.NETWORK_EVM_CHAIN_ID === "40",
+            mainnet: process.env.NETWORK_EVM_CHAIN_ID === '40',
             accountConnected: false,
-            drawer: false
+            drawer: false,
         };
     },
     computed: {
@@ -118,17 +118,17 @@ export default {
             'isLoggedIn',
             'isNative',
             'address',
-            'nativeAccount'
+            'nativeAccount',
         ]),
         onHomePage() {
-            return this.$route.name === "home";
-        }
+            return this.$route.name === 'home';
+        },
     },
     async mounted(){
         this.removeOldAngularCache();
     },
     created() {
-        this.$q.dark.set(localStorage.getItem("darkModeEnabled") !== "false");
+        this.$q.dark.set(localStorage.getItem('darkModeEnabled') !== 'false');
     },
     methods: {
         getLoginDisplay() {
@@ -138,10 +138,10 @@ export default {
 
         toggleDarkMode() {
             this.$q.dark.toggle();
-            localStorage.setItem("darkModeEnabled", this.$q.dark.isActive);
+            localStorage.setItem('darkModeEnabled', this.$q.dark.isActive);
         },
         goTo(url) {
-            window.open(url, "_blank");
+            window.open(url, '_blank');
             this.drawer = false;
         },
         routerTo(path) {
@@ -158,8 +158,8 @@ export default {
                         }
                     });
             }
-        }
-    }
+        },
+    },
 };
 </script>
 

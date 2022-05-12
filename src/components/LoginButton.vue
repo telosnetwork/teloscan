@@ -1,23 +1,23 @@
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
     data() {
         return { showLogin: false, error: null };
     },
     computed: {
-        ...mapGetters("account", [
-            "isAuthenticated",
-            "accountName",
-            "loading",
-            "isAutoLoading"
-        ])
+        ...mapGetters('account', [
+            'isAuthenticated',
+            'accountName',
+            'loading',
+            'isAutoLoading',
+        ]),
     },
     async mounted() {
         await this.autoLogin(this.$route.query.returnUrl);
     },
     methods: {
-        ...mapActions("account", ["login", "logout", "autoLogin"]),
+        ...mapActions('account', ['login', 'logout', 'autoLogin']),
         async onLogin(idx) {
             this.error = null;
             const error = await this.login({ idx });
@@ -35,7 +35,7 @@ export default {
             if (this.$router.currentRoute.path !== accountPath) {
                 this.$router.push({ path: accountPath });
             }
-        }
+        },
     },
 };
 </script>

@@ -103,33 +103,33 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { BigNumber, ethers } from "ethers";
+import { mapGetters } from 'vuex';
+import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
 
-import TransactionField from "components/TransactionField";
+import TransactionField from 'components/TransactionField';
 
 const decimalOptions = [{
-    label: "18 - TLOS/ETH/etc..",
-    value: 18
+    label: '18 - TLOS/ETH/etc..',
+    value: 18,
 }, {
-    label: "9 - Gwei",
-    value: 9
+    label: '9 - Gwei',
+    value: 9,
 }, {
-    label: "8 - BTC",
-    value: 8
+    label: '8 - BTC',
+    value: 8,
 }, {
-    label: "0 - Wei",
-    value: 0
+    label: '0 - Wei',
+    value: 0,
 }, {
-    label: "Custom",
-    value: "custom"
+    label: 'Custom',
+    value: 'custom',
 }];
 
 export default {
-    name: "FunctionInterface",
+    name: 'FunctionInterface',
     components: {
-        TransactionField
+        TransactionField,
     },
     props: {
         contract: {
@@ -143,7 +143,7 @@ export default {
         runLabel: {
             type: String,
             default: null,
-        }
+        },
     },
     data : () => ({
         loading: false,
@@ -157,12 +157,12 @@ export default {
         amountDecimals: 0,
         selectDecimals: decimalOptions[0],
         customDecimals: 0,
-        value: "0",
+        value: '0',
         params: [],
         valueParam: {
-            "name": "value",
-            "type": "amount",
-            "internalType": "amount"
+            'name': 'value',
+            'type': 'amount',
+            'internalType': 'amount',
         },
     }),
     computed: {
@@ -170,7 +170,7 @@ export default {
             'address',
             'isLoggedIn',
             'isNative',
-            'nativeAccount'
+            'nativeAccount',
         ]),
         enableRun() {
             return this.isLoggedIn || this.abi.stateMutability === 'view'
@@ -187,7 +187,7 @@ export default {
             }
 
             return false;
-        }
+        },
     },
     methods: {
         makeLabel(abiParam, position) {
@@ -267,7 +267,7 @@ export default {
                     .catch((msg) => {
                         this.errorMessage = msg;
                     })
-                    .finally(() => this.endLoading())
+                    .finally(() => this.endLoading()),
                 );
         },
         async runNative(opts) {
@@ -296,26 +296,26 @@ export default {
             await user.signTransaction(
                 {
                     actions: [{
-                        account: "eosio.evm",
-                        name: "raw",
+                        account: 'eosio.evm',
+                        name: 'raw',
                         authorization: [
                             {
                                 actor: this.nativeAccount,
-                                permission: "active"
-                            }
+                                permission: 'active',
+                            },
                         ],
                         data: {
-                            ram_payer: "eosio.evm",
+                            ram_payer: 'eosio.evm',
                             tx: raw.replace(/^0x/, ''),
                             estimate_gas: false,
-                            sender: this.address.replace(/^0x/, '').toLowerCase()
-                        }
+                            sender: this.address.replace(/^0x/, '').toLowerCase(),
+                        },
                     }],
                 },
                 {
                     blocksBehind: 3,
-                    expireSeconds: 30
-                }
+                    expireSeconds: 30,
+                },
             );
 
             // This doesn't produce the right hash... but would be nice to use ethers here instead of ethereumjs/tx
@@ -325,7 +325,7 @@ export default {
             const trxBuffer = Buffer.from(raw.replace(/^0x/, ''), 'hex');
 
             const tx = Transaction.fromSerializedTx(trxBuffer, {
-                common: this.$evm.chainConfig
+                common: this.$evm.chainConfig,
             });
 
             this.hash = `0x${tx.hash().toString('hex')}`;
@@ -339,8 +339,8 @@ export default {
         },
         endLoading() {
             this.loading = false;
-        }
-    }
+        },
+    },
 }
 </script>
 

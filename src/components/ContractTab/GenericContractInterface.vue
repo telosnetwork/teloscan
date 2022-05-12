@@ -164,9 +164,9 @@ import JsonViewer from 'vue-json-viewer';
 
 import Contract from 'src/lib/Contract';
 import erc721Abi from 'src/lib/erc721';
-import erc20Abi from "erc-20-abi";
+import erc20Abi from 'erc-20-abi';
 
-import { sortAbiFunctionsByName } from "src/lib/utils";
+import { sortAbiFunctionsByName } from 'src/lib/utils';
 
 import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
 
@@ -181,7 +181,7 @@ export default {
         contract: null,
         functions: null,
         displayWriteFunctions: false,
-        customAbiDefinition: "",
+        customAbiDefinition: '',
         selectedAbi: null,
         abiOptions: {
             erc20: 'erc20',
@@ -216,7 +216,7 @@ export default {
                 this.formatAbiFunctionLists();
                 this.displayWriteFunctions = false;
             }
-        }
+        },
     },
     created() {
         this.address = this.$route.params.address;
@@ -225,7 +225,7 @@ export default {
         async formatAbiFunctionLists() {
             this.functions = {
                 read: [],
-                write: []
+                write: [],
             };
 
             const { custom, erc20, erc721 } = this.abiOptions;
@@ -270,9 +270,9 @@ export default {
 
             this.functions = {
                 read: sortAbiFunctionsByName(read),
-                write: sortAbiFunctionsByName(write)
+                write: sortAbiFunctionsByName(write),
             };
         },
-    }
+    },
 }
 </script>

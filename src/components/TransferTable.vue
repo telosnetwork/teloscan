@@ -1,47 +1,47 @@
 <script>
-import AddressField from "components/AddressField";
-import DateField from "components/DateField";
-import TransactionField from "components/TransactionField";
-import {ethers, BigNumber} from "ethers";
-import DEFAULT_TOKEN_LOGO from "src/assets/evm_logo.png";
+import AddressField from 'components/AddressField';
+import DateField from 'components/DateField';
+import TransactionField from 'components/TransactionField';
+import {ethers, BigNumber} from 'ethers';
+import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
 
-const TRANSFER_EVENT_SIGNATURE = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+const TRANSFER_EVENT_SIGNATURE = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
 // TODO: Add icon column and render it
 const columns = [
     {
-        name: "hash",
-        label: "TX Hash",
-        align: "left"
+        name: 'hash',
+        label: 'TX Hash',
+        align: 'left',
     },
     {
-        name: "date",
-        label: "Date",
-        align: "left"
+        name: 'date',
+        label: 'Date',
+        align: 'left',
     },
     {
-        name: "from",
-        label: "From",
-        align: "left"
+        name: 'from',
+        label: 'From',
+        align: 'left',
     },
     {
-        name: "to",
-        label: "To",
-        align: "left"
+        name: 'to',
+        label: 'To',
+        align: 'left',
     },
     {
-        name: "value",
-        label: "Value",
-        align: "left"
+        name: 'value',
+        label: 'Value',
+        align: 'left',
     },{
-        name: "token",
-        label: "Token",
-        align: "left"
-    }
+        name: 'token',
+        label: 'Token',
+        align: 'left',
+    },
 ];
 
 export default {
-    name: "TransferTable",
+    name: 'TransferTable',
     components: {
         TransactionField,
         DateField,
@@ -50,20 +50,20 @@ export default {
     props: {
         title: {
             type: String,
-            required: true
+            required: true,
         },
         tokenType: {
             type: String,
-            required: true
+            required: true,
         },
         address: {
             type: String,
-            required: true
+            required: true,
         },
         initialPageSize: {
             type: Number,
             required: true,
-        }
+        },
     },
     data() {
         return {
@@ -75,14 +75,14 @@ export default {
             loading: false,
             expectedTopicLength: 0,
             pagination: {
-                sortBy: "date",
+                sortBy: 'date',
                 descending: true,
                 page: 1,
                 rowsPerPage: 10,
-                rowsNumber: 0
+                rowsNumber: 0,
             },
             showAge: true,
-            tokenList: {}
+            tokenList: {},
         };
     },
     mounted() {
@@ -98,7 +98,7 @@ export default {
         }
 
         this.onRequest({
-            pagination: this.pagination
+            pagination: this.pagination,
         });
     },
     methods: {
@@ -134,7 +134,7 @@ export default {
 
                         const contract = await this.$contractManager.getContract(
                             ethers.utils.getAddress(address),
-                            this.tokenType
+                            this.tokenType,
                         );
 
                         const token = contract.token;
@@ -152,9 +152,9 @@ export default {
                                 if (valueStr.length > 50)
                                     valueStr = `${valueStr.slice(0, 20)} ...`
 
-                                valueDisplay = valueStr + " " + token.symbol
+                                valueDisplay = valueStr + ' ' + token.symbol
                             } else {
-                                valueDisplay = "Unknown precision";
+                                valueDisplay = 'Unknown precision';
                             }
                         } else {
                             valueDisplay = `Id #${parseInt(log.topics[3], 16)}`
@@ -171,7 +171,7 @@ export default {
 
                 } catch (e) {
                     console.error(
-                        `Failed to parse data for transaction, error was: ${e.message}`
+                        `Failed to parse data for transaction, error was: ${e.message}`,
                     );
                 }
             }
@@ -179,7 +179,7 @@ export default {
             this.transfers.splice(
                 0,
                 this.transfers.length,
-                ...newTransfers
+                ...newTransfers,
             );
 
             this.setRows(page, rowsPerPage);
@@ -191,7 +191,7 @@ export default {
         },
         getIcon(row) {
             if (row.token && row.token.logoURI) {
-                if (row.token.logoURI.startsWith("ipfs://")) {
+                if (row.token.logoURI.startsWith('ipfs://')) {
                     return `https://ipfs.io/ipfs/${row.token.logoURI.replace(/ipfs:\/\//, '')}`
                 }
                 return row.token.logoURI;
@@ -207,11 +207,11 @@ export default {
 
             path += `&log_topics=${TRANSFER_EVENT_SIGNATURE},${this.address}`
             path += `&skip=${(page - 1) * rowsPerPage}`;
-            path += `&sort=${descending ? "desc" : "asc"}`;
+            path += `&sort=${descending ? 'desc' : 'asc'}`;
 
             return path;
-        }
-    }
+        },
+    },
 };
 </script>
 <template lang="pug">

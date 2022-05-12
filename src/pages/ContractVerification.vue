@@ -1,6 +1,6 @@
 <script>
 import { getCompilerOptions } from 'src/lib/contractVerification';
-import { isValidAddressFormat } from "src/lib/utils";
+import { isValidAddressFormat } from 'src/lib/utils';
 
 export default {
     name: 'ContractVerification',
@@ -24,14 +24,14 @@ export default {
                 'petersburg',
                 'istanbul',
                 'berlin',
-                'london'
+                'london',
             ],
             targetEvm: 'default',
             inputMethod: true,
             sourcePath: '',
             contractInput: '',
             fileType: true,
-            TIME_DELAY: 6000
+            TIME_DELAY: 6000,
         };
     },
     computed: {
@@ -39,10 +39,10 @@ export default {
             return !this.inputMethod || (this.inputMethod && this.fileType);
         },
         uploaderLabel() {
-            const solFile = `Select .sol contract file for upload`;
+            const solFile = 'Select .sol contract file for upload';
             const jsonFile = 'Select standard JSON input object file for upload';
             return  this.fileType ? solFile : jsonFile;
-        }
+        },
     },
     async mounted() {
         this.compilerOptions = await getCompilerOptions();
@@ -59,7 +59,7 @@ export default {
         uploaded(uploadedObj){
             const verifyResponse = JSON.parse(uploadedObj.xhr.response);
             this.onNotify(verifyResponse);
-            if (verifyResponse.type === "positive"){
+            if (verifyResponse.type === 'positive'){
                 this.navToAddress();
             }
         },
@@ -71,7 +71,7 @@ export default {
                 type: notification.type,
                 position: 'top',
                 message: notification.message,
-                timeout: this.TIME_DELAY
+                timeout: this.TIME_DELAY,
             });
         },
         navToAddress(){
@@ -100,7 +100,7 @@ export default {
             try{
                 const result = await this.$telosApi.post('contracts/verify', formData);
                 this.onNotify(result.data);
-                if (result.data.type === "positive"){
+                if (result.data.type === 'positive'){
                     this.navToAddress();
                 }
             }catch(e){
@@ -126,7 +126,7 @@ export default {
                 { name: 'runs', value: this.runs },
                 { name: 'constructorArgs', value: this.constructorArgs},
                 { name: 'targetEvm', value: this.targetEvm },
-                { name: 'fileType', value: this.fileType }
+                { name: 'fileType', value: this.fileType },
             ]
         },
 
@@ -142,8 +142,8 @@ export default {
             if (this.$refs.uploader){
                 this.$refs.uploader.files = []
             }
-        }
-    }
+        },
+    },
 }
 </script>
 

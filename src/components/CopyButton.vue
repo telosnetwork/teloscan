@@ -66,14 +66,14 @@ export default {
         handleClick() {
             navigator.clipboard.writeText(this.text);
             this.iconClass = icons.success;
-            this.hint = "Copied";
+            this.hint = 'Copied';
 
             setTimeout(() => {
                 this.iconClass = icons.copy;
                 this.hint = this.defaultHint;
             }, 1500);
         },
-    }
+    },
 }
 </script>
 

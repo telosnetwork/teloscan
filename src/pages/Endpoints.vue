@@ -1,6 +1,6 @@
 <script>
-import axios from "axios";
-import axiosTime from "axios-time";
+import axios from 'axios';
+import axiosTime from 'axios-time';
 
 const ENDPOINT_LIST = 'https://raw.githubusercontent.com/telosnetwork/evm-rpc-list/main/list.json';
 const TIMEOUT_MS = 2000;
@@ -37,22 +37,22 @@ export default {
         },
         async doCheck(endpoint, idx) {
             const checker = axios.create({
-                timeout: TIMEOUT_MS
+                timeout: TIMEOUT_MS,
             });
 
             axiosTime(checker);
             const result = await checker.post(endpoint.http, {
-                "jsonrpc":"2.0",
-                "method":"eth_blockNumber",
-                "params":[],
-                "id":1
+                'jsonrpc':'2.0',
+                'method':'eth_blockNumber',
+                'params':[],
+                'id':1,
             });
 
             this.$set(this.endpoints[idx], 'latency', result.timings.elapsedTime);
             //this.endpoints[idx].latency = result.timings.elapsedTime;
             this.endpoints[idx].block = parseInt(result.data.result, 16);
-        }
-    }
+        },
+    },
 };
 </script>
 

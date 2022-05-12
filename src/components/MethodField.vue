@@ -1,11 +1,11 @@
 <script>
 
-import { formatBN } from "src/lib/utils";
+import { formatBN } from 'src/lib/utils';
 
 const ERC20_SIGHASH = '0xa9059cbb';
 
 export default {
-    name: "MethodField",
+    name: 'MethodField',
     props: {
         trx: {
             type: Object,
@@ -17,13 +17,13 @@ export default {
         },
         shorten: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     },
     data() {
         return {
             transferAmount: null,
-            transferTo: null
+            transferTo: null,
         }
     },
     mounted() {
@@ -35,10 +35,10 @@ export default {
                 return;
 
             if (this.trx.parsedTransaction.sighash === ERC20_SIGHASH && this.contract) {
-                this.transferAmount = `${formatBN(this.trx.parsedTransaction.args["amount"], this.contract.token.decimals, 5)} ${this.contract.token.symbol}`;
+                this.transferAmount = `${formatBN(this.trx.parsedTransaction.args['amount'], this.contract.token.decimals, 5)} ${this.contract.token.symbol}`;
             }
-        }
-    }
+        },
+    },
 }
 </script>
 

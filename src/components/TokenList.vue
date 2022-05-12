@@ -1,19 +1,19 @@
 <script>
-import AddressField from "components/AddressField";
-import {formatBN} from "src/lib/utils";
+import AddressField from 'components/AddressField';
+import {formatBN} from 'src/lib/utils';
 
 export default {
-    name: "TokenList",
+    name: 'TokenList',
     components: {AddressField},
     props: {
         address: {
             type: String,
             required: true,
-        }
+        },
     },
     data() {
         return {
-            tokens: null
+            tokens: null,
         }
     },
     mounted() {
@@ -25,7 +25,7 @@ export default {
             let tokens = tokenList.tokens
             tokens = this.sortTokens(tokens);
             await Promise.all(tokens.map(async token => {
-                if (token.logoURI && token.logoURI.startsWith("ipfs://"))
+                if (token.logoURI && token.logoURI.startsWith('ipfs://'))
                     token.logoURI = `https://ipfs.io/ipfs/${token.logoURI.replace(/ipfs:\/\//, '')}`
                 else if (!token.logoURI)
                     token.logoURI = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT28t_CidqCQ0st_OhY3MxnPKMFjclG9ppwWA&usqp=CAU';
@@ -63,8 +63,8 @@ export default {
 
                 return a.symbol > b.symbol ? 1 : -1;
             })
-        }
-    }
+        },
+    },
 }
 </script>
 

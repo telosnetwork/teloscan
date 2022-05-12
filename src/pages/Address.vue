@@ -1,14 +1,14 @@
 <script>
-import Web3 from "web3";
-import TransactionTable from "components/TransactionTable";
-import TransferTable from "components/TransferTable";
-import TokenList from "components/TokenList";
-import ConfirmationDialog from "components/ConfirmationDialog";
+import Web3 from 'web3';
+import TransactionTable from 'components/TransactionTable';
+import TransferTable from 'components/TransferTable';
+import TokenList from 'components/TokenList';
+import ConfirmationDialog from 'components/ConfirmationDialog';
 import ContractTab from 'components/ContractTab/ContractTab';
-import TransactionField from "components/TransactionField";
-import AddressField from "components/AddressField";
-import CopyButton from "components/CopyButton";
-import GenericContractInterface from "components/ContractTab/GenericContractInterface.vue";
+import TransactionField from 'components/TransactionField';
+import AddressField from 'components/AddressField';
+import CopyButton from 'components/CopyButton';
+import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
 
 const web3 = new Web3();
 export default {
@@ -34,9 +34,9 @@ export default {
             isVerified: null,
             contract: null,
             verificationDate: '',
-            tab: "transactions",
+            tab: 'transactions',
             tokens: null,
-            confirmationDialog: false
+            confirmationDialog: false,
         };
     },
     watch: {
@@ -51,7 +51,7 @@ export default {
                 this.loadAccount();
             },
             immediate: true,
-        }
+        },
     },
     mounted() {
         this.loadAccount();
@@ -84,24 +84,24 @@ export default {
         },
         getBalanceDisplay(balance) {
             let strBalance = web3.utils.fromWei(balance);
-            const decimalIndex = strBalance.indexOf(".");
+            const decimalIndex = strBalance.indexOf('.');
             if (decimalIndex > 0) {
                 strBalance = `${strBalance.substring(
                     0,
-                    decimalIndex + 5
+                    decimalIndex + 5,
                 )}`;
             }
             return `${strBalance} TLOS`;
         },
         getAddressNativeExplorerURL() {
-            if (!this.telosAccount) return "";
+            if (!this.telosAccount) return '';
 
             return `${process.env.NETWORK_EXPLORER}/account/${this.telosAccount}`;
         },
         disableConfirmation(){
             this.confirmationDialog = false;
-        }
-    }
+        },
+    },
 };
 </script>
 

@@ -1,11 +1,11 @@
 <script>
 export default {
-    name: "BlockField",
+    name: 'BlockField',
     props: {
         block: {
             type: Number,
-            required: true
-        }
+            required: true,
+        },
     },
 }
 </script>

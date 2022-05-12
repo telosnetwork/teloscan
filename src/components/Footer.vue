@@ -5,8 +5,8 @@ export default {
         currentFullYear() {
             const current = new Date();
             return current.getFullYear();
-        }
-    }
+        },
+    },
 };
 </script>
 

@@ -1,21 +1,21 @@
 <script lang="javascript">
-import FunctionInterface from "components/ContractTab/FunctionInterface";
+import FunctionInterface from 'components/ContractTab/FunctionInterface';
 
-import { sortAbiFunctionsByName } from "src/lib/utils";
+import { sortAbiFunctionsByName } from 'src/lib/utils';
 
 export default {
-    name: "ContractInterface",
+    name: 'ContractInterface',
     components: { FunctionInterface },
     props: {
         write: {
             type: Boolean,
             required: true,
-        }
+        },
     },
     data() {
         return {
             functions: [],
-            contract: []
+            contract: [],
         };
     },
     async mounted() {
@@ -35,9 +35,9 @@ export default {
 
         this.functions = {
             read: sortAbiFunctionsByName(read),
-            write: sortAbiFunctionsByName(write)
+            write: sortAbiFunctionsByName(write),
         }
-    }
+    },
 }
 </script>
 

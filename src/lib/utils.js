@@ -1,5 +1,5 @@
-import {BigNumber} from "ethers";
-import moment from "moment";
+import {BigNumber} from 'ethers';
+import moment from 'moment';
 const createKeccakHash = require('keccak')
 const REVERT_FUNCTION_SELECTOR = '0x08c379a0'
 const REVERT_PANIC_SELECTOR = '0x4e487b71'
@@ -24,7 +24,7 @@ export function toChecksumAddress(address) {
 
     address = address.toLowerCase().replace('0x', '')
     if (address.length != 40)
-        address = address.padStart(40, "0");
+        address = address.padStart(40, '0');
 
     let hash = createKeccakHash('keccak256').update(address).digest('hex')
     let ret = '0x'
@@ -69,32 +69,32 @@ export function parsePanicReason(revertOutput) {
     let reason;
 
     switch (trimmedOutput) {
-    case "01":
-        reason = "If you call assert with an argument that evaluates to false.";
+    case '01':
+        reason = 'If you call assert with an argument that evaluates to false.';
         break;
-    case "11":
-        reason = "If an arithmetic operation results in underflow or overflow outside of an unchecked { ... } block.";
+    case '11':
+        reason = 'If an arithmetic operation results in underflow or overflow outside of an unchecked { ... } block.';
         break;
-    case "12":
-        reason = "If you divide or modulo by zero (e.g. 5 / 0 or 23 % 0).";
+    case '12':
+        reason = 'If you divide or modulo by zero (e.g. 5 / 0 or 23 % 0).';
         break;
-    case "21":
-        reason = "If you convert a value that is too big or negative into an enum type.";
+    case '21':
+        reason = 'If you convert a value that is too big or negative into an enum type.';
         break;
-    case "31":
-        reason = "If you call .pop() on an empty array.";
+    case '31':
+        reason = 'If you call .pop() on an empty array.';
         break;
-    case "32":
-        reason = "If you access an array, bytesN or an array slice at an out-of-bounds or negative index (i.e. x[i] where i >= x.length or i < 0).";
+    case '32':
+        reason = 'If you access an array, bytesN or an array slice at an out-of-bounds or negative index (i.e. x[i] where i >= x.length or i < 0).';
         break;
-    case "41":
-        reason = "If you allocate too much memory or create an array that is too large.";
+    case '41':
+        reason = 'If you allocate too much memory or create an array that is too large.';
         break;
-    case "51":
-        reason = "If you call a zero-initialized variable of internal function type.";
+    case '51':
+        reason = 'If you call a zero-initialized variable of internal function type.';
         break;
     default:
-        reason = "Default panic message";
+        reason = 'Default panic message';
     }
     return reason;
 }

@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: "FunctionParameter",
+    name: 'FunctionParameter',
     props: {
         abiParam: {
             type: Object,
@@ -15,12 +15,12 @@ export default {
         return {
             label: null,
             value: null,
-            typeIcon: null
+            typeIcon: null,
         }
     },
     mounted() {
         this.label = `${this.abiParam.name ? this.abiParam.name : `Param ${this.position}`} (${this.abiParam.type})`
-    }
+    },
 }
 </script>
 

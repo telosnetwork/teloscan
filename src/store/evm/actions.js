@@ -1,15 +1,15 @@
-import { BigNumber } from "ethers";
+import { BigNumber } from 'ethers';
 
 let rpcId = 0;
 
 export async function doRPC(_, { method, params }) {
     const rpcPayload = {
-        jsonrpc: "2.0",
+        jsonrpc: '2.0',
         id: ++rpcId,
         method,
-        params
+        params,
     };
-    const result = await this.$evmEndpoint.post("/evm", rpcPayload);
+    const result = await this.$evmEndpoint.post('/evm', rpcPayload);
 
     return result.data;
 }
@@ -22,51 +22,51 @@ export async function getContract(_, { address }) {
 export const fetchTlosPrice = async function({ commit }) {
     try {
         const response = await this.$api.getTableRows({
-            code: "delphioracle",
-            limit: "1000",
-            scope: "tlosusd",
-            table: "datapoints"
+            code: 'delphioracle',
+            limit: '1000',
+            scope: 'tlosusd',
+            table: 'datapoints',
         });
 
         const tlosPrice = response.rows[0].median / 10000;
-        commit("setTlosPrice", tlosPrice);
+        commit('setTlosPrice', tlosPrice);
     } catch (error) {
-        console.error("fetchTlosPrice");
-        commit("general/setErrorMsg", error.message || error, { root: true });
+        console.error('fetchTlosPrice');
+        commit('general/setErrorMsg', error.message || error, { root: true });
     }
 };
 
 export const fetchGasPrice = async function({ commit }) {
     try {
         const response = await this.$api.getTableRows({
-            code: "eosio.evm",
-            scope: "eosio.evm",
-            table: "config",
-            limit: "1"
+            code: 'eosio.evm',
+            scope: 'eosio.evm',
+            table: 'config',
+            limit: '1',
         });
 
         let gasPrice = response.rows[0].gas_price;
-        gasPrice = BigNumber.from("0x" + gasPrice);
-        commit("setGasPrice", gasPrice);
+        gasPrice = BigNumber.from('0x' + gasPrice);
+        commit('setGasPrice', gasPrice);
     } catch (error) {
-        console.error("fetchGasPrice");
-        commit("general/setErrorMsg", error.message || error, { root: true });
+        console.error('fetchGasPrice');
+        commit('general/setErrorMsg', error.message || error, { root: true });
     }
 };
 
 export const fetchLatestBlock = async function({ commit }) {
     try {
         const response = await this.$api.getTableRows({
-            code: "eosio.evm",
-            scope: "eosio.evm",
-            table: "config",
-            limit: "1"
+            code: 'eosio.evm',
+            scope: 'eosio.evm',
+            table: 'config',
+            limit: '1',
         });
 
         const lastBlock = response.rows[0].last_block;
-        commit("setLatestBlock", lastBlock);
+        commit('setLatestBlock', lastBlock);
     } catch (error) {
-        console.error("fetchLatestBlock");
-        commit("general/setErrorMsg", error.message || error, { root: true });
+        console.error('fetchLatestBlock');
+        commit('general/setErrorMsg', error.message || error, { root: true });
     }
 };

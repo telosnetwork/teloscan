@@ -1,70 +1,70 @@
 <script>
-import AddressField from "components/AddressField";
-import BlockField from "components/BlockField";
-import DateField from "components/DateField";
-import TransactionField from "components/TransactionField";
-import MethodField from "components/MethodField";
+import AddressField from 'components/AddressField';
+import BlockField from 'components/BlockField';
+import DateField from 'components/DateField';
+import TransactionField from 'components/TransactionField';
+import MethodField from 'components/MethodField';
 
 const columns = [
     {
-        name: "hash",
-        label: "TX Hash",
-        align: "left"
+        name: 'hash',
+        label: 'TX Hash',
+        align: 'left',
     },
     {
-        name: "block",
-        label: "Block",
-        align: "left"
+        name: 'block',
+        label: 'Block',
+        align: 'left',
     },
     {
-        name: "date",
-        label: "Date",
-        align: "left"
+        name: 'date',
+        label: 'Date',
+        align: 'left',
     },
     {
-        name: "method",
-        label: "Method",
-        align: "left"
+        name: 'method',
+        label: 'Method',
+        align: 'left',
     },
     {
-        name: "from",
-        label: "From",
-        align: "left"
+        name: 'from',
+        label: 'From',
+        align: 'left',
     },
     {
-        name: "to",
-        label: "To / Interacted with",
-        align: "left"
+        name: 'to',
+        label: 'To / Interacted with',
+        align: 'left',
     },
     {
-        name: "value",
-        label: "Value",
-        align: "left"
-    }
+        name: 'value',
+        label: 'Value',
+        align: 'left',
+    },
 ];
 
 export default {
-    name: "TransactionTable",
+    name: 'TransactionTable',
     components: {
         TransactionField,
         DateField,
         BlockField,
         AddressField,
-        MethodField
+        MethodField,
     },
     props: {
         title: {
             type: String,
-            required: true
+            required: true,
         },
         filter: {
             type: Object,
-            default: () => ({})
+            default: () => ({}),
         },
         initialPageSize: {
             type: Number,
             required: true,
-        }
+        },
     },
     data() {
         return {
@@ -75,18 +75,18 @@ export default {
             total: null,
             loading: false,
             pagination: {
-                sortBy: "date",
+                sortBy: 'date',
                 descending: true,
                 page: 1,
                 rowsPerPage: 10,
-                rowsNumber: 0
+                rowsNumber: 0,
             },
-            showAge: true
+            showAge: true,
         };
     },
     mounted() {
         this.onRequest({
-            pagination: this.pagination
+            pagination: this.pagination,
         });
     },
     methods: {
@@ -107,19 +107,19 @@ export default {
             this.transactions.splice(
                 0,
                 this.transactions.length,
-                ...result.data.transactions
+                ...result.data.transactions,
             );
             for (const transaction of this.transactions) {
                 try {
-                    if (transaction.input_data === "0x") continue;
+                    if (transaction.input_data === '0x') continue;
 
                     const contract = await this.$contractManager.getContract(
-                        transaction.to
+                        transaction.to,
                     );
                     if (!contract) continue;
 
                     const parsedTransaction = await contract.parseTransaction(
-                        transaction.input_data
+                        transaction.input_data,
                     );
                     if (parsedTransaction) {
                         transaction.parsedTransaction = parsedTransaction;
@@ -127,7 +127,7 @@ export default {
                     }
                 } catch (e) {
                     console.error(
-                        `Failed to parse data for transaction, error was: ${e.message}`
+                        `Failed to parse data for transaction, error was: ${e.message}`,
                     );
                 }
             }
@@ -151,11 +151,11 @@ export default {
             if (filter.hash) path += `&hash=${filter.hash}`;
 
             path += `&skip=${(page - 1) * rowsPerPage}`;
-            path += `&sort=${descending ? "desc" : "asc"}`;
+            path += `&sort=${descending ? 'desc' : 'asc'}`;
 
             return path;
-        }
-    }
+        },
+    },
 };
 </script>
 

@@ -1,16 +1,16 @@
 export const login = async function(
     { commit, dispatch },
-    { idx, account }
+    { idx, account },
 ) {
     const authenticator = this.$ual.authenticators[idx];
     try {
-        commit("setLoadingWallet", authenticator.getStyle().text);
+        commit('setLoadingWallet', authenticator.getStyle().text);
         await authenticator.init();
         if (!account) {
             const requestAccount = await authenticator.shouldRequestAccountName();
             if (requestAccount) {
-                await dispatch("fetchAvailableAccounts", idx);
-                commit("setRequestAccount", true);
+                await dispatch('fetchAvailableAccounts', idx);
+                commit('setRequestAccount', true);
                 return;
             }
         }
@@ -19,46 +19,46 @@ export const login = async function(
             const account = users[0];
             const accountName = await account.getAccountName();
             this.$ualUser = account;
-            this.$type = "ual";
-            commit("setAccountName", accountName);
-            localStorage.setItem("autoLogin", authenticator.constructor.name);
-            localStorage.setItem("account", accountName);
-            localStorage.setItem("returning", true);
-            dispatch("getAccountProfile");
+            this.$type = 'ual';
+            commit('setAccountName', accountName);
+            localStorage.setItem('autoLogin', authenticator.constructor.name);
+            localStorage.setItem('account', accountName);
+            localStorage.setItem('returning', true);
+            dispatch('getAccountProfile');
         }
     } catch (e) {
         const error =
       (authenticator.getError() && authenticator.getError().message) ||
       e.message ||
       e.reason;
-        commit("general/setErrorMsg", error, { root: true });
-        console.log("Login error: ", error);
+        commit('general/setErrorMsg', error, { root: true });
+        console.log('Login error: ', error);
     } finally {
-        commit("setLoadingWallet");
+        commit('setLoadingWallet');
     }
 };
 
 export const autoLogin = async function({ dispatch, commit }, returnUrl) {
     const { authenticator, idx } = getAuthenticator(this.$ual);
     if (authenticator) {
-        commit("setAutoLogin", true);
-        await dispatch("login", {
+        commit('setAutoLogin', true);
+        await dispatch('login', {
             idx,
             returnUrl,
-            account: localStorage.getItem("account")
+            account: localStorage.getItem('account'),
         });
-        commit("setAutoLogin", false);
+        commit('setAutoLogin', false);
     }
 };
 
 const getAuthenticator = function(ual, wallet = null) {
-    wallet = wallet || localStorage.getItem("autoLogin");
+    wallet = wallet || localStorage.getItem('autoLogin');
     const idx = ual.authenticators.findIndex(
-        auth => auth.constructor.name === wallet
+        auth => auth.constructor.name === wallet,
     );
     return {
         authenticator: ual.authenticators[idx],
-        idx
+        idx,
     };
 };
 
@@ -68,13 +68,13 @@ export const logout = async function({ getters }) {
         try {
             authenticator && (await authenticator.logout());
         } catch (error) {
-            console.log("Authenticator logout error", error);
+            console.log('Authenticator logout error', error);
         }
 
-        localStorage.removeItem("autoLogin");
+        localStorage.removeItem('autoLogin');
 
-        if (this.$router.currentRoute.path !== "/") {
-            this.$router.push({path: "/"});
+        if (this.$router.currentRoute.path !== '/') {
+            this.$router.push({path: '/'});
         }
     }
 };

@@ -1,20 +1,20 @@
 <script>
 import MetamaskLogo from 'src/assets/metamask-fox.svg'
 import { mapGetters, mapMutations } from 'vuex';
-import { ethers } from "ethers";
-const providersError = "More than one provider is active, disable additional providers.";
-const unsupportedError ="current EVM wallet provider is not supported.";
+import { ethers } from 'ethers';
+const providersError = 'More than one provider is active, disable additional providers.';
+const unsupportedError ='current EVM wallet provider is not supported.';
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
 const PROVIDER_WEB3_INJECTED = 'injectedWeb3'
 
 export default {
-    name: "ConnectButton",
+    name: 'ConnectButton',
     data() {
         return {
             tab: 'web3',
             showLogin: false,
-            metamaskLogo: MetamaskLogo
+            metamaskLogo: MetamaskLogo,
         }
     },
     computed: {
@@ -22,11 +22,11 @@ export default {
             'isLoggedIn',
             'isNative',
             'address',
-            'nativeAccount'
-        ])
+            'nativeAccount',
+        ]),
     },
     mounted() {
-        const loginData = localStorage.getItem("loginData");
+        const loginData = localStorage.getItem('loginData');
         if (!loginData)
             return;
 
@@ -47,7 +47,7 @@ export default {
     },
     methods: {
         ...mapMutations('login', [
-            'setLogin'
+            'setLogin',
         ]),
         getLoginDisplay() {
             return this.isNative ? this.nativeAccount : `0x...${this.address.slice(this.address.length - 4)}`;
@@ -57,7 +57,7 @@ export default {
         },
         disconnect() {
             if (this.isNative) {
-                const loginData = localStorage.getItem("loginData");
+                const loginData = localStorage.getItem('loginData');
                 if (!loginData)
                     return;
 
@@ -80,7 +80,7 @@ export default {
                     address,
                 })
                 this.$providerManager.setProvider(this.getInjectedProvider());
-                localStorage.setItem("loginData", JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED}));
+                localStorage.setItem('loginData', JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED}));
             }
             this.showLogin = false;
         },
@@ -97,17 +97,17 @@ export default {
                     this.$q.notify({
                         position: 'top',
                         message: `Search for EVM address linked to ${accountName} native account failed.  You can create one at wallet.telos.net`,
-                        timeout: 6000
+                        timeout: 6000,
                     });
                     wallet.logout();
                     return;
                 }
                 this.setLogin({
                     address: evmAccount.address,
-                    nativeAccount: accountName
+                    nativeAccount: accountName,
                 })
                 this.$providerManager.setProvider(account);
-                localStorage.setItem("loginData", JSON.stringify({type: LOGIN_NATIVE, provider: wallet.getName()}));
+                localStorage.setItem('loginData', JSON.stringify({type: LOGIN_NATIVE, provider: wallet.getName()}));
             }
             this.showLogin = false;
         },
@@ -170,12 +170,12 @@ export default {
                                     chainId: chainIdParam,
                                     chainName: `Telos EVM ${mainnet ? 'Mainnet' : 'Testnet'}`,
                                     nativeCurrency: {
-                                        name: `Telos`,
-                                        symbol: `TLOS`,
+                                        name: 'Telos',
+                                        symbol: 'TLOS',
                                         decimals: 18,
                                     },
                                     rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
-                                    blockExplorerUrls: [`https://${mainnet ? '' : 'testnet'}.teloscan.io`]
+                                    blockExplorerUrls: [`https://${mainnet ? '' : 'testnet'}.teloscan.io`],
                                 }],
                             });
                             return true;
@@ -187,8 +187,8 @@ export default {
             } else {
                 return false;
             }
-        }
-    }
+        },
+    },
 }
 </script>
 

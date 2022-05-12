@@ -1,9 +1,9 @@
 <script>
 import JsonViewer from 'vue-json-viewer'
 export default {
-    name: "LogsViewer",
+    name: 'LogsViewer',
     components: {
-        JsonViewer
+        JsonViewer,
     },
     props: {
         logs: {
@@ -13,8 +13,8 @@ export default {
         contract: {
             type: Object,
             required: true,
-        }
-    }
+        },
+    },
 }
 </script>
 

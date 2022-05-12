@@ -1,13 +1,13 @@
 <script>
-import { mapActions } from "vuex";
-import { ethers } from "ethers";
+import { mapActions } from 'vuex';
+import { ethers } from 'ethers';
 
 export default {
-    name: "AddressField",
+    name: 'AddressField',
     props: {
         address: {
             type: String,
-            required: true
+            required: true,
         },
         name: {
             type: String,
@@ -16,28 +16,28 @@ export default {
         truncate: {
             type: Number,
             required: false,
-            default: 18
+            default: 18,
         },
         isContractTrx: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     },
     data() {
         return {
-            contract: null
+            contract: null,
         }
     },
     watch: {
         address () {
             this.loadContract();
-        }
+        },
     },
     async mounted() {
         await this.loadContract();
     },
     methods: {
-        ...mapActions("evm", ["getContract"]),
+        ...mapActions('evm', ['getContract']),
         goToAddress() {
             this.$router.push(`/address/${this.address}`);
         },
@@ -67,9 +67,9 @@ export default {
             if (contract) {
                 this.contract = contract;
             }
-        }
+        },
 
-    }
+    },
 }
 </script>
 

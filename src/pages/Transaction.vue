@@ -1,12 +1,12 @@
 <script>
-import DateField from "components/DateField";
-import BlockField from "components/BlockField";
-import AddressField from "components/AddressField";
-import LogsViewer from "components/Transaction/LogsViewer";
-import InternalTxns from "components/Transaction/InternalTxns";
-import MethodField from "components/MethodField";
-import JsonViewer from "vue-json-viewer";
-import {parseErrorMessage} from "src/lib/utils";
+import DateField from 'components/DateField';
+import BlockField from 'components/BlockField';
+import AddressField from 'components/AddressField';
+import LogsViewer from 'components/Transaction/LogsViewer';
+import InternalTxns from 'components/Transaction/InternalTxns';
+import MethodField from 'components/MethodField';
+import JsonViewer from 'vue-json-viewer';
+import {parseErrorMessage} from 'src/lib/utils';
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
@@ -18,7 +18,7 @@ export default {
         BlockField,
         DateField,
         MethodField,
-        JsonViewer
+        JsonViewer,
     },
     data() {
         return {
@@ -27,13 +27,13 @@ export default {
             trxNotFound: false,
             errorMessage: null,
             trx: null,
-            tab: "general",
+            tab: 'general',
             isContract: false,
             contract: null,
             parsedTransaction: null,
             parsedLogs: null,
             methodTrx: null,
-            showAge: true
+            showAge: true,
         };
     },
     watch: {
@@ -49,7 +49,7 @@ export default {
                 this.loadTransaction();
             },
             immediate: true,
-        }
+        },
     },
     mounted() {
         this.loadTransaction();
@@ -58,7 +58,7 @@ export default {
         resetTransaction() {
             this.blockData = null;
             this.trx = null;
-            this.tab = "general";
+            this.tab = 'general';
             this.isContract = false;
             this.contract = null;
             this.parsedTransaction = null;
@@ -67,7 +67,7 @@ export default {
         },
         async loadTransaction() {
             const trxResponse = await this.$evmEndpoint.get(
-                `/v2/evm/get_transactions?hash=${this.hash}`
+                `/v2/evm/get_transactions?hash=${this.hash}`,
             );
             if (trxResponse.data.transactions.length < 1) {
                 this.trxNotFound = true;
@@ -80,31 +80,31 @@ export default {
             this.setTab();
         },
         async loadContract() {
-            if (this.trx.input_data === "0x") return;
+            if (this.trx.input_data === '0x') return;
 
             const contract = await this.$contractManager.getContract(this.trx.to);
             if (!contract) return;
 
             this.contract = contract;
             this.parsedTransaction = await this.contract.parseTransaction(
-                this.trx.input_data
+                this.trx.input_data,
             );
             this.parsedLogs = await this.contract.parseLogs(this.trx.logs);
             this.methodTrx = Object.assign(
                 { parsedTransaction: this.parsedTransaction },
-                this.trx
+                this.trx,
             );
             this.isContract = true;
         },
         setTab() {
-            if (this.$route.hash === "internal") {
-                this.tab = "internal";
-            } else if (this.$route.hash === "eventlog") {
-                this.tab = "logs";
-            } else if (this.$route.hash === "details") {
-                this.tab = "details";
+            if (this.$route.hash === 'internal') {
+                this.tab = 'internal';
+            } else if (this.$route.hash === 'eventlog') {
+                this.tab = 'logs';
+            } else if (this.$route.hash === 'details') {
+                this.tab = 'details';
             } else {
-                this.tab = "general";
+                this.tab = 'general';
             }
         },
         setErrorMessage() {
@@ -121,7 +121,7 @@ export default {
 
             let params = {
                 function: this.parsedTransaction.signature,
-                args: this.parsedTransaction.args
+                args: this.parsedTransaction.args,
             };
             return params;
         },
@@ -147,8 +147,8 @@ export default {
         },
         getGasChargedGWEI() {
             return (this.trx.charged_gas_price / 1000000000).toFixed(2);
-        }
-    }
+        },
+    },
 };
 </script>
 

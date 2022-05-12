@@ -1,17 +1,17 @@
 <script>
 export default {
-    name: "TransactionField",
+    name: 'TransactionField',
     props: {
         transactionHash: {
             type: String,
-            required: true
-        }
+            required: true,
+        },
     },
     methods: {
         goToAddress() {
             this.$router.push(`/tx/${this.transactionHash}`);
-        }
-    }
+        },
+    },
 }
 </script>
 

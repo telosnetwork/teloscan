@@ -4,31 +4,31 @@ export default {
     props: {
         title: {
             type: String,
-            required: true
+            required: true,
         },
 
         caption: {
             type: String,
-            default: ''
+            default: '',
         },
 
         path: {
             type: String,
-            default: '/'
+            default: '/',
         },
 
         icon: {
             type: String,
-            default: ''
-        }
+            default: '',
+        },
     },
     methods: {
         goTo(path) {
             if (this.$router.currentRoute.path !== path) {
                 this.$router.push({ path: path });
             }
-        }
-    }
+        },
+    },
 }
 </script>
 

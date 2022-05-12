@@ -2,25 +2,25 @@
 const moment = require('moment');
 
 export default {
-    name: "DateField",
+    name: 'DateField',
     props: {
         epoch: {
             type: Number,
-            required: true
+            required: true,
         },
         showAge: {
             type: Boolean,
-            default: true
-        }
+            default: true,
+        },
     },
     computed: {
         friendlyDate ()  {
             if (this.showAge) {
                 return moment.unix(this.epoch).fromNow()
             } 
-            return  `${ moment.unix(this.epoch).format("YYYY-MM-DD h:mm:ss")}`
-        }
-    }
+            return  `${ moment.unix(this.epoch).format('YYYY-MM-DD h:mm:ss')}`
+        },
+    },
 }
 </script>
 

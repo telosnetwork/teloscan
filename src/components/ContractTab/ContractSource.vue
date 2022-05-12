@@ -5,21 +5,21 @@ import hljs from 'highlight.js/lib/core';
 import hljsDefineSolidity from 'highlightjs-solidity';
 import 'highlight.js/styles/default.css';
 import json from 'highlight.js/lib/languages/json';
-import { toChecksumAddress } from "src/lib/utils";
+import { toChecksumAddress } from 'src/lib/utils';
 
 hljs.registerLanguage('json', json);
 hljsDefineSolidity(hljs);
 
 export default {
-    name: "ContractSource",
+    name: 'ContractSource',
     components: {
-        JsonViewer
+        JsonViewer,
     },
     data() {
         return {
-            tab:"sources",
+            tab:'sources',
             contracts: [],
-            json: []
+            json: [],
         };
     },
     async mounted() {
@@ -55,8 +55,8 @@ export default {
         isJson(fileName){
             let ext = fileName.split('.').pop();
             return ext === 'json';
-        }
-    }
+        },
+    },
 }
 </script>
 

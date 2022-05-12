@@ -1,14 +1,14 @@
 <script>
-import Search from "components/Search";
-import TransactionTable from "components/TransactionTable";
-import HomeInfo from "components/HomeInfo.vue";
+import Search from 'components/Search';
+import TransactionTable from 'components/TransactionTable';
+import HomeInfo from 'components/HomeInfo.vue';
 export default {
     name: 'IndexPage',
     components: {
         Search,
         HomeInfo,
-        TransactionTable
-    }
+        TransactionTable,
+    },
 };
 </script>
 

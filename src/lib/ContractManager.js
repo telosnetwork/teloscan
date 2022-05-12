@@ -1,16 +1,16 @@
-import Contract from "src/lib/Contract";
-import { ethers } from "ethers";
-import Web3 from "web3";
-import axios from "axios";
-import erc20Abi from "erc-20-abi";
-import erc721Abi from  "./erc721";
-import { toChecksumAddress } from "./utils";
+import Contract from 'src/lib/Contract';
+import { ethers } from 'ethers';
+import Web3 from 'web3';
+import axios from 'axios';
+import erc20Abi from 'erc-20-abi';
+import erc721Abi from  './erc721';
+import { toChecksumAddress } from './utils';
 
 const contractsBucket = axios.create({
-    baseURL: `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com`
+    baseURL: `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com`,
 });
 
-const tokenList = `https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json`;
+const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 export default class ContractManager {
 
     constructor(evmEndpoint) {
@@ -131,7 +131,7 @@ export default class ContractManager {
         abi: metadata.output.abi,
         manager: this,
         token, creationInfo,
-        verified: true
+        verified: true,
     });
         this.contracts[address] = contract;
         return contract;
@@ -146,7 +146,7 @@ export default class ContractManager {
             creationInfo,
             token: Object.assign({
                 address,
-            }, tokenData)
+            }, tokenData),
         });
 
         this.contracts[address] = contract;
@@ -158,7 +158,7 @@ export default class ContractManager {
             name: `${address.slice(0,16)}...`,
             address, creationInfo,
             abi: undefined,
-            manager: this
+            manager: this,
         });
         this.contracts[address] = contract;
         return contract;
@@ -224,7 +224,7 @@ export default class ContractManager {
                 address, creationInfo,
                 abi: erc20Abi,
                 manager: this,
-                token
+                token,
             });
         }
     }

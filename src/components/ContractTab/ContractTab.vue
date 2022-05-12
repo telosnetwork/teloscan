@@ -38,12 +38,12 @@
 </template>
 
 <script>
-import ContractSource from "components/ContractTab/ContractSource";
-import ContractInterface from "components/ContractTab/ContractInterface";
-import CopyButton from "components/CopyButton.vue";
+import ContractSource from 'components/ContractTab/ContractSource';
+import ContractInterface from 'components/ContractTab/ContractInterface';
+import CopyButton from 'components/CopyButton.vue';
 
 export default {
-    name: "ContractTab",
+    name: 'ContractTab',
     components: {
         ContractSource,
         ContractInterface,
@@ -53,7 +53,7 @@ export default {
         contract: {
             type: Object,
             default: () => ({}),
-        }
+        },
     },
     data: () => ({
         source: true,
@@ -76,7 +76,7 @@ export default {
         writeSelected() {
             return this.source === false && this.write === true;
         },
-    }
+    },
 }
 </script>
 

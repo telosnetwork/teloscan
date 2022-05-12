@@ -3,7 +3,7 @@ import JsonViewer from 'vue-json-viewer'
 export default {
     name: 'InternalTxns',
     components: {
-        JsonViewer
+        JsonViewer,
     },
     props: {
         itxs: {
@@ -13,11 +13,11 @@ export default {
         contract: {
             type: Object,
             required: true,
-        }
+        },
     },
     data () {
         return {}
-    }
+    },
 }
 </script>
 

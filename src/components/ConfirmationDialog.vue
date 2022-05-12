@@ -1,30 +1,30 @@
 <script lang="ts">
-const VIEW_SOURCE_PROMPT = `This contract has been verified. You can view the source code & metadata in the 'contract' tab`;
+const VIEW_SOURCE_PROMPT = 'This contract has been verified. You can view the source code & metadata in the \'contract\' tab';
 const VERIFY_PROMPT = 'This contract has not been verified.  Would you like to upload the contract(s) and metadata to verify source now?';
 
 export default {
-    name: "ConfirmationDialog",
+    name: 'ConfirmationDialog',
     components: {},
     props: {
         flag: {
             type: Boolean,
-            required: true
+            required: true,
         },
         address: { 
             type: String,
-            required: true
+            required: true,
         },
         status: {
             type: Boolean,
-            default: false
-        }
+            default: false,
+        },
     },
     data() {
         return {
             showDialog: false,
             icon: 'warning',
             color: 'text-red',
-            dialogMessage: VERIFY_PROMPT
+            dialogMessage: VERIFY_PROMPT,
         }
     },
     watch: {
@@ -44,13 +44,13 @@ export default {
         },
         showDialog(val){
             if (!val) this.$emit('dialog', val);
-        }
+        },
     },
     methods: {
         async navigate(){
             await this.$router.push({name:'sourcify'});
-        }
-    } 
+        },
+    }, 
 }
 </script>
 
