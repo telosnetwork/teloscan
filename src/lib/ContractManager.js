@@ -193,6 +193,9 @@ export default class ContractManager {
 
   async loadTokenList() {
     const results = await axios.get(tokenList);
+    const { tokens } = results.data;
+    results.data.tokens = (tokens ?? []).filter(({ chainId }) => chainId = process.env.NETWORK_EVM_CHAIN_ID);
+
     this.tokenList = results.data;
   }
 
