@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import Web3 from "web3";
 import axios from "axios";
 import erc20Abi from "erc-20-abi";
-import erc721Abi from  "./erc721";
+import erc721Abi from "./erc721";
 import { toChecksumAddress } from "./utils";
 
 const contractsBucket = axios.create({
@@ -84,14 +84,14 @@ export default class ContractManager {
   async getContract(address, suspectedToken) {
     const addressLower = address.toLowerCase();
 
-    if (this.contracts[addressLower]){
+    if (this.contracts[addressLower]) {
       return this.contracts[addressLower];
     }
 
     const creationInfo = await this.getContractCreation(addressLower);
 
     const metadata = await this.checkBucket(address);
-    if (metadata){
+    if (metadata) {
       return await this.getVerifiedContract(addressLower, metadata, creationInfo)
     }
     // TODO: there's some in this list that are not ERC20... they have extra stuff like the Swapin method
@@ -111,12 +111,12 @@ export default class ContractManager {
     return await this.getEmptyContract(addressLower, creationInfo);
   }
 
-  async checkBucket(address){
+  async checkBucket(address) {
     let checksumAddress = toChecksumAddress(address);
-    try{
+    try {
       let responseData = (await contractsBucket.get(`${checksumAddress}/metadata.json`)).data;
       return JSON.parse(responseData.content);
-    }catch(e){
+    } catch (e) {
       console.log(e);
       return false;
     }
@@ -125,19 +125,19 @@ export default class ContractManager {
   async getVerifiedContract(address, metadata, creationInfo) {
     const token = await this.getToken(address);
     const contract =
-    new Contract({
-      name: Object.values(metadata.settings.compilationTarget)[0],
-      address,
-      abi: metadata.output.abi,
-      manager: this,
-      token, creationInfo,
-      verified: true
-    });
+      new Contract({
+        name: Object.values(metadata.settings.compilationTarget)[0],
+        address,
+        abi: metadata.output.abi,
+        manager: this,
+        token, creationInfo,
+        verified: true
+      });
     this.contracts[address] = contract;
     return contract;
   }
 
-  async getTokenContract(address, tokenData, creationInfo){
+  async getTokenContract(address, tokenData, creationInfo) {
     const contract = new Contract({
       name: tokenData.symbol ? `${tokenData.name} (${tokenData.symbol})` : tokenData.name,
       address,
@@ -153,9 +153,9 @@ export default class ContractManager {
     return contract;
   }
 
-  async getEmptyContract(address, creationInfo){
+  async getEmptyContract(address, creationInfo) {
     const contract = new Contract({
-      name: `${address.slice(0,16)}...`,
+      name: `${address.slice(0, 16)}...`,
       address, creationInfo,
       abi: undefined,
       manager: this
@@ -194,25 +194,25 @@ export default class ContractManager {
   async loadTokenList() {
     const results = await axios.get(tokenList);
     const { tokens } = results.data;
-    results.data.tokens = (tokens ?? []).filter(({ chainId }) => chainId = process.env.NETWORK_EVM_CHAIN_ID);
+    results.data.tokens = (tokens ?? []).filter(({ chainId }) => chainId === +process.env.NETWORK_EVM_CHAIN_ID);
 
     this.tokenList = results.data;
   }
 
   async getTokenList() {
-    if (!this.tokenList){
+    if (!this.tokenList) {
       await this.loadTokenList();
     }
     return this.tokenList;
   }
 
-  async getToken(address){
+  async getToken(address) {
     if (!this.tokenList)
       await this.loadTokenList();
 
     let i = this.tokenList.tokens.length;
     while (i--) {
-      if (this.tokenList.tokens[i].address.toLowerCase() === address.toLowerCase()){
+      if (this.tokenList.tokens[i].address.toLowerCase() === address.toLowerCase()) {
         return this.tokenList.tokens[i];
       }
     }
