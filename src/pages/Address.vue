@@ -26,7 +26,6 @@ export default {
   },
   data() {
     return {
-      address: this.$route.params.address,
       title: '',
       telosAccount: null,
       balance: null,
@@ -38,6 +37,11 @@ export default {
       tokens: null,
       confirmationDialog: false
     };
+  },
+  computed: {
+    address() {
+      return this.$route.params?.address?.toLowerCase() ?? '';
+    }
   },
   mounted() {
     this.loadAccount();
@@ -56,12 +60,12 @@ export default {
       this.isContract = account.code.length > 0;
 
       const isVerifiedContract = this.isContract && this.isVerified;
-      const knownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address === this.address);
+      const knownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address.toLowerCase() === this.address.toLowerCase());
 
-      if (isVerifiedContract) {
-        this.title = this.contract.getName();
-      } else if (!!knownToken) {
+      if (knownToken?.name) {
         this.title = knownToken.name;
+      } else if (isVerifiedContract) {
+        this.title = this.contract.getName();
       } else if (this.isContract) {
         this.title = 'Contract';
       } else {
@@ -89,15 +93,11 @@ export default {
     }
   },
   watch: {
-    '$route.params': {
-      handler(newValue) {
-        const { address } = newValue
-        if (this.address === address) {
-          return;
+    'address': {
+      handler(newValue, oldValue) {
+        if (newValue !== oldValue) {
+          this.loadAccount();
         }
-
-        this.address = address;
-        this.loadAccount();
       },
       immediate: true,
     }
