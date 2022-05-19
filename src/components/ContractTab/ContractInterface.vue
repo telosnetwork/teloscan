@@ -1,10 +1,17 @@
 <script lang="javascript">
 import FunctionInterface from "components/ContractTab/FunctionInterface";
 
+import { sortAbiFunctionsByName } from "src/lib/utils";
+
 export default {
   name: "ContractInterface",
   components: { FunctionInterface },
-  props: ['write'],
+  props: {
+    write: {
+      type: Boolean,
+      required: true,
+    }
+  },
   data() {
     return {
       functions: [],
@@ -24,21 +31,11 @@ export default {
       } else {
         write.push(a);
       }
-
     })
 
     this.functions = {
-      read: this.sortByName(read),
-      write: this.sortByName(write)
-    }
-  },
-  methods: {
-    sortByName(functions) {
-      return functions.sort((a, b) => {
-        const upperA = a.name.toUpperCase()
-        const upperB = b.name.toUpperCase()
-        return (upperA < upperB) ? -1 : (upperA > upperB) ? 1 : 0;
-      })
+      read: sortAbiFunctionsByName(read),
+      write: sortAbiFunctionsByName(write)
     }
   }
 }
@@ -58,7 +55,7 @@ export default {
 .interface-list
   margin-bottom: 1.5rem
 
-.interface-item.q-expansion-item 
+.interface-item.q-expansion-item
   border: .125rem solid grey
   border-radius: .25rem
   margin-top: 1rem
@@ -68,7 +65,7 @@ export default {
     margin-bottom: 1rem
 
 .interface-input .q-input
-  border-width: .125rem 
+  border-width: .125rem
   border-style: solid
   border-color: gray
   border-radius: .25rem

@@ -98,3 +98,12 @@ export function parsePanicReason(revertOutput) {
   }
   return reason;
 }
+
+export function sortAbiFunctionsByName(fns) {
+  return fns.sort(
+    ({ name: nameA }, { name: nameB }) => {
+      const upperA = nameA.toUpperCase();
+      const upperB = nameB.toUpperCase();
+      return (upperA < upperB) ? -1 : (upperA > upperB) ? 1 : 0;
+    });
+}

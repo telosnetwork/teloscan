@@ -31,8 +31,13 @@ export default {
 
         const contract = await this.$contractManager.getContract(token.address);
         const contractInstance = contract.getContractInstance();
-        const balance = await contractInstance.balanceOf(this.address);
-        token.balance = `${formatBN(balance, token.decimals, 5)} ${token.symbol}`;
+
+        try {
+          const balance = await contractInstance.balanceOf(this.address);
+          token.balance = `${formatBN(balance, token.decimals, 5)} ${token.symbol}`;
+        } catch (e) {
+          throw `Failed to fetch balance:\n${e}`
+        }
       }));
       this.tokens = tokens;
     },
@@ -78,7 +83,7 @@ export default {
             .text-h6
               div() {{ token.name }}
             address-field( :address="token.address" )
-            div() Balance: {{ token.balance }}
+            div() Balance: {{ token.balance || '(error fetching balance)' }}
 </template>
 
 <style lang="sass" scoped>
