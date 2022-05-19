@@ -8,6 +8,7 @@ import ContractTab from 'components/ContractTab/ContractTab';
 import TransactionField from "components/TransactionField";
 import AddressField from "components/AddressField";
 import CopyButton from "components/CopyButton";
+import GenericContractInterface from "components/ContractTab/GenericContractInterface.vue";
 
 const web3 = new Web3();
 export default {
@@ -17,6 +18,7 @@ export default {
     ConfirmationDialog,
     ContractTab,
     CopyButton,
+    GenericContractInterface,
     TokenList,
     TransactionField,
     TransactionTable,
@@ -24,7 +26,7 @@ export default {
   },
   data() {
     return {
-      address: this.$route.params.address,
+      title: '',
       telosAccount: null,
       balance: null,
       isContract: false,
@@ -35,6 +37,11 @@ export default {
       tokens: null,
       confirmationDialog: false
     };
+  },
+  computed: {
+    address() {
+      return this.$route.params?.address?.toLowerCase() ?? '';
+    }
   },
   mounted() {
     this.loadAccount();
@@ -51,6 +58,19 @@ export default {
       this.balance = this.getBalanceDisplay(account.balance);
       this.telosAccount = account.account;
       this.isContract = account.code.length > 0;
+
+      const isVerifiedContract = this.isContract && this.isVerified;
+      const knownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address.toLowerCase() === this.address.toLowerCase());
+
+      if (knownToken?.name) {
+        this.title = knownToken.name;
+      } else if (isVerifiedContract) {
+        this.title = this.contract.getName();
+      } else if (this.isContract) {
+        this.title = 'Contract';
+      } else {
+        this.title = 'Account';
+      }
     },
     getBalanceDisplay(balance) {
       let strBalance = web3.utils.fromWei(balance);
@@ -63,16 +83,6 @@ export default {
       }
       return `${strBalance} TLOS`;
     },
-    getTitle() {
-      if (this.isContract) {
-        if (this.isVerified){
-          return this.contract.getName();
-        }
-        return 'Contract';
-      }
-
-      return 'Account';
-    },
     getAddressNativeExplorerURL() {
       if (!this.telosAccount) return "";
 
@@ -83,15 +93,11 @@ export default {
     }
   },
   watch: {
-    '$route.params': {
-      handler(newValue) {
-        const { address } = newValue
-        if (this.address === address) {
-          return;
+    'address': {
+      handler(newValue, oldValue) {
+        if (newValue !== oldValue) {
+          this.loadAccount();
         }
-
-        this.address = address;
-        this.loadAccount();
       },
       immediate: true,
     }
@@ -104,11 +110,10 @@ export default {
     div
       .row(class="tableWrapper").justify-between
         div(class="homeInfo")
-          .text-primary.text-h4 {{ getTitle() }}
+          .text-primary.text-h4.q-pr-xs {{ title }}
           q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
           ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
-          .text-white {{ address }}
-            CopyButton(:text="address" description="address")
+          CopyButton(:text="address" :accompanyingText="address" description="address")
           span(v-if='contract')
             .text-white Created at trx&nbsp
               TransactionField(:transaction-hash="contract.getCreationTrx()" )
@@ -139,13 +144,8 @@ export default {
           q-tab-panel( name="tokens" )
             token-list( :address="address" )
           q-tab-panel( v-if="isContract" name="contract" )
-            ContractTab(v-if='isVerified')
-            .verify-source(v-else)
-              q-icon( name='warning' class='text-red' size='1.25rem')
-              | This contract source has not been verified. <br/>
-              | Click&nbsp
-              router-link( :to="{name: 'sourcify'}") here
-              | &nbspto upload source files and verify this contract.
+            ContractTab(v-if='isVerified' :contract="contract")
+            GenericContractInterface(v-else)
 </template>
 
 <style scoped lang="sass">
@@ -167,10 +167,4 @@ export default {
 
 .text-primary
   display: inline-block
-
-.verify-source
-  height: 25rem
-  line-height: 2rem
-  margin-left: 2rem
-  padding-top: 10rem
 </style>
