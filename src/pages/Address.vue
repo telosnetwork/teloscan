@@ -12,17 +12,65 @@ import GenericContractInterface from 'components/ContractTab/GenericContractInte
 
 const web3 = new Web3();
 export default {
-    name: 'AddressPage',
-    components: {
-        AddressField,
-        ConfirmationDialog,
-        ContractTab,
-        CopyButton,
-        GenericContractInterface,
-        TokenList,
-        TransactionField,
-        TransactionTable,
-        TransferTable,
+  name: "Address",
+  components: {
+    AddressField,
+    ConfirmationDialog,
+    ContractTab,
+    CopyButton,
+    GenericContractInterface,
+    TokenList,
+    TransactionField,
+    TransactionTable,
+    TransferTable,
+  },
+  data() {
+    return {
+      title: '',
+      telosAccount: null,
+      balance: null,
+      isContract: false,
+      isVerified: null,
+      contract: null,
+      verificationDate: '',
+      tab: "transactions",
+      tokens: null,
+      confirmationDialog: false
+    };
+  },
+  computed: {
+    address() {
+      return this.$route.params?.address?.toLowerCase() ?? '';
+    }
+  },
+  mounted() {
+    this.loadAccount();
+  },
+  methods: {
+    async loadAccount() {
+      const account = await this.$evm.telos.getEthAccount(this.address);
+      if (account.code.length > 0){
+        this.isContract = true;
+        this.contract = await this.$contractManager.getContract(this.address)
+        this.isVerified = this.contract.verified;
+      }
+
+      this.balance = this.getBalanceDisplay(account.balance);
+      this.telosAccount = account.account;
+      this.isContract = account.code.length > 0;
+
+      const isVerifiedContract = this.isContract && this.isVerified;
+      const knownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address.toLowerCase() === this.address.toLowerCase());
+
+      if (knownToken?.name) {
+        this.title = knownToken.name;
+      } else if (isVerifiedContract) {
+        this.title = this.contract.getName();
+      } else if (this.isContract) {
+        this.title = 'Contract';
+      } else {
+        this.title = 'Account';
+      }
     },
     data() {
         return {
@@ -53,55 +101,20 @@ export default {
             immediate: true,
         },
     },
-    mounted() {
-        this.loadAccount();
-    },
-    methods: {
-        async loadAccount() {
-            const account = await this.$evm.telos.getEthAccount(this.address);
-            if (account.code.length > 0){
-                this.isContract = true;
-                this.contract = await this.$contractManager.getContract(this.address)
-                this.isVerified = this.contract.verified;
-            }
-
-            this.balance = this.getBalanceDisplay(account.balance);
-            this.telosAccount = account.account;
-            this.isContract = account.code.length > 0;
-
-            const isVerifiedContract = this.isContract && this.isVerified;
-            const knownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address === this.address);
-
-            if (isVerifiedContract) {
-                this.title = this.contract.getName();
-            } else if (knownToken) {
-                this.title = knownToken.name;
-            } else if (this.isContract) {
-                this.title = 'Contract';
-            } else {
-                this.title = 'Account';
-            }
-        },
-        getBalanceDisplay(balance) {
-            let strBalance = web3.utils.fromWei(balance);
-            const decimalIndex = strBalance.indexOf('.');
-            if (decimalIndex > 0) {
-                strBalance = `${strBalance.substring(
-                    0,
-                    decimalIndex + 5,
-                )}`;
-            }
-            return `${strBalance} TLOS`;
-        },
-        getAddressNativeExplorerURL() {
-            if (!this.telosAccount) return '';
-
-            return `${process.env.NETWORK_EXPLORER}/account/${this.telosAccount}`;
-        },
-        disableConfirmation(){
-            this.confirmationDialog = false;
-        },
-    },
+    disableConfirmation(){
+      this.confirmationDialog = false;
+    }
+  },
+  watch: {
+    'address': {
+      handler(newValue, oldValue) {
+        if (newValue !== oldValue) {
+          this.loadAccount();
+        }
+      },
+      immediate: true,
+    }
+  }
 };
 </script>
 
