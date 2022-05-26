@@ -1,4 +1,5 @@
 <script>
+import Web3 from 'web3';
 import TransactionTable from 'components/TransactionTable';
 import TransferTable from 'components/TransferTable';
 import TokenList from 'components/TokenList';
@@ -9,6 +10,7 @@ import AddressField from 'components/AddressField';
 import CopyButton from 'components/CopyButton';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
 
+const web3 = new Web3();
 export default {
     name: 'Address',
     components: {
@@ -80,34 +82,21 @@ export default {
                 this.title = 'Account';
             }
         },
-        data() {
-            return {
-                address: this.$route.params.address,
-                title: '',
-                telosAccount: null,
-                balance: null,
-                isContract: false,
-                isVerified: null,
-                contract: null,
-                verificationDate: '',
-                tab: 'transactions',
-                tokens: null,
-                confirmationDialog: false,
-            };
+        getBalanceDisplay(balance) {
+            let strBalance = web3.utils.fromWei(balance);
+            const decimalIndex = strBalance.indexOf('.');
+            if (decimalIndex > 0) {
+                strBalance = `${strBalance.substring(
+                    0,
+                    decimalIndex + 5,
+                )}`;
+            }
+            return `${strBalance} TLOS`;
         },
-        watch: {
-            '$route.params': {
-                handler(newValue) {
-                    const { address } = newValue
-                    if (this.address === address) {
-                        return;
-                    }
+        getAddressNativeExplorerURL() {
+            if (!this.telosAccount) return '';
 
-                    this.address = address;
-                    this.loadAccount();
-                },
-                immediate: true,
-            },
+            return `${process.env.NETWORK_EXPLORER}/account/${this.telosAccount}`;
         },
         disableConfirmation(){
             this.confirmationDialog = false;
