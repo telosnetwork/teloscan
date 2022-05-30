@@ -1,105 +1,105 @@
 <template>
-  <div>
+<div>
     <q-dialog v-model="enterAmount">
-      <q-card class="amount-dialog">
-        <p>Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256</p>
-        <q-select
-          v-model="selectDecimals"
-          :options="decimalOptions"
-          @input="updateDecimals"
-        />
-        <q-input
-          v-if="selectDecimals.value === 'custom'"
-          v-model.number="customDecimals"
-          type="number"
-          label="Custom decimals"
-          @change="updateDecimals"
-        />
-        <q-input
-          v-model="amountInput"
-          label="Amount"
-          type="number"
-        />
-        <q-card-actions align="right">
-          <q-btn
-            v-close-popup
-            flat="flat"
-            label="Ok"
-            color="primary"
-            @click="setAmount"
-          />
-          <q-btn
-            v-close-popup
-            flat="flat"
-            label="Cancel"
-            color="primary"
-            @click="clearAmount"
-          />
-        </q-card-actions>
-      </q-card>
+        <q-card class="amount-dialog">
+            <p>Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256</p>
+            <q-select
+                v-model="selectDecimals"
+                :options="decimalOptions"
+                @input="updateDecimals"
+            />
+            <q-input
+                v-if="selectDecimals.value === 'custom'"
+                v-model.number="customDecimals"
+                type="number"
+                label="Custom decimals"
+                @change="updateDecimals"
+            />
+            <q-input
+                v-model="amountInput"
+                label="Amount"
+                type="number"
+            />
+            <q-card-actions align="right">
+                <q-btn
+                    v-close-popup
+                    flat="flat"
+                    label="Ok"
+                    color="primary"
+                    @click="setAmount"
+                />
+                <q-btn
+                    v-close-popup
+                    flat="flat"
+                    label="Cancel"
+                    color="primary"
+                    @click="clearAmount"
+                />
+            </q-card-actions>
+        </q-card>
     </q-dialog>
     <div v-if="abi.stateMutability === 'payable'">
-      <q-input
-        v-model="value"
-        label="Value (amount)"
-      >
-        <template #append>
-          <q-icon
-            class="cursor-pointer"
-            name="pin"
-            @click="showAmountDialog('value')"
-          />
-        </template>
-      </q-input>
+        <q-input
+            v-model="value"
+            label="Value (amount)"
+        >
+            <template #append>
+                <q-icon
+                    class="cursor-pointer"
+                    name="pin"
+                    @click="showAmountDialog('value')"
+                />
+            </template>
+        </q-input>
     </div>
     <div
-      v-for="(param, idx) in abi.inputs"
-      :key="idx"
+        v-for="(param, idx) in abi.inputs"
+        :key="idx"
     >
-      <q-input
-        v-model="params[idx]"
-        :label="makeLabel(param, idx)"
-      >
-        <template
-          v-if="param.type === 'uint256'"
-          #append
+        <q-input
+            v-model="params[idx]"
+            :label="makeLabel(param, idx)"
         >
-          <q-icon
-            class="cursor-pointer"
-            name="pin"
-            @click="showAmountDialog(idx)"
-          />
-        </template>
-      </q-input>
+            <template
+                v-if="param.type === 'uint256'"
+                #append
+            >
+                <q-icon
+                    class="cursor-pointer"
+                    name="pin"
+                    @click="showAmountDialog(idx)"
+                />
+            </template>
+        </q-input>
     </div>
     <q-btn
-      v-if="enableRun"
-      :loading="loading"
-      :label="runLabel"
-      :disabled="missingInputs"
-      class="run-button"
-      color="primary"
-      icon="send"
-      @click="run"
+        v-if="enableRun"
+        :loading="loading"
+        :label="runLabel"
+        :disabled="missingInputs"
+        class="run-button"
+        color="primary"
+        icon="send"
+        @click="run"
     />
 
     <p class="text-red output-container">
-      {{ errorMessage }}
+        {{ errorMessage }}
     </p>
     <div
-      v-if="result"
-      class="output-container"
+        v-if="result"
+        class="output-container"
     >
-      Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
+        Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
     </div>
     <div
-      v-if="hash"
-      class="output-container"
+        v-if="hash"
+        class="output-container"
     >
-      View Transaction:&nbsp;
-      <transaction-field :transaction-hash="hash" />
+        View Transaction:&nbsp;
+        <transaction-field :transaction-hash="hash" />
     </div>
-  </div>
+</div>
 </template>
 
 <script>
