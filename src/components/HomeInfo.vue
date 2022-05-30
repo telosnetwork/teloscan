@@ -1,36 +1,33 @@
 <script>
-import { mapGetters, mapActions } from "vuex";
-import { ethers } from "ethers";
+import { mapGetters, mapActions } from 'vuex';
+import { ethers } from 'ethers';
 
 export default {
-  name: "HomeInfo",
-  data() {
-    return {
-      polling: false
-    };
-  },
-  computed: {
-    ...mapGetters("evm", ["tlosPrice", "gasPrice", "latestBlock"]),
-    gasPriceGwei() {
-      let gweiStr = ethers.utils.formatUnits(this.gasPrice, "gwei");
-      gweiStr = (+gweiStr).toFixed(0);
-      return gweiStr;
-    }
-  },
-  methods: {
-    ...mapActions("evm", ["fetchTlosPrice", "fetchGasPrice", "fetchLatestBlock"]),
-  },
-  components: {},
-  async created() {
-    this.fetchTlosPrice();
-    this.fetchGasPrice();
-    this.fetchLatestBlock();
-    this.polling = setInterval(async () => {
-      this.fetchTlosPrice();
-      this.fetchGasPrice();
-      this.fetchLatestBlock();
-    }, 3000);
-  }
+    name: 'HomeInfo',
+    data: () => ({
+        polling: false,
+    }),
+    computed: {
+        ...mapGetters('evm', ['tlosPrice', 'gasPrice', 'latestBlock']),
+        gasPriceGwei() {
+            let gweiStr = ethers.utils.formatUnits(this.gasPrice, 'gwei');
+            gweiStr = (+gweiStr).toFixed(0);
+            return gweiStr;
+        },
+    },
+    async created() {
+        this.fetchTlosPrice();
+        this.fetchGasPrice();
+        this.fetchLatestBlock();
+        this.polling = setInterval(async () => {
+            this.fetchTlosPrice();
+            this.fetchGasPrice();
+            this.fetchLatestBlock();
+        }, 3000);
+    },
+    methods: {
+        ...mapActions('evm', ['fetchTlosPrice', 'fetchGasPrice', 'fetchLatestBlock']),
+    },
 };
 </script>
 
