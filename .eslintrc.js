@@ -28,6 +28,7 @@ module.exports = {
 
         'comma-dangle': ['error', 'always-multiline'],
         'indent': ['error', 4],
+        'vue/html-indent': ['warn', 4, { 'baseIndent': 0, }], // eztodo switch to error (after pug removal?)
         'quotes': ['error', 'single'],
     },
 }
