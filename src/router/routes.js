@@ -10,9 +10,11 @@ const routes = [
         path: '/address/:address',
         component: () => import('layouts/MainLayout.vue'),
         children: [
-            { path: '',
+            {
+                path: '',
                 name: 'address',
-                component: () => import('pages/Address.vue') },
+                component: () => import('pages/Address.vue'),
+            },
         ],
     },
     {
@@ -46,6 +48,11 @@ const routes = [
                 component: () => import('pages/ContractVerification.vue'),
             },
         ],
+    },
+    {
+        path: '/token',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{ path: ':address', component: () => import('pages/token/TokenPage.vue') }],
     },
     {
         path: '/endpoints',

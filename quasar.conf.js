@@ -55,6 +55,7 @@ module.exports = function(/* ctx */) {
                 NETWORK_EVM_CHAIN_ID: process.env.NETWORK_EVM_CHAIN_ID,
                 NETWORK_EVM_ENDPOINT: process.env.NETWORK_EVM_ENDPOINT,
                 TELOS_API_ENDPOINT: process.env.TELOS_API_ENDPOINT,
+                TELOSCAN_API_ENDPOINT: process.env.TELOSCAN_API_ENDPOINT,
                 VERIFIED_CONTRACTS_BUCKET: process.env.VERIFIED_CONTRACTS_BUCKET,
             },
 
