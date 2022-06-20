@@ -80,14 +80,13 @@ export default {
     }),
     computed: {
         token() {
-            return (this.$contractManager?.tokenList?.tokens ?? [])
-                .find(token => token.address.toLowerCase() === this.address.toLowerCase()) ?? {};
+            return this.$contractManager.getToken(this.address);
         },
         address() {
             return this.$route.params?.address?.toLowerCase() ?? '';
         },
         headerTokenText() {
-            const { name, symbol } = this.token;
+            const { name, symbol } = this.token || {};
 
             if (name && symbol) {
                 return `${name} (${symbol})`;

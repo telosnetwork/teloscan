@@ -106,7 +106,7 @@ export default {
         const params = {
             address: null,
             contract: this.address,
-            limit: null,
+            limit: 50,
             offset: null,
         };
 
