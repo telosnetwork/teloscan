@@ -12,7 +12,6 @@
         <span class="text-grey">
             {{ headerTokenText }}
         </span>
-        <!-- eztodo handle address not found / not a token contract -->
     </div>
     <div class="c-token-page__overview" />
     <div v-if="selectedTab" class="c-token-page__body">
@@ -77,16 +76,14 @@ export default {
     data: () => ({
         tabs,
         selectedTab: tabs.transfers,
+        tokenInfo: {},
     }),
     computed: {
-        token() {
-            return this.$contractManager.getToken(this.address);
-        },
         address() {
             return this.$route.params?.address?.toLowerCase() ?? '';
         },
         headerTokenText() {
-            const { name, symbol } = this.token || {};
+            const { name, symbol } = this.tokenInfo;
 
             if (name && symbol) {
                 return `${name} (${symbol})`;
@@ -110,8 +107,8 @@ export default {
             immediate: true,
         },
     },
-    methods: {
-
+    async created() {
+        this.tokenInfo = await this.$contractManager.getToken(this.address);
     },
 }
 </script>
