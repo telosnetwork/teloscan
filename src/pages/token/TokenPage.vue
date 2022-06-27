@@ -46,10 +46,10 @@
             keep-alive
         >
             <q-tab-panel name="transfers">
-                <token-transfers :address="address" />
+                <token-transfers :address="address" :format-balance="formatTokenBalance" />
             </q-tab-panel>
             <q-tab-panel name="holders" class="shadow-2">
-                <token-holders :address="address" />
+                <token-holders :address="address" :format-balance="formatTokenBalance" />
             </q-tab-panel>
         </q-tab-panels>
     </div>
@@ -57,6 +57,8 @@
 </template>
 
 <script>
+import { formatBN } from 'src/lib/utils';
+
 import TokenHolders from 'pages/token/TokenHolders';
 import TokenTransfers from 'pages/token/TokenTransfers';
 
@@ -109,6 +111,11 @@ export default {
     },
     async created() {
         this.tokenInfo = await this.$contractManager.getToken(this.address);
+    },
+    methods: {
+        formatTokenBalance(balance) {
+            return `${formatBN(balance, this.tokenInfo.decimals, 6)}`;
+        },
     },
 }
 </script>

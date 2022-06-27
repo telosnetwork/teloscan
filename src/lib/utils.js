@@ -107,3 +107,10 @@ export function sortAbiFunctionsByName(fns) {
             return (upperA < upperB) ? -1 : (upperA > upperB) ? 1 : 0;
         });
 }
+
+/**
+ * @param {Object.<string, Object>} data
+ *
+ * @returns {string[]} list of keys of supplied object as lower case strings
+ */
+export const keysToLower = obj => Object.keys(obj ?? {}).map(address => address.toLowerCase());
