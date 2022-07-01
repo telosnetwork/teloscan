@@ -46,10 +46,16 @@
             keep-alive
         >
             <q-tab-panel name="transfers">
-                <token-transfers :address="address" :format-balance="formatTokenBalance" />
+                <token-transfers
+                    :address="address"
+                    @token-info-loaded="handleTokenInfoLoaded"
+                />
             </q-tab-panel>
             <q-tab-panel name="holders" class="shadow-2">
-                <token-holders :address="address" :format-balance="formatTokenBalance" />
+                <token-holders
+                    :address="address"
+                    @token-info-loaded="handleTokenInfoLoaded"
+                />
             </q-tab-panel>
         </q-tab-panels>
     </div>
@@ -57,10 +63,10 @@
 </template>
 
 <script>
-import { formatBN } from 'src/lib/utils';
-
 import TokenHolders from 'pages/token/TokenHolders';
 import TokenTransfers from 'pages/token/TokenTransfers';
+
+import { toChecksumAddress } from 'src/lib/utils';
 
 const genericLogo = require('assets/telos-logo--evm-generic.png');
 
@@ -78,13 +84,17 @@ export default {
     data: () => ({
         tabs,
         selectedTab: tabs.transfers,
-        tokenInfo: {},
+        tokenInfo: null,
     }),
     computed: {
         address() {
-            return this.$route.params?.address?.toLowerCase() ?? '';
+            return toChecksumAddress(this.$route.params?.address);
         },
         headerTokenText() {
+            if (!this.tokenInfo) {
+                return 'Loading...';
+            }
+
             const { name, symbol } = this.tokenInfo;
 
             if (name && symbol) {
@@ -93,7 +103,7 @@ export default {
             return 'Unknown Token';
         },
         headerTokenLogo() {
-            return this.token?.logoURI ?? genericLogo;
+            return this.tokenInfo?.logoURI ?? genericLogo;
         },
     },
     watch: {
@@ -108,13 +118,25 @@ export default {
             },
             immediate: true,
         },
-    },
-    async created() {
-        this.tokenInfo = await this.$contractManager.getToken(this.address);
+        '$route.path': {
+            handler(newPath) {
+                const urlPath = newPath.replace('/token/', '');
+                const urlPathChecksum = toChecksumAddress(urlPath);
+                const pathNeedsFormatting =
+                    !!urlPathChecksum &&
+                    urlPath !== urlPathChecksum &&
+                    urlPath.toLowerCase() === urlPathChecksum.toLowerCase();
+
+                if (pathNeedsFormatting) {
+                    this.$router.replace(`/token/${this.address}`);
+                }
+            },
+            immediate: true,
+        },
     },
     methods: {
-        formatTokenBalance(balance) {
-            return `${formatBN(balance, this.tokenInfo.decimals, 6)}`;
+        handleTokenInfoLoaded(tokenContractMeta) {
+            this.$set(this, 'tokenInfo', { ...tokenContractMeta })
         },
     },
 }

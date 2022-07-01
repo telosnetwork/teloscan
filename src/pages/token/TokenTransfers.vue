@@ -51,10 +51,12 @@
 </template>
 
 <script>
+import { keys } from 'lodash';
+
 import AddressField from 'components/AddressField';
 import TransactionField from 'components/TransactionField';
 
-import { keysToLower } from 'src/lib/utils';
+import { formatBN } from 'src/lib/utils';
 
 const columns = [
     {
@@ -100,10 +102,6 @@ export default {
             type: String,
             required: true,
         },
-        formatBalance: {
-            type: Function,
-            required: true,
-        },
     },
     data: () => ({
         columns,
@@ -130,7 +128,8 @@ export default {
         this.$teloscanApi.get('transfers', { params })
             .then(({ data }) => {
                 const rows = data?.results ?? [];
-                const contracts = keysToLower(data?.contracts);
+                const tokenContractMeta = data?.contracts[this.address] ?? {};
+                const contractAddresses = keys(data?.contracts);
 
                 function shapeRowData(row) {
                     const { transaction, amount } = row;
@@ -140,7 +139,7 @@ export default {
                             ...accumulator,
                             [property]: {
                                 address: row[property],
-                                isContract: contracts.includes(row[property].toLowerCase()),
+                                isContract: contractAddresses.includes(row[property]),
                             },
                         }),
                         {},
@@ -148,11 +147,12 @@ export default {
 
                     return {
                         transaction,
-                        amount: component.formatBalance(amount),
+                        amount: formatBN(amount, tokenContractMeta.decimals, 6),
                         ...shapedToAndFrom,
                     };
                 }
 
+                component.$emit('token-info-loaded', tokenContractMeta);
                 this.transfers = rows.map(row => shapeRowData(row));
             })
             .catch((err) => {

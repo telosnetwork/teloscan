@@ -48,9 +48,11 @@
  -->
 
 <script>
+import { keys } from 'lodash';
+
 import AddressField from 'components/AddressField';
 
-import { keysToLower } from 'src/lib/utils';
+import { formatBN } from 'src/lib/utils';
 
 const columns = [
     {
@@ -74,10 +76,6 @@ export default {
             type: String,
             required: true,
         },
-        formatBalance: {
-            type: Function,
-            required: true,
-        },
     },
     data: () => ({
         columns,
@@ -91,19 +89,21 @@ export default {
             offset: null,
         };
 
-        this.$teloscanApi.get(`/holders/${this.address}`, { params })
+        this.$teloscanApi.get(`holders/${this.address}`, { params })
             .then(({ data }) => {
                 const rows = data?.results ?? [];
-                const contracts = keysToLower(data?.contracts);
+                const tokenContractMeta = data?.contracts[this.address] ?? {};
+                const contractAddresses = keys(data?.contracts);
 
                 const shapedRows = rows.map(({ balance, address }) => ({
-                    balance: this.formatBalance(balance),
+                    balance: formatBN(balance, tokenContractMeta.decimals, 6),
                     holder: {
                         address,
-                        isContract: contracts.includes(address.toLowerCase()),
+                        isContract: contractAddresses.includes(address),
                     },
                 }));
 
+                this.$emit('token-info-loaded', tokenContractMeta);
                 this.holders = [...shapedRows];
             })
             .catch((err) => {
