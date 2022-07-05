@@ -122,9 +122,8 @@ export default {
         '$route.path': {
             handler(newPath) {
                 const urlPath = newPath.replace('/token/', '');
-                const urlPathChecksum = toChecksumAddress(urlPath);
+                const urlPathChecksum = toChecksumAddress(urlPath) ?? '';
                 const pathNeedsFormatting =
-                    !!urlPathChecksum &&
                     urlPath !== urlPathChecksum &&
                     urlPath.toLowerCase() === urlPathChecksum.toLowerCase();
 
