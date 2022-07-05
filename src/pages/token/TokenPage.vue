@@ -100,6 +100,7 @@ export default {
             if (name && symbol) {
                 return `${name} (${symbol})`;
             }
+
             return 'Unknown Token';
         },
         headerTokenLogo() {
@@ -136,7 +137,7 @@ export default {
     },
     methods: {
         handleTokenInfoLoaded(tokenContractMeta) {
-            this.$set(this, 'tokenInfo', { ...tokenContractMeta })
+            this.$set(this, 'tokenInfo', { ...tokenContractMeta });
         },
     },
 }
