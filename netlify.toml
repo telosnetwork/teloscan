@@ -32,7 +32,7 @@
   NETWORK_EXPLORER = "https://explorer-test.telos.net"
   HYPERION_ENDPOINT = "https://testnet.telos.net"
   TELOS_API_ENDPOINT = "https://api-dev.telos.net"
-  TELOSCAN_API_ENDPOINT=https://api.teloscan.io/v1
+  TELOSCAN_API_ENDPOINT="https://api.teloscan.io/v1"
   VERIFIED_CONTRACTS_BUCKET = "verified-evm-contracts-testnet"
 
 [context.deploy-preview.environment]
@@ -49,7 +49,7 @@
   NETWORK_EXPLORER = "https://explorer-test.telos.net"
   HYPERION_ENDPOINT = "https://testnet.telos.net"
   TELOS_API_ENDPOINT = "https://api-dev.telos.net"
-  TELOSCAN_API_ENDPOINT=https://api.teloscan.io/v1
+  TELOSCAN_API_ENDPOINT="https://api.teloscan.io/v1"
   VERIFIED_CONTRACTS_BUCKET = "verified-evm-contracts-testnet"
 
 [[redirects]]
