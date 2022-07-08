@@ -13,7 +13,7 @@
                     <q-th
                         v-for="col in columns"
                         :key="col.label"
-                        align="left"
+                        class="text-left"
                     >
                         {{ col.label }}
                     </q-th>
@@ -31,12 +31,14 @@
                         <address-field
                             :address="props.row.from.address"
                             :is-contract="props.row.from.isContract"
+                            :truncate="40"
                         />
                     </q-td>
                     <q-td key="to">
                         <address-field
                             :address="props.row.to.address"
                             :is-contract="props.row.to.isContract"
+                            :truncate="40"
                         />
                     </q-td>
                     <q-td key="amount">

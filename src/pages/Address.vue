@@ -42,6 +42,9 @@ export default {
         address() {
             return this.$route.params?.address?.toLowerCase() ?? '';
         },
+        showTokenLink() {
+            return !!this.contract?.token;
+        },
     },
     watch: {
         'address': {
@@ -114,11 +117,12 @@ export default {
           q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
           ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
           CopyButton(:text="address" :accompanyingText="address" description="address")
-          span(v-if='contract')
+          template(v-if='contract')
             .text-white Created at trx&nbsp
               TransactionField(:transaction-hash="contract.getCreationTrx()" )
-            .text-white by address&nbsp
+            .text-white.q-pb-sm by address&nbsp
               AddressField(:address="contract.getCreator()")
+          router-link(v-if="showTokenLink" :to="`/token/${address}`") Go to Token Info page
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount")
             .dataCardTile Native account

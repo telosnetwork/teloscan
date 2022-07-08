@@ -1,19 +1,34 @@
 <template>
 <div class="c-token-page pageContainer q-pt-xl">
-    <div class="c-token-page__header q-mb-md">
-        <img
-            :src="headerTokenLogo"
-            height="32"
-            width="32"
-            alt="Token icon"
-            style="vertical-align:sub;"
-        >
-        <span class="text-primary text-h4 q-px-sm">Token</span>
-        <span class="text-grey">
-            {{ headerTokenText }}
-        </span>
+    <div class="row">
+        <div class="col-12 q-mb-sm">
+            <img
+                :src="headerTokenLogo"
+                height="32"
+                width="32"
+                alt="Token icon"
+                class="c-token-page__logo"
+            >
+            <span class="text-primary text-h4 q-px-sm">Token</span>
+            <span class="text-grey">
+                {{ headerTokenText }}
+            </span>
+        </div>
+        <div class="col-12 text-white">
+            <copy-button
+                :text="address"
+                :accompanying-text="address"
+                description="address"
+            />
+            <p v-if="showTokenHeaderInfo">
+                Created at trx <transaction-field :transaction-hash="tokenInfo.transaction" /><br>
+                by address <address-field :address="tokenInfo.creator" />
+            </p>
+            <router-link :to="`/address/${address}`">
+                Go to {{ showTokenHeaderInfo ? 'Contract' : 'Address' }} Info page
+            </router-link>
+        </div>
     </div>
-    <div class="c-token-page__overview" />
     <div v-if="selectedTab" class="c-token-page__body">
         <q-tabs
             v-model="selectedTab"
@@ -21,8 +36,7 @@
             active-color="secondary"
             align="justify"
             narrow-indicator
-            class="tabsBar topRounded text-white tableWrapper tabs-header"
-            :class="{ 'q-dark': $q.dark.isActive }"
+            :class="qtabsClasses"
         >
             <q-route-tab
                 name="transfers"
@@ -63,6 +77,10 @@
 </template>
 
 <script>
+import AddressField from 'src/components/AddressField';
+import CopyButton from 'src/components/CopyButton';
+import TransactionField from 'src/components/TransactionField';
+
 import TokenHolders from 'pages/token/TokenHolders';
 import TokenTransfers from 'pages/token/TokenTransfers';
 
@@ -78,8 +96,11 @@ const tabs = {
 export default {
     name: 'TokenPage',
     components: {
+        AddressField,
+        CopyButton,
         TokenHolders,
         TokenTransfers,
+        TransactionField,
     },
     data: () => ({
         tabs,
@@ -106,32 +127,44 @@ export default {
         headerTokenLogo() {
             return this.tokenInfo?.logoURI ?? genericLogo;
         },
+        showTokenHeaderInfo() {
+            return ['creator', 'transaction'].every(property => !!this.tokenInfo?.[property]);
+        },
+        qtabsClasses() {
+            const extraClasses = this.$q.dark.isActive ? 'q-dark text-white' : 'text-black';
+            return `c-token-page__tabs-header tabsBar topRounded tableWrapper ${extraClasses}`;
+        },
     },
     watch: {
-        '$route.hash': {
-            handler(newHash) {
+        $route: {
+            deep: true,
+            immediate: true,
+            handler(newRoute, oldRoute = {}) {
+                const { hash: oldHash, path: oldPath } = oldRoute;
+                const { hash: newHash, path: newPath } = newRoute;
+
+                if (oldHash === newHash && oldPath === newPath) return;
+
                 const tabNames = Object.values(this.tabs);
                 const hash = newHash?.replace('#', '') ?? '';
+                const shouldAddTransfersHash = !tabNames.includes(hash);
 
-                if (!tabNames.includes(hash)) {
-                    this.$router.replace({ hash: this.tabs.transfers });
-                }
-            },
-            immediate: true,
-        },
-        '$route.path': {
-            handler(newPath) {
                 const urlPath = newPath.replace('/token/', '');
                 const urlPathChecksum = toChecksumAddress(urlPath) ?? '';
                 const pathNeedsFormatting =
                     urlPath !== urlPathChecksum &&
                     urlPath.toLowerCase() === urlPathChecksum.toLowerCase();
 
+                const newRouteOpts = {
+                    hash: shouldAddTransfersHash ? tabs.transfers : newHash,
+                };
+
                 if (pathNeedsFormatting) {
-                    this.$router.replace(`/token/${this.address}`);
+                    newRouteOpts.path = `/token/${this.address}`;
                 }
+
+                this.$router.replace({ ...newRouteOpts });
             },
-            immediate: true,
         },
     },
     methods: {
@@ -143,4 +176,21 @@ export default {
 </script>
 
 <style lang="scss">
+.c-token-page {
+    &__logo {
+        height: 32px;
+        width: 32px;
+        vertical-align: sub;
+    }
+
+    &__tabs-header {
+        background: white;
+
+        &.q-dark {
+            background: var(--q-color-dark);
+        }
+    }
+}
+
+
 </style>
