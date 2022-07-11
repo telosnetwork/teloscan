@@ -1,5 +1,7 @@
 <script>
 import Web3 from 'web3';
+import { toChecksumAddress } from 'src/lib/utils';
+
 import TransactionTable from 'components/TransactionTable';
 import TransferTable from 'components/TransferTable';
 import TokenList from 'components/TokenList';
@@ -30,6 +32,7 @@ export default {
             telosAccount: null,
             balance: null,
             isContract: false,
+            showTokenLink: false,
             isVerified: null,
             contract: null,
             verificationDate: '',
@@ -52,6 +55,20 @@ export default {
             },
             immediate: true,
         },
+    },
+    created() {
+        this.$teloscanApi.get(`contract/${this.address}`)
+            .then(({ data }) => {
+                const checksumAddress = toChecksumAddress(this.address);
+                const { decimals, symbol } = data.contracts?.[checksumAddress] ?? {};
+
+                if (decimals && symbol) {
+                    this.showTokenLink = true;
+                }
+            })
+            .catch(error => {
+                throw `Unable to retrieve contract information: ${error}`;
+            });
     },
     mounted() {
         this.loadAccount();
@@ -114,11 +131,12 @@ export default {
           q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
           ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
           CopyButton(:text="address" :accompanyingText="address" description="address")
-          span(v-if='contract')
+          template(v-if='contract')
             .text-white Created at trx&nbsp
               TransactionField(:transaction-hash="contract.getCreationTrx()" )
-            .text-white by address&nbsp
+            .text-white.q-pb-sm by address&nbsp
               AddressField(:address="contract.getCreator()")
+          router-link(v-if="showTokenLink" :to="`/token/${address}`") Go to Token Info page
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount")
             .dataCardTile Native account

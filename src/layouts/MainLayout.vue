@@ -1,100 +1,100 @@
 <template>
-  <q-layout view="lhh Lpr lFf">
+<q-layout view="lhh Lpr lFf">
     <q-header class="transparent">
-      <q-toolbar class="text-white toolbar transparent">
-        <div class="q-py-sm">
-          <router-link
-            to="/"
-            class="row items-center q-gutter-x-xs"
-          >
-            <img
-              alt="Telos EVM logo"
-              src="~assets/evm_logo.png"
-              width="45"
-            >
-            <div class="text-h5 text-white">
-              Teloscan
+        <q-toolbar class="text-white toolbar transparent">
+            <div class="q-py-sm">
+                <router-link
+                    to="/"
+                    class="row items-center q-gutter-x-xs"
+                >
+                    <img
+                        alt="Telos EVM logo"
+                        src="~assets/evm_logo.png"
+                        width="45"
+                    >
+                    <div class="text-h5 text-white">
+                        Teloscan
+                    </div>
+                </router-link>
             </div>
-          </router-link>
-        </div>
-        <q-space />
+            <q-space />
 
-        <search
-          class="taskbarSearch desktop-only text-center "
-          :toolbar="true"
-        />
+            <search
+                class="taskbarSearch desktop-only text-center "
+                :toolbar="true"
+            />
 
-        <q-btn
-          flat
-          dark
-          standout
-          class="q-px-md"
-          :icon="$q.dark.isActive ? 'fas fa-sun' : 'fas fa-moon'"
-          @click="toggleDarkMode()"
-        />
+            <q-btn
+                flat
+                dark
+                standout
+                class="q-px-md"
+                :icon="$q.dark.isActive ? 'fas fa-sun' : 'fas fa-moon'"
+                @click="toggleDarkMode()"
+            />
 
-        <connect-button />
-        <q-btn
-          flat
-          round
-          dense
-          icon="menu"
-          @click="drawer = !drawer"
-        />
-      </q-toolbar>
+            <connect-button />
+            <q-btn
+                flat
+                round
+                dense
+                icon="menu"
+                @click="drawer = !drawer"
+            />
+        </q-toolbar>
     </q-header>
 
     <q-drawer
-      v-model="drawer"
-      side="right"
-      :width="200"
-      :breakpoint="500"
-      overlay
-      bordered
+        v-model="drawer"
+        side="right"
+        :width="200"
+        :breakpoint="500"
+        overlay
+        bordered
     >
-      <q-list>
-        <q-item
-          v-close-popup
-          clickable
-          @click.native="routerTo('/endpoints')"
-        >
-          <q-item-section>
-            <q-item-label>RPC Endpoints</q-item-label>
-          </q-item-section>
-        </q-item>
+        <q-list>
+            <q-item
+                v-close-popup
+                clickable
+                @click.native="routerTo('/endpoints')"
+            >
+                <q-item-section>
+                    <q-item-label>RPC Endpoints</q-item-label>
+                </q-item-section>
+            </q-item>
 
-        <q-item
-          v-if="!mainnet"
-          v-close-popup
-          clickable
-          @click.native="goTo('https://teloscan.io/')"
-        >
-          <q-item-section>
-            <q-item-label> Teloscan Mainnet </q-item-label>
-          </q-item-section>
-        </q-item>
+            <q-item
+                v-if="!mainnet"
+                v-close-popup
+                clickable
+                @click.native="goTo('https://teloscan.io/')"
+            >
+                <q-item-section>
+                    <q-item-label> Teloscan Mainnet </q-item-label>
+                </q-item-section>
+            </q-item>
 
-        <q-item
-          v-if="mainnet"
-          v-close-popup
-          clickable
-          @click.native="goTo('https://testnet.teloscan.io/')"
-        >
-          <q-item-section>
-            <q-item-label> Teloscan Testnet </q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
+            <q-item
+                v-if="mainnet"
+                v-close-popup
+                clickable
+                @click.native="goTo('https://testnet.teloscan.io/')"
+            >
+                <q-item-section>
+                    <q-item-label> Teloscan Testnet </q-item-label>
+                </q-item-section>
+            </q-item>
+        </q-list>
     </q-drawer>
 
     <div :class="`banner ${onHomePage ? 'home' : ''}`" />
 
     <q-page-container class="flex flex-center ">
-      <router-view />
+        <router-view />
     </q-page-container>
 
     <footer-main />
-  </q-layout>
+</q-layout>
 </template>
 
 <script>

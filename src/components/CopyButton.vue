@@ -1,24 +1,24 @@
 <template>
-  <div
+<div
     :class="containerClasses"
     :aria-label="hint"
     aria-role="button"
     tabindex="0"
     @click="handleClick"
     @keydown.space.enter="handleClick"
-  >
+>
     <q-tooltip
-      :offset="[0,0]"
-      anchor="center end"
-      self="center left"
+        :offset="[0,0]"
+        anchor="center end"
+        self="center left"
     >
-      {{ hint }}
+        {{ hint }}
     </q-tooltip>
 
     {{ accompanyingText }}
 
     <q-icon :class="iconClasses" />
-  </div>
+</div>
 </template>
 
 <script>
