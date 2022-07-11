@@ -3,7 +3,7 @@
     <CopyButton
         v-if="abi"
         :text="abi"
-        accompanyingText="Copy contract ABI JSON to clipboard"
+        accompanying-text="Copy contract ABI JSON to clipboard"
         class="q-mb-md"
     />
     <br>
@@ -20,7 +20,7 @@
             label="Read"
             push
             @click="source = false; write = false"
-        ></q-btn>
+        />
         <q-btn
             :outline="writeSelected"
             label="Write"
@@ -30,17 +30,20 @@
     </q-btn-group>
 
     <ContractSource v-if="source" />
-    <ContractInterface v-else :write="write" />
+    <ContractInterface
+        v-else
+        :write="write"
+    />
 </div>
 </template>
 
 <script>
-import ContractSource from "components/ContractTab/ContractSource";
-import ContractInterface from "components/ContractTab/ContractInterface";
-import CopyButton from "components/CopyButton.vue";
+import ContractSource from 'components/ContractTab/ContractSource';
+import ContractInterface from 'components/ContractTab/ContractInterface';
+import CopyButton from 'components/CopyButton.vue';
 
 export default {
-    name: "ContractTab",
+    name: 'ContractTab',
     components: {
         ContractSource,
         ContractInterface,
@@ -50,7 +53,7 @@ export default {
         contract: {
             type: Object,
             default: () => ({}),
-        }
+        },
     },
     data: () => ({
         source: true,
@@ -73,7 +76,7 @@ export default {
         writeSelected() {
             return this.source === false && this.write === true;
         },
-    }
+    },
 }
 </script>
 

@@ -1,74 +1,75 @@
 <script>
-import AddressField from "components/AddressField";
-import {formatBN} from "src/lib/utils";
+import AddressField from 'components/AddressField';
+import {formatBN} from 'src/lib/utils';
 
 export default {
-  name: "TokenList",
-  components: {AddressField},
-  props: {
-    address: {
-      type: String
-    }
-  },
-  data() {
-    return {
-      tokens: null
-    }
-  },
-  mounted() {
-    this.loadTokens();
-  },
-  methods: {
-    async loadTokens() {
-      const tokenList = await this.$contractManager.getTokenList();
-      let tokens = tokenList.tokens
-      tokens = this.sortTokens(tokens);
-      await Promise.all(tokens.map(async token => {
-        if (token.logoURI && token.logoURI.startsWith("ipfs://"))
-          token.logoURI = `https://ipfs.io/ipfs/${token.logoURI.replace(/ipfs:\/\//, '')}`
-        else if (!token.logoURI)
-          token.logoURI = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT28t_CidqCQ0st_OhY3MxnPKMFjclG9ppwWA&usqp=CAU';
-
-        const contract = await this.$contractManager.getContract(token.address);
-        const contractInstance = contract.getContractInstance();
-
-        try {
-          const balance = await contractInstance.balanceOf(this.address);
-          token.balance = `${formatBN(balance, token.decimals, 5)} ${token.symbol}`;
-        } catch (e) {
-          throw `Failed to fetch balance:\n${e}`
-        }
-      }));
-      this.tokens = tokens;
+    name: 'TokenList',
+    components: {AddressField},
+    props: {
+        address: {
+            type: String,
+            required: true,
+        },
     },
-    sortTokens(tokens) {
-      return tokens.sort((a, b) => {
-        if (a.symbol === 'WTLOS')
-          return -1;
-
-        if (b.symbol === 'WTLOS')
-          return 1;
-
-        if (a.tags.includes('stablecoin') && !b.tags.includes('stablecoin')) {
-          return -1;
+    data() {
+        return {
+            tokens: null,
         }
+    },
+    mounted() {
+        this.loadTokens();
+    },
+    methods: {
+        async loadTokens() {
+            const tokenList = await this.$contractManager.getTokenList();
+            let tokens = tokenList.tokens
+            tokens = this.sortTokens(tokens);
+            await Promise.all(tokens.map(async token => {
+                if (token.logoURI && token.logoURI.startsWith('ipfs://'))
+                    token.logoURI = `https://ipfs.io/ipfs/${token.logoURI.replace(/ipfs:\/\//, '')}`
+                else if (!token.logoURI)
+                    token.logoURI = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT28t_CidqCQ0st_OhY3MxnPKMFjclG9ppwWA&usqp=CAU';
 
-        if (!a.tags.includes('stablecoin') && b.tags.includes('stablecoin')) {
-          return 1;
-        }
+                const contract = await this.$contractManager.getContract(token.address);
+                const contractInstance = contract.getContractInstance();
 
-        if (a.tags.includes('telosevm') && !b.tags.includes('telosevm')) {
-          return 1;
-        }
+                try {
+                    const balance = await contractInstance.balanceOf(this.address);
+                    token.balance = `${formatBN(balance, token.decimals, 5)} ${token.symbol}`;
+                } catch (e) {
+                    throw `Failed to fetch balance:\n${e}`
+                }
+            }));
+            this.tokens = tokens;
+        },
+        sortTokens(tokens) {
+            return tokens.sort((a, b) => {
+                if (a.symbol === 'WTLOS')
+                    return -1;
 
-        if (!a.tags.includes('telosevm') && b.tags.includes('telosevm')) {
-          return -1;
-        }
+                if (b.symbol === 'WTLOS')
+                    return 1;
 
-        return a.symbol > b.symbol ? 1 : -1;
-      })
-    }
-  }
+                if (a.tags.includes('stablecoin') && !b.tags.includes('stablecoin')) {
+                    return -1;
+                }
+
+                if (!a.tags.includes('stablecoin') && b.tags.includes('stablecoin')) {
+                    return 1;
+                }
+
+                if (a.tags.includes('telosevm') && !b.tags.includes('telosevm')) {
+                    return 1;
+                }
+
+                if (!a.tags.includes('telosevm') && b.tags.includes('telosevm')) {
+                    return -1;
+                }
+
+                return a.symbol > b.symbol ? 1 : -1;
+            })
+        },
+    },
 }
 </script>
 

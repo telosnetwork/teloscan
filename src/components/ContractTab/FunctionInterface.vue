@@ -3,44 +3,72 @@
     <q-dialog v-model="enterAmount">
         <q-card class="amount-dialog">
             <p>Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256</p>
-            <q-select :options="decimalOptions" v-model="selectDecimals" @input="updateDecimals"></q-select>
+            <q-select
+                v-model="selectDecimals"
+                :options="decimalOptions"
+                @input="updateDecimals"
+            />
             <q-input
                 v-if="selectDecimals.value === 'custom'"
                 v-model.number="customDecimals"
                 type="number"
                 label="Custom decimals"
                 @change="updateDecimals"
-            ></q-input>
-            <q-input label="Amount" v-model="amountInput" type="number"></q-input>
+            />
+            <q-input
+                v-model="amountInput"
+                label="Amount"
+                type="number"
+            />
             <q-card-actions align="right">
                 <q-btn
+                    v-close-popup
                     flat="flat"
                     label="Ok"
                     color="primary"
                     @click="setAmount"
-                    v-close-popup
-                ></q-btn>
+                />
                 <q-btn
+                    v-close-popup
                     flat="flat"
                     label="Cancel"
                     color="primary"
                     @click="clearAmount"
-                    v-close-popup
-                ></q-btn>
+                />
             </q-card-actions>
         </q-card>
     </q-dialog>
     <div v-if="abi.stateMutability === 'payable'">
-        <q-input label="Value (amount)" v-model="value">
-            <template v-slot:append>
-                <q-icon class="cursor-pointer" name="pin" @click="showAmountDialog('value')"></q-icon>
+        <q-input
+            v-model="value"
+            label="Value (amount)"
+        >
+            <template #append>
+                <q-icon
+                    class="cursor-pointer"
+                    name="pin"
+                    @click="showAmountDialog('value')"
+                />
             </template>
         </q-input>
     </div>
-    <div v-for="(param, idx) in abi.inputs" :key="idx">
-        <q-input :label="makeLabel(param, idx)" v-model="params[idx]">
-            <template v-if="param.type === 'uint256'" v-slot:append>
-                <q-icon class="cursor-pointer" name="pin" @click="showAmountDialog(idx)"></q-icon>
+    <div
+        v-for="(param, idx) in abi.inputs"
+        :key="idx"
+    >
+        <q-input
+            v-model="params[idx]"
+            :label="makeLabel(param, idx)"
+        >
+            <template
+                v-if="param.type === 'uint256'"
+                #append
+            >
+                <q-icon
+                    class="cursor-pointer"
+                    name="pin"
+                    @click="showAmountDialog(idx)"
+                />
             </template>
         </q-input>
     </div>
@@ -53,61 +81,96 @@
         color="primary"
         icon="send"
         @click="run"
-    ></q-btn>
+    />
 
     <p class="text-red output-container">
         {{ errorMessage }}
     </p>
-    <div class="output-container" v-if="result">
+    <div
+        v-if="result"
+        class="output-container"
+    >
         Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
     </div>
-    <div class="output-container" v-if="hash">
+    <div
+        v-if="hash"
+        class="output-container"
+    >
         View Transaction:&nbsp;
-        <transaction-field :transaction-hash="hash"></transaction-field>
+        <transaction-field :transaction-hash="hash" />
     </div>
 </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { BigNumber, ethers } from "ethers";
+import { mapGetters } from 'vuex';
+import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
 
-import TransactionField from "components/TransactionField";
+import TransactionField from 'components/TransactionField';
 
 const decimalOptions = [{
-    label: "18 - TLOS/ETH/etc..",
-    value: 18
+    label: '18 - TLOS/ETH/etc..',
+    value: 18,
 }, {
-    label: "9 - Gwei",
-    value: 9
+    label: '9 - Gwei',
+    value: 9,
 }, {
-    label: "8 - BTC",
-    value: 8
+    label: '8 - BTC',
+    value: 8,
 }, {
-    label: "0 - Wei",
-    value: 0
+    label: '0 - Wei',
+    value: 0,
 }, {
-    label: "Custom",
-    value: "custom"
+    label: 'Custom',
+    value: 'custom',
 }];
 
 export default {
-    name: "FunctionInterface",
+    name: 'FunctionInterface',
     components: {
-        TransactionField
+        TransactionField,
     },
     props: {
-        contract: null,
-        abi: null,
-        runLabel: null
+        contract: {
+            type: Object,
+            default: null,
+        },
+        abi: {
+            type: Object,
+            default: null,
+        },
+        runLabel: {
+            type: String,
+            default: null,
+        },
     },
+    data : () => ({
+        loading: false,
+        errorMessage: '',
+        decimalOptions,
+        result: null,
+        hash: null,
+        enterAmount: false,
+        amountInput: 0,
+        amountParam: null,
+        amountDecimals: 0,
+        selectDecimals: decimalOptions[0],
+        customDecimals: 0,
+        value: '0',
+        params: [],
+        valueParam: {
+            'name': 'value',
+            'type': 'amount',
+            'internalType': 'amount',
+        },
+    }),
     computed: {
         ...mapGetters('login', [
             'address',
             'isLoggedIn',
             'isNative',
-            'nativeAccount'
+            'nativeAccount',
         ]),
         enableRun() {
             return this.isLoggedIn || this.abi.stateMutability === 'view'
@@ -124,28 +187,8 @@ export default {
             }
 
             return false;
-        }
-    },
-    data : () => ({
-        loading: false,
-        errorMessage: '',
-        decimalOptions,
-        result: null,
-        hash: null,
-        enterAmount: false,
-        amountInput: 0,
-        amountParam: null,
-        amountDecimals: 0,
-        selectDecimals: decimalOptions[0],
-        customDecimals: 0,
-        value: "0",
-        params: [],
-        valueParam: {
-            "name": "value",
-            "type": "amount",
-            "internalType": "amount"
         },
-    }),
+    },
     methods: {
         makeLabel(abiParam, position) {
             return `${abiParam.name ? abiParam.name : `Param ${position}`} (${abiParam.type})`
@@ -180,10 +223,10 @@ export default {
         },
         formatValue(value, type) {
             switch (type) {
-                case 'uint256':
-                    return BigNumber.from(value);
-                default:
-                    return value;
+            case 'uint256':
+                return BigNumber.from(value);
+            default:
+                return value;
             }
         },
         async run() {
@@ -220,12 +263,12 @@ export default {
         runRead() {
             return this.getEthersFunction()
                 .then(func => func(...this.getFormattedParams())
-                .then(response => { this.result = response })
-                .catch((msg) => {
-                    this.errorMessage = msg;
-                })
-                .finally(() => this.endLoading())
-            );
+                    .then(response => { this.result = response })
+                    .catch((msg) => {
+                        this.errorMessage = msg;
+                    })
+                    .finally(() => this.endLoading()),
+                );
         },
         async runNative(opts) {
             const contractInstance = await this.contract.getContractInstance();
@@ -250,29 +293,29 @@ export default {
             const raw = ethers.utils.serializeTransaction(unsignedTrx);
 
             let user = this.$providerManager.getProvider();
-            const trx = await user.signTransaction(
+            await user.signTransaction(
                 {
                     actions: [{
-                        account: "eosio.evm",
-                        name: "raw",
+                        account: 'eosio.evm',
+                        name: 'raw',
                         authorization: [
                             {
                                 actor: this.nativeAccount,
-                                permission: "active"
-                            }
+                                permission: 'active',
+                            },
                         ],
                         data: {
-                            ram_payer: "eosio.evm",
+                            ram_payer: 'eosio.evm',
                             tx: raw.replace(/^0x/, ''),
                             estimate_gas: false,
-                            sender: this.address.replace(/^0x/, '').toLowerCase()
-                        }
+                            sender: this.address.replace(/^0x/, '').toLowerCase(),
+                        },
                     }],
                 },
                 {
                     blocksBehind: 3,
-                    expireSeconds: 30
-                }
+                    expireSeconds: 30,
+                },
             );
 
             // This doesn't produce the right hash... but would be nice to use ethers here instead of ethereumjs/tx
@@ -282,7 +325,7 @@ export default {
             const trxBuffer = Buffer.from(raw.replace(/^0x/, ''), 'hex');
 
             const tx = Transaction.fromSerializedTx(trxBuffer, {
-                common: this.$evm.chainConfig
+                common: this.$evm.chainConfig,
             });
 
             this.hash = `0x${tx.hash().toString('hex')}`;
@@ -296,8 +339,8 @@ export default {
         },
         endLoading() {
             this.loading = false;
-        }
-    }
+        },
+    },
 }
 </script>
 

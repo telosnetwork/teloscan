@@ -7,11 +7,13 @@
                     name="warning"
                     class="text-red"
                     size="1.25rem"
-                ></q-icon>
+                />
                 This contract source has not been verified.
             </p>
             <p>
-                Click <router-link :to="{ name: 'sourcify' }">here</router-link>
+                Click <router-link :to="{ name: 'sourcify' }">
+                    here
+                </router-link>
                 to upload source files and verify this contract.
                 Alternatively, you can interact with the contract using an arbitrary ABI:
             </p>
@@ -49,7 +51,10 @@
         </div>
     </div>
 
-    <div class="row q-mb-xl" v-if="selectedAbi === abiOptions.custom">
+    <div
+        v-if="selectedAbi === abiOptions.custom"
+        class="row q-mb-xl"
+    >
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
             <q-input
                 v-model="customAbiDefinition"
@@ -61,25 +66,36 @@
 
             <template v-if="!!customAbiDefinition">
                 <template v-if="customAbiIsValidJSON">
-                    <p class="q-mb-sm">ABI JSON Preview</p>
+                    <p class="q-mb-sm">
+                        ABI JSON Preview
+                    </p>
                     <JsonViewer
                         :value="JSON.parse(customAbiDefinition)"
                         :expand-depth="1"
                         expanded
                         theme="custom-theme"
                     />
-                    <p v-if="!showAbiFunctions" class="text-red">
+                    <p
+                        v-if="!showAbiFunctions"
+                        class="text-red"
+                    >
                         Provided ABI is either invalid or contains no function definitions
                     </p>
                 </template>
-                <p v-else class="text-red">
+                <p
+                    v-else
+                    class="text-red"
+                >
                     Provided JSON is invalid
                 </p>
             </template>
         </div>
     </div>
 
-    <div class="row" v-if="showAbiFunctions">
+    <div
+        v-if="showAbiFunctions"
+        class="row"
+    >
         <div class="col-12">
             <q-btn-group>
                 <q-btn
@@ -98,7 +114,10 @@
                 </q-btn>
             </q-btn-group>
 
-            <q-list v-if="displayWriteFunctions" class="interface-list">
+            <q-list
+                v-if="displayWriteFunctions"
+                class="interface-list"
+            >
                 <q-expansion-item
                     v-for="func in functions.write"
                     :key="func.name"
@@ -115,7 +134,10 @@
                     />
                 </q-expansion-item>
             </q-list>
-            <q-list v-else class="interface-list">
+            <q-list
+                v-else
+                class="interface-list"
+            >
                 <q-expansion-item
                     v-for="func in functions.read"
                     :key="func.name"
@@ -142,9 +164,9 @@ import JsonViewer from 'vue-json-viewer';
 
 import Contract from 'src/lib/Contract';
 import erc721Abi from 'src/lib/erc721';
-import erc20Abi from "erc-20-abi";
+import erc20Abi from 'erc-20-abi';
 
-import { sortAbiFunctionsByName } from "src/lib/utils";
+import { sortAbiFunctionsByName } from 'src/lib/utils';
 
 import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
 
@@ -159,7 +181,7 @@ export default {
         contract: null,
         functions: null,
         displayWriteFunctions: false,
-        customAbiDefinition: "",
+        customAbiDefinition: '',
         selectedAbi: null,
         abiOptions: {
             erc20: 'erc20',
@@ -172,13 +194,27 @@ export default {
             return Object.values(this.abiOptions).includes(this.selectedAbi) &&
                 ['read', 'write']
                     .some(access => (this.functions?.[access] ?? [])
-                    .some(member => member.type === 'function'))
+                        .some(member => member.type === 'function'))
         },
         customAbiIsValidJSON() {
             try {
                 return !!JSON.parse(this.customAbiDefinition);
             } catch {
                 return false;
+            }
+        },
+    },
+    watch: {
+        selectedAbi(oldValue, newValue) {
+            if (oldValue !== newValue) {
+                this.formatAbiFunctionLists();
+                this.displayWriteFunctions = false;
+            }
+        },
+        customAbiDefinition(oldValue, newValue) {
+            if (oldValue !== newValue && this.customAbiIsValidJSON) {
+                this.formatAbiFunctionLists();
+                this.displayWriteFunctions = false;
             }
         },
     },
@@ -189,7 +225,7 @@ export default {
         async formatAbiFunctionLists() {
             this.functions = {
                 read: [],
-                write: []
+                write: [],
             };
 
             const { custom, erc20, erc721 } = this.abiOptions;
@@ -234,23 +270,9 @@ export default {
 
             this.functions = {
                 read: sortAbiFunctionsByName(read),
-                write: sortAbiFunctionsByName(write)
+                write: sortAbiFunctionsByName(write),
             };
         },
     },
-    watch: {
-        selectedAbi(oldValue, newValue) {
-            if (oldValue !== newValue) {
-                this.formatAbiFunctionLists();
-                this.displayWriteFunctions = false;
-            }
-        },
-        customAbiDefinition(oldValue, newValue) {
-            if (oldValue !== newValue && this.customAbiIsValidJSON) {
-                this.formatAbiFunctionLists();
-                this.displayWriteFunctions = false;
-            }
-        }
-    }
 }
 </script>

@@ -1,3 +1,4 @@
+/* eslint-disable */
 const { ethers } = require("ethers");
 const providersError = "More than one provider is active, disable additional providers.";
 const unsupportedError ="current EVM wallet provider is not supported.";

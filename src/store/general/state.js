@@ -1,5 +1,5 @@
 export default () => ({
-  errorMsg: null,
-  successMsg: null,
-  isLoading: null,
+    errorMsg: null,
+    successMsg: null,
+    isLoading: null,
 });
