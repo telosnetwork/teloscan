@@ -16,6 +16,14 @@
                         class="text-left"
                     >
                         {{ col.label }}
+
+                        <q-icon
+                            v-if="col.name === 'timestamp'"
+                            name="fas fa-info-circle"
+                            @click="showAge = !showAge"
+                        >
+                            <q-tooltip>Click to change format</q-tooltip>
+                        </q-icon>
                     </q-th>
                 </q-tr>
 
@@ -27,18 +35,22 @@
                     <q-td key="transaction">
                         <transaction-field :transaction-hash="props.row.transaction" />
                     </q-td>
+                    <q-td key="block">
+                        <block-field :block="props.row.block" />
+                    </q-td>
+                    <q-td key="date">
+                        <date-field :epoch="props.row.timestamp" :show-age="showAge" />
+                    </q-td>
                     <q-td key="from">
                         <address-field
                             :address="props.row.from.address"
                             :is-contract="props.row.from.isContract"
-                            :truncate="40"
                         />
                     </q-td>
                     <q-td key="to">
                         <address-field
                             :address="props.row.to.address"
                             :is-contract="props.row.to.isContract"
-                            :truncate="40"
                         />
                     </q-td>
                     <q-td key="amount">
@@ -55,6 +67,8 @@
 import { keys } from 'lodash';
 
 import AddressField from 'components/AddressField';
+import BlockField from 'components/BlockField';
+import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 
 import { formatBN } from 'src/lib/utils';
@@ -63,30 +77,36 @@ const columns = [
     {
         name: 'transaction',
         label: 'Tx Hash',
-        align: 'left',
+    },
+    {
+        name: 'block',
+        label: 'Block',
+    },
+    {
+        name: 'timestamp',
+        label: 'Date',
     },
     {
         name: 'from',
         label: 'From',
-        align: 'left',
     },
     {
         name: 'to',
         label: 'To',
-        align: 'left',
     },
     {
         name: 'amount',
         label: 'Quantity',
-        align: 'left',
     },
 
-];
+].map(col => ({ ...col, align: 'left' }));
 
 export default {
     name: 'TokenTransfers',
     components: {
         AddressField,
+        BlockField,
+        DateField,
         TransactionField,
     },
     props: {
@@ -103,6 +123,7 @@ export default {
         },
         transfers: [],
         loading: true,
+        showAge: true,
     }),
     created() {
         const emitTokenInfo = info => this.$emit('token-info-loaded', info)
@@ -121,7 +142,7 @@ export default {
                 const contractAddresses = keys(data?.contracts);
 
                 function shapeRowData(row) {
-                    const { transaction, amount } = row;
+                    const { transaction, amount, block, timestamp } = row;
 
                     const shapedToAndFrom = ['to', 'from'].reduce(
                         (accumulator, property) => ({
@@ -136,6 +157,8 @@ export default {
 
                     return {
                         transaction,
+                        block,
+                        timestamp,
                         amount: formatBN(amount, tokenContractMeta.decimals, 6),
                         ...shapedToAndFrom,
                     };
