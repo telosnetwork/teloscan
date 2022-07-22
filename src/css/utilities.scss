@@ -1,0 +1,24 @@
+/* General */
+.u-flex {
+    &--center,
+    &--space-between {
+        display: flex;
+    }
+
+    &--center {
+        justify-content: center;
+        align-items: center;
+    }
+
+    &--space-between {
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+/* Text */
+.u-text {
+    &--small {
+        font-size: 12px;
+    }
+}

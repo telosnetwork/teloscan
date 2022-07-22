@@ -1,8 +1,10 @@
-import {BigNumber} from 'ethers';
+import { BigNumber } from 'ethers';
 import moment from 'moment';
 const createKeccakHash = require('keccak')
 const REVERT_FUNCTION_SELECTOR = '0x08c379a0'
 const REVERT_PANIC_SELECTOR = '0x4e487b71'
+
+export const WEI_PRECISION = 18;
 
 export function formatBN(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);
@@ -14,7 +16,26 @@ export function isValidAddressFormat(ethAddressString) {
     return pattern.test(ethAddressString);
 }
 
-export function formatIsoDateTime(dateTimezone){
+/**
+ * Tests whether a string represents a valid wei value, ie. 1-18 places, positive, whole number
+ * For more information on why this is helpful, see https://docs.ethers.io/v4/notes.html#ieee754
+ *
+ *  @param maybeWei - the variable to test
+ *
+ *  @return {Boolean}
+ * */
+export function isValidWeiString(maybeWei) {
+    if (typeof maybeWei !== 'string') return false;
+
+    const { length } = maybeWei;
+    const isValidLength = length > 0 && length <= WEI_PRECISION;
+
+    const isPositiveWholeNum = /^\d+$/.test(maybeWei)
+
+    return isValidLength && isPositiveWholeNum;
+}
+
+export function formatIsoDateTime(dateTimezone) {
     return moment(dateTimezone).utc().format('DD/MM/YYYY');
 }
 

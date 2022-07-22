@@ -58,7 +58,7 @@ export default {
 
 <template lang="pug">
 .pageContainer.q-pt-xl
-    .homeInfo
+    .homeInfo.q-mb-lg
         .text-primary.text-h6 RPC ENDPOINTS
     .q-mb-md.tableWrapper
       q-card
