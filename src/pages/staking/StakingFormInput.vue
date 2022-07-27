@@ -16,7 +16,9 @@
     <div class="row">
         <div class="col">
             <input
+                v-show="!isLoading"
                 ref="input"
+                :disabled="isLoading"
                 type="text"
                 pattern="[0-9]*"
                 inputmode="numeric"
@@ -25,6 +27,12 @@
                 @keydown="handleKeydown"
                 @input="handleInput"
             >
+            <div
+                v-if="isLoading"
+                class="c-staking-input__loading u-flex--left"
+            >
+                <i class="fa fa-spinner fa-spin" />
+            </div>
         </div>
     </div>
 </div>
@@ -33,7 +41,7 @@
 <script>
 import { BigNumber, ethers } from 'ethers';
 
-import { WEI_PRECISION, isValidWeiString } from 'src/lib/utils';
+import { WEI_PRECISION } from 'src/lib/utils';
 
 export default {
     name: 'StakingFormInput',
@@ -41,7 +49,7 @@ export default {
         value: {
             type: String,
             required: true,
-            validator: str => isValidWeiString(str), // eztodo switch util to use BigNumber try/catch
+            validator: str => BigNumber.from(str),
         },
         label: {
             type: String,
@@ -56,7 +64,6 @@ export default {
             required: true,
         },
         isLoading: {
-            // eztodo add loading state
             type: Boolean,
             required: true,
         },
@@ -194,11 +201,12 @@ export default {
             }
 
             const [integer, fractional = ''] = currentInputValue.split(dot);
-            const savedTrailingZeroes = fractional.match(trailingZeroesRegex);
+            let savedTrailingZeroes = '';
 
-            if (fractional.length > WEI_PRECISION) {
+            if (fractional.length) {
                 const newFractional = fractional.substring(0, WEI_PRECISION);
                 workingValue = `${integer}.${newFractional}`;
+                savedTrailingZeroes = newFractional.match(trailingZeroesRegex) ?? '';
             }
 
             const workingValueAsWei = ethers.utils.parseUnits(workingValue, 'ether');
@@ -208,16 +216,16 @@ export default {
 
             const eth = workingValue;
 
-            // trailing zeroes still needs massaging - only works for zeroes directly after dot
-            event.target.value = ethers.utils.commify(eth).replace(trailingZeroesRegex, savedTrailingZeroes);
-            // 18 characters: /^\d{0,18}/g
-
+            event.target.value = ethers.utils.commify(eth)
+                .replace(trailingZeroesRegex, '')
+                .concat(savedTrailingZeroes);
 
             const newCommaCount = (event.target.value.match(commaRegex) || []).length;
             const deltaCommaCount = newCommaCount - savedCommaCount;
 
-            event.target.selectionStart = savedCaretPosition + deltaCommaCount;
-            event.target.selectionEnd = savedCaretPosition + deltaCommaCount;
+            ['selectionStart', 'selectionEnd'].forEach(
+                property => event.target[property] = savedCaretPosition + deltaCommaCount,
+            );
         },
     },
 }
@@ -225,12 +233,18 @@ export default {
 
 <style lang="scss">
 .c-staking-input {
+    height: 104px;
     padding: 16px;
     border-radius: 10px;
     background-color: rgba($secondary, 0.03);
 
     &__label {
         margin: 0;
+    }
+
+    &__input,
+    &__loading {
+        height: 36px;
     }
 
     &__input {

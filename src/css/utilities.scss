@@ -1,8 +1,14 @@
 /* General */
 .u-flex {
+    &--left,
     &--center,
     &--space-between {
         display: flex;
+    }
+
+    &--left {
+        justify-content: flex-start;
+        align-items: center;
     }
 
     &--center {

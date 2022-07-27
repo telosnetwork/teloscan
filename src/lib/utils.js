@@ -16,25 +16,6 @@ export function isValidAddressFormat(ethAddressString) {
     return pattern.test(ethAddressString);
 }
 
-/**
- * Tests whether a string represents a valid wei value, ie. 1-18 places, positive, whole number
- * For more information on why this is helpful, see https://docs.ethers.io/v4/notes.html#ieee754
- *
- *  @param maybeWei - the variable to test
- *
- *  @return {Boolean}
- * */
-export function isValidWeiString(maybeWei) {
-    if (typeof maybeWei !== 'string') return false;
-
-    const { length } = maybeWei;
-    const isValidLength = length > 0 && length <= WEI_PRECISION;
-
-    const isPositiveWholeNum = /^\d+$/.test(maybeWei)
-
-    return isValidLength && isPositiveWholeNum;
-}
-
 export function formatIsoDateTime(dateTimezone) {
     return moment(dateTimezone).utc().format('DD/MM/YYYY');
 }
