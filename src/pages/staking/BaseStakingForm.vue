@@ -54,6 +54,8 @@
 <script>
 import StakingFormInput from 'pages/staking/StakingFormInput';
 
+const genericMaxWei = '999999999999000000000000000000';
+
 export default {
     name: 'BaseStakingForm',
     components: {
@@ -114,10 +116,14 @@ export default {
                 label:    this.topInputLabel,
                 infoText: this.topInputInfoText,
                 hasError: this.topInputHasError,
+                maxValueWei: genericMaxWei,
+                isLoading: false,
             }, {
                 label:    this.bottomInputLabel,
                 infoText: this.bottomInputInfoText,
                 hasError: this.bottomInputHasError,
+                maxValueWei: genericMaxWei,
+                isLoading: false,
             }];
         },
         transactionIsValid() {

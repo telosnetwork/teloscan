@@ -82,15 +82,19 @@ export default {
         },
     },
     watch: {
-        ['$route.hash'](newHash, oldHash) {
-            if (oldHash === newHash) return;
+        ['$route.hash']: {
+            immediate: true,
+            handler(newHash, oldHash) {
+                if (oldHash === newHash)
+                    return;
 
-            const hash = newHash?.replace('#', '') ?? '';
-            const tabNames = Object.values(this.tabs);
+                const hash = newHash?.replace('#', '') ?? '';
+                const tabNames = Object.values(this.tabs);
+                const shouldAddStakeHash = !tabNames.includes(hash);
 
-            const shouldAddStakeHash = !tabNames.includes(hash);
-
-            if (shouldAddStakeHash) this.$router.replace({ hash });
+                if (shouldAddStakeHash)
+                    this.$router.replace({ hash: tabs.stake });
+            },
         },
     },
 }
