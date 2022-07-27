@@ -28,6 +28,7 @@
                     <staking-form-input
                         :value="bottomInputAmount"
                         v-bind="inputs[1]"
+                        @input="handleInput($event)"
                     />
                 </div>
 

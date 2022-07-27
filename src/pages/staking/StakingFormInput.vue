@@ -87,27 +87,27 @@ export default {
     // },
     methods: {
         handleKeydown(event) {
+            const { input } = this.$refs;
+
             const dot = '.';
             const numKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-            const currentInputValue = String(event.target.value);
-            const caretPosition = event.target.selectionStart;
+            const currentInputValue = String(input.value);
+            const caretPosition = input.selectionStart;
             const pressedKey = event.key;
 
             const eventHasModifiers = ['ctrlKey', 'metaKey', 'shiftKey', 'altKey'].some(modifier => event[modifier] === true);
-            const targetHasNoSelection = caretPosition === event.target.selectionEnd;
+            const targetHasNoSelection = caretPosition === input.selectionEnd;
             const deletingBackward = event.key === 'Backspace' && !eventHasModifiers && targetHasNoSelection;
             const deletingForward = event.key === 'Delete' && !eventHasModifiers && targetHasNoSelection;
             const nextCharacterIsComma = currentInputValue[caretPosition] === ',';
             const previousCharacterIsComma = currentInputValue[caretPosition - 1] === ',';
 
-
             if (deletingForward && nextCharacterIsComma) {
                 const preCommaInclusive = currentInputValue.slice(0, caretPosition + 1);
                 const newPostComma = currentInputValue.slice(caretPosition + 2);
 
-                event.target.value = preCommaInclusive.concat(newPostComma);
-                event.target.selectionStart = caretPosition;
-                event.target.selectionEnd = caretPosition;
+                this.setInputValue(preCommaInclusive.concat(newPostComma));
+                this.setInputCaretPosition(caretPosition);
 
                 return;
             }
@@ -116,9 +116,8 @@ export default {
                 const newPreComma = currentInputValue.slice(0, caretPosition - 2);
                 const postCommaInclusive = currentInputValue.slice(caretPosition - 1);
 
-                event.target.value = newPreComma.concat(postCommaInclusive);
-                event.target.selectionStart = caretPosition;
-                event.target.selectionEnd = caretPosition;
+                this.setInputValue(newPreComma.concat(postCommaInclusive));
+                this.setInputCaretPosition(caretPosition);
 
                 return;
             }
@@ -149,15 +148,18 @@ export default {
             if (invalidKeystroke)
                 event.preventDefault();
         },
-        handleInput(event) {
-            if (['', null, '0', '0.'].includes(event.target.value)) {
-                // eztodo emit 0?
+        handleInput() {
+            const { input } = this.$refs;
+            const emit = val => this.$emit('input', val)
+
+            if (['', null, '0', '0.'].includes(input.value)) {
+                emit(0);
                 return;
             }
 
-            if (event.target.value === '.') {
-                // eztodo emit 0?
-                event.target.value = '0.';
+            if (input.value === '.') {
+                emit(0);
+                this.setInputValue('0.');
                 return;
             }
 
@@ -166,28 +168,31 @@ export default {
             const illegalCharactersRegexPretty = /[^0-9,.]/g;
             const leadingZeroesRegex = /^0+/g;
             const trailingZeroesRegex = /0+$/g
+            const trailingDotRegex = /[.]$/g;
             const commaRegex = /[,]/g;
             const dotRegex = /[.]/g;
 
-            const savedCaretPosition = event.target.selectionStart;
-            const savedCommaCount = (event.target.value.match(commaRegex) || []).length;
+            const savedCaretPosition = input.selectionStart;
+            const savedCommaCount = (input.value.match(commaRegex) || []).length;
 
-            event.target.value = String(event.target.value)
-                .replace(leadingZeroesRegex, '')
-                .replace(illegalCharactersRegexPretty, '');
+            this.setInputValue(
+                String(input.value)
+                    .replace(leadingZeroesRegex, '')
+                    .replace(illegalCharactersRegexPretty, ''),
+            );
 
             // remove extraneous dots not handled in keydownHandler (ie. from pasted values)
-            if ((event.target.value?.match(dotRegex) ?? []).length > 1) {
-                const { value } = event.target;
+            if ((input.value?.match(dotRegex) ?? []).length > 1) {
+                const { value } = input;
                 const afterFirstDotIndex = value.indexOf(dot) + 1;
                 const int = value.slice(0, afterFirstDotIndex);
                 const fractional = value.slice(afterFirstDotIndex).replaceAll(dot, '');
-                event.target.value = int.concat(fractional);
+                this.setInputValue(int.concat(fractional));
             }
 
-            const currentInputValue = event.target.value.replace(illegalCharactersRegex, '');
+            const currentInputValue = input.value.replace(illegalCharactersRegex, '');
 
-            const caretPosition = event.target.selectionStart;
+            const caretPosition = input.selectionStart;
 
             // don't format or emit if the user is about to type a decimal
             if (currentInputValue[currentInputValue.length - 1] === dot)
@@ -209,23 +214,29 @@ export default {
                 savedTrailingZeroes = newFractional.match(trailingZeroesRegex) ?? '';
             }
 
-            const workingValueAsWei = ethers.utils.parseUnits(workingValue, 'ether');
+            const workingValueAsWeiBn = ethers.utils.parseUnits(workingValue, 'ether');
 
-            if (workingValueAsWei.gt(this.maxValueWei))
+            if (workingValueAsWeiBn.gt(this.maxValueWei))
                 workingValue = ethers.utils.formatEther(this.maxValueWei);
 
-            const eth = workingValue;
+            this.setInputValue(
+                ethers.utils.commify(workingValue)
+                    .replace(trailingZeroesRegex, '')
+                    .replace(trailingDotRegex, '')
+                    .concat(savedTrailingZeroes),
+            );
 
-            event.target.value = ethers.utils.commify(eth)
-                .replace(trailingZeroesRegex, '')
-                .concat(savedTrailingZeroes);
-
-            const newCommaCount = (event.target.value.match(commaRegex) || []).length;
+            const newCommaCount = (input.value.match(commaRegex) || []).length;
             const deltaCommaCount = newCommaCount - savedCommaCount;
 
-            ['selectionStart', 'selectionEnd'].forEach(
-                property => event.target[property] = savedCaretPosition + deltaCommaCount,
-            );
+            emit(workingValueAsWeiBn.toString());
+            this.setInputCaretPosition(savedCaretPosition + deltaCommaCount);
+        },
+        setInputValue(val) {
+            this.$refs.input.value = val;
+        },
+        setInputCaretPosition(val) {
+            ['selectionStart', 'selectionEnd'].forEach(property => this.$refs.input[property] = val)
         },
     },
 }
