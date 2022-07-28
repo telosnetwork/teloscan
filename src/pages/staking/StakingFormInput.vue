@@ -73,18 +73,14 @@ export default {
             validator: str => BigNumber.from(str),
         },
     },
-    // watch: {
-    //     value(newVal, oldVal) {
-    //         if (newVal !== oldVal) {
-    //             try {
-    //                 const eth = ethers.utils.formatEther(BigNumber.from(newVal));
-    //                 this.$refs.input.value = ethers.utils.commify(eth);
-    //             } catch (e) {
-    //                 console.error(e.message);
-    //             }
-    //         }
-    //     },
-    // },
+    watch: {
+        value(newVal, oldVal) {
+            if (newVal !== oldVal) {
+                this.setInputValue(newVal);
+                this.handleInput();
+            }
+        },
+    },
     methods: {
         handleKeydown(event) {
             const { input } = this.$refs;
@@ -150,7 +146,7 @@ export default {
         },
         handleInput() {
             const { input } = this.$refs;
-            const emit = val => this.$emit('input', val)
+            const emit = val => (val !== this.value) && this.$emit('input', val)
 
             if (['', null, '0', '0.'].includes(input.value)) {
                 emit(0);

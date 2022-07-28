@@ -13,6 +13,7 @@
     :bottom-input-has-error="bottomInputHasError"
     :cta-text="ctaText"
     :cta-disabled="ctaIsDisabled"
+    @cta-clicked="handleCtaClick"
 />
 </template>
 
@@ -21,6 +22,7 @@ import { mapGetters } from 'vuex';
 
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 
+import { triggerLogin } from 'components/ConnectButton';
 
 export default {
     name: 'StakeForm',
@@ -53,16 +55,22 @@ export default {
             return !this.isLoggedIn;
         },
         ctaIsDisabled() {
-            return this.topInputHasError || this.topInputAmount === '0';
+            // return this.topInputHasError || this.topInputAmount === '0';
+            return false;
         },
         ctaText() {
             // should not actually be this. disable when input is invalid, logged out = enabled, launches metamask
-            return this.ctaIsDisabled ? 'Connect Wallet' : 'Stake';
+            return this.isLoggedIn ? 'Stake' : 'Connect Wallet';
         },
         bottomInputAmount() {
             // convert topInputAmount to sTLOS
 
             return this.topInputAmount;
+        },
+    },
+    methods: {
+        handleCtaClick() {
+            if (!this.isLoggedIn) triggerLogin();
         },
     },
 }
