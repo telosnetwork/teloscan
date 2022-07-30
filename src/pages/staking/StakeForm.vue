@@ -23,6 +23,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
+import { debounce } from 'lodash';
 
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 
@@ -88,13 +89,18 @@ export default {
             this.bottomInputIsLoading = true;
             this.topInputAmount = newWei;
 
-            this.previewExchange(newWei, tokens.tlos)
-                .then(amount => this.bottomInputAmount = amount)
-                .catch(err => {
-                    this.bottomInputAmount = '';
-                    console.error(err);
-                })
-                .finally(() => this.bottomInputIsLoading = false);
+            const debouncedCall = debounce(
+                () => this.previewExchange(this.topInputAmount, tokens.tlos)
+                    .then(amount => this.bottomInputAmount = amount)
+                    .catch(err => {
+                        this.bottomInputAmount = '';
+                        console.error(err);
+                    })
+                    .finally(() => this.bottomInputIsLoading = false),
+                750,
+            );
+
+            debouncedCall();
         },
         handleInputBottom(newWei = '0') {
             this.previewExchange(newWei, tokens.stlos);
@@ -113,9 +119,7 @@ export default {
 
             // return this.$teloscanApi.get(endpoint, wei);
 
-            return new Promise(
-                resolve => setTimeout(() => resolve(wei, 1000)),
-            );
+            return Promise.resolve(wei);
         },
     },
 }

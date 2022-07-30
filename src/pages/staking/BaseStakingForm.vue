@@ -129,13 +129,13 @@ export default {
                 label:    this.topInputLabel,
                 infoText: this.topInputInfoText,
                 hasError: this.topInputHasError,
-                maxValueWei: this.topInputMaxValue ?? genericMaxWei, // eztodo
+                maxValueWei: this.topInputMaxValue ?? genericMaxWei,
                 isLoading: this.topInputIsLoading,
             }, {
                 label:    this.bottomInputLabel,
                 infoText: this.bottomInputInfoText,
                 hasError: false,
-                maxValueWei: this.bottomInputMaxValue, // eztodo
+                maxValueWei: this.bottomInputMaxValue,
                 isLoading: this.bottomInputIsLoading,
             }];
         },

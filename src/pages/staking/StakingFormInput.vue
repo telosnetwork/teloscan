@@ -75,15 +75,15 @@ export default {
     },
     watch: {
         value(newVal) {
-            // debugger;
-            const newValWei = newVal || '0';
-            const currentValWei = this.$refs.input.value || '0';
-            const newValIsDifferent =
-                ethers.utils.formatEther(BigNumber.from(newValWei)) !== ethers.utils.parseUnits(currentValWei);
+            const newValWeiBn = BigNumber.from(newVal || '0');
+            const currentValWeiBn = ethers.utils.parseUnits(
+                this.$refs.input.value?.replaceAll(',', '') || '0',
+            );
+            const newValIsDifferent = !newValWeiBn.eq(currentValWeiBn);
+
             if (newValIsDifferent) {
-                //
-                const newwy = ethers.utils.formatEther(BigNumber.from(newValWei)).replace(/.0$/g, '');
-                this.setInputValue(newwy);
+                const formattedNewVal = ethers.utils.formatEther(newValWeiBn).replace(/.0$/g);
+                this.setInputValue(formattedNewVal);
                 this.handleInput();
             }
         },
@@ -153,30 +153,27 @@ export default {
         },
         handleInput() {
             const { input } = this.$refs;
-            const emit = val => {
-                debugger;
-                (val !== this.value) && this.$emit('input', val)
-            };
 
-            if (['', null, '0', '0.'].includes(input.value)) {
-                emit(0);
-                return;
-            }
-
-            if (input.value === '.') {
-                emit(0);
-                this.setInputValue('0.');
-                return;
-            }
+            const emit = val => (val !== this.value) && this.$emit('input', val);
 
             const dot = '.';
             const illegalCharactersRegex = /[^0-9.]/g;
             const illegalCharactersRegexPretty = /[^0-9,.]/g;
             const leadingZeroesRegex = /^0+/g;
             const trailingZeroesRegex = /0+$/g
-            const trailingDotRegex = /[.]$/g;
             const commaRegex = /[,]/g;
             const dotRegex = /[.]/g;
+
+            if (['', null, '0', '0.'].includes(input.value)) {
+                emit('0');
+                return;
+            }
+
+            if (input.value === dot) {
+                emit('0');
+                this.setInputValue('0.');
+                return;
+            }
 
             const savedCaretPosition = input.selectionStart;
             const savedCommaCount = (input.value.match(commaRegex) || []).length;
@@ -212,12 +209,12 @@ export default {
             }
 
             const [integer, fractional = ''] = currentInputValue.split(dot);
-            let savedTrailingZeroes = '';
+            let savedTrailingFractionalZeroes = '';
 
             if (fractional.length) {
                 const newFractional = fractional.substring(0, WEI_PRECISION);
                 workingValue = `${integer}.${newFractional}`;
-                savedTrailingZeroes = newFractional.match(trailingZeroesRegex) ?? '';
+                savedTrailingFractionalZeroes = newFractional.match(trailingZeroesRegex)?.[0] ?? '';
             }
 
             const workingValueAsWeiBn = ethers.utils.parseUnits(workingValue, 'ether');
@@ -225,23 +222,17 @@ export default {
             if (!!this.maxValueWei && workingValueAsWeiBn.gt(this.maxValueWei))
                 workingValue = ethers.utils.formatEther(this.maxValueWei);
 
-            // const com = ethers.utils.commify;
-            // console.log(com);
-            // debugger;
-
             this.setInputValue(
                 ethers.utils.commify(workingValue)
-                    .replace(trailingZeroesRegex, '')
-                    .replace(trailingDotRegex, '')
-                    .replace(/.0$/g, '')
-                    .concat(savedTrailingZeroes.length ? `.${savedTrailingZeroes}` : ''),
+                    .replace(/.0$/, dot)
+                    .concat(savedTrailingFractionalZeroes),
             );
 
             const newCommaCount = (input.value.match(commaRegex) || []).length;
             const deltaCommaCount = newCommaCount - savedCommaCount;
 
-            emit(workingValueAsWeiBn.toString());
             this.setInputCaretPosition(savedCaretPosition + deltaCommaCount);
+            emit(workingValueAsWeiBn.toString());
         },
         setInputValue(val) {
             this.$refs.input.value = val;
