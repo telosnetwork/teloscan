@@ -16,7 +16,7 @@
                     <staking-form-input
                         :value="topInputAmount"
                         v-bind="inputs[0]"
-                        @input="handleInput($event)"
+                        @input="handleInput($event, 0)"
                     />
                 </div>
 
@@ -28,7 +28,7 @@
                     <staking-form-input
                         :value="bottomInputAmount"
                         v-bind="inputs[1]"
-                        @input="handleInput($event)"
+                        @input="handleInput($event, 1)"
                     />
                 </div>
 
@@ -83,7 +83,15 @@ export default {
             type: String,
             required: true,
         },
+        topInputMaxValue: {
+            type: String,
+            default: null,
+        },
         topInputHasError: {
+            type: Boolean,
+            required: true,
+        },
+        topInputIsLoading: {
             type: Boolean,
             required: true,
         },
@@ -95,7 +103,11 @@ export default {
             type: String,
             required: true,
         },
-        bottomInputHasError: {
+        bottomInputMaxValue: {
+            type: String,
+            default: null,
+        },
+        bottomInputIsLoading: {
             type: Boolean,
             required: true,
         },
@@ -117,23 +129,22 @@ export default {
                 label:    this.topInputLabel,
                 infoText: this.topInputInfoText,
                 hasError: this.topInputHasError,
-                maxValueWei: genericMaxWei,
-                isLoading: false,
+                maxValueWei: this.topInputMaxValue ?? genericMaxWei, // eztodo
+                isLoading: this.topInputIsLoading,
             }, {
                 label:    this.bottomInputLabel,
                 infoText: this.bottomInputInfoText,
-                hasError: this.bottomInputHasError,
-                maxValueWei: genericMaxWei,
-                isLoading: false,
+                hasError: false,
+                maxValueWei: this.bottomInputMaxValue, // eztodo
+                isLoading: this.bottomInputIsLoading,
             }];
-        },
-        transactionIsValid() {
-            return !this.topInputHasError && !this.bottomInputHasError;
         },
     },
     methods: {
-        handleInput(event) {
-            this.$emit('input', event);
+        handleInput(event, index) {
+            const eventName = 'input-'.concat(index === 0 ? 'top' : 'bottom');
+
+            this.$emit(eventName, event);
         },
         handleCtaClick() {
             this.$emit('cta-clicked');

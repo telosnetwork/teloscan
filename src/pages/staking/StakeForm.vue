@@ -1,28 +1,37 @@
 <template>
-<!-- eztodo need to add @input handler here, question vmodel -->
-
 <base-staking-form
     :header="header"
     :subheader="subheader"
     :top-input-label="topInputLabel"
     :top-input-info-text="topInputInfoText"
     :top-input-amount="topInputAmount"
+    :top-input-max-value="topInputMaxValue"
     :top-input-has-error="topInputHasError"
+    :top-input-is-loading="topInputIsLoading"
     :bottom-input-label="bottomInputLabel"
     :bottom-input-amount="bottomInputAmount"
-    :bottom-input-has-error="bottomInputHasError"
+    :bottom-input-max-value="bottomInputMaxValue"
+    :bottom-input-is-loading="bottomInputIsLoading"
     :cta-text="ctaText"
     :cta-disabled="ctaIsDisabled"
+    @input-top="handleInputTop"
+    @input-bottom="handleInputBottom"
     @cta-clicked="handleCtaClick"
 />
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+import { BigNumber, ethers } from 'ethers';
 
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 
 import { triggerLogin } from 'components/ConnectButton';
+
+const tokens = {
+    tlos: 'tlos',
+    stlos: 'stlos',
+};
 
 export default {
     name: 'StakeForm',
@@ -33,21 +42,25 @@ export default {
         header: 'Stake TLOS',
         subheader: 'Staked sTLOS provide you with access to a steady income and access to our Defi applications',
         topInputLabel: 'Stake TLOS',
-        // topInputInfoText: '',
         topInputAmount: '0',
-        // topInputHasError: false,
+        bottomInputMaxValue: null,
+        topInputIsLoading: false,
+        bottomInputIsLoading: false,
         bottomInputLabel: 'Receive sTLOS',
-        // bottomInputAmount: '',
-        bottomInputHasError: false,
+        bottomInputAmount: '0',
+        wallet: { balance: '123456789987654321' },  // eztodo get from wallet / service
     }),
     computed: {
         ...mapGetters('login', ['isLoggedIn']),
+        topInputMaxValue() {
+            return this.isLoggedIn ? this.wallet.balance : null;
+        },
         topInputInfoText() {
             if (!this.isLoggedIn)
                 return 'Wallet not connected';
 
             // get this from wallet
-            const availableTLOS = Number.prototype.toLocaleString.call(1234567);
+            const availableTLOS = ethers.utils.commify(BigNumber.from(this.wallet.balance ?? '0').toString());
 
             return `${availableTLOS} Available`;
         },
@@ -55,22 +68,54 @@ export default {
             return !this.isLoggedIn;
         },
         ctaIsDisabled() {
-            // return this.topInputHasError || this.topInputAmount === '0';
-            return false;
+
+            return this.topInputIsLoading ||
+                this.bottomInputIsLoading ||
+                (
+                    this.isLoggedIn &&
+                    [this.topInputAmount, this.bottomInputAmount].some(amount => ['0', ''].includes(amount))
+                );
         },
         ctaText() {
-            // should not actually be this. disable when input is invalid, logged out = enabled, launches metamask
             return this.isLoggedIn ? 'Stake' : 'Connect Wallet';
-        },
-        bottomInputAmount() {
-            // convert topInputAmount to sTLOS
-
-            return this.topInputAmount;
         },
     },
     methods: {
+        handleInputTop(newWei = '0') {
+            if (newWei === this.topInputAmount)
+                return;
+
+            this.bottomInputIsLoading = true;
+            this.topInputAmount = newWei;
+
+            this.previewExchange(newWei, tokens.tlos)
+                .then(amount => this.bottomInputAmount = amount)
+                .catch(err => {
+                    this.bottomInputAmount = '';
+                    console.error(err);
+                })
+                .finally(() => this.bottomInputIsLoading = false);
+        },
+        handleInputBottom(newWei = '0') {
+            this.previewExchange(newWei, tokens.stlos);
+        },
         handleCtaClick() {
             if (!this.isLoggedIn) triggerLogin();
+        },
+        previewExchange(wei) {
+            // let endpoint = '';
+
+            // if (token === tokens.tlos) {
+            //     endpoint = 'placeholder - endpoint to get sTLOS for given TLOS amount';
+            // } else if (token === tokens.tlos) {
+            //     endpoint = 'placeholder - endpoint to get TLOS for given sTLOS amount';
+            // }
+
+            // return this.$teloscanApi.get(endpoint, wei);
+
+            return new Promise(
+                resolve => setTimeout(() => resolve(wei, 1000)),
+            );
         },
     },
 }
