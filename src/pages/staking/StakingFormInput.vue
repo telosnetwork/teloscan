@@ -82,7 +82,7 @@ export default {
             const newValIsDifferent = !newValWeiBn.eq(currentValWeiBn);
 
             if (newValIsDifferent) {
-                const formattedNewVal = ethers.utils.formatEther(newValWeiBn).replace(/.0$/g);
+                const formattedNewVal = ethers.utils.formatEther(newValWeiBn).replace(/.0$/g, '');
                 this.setInputValue(formattedNewVal);
                 this.handleInput();
             }
