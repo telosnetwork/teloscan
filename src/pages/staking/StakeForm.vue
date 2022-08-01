@@ -49,7 +49,7 @@ export default {
         bottomInputIsLoading: false,
         bottomInputLabel: 'Receive sTLOS',
         bottomInputAmount: '0',
-        wallet: { balance: '123456789987654321' },  // eztodo get from wallet / service
+        wallet: { balance: '50000000000000000000' },  // 50 TLOS -- eztodo get from wallet / service
     }),
     computed: {
         ...mapGetters('login', ['isLoggedIn']),
@@ -61,9 +61,12 @@ export default {
                 return 'Wallet not connected';
 
             // get this from wallet
-            const availableTLOS = ethers.utils.commify(BigNumber.from(this.wallet.balance ?? '0').toString());
+            const walletBalanceWeiBn = BigNumber.from(this.wallet.balance ?? '0');
+            const balanceTLOS = ethers.utils.commify(
+                ethers.utils.formatEther(walletBalanceWeiBn),
+            );
 
-            return `${availableTLOS} Available`;
+            return `${balanceTLOS} Available`;
         },
         topInputHasError() {
             return !this.isLoggedIn;

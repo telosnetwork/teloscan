@@ -157,14 +157,15 @@ export default {
             const emit = val => (val !== this.value) && this.$emit('input', val);
 
             const dot = '.';
-            const illegalCharactersRegex = /[^0-9.]/g;
-            const illegalCharactersRegexPretty = /[^0-9,.]/g;
+            const illegalCharsEthRegex = /[^0-9.]/g;
+            const illegalCharsPrettyEthRegex = /[^0-9,.]/g;
             const leadingZeroesRegex = /^0+/g;
             const trailingZeroesRegex = /0+$/g
-            const commaRegex = /[,]/g;
-            const dotRegex = /[.]/g;
+            const trailingDotZeroRegex = /\.0+$/g;
+            const commaRegex = /,/g;
+            const dotRegex = /\./g;
 
-            if (['', null, '0', '0.'].includes(input.value)) {
+            if (['', null, undefined, '0', '0.'].includes(input.value)) {
                 emit('0');
                 return;
             }
@@ -181,7 +182,7 @@ export default {
             this.setInputValue(
                 String(input.value)
                     .replace(leadingZeroesRegex, '')
-                    .replace(illegalCharactersRegexPretty, ''),
+                    .replace(illegalCharsPrettyEthRegex, ''),
             );
 
             // remove extraneous dots not handled in keydownHandler (ie. from pasted values)
@@ -193,17 +194,16 @@ export default {
                 this.setInputValue(int.concat(fractional));
             }
 
-            const currentInputValue = input.value.replace(illegalCharactersRegex, '');
+            const currentInputValue = input.value.replace(illegalCharsEthRegex, '');
 
             const caretPosition = input.selectionStart;
 
             // don't format or emit if the user is about to type a decimal
-            if (currentInputValue[currentInputValue.length - 1] === dot)
+            if (currentInputValue[currentInputValue.length - 1] === dot && caretPosition === currentInputValue.length - 1)
                 return;
 
             let workingValue = currentInputValue;
 
-            // eztodo is this a duplicate of :151 ?
             if (currentInputValue[0] === dot && caretPosition !== 0) {
                 workingValue = '0'.concat(currentInputValue)
             }
@@ -224,7 +224,7 @@ export default {
 
             this.setInputValue(
                 ethers.utils.commify(workingValue)
-                    .replace(/.0$/, dot)
+                    .replace(trailingDotZeroRegex, dot)
                     .concat(savedTrailingFractionalZeroes),
             );
 
@@ -238,7 +238,7 @@ export default {
             this.$refs.input.value = val;
         },
         setInputCaretPosition(val) {
-            ['selectionStart', 'selectionEnd'].forEach(property => this.$refs.input[property] = val)
+            ['Start', 'End'].forEach(property => this.$refs.input[`selection${property}`] = val)
         },
     },
 }
