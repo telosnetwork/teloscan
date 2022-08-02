@@ -1,9 +1,9 @@
 <script>
     import MetamaskLogo from 'src/assets/metamask-fox.svg'
     import { mapGetters, mapMutations } from 'vuex';
-    import { ethers } from "ethers";
-    const providersError = "More than one provider is active, disable additional providers.";
-    const unsupportedError ="current EVM wallet provider is not supported.";
+    import { ethers } from 'ethers';
+    const providersError = 'More than one provider is active, disable additional providers.';
+    const unsupportedError = 'current EVM wallet provider is not supported.';
     const LOGIN_EVM = 'evm';
     const LOGIN_NATIVE = 'native';
     const PROVIDER_WEB3_INJECTED = 'injectedWeb3'
@@ -62,7 +62,7 @@
             },
             disconnect() {
                 if (this.isNative) {
-                    const loginData = localStorage.getItem("loginData");
+                    const loginData = localStorage.getItem('loginData');
                     if (!loginData)
                         return;
 
@@ -122,7 +122,7 @@
                         nativeAccount: accountName
                     })
                     this.$providerManager.setProvider(account);
-                    localStorage.setItem("loginData", JSON.stringify({type: LOGIN_NATIVE, provider: wallet.getName()}));
+                    localStorage.setItem('loginData', JSON.stringify({type: LOGIN_NATIVE, provider: wallet.getName()}));
                 }
                 this.showLogin = false;
             },
@@ -185,8 +185,8 @@
                                         chainId: chainIdParam,
                                         chainName: `Telos EVM ${mainnet ? 'Mainnet' : 'Testnet'}`,
                                         nativeCurrency: {
-                                            name: `Telos`,
-                                            symbol: `TLOS`,
+                                            name: 'Telos',
+                                            symbol: 'TLOS',
                                             decimals: 18,
                                         },
                                         rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
