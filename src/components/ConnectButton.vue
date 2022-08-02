@@ -17,26 +17,31 @@ export default {
       metamaskLogo: MetamaskLogo
     }
   },
-  mounted() {
-    const loginData = localStorage.getItem("loginData");
-    if (!loginData)
-      return;
+    async mounted() {
+        const loginData = localStorage.getItem('loginData');
+        if (!loginData)
+            return;
 
-    const loginObj = JSON.parse(loginData);
-    if (loginObj.type === LOGIN_EVM) {
-      switch (loginObj.provider) {
-        case PROVIDER_WEB3_INJECTED:
-          this.injectedWeb3Login();
-          break;
-        default:
-          console.error(`Unknown web3 login type: ${loginObj.provider}`);
-          break;
-      }
-    } else if (loginObj.type === LOGIN_NATIVE) {
-      const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
-      this.ualLogin(wallet);
-    }
-  },
+        const loginObj = JSON.parse(loginData);
+        if (loginObj.type === LOGIN_EVM) {
+            const provider = this.getInjectedProvider();
+            let checkProvider = new ethers.providers.Web3Provider(provider)
+            const {chainId} = await checkProvider.getNetwork();
+            if(loginObj.chain == chainId){
+                switch (loginObj.provider) {
+                    case PROVIDER_WEB3_INJECTED:
+                        this.injectedWeb3Login();
+                        break;
+                    default:
+                        console.error(`Unknown web3 login type: ${loginObj.provider}`);
+                        break;
+                }
+            }
+        } else if (loginObj.type === LOGIN_NATIVE) {
+            const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
+            this.ualLogin(wallet);
+        }
+    },
   computed: {
     ...mapGetters('login', [
       'isLoggedIn',
@@ -79,8 +84,17 @@ export default {
         this.setLogin({
           address,
         })
-        this.$providerManager.setProvider(this.getInjectedProvider());
-        localStorage.setItem("loginData", JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED}));
+          let provider = this.getInjectedProvider();
+          let checkProvider = new ethers.providers.Web3Provider(provider)
+          this.$providerManager.setProvider(provider);
+          const {chainId} = await checkProvider.getNetwork();
+          localStorage.setItem('loginData', JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED, chain: chainId }));
+          provider.on("chainChanged", (newNetwork) => {
+              if(newNetwork != chainId){
+                  this.setLogin({});
+                  this.$providerManager.setProvider(null);
+              }
+          });
       }
       this.showLogin = false;
     },
