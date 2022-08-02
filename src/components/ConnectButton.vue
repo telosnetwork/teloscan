@@ -23,7 +23,7 @@ export default {
             'isNative',
             'address',
             'nativeAccount',
-        ])
+        ]),
     },
     async mounted() {
         const loginData = localStorage.getItem('loginData');
@@ -185,8 +185,8 @@ export default {
                                     chainId: chainIdParam,
                                     chainName: `Telos EVM ${mainnet ? 'Mainnet' : 'Testnet'}`,
                                     nativeCurrency: {
-                                        name: `Telos`,
-                                        symbol: `TLOS`,
+                                        name: 'Telos',
+                                        symbol: 'TLOS',
                                         decimals: 18,
                                     },
                                     rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
