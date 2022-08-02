@@ -76,7 +76,7 @@ export default {
                 this.bottomInputIsLoading ||
                 (
                     this.isLoggedIn &&
-                    [this.topInputAmount, this.bottomInputAmount].some(amount => ['0', ''].includes(amount))
+                    [this.topInputAmount, this.bottomInputAmount].some(amount => ['0', '', null, undefined].includes(amount))
                 );
         },
         ctaText() {
@@ -91,7 +91,7 @@ export default {
             this.bottomInputIsLoading = true;
             this.topInputAmount = newWei;
 
-            const debouncedCall = debounce(
+            debounce(
                 () => this.previewExchange(this.topInputAmount, tokens.tlos)
                     .then(amount => this.bottomInputAmount = amount)
                     .catch(err => {
@@ -100,9 +100,7 @@ export default {
                     })
                     .finally(() => this.bottomInputIsLoading = false),
                 750,
-            );
-
-            debouncedCall();
+            )();
         },
         handleInputBottom(newWei = '0') {
             if (newWei === this.bottomInputAmount)
@@ -111,7 +109,7 @@ export default {
             this.topInputIsLoading = true;
             this.bottomInputAmount = newWei;
 
-            const debouncedCall = debounce(
+            debounce(
                 () => this.previewExchange(this.bottomInputAmount, tokens.tlos)
                     .then(amount => this.topInputAmount = amount)
                     .catch(err => {
@@ -120,12 +118,11 @@ export default {
                     })
                     .finally(() => this.topInputIsLoading = false),
                 750,
-            );
-
-            debouncedCall();
+            )();
         },
         handleCtaClick() {
-            if (!this.isLoggedIn) triggerLogin();
+            if (!this.isLoggedIn)
+                triggerLogin();
         },
         previewExchange(wei) {
             // let endpoint = '';

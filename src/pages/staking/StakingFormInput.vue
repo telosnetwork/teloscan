@@ -43,6 +43,17 @@ import { BigNumber, ethers } from 'ethers';
 
 import { WEI_PRECISION } from 'src/lib/utils';
 
+const { commify, parseUnits, formatEther} = ethers.utils;
+
+const dot = '.';
+const illegalCharsEthRegex = /[^0-9.]/g;
+const illegalCharsPrettyEthRegex = /[^0-9,.]/g;
+const leadingZeroesRegex = /^0+/g;
+const trailingZeroesRegex = /0+$/g
+const trailingDotZeroRegex = /\.0+$/g;
+const commaRegex = /,/g;
+const dotRegex = /\./g;
+
 export default {
     name: 'StakingFormInput',
     props: {
@@ -76,13 +87,13 @@ export default {
     watch: {
         value(newVal) {
             const newValWeiBn = BigNumber.from(newVal || '0');
-            const currentValWeiBn = ethers.utils.parseUnits(
-                this.$refs.input.value?.replaceAll(',', '') ?? '0',
+            const currentValWeiBn = parseUnits(
+                this.$refs.input.value?.replaceAll(',', '') || '0',
             );
             const newValIsDifferent = !newValWeiBn.eq(currentValWeiBn);
 
             if (newValIsDifferent) {
-                const formattedNewVal = ethers.utils.formatEther(newValWeiBn).replace(/.0$/g, '');
+                const formattedNewVal = formatEther(newValWeiBn).replace(/.0$/g, '');
                 this.setInputValue(formattedNewVal);
                 this.handleInput();
             }
@@ -92,7 +103,6 @@ export default {
         handleKeydown(event) {
             const { input } = this.$refs;
 
-            const dot = '.';
             const numKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
             const currentInputValue = String(input.value);
             const caretPosition = input.selectionStart;
@@ -155,14 +165,6 @@ export default {
             const emit = val => (val !== this.value) && this.$emit('input', val);
 
             const { input } = this.$refs;
-            const dot = '.';
-            const illegalCharsEthRegex = /[^0-9.]/g;
-            const illegalCharsPrettyEthRegex = /[^0-9,.]/g;
-            const leadingZeroesRegex = /^0+/g;
-            const trailingZeroesRegex = /0+$/g
-            const trailingDotZeroRegex = /\.0+$/g;
-            const commaRegex = /,/g;
-            const dotRegex = /\./g;
 
             if (['', null, undefined, '0', '0.'].includes(input.value)) {
                 emit('0');
@@ -207,11 +209,11 @@ export default {
                 workingValue = '0'.concat(currentInputValue)
             }
 
-            let workingValueAsWeiBn = ethers.utils.parseUnits(workingValue, 'ether');
+            let workingValueAsWeiBn = parseUnits(workingValue, 'ether');
 
             if (!!this.maxValueWei && workingValueAsWeiBn.gt(this.maxValueWei)) {
-                workingValue = ethers.utils.formatEther(this.maxValueWei);
-                workingValueAsWeiBn = ethers.utils.parseUnits(workingValue, 'ether');
+                workingValue = formatEther(this.maxValueWei);
+                workingValueAsWeiBn = parseUnits(workingValue, 'ether');
             }
 
             const [integer, fractional = ''] = currentInputValue.split(dot);
@@ -227,7 +229,7 @@ export default {
             }
 
             this.setInputValue(
-                ethers.utils.commify(workingValue)
+                commify(workingValue)
                     .replace(trailingDotZeroRegex, '')
                     .concat(savedTrailingFractionalZeroes),
             );

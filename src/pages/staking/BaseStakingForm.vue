@@ -121,7 +121,7 @@ export default {
         },
     },
     data: () => ({
-        unstakePeriodDays: 5,
+        unstakePeriodDays: 5, // eztodo get from service
     }),
     computed: {
         inputs() {
