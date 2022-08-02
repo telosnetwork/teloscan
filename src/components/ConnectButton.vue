@@ -90,7 +90,6 @@ export default {
           const {chainId} = await checkProvider.getNetwork();
           localStorage.setItem('loginData', JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED, chain: chainId }));
           provider.on("chainChanged", (newNetwork) => {
-              console.log(newNetwork)
               if(newNetwork != chainId){
                   this.setLogin({});
                   this.$providerManager.setProvider(null);
