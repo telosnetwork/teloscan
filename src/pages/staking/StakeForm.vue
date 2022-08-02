@@ -72,7 +72,6 @@ export default {
             return !this.isLoggedIn;
         },
         ctaIsDisabled() {
-
             return this.topInputIsLoading ||
                 this.bottomInputIsLoading ||
                 (
@@ -106,7 +105,24 @@ export default {
             debouncedCall();
         },
         handleInputBottom(newWei = '0') {
-            this.previewExchange(newWei, tokens.stlos);
+            if (newWei === this.bottomInputAmount)
+                return;
+
+            this.topInputIsLoading = true;
+            this.bottomInputAmount = newWei;
+
+            const debouncedCall = debounce(
+                () => this.previewExchange(this.bottomInputAmount, tokens.tlos)
+                    .then(amount => this.topInputAmount = amount)
+                    .catch(err => {
+                        this.topInputAmount = '';
+                        console.error(err);
+                    })
+                    .finally(() => this.topInputIsLoading = false),
+                750,
+            );
+
+            debouncedCall();
         },
         handleCtaClick() {
             if (!this.isLoggedIn) triggerLogin();

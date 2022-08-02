@@ -77,7 +77,7 @@ export default {
         value(newVal) {
             const newValWeiBn = BigNumber.from(newVal || '0');
             const currentValWeiBn = ethers.utils.parseUnits(
-                this.$refs.input.value?.replaceAll(',', '') || '0',
+                this.$refs.input.value?.replaceAll(',', '') ?? '0',
             );
             const newValIsDifferent = !newValWeiBn.eq(currentValWeiBn);
 
@@ -152,10 +152,9 @@ export default {
                 event.preventDefault();
         },
         handleInput() {
-            const { input } = this.$refs;
-
             const emit = val => (val !== this.value) && this.$emit('input', val);
 
+            const { input } = this.$refs;
             const dot = '.';
             const illegalCharsEthRegex = /[^0-9.]/g;
             const illegalCharsPrettyEthRegex = /[^0-9,.]/g;
@@ -208,23 +207,28 @@ export default {
                 workingValue = '0'.concat(currentInputValue)
             }
 
+            let workingValueAsWeiBn = ethers.utils.parseUnits(workingValue, 'ether');
+
+            if (!!this.maxValueWei && workingValueAsWeiBn.gt(this.maxValueWei)) {
+                workingValue = ethers.utils.formatEther(this.maxValueWei);
+                workingValueAsWeiBn = ethers.utils.parseUnits(workingValue, 'ether');
+            }
+
             const [integer, fractional = ''] = currentInputValue.split(dot);
             let savedTrailingFractionalZeroes = '';
 
             if (fractional.length) {
                 const newFractional = fractional.substring(0, WEI_PRECISION);
+                const trailingZeroes = newFractional.match(trailingZeroesRegex)?.[0];
                 workingValue = `${integer}.${newFractional}`;
-                savedTrailingFractionalZeroes = newFractional.match(trailingZeroesRegex)?.[0] ?? '';
+
+                if (trailingZeroes.length)
+                    savedTrailingFractionalZeroes = `${dot}trailingZeroes`;
             }
-
-            const workingValueAsWeiBn = ethers.utils.parseUnits(workingValue, 'ether');
-
-            if (!!this.maxValueWei && workingValueAsWeiBn.gt(this.maxValueWei))
-                workingValue = ethers.utils.formatEther(this.maxValueWei);
 
             this.setInputValue(
                 ethers.utils.commify(workingValue)
-                    .replace(trailingDotZeroRegex, dot)
+                    .replace(trailingDotZeroRegex, '')
                     .concat(savedTrailingFractionalZeroes),
             );
 
