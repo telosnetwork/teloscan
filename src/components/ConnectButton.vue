@@ -7,7 +7,6 @@ const unsupportedError ='current EVM wallet provider is not supported.';
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
 const PROVIDER_WEB3_INJECTED = 'injectedWeb3'
-
 export default {
     name: 'ConnectButton',
     data() {
@@ -25,20 +24,24 @@ export default {
             'nativeAccount',
         ]),
     },
-    mounted() {
+    async mounted() {
         const loginData = localStorage.getItem('loginData');
         if (!loginData)
             return;
-
         const loginObj = JSON.parse(loginData);
         if (loginObj.type === LOGIN_EVM) {
-            switch (loginObj.provider) {
-            case PROVIDER_WEB3_INJECTED:
-                this.injectedWeb3Login();
-                break;
-            default:
-                console.error(`Unknown web3 login type: ${loginObj.provider}`);
-                break;
+            const provider = this.getInjectedProvider();
+            let checkProvider = new ethers.providers.Web3Provider(provider)
+            const {chainId} = await checkProvider.getNetwork();
+            if(loginObj.chain == chainId){
+                switch (loginObj.provider) {
+                case PROVIDER_WEB3_INJECTED:
+                    this.injectedWeb3Login();
+                    break;
+                default:
+                    console.error(`Unknown web3 login type: ${loginObj.provider}`);
+                    break;
+                }
             }
         } else if (loginObj.type === LOGIN_NATIVE) {
             const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
@@ -60,12 +63,10 @@ export default {
                 const loginData = localStorage.getItem('loginData');
                 if (!loginData)
                     return;
-
                 const loginObj = JSON.parse(loginData);
                 const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
                 wallet.logout();
             }
-
             this.setLogin({});
             localStorage.removeItem('loginData');
             this.$providerManager.setProvider(null);
@@ -79,8 +80,11 @@ export default {
                 this.setLogin({
                     address,
                 })
-                this.$providerManager.setProvider(this.getInjectedProvider());
-                localStorage.setItem('loginData', JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED}));
+                let provider = this.getInjectedProvider();
+                let checkProvider = new ethers.providers.Web3Provider(provider)
+                this.$providerManager.setProvider(provider);
+                const {chainId} = await checkProvider.getNetwork();
+                localStorage.setItem('loginData', JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED, chain: chainId }));
             }
             this.showLogin = false;
         },
@@ -114,7 +118,6 @@ export default {
         async getInjectedAddress() {
             const provider = this.getInjectedProvider();
             let checkProvider = new ethers.providers.Web3Provider(provider);
-
             checkProvider = await this.ensureCorrectChain(checkProvider);
             const accounts = await checkProvider.listAccounts();
             if (accounts.length > 0) {
@@ -122,11 +125,9 @@ export default {
                 return accounts[0];
             } else {
                 const accessGranted = await provider.request({ method: 'eth_requestAccounts' })
-
                 if (accessGranted.length < 1) {
                     return false;
                 }
-
                 checkProvider = await this.ensureCorrectChain(checkProvider);
                 return accessGranted[0];
             }
@@ -150,7 +151,6 @@ export default {
         },
         async switchChainInjected() {
             const provider = this.getInjectedProvider();
-
             if (provider) {
                 const chainId = parseInt(process.env.NETWORK_EVM_CHAIN_ID, 10);
                 const chainIdParam = `0x${chainId.toString(16)}`
@@ -231,9 +231,7 @@ export default {
   text-align: center
   p
     margin: .25rem
-
 .wallet-img
   width: 3.5rem
   margin: .5rem .5rem 0 .5rem
-
 </style>
