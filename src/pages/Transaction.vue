@@ -1,154 +1,154 @@
 <script>
-import DateField from "components/DateField";
-import BlockField from "components/BlockField";
-import AddressField from "components/AddressField";
-import LogsViewer from "components/Transaction/LogsViewer";
-import InternalTxns from "components/Transaction/InternalTxns";
-import MethodField from "components/MethodField";
-import JsonViewer from "vue-json-viewer";
-import {parseErrorMessage} from "src/lib/utils";
+import DateField from 'components/DateField';
+import BlockField from 'components/BlockField';
+import AddressField from 'components/AddressField';
+import LogsViewer from 'components/Transaction/LogsViewer';
+import InternalTxns from 'components/Transaction/InternalTxns';
+import MethodField from 'components/MethodField';
+import JsonViewer from 'vue-json-viewer';
+import {parseErrorMessage} from 'src/lib/utils';
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
-  name: "Transaction",
-  components: {
-    LogsViewer,
-    InternalTxns,
-    AddressField,
-    BlockField,
-    DateField,
-    MethodField,
-    JsonViewer
-  },
-  data() {
-    return {
-      hash: this.$route.params.hash,
-      blockData: null,
-      trxNotFound: false,
-      errorMessage: null,
-      trx: null,
-      tab: "general",
-      isContract: false,
-      contract: null,
-      parsedTransaction: null,
-      parsedLogs: null,
-      methodTrx: null,
-      showAge: true
-    };
-  },
-  mounted() {
-    this.loadTransaction();
-  },
-  methods: {
-    resetTransaction() {
-      this.blockData = null;
-      this.trx = null;
-      this.tab = "general";
-      this.isContract = false;
-      this.contract = null;
-      this.parsedTransaction = null;
-      this.parsedLogs = null;
-      this.methodTrx = null;
+    name: 'TransactionPage',
+    components: {
+        LogsViewer,
+        InternalTxns,
+        AddressField,
+        BlockField,
+        DateField,
+        MethodField,
+        JsonViewer,
     },
-    async loadTransaction() {
-      const trxResponse = await this.$evmEndpoint.get(
-        `/v2/evm/get_transactions?hash=${this.hash}`
-      );
-      if (trxResponse.data.transactions.length < 1) {
-        this.trxNotFound = true;
-        return;
-      }
-
-      this.trx = trxResponse.data.transactions[0];
-      this.setErrorMessage();
-      await this.loadContract();
-      this.setTab();
+    data() {
+        return {
+            hash: this.$route.params.hash,
+            blockData: null,
+            trxNotFound: false,
+            errorMessage: null,
+            trx: null,
+            tab: 'general',
+            isContract: false,
+            contract: null,
+            parsedTransaction: null,
+            parsedLogs: null,
+            methodTrx: null,
+            showAge: true,
+        };
     },
-    async loadContract() {
-      if (this.trx.input_data === "0x") return;
+    watch: {
+        '$route.params': {
+            handler(newValue) {
+                const { hash } = newValue
+                if (this.hash === hash) {
+                    return;
+                }
 
-      const contract = await this.$contractManager.getContract(this.trx.to);
-      if (!contract) return;
-
-      this.contract = contract;
-      this.parsedTransaction = await this.contract.parseTransaction(
-        this.trx.input_data
-      );
-      this.parsedLogs = await this.contract.parseLogs(this.trx.logs);
-      this.methodTrx = Object.assign(
-        { parsedTransaction: this.parsedTransaction },
-        this.trx
-      );
-      this.isContract = true;
+                this.resetTransaction();
+                this.hash = hash;
+                this.loadTransaction();
+            },
+            immediate: true,
+        },
     },
-    setTab() {
-      if (this.$route.hash === "internal") {
-        this.tab = "internal";
-      } else if (this.$route.hash === "eventlog") {
-        this.tab = "logs";
-      } else if (this.$route.hash === "details") {
-        this.tab = "details";
-      } else {
-        this.tab = "general";
-      }
-    },
-    setErrorMessage() {
-      if (this.trx.status !== 0)
-        return;
-
-      this.errorMessage = parseErrorMessage(this.trx.output);
-    },
-    getFunctionName() {
-      if (this.parsedTransaction) return this.parsedTransaction.name;
-    },
-    getFunctionParams() {
-      if (!this.parsedTransaction) return;
-
-      let params = {
-        function: this.parsedTransaction.signature,
-        args: this.parsedTransaction.args
-      };
-      return params;
-    },
-    getLogs() {
-      if (this.parsedLogs) {
-        const logsObj = this.parsedLogs.map(log => {
-          if (log.signature && log.args)
-            return { name: log.signature, args: log.args };
-
-          return log;
-        });
-
-        return logsObj;
-      }
-
-      return this.trx.logs;
-    },
-    getGasFee() {
-      return (
-        (this.trx.charged_gas_price * this.trx.gasused) /
-        1000000000000000000
-      ).toFixed(5);
-    },
-    getGasChargedGWEI() {
-      return (this.trx.charged_gas_price / 1000000000).toFixed(2);
-    }
-  },
-  watch: {
-    '$route.params': {
-      handler(newValue) {
-        const { hash } = newValue
-        if (this.hash === hash) {
-          return;
-        }
-
-        this.resetTransaction();
-        this.hash = hash;
+    mounted() {
         this.loadTransaction();
-      },
-      immediate: true,
-    }
-  }
+    },
+    methods: {
+        resetTransaction() {
+            this.blockData = null;
+            this.trx = null;
+            this.tab = 'general';
+            this.isContract = false;
+            this.contract = null;
+            this.parsedTransaction = null;
+            this.parsedLogs = null;
+            this.methodTrx = null;
+        },
+        async loadTransaction() {
+            const trxResponse = await this.$evmEndpoint.get(
+                `/v2/evm/get_transactions?hash=${this.hash}`,
+            );
+            if (trxResponse.data.transactions.length < 1) {
+                this.trxNotFound = true;
+                return;
+            }
+
+            this.trx = trxResponse.data.transactions[0];
+            this.setErrorMessage();
+            await this.loadContract();
+            this.setTab();
+        },
+        async loadContract() {
+            if (this.trx.input_data === '0x') return;
+
+            const contract = await this.$contractManager.getContract(this.trx.to);
+            if (!contract) return;
+
+            this.contract = contract;
+            this.parsedTransaction = await this.contract.parseTransaction(
+                this.trx.input_data,
+            );
+            this.parsedLogs = await this.contract.parseLogs(this.trx.logs);
+            this.methodTrx = Object.assign(
+                { parsedTransaction: this.parsedTransaction },
+                this.trx,
+            );
+            this.isContract = true;
+        },
+        setTab() {
+            if (this.$route.hash === 'internal') {
+                this.tab = 'internal';
+            } else if (this.$route.hash === 'eventlog') {
+                this.tab = 'logs';
+            } else if (this.$route.hash === 'details') {
+                this.tab = 'details';
+            } else {
+                this.tab = 'general';
+            }
+        },
+        setErrorMessage() {
+            if (this.trx.status !== 0)
+                return;
+
+            this.errorMessage = parseErrorMessage(this.trx.output);
+        },
+        getFunctionName() {
+            if (this.parsedTransaction) return this.parsedTransaction.name;
+        },
+        getFunctionParams() {
+            if (!this.parsedTransaction) return;
+
+            let params = {
+                function: this.parsedTransaction.signature,
+                args: this.parsedTransaction.args,
+            };
+            return params;
+        },
+        getLogs() {
+            if (this.parsedLogs) {
+                const logsObj = this.parsedLogs.map(log => {
+                    if (log.signature && log.args)
+                        return { name: log.signature, args: log.args };
+
+                    return log;
+                });
+
+                return logsObj;
+            }
+
+            return this.trx.logs;
+        },
+        getGasFee() {
+            return (
+                (this.trx.charged_gas_price * this.trx.gasused) /
+        1000000000000000000
+            ).toFixed(5);
+        },
+        getGasChargedGWEI() {
+            return (this.trx.charged_gas_price / 1000000000).toFixed(2);
+        },
+    },
 };
 </script>
 
