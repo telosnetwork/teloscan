@@ -6,11 +6,32 @@
                 {{ label }}
             </h6>
         </div>
-        <div
-            v-if="infoText"
-            :class="`col-6 text-right q-pt-sm ${hasError ? 'text-red' : ''}`"
-        >
-            {{ infoText }}
+        <div class="col-6 u-flex--right">
+            <p
+                v-if="errorText"
+                class="text-red"
+            >
+                {{ errorText }}
+            </p>
+
+            <div
+                v-else-if="infoText"
+                class="c-staking-input__info-container"
+                @click="handleInfoClick"
+            >
+                <q-tooltip
+                    :offset="[0, 48]"
+                    anchor="top middle"
+                    self="top middle"
+                >
+                    <!-- eztodo improve this message - should convey that this total balance isn't exactly equal to wallet balance -->
+                    Exact balance (after approx. gas fees):<br>
+                    {{ availableBalance }}
+                </q-tooltip>
+
+                {{ infoText }}
+                <q-icon name="fas fa-info-circle q-pl-xs" />
+            </div>
         </div>
     </div>
     <div class="row">
@@ -70,9 +91,9 @@ export default {
             type: String,
             default: '',
         },
-        hasError: {
-            type: Boolean,
-            required: true,
+        errorText: {
+            type: String,
+            default: '',
         },
         isLoading: {
             type: Boolean,
@@ -82,6 +103,12 @@ export default {
             type: String,
             default: null,
             validator: str => BigNumber.from(str),
+        },
+    },
+    computed: {
+        availableBalance() {
+            const balance = formatEther(this.maxValueWei).toString();
+            return `${balance}`;
         },
     },
     watch: {
@@ -100,6 +127,9 @@ export default {
         },
     },
     methods: {
+        handleInfoClick() {
+            this.$emit('input', this.maxValueWei);
+        },
         handleKeydown(event) {
             const { input } = this.$refs;
 
@@ -177,7 +207,7 @@ export default {
                 return;
             }
 
-            const savedCaretPosition = input.selectionStart;
+            let caretPosition = input.selectionStart;
             const savedCommaCount = (input.value.match(commaRegex) || []).length;
 
             this.setInputValue(
@@ -195,12 +225,10 @@ export default {
                 this.setInputValue(int.concat(fractional));
             }
 
-            const currentInputValue = input.value.replace(illegalCharsEthRegex, '');
-
-            const caretPosition = input.selectionStart;
+            const currentInputValue = input.value.replace(illegalCharsEthRegex, '') ?? '';
 
             // don't format or emit if the user is about to type a decimal
-            if (currentInputValue[currentInputValue.length - 1] === dot && caretPosition === currentInputValue.length - 1)
+            if (currentInputValue[currentInputValue.length - 1] === dot && caretPosition === currentInputValue.length)
                 return;
 
             let workingValue = currentInputValue;
@@ -214,6 +242,7 @@ export default {
             if (!!this.maxValueWei && workingValueAsWeiBn.gt(this.maxValueWei)) {
                 workingValue = formatEther(this.maxValueWei);
                 workingValueAsWeiBn = parseUnits(workingValue, 'ether');
+                caretPosition = workingValue.length;
             }
 
             const [integer, fractional = ''] = currentInputValue.split(dot);
@@ -221,7 +250,7 @@ export default {
 
             if (fractional.length) {
                 const newFractional = fractional.substring(0, WEI_PRECISION);
-                const trailingZeroes = newFractional.match(trailingZeroesRegex)?.[0];
+                const trailingZeroes = newFractional.match(trailingZeroesRegex)?.[0] ?? '';
                 workingValue = `${integer}.${newFractional}`;
 
                 if (trailingZeroes.length)
@@ -237,7 +266,7 @@ export default {
             const newCommaCount = (input.value.match(commaRegex) || []).length;
             const deltaCommaCount = newCommaCount - savedCommaCount;
 
-            this.setInputCaretPosition(savedCaretPosition + deltaCommaCount);
+            this.setInputCaretPosition(caretPosition + deltaCommaCount);
             emit(workingValueAsWeiBn.toString());
         },
         setInputValue(val) {
@@ -259,6 +288,14 @@ export default {
 
     &__label {
         margin: 0;
+    }
+
+    &__info-container {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        width: min-content;
+        white-space: nowrap;
     }
 
     &__input,

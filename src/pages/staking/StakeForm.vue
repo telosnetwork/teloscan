@@ -6,7 +6,7 @@
     :top-input-info-text="topInputInfoText"
     :top-input-amount="topInputAmount"
     :top-input-max-value="topInputMaxValue"
-    :top-input-has-error="topInputHasError"
+    :top-input-error-text="topInputErrorText"
     :top-input-is-loading="topInputIsLoading"
     :bottom-input-label="bottomInputLabel"
     :bottom-input-amount="bottomInputAmount"
@@ -28,6 +28,7 @@ import { debounce } from 'lodash';
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 
 import { triggerLogin } from 'components/ConnectButton';
+import { WEI_PRECISION } from 'src/lib/utils';
 
 const tokens = {
     tlos: 'tlos',
@@ -49,27 +50,40 @@ export default {
         bottomInputIsLoading: false,
         bottomInputLabel: 'Receive sTLOS',
         bottomInputAmount: '0',
-        wallet: { balance: '50000000000000000000' },  // 50 TLOS -- eztodo get from wallet / service
+        wallet: { balance: '512345661427364984367282' },  // 50 TLOS -- eztodo get from wallet / service
     }),
     computed: {
         ...mapGetters('login', ['isLoggedIn']),
         topInputMaxValue() {
-            return this.isLoggedIn ? this.wallet.balance : null;
+            return this.isLoggedIn ? this.usableWalletBalance : null;
+        },
+        usableWalletBalance() {
+            // eztodo update low balance logic here
+
+            const walletBalanceWeiBn = BigNumber.from(this.wallet.balance ?? '0');
+            const reservedForGas = BigNumber.from('10').pow(WEI_PRECISION);
+
+            return walletBalanceWeiBn.sub(reservedForGas).toString();
         },
         topInputInfoText() {
             if (!this.isLoggedIn)
-                return 'Wallet not connected';
+                return '';
 
-            // get this from wallet
-            const walletBalanceWeiBn = BigNumber.from(this.wallet.balance ?? '0');
-            const balanceTLOS = ethers.utils.commify(
-                ethers.utils.formatEther(walletBalanceWeiBn),
-            );
+            let balanceEth = ethers.utils.formatEther(this.usableWalletBalance);
+
+            if (balanceEth.indexOf('.') >= 0) {
+                const [integer, fraction] = balanceEth.split('.');
+
+                balanceEth = integer.concat(`.${fraction.slice(0, 3)}`);
+            }
+
+            // eztodo if balance is too low?
+            const balanceTLOS = ethers.utils.commify(balanceEth);
 
             return `${balanceTLOS} Available`;
         },
-        topInputHasError() {
-            return !this.isLoggedIn;
+        topInputErrorText() {
+            return this.isLoggedIn ? '' : 'Wallet not connected';
         },
         ctaIsDisabled() {
             return this.topInputIsLoading ||

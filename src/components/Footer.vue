@@ -16,7 +16,7 @@ export default {
       .column.items-center
         span COPYRIGHT © {{ currentFullYear() }}
           a( href="/" target="_blank" rel="noopener noreferrer")
-            | Teloscan
+            | &nbsp;Teloscan&nbsp;
           span.d-none.d-sm-inline-block All rights Reserved
     .col-xs-12.col-md-6
       .column.items-center
@@ -35,9 +35,9 @@ export default {
           a(
             href="https://eosauthority.com/vote/producers?network=telos"
             target="_blank"
-          ) Yknot &
+          ) &nbsp;Yknot &
           a(
             href="https://eosauthority.com/vote/producers?network=telos"
             target="_blank"
-          ) Caleos
+          ) &nbsp;Caleos
 </template>

@@ -2,23 +2,26 @@
 .u-flex {
     &--left,
     &--center,
+    &--right,
     &--space-between {
         display: flex;
+        align-items: center;
     }
 
     &--left {
         justify-content: flex-start;
-        align-items: center;
+    }
+
+    &--right {
+        justify-content: flex-end;
     }
 
     &--center {
         justify-content: center;
-        align-items: center;
     }
 
     &--space-between {
         justify-content: space-between;
-        align-items: center;
     }
 }
 

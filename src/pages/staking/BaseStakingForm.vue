@@ -87,8 +87,8 @@ export default {
             type: String,
             default: null,
         },
-        topInputHasError: {
-            type: Boolean,
+        topInputErrorText: {
+            type: String,
             required: true,
         },
         topInputIsLoading: {
@@ -128,13 +128,13 @@ export default {
             return [{
                 label:    this.topInputLabel,
                 infoText: this.topInputInfoText,
-                hasError: this.topInputHasError,
+                errorText: this.topInputErrorText,
                 maxValueWei: this.topInputMaxValue ?? genericMaxWei,
                 isLoading: this.topInputIsLoading,
             }, {
                 label:    this.bottomInputLabel,
                 infoText: this.bottomInputInfoText,
-                hasError: false,
+                errorText: '',
                 maxValueWei: this.bottomInputMaxValue,
                 isLoading: this.bottomInputIsLoading,
             }];
