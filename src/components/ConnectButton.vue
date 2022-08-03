@@ -95,9 +95,9 @@ export default {
                         this.$providerManager.setProvider(null);
                     }
                 });
-                window.ethereum.on('accountsChanged', function (accounts) {
+                provider.on('accountsChanged', (accounts) => {
                     this.setLogin({
-                        accounts[0],
+                        address: accounts[0],
                     })
                 })
             }
