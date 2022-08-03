@@ -1,21 +1,23 @@
 <script>
 import JsonViewer from 'vue-json-viewer'
 export default {
-  name: 'InternalTxns',
-  components: {
-    JsonViewer
-  },
-  props: {
-    itxs: {
-      type: Array
+    name: 'InternalTxns',
+    components: {
+        JsonViewer,
     },
-    contract: {
-      type: Object
-    }
-  },
-  data () {
-    return {}
-  }
+    props: {
+        itxs: {
+            type: Array,
+            required: true,
+        },
+        contract: {
+            type: Object,
+            required: true,
+        },
+    },
+    data () {
+        return {}
+    },
 }
 </script>
 

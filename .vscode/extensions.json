@@ -1,8 +1,12 @@
 {
   "recommendations": [
+    "abdelaziz18003.quasar-snippets",
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "octref.vetur"
+    "eg2.vscode-npm-script",
+    "christian-kohler.npm-intellisense",
+    "syler.sass-indented",
+    "vue.volar",
+    "eamodio.gitlens"
   ],
   "unwantedRecommendations": [
     "hookyqr.beautify",

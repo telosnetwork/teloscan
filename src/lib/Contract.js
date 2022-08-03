@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { ethers } from "ethers";
 export default class Contract {
 

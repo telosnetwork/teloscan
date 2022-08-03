@@ -1,24 +1,24 @@
 <template>
-    <div
-        :class="containerClasses"
-        :aria-label="hint"
-        aria-role="button"
-        tabindex="0"
-        @click="handleClick"
-        @keydown.space.enter="handleClick"
+  <div
+    :class="containerClasses"
+    :aria-label="hint"
+    aria-role="button"
+    tabindex="0"
+    @click="handleClick"
+    @keydown.space.enter="handleClick"
+  >
+    <q-tooltip
+      :offset="[0,0]"
+      anchor="center end"
+      self="center left"
     >
-        <q-tooltip
-            :offset="[0,0]"
-            anchor="center end"
-            self="center left"
-        >
-            {{ hint }}
-        </q-tooltip>
+      {{ hint }}
+    </q-tooltip>
 
-        {{ accompanyingText }}
+    {{ accompanyingText }}
 
-        <q-icon :class="iconClasses" />
-    </div>
+    <q-icon :class="iconClasses" />
+  </div>
 </template>
 
 <script>
@@ -66,14 +66,14 @@ export default {
         handleClick() {
             navigator.clipboard.writeText(this.text);
             this.iconClass = icons.success;
-            this.hint = "Copied";
+            this.hint = 'Copied';
 
             setTimeout(() => {
                 this.iconClass = icons.copy;
                 this.hint = this.defaultHint;
             }, 1500);
         },
-    }
+    },
 }
 </script>
 
