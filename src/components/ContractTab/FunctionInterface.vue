@@ -222,10 +222,39 @@ export default {
             return formatted;
         },
         formatValue(value, type) {
-            switch (type) {
-            case 'uint256':
+            const uint256ArrayRegex = /^uint256\[\d+]$/g;
+            const typeIsUint256 = type === 'uint256';
+            const typeIsUint256Array = type.match(uint256ArrayRegex)?.length === 1;
+
+            if (typeIsUint256) {
                 return BigNumber.from(value);
-            default:
+            } else if (typeIsUint256Array) {
+                const uintArrayLengthRegex = /\d+(?=]$)/g;
+                const notDigitOrCommaRegex = /[^\d,]/g;
+                const arrayOfIntegersRegex = /^\[((\d+), ?)+(\d)+\]$/g
+                const paramsLength = type.match(uintArrayLengthRegex)[0];
+
+                const valueRepresentsAnArray = (value ?? '').test(arrayOfIntegersRegex);
+
+                if (!valueRepresentsAnArray) {
+                    const exampleArray = Array(paramsLength).fill('')
+                        .map((_, index) => index)
+                        .toString()
+                        .replace(/,/g, ', ');
+
+                    const line1 = `Invalid array format; args array of type ${type}'`;
+                    const line2 = `should be formatted like [${exampleArray}] (spaces optional)`;
+                    const line3 = `\tReceived: ${value}`;
+
+                    throw `${line1}\n${line2}\n${line3}`
+                }
+
+                return value
+                    .replace(notDigitOrCommaRegex, '')
+                    .split(',')
+                    .map(valString => BigNumber.from(valString))
+                    .slice(0, paramsLength);
+            } else {
                 return value;
             }
         },
