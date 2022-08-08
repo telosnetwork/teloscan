@@ -219,6 +219,7 @@ export default {
                 let param = this.abi.inputs[i];
                 formatted.push(this.formatValue(this.params[i], param.type));
             }
+
             return formatted;
         },
         formatValue(value, type) {
@@ -234,7 +235,7 @@ export default {
                 const arrayOfIntegersRegex = /^\[((\d+), ?)+(\d)+\]$/g
                 const paramsLength = type.match(uintArrayLengthRegex)[0];
 
-                const valueRepresentsAnArray = (value ?? '').test(arrayOfIntegersRegex);
+                const valueRepresentsAnArray = arrayOfIntegersRegex.test(value ?? '');
 
                 if (!valueRepresentsAnArray) {
                     const exampleArray = Array(paramsLength).fill('')
