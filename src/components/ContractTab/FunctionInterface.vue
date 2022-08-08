@@ -232,22 +232,29 @@ export default {
             } else if (typeIsUint256Array) {
                 const uintArrayLengthRegex = /\d+(?=]$)/g;
                 const notDigitOrCommaRegex = /[^\d,]/g;
-                const arrayOfIntegersRegex = /^\[((\d+), ?)+(\d)+\]$/g
-                const paramsLength = type.match(uintArrayLengthRegex)[0];
 
-                const valueRepresentsAnArray = arrayOfIntegersRegex.test(value ?? '');
+                const paramsLength = +type.match(uintArrayLengthRegex)[0];
+                const expectedIntsWithTrailingCommas = (() => {
+                    const length = paramsLength - 1;
+                    return length < 0 ? 0 : length;
+                })();
+                // for easier reading, regex without template string escapes: /^\[(\d+, ?){x}\d+\]$/g
+                // where x = expectedIntsWithTrailingCommas
+                const arrayOfIntegersRegex = new RegExp(`^\\[(\\d+, ?){${expectedIntsWithTrailingCommas}}\\d+\\]$`, 'g');
+                const valueRepresentsAnArrayOfCorrectLength = arrayOfIntegersRegex.test(value ?? '');
 
-                if (!valueRepresentsAnArray) {
+                if (!valueRepresentsAnArrayOfCorrectLength) {
                     const exampleArray = Array(paramsLength).fill('')
                         .map((_, index) => index)
                         .toString()
                         .replace(/,/g, ', ');
 
-                    const line1 = `Invalid array format; args array of type ${type}'`;
-                    const line2 = `should be formatted like [${exampleArray}] (spaces optional)`;
+                    const line1 = 'Invalid array format';
+                    const line2 = `Args array of type ${type} should be formatted like [${exampleArray}] (spaces optional)`;
                     const line3 = `\tReceived: ${value}`;
 
-                    throw `${line1}\n${line2}\n${line3}`
+                    console.error(`${line1}\n${line2}\n${line3}`);
+                    return undefined;
                 }
 
                 return value
