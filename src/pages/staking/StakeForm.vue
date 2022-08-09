@@ -30,17 +30,13 @@ import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import { triggerLogin } from 'components/ConnectButton';
 import { WEI_PRECISION } from 'src/lib/utils';
 
-const tokens = {
-    tlos: 'tlos',
-    stlos: 'stlos',
-};
-
 export default {
     name: 'StakeForm',
     components: {
         BaseStakingForm,
     },
     data: () => ({
+        stlosContract: null,
         header: 'Stake TLOS',
         subheader: 'Staked sTLOS provide you with access to a steady income and access to our Defi applications',
         topInputLabel: 'Stake TLOS',
@@ -50,18 +46,20 @@ export default {
         bottomInputIsLoading: false,
         bottomInputLabel: 'Receive sTLOS',
         bottomInputAmount: '0',
-        wallet: { balance: '512345661427364984367282' },  // 50 TLOS -- eztodo get from wallet / service
+        maxDeposit: null,
     }),
     computed: {
-        ...mapGetters('login', ['isLoggedIn']),
+        ...mapGetters('login', ['address', 'isLoggedIn']),
         topInputMaxValue() {
             return this.isLoggedIn ? this.usableWalletBalance : null;
         },
         usableWalletBalance() {
-            // eztodo update low balance logic here
-
-            const walletBalanceWeiBn = BigNumber.from(this.wallet.balance ?? '0');
+            const walletBalanceWeiBn = BigNumber.from(this.maxDeposit ?? '0');
             const reservedForGas = BigNumber.from('10').pow(WEI_PRECISION);
+
+            // eztodo update low balance logic here
+            if (walletBalanceWeiBn.lte(reservedForGas))
+                return '0'
 
             return walletBalanceWeiBn.sub(reservedForGas).toString();
         },
@@ -77,7 +75,7 @@ export default {
                 balanceEth = integer.concat(`.${fraction.slice(0, 3)}`);
             }
 
-            // eztodo if balance is too low?
+            // eztodo update low balance here
             const balanceTLOS = ethers.utils.commify(balanceEth);
 
             return `${balanceTLOS} Available`;
@@ -97,6 +95,14 @@ export default {
             return this.isLoggedIn ? 'Stake' : 'Connect Wallet';
         },
     },
+    created() {
+        this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)
+            .then(contract => {
+                this.stlosContract = contract.getContractInstance();
+                this.setMaxDeposit();
+            })
+            .catch(e => console.error(`Failed to get sTLOS contract instance: ${e.message}`));
+    },
     methods: {
         handleInputTop(newWei = '0') {
             if (newWei === this.topInputAmount)
@@ -106,7 +112,7 @@ export default {
             this.topInputAmount = newWei;
 
             debounce(
-                () => this.previewExchange(this.topInputAmount, tokens.tlos)
+                () => this.convertTlosToStlos(this.topInputAmount)
                     .then(amount => this.bottomInputAmount = amount)
                     .catch(err => {
                         this.bottomInputAmount = '';
@@ -124,7 +130,7 @@ export default {
             this.bottomInputAmount = newWei;
 
             debounce(
-                () => this.previewExchange(this.bottomInputAmount, tokens.tlos)
+                () => this.convertStlosToTlos(this.bottomInputAmount)
                     .then(amount => this.topInputAmount = amount)
                     .catch(err => {
                         this.topInputAmount = '';
@@ -138,18 +144,16 @@ export default {
             if (!this.isLoggedIn)
                 triggerLogin();
         },
-        previewExchange(wei) {
-            // let endpoint = '';
-
-            // if (token === tokens.tlos) {
-            //     endpoint = 'placeholder - endpoint to get sTLOS for given TLOS amount';
-            // } else if (token === tokens.tlos) {
-            //     endpoint = 'placeholder - endpoint to get TLOS for given sTLOS amount';
-            // }
-
-            // return this.$teloscanApi.get(endpoint, wei);
-
-            return Promise.resolve(wei);
+        convertTlosToStlos(wei) {
+            return this.stlosContract.previewDeposit(wei).then(bigNum => bigNum.toString());
+        },
+        convertStlosToTlos(wei) {
+            return this.stlosContract.previewRedeem(wei).then(bigNum => bigNum.toString());
+        },
+        setMaxDeposit() {
+            this.$evm.telos.getEthAccount(this.address)
+                .then(account => { this.maxDeposit = account.balance.toString() })
+                .catch(e => console.error(`Failed to get user EVM account balance: ${e.message}`));
         },
     },
 }

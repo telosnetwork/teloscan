@@ -17,6 +17,8 @@
   HYPERION_ENDPOINT = "https://mainnet.telos.net"
   TELOS_API_ENDPOINT = "https://api.telos.net"
   VERIFIED_CONTRACTS_BUCKET = "verified-evm-contracts"
+  STLOS_CONTRACT_ADDRESS = ""
+  STLOS_ESCROW_CONTRACT_ADDRESS = ""
 
 [context.dev.environment]
   APP_NAME = "Teloscan Testnet"
@@ -34,6 +36,9 @@
   TELOS_API_ENDPOINT = "https://api-dev.telos.net"
   VERIFIED_CONTRACTS_BUCKET = "verified-evm-contracts-testnet"
 
+  STLOS_CONTRACT_ADDRESS = "0x5a9b40a59109a848b82a0ff153910bb595082e09"
+  STLOS_ESCROW_CONTRACT_ADDRESS = "0x0a5b1c590F23b1B63716f613dA1C29979C63fF7a"
+
 [context.deploy-preview.environment]
   APP_NAME = "Teloscan Testnet"
   NODE_VERSION = "14"
@@ -49,6 +54,9 @@
   HYPERION_ENDPOINT = "https://testnet.telos.net"
   TELOS_API_ENDPOINT = "https://api-dev.telos.net"
   VERIFIED_CONTRACTS_BUCKET = "verified-evm-contracts-testnet"
+
+  STLOS_CONTRACT_ADDRESS = "0x5a9b40a59109a848b82a0ff153910bb595082e09"
+  STLOS_ESCROW_CONTRACT_ADDRESS = "0x0a5b1c590F23b1B63716f613dA1C29979C63fF7a"
 
 [[redirects]]
   from = "/*"

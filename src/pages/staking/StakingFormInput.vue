@@ -20,13 +20,14 @@
                 @click="handleInfoClick"
             >
                 <q-tooltip
-                    :offset="[0, 48]"
+                    :offset="[0, 88]"
                     anchor="top middle"
                     self="top middle"
                 >
                     <!-- eztodo improve this message - should convey that this total balance isn't exactly equal to wallet balance -->
-                    Exact balance (after approx. gas fees):<br>
-                    {{ availableBalance }}
+                    Click to input full wallet balance<br><br>
+                    Exact balance (less approx. gas fees):<br>
+                    {{ availableBalance }} TLOS
                 </q-tooltip>
 
                 {{ infoText }}
@@ -196,6 +197,12 @@ export default {
 
             const { input } = this.$refs;
 
+            this.setInputValue(
+                String(input.value)
+                    .replace(leadingZeroesRegex, '')
+                    .replace(illegalCharsPrettyEthRegex, ''),
+            );
+
             if (['', null, undefined, '0', '0.'].includes(input.value)) {
                 emit('0');
                 return;
@@ -209,12 +216,6 @@ export default {
 
             let caretPosition = input.selectionStart;
             const savedCommaCount = (input.value.match(commaRegex) || []).length;
-
-            this.setInputValue(
-                String(input.value)
-                    .replace(leadingZeroesRegex, '')
-                    .replace(illegalCharsPrettyEthRegex, ''),
-            );
 
             // remove extraneous dots not handled in keydownHandler (ie. from pasted values)
             if ((input.value?.match(dotRegex) ?? []).length > 1) {
