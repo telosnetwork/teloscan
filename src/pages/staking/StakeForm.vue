@@ -95,13 +95,23 @@ export default {
             return this.isLoggedIn ? 'Stake' : 'Connect Wallet';
         },
     },
+    watch: {
+        address: {
+            immediate: true,
+            handler(address, oldAddress) {
+                if (address && address !== oldAddress)
+                    this.setMaxDeposit();
+            },
+        },
+    },
     created() {
         this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)
             .then(contract => {
                 this.stlosContract = contract.getContractInstance();
-                this.setMaxDeposit();
             })
-            .catch(e => console.error(`Failed to get sTLOS contract instance: ${e.message}`));
+            .catch(e => {
+                console.error(`Failed to get sTLOS contract instance: ${e.message}`);
+            });
     },
     methods: {
         handleInputTop(newWei = '0') {
@@ -152,8 +162,12 @@ export default {
         },
         setMaxDeposit() {
             this.$evm.telos.getEthAccount(this.address)
-                .then(account => { this.maxDeposit = account.balance.toString() })
-                .catch(e => console.error(`Failed to get user EVM account balance: ${e.message}`));
+                .then(account => {
+                    this.maxDeposit = account.balance.toString();
+                })
+                .catch(e => {
+                    console.error(`Failed to get user EVM account balance: ${e.message}`);
+                });
         },
     },
 }

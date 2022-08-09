@@ -17,6 +17,7 @@
   HYPERION_ENDPOINT = "https://mainnet.telos.net"
   TELOS_API_ENDPOINT = "https://api.telos.net"
   VERIFIED_CONTRACTS_BUCKET = "verified-evm-contracts"
+
   STLOS_CONTRACT_ADDRESS = ""
   STLOS_ESCROW_CONTRACT_ADDRESS = ""
 
