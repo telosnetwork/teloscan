@@ -27,20 +27,25 @@ export default {
             'nativeAccount',
         ]),
     },
-    mounted() {
+    async mounted() {
         const loginData = localStorage.getItem('loginData');
         if (!loginData)
             return;
 
         const loginObj = JSON.parse(loginData);
         if (loginObj.type === LOGIN_EVM) {
-            switch (loginObj.provider) {
-            case PROVIDER_WEB3_INJECTED:
-                this.injectedWeb3Login();
-                break;
-            default:
-                console.error(`Unknown web3 login type: ${loginObj.provider}`);
-                break;
+            const provider = this.getInjectedProvider();
+            let checkProvider = new ethers.providers.Web3Provider(provider)
+            const {chainId} = await checkProvider.getNetwork();
+            if(loginObj.chain == chainId){
+                switch (loginObj.provider) {
+                case PROVIDER_WEB3_INJECTED:
+                    this.injectedWeb3Login();
+                    break;
+                default:
+                    console.error(`Unknown web3 login type: ${loginObj.provider}`);
+                    break;
+                }
             }
         } else if (loginObj.type === LOGIN_NATIVE) {
             const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
@@ -81,8 +86,22 @@ export default {
                 this.setLogin({
                     address,
                 })
-                this.$providerManager.setProvider(this.getInjectedProvider());
-                localStorage.setItem('loginData', JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED}));
+                let provider = this.getInjectedProvider();
+                let checkProvider = new ethers.providers.Web3Provider(provider)
+                this.$providerManager.setProvider(provider);
+                const {chainId} = await checkProvider.getNetwork();
+                localStorage.setItem('loginData', JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED, chain: chainId }));
+                provider.on('chainChanged', (newNetwork) => {
+                    if(newNetwork != chainId){
+                        this.setLogin({});
+                        this.$providerManager.setProvider(null);
+                    }
+                });
+                provider.on('accountsChanged', (accounts) => {
+                    this.setLogin({
+                        address: accounts[0],
+                    })
+                })
             }
             this.showLogin = false;
         },
@@ -123,7 +142,7 @@ export default {
                 checkProvider = await this.ensureCorrectChain(checkProvider);
                 return accounts[0];
             } else {
-                const accessGranted = await provider.request({ method: 'eth_requestAccounts' })
+                const accessGranted = await provider.request({ method: 'eth_requestAccounts' });
 
                 if (accessGranted.length < 1) {
                     return false;
@@ -155,7 +174,7 @@ export default {
 
             if (provider) {
                 const chainId = parseInt(process.env.NETWORK_EVM_CHAIN_ID, 10);
-                const chainIdParam = `0x${chainId.toString(16)}`
+                const chainIdParam = `0x${chainId.toString(16)}`;
                 const mainnet = chainId === 40;
                 try {
                     await provider.request({
@@ -164,7 +183,7 @@ export default {
                     });
                     return true;
                 } catch (e) {
-                    if (e.code === 4902) {  // "Chain <hex chain id> hasn't been added"
+                    if (e.code === 4902) {  // 'Chain <hex chain id> hasn't been added'
                         try {
                             await provider.request({
                                 method: 'wallet_addEthereumChain',
@@ -194,48 +213,48 @@ export default {
 }
 </script>
 
-<template lang="pug">
+<template lang='pug'>
   div()
-    q-btn( v-if="!isLoggedIn" id="c-connect-button__login-button" label="Connect Wallet" @click="connect()" )
-    q-btn-dropdown( v-if="isLoggedIn" :label="getLoginDisplay()" )
+    q-btn( v-if='!isLoggedIn' id='c-connect-button__login-button' label='Connect Wallet' @click='connect()' )
+    q-btn-dropdown( v-if='isLoggedIn' :label='getLoginDisplay()' )
       q-list()
-        q-item( clickable v-close-popup @click="goToAddress()" )
+        q-item( clickable v-close-popup @click='goToAddress()' )
           q-item-section()
             q-item-label() View address
-        q-item( clickable v-close-popup @click="disconnect()" )
+        q-item( clickable v-close-popup @click='disconnect()' )
           q-item-section()
             q-item-label() Disconnect
-    q-dialog( v-model="showLogin" )
+    q-dialog( v-model='showLogin' )
       q-card( rounded )
-        q-tabs( v-model="tab" )
-          q-tab( name="web3" label="EVM Wallets" )
-          q-tab( name="native" label="Native Wallets" )
+        q-tabs( v-model='tab' )
+          q-tab( name='web3' label='EVM Wallets' )
+          q-tab( name='native' label='Native Wallets' )
         q-separator()
-        q-tab-panels( v-model="tab" animated )
-          q-tab-panel( name="web3" )
-            q-card.wallet-icon.cursor-pointer( @click="injectedWeb3Login()" )
-              q-img.wallet-img( :src="metamaskLogo" )
+        q-tab-panels( v-model='tab' animated )
+          q-tab-panel( name='web3' )
+            q-card.wallet-icon.cursor-pointer( @click='injectedWeb3Login()' )
+              q-img.wallet-img( :src='metamaskLogo' )
               p Metamask
-          q-tab-panel( name="native" )
-            q-card.wallet-icon.cursor-pointer( v-for="(wallet, idx) in $ual.authenticators"
-              :key="wallet.getStyle().text"
-              @click="ualLogin(wallet)" )
-              q-img.wallet-img( :src="wallet.getStyle().icon" )
+          q-tab-panel( name='native' )
+            q-card.wallet-icon.cursor-pointer( v-for='(wallet, idx) in $ual.authenticators'
+              :key='wallet.getStyle().text'
+              @click='ualLogin(wallet)' )
+              q-img.wallet-img( :src='wallet.getStyle().icon' )
               p {{ wallet.getStyle().text }}
 </template>
 
 <style lang='sass'>
-.wallet-icon
-  width: 4.5rem
-  display: inline-block
-  margin: .5rem
-  padding: .5rem
-  text-align: center
-  p
-    margin: .25rem
+    .wallet-icon
+        width: 4.5rem
+        display: inline-block
+        margin: .5rem
+        padding: .5rem
+        text-align: center
+        p
+            margin: .25rem
 
-.wallet-img
-  width: 3.5rem
-  margin: .5rem .5rem 0 .5rem
+    .wallet-img
+        width: 3.5rem
+        margin: .5rem .5rem 0 .5rem
 
 </style>
