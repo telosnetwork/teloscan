@@ -99,8 +99,12 @@ export default {
         address: {
             immediate: true,
             handler(address, oldAddress) {
-                if (address && address !== oldAddress)
-                    this.setMaxDeposit();
+                if (address !== oldAddress) {
+                    if (address)
+                        this.setMaxDeposit();
+                    else
+                        this.maxDeposit = null;
+                }
             },
         },
     },
