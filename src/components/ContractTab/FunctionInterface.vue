@@ -1,105 +1,105 @@
 <template>
-  <div>
+<div>
     <q-dialog v-model="enterAmount">
-      <q-card class="amount-dialog">
-        <p>Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256</p>
-        <q-select
-          v-model="selectDecimals"
-          :options="decimalOptions"
-          @input="updateDecimals"
-        />
-        <q-input
-          v-if="selectDecimals.value === 'custom'"
-          v-model.number="customDecimals"
-          type="number"
-          label="Custom decimals"
-          @change="updateDecimals"
-        />
-        <q-input
-          v-model="amountInput"
-          label="Amount"
-          type="number"
-        />
-        <q-card-actions align="right">
-          <q-btn
-            v-close-popup
-            flat="flat"
-            label="Ok"
-            color="primary"
-            @click="setAmount"
-          />
-          <q-btn
-            v-close-popup
-            flat="flat"
-            label="Cancel"
-            color="primary"
-            @click="clearAmount"
-          />
-        </q-card-actions>
-      </q-card>
+        <q-card class="amount-dialog">
+            <p>Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256</p>
+            <q-select
+                v-model="selectDecimals"
+                :options="decimalOptions"
+                @input="updateDecimals"
+            />
+            <q-input
+                v-if="selectDecimals.value === 'custom'"
+                v-model.number="customDecimals"
+                type="number"
+                label="Custom decimals"
+                @change="updateDecimals"
+            />
+            <q-input
+                v-model="amountInput"
+                label="Amount"
+                type="number"
+            />
+            <q-card-actions align="right">
+                <q-btn
+                    v-close-popup
+                    flat="flat"
+                    label="Ok"
+                    color="primary"
+                    @click="setAmount"
+                />
+                <q-btn
+                    v-close-popup
+                    flat="flat"
+                    label="Cancel"
+                    color="primary"
+                    @click="clearAmount"
+                />
+            </q-card-actions>
+        </q-card>
     </q-dialog>
     <div v-if="abi.stateMutability === 'payable'">
-      <q-input
-        v-model="value"
-        label="Value (amount)"
-      >
-        <template #append>
-          <q-icon
-            class="cursor-pointer"
-            name="pin"
-            @click="showAmountDialog('value')"
-          />
-        </template>
-      </q-input>
+        <q-input
+            v-model="value"
+            label="Value (amount)"
+        >
+            <template #append>
+                <q-icon
+                    class="cursor-pointer"
+                    name="pin"
+                    @click="showAmountDialog('value')"
+                />
+            </template>
+        </q-input>
     </div>
     <div
-      v-for="(param, idx) in abi.inputs"
-      :key="idx"
+        v-for="(param, idx) in abi.inputs"
+        :key="idx"
     >
-      <q-input
-        v-model="params[idx]"
-        :label="makeLabel(param, idx)"
-      >
-        <template
-          v-if="param.type === 'uint256'"
-          #append
+        <q-input
+            v-model="params[idx]"
+            :label="makeLabel(param, idx)"
         >
-          <q-icon
-            class="cursor-pointer"
-            name="pin"
-            @click="showAmountDialog(idx)"
-          />
-        </template>
-      </q-input>
+            <template
+                v-if="param.type === 'uint256'"
+                #append
+            >
+                <q-icon
+                    class="cursor-pointer"
+                    name="pin"
+                    @click="showAmountDialog(idx)"
+                />
+            </template>
+        </q-input>
     </div>
     <q-btn
-      v-if="enableRun"
-      :loading="loading"
-      :label="runLabel"
-      :disabled="missingInputs"
-      class="run-button"
-      color="primary"
-      icon="send"
-      @click="run"
+        v-if="enableRun"
+        :loading="loading"
+        :label="runLabel"
+        :disabled="missingInputs"
+        class="run-button"
+        color="primary"
+        icon="send"
+        @click="run"
     />
 
     <p class="text-red output-container">
-      {{ errorMessage }}
+        {{ errorMessage }}
     </p>
     <div
-      v-if="result"
-      class="output-container"
+        v-if="result"
+        class="output-container"
     >
-      Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
+        Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
     </div>
     <div
-      v-if="hash"
-      class="output-container"
+        v-if="hash"
+        class="output-container"
     >
-      View Transaction:&nbsp;
-      <transaction-field :transaction-hash="hash" />
+        View Transaction:&nbsp;
+        <transaction-field :transaction-hash="hash" />
     </div>
-  </div>
+</div>
 </template>
 
 <script>
@@ -219,13 +219,50 @@ export default {
                 let param = this.abi.inputs[i];
                 formatted.push(this.formatValue(this.params[i], param.type));
             }
+
             return formatted;
         },
         formatValue(value, type) {
-            switch (type) {
-            case 'uint256':
+            const uint256ArrayRegex = /^uint256\[\d+]$/g;
+            const typeIsUint256 = type === 'uint256';
+            const typeIsUint256Array = type.match(uint256ArrayRegex)?.length === 1;
+
+            if (typeIsUint256) {
                 return BigNumber.from(value);
-            default:
+            } else if (typeIsUint256Array) {
+                const uintArrayLengthRegex = /\d+(?=]$)/g;
+                const notDigitOrCommaRegex = /[^\d,]/g;
+
+                const paramsLength = +type.match(uintArrayLengthRegex)[0];
+                const expectedIntsWithTrailingCommas = (() => {
+                    const length = paramsLength - 1;
+                    return length < 0 ? 0 : length;
+                })();
+                // for easier reading, regex without template string escapes: /^\[(\d+, ?){x}\d+\]$/g
+                // where x = expectedIntsWithTrailingCommas
+                const arrayOfIntegersRegex = new RegExp(`^\\[(\\d+, ?){${expectedIntsWithTrailingCommas}}\\d+\\]$`, 'g');
+                const valueRepresentsAnArrayOfCorrectLength = arrayOfIntegersRegex.test(value ?? '');
+
+                if (!valueRepresentsAnArrayOfCorrectLength) {
+                    const exampleArray = Array(paramsLength).fill('')
+                        .map((_, index) => index)
+                        .toString()
+                        .replace(/,/g, ', ');
+
+                    const line1 = 'Invalid array format';
+                    const line2 = `Args array of type ${type} should be formatted like [${exampleArray}] (spaces optional)`;
+                    const line3 = `\tReceived: ${value}`;
+
+                    console.error(`${line1}\n${line2}\n${line3}`);
+                    return undefined;
+                }
+
+                return value
+                    .replace(notDigitOrCommaRegex, '')
+                    .split(',')
+                    .map(valString => BigNumber.from(valString))
+                    .slice(0, paramsLength);
+            } else {
                 return value;
             }
         },
