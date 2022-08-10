@@ -144,13 +144,17 @@ export default {
             this.bottomInputAmount = newWei;
 
             debounce(
-                () => this.convertStlosToTlos(this.bottomInputAmount)
-                    .then(amount => this.topInputAmount = amount)
-                    .catch(err => {
-                        this.topInputAmount = '';
-                        console.error(err);
-                    })
-                    .finally(() => this.topInputIsLoading = false),
+                () => {
+                    // eztodo fix debounce 🙄
+                    console.log('bingbong')
+                    this.convertStlosToTlos(this.bottomInputAmount)
+                        .then(amount => this.topInputAmount = amount)
+                        .catch(err => {
+                            this.topInputAmount = '';
+                            console.error(err);
+                        })
+                        .finally(() => this.topInputIsLoading = false)
+                },
                 750,
             )();
         },

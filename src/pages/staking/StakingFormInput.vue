@@ -62,17 +62,17 @@
 
 <script>
 import { BigNumber, ethers } from 'ethers';
+import { debounce } from 'lodash';
 
 import { WEI_PRECISION } from 'src/lib/utils';
 
 const { commify, parseUnits, formatEther} = ethers.utils;
 
 const dot = '.';
-const illegalCharsEthRegex = /[^0-9.]/g;
-const illegalCharsPrettyEthRegex = /[^0-9,.]/g;
+const illegalCharsEthRegex = /[^\d.]/g;
+const illegalCharsPrettyEthRegex = /[^\d,.]/g;
 const leadingZeroesRegex = /^0+/g;
-const trailingZeroesRegex = /0+$/g
-const trailingDotZeroRegex = /\.0+$/g;
+const decimalRegex = /\.\d+$/g;
 const commaRegex = /,/g;
 const dotRegex = /\./g;
 
@@ -244,27 +244,24 @@ export default {
                 workingValue = formatEther(this.maxValueWei);
                 workingValueAsWeiBn = parseUnits(workingValue, 'ether');
                 caretPosition = workingValue.length;
+                this.triggerWiggle();
             }
 
-            const [integer, fractional = ''] = currentInputValue.split(dot);
-            let savedTrailingFractionalZeroes = '';
+            let commifiedWorkingValue = commify(workingValue);
 
-            if (fractional.length) {
-                const newFractional = fractional.substring(0, WEI_PRECISION);
-                const trailingZeroes = newFractional.match(trailingZeroesRegex)?.[0] ?? '';
-                workingValue = `${integer}.${newFractional}`;
+            if (commifiedWorkingValue.includes(dot)) {
+                // override commify's handling of trailing zeroes to allow user to continue typing past 1 zero
+                //    eg. 123.00003
 
-                if (trailingZeroes.length)
-                    savedTrailingFractionalZeroes = `${dot}trailingZeroes`;
+                const commifiedInteger = commify(workingValue).replace(decimalRegex, '');
+                const fractional = (workingValue.match(decimalRegex)?.[0] ?? '').slice(0, WEI_PRECISION);
+
+                commifiedWorkingValue = `${commifiedInteger}${fractional}`;
             }
 
-            this.setInputValue(
-                commify(workingValue)
-                    .replace(trailingDotZeroRegex, '')
-                    .concat(savedTrailingFractionalZeroes),
-            );
+            this.setInputValue(commifiedWorkingValue);
 
-            const newCommaCount = (input.value.match(commaRegex) || []).length;
+            const newCommaCount = (input.value.match(commaRegex) ?? []).length;
             const deltaCommaCount = newCommaCount - savedCommaCount;
 
             this.setInputCaretPosition(caretPosition + deltaCommaCount);
@@ -276,6 +273,22 @@ export default {
         setInputCaretPosition(val) {
             ['Start', 'End'].forEach(property => this.$refs.input[`selection${property}`] = val)
         },
+        triggerWiggle() {
+            const debounceMs = 1000;
+            // eztodo fix debounce 🙄
+            debounce(
+                () => {
+                    const { $el } = this;
+
+                    $el.classList.add('c-staking-input--wiggle');
+                    setTimeout(() => {
+                        $el.classList.remove('c-staking-input--wiggle');
+                    }, 750);
+                },
+                debounceMs,
+                { leading: true },
+            )();
+        },
     },
 }
 </script>
@@ -286,6 +299,13 @@ export default {
     padding: 16px;
     border-radius: 10px;
     background-color: rgba($secondary, 0.03);
+
+    &--wiggle {
+        animation-name: wiggle;
+        animation-duration: 350ms;
+        animation-iteration-count: 1;
+        animation-timing-function: linear;
+    }
 
     &__label {
         margin: 0;
@@ -313,6 +333,28 @@ export default {
         border: none;
         outline: none;
         font-size: 1.4rem;
+    }
+
+    @keyframes wiggle {
+        0% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(-4px);
+        }
+
+        50% {
+            transform: translateX(4px);
+        }
+
+        75% {
+            transform: translateX(-4px);
+        }
+
+        100% {
+            transform: translateX(0);
+        }
     }
 }
 </style>
