@@ -1,5 +1,8 @@
 <template>
-<div class="c-staking-input container-fluid shadow-3">
+<div
+    class="c-staking-input container-fluid shadow-3"
+    @animationend="handleWiggleEnd"
+>
     <div class="row">
         <div class="col-6">
             <h6 class="c-staking-input__label">
@@ -62,7 +65,6 @@
 
 <script>
 import { BigNumber, ethers } from 'ethers';
-import { debounce } from 'lodash';
 
 import { WEI_PRECISION } from 'src/lib/utils';
 
@@ -274,20 +276,10 @@ export default {
             ['Start', 'End'].forEach(property => this.$refs.input[`selection${property}`] = val)
         },
         triggerWiggle() {
-            const debounceMs = 1000;
-            // eztodo fix debounce 🙄
-            debounce(
-                () => {
-                    const { $el } = this;
-
-                    $el.classList.add('c-staking-input--wiggle');
-                    setTimeout(() => {
-                        $el.classList.remove('c-staking-input--wiggle');
-                    }, 750);
-                },
-                debounceMs,
-                { leading: true },
-            )();
+            this.$el.classList.add('c-staking-input--wiggle');
+        },
+        handleWiggleEnd() {
+            this.$el.classList.remove('c-staking-input--wiggle');
         },
     },
 }
@@ -300,11 +292,12 @@ export default {
     border-radius: 10px;
     background-color: rgba($secondary, 0.03);
 
+    animation-duration: 350ms;
+    animation-iteration-count: 1;
+    animation-timing-function: linear;
+
     &--wiggle {
         animation-name: wiggle;
-        animation-duration: 350ms;
-        animation-iteration-count: 1;
-        animation-timing-function: linear;
     }
 
     &__label {

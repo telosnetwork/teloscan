@@ -47,6 +47,8 @@ export default {
         bottomInputLabel: 'Receive sTLOS',
         bottomInputAmount: '0',
         maxDeposit: null,
+        debouncedTopInputHandler: null,
+        debouncedBottomInputHandler: null,
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
@@ -116,6 +118,34 @@ export default {
             .catch(e => {
                 console.error(`Failed to get sTLOS contract instance: ${e.message}`);
             });
+
+        const debounceWaitMs = 250;
+
+        this.debouncedTopInputHandler = debounce(
+            () => {
+                this.stlosContract.previewDeposit(this.topInputAmount)
+                    .then(amountBigNum => this.bottomInputAmount = amountBigNum.toString())
+                    .catch(err => {
+                        this.bottomInputAmount = '';
+                        console.error(`Unable to convert TLOS to STLOS: ${err}`);
+                    })
+                    .finally(() => this.bottomInputIsLoading = false)
+            },
+            debounceWaitMs,
+        );
+
+        this.debouncedBottomInputHandler = debounce(
+            () => {
+                this.stlosContract.previewRedeem(this.bottomInputAmount)
+                    .then(amountBigNum => this.topInputAmount = amountBigNum.toString())
+                    .catch(err => {
+                        this.topInputAmount = '';
+                        console.error(`Unable to convert STLOS to TLOS: ${err}`);
+                    })
+                    .finally(() => this.topInputIsLoading = false)
+            },
+            debounceWaitMs,
+        );
     },
     methods: {
         handleInputTop(newWei = '0') {
@@ -125,16 +155,7 @@ export default {
             this.bottomInputIsLoading = true;
             this.topInputAmount = newWei;
 
-            debounce(
-                () => this.convertTlosToStlos(this.topInputAmount)
-                    .then(amount => this.bottomInputAmount = amount)
-                    .catch(err => {
-                        this.bottomInputAmount = '';
-                        console.error(err);
-                    })
-                    .finally(() => this.bottomInputIsLoading = false),
-                750,
-            )();
+            this.debouncedTopInputHandler();
         },
         handleInputBottom(newWei = '0') {
             if (newWei === this.bottomInputAmount)
@@ -143,30 +164,11 @@ export default {
             this.topInputIsLoading = true;
             this.bottomInputAmount = newWei;
 
-            debounce(
-                () => {
-                    // eztodo fix debounce 🙄
-                    console.log('bingbong')
-                    this.convertStlosToTlos(this.bottomInputAmount)
-                        .then(amount => this.topInputAmount = amount)
-                        .catch(err => {
-                            this.topInputAmount = '';
-                            console.error(err);
-                        })
-                        .finally(() => this.topInputIsLoading = false)
-                },
-                750,
-            )();
+            this.debouncedBottomInputHandler();
         },
         handleCtaClick() {
             if (!this.isLoggedIn)
                 triggerLogin();
-        },
-        convertTlosToStlos(wei) {
-            return this.stlosContract.previewDeposit(wei).then(bigNum => bigNum.toString());
-        },
-        convertStlosToTlos(wei) {
-            return this.stlosContract.previewRedeem(wei).then(bigNum => bigNum.toString());
         },
         setMaxDeposit() {
             this.$evm.telos.getEthAccount(this.address)
