@@ -219,13 +219,50 @@ export default {
                 let param = this.abi.inputs[i];
                 formatted.push(this.formatValue(this.params[i], param.type));
             }
+
             return formatted;
         },
         formatValue(value, type) {
-            switch (type) {
-            case 'uint256':
+            const uint256ArrayRegex = /^uint256\[\d+]$/g;
+            const typeIsUint256 = type === 'uint256';
+            const typeIsUint256Array = type.match(uint256ArrayRegex)?.length === 1;
+
+            if (typeIsUint256) {
                 return BigNumber.from(value);
-            default:
+            } else if (typeIsUint256Array) {
+                const uintArrayLengthRegex = /\d+(?=]$)/g;
+                const notDigitOrCommaRegex = /[^\d,]/g;
+
+                const paramsLength = +type.match(uintArrayLengthRegex)[0];
+                const expectedIntsWithTrailingCommas = (() => {
+                    const length = paramsLength - 1;
+                    return length < 0 ? 0 : length;
+                })();
+                // for easier reading, regex without template string escapes: /^\[(\d+, ?){x}\d+\]$/g
+                // where x = expectedIntsWithTrailingCommas
+                const arrayOfIntegersRegex = new RegExp(`^\\[(\\d+, ?){${expectedIntsWithTrailingCommas}}\\d+\\]$`, 'g');
+                const valueRepresentsAnArrayOfCorrectLength = arrayOfIntegersRegex.test(value ?? '');
+
+                if (!valueRepresentsAnArrayOfCorrectLength) {
+                    const exampleArray = Array(paramsLength).fill('')
+                        .map((_, index) => index)
+                        .toString()
+                        .replace(/,/g, ', ');
+
+                    const line1 = 'Invalid array format';
+                    const line2 = `Args array of type ${type} should be formatted like [${exampleArray}] (spaces optional)`;
+                    const line3 = `\tReceived: ${value}`;
+
+                    console.error(`${line1}\n${line2}\n${line3}`);
+                    return undefined;
+                }
+
+                return value
+                    .replace(notDigitOrCommaRegex, '')
+                    .split(',')
+                    .map(valString => BigNumber.from(valString))
+                    .slice(0, paramsLength);
+            } else {
                 return value;
             }
         },
