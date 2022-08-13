@@ -71,10 +71,13 @@ import { WEI_PRECISION } from 'src/lib/utils';
 const { commify, parseUnits, formatEther} = ethers.utils;
 
 const dot = '.';
-const illegalCharsEthRegex = /[^\d.]/g;
-const illegalCharsPrettyEthRegex = /[^\d,.]/g;
-const leadingZeroesRegex = /^0+/g;
+const zeroDot = '0.';
+const zero = '0';
+const notIntegerOrDotRegex = /[^\d.]/g;
+const notIntegerDotOrCommaRegex = /[^\d,.]/g;
+const leadingZeroesRegex = /^0+(?!$|\.)/g;
 const decimalRegex = /\.\d+$/g;
+const dotZeroRegex = /\.0$/g
 const commaRegex = /,/g;
 const dotRegex = /\./g;
 
@@ -116,14 +119,14 @@ export default {
     },
     watch: {
         value(newVal) {
-            const newValWeiBn = BigNumber.from(newVal || '0');
+            const newValWeiBn = BigNumber.from(newVal || zero);
             const currentValWeiBn = parseUnits(
-                this.$refs.input.value?.replaceAll(',', '') || '0',
+                this.$refs.input.value?.replaceAll(',', '') || zero,
             );
             const newValIsDifferent = !newValWeiBn.eq(currentValWeiBn);
 
             if (newValIsDifferent) {
-                const formattedNewVal = formatEther(newValWeiBn).replace(/.0$/g, '');
+                const formattedNewVal = formatEther(newValWeiBn).replace(dotZeroRegex, '');
                 this.setInputValue(formattedNewVal);
                 this.handleInput();
             }
@@ -137,39 +140,47 @@ export default {
             const { input } = this.$refs;
 
             const numKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-            const currentInputValue = String(input.value);
+            const modifierKeys = ['ctrl', 'meta', 'shift', 'alt'].map(mod => `${mod}Key`);
+            const value = input.value;
             const caretPosition = input.selectionStart;
             const pressedKey = event.key;
 
-            const eventHasModifiers = ['ctrlKey', 'metaKey', 'shiftKey', 'altKey'].some(modifier => event[modifier] === true);
+            const eventHasModifiers = modifierKeys.some(modifier => event[modifier] === true);
             const targetHasNoSelection = caretPosition === input.selectionEnd;
             const deletingBackward = event.key === 'Backspace' && !eventHasModifiers && targetHasNoSelection;
-            const deletingForward = event.key === 'Delete' && !eventHasModifiers && targetHasNoSelection;
-            const nextCharacterIsComma = currentInputValue[caretPosition] === ',';
-            const previousCharacterIsComma = currentInputValue[caretPosition - 1] === ',';
+            const deletingForward  = event.key === 'Delete'    && !eventHasModifiers && targetHasNoSelection;
 
-            if (deletingForward && nextCharacterIsComma) {
-                const preCommaInclusive = currentInputValue.slice(0, caretPosition + 1);
-                const newPostComma = currentInputValue.slice(caretPosition + 2);
+            const nextCharacterIsComma     = commaRegex.test(value[caretPosition]);
+            const previousCharacterIsComma = commaRegex.test(value[caretPosition - 1]);
+            const nextCharacterIsDot       =   dotRegex.test(value[caretPosition]);
+            const previousCharacterIsDot   =   dotRegex.test(value[caretPosition - 1]);
+
+            const deletingDot   = (deletingForward && nextCharacterIsDot)   || (deletingBackward && previousCharacterIsDot);
+            const deletingComma = (deletingForward && nextCharacterIsComma) || (deletingBackward && previousCharacterIsComma);
+
+            if (deletingDot) {
+                this.setInputValue(value.replace(dotRegex, ''));
+            } else if (deletingForward && nextCharacterIsComma) {
+                const preCommaInclusive = value.slice(0, caretPosition + 1);
+                const newPostComma =      value.slice(caretPosition + 2);
 
                 this.setInputValue(preCommaInclusive.concat(newPostComma));
-                this.setInputCaretPosition(caretPosition);
-
-                return;
-            }
-
-            if (deletingBackward && previousCharacterIsComma) {
-                const newPreComma = currentInputValue.slice(0, caretPosition - 2);
-                const postCommaInclusive = currentInputValue.slice(caretPosition - 1);
+            } else if (deletingBackward && previousCharacterIsComma) {
+                const newPreComma =        value.slice(0, caretPosition - 2);
+                const postCommaInclusive = value.slice(caretPosition - 1);
 
                 this.setInputValue(newPreComma.concat(postCommaInclusive));
-                this.setInputCaretPosition(caretPosition);
+            }
 
+            if (deletingDot || deletingComma) {
+                this.setInputCaretPosition(caretPosition);
+                event.preventDefault();
+                this.handleInput();
                 return;
             }
 
             const tryingToAddDigitsPastMaxPrecision = (() => {
-                const valueSplitAtDecimal = currentInputValue.split(dot);
+                const valueSplitAtDecimal = value.split(dot);
                 const integer = valueSplitAtDecimal[0] ?? '';
                 const fractional = valueSplitAtDecimal[1] ?? '';
 
@@ -179,10 +190,10 @@ export default {
 
                 return keypressIsDigit && caretIsPastDecimal && !fractionalUnderMaxLength
             })();
-            const tryingToAddSecondDot = pressedKey === dot && currentInputValue.includes(dot);
+            const tryingToAddSecondDot = pressedKey === dot && value.includes(dot);
             const tryingToAddLeadingZeroes =
-                pressedKey === '0' &&
-                currentInputValue[0] === '0' &&
+                pressedKey === zero &&
+                value[0]   === zero &&
                 [0, 1].includes(caretPosition);
 
             const invalidKeystroke =
@@ -202,17 +213,14 @@ export default {
             this.setInputValue(
                 String(input.value)
                     .replace(leadingZeroesRegex, '')
-                    .replace(illegalCharsPrettyEthRegex, ''),
+                    .replace(notIntegerDotOrCommaRegex, ''),
             );
 
-            if (['', null, undefined, '0', '0.'].includes(input.value)) {
-                emit('0');
-                return;
-            }
+            if (['', null, undefined, zero, zeroDot, dot].includes(input.value)) {
+                if (input.value === dot)
+                    this.setInputValue(zeroDot);
 
-            if (input.value === dot) {
-                emit('0');
-                this.setInputValue('0.');
+                emit(zero);
                 return;
             }
 
@@ -228,18 +236,11 @@ export default {
                 this.setInputValue(int.concat(fractional));
             }
 
-            const currentInputValue = input.value.replace(illegalCharsEthRegex, '') ?? '';
-
             // don't format or emit if the user is about to type a decimal
-            if (currentInputValue[currentInputValue.length - 1] === dot && caretPosition === currentInputValue.length)
+            if (input.value[input.value.length - 1] === dot && caretPosition === input.value.length)
                 return;
 
-            let workingValue = currentInputValue;
-
-            if (currentInputValue[0] === dot && caretPosition !== 0) {
-                workingValue = '0'.concat(currentInputValue)
-            }
-
+            let workingValue = input.value.replace(notIntegerOrDotRegex, '') ?? '';
             let workingValueAsWeiBn = parseUnits(workingValue, 'ether');
 
             if (!!this.maxValueWei && workingValueAsWeiBn.gt(this.maxValueWei)) {
@@ -254,8 +255,7 @@ export default {
             if (commifiedWorkingValue.includes(dot)) {
                 // override commify's handling of trailing zeroes to allow user to continue typing past 1 zero
                 //    eg. 123.00003
-
-                const commifiedInteger = commify(workingValue).replace(decimalRegex, '');
+                const commifiedInteger = commifiedWorkingValue.replace(decimalRegex, '');
                 const fractional = (workingValue.match(decimalRegex)?.[0] ?? '').slice(0, WEI_PRECISION);
 
                 commifiedWorkingValue = `${commifiedInteger}${fractional}`;
