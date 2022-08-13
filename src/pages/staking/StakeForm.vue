@@ -169,6 +169,9 @@ export default {
         handleCtaClick() {
             if (!this.isLoggedIn)
                 triggerLogin();
+
+            // this.stlosContract.
+
         },
         setMaxDeposit() {
             this.$evm.telos.getEthAccount(this.address)
