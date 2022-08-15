@@ -34,7 +34,7 @@
 
                 <div class="col-12 u-flex--space-between">
                     <p class="c-base-staking-form__footer-p">
-                        Please note that there is an unstaking period of {{ unstakePeriodDays }} days
+                        Please note that there is an unstaking period of {{ unstakePeriod }}
                     </p>
 
                     <q-btn
@@ -56,6 +56,8 @@
 import StakingFormInput from 'pages/staking/StakingFormInput';
 
 const genericMaxWei = '999999999999000000000000000000';
+const DAY_SECONDS = 86400;
+const HOUR_SECONDS = 3600;
 
 export default {
     name: 'BaseStakingForm',
@@ -121,7 +123,8 @@ export default {
         },
     },
     data: () => ({
-        unstakePeriodDays: 5, // eztodo get from service
+        unstakePeriod: '', 
+        stlosContract: null,
     }),
     computed: {
         inputs() {
@@ -140,7 +143,14 @@ export default {
             }];
         },
     },
+    async created(){
+        const escrowContract = await (await this.$contractManager.getContract(process.env.STLOS_ESCROW_CONTRACT_ADDRESS)).getContractInstance();
+        this.unstakePeriod = this.formatTime((await escrowContract.lockDuration()).toNumber());
+    },
     methods: {
+        formatTime(seconds){
+            return  seconds < DAY_SECONDS ? seconds < HOUR_SECONDS ? `${seconds / 60} minutes`: `${seconds / HOUR_SECONDS} hours` : `${seconds / DAY_SECONDS} days`
+        },
         handleInput(event, index) {
             const eventName = 'input-'.concat(index === 0 ? 'top' : 'bottom');
 
