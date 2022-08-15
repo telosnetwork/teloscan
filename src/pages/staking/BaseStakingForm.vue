@@ -7,7 +7,6 @@
                     <h5 class="c-base-staking-form__header">
                         {{ header }}
                     </h5>
-                    <!-- eztodo make <p> dark mode compatible -->
                     <p>{{ subheader }}</p>
                 </div>
             </div>
@@ -136,7 +135,6 @@ export default {
                 isLoading: this.topInputIsLoading,
             }, {
                 label:    this.bottomInputLabel,
-                infoText: this.bottomInputInfoText,
                 errorText: '',
                 maxValueWei: this.bottomInputMaxValue,
                 isLoading: this.bottomInputIsLoading,
@@ -183,13 +181,9 @@ export default {
 
             height: 48px;
             width: 4px;
-            // background-color: $white;
             border-radius: 4px 4px 0 0;
 
-
-            @at-root .body--dark & {
-                background-color: $white;
-            }
+            background-color: $grey-0;
 
             @at-root .body--light & {
                 background-color: $purpleDark;
@@ -207,19 +201,15 @@ export default {
         }
     }
 
-    // &__footer {
-    //     display: flex;
-    //     align-items: center;
-    //     justify-content: space-between;
-    // }
-
     &__footer-p {
-        // gray text
-        // small
-        // white-space: nowrap;
         font-size: 12px;
-        color: $grey-0;
         margin: 0;
+
+        color: $grey-0;
+
+        @at-root .body--light & {
+            color: $purpleDark
+        }
     }
 }
 </style>
