@@ -4,7 +4,7 @@
         <div class="col-12 text-primary text-h4 q-mb-sm">
             Telos EVM Staking
         </div>
-        <div class="col-12">
+        <div class="col-12 text-white">
             <p>Stake sTLOS and receive sTLOS from the shared REX/EVM pool</p>
         </div>
     </div>
