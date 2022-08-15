@@ -180,9 +180,7 @@ export default {
             }
 
             const tryingToAddDigitsPastMaxPrecision = (() => {
-                const valueSplitAtDecimal = value.split(dot);
-                const integer = valueSplitAtDecimal[0] ?? '';
-                const fractional = valueSplitAtDecimal[1] ?? '';
+                const [integer = '', fractional = ''] = value.split(dot);
 
                 const keypressIsDigit = numKeys.includes(event.key);
                 const caretIsPastDecimal = caretPosition > integer.length + 1;
@@ -193,14 +191,14 @@ export default {
             const tryingToAddSecondDot = pressedKey === dot && value.includes(dot);
             const tryingToAddLeadingZeroes =
                 pressedKey === zero &&
-                value[0]   === zero &&
-                [0, 1].includes(caretPosition);
+                value[0] !== dot &&
+                value.length > 1 &&
+                caretPosition === 0;
 
             const invalidKeystroke =
                 tryingToAddDigitsPastMaxPrecision ||
                 tryingToAddSecondDot ||
                 tryingToAddLeadingZeroes;
-
 
             if (invalidKeystroke)
                 event.preventDefault();
