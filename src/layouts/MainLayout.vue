@@ -51,6 +51,7 @@
         :breakpoint="500"
         overlay
         bordered
+        elevated
     >
         <q-list>
             <q-item
@@ -172,7 +173,7 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
 .banner
   z-index: -1
   height: 280px
@@ -194,4 +195,9 @@ export default {
   overflow: hidden
   text-overflow: ellipsis
 
+.q-drawer
+  margin-top:16px
+  height: fit-content
+  border-top-left-radius: 4px
+  border-bottom-left-radius: 4px
 </style>
