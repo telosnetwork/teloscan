@@ -1,23 +1,28 @@
 <template>
-<base-staking-form
-    :header="header"
-    :subheader="subheader"
-    :top-input-label="topInputLabel"
-    :top-input-info-text="topInputInfoText"
-    :top-input-amount="topInputAmount"
-    :top-input-max-value="topInputMaxValue"
-    :top-input-error-text="topInputErrorText"
-    :top-input-is-loading="topInputIsLoading"
-    :bottom-input-label="bottomInputLabel"
-    :bottom-input-amount="bottomInputAmount"
-    :bottom-input-max-value="bottomInputMaxValue"
-    :bottom-input-is-loading="bottomInputIsLoading"
-    :cta-text="ctaText"
-    :cta-disabled="ctaIsDisabled"
-    @input-top="handleInputTop"
-    @input-bottom="handleInputBottom"
-    @cta-clicked="handleCtaClick"
-/>
+<div>
+    <base-staking-form
+        :header="header"
+        :subheader="subheader"
+        :top-input-label="topInputLabel"
+        :top-input-info-text="topInputInfoText"
+        :top-input-amount="topInputAmount"
+        :top-input-max-value="topInputMaxValue"
+        :top-input-error-text="topInputErrorText"
+        :top-input-is-loading="topInputIsLoading"
+        :bottom-input-label="bottomInputLabel"
+        :bottom-input-amount="bottomInputAmount"
+        :bottom-input-max-value="bottomInputMaxValue"
+        :bottom-input-is-loading="bottomInputIsLoading"
+        :cta-text="ctaText"
+        :cta-disabled="ctaIsDisabled"
+        @input-top="handleInputTop"
+        @input-bottom="handleInputBottom"
+        @cta-clicked="handleCtaClick"
+    />
+    <div v-if="resultHash">
+        Transaction: {{ resultHash }}
+    </div>
+</div>
 </template>
 
 <script>
@@ -37,6 +42,7 @@ export default {
     },
     data: () => ({
         stlosContract: null,
+        resultHash: null,
         header: 'Stake TLOS',
         subheader: 'Staked sTLOS provide you with access to a steady income and access to our Defi applications',
         topInputLabel: 'Stake TLOS',
@@ -110,14 +116,12 @@ export default {
             },
         },
     },
-    created() {
-        this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)
-            .then(contract => {
-                this.stlosContract = contract.getContractInstance();
-            })
-            .catch(e => {
-                console.error(`Failed to get sTLOS contract instance: ${e.message}`);
-            });
+    async created() {
+        try{
+            this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance();
+        }catch(e){
+            console.error(`Failed to get sTLOS contract instance: ${e.message}`);
+        }
 
         const debounceWaitMs = 250;
 
@@ -166,12 +170,16 @@ export default {
 
             this.debouncedBottomInputHandler();
         },
-        handleCtaClick() {
-            if (!this.isLoggedIn)
+        async handleCtaClick() {
+            if (!this.isLoggedIn){
                 triggerLogin();
-
-            // this.stlosContract.
-
+                return;
+            }
+            if (!this.stlosContract.signer){
+                this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true);
+            } 
+            const result = await this.stlosContract['depositTLOS()']({value: BigNumber.from(this.topInputAmount)});
+            this.resultHash = result.hash;
         },
         setMaxDeposit() {
             this.$evm.telos.getEthAccount(this.address)

@@ -45,13 +45,13 @@ export default class Contract {
     return this.creationInfo.creator;
   }
 
-  getContractInstance(provider) {
+  getContractInstance(provider, createNew=false) {
     if (!this.abi){
       console.log("Cannot create contract instance without ABI!");
       return;
     }
 
-    if (!this.contract){
+    if (!this.contract || createNew){
       this.contract = new ethers.Contract(this.address, this.abi, provider ? provider : this.manager.getEthersProvider());
     }
     return this.contract;

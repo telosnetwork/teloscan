@@ -369,7 +369,7 @@ export default {
             this.endLoading();
         },
         async runEVM(opts) {
-            const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
+            const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());       
             const result = await func(...this.getFormattedParams(), opts);
             this.hash = result.hash;
             this.endLoading();
