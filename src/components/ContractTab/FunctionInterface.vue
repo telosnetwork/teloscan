@@ -271,7 +271,7 @@ export default {
 
             try {
                 const opts = {};
-                if (this.abi.payable) {
+                if (this.abi.stateMutability === 'payable') {
                     opts.value = this.formatValue(this.value, 'uint256');
                 }
 
