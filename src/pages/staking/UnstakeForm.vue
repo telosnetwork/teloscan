@@ -36,7 +36,7 @@ export default {
         BaseStakingForm,
     },
     data: () => ({
-        stlosContract: null,
+        escrowContract: null,
         header: 'Unstake sTLOS',
         subheader: 'Unstake matured sTLOS',
         topInputLabel: 'Unstake sTLOS',
@@ -98,26 +98,29 @@ export default {
         },
     },
     watch: {
-        address: {
+        escrowContract: {
             immediate: true,
-            handler(address, oldAddress) {
+            async handler(address, oldAddress) {
                 if (address !== oldAddress) {
                     if (address)
-                        this.setMaxDeposit();
+                        await this.setMaxDeposit();
                     else
                         this.maxDeposit = null;
                 }
             },
         },
     },
-    created() {
-        this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)
-            .then(contract => {
-                this.stlosContract = contract.getContractInstance();
-            })
-            .catch(e => {
-                console.error(`Failed to get sTLOS contract instance: ${e.message}`);
-            });
+    async created() {
+        if (!this.isLoggedIn){
+            triggerLogin();
+            return;
+        }
+        try{
+            this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true);
+            this.escrowContract = await (await this.$contractManager.getContract(process.env.STLOS_ESCROW_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true);
+        }catch(e){
+            console.error(`Failed to get sTLOS contract instance: ${e.message}`);
+        }
 
         const debounceWaitMs = 250;
 
@@ -149,8 +152,7 @@ export default {
     },
     methods: {
         handleInputTop(newWei = '0') {
-            if (newWei === this.topInputAmount)
-                return;
+            if (newWei === this.topInputAmount) return;
 
             this.bottomInputIsLoading = true;
             this.topInputAmount = newWei;
@@ -158,8 +160,7 @@ export default {
             this.debouncedTopInputHandler();
         },
         handleInputBottom(newWei = '0') {
-            if (newWei === this.bottomInputAmount)
-                return;
+            if (newWei === this.bottomInputAmount) return;
 
             this.topInputIsLoading = true;
             this.bottomInputAmount = newWei;
@@ -170,14 +171,13 @@ export default {
             if (!this.isLoggedIn)
                 triggerLogin();
         },
-        setMaxDeposit() {
-            this.$evm.telos.getEthAccount(this.address)
-                .then(account => {
-                    this.maxDeposit = account.balance.toString();
-                })
-                .catch(e => {
-                    console.error(`Failed to get user EVM account balance: ${e.message}`);
-                });
+        async setMaxDeposit() {
+            debugger;
+            try{
+                this.maxDeposit = (await this.stlosContract.balanceOf(this.address)).toString();
+            }catch(e){
+                console.error(`Failed to get user EVM account balance: ${e.message}`);
+            }
         },
     },
 }
