@@ -175,9 +175,7 @@ export default {
                 triggerLogin();
                 return;
             }
-            if (!this.stlosContract.signer){
-                this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true);
-            } 
+            this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true); 
             const result = await this.stlosContract['depositTLOS()']({value: BigNumber.from(this.topInputAmount)});
             this.resultHash = result.hash;
         },
