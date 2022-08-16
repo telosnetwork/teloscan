@@ -88,7 +88,7 @@
             <q-item
                 v-close-popup
                 clickable
-                @click.native="routerTo('staking')"
+                @click.native="routerTo('/staking')"
             >
                 <q-item-section>
                     <q-item-label> Stake Telos </q-item-label>
