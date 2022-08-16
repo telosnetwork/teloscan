@@ -172,7 +172,6 @@ export default {
                 triggerLogin();
         },
         async setMaxDeposit() {
-            debugger;
             try{
                 this.maxDeposit = (await this.stlosContract.balanceOf(this.address)).toString();
             }catch(e){
