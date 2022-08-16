@@ -23,7 +23,7 @@
         v-show="resultHash"
         class="transaction-result"
     >
-        View Transaction: <a @click='goToTransaction'> {{ resultHash }} </a>
+        View Transaction: <a @click="goToTransaction"> {{ resultHash }} </a>
     </div>
 </div>
 </template>
@@ -181,7 +181,7 @@ export default {
                 triggerLogin();
                 return;
             }
-            this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true); 
+            this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true);
             const result = await this.stlosContract['depositTLOS()']({value: BigNumber.from(this.topInputAmount)});
             this.resultHash = result.hash;
         },
