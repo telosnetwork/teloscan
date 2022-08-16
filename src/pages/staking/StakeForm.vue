@@ -19,8 +19,11 @@
         @input-bottom="handleInputBottom"
         @cta-clicked="handleCtaClick"
     />
-    <div v-if="resultHash">
-        Transaction: {{ resultHash }}
+    <div
+        v-show="resultHash"
+        class="transaction-result"
+    >
+        View Transaction: <a @click='goToTransaction'> {{ resultHash }} </a>
     </div>
 </div>
 </template>
@@ -152,6 +155,9 @@ export default {
         );
     },
     methods: {
+        goToTransaction(){
+            this.$router.push({ path: `/tx/${this.resultHash}` });
+        },
         handleInputTop(newWei = '0') {
             if (newWei === this.topInputAmount)
                 return;
@@ -192,5 +198,9 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="sass">
+.transaction-result
+    width: fit-content
+    margin: auto
+    margin-top: 2rem
 </style>
