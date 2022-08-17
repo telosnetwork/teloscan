@@ -22,7 +22,7 @@
                             <a
                                 href=""
                                 target="_blank"
-                            > 4.56 </a>
+                            > {{ liquidBalance }} </a>
                         </div>
                     </div>
                     <div class="data-card">
@@ -33,7 +33,7 @@
                             <a
                                 href=""
                                 target="_blank"
-                            > 4.56 </a>
+                            > {{ stakedBalance }} </a>
                         </div>
                     </div>
                     <div class="data-card">
@@ -44,7 +44,7 @@
                             <a
                                 href=""
                                 target="_blank"
-                            > 4.56 </a>
+                            > {{ redeemableBalance }} </a>
                         </div>
                     </div>
                 </div>
@@ -99,6 +99,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 import StakeForm from 'pages/staking/StakeForm';
 import UnstakeForm from 'pages/staking/UnstakeForm';
 
@@ -119,8 +120,12 @@ export default {
         stakedAmount: 0,
         stlosContract: null,
         account: null,
+        liquidBalance: 0,
+        stakedBalance: 0,
+        redeemableBalance: 0,
     }),
     computed: {
+        ...mapGetters('login', ['address', 'isLoggedIn']),
         qtabsClasses() {
             const extraClasses = this.$q.dark.isActive ? 'q-dark text-white' : 'text-black';
             return `c-staking-page__tabs-header tabsBar topRounded tableWrapper ${extraClasses}`;
@@ -141,13 +146,25 @@ export default {
                     this.$router.replace({ hash: tabs.stake });
             },
         },
+        account(){
+            this.setContract();
+        },
     },
     async created() {
-        try{
-            this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance();
-        }catch(e){
-            console.error(`Failed to get sTLOS contract instance: ${e.message}`);
+        if (this.address){
+            this.setContract();
         }
+    },
+    methods: {
+        async setContract(){
+            try{
+                this.liquidBalance = ((await this.$evm.telos.getEthAccount(this.address)).balance / 10**18).toFixed(2);
+
+                this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true);
+            }catch(e){
+                console.error(`Failed to get sTLOS contract instance: ${e.message}`);
+            }
+        },
     },
 }
 </script>
@@ -159,10 +176,11 @@ export default {
         &.q-dark 
             background: var(--q-color-dark)
 
-.dataCardsContainer .dataCardItem    
+.dataCardsContainer 
     margin-left: auto
-    width: fit-content
-    height: 5rem
+    .dataCardItem    
+        width: fit-content
+        height: 5rem
 
 .data-card
     margin:.5rem
@@ -171,5 +189,5 @@ export default {
     align-items: center
 
 .page-header
-    width:fit-content
+    width: 20rem
 </style>
