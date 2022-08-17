@@ -159,8 +159,9 @@ export default {
         async setContract(){
             try{
                 this.liquidBalance = ((await this.$evm.telos.getEthAccount(this.address)).balance / 10**18).toFixed(2);
-
                 this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true);
+                debugger;
+                this.stakedBalance = (await this.stlosContract.balanceOf(this.address)).toString(); 
             }catch(e){
                 console.error(`Failed to get sTLOS contract instance: ${e.message}`);
             }
