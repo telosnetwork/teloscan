@@ -165,10 +165,10 @@ export default {
     height: 5rem
 
 .data-card
+    margin:.5rem
     display: flex
     flex-direction: column
-    justify-content: center
-    margin-left:.5rem
+    align-items: center
 
 .page-header
     width:fit-content
