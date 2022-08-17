@@ -216,7 +216,7 @@ export default {
             color: $purpleDark;
         }
 
-        @media(min-width: $breakpoint-sm) {
+        @media screen and (min-width: $breakpoint-sm) {
             margin: 0;
         }
     }
