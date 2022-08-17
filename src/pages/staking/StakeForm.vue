@@ -137,8 +137,6 @@ export default {
                         console.error(`Unable to convert TLOS to STLOS: ${err}`);
                     })
                     .finally(() => {
-                        // debugger;
-
                         return this.bottomInputIsLoading = false;
                     })
             },
