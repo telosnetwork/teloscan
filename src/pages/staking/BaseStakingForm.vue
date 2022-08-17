@@ -31,11 +31,16 @@
                     />
                 </div>
 
-                <div class="col-12 u-flex--space-between">
-                    <p class="c-base-staking-form__footer-p">
+                <div class="col-xs-12 col-sm-8 u-flex--center-y">
+                    <p
+                        v-if="unstakePeriod"
+                        class="c-base-staking-form__footer-p"
+                    >
                         Please note that there is an unstaking period of {{ unstakePeriod }}
                     </p>
+                </div>
 
+                <div class="col-xs-12 col-sm-4 u-flex--right">
                     <q-btn
                         :disabled="ctaDisabled"
                         color="secondary"
@@ -122,22 +127,22 @@ export default {
         },
     },
     data: () => ({
-        unstakePeriod: '', 
+        unstakePeriod: '',
         stlosContract: null,
     }),
     computed: {
         inputs() {
             return [{
-                label:    this.topInputLabel,
-                infoText: this.topInputInfoText,
-                errorText: this.topInputErrorText,
+                label:       this.topInputLabel,
+                infoText:    this.topInputInfoText,
+                errorText:   this.topInputErrorText,
                 maxValueWei: this.topInputMaxValue ?? genericMaxWei,
-                isLoading: this.topInputIsLoading,
+                isLoading:   this.topInputIsLoading,
             }, {
-                label:    this.bottomInputLabel,
-                errorText: '',
+                label:       this.bottomInputLabel,
+                errorText:   '',
                 maxValueWei: this.bottomInputMaxValue,
-                isLoading: this.bottomInputIsLoading,
+                isLoading:   this.bottomInputIsLoading,
             }];
         },
     },
@@ -203,12 +208,16 @@ export default {
 
     &__footer-p {
         font-size: 12px;
-        margin: 0;
+        margin: 0 0 16px;
 
         color: $grey-0;
 
         @at-root .body--light & {
-            color: $purpleDark
+            color: $purpleDark;
+        }
+
+        @media(min-width: $breakpoint-sm) {
+            margin: 0;
         }
     }
 }
