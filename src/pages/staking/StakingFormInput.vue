@@ -324,6 +324,10 @@ export default {
         border: none;
         outline: none;
         font-size: 1.4rem;
+
+        @at-root .body--light & {
+            color: $info;
+        }
     }
 
     @keyframes wiggle {
