@@ -1,55 +1,98 @@
 <template>
 <div class="pageContainer q-pt-xl">
-    <div class="row q-mx-md q-mb-lg">
-        <div class="col-12 text-primary text-h4 q-mb-sm">
-            Telos EVM Staking
-        </div>
-        <div class="col-12 text-white">
-            <p>Stake sTLOS and receive sTLOS from the shared REX/EVM pool</p>
-        </div>
-    </div>
     <div class="row">
-        <div class="col-12">
-            <q-tabs
-                v-model="selectedTab"
-                dense
-                active-color="secondary"
-                align="justify"
-                narrow-indicator
-                :class="qtabsClasses"
+        <div class="page-header row q-mx-md q-mb-lg">
+            <div class="col-12 text-primary text-h4 q-mb-sm">
+                Telos EVM Staking
+            </div>
+            <div class="col-12 text-white">
+                <p>Stake sTLOS and receive sTLOS from the shared REX/EVM pool</p>
+            </div>
+        </div>
+        <div class="dataCardsContainer">
+            <div
+                class="dataCardItem"
             >
-                <q-route-tab
-                    name="stake"
-                    to="#stake"
-                    exact
-                    push
-                    label="Stake"
-                />
-                <q-route-tab
-                    name="unstake"
-                    to="#unstake"
-                    exact
-                    push
-                    label="Unstake"
-                />
-            </q-tabs>
-
-            <q-tab-panels
-                v-model="selectedTab"
-                animated
-                keep-alive
-                class="q-py-lg"
-            >
-                <q-tab-panel name="stake">
-                    <stake-form />
-                </q-tab-panel>
-                <q-tab-panel
-                    name="unstake"
-                    class="shadow-2"
+                <div class="row">
+                    <div class="data-card">
+                        <div class="dataCardTile">
+                            Balance
+                        </div>
+                        <div class="dataCardData">
+                            <a
+                                href=""
+                                target="_blank"
+                            > 4.56 </a>
+                        </div>
+                    </div>
+                    <div class="data-card">
+                        <div class="dataCardTile">
+                            Staked
+                        </div>
+                        <div class="dataCardData">
+                            <a
+                                href=""
+                                target="_blank"
+                            > 4.56 </a>
+                        </div>
+                    </div>
+                    <div class="data-card">
+                        <div class="dataCardTile">
+                            Unlocked
+                        </div>
+                        <div class="dataCardData">
+                            <a
+                                href=""
+                                target="_blank"
+                            > 4.56 </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <q-tabs
+                    v-model="selectedTab"
+                    dense
+                    active-color="secondary"
+                    align="justify"
+                    narrow-indicator
+                    :class="qtabsClasses"
                 >
-                    <unstake-form />
-                </q-tab-panel>
-            </q-tab-panels>
+                    <q-route-tab
+                        name="stake"
+                        to="#stake"
+                        exact
+                        push
+                        label="Stake"
+                    />
+                    <q-route-tab
+                        name="unstake"
+                        to="#unstake"
+                        exact
+                        push
+                        label="Unstake"
+                    />
+                </q-tabs>
+
+                <q-tab-panels
+                    v-model="selectedTab"
+                    animated
+                    keep-alive
+                    class="q-py-lg"
+                >
+                    <q-tab-panel name="stake">
+                        <stake-form />
+                    </q-tab-panel>
+                    <q-tab-panel
+                        name="unstake"
+                        class="shadow-2"
+                    >
+                        <unstake-form />
+                    </q-tab-panel>
+                </q-tab-panels>
+            </div>
         </div>
     </div>
 </div>
@@ -74,6 +117,8 @@ export default {
         tabs,
         selectedTab: tabs.stake,
         stakedAmount: 0,
+        stlosContract: null,
+        account: null,
     }),
     computed: {
         qtabsClasses() {
@@ -97,17 +142,34 @@ export default {
             },
         },
     },
+    async created() {
+        try{
+            this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance();
+        }catch(e){
+            console.error(`Failed to get sTLOS contract instance: ${e.message}`);
+        }
+    },
 }
 </script>
 
-<style lang="scss">
-.c-staking-page {
-    &__tabs-header {
-        background: white;
+<style lang="sass">
+.c-staking-page 
+    &__tabs-header 
+        background: white
+        &.q-dark 
+            background: var(--q-color-dark)
 
-        &.q-dark {
-            background: var(--q-color-dark);
-        }
-    }
-}
+.dataCardsContainer .dataCardItem    
+    margin-left: auto
+    width: fit-content
+    height: 5rem
+
+.data-card
+    display: flex
+    flex-direction: column
+    justify-content: center
+    margin-left:.5rem
+
+.page-header
+    width:fit-content
 </style>

@@ -149,6 +149,10 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.dataCardsContainer .dataCardItem       
+  width: fit-content
+  height: 5rem
+
 .q-tab-panel
   padding: 0
 
