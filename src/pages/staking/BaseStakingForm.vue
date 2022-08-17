@@ -43,7 +43,7 @@
                 <div class="col-xs-12 col-sm-4 u-flex--right">
                     <q-btn
                         :disabled="ctaDisabled"
-                        color="green"
+                        color="secondary"
                         text-color="black"
                         @click="handleCtaClick"
                     >
