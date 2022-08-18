@@ -295,9 +295,9 @@ export default {
                           strong Tuple {{ '#' + index}}
                           div(v-for="(tuple, i) in value") {{ tuple}}
                           br(v-if="index !== param.value.length - 1")
-                        div(v-else-if="param.arrayChildren === 'address'") <AddressField :address="value" copy :truncate="20"  />
+                        div(v-else-if="param.arrayChildren === 'address'") <AddressField :address="value" copy :name="value === contract.address && contract.name ?  contract.name : null"   />
                         div(v-else  ) {{ value }}
-                    div(v-else-if="param.type === 'address'" class="col-9") <AddressField :address="param.value" copy :truncate="20"  />
+                    div(v-else-if="param.type === 'address'" class="col-9") <AddressField :address="param.value" copy :name="param.value === contract.address && contract.name ?  contract.name : null"   />
                     div(v-else  class="col-9") {{ param.value }}
               br( v-if="isContract && params.length > 0" )
               div( v-if="trx.createdaddr", class="fit row wrap justify-start items-start content-start" )
