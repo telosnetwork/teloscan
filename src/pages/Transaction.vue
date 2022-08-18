@@ -327,7 +327,7 @@ export default {
                       strong {{ ` Token : ` }}
                       span {{ transfer.value }}
                       a(:href="'/address/' + transfer.token.address" style="margin-left: 3px;") {{ transfer.token.symbol }}
-              br
+              br(v-if="transfers.length > 0")
               div(class="fit row wrap justify-start items-start content-start")
                 div(class="col-3")
                   strong {{ `Gas Price Charged: ` }}
@@ -396,7 +396,7 @@ export default {
 
     .col-9
         overflow-wrap: break-word
-        
+
     .q-tabs__content
         margin-bottom: -1px
 
