@@ -56,7 +56,6 @@ export default class ContractManager {
     async getEventIface(data) {
         if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, 'data'))
             return this.eventInterfaces[data];
-
         const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`)
         if (abiResponse) {
             if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
@@ -184,7 +183,6 @@ export default class ContractManager {
             // TODO: if this is erc721, could we get more info about it and maybe read the metadata to link to the image?
             // can't be sure if this contract would support ERC721Metadata, but something like:
             // if (type == 'erc721') tokenData.baseURI = await contract.baseURI();
-
             return tokenData;
         } catch (e) {
             return;

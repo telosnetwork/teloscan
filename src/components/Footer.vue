@@ -15,7 +15,7 @@ export default {
     .col-xs-12.col-md-6
       .column.items-center
         span COPYRIGHT © {{ currentFullYear() }}
-          a( href="/" target="_blank" rel="noopener noreferrer")
+          a( href="/" target="_blank" rel="noopener noreferrer" style="margin-right: 3px; margin-left: 3px;")
             | Teloscan
           span.d-none.d-sm-inline-block All rights Reserved
     .col-xs-12.col-md-6
@@ -24,20 +24,22 @@ export default {
           | Made with
           q-icon.q-pl-sm(
             name="fas fa-heart red"
-            style="font-size:15px;color:red;padding-bottom:4px"
+            style="font-size:15px;color:red;padding-bottom:4px; margin-right: 3px;"
           )
           | +
           q-icon.q-pr-sm(
             name="fas fa-coffee red"
-            style="font-size:15px;color:brown;padding-bottom:4px"
+            style="font-size:15px;color:brown;padding-bottom:4px; margin-left: 3px;"
           )
           | by
           a(
             href="https://eosauthority.com/vote/producers?network=telos"
             target="_blank"
+            style="margin-left: 3px;"
           ) Yknot &
           a(
             href="https://eosauthority.com/vote/producers?network=telos"
             target="_blank"
+            style="margin-left: 3px;"
           ) Caleos
 </template>

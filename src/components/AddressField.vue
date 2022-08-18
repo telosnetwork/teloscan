@@ -1,6 +1,8 @@
 <script>
 import { mapActions } from 'vuex';
 import { ethers } from 'ethers';
+import { copyToClipboard, Notify } from 'quasar';
+
 
 export default {
     name: 'AddressField',
@@ -12,6 +14,10 @@ export default {
         name: {
             type: String,
             default: '',
+        },
+        copy: {
+            type: Boolean,
+            default: false,
         },
         truncate: {
             type: Number,
@@ -40,6 +46,19 @@ export default {
         ...mapActions('evm', ['getContract']),
         goToAddress() {
             this.$router.push(`/address/${this.address}`);
+        },
+        async copyAddress(){
+            copyToClipboard(this.address).then(() => {
+                Notify.create({
+                    type: 'positive',
+                    message: 'Address copied !',
+                });
+            }).catch(() => {
+                Notify.create({
+                    type: 'negative',
+                    message: 'Address could not be copied on this device',
+                });
+            });
         },
         getDisplay() {
             if (this.name) {
@@ -75,13 +94,27 @@ export default {
 
 <template lang="pug">
   div.inline-div
-    q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs")
-      q-tooltip Contract
     //- router-link(:to="`/address/${this.address}`") {{ getDisplay() }}
     a(:href="`/address/${this.address}`") {{ getDisplay() }}
+    q-icon(v-if="this.copy" class="far fa-copy" @click.stop="copyAddress")
+      q-tooltip Copy address
 </template>
 
 <style lang='sass' scoped>
-.inline-div
-  display: inline
+    .inline-div
+        display: inline
+
+    .far.fa-copy
+        margin-top: -5px
+        margin-left: 5px
+        margin-right: 15px
+        cursor: pointer
+        color: #666666
+        &:hover
+            transform: scale(1.2)
+            color: black
+
+    .body--dark .far.fa-copy
+        color: #c3c3c3
+
 </style>

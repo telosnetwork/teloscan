@@ -78,16 +78,24 @@ export default class Contract {
   }
 
   async parseLogs(logsArray) {
+
     if (this.iface) {
-      let parsed = logsArray.map(log => {
+      let parsedArray = logsArray.map(log => {
         try {
-          return this.iface.parseLog(log)
+          let parsedLog = this.iface.parseLog(log);
+          parsedLog.address = log.address;
+          return parsedLog;
         } catch (e) {
           console.log(`Failed parsing log event: ${e.message}`)
           return log;
         }
       });
-      return parsed;
+      parsedArray.forEach(parsed => {
+        if(parsed.name){
+          parsed.inputs = parsed.eventFragment.inputs;
+        }
+      })
+      return parsedArray;
     }
 
     // TODO: This works very inconsistently... need to dig deeper, example http://localhost:8080/tx/0x817b1596365bb402c45b53d67be7808fb204e3842cf61587777d92a3ce909d16

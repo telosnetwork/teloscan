@@ -4,6 +4,8 @@ import BlockField from 'components/BlockField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import MethodField from 'components/MethodField';
+import { formatBN } from 'src/lib/utils';
+import { TRANSFER_SIGNATURE } from 'src/lib/functionSignatures';
 
 const columns = [
     {
@@ -38,7 +40,7 @@ const columns = [
     },
     {
         name: 'value',
-        label: 'Value',
+        label: 'Value / Transfer',
         align: 'left',
     },
 ];
@@ -111,6 +113,7 @@ export default {
             );
             for (const transaction of this.transactions) {
                 try {
+                    transaction.transfers = [];
                     if (transaction.input_data === '0x') continue;
 
                     const contract = await this.$contractManager.getContract(
@@ -125,6 +128,17 @@ export default {
                         transaction.parsedTransaction = parsedTransaction;
                         transaction.contract = contract;
                     }
+                    transaction.logs.forEach(log => {
+                        log.topics.forEach(async  topic =>  {
+                            let signature = topic.substring(0, 10)
+                            if(signature === TRANSFER_SIGNATURE){
+                                if(transaction.contract && transaction.contract.token){
+                                    transaction.transfers.push({'value': `${formatBN(transaction.parsedTransaction.args['amount'], transaction.contract.token.decimals, 5)}`, 'symbol': transaction.contract.token.symbol})
+                                }
+                            }
+                        })
+                    })
+                    transaction.transfers.sort((a,b) => a.value - b.value);
                 } catch (e) {
                     console.error(
                         `Failed to parse data for transaction, error was: ${e.message}`,
@@ -185,7 +199,7 @@ q-table(
       template(
         v-if="col.name==='method'"
         )
-        q-icon(name="fas fa-info-circle")
+        q-icon(name="fas fa-info-circle", style="margin-top: -5px; margin-left: 3px;")
           q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
 
   q-tr( slot="body" slot-scope="props" :props="props" )
@@ -201,5 +215,9 @@ q-table(
       address-field( :address="props.row.from" )
     q-td( key="to" )
       address-field( :address="props.row.to" :is-contract-trx="props.row.input_data !== '0x'" )
-    q-td( key="value" ) {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
+    q-td( key="value" )
+      span(v-if="props.row.value > 0 ||  props.row.transfers.length == 0") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
+      div(v-else)
+        span {{ props.row.transfers[0].value }} {{ props.row.transfers[0].symbol }}
+        small(v-if="props.row.transfers.length > 1") +{{ props.row.transfers.length - 1 }}
 </template>

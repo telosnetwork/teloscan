@@ -1,0 +1,1 @@
+export const TRANSFER_SIGNATURE = '0xddf252ad'
