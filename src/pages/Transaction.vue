@@ -291,8 +291,8 @@ export default {
                       span(v-else) {{param.type}} :
                     div(v-if="param.arrayChildren" class="col-9")
                       div(v-for="(value, index) in param.value")
-                        div(v-if="param.arrayChildren === 'tuple'")
-                          strong Tuple {{ index}}
+                        div(v-if="param.arrayChildren === 'tuple'" :class="index != param.value.length - 1 ? 'q-mb-sm' : ''")
+                          strong Tuple {{ '#' + index}}
                           div(v-for="(tuple, i) in value") {{ tuple}}
                           br(v-if="index !== param.value.length - 1")
                         div(v-else-if="param.arrayChildren === 'address'") <AddressField :address="value" copy :truncate="20"  />
