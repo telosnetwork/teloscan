@@ -394,6 +394,9 @@ export default {
     .col-9 .jv-container .jv-code
         padding: 0
 
+    .col-9
+        overflow-wrap: break-word
+        
     .q-tabs__content
         margin-bottom: -1px
 
