@@ -27,7 +27,11 @@ module.exports = {
         'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
 
         'comma-dangle': ['error', 'always-multiline'],
-        'indent': ['error', 4],
+        'indent': ['error', 4, {
+            // addresses ESLint error:
+            // https://stackoverflow.com/questions/59851788/import-eslint-cannot-read-property-range-of-null-occurred-while-linting
+            ignoredNodes: ['TemplateLiteral'],
+        }],
         'vue/html-indent': ['warn', 4, { 'baseIndent': 0, }], // eztodo switch to error (after pug removal?)
         'quotes': ['error', 'single'],
     },
