@@ -23,7 +23,7 @@
                 </div>
 
                 <div class="c-staking-page__stat-value">
-                    {{ value || '--' }}
+                    {{ value }}
                 </div>
             </div>
         </div>
@@ -76,8 +76,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex';
-
+import { mapGetters } from 'vuex';
 import StakeForm from 'pages/staking/StakeForm';
 import UnstakeForm from 'pages/staking/UnstakeForm';
 
@@ -95,29 +94,33 @@ export default {
     data: () => ({
         tabs,
         selectedTab: tabs.stake,
+        stakedAmount: 0,
+        stlosContract: null,
+        account: null,
+        liquidBalance: 0,
+        stakedBalance: 0,
+        redeemableBalance: 0,
     }),
     computed: {
-        ...mapState('staking', [
-            'tlosBalance',
-            'stlosBalance',
-        ]),
-        ...mapGetters('staking', [
-            'tlosBalancePretty',
-            'redeemableStlosBalance',
-        ]),
         ...mapGetters('login', ['address', 'isLoggedIn']),
         stats() {
+            // eztodo remove this dummy data after all styling complete
+            // return [
+            //     { label: 'Balance',   value: '93.1251561123', unit: 'TLOS' },
+            //     { label: 'Staked',    value: '302.553',       unit: 'STLOS' },
+            //     { label: 'Unlocked',  value: '0',             unit: 'STLOS' },
+            // ];
             return [{
                 label: 'Balance',
-                value: this.tlosBalancePretty,
+                value: this.liquidBalance,
                 unit: 'TLOS',
             }, {
                 label: 'Staked',
-                value: this.stlosBalance,
+                value: this.stakedBalance,
                 unit: 'STLOS',
             }, {
                 label: 'Unlocked',
-                value: this.redeemableStlosBalance,
+                value: this.redeemableBalance,
                 unit: 'STLOS',
             }];
         },
@@ -137,36 +140,25 @@ export default {
                     this.$router.replace({ hash: tabs.stake });
             },
         },
-        address: {
-            immediate: true,
-            handler(address, oldAddress) {
-                if (address && address !== oldAddress) {
-                    this.refreshBalances(address);
-                }
-            },
+        account(){
+            this.setContract();
         },
     },
-    created() {
-        // eztodo pickup here on 8/20 - call stack overflow, see src/boot/evm.js
-        // error did not occur in before this commit; find a way around it
-        // also, this may break if user is not signed in, check if provider with no signer is needed for logged out case
-        this.fetchStlosContract({
-            contractManager: this.$contractManager,
-            providerManager: this.$providerManager,
-        });
-        this.fetchEscrowContract();
-        // this.refreshBalances();
+    async created() {
+        if (this.address){
+            this.setContract();
+        }
     },
     methods: {
-        ...mapActions('staking', [
-            'fetchStlosContract',
-            'fetchEscrowContract',
-            'fetchAccountTlosBalance',
-            'fetchAccountStlosBalance',
-        ]),
-        refreshBalances(address) {
-            this.fetchAccountTlosBalance(address);
-            // this.fetchAccountStlosBalance();
+        async setContract(){
+            try{
+                // eztodo fix unsafe cast from BN to number
+                this.liquidBalance = ((await this.$evm.telos.getEthAccount(this.address)).balance / 10**18).toFixed(2);
+                this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true);
+                this.stakedBalance = (await this.stlosContract.balanceOf(this.address)).toString();
+            }catch(e){
+                console.error(`Failed to get sTLOS contract instance: ${e.message}`);
+            }
         },
     },
 }
