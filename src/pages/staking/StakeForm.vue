@@ -16,13 +16,14 @@
             :bottom-input-is-loading="bottomInputIsLoading"
             :cta-text="ctaText"
             :cta-disabled="ctaIsDisabled"
+            :unstake-period-seconds="unstakePeriodSeconds"
             @input-top="handleInputTop"
             @input-bottom="handleInputBottom"
             @cta-clicked="handleCtaClick"
         />
     </div>
     <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
-        Stake Successful! View Transaction:
+        Stake successful! View Transaction:
         <transaction-field :transaction-hash="resultHash" />
     </div>
 </div>
@@ -54,6 +55,10 @@ export default {
             type: String,
             default: null,
         },
+        unstakePeriodSeconds: {
+            type: Number,
+            default: null,
+        },
     },
     data: () => ({
         resultHash: null,
@@ -76,14 +81,14 @@ export default {
             return this.isLoggedIn ? this.usableWalletBalance : null;
         },
         usableWalletBalance() {
-            const walletBalanceWeiBn = BigNumber.from(this.tlosBalance ?? '0');
+            const walletBalanceBn = BigNumber.from(this.tlosBalance ?? '0');
             const reservedForGas = BigNumber.from('10').pow(WEI_PRECISION);
 
             // eztodo update low balance logic here
-            if (walletBalanceWeiBn.lte(reservedForGas))
+            if (walletBalanceBn.lte(reservedForGas))
                 return '0'
 
-            return walletBalanceWeiBn.sub(reservedForGas).toString();
+            return walletBalanceBn.sub(reservedForGas).toString();
         },
         topInputInfoText() {
             if (!this.isLoggedIn)
@@ -98,9 +103,9 @@ export default {
             }
 
             // eztodo update low balance here
-            const balanceTLOS = ethers.utils.commify(balanceEth);
+            const balanceTlos = ethers.utils.commify(balanceEth);
 
-            return `${balanceTLOS} Available`;
+            return `${balanceTlos} Available`;
         },
         topInputErrorText() {
             return this.isLoggedIn ? '' : 'Wallet not connected';
@@ -120,7 +125,7 @@ export default {
             if (this.ctaIsLoading)
                 return 'Loading...';
 
-            return this.isLoggedIn ? 'Stake' : 'Connect Wallet';
+            return this.isLoggedIn ? 'Stake TLOS' : 'Connect Wallet';
         },
     },
     async created() {
@@ -205,9 +210,4 @@ export default {
 }
 </script>
 
-<style lang="sass">
-.transaction-result
-    width: fit-content
-    margin: auto
-    margin-top: 2rem
-</style>
+<style lang="scss"></style>

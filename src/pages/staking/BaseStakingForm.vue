@@ -32,11 +32,8 @@
                 </div>
 
                 <div class="col-xs-12 col-sm-8 u-flex--center-y">
-                    <p
-                        v-if="unstakePeriod"
-                        class="c-base-staking-form__footer-p"
-                    >
-                        Please note that there is an unstaking period of {{ unstakePeriod }}
+                    <p class="c-base-staking-form__footer-p">
+                        Please note that there is an unstaking period of {{ unstakePeriodPretty }}
                     </p>
                 </div>
 
@@ -125,12 +122,30 @@ export default {
             type: Boolean,
             required: true,
         },
+        unstakePeriodSeconds: {
+            type: Number,
+            default: null,
+        },
     },
     data: () => ({
         unstakePeriod: '',
         stlosContract: null,
     }),
     computed: {
+        unstakePeriodPretty() {
+            if (this.unstakePeriodSeconds === null)
+                return '--';
+
+            const seconds = this.unstakePeriodSeconds;
+
+            if (seconds < HOUR_SECONDS) {
+                return `${seconds / 60} minutes`;
+            } else if (seconds < DAY_SECONDS) {
+                return `${seconds / HOUR_SECONDS} hours`;
+            } else {
+                return `${seconds / DAY_SECONDS} days`;
+            }
+        },
         inputs() {
             return [{
                 label:       this.topInputLabel,
@@ -146,14 +161,7 @@ export default {
             }];
         },
     },
-    async created(){
-        const escrowContract = await (await this.$contractManager.getContract(process.env.STLOS_ESCROW_CONTRACT_ADDRESS)).getContractInstance();
-        this.unstakePeriod = this.formatTime((await escrowContract.lockDuration()).toNumber());
-    },
     methods: {
-        formatTime(seconds){
-            return  seconds < DAY_SECONDS ? seconds < HOUR_SECONDS ? `${seconds / 60} minutes`: `${seconds / HOUR_SECONDS} hours` : `${seconds / DAY_SECONDS} days`
-        },
         handleInput(event, index) {
             const eventName = 'input-'.concat(index === 0 ? 'top' : 'bottom');
 

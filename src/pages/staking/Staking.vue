@@ -72,6 +72,7 @@
                             <stake-form
                                 :stlos-contract-instance="stlosContractInstance"
                                 :tlos-balance="tlosBalance"
+                                :unstake-period-seconds="unstakePeriodSeconds"
                                 @balance-changed="fetchBalances"
                             />
                         </div>
@@ -79,10 +80,24 @@
                 </q-tab-panel>
 
                 <q-tab-panel name="unstake">
-                    <unstake-form
-                        :stlos-contract-instance="stlosContractInstance"
-                        :escrow-contract-instance="stlosContractInstance"
-                    />
+                    <div class="row">
+                        <div
+                            v-if="!stlosContractInstance || !tlosBalance || !escrowContractInstance"
+                            class="col-12 u-flex--center"
+                        >
+                            <q-spinner />
+                        </div>
+                        <div v-else class="col-12">
+                            <unstake-form
+                                :stlos-contract-instance="stlosContractInstance"
+                                :escrow-contract-instance="escrowContractInstance"
+                                :stlos-balance="tlosBalance"
+                                :unlocked-stlos-balance="tlosBalance"
+                                :unstake-period-seconds="unstakePeriodSeconds"
+                                @balance-changed="fetchBalances"
+                            />
+                        </div>
+                    </div>
                 </q-tab-panel>
             </q-tab-panels>
         </div>
@@ -111,15 +126,14 @@ export default {
     data: () => ({
         tabs,
         selectedTab: tabs.stake,
-
         stlosContract: null,
         escrowContract: null,
         stlosContractInstance: null,
         escrowContractInstance: null,
-
         tlosBalance: null,
         stlosBalance: null,
         unlockedStlosBalance: null,
+        unstakePeriodSeconds: null,
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
@@ -223,6 +237,7 @@ export default {
             const escrowPromise = this.$contractManager.getContract(process.env.STLOS_ESCROW_CONTRACT_ADDRESS)
                 .then((contract) => {
                     this.escrowContract = contract;
+
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to get STLOS contract: ${message}`);
@@ -244,6 +259,12 @@ export default {
             this.escrowContractInstance = this.escrowContract.getContractInstance(provider, true);
 
             await this.fetchBalances();
+
+            try {
+                this.unstakePeriodSeconds = (await this.escrowContractInstance.lockDuration()).toNumber();
+            } catch({ message }) {
+                console.error(`Failed to retrieve unstaking period: ${message}`)
+            }
         },
         formatWeiForStats(wei) {
             return !wei ? '--': formatBN(wei, WEI_PRECISION, 3);

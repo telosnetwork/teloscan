@@ -1,23 +1,32 @@
 <template>
-<base-staking-form
-    :header="header"
-    :subheader="subheader"
-    :top-input-label="topInputLabel"
-    :top-input-info-text="topInputInfoText"
-    :top-input-amount="topInputAmount"
-    :top-input-max-value="topInputMaxValue"
-    :top-input-error-text="topInputErrorText"
-    :top-input-is-loading="topInputIsLoading"
-    :bottom-input-label="bottomInputLabel"
-    :bottom-input-amount="bottomInputAmount"
-    :bottom-input-max-value="bottomInputMaxValue"
-    :bottom-input-is-loading="bottomInputIsLoading"
-    :cta-text="ctaText"
-    :cta-disabled="ctaIsDisabled"
-    @input-top="handleInputTop"
-    @input-bottom="handleInputBottom"
-    @cta-clicked="handleCtaClick"
-/>
+<div class="row">
+    <div class="col-12 q-mb-lg">
+        <base-staking-form
+            :header="header"
+            :subheader="subheader"
+            :top-input-label="topInputLabel"
+            :top-input-info-text="topInputInfoText"
+            :top-input-amount="topInputAmount"
+            :top-input-max-value="topInputMaxValue"
+            :top-input-error-text="topInputErrorText"
+            :top-input-is-loading="topInputIsLoading"
+            :bottom-input-label="bottomInputLabel"
+            :bottom-input-amount="bottomInputAmount"
+            :bottom-input-max-value="bottomInputMaxValue"
+            :bottom-input-is-loading="bottomInputIsLoading"
+            :cta-text="ctaText"
+            :cta-disabled="ctaIsDisabled"
+            :unstake-period-seconds="unstakePeriodSeconds"
+            @input-top="handleInputTop"
+            @input-bottom="handleInputBottom"
+            @cta-clicked="handleCtaClick"
+        />
+    </div>
+    <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
+        Unstake successful! View Transaction:
+        <transaction-field :transaction-hash="resultHash" />
+    </div>
+</div>
 </template>
 
 <script>
@@ -26,6 +35,7 @@ import { BigNumber, ethers } from 'ethers';
 import { debounce } from 'lodash';
 
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
+import TransactionField from 'components/TransactionField';
 
 import { triggerLogin } from 'components/ConnectButton';
 import { WEI_PRECISION } from 'src/lib/utils';
@@ -34,19 +44,42 @@ export default {
     name: 'StakeForm',
     components: {
         BaseStakingForm,
+        TransactionField,
+    },
+    props: {
+        stlosContractInstance: {
+            type: Object,
+            required: true,
+        },
+        escrowContractInstance: {
+            type: Object,
+            required: true,
+        },
+        stlosBalance: {
+            type: String,
+            default: null,
+        },
+        unlockedStlosBalance: {
+            type: String,
+            default: null,
+        },
+        unstakePeriodSeconds: {
+            type: Number,
+            default: null,
+        },
     },
     data: () => ({
-        escrowContract: null,
+        resultHash: null,
         header: 'Unstake sTLOS',
-        subheader: 'Unstake matured sTLOS',
+        subheader: 'Redeem matured sTLOS in exchange for TLOS',
         topInputLabel: 'Unstake sTLOS',
         topInputAmount: '0',
-        bottomInputMaxValue: null,
         topInputIsLoading: false,
+        bottomInputMaxValue: null,
         bottomInputIsLoading: false,
         bottomInputLabel: 'Receive TLOS',
         bottomInputAmount: '0',
-        maxDeposit: null,
+        ctaIsLoading: false,
         debouncedTopInputHandler: null,
         debouncedBottomInputHandler: null,
     }),
@@ -55,15 +88,17 @@ export default {
         topInputMaxValue() {
             return this.isLoggedIn ? this.usableWalletBalance : null;
         },
+
+        // eztodo rename, see if same gas logic/naming applies (where does metamask show the gas fee as coming from?)
         usableWalletBalance() {
-            const walletBalanceWeiBn = BigNumber.from(this.maxDeposit ?? '0');
+            const redeemableStlosBn = BigNumber.from(this.tlosBalance ?? '0');
             const reservedForGas = BigNumber.from('10').pow(WEI_PRECISION);
 
             // eztodo update low balance logic here
-            if (walletBalanceWeiBn.lte(reservedForGas))
+            if (redeemableStlosBn.lte(reservedForGas))
                 return '0'
 
-            return walletBalanceWeiBn.sub(reservedForGas).toString();
+            return redeemableStlosBn.sub(reservedForGas).toString();
         },
         topInputInfoText() {
             if (!this.isLoggedIn)
@@ -78,81 +113,72 @@ export default {
             }
 
             // eztodo update low balance here
-            const balanceTLOS = ethers.utils.commify(balanceEth);
+            const balanceTlos = ethers.utils.commify(balanceEth);
 
-            return `${balanceTLOS} Available`;
+            return `${balanceTlos} Available`;
         },
         topInputErrorText() {
             return this.isLoggedIn ? '' : 'Wallet not connected';
         },
         ctaIsDisabled() {
-            return this.topInputIsLoading ||
+            const inputsInvalid = (
+                this.isLoggedIn &&
+                [this.topInputAmount, this.bottomInputAmount].some(amount => ['0', '', null, undefined].includes(amount))
+            );
+
+            return inputsInvalid ||
+                this.topInputIsLoading ||
                 this.bottomInputIsLoading ||
-                (
-                    this.isLoggedIn &&
-                    [this.topInputAmount, this.bottomInputAmount].some(amount => ['0', '', null, undefined].includes(amount))
-                );
+                this.ctaIsLoading;
         },
         ctaText() {
-            return this.isLoggedIn ? 'Unstake' : 'Connect Wallet';
-        },
-    },
-    watch: {
-        escrowContract: {
-            immediate: true,
-            async handler(address, oldAddress) {
-                if (address !== oldAddress) {
-                    if (address)
-                        await this.setMaxDeposit();
-                    else
-                        this.maxDeposit = null;
-                }
-            },
+            if (this.ctaIsLoading)
+                return 'Loading...';
+
+            return this.isLoggedIn ? 'Unstake sTLOS' : 'Connect Wallet';
         },
     },
     async created() {
-        if (!this.isLoggedIn){
-            triggerLogin();
-            return;
-        }
-        try{
-            this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true);
-            this.escrowContract = await (await this.$contractManager.getContract(process.env.STLOS_ESCROW_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true);
-        }catch(e){
-            console.error(`Failed to get sTLOS contract instance: ${e.message}`);
-        }
-
         const debounceWaitMs = 250;
 
         this.debouncedTopInputHandler = debounce(
             () => {
-                this.stlosContract.previewDeposit(this.topInputAmount)
-                    .then(amountBigNum => this.bottomInputAmount = amountBigNum.toString())
-                    .catch(err => {
+                this.stlosContractInstance.previewDeposit(this.topInputAmount)
+                    .then((amountBigNum) => {
+                        this.bottomInputAmount = amountBigNum.toString();
+                    })
+                    .catch((err) => {
                         this.bottomInputAmount = '';
                         console.error(`Unable to convert TLOS to STLOS: ${err}`);
                     })
-                    .finally(() => this.bottomInputIsLoading = false)
+                    .finally(() => {
+                        return this.bottomInputIsLoading = false;
+                    })
             },
             debounceWaitMs,
         );
 
         this.debouncedBottomInputHandler = debounce(
             () => {
-                this.stlosContract.previewRedeem(this.bottomInputAmount)
-                    .then(amountBigNum => this.topInputAmount = amountBigNum.toString())
+                this.stlosContractInstance.previewRedeem(this.bottomInputAmount)
+                    .then(amountBigNum => {
+                        this.topInputAmount = amountBigNum.toString();
+                    })
                     .catch(err => {
                         this.topInputAmount = '';
                         console.error(`Unable to convert STLOS to TLOS: ${err}`);
                     })
-                    .finally(() => this.topInputIsLoading = false)
+                    .finally(() => {
+                        this.topInputIsLoading = false;
+                    })
             },
             debounceWaitMs,
         );
     },
     methods: {
         handleInputTop(newWei = '0') {
-            if (newWei === this.topInputAmount) return;
+            if (newWei === this.topInputAmount)
+                return;
 
             this.bottomInputIsLoading = true;
             this.topInputAmount = newWei;
@@ -160,7 +186,8 @@ export default {
             this.debouncedTopInputHandler();
         },
         handleInputBottom(newWei = '0') {
-            if (newWei === this.bottomInputAmount) return;
+            if (newWei === this.bottomInputAmount)
+                return;
 
             this.topInputIsLoading = true;
             this.bottomInputAmount = newWei;
@@ -168,19 +195,31 @@ export default {
             this.debouncedBottomInputHandler();
         },
         handleCtaClick() {
-            if (!this.isLoggedIn)
+            if (!this.isLoggedIn){
                 triggerLogin();
-        },
-        async setMaxDeposit() {
-            try{
-                this.maxDeposit = (await this.stlosContract.balanceOf(this.address)).toString();
-            }catch(e){
-                console.error(`Failed to get user EVM account balance: ${e.message}`);
+                return;
             }
+
+            this.ctaIsLoading = true;
+            const value = BigNumber.from(this.topInputAmount);
+
+            // eztodo check with Thomas; STLOS README has description as "Withdraw all unlocked TLOS"
+            //  rather than specific amount
+            this.escrowContractInstance['withdraw()']({ value })
+                .then((result) => {
+                    this.resultHash = result.hash;
+                    this.$emit('balance-changed');
+                })
+                .catch(({ message }) => {
+                    console.error(`Failed to unstake sTLOS: ${message}`);
+                    this.resultHash = null;
+                })
+                .finally(() => {
+                    this.ctaIsLoading = false;
+                });
         },
     },
 }
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>
