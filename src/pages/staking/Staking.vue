@@ -80,6 +80,8 @@ import { mapGetters } from 'vuex';
 import StakeForm from 'pages/staking/StakeForm';
 import UnstakeForm from 'pages/staking/UnstakeForm';
 
+import { formatBN, WEI_PRECISION } from 'src/lib/utils';
+
 const tabs = {
     stake: 'stake',
     unstake: 'unstake',
@@ -94,33 +96,30 @@ export default {
     data: () => ({
         tabs,
         selectedTab: tabs.stake,
-        stakedAmount: 0,
+
         stlosContract: null,
-        account: null,
-        liquidBalance: 0,
-        stakedBalance: 0,
-        redeemableBalance: 0,
+        escrowContract: null,
+        stlosContractInstance: null,
+        escrowContractInstance: null,
+
+        tlosBalance: null,
+        stlosBalance: null,
+        unlockedStlosBalance: null,
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
         stats() {
-            // eztodo remove this dummy data after all styling complete
-            // return [
-            //     { label: 'Balance',   value: '93.1251561123', unit: 'TLOS' },
-            //     { label: 'Staked',    value: '302.553',       unit: 'STLOS' },
-            //     { label: 'Unlocked',  value: '0',             unit: 'STLOS' },
-            // ];
             return [{
                 label: 'Balance',
-                value: this.liquidBalance,
+                value: this.formatWeiForStats(this.tlosBalance),
                 unit: 'TLOS',
             }, {
                 label: 'Staked',
-                value: this.stakedBalance,
+                value: this.formatWeiForStats(this.stlosBalance),
                 unit: 'STLOS',
             }, {
                 label: 'Unlocked',
-                value: this.redeemableBalance,
+                value: this.formatWeiForStats(this.unlockedStlosBalance),
                 unit: 'STLOS',
             }];
         },
@@ -140,25 +139,99 @@ export default {
                     this.$router.replace({ hash: tabs.stake });
             },
         },
-        account(){
-            this.setContract();
+        isLoggedIn: {
+            immediate: true,
+            async handler(isLoggedIn, wasLoggedIn) {
+                if (isLoggedIn !== wasLoggedIn) {
+                    await this.fetchContractInstances();
+                    await this.fetchBalances();
+                }
+            },
         },
     },
     async created() {
-        if (this.address){
-            this.setContract();
-        }
+        await this.fetchContracts();
     },
     methods: {
-        async setContract(){
-            try{
-                // eztodo fix unsafe cast from BN to number
-                this.liquidBalance = ((await this.$evm.telos.getEthAccount(this.address)).balance / 10**18).toFixed(2);
-                this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true);
-                this.stakedBalance = (await this.stlosContract.balanceOf(this.address)).toString();
-            }catch(e){
-                console.error(`Failed to get sTLOS contract instance: ${e.message}`);
+        fetchBalances() {
+            if (!this.address) {
+                this.tlosBalance = null;
+                this.stlosBalance = null;
+                this.unlockedStlosBalance = null;
+
+                return;
             }
+
+            const tlosPromise = this.$evm.telos.getEthAccount(this.address)
+                .then((account) => {
+                    this.tlosBalance = account.balance.toString();
+                })
+                .catch(({ message }) => {
+                    console.error(`Failed to fetch account: ${message}`);
+                    this.tlosBalance = null;
+                });
+
+            const stlosPromise = this.stlosContractInstance.balanceOf(this.address)
+                .then((balanceBn) => {
+                    this.stlosBalance = balanceBn.toString();
+                })
+                .catch(({ message }) => {
+                    console.error(`Failed to fetch account STLOS balance: ${message}`);
+                    this.stlosBalance = null;
+                });
+
+            const redeemablePromise = this.escrowContractInstance.maxWithdraw(this.address)
+                .then((amountBn) => {
+                    this.unlockedStlosBalance = amountBn.toString();
+                })
+                .catch(({ message }) => {
+                    console.error(`Failed to fetch withdrawable STLOS balance: ${message}`);
+                    this.unlockedStlosBalance = null;
+                });
+
+            return Promise.all([
+                tlosPromise,
+                stlosPromise,
+                redeemablePromise,
+            ]);
+        },
+        fetchContracts() {
+            const stlosPromise = this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)
+                .then((contract) => {
+                    this.stlosContract = contract;
+                })
+                .catch(({ message }) => {
+                    console.error(`Failed to get STLOS contract: ${message}`);
+                    this.stlosContract = null;
+                });
+
+            const escrowPromise = this.$contractManager.getContract(process.env.STLOS_ESCROW_CONTRACT_ADDRESS)
+                .then((contract) => {
+                    this.escrowContract = contract;
+                })
+                .catch(({ message }) => {
+                    console.error(`Failed to get STLOS contract: ${message}`);
+                    this.escrowContract = null;
+                });
+
+            return Promise.all([stlosPromise, escrowPromise]);
+        },
+        async fetchContractInstances() {
+            if (!this.stlosContract || !this.escrowContract) {
+                await this.fetchContracts();
+            }
+
+            const provider = this.isLoggedIn ?
+                this.$providerManager.getEthersProvider().getSigner() :
+                this.$contractManager.getEthersProvider();
+
+            this.stlosContractInstance  = this.stlosContract.getContractInstance(provider, true);
+            this.escrowContractInstance = this.escrowContract.getContractInstance(provider, true);
+
+            await this.fetchBalances();
+        },
+        formatWeiForStats(wei) {
+            return !wei ? '--': formatBN(wei, WEI_PRECISION, 3);
         },
     },
 }
