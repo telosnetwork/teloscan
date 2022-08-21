@@ -61,13 +61,28 @@
                 class="q-py-lg"
             >
                 <q-tab-panel name="stake">
-                    <stake-form />
+                    <div class="row">
+                        <div
+                            v-if="!stlosContractInstance || !tlosBalance"
+                            class="col-12 u-flex--center"
+                        >
+                            <q-spinner />
+                        </div>
+                        <div v-else class="col-12">
+                            <stake-form
+                                :stlos-contract-instance="stlosContractInstance"
+                                :tlos-balance="tlosBalance"
+                                @balance-changed="fetchBalances"
+                            />
+                        </div>
+                    </div>
                 </q-tab-panel>
-                <q-tab-panel
-                    name="unstake"
-                    class="shadow-2"
-                >
-                    <unstake-form />
+
+                <q-tab-panel name="unstake">
+                    <unstake-form
+                        :stlos-contract-instance="stlosContractInstance"
+                        :escrow-contract-instance="stlosContractInstance"
+                    />
                 </q-tab-panel>
             </q-tab-panels>
         </div>

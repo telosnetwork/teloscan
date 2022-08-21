@@ -1,29 +1,29 @@
 <template>
-<div>
-    <base-staking-form
-        :header="header"
-        :subheader="subheader"
-        :top-input-label="topInputLabel"
-        :top-input-info-text="topInputInfoText"
-        :top-input-amount="topInputAmount"
-        :top-input-max-value="topInputMaxValue"
-        :top-input-error-text="topInputErrorText"
-        :top-input-is-loading="topInputIsLoading"
-        :bottom-input-label="bottomInputLabel"
-        :bottom-input-amount="bottomInputAmount"
-        :bottom-input-max-value="bottomInputMaxValue"
-        :bottom-input-is-loading="bottomInputIsLoading"
-        :cta-text="ctaText"
-        :cta-disabled="ctaIsDisabled"
-        @input-top="handleInputTop"
-        @input-bottom="handleInputBottom"
-        @cta-clicked="handleCtaClick"
-    />
-    <div
-        v-show="resultHash"
-        class="transaction-result"
-    >
-        View Transaction: <a @click="goToTransaction"> {{ resultHash }} </a>
+<div class="row">
+    <div class="col-12 q-mb-lg">
+        <base-staking-form
+            :header="header"
+            :subheader="subheader"
+            :top-input-label="topInputLabel"
+            :top-input-info-text="topInputInfoText"
+            :top-input-amount="topInputAmount"
+            :top-input-max-value="topInputMaxValue"
+            :top-input-error-text="topInputErrorText"
+            :top-input-is-loading="topInputIsLoading"
+            :bottom-input-label="bottomInputLabel"
+            :bottom-input-amount="bottomInputAmount"
+            :bottom-input-max-value="bottomInputMaxValue"
+            :bottom-input-is-loading="bottomInputIsLoading"
+            :cta-text="ctaText"
+            :cta-disabled="ctaIsDisabled"
+            @input-top="handleInputTop"
+            @input-bottom="handleInputBottom"
+            @cta-clicked="handleCtaClick"
+        />
+    </div>
+    <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
+        Stake Successful! View Transaction:
+        <transaction-field :transaction-hash="resultHash" />
     </div>
 </div>
 </template>
@@ -34,6 +34,7 @@ import { BigNumber, ethers } from 'ethers';
 import { debounce } from 'lodash';
 
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
+import TransactionField from 'components/TransactionField';
 
 import { triggerLogin } from 'components/ConnectButton';
 import { WEI_PRECISION } from 'src/lib/utils';
@@ -42,20 +43,30 @@ export default {
     name: 'StakeForm',
     components: {
         BaseStakingForm,
+        TransactionField,
+    },
+    props: {
+        stlosContractInstance: {
+            type: Object,
+            required: true,
+        },
+        tlosBalance: {
+            type: String,
+            default: null,
+        },
     },
     data: () => ({
-        stlosContract: null,
         resultHash: null,
         header: 'Stake TLOS',
         subheader: 'Staked sTLOS provide you with access to a steady income and access to our Defi applications',
         topInputLabel: 'Stake TLOS',
         topInputAmount: '0',
-        bottomInputMaxValue: null,
         topInputIsLoading: false,
+        bottomInputMaxValue: null,
         bottomInputIsLoading: false,
         bottomInputLabel: 'Receive sTLOS',
         bottomInputAmount: '0',
-        maxDeposit: null,
+        ctaIsLoading: false,
         debouncedTopInputHandler: null,
         debouncedBottomInputHandler: null,
     }),
@@ -65,7 +76,7 @@ export default {
             return this.isLoggedIn ? this.usableWalletBalance : null;
         },
         usableWalletBalance() {
-            const walletBalanceWeiBn = BigNumber.from(this.maxDeposit ?? '0');
+            const walletBalanceWeiBn = BigNumber.from(this.tlosBalance ?? '0');
             const reservedForGas = BigNumber.from('10').pow(WEI_PRECISION);
 
             // eztodo update low balance logic here
@@ -95,44 +106,33 @@ export default {
             return this.isLoggedIn ? '' : 'Wallet not connected';
         },
         ctaIsDisabled() {
-            return this.topInputIsLoading ||
+            const inputsInvalid = (
+                this.isLoggedIn &&
+                [this.topInputAmount, this.bottomInputAmount].some(amount => ['0', '', null, undefined].includes(amount))
+            );
+
+            return inputsInvalid ||
+                this.topInputIsLoading ||
                 this.bottomInputIsLoading ||
-                (
-                    this.isLoggedIn &&
-                    [this.topInputAmount, this.bottomInputAmount].some(amount => ['0', '', null, undefined].includes(amount))
-                );
+                this.ctaIsLoading;
         },
         ctaText() {
+            if (this.ctaIsLoading)
+                return 'Loading...';
+
             return this.isLoggedIn ? 'Stake' : 'Connect Wallet';
         },
     },
-    watch: {
-        address: {
-            immediate: true,
-            handler(address, oldAddress) {
-                if (address !== oldAddress) {
-                    if (address)
-                        this.setMaxDeposit();
-                    else
-                        this.maxDeposit = null;
-                }
-            },
-        },
-    },
     async created() {
-        try{
-            this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance();
-        }catch(e){
-            console.error(`Failed to get sTLOS contract instance: ${e.message}`);
-        }
-
         const debounceWaitMs = 250;
 
         this.debouncedTopInputHandler = debounce(
             () => {
-                this.stlosContract.previewDeposit(this.topInputAmount)
-                    .then(amountBigNum => this.bottomInputAmount = amountBigNum.toString())
-                    .catch(err => {
+                this.stlosContractInstance.previewDeposit(this.topInputAmount)
+                    .then((amountBigNum) => {
+                        this.bottomInputAmount = amountBigNum.toString();
+                    })
+                    .catch((err) => {
                         this.bottomInputAmount = '';
                         console.error(`Unable to convert TLOS to STLOS: ${err}`);
                     })
@@ -145,8 +145,10 @@ export default {
 
         this.debouncedBottomInputHandler = debounce(
             () => {
-                this.stlosContract.previewRedeem(this.bottomInputAmount)
-                    .then(amountBigNum => this.topInputAmount = amountBigNum.toString())
+                this.stlosContractInstance.previewRedeem(this.bottomInputAmount)
+                    .then(amountBigNum => {
+                        this.topInputAmount = amountBigNum.toString();
+                    })
                     .catch(err => {
                         this.topInputAmount = '';
                         console.error(`Unable to convert STLOS to TLOS: ${err}`);
@@ -159,9 +161,6 @@ export default {
         );
     },
     methods: {
-        goToTransaction(){
-            this.$router.push({ path: `/tx/${this.resultHash}` });
-        },
         handleInputTop(newWei = '0') {
             if (newWei === this.topInputAmount)
                 return;
@@ -180,22 +179,26 @@ export default {
 
             this.debouncedBottomInputHandler();
         },
-        async handleCtaClick() {
+        handleCtaClick() {
             if (!this.isLoggedIn){
                 triggerLogin();
                 return;
             }
-            this.stlosContract = await (await this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)).getContractInstance(this.$providerManager.getEthersProvider().getSigner(), true);
-            const result = await this.stlosContract['depositTLOS()']({value: BigNumber.from(this.topInputAmount)});
-            this.resultHash = result.hash;
-        },
-        setMaxDeposit() {
-            this.$evm.telos.getEthAccount(this.address)
-                .then(account => {
-                    this.maxDeposit = account.balance.toString();
+
+            this.ctaIsLoading = true;
+            const value = BigNumber.from(this.topInputAmount);
+
+            this.stlosContractInstance['depositTLOS()']({ value })
+                .then((result) => {
+                    this.resultHash = result.hash;
+                    this.$emit('balance-changed');
                 })
-                .catch(e => {
-                    console.error(`Failed to get user EVM account balance: ${e.message}`);
+                .catch(({ message }) => {
+                    console.error(`Failed to deposit TLOS: ${message}`);
+                    this.resultHash = null;
+                })
+                .finally(() => {
+                    this.ctaIsLoading = false;
                 });
         },
     },
