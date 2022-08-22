@@ -205,7 +205,8 @@ export default {
 
             // eztodo check with Thomas; STLOS README has description as "Withdraw all unlocked TLOS"
             //  rather than specific amount
-            this.escrowContractInstance['withdraw()']({ value })
+            // NOTE: this is the unstake action to 'withdraw' to the escrow contract not 'redeem'/'claim' - dp
+            this.stlosContractInstance['withdraw()']({ value })
                 .then((result) => {
                     this.resultHash = result.hash;
                     this.$emit('balance-changed');

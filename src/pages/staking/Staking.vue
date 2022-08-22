@@ -137,7 +137,11 @@ export default {
 
         tlosBalance: null,
         stlosBalance: null,
-        unlockedStlosBalance: null,
+        stlosValue: null,
+        tlosTotal: null,
+        totalUnstakedTlosBalance: null,
+        lockedTlosBalance: null,
+        unlockedTlosBalance: null,
         unstakePeriodSeconds: null,
     }),
     computed: {
@@ -155,9 +159,17 @@ export default {
                 label: 'Value',
                 value: this.formatWeiForStats(this.stlosValue),
                 unit: 'TLOS',
-            },  {
+            }, {
+                label: 'Total Unstaked',
+                value: this.formatWeiForStats(this.totalUnstakedTlosBalance),
+                unit: 'TLOS',
+            }, {
+                label: 'Locked',
+                value: this.formatWeiForStats(this.totalUnstakedTlosBalance - this.unlockedTlosBalance),
+                unit: 'TLOS',
+            }, {
                 label: 'Unlocked',
-                value: this.formatWeiForStats(this.unlockedStlosBalance),
+                value: this.formatWeiForStats(this.unlockedTlosBalance),
                 unit: 'TLOS',
             }];
         },
@@ -196,7 +208,7 @@ export default {
             if (!this.address) {
                 this.tlosBalance = null;
                 this.stlosBalance = null;
-                this.unlockedStlosBalance = null;
+                this.unlockedTlosBalance = null;
                 this.stlosValue = null;
 
                 return;
@@ -229,20 +241,30 @@ export default {
                     this.stlosValue = null;
                 });
 
-            const redeemablePromise = this.escrowContractInstance.maxWithdraw(this.address)
+            const totalUnstakedPromise = this.escrowContractInstance.balanceOf(this.address)
                 .then((amountBn) => {
-                    this.unlockedStlosBalance = amountBn.toString();
+                    this.totalUnstakedTlosBalance = amountBn.toString();
+                })
+                .catch(({ message }) => {
+                    console.error(`Failed to fetch total unstaked TLOS balance: ${message}`);
+                    this.totalUnstakedTlosBalance = null;
+                });
+
+            const unlockedPromise = this.escrowContractInstance.maxWithdraw(this.address)
+                .then((amountBn) => {
+                    this.unlockedTlosBalance = amountBn.toString();
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch withdrawable STLOS balance: ${message}`);
-                    this.unlockedStlosBalance = null;
+                    this.unlockedTlosBalance = null;
                 });
 
             return Promise.all([
                 tlosPromise,
                 stlosPromise,
-                redeemablePromise,
                 currentValuePromise,
+                totalUnstakedPromise,
+                unlockedPromise,
             ]);
         },
         fetchContracts() {
