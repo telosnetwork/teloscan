@@ -136,7 +136,7 @@ export default {
 
         this.debouncedTopInputHandler = debounce(
             () => {
-                this.stlosContractInstance.previewDeposit(this.topInputAmount)
+                this.stlosContractInstance.previewRedeem(this.topInputAmount)
                     .then((amountBigNum) => {
                         this.bottomInputAmount = amountBigNum.toString();
                     })
@@ -153,7 +153,7 @@ export default {
 
         this.debouncedBottomInputHandler = debounce(
             () => {
-                this.stlosContractInstance.previewRedeem(this.bottomInputAmount)
+                this.stlosContractInstance.previewDeposit(this.bottomInputAmount)
                     .then(amountBigNum => {
                         this.topInputAmount = amountBigNum.toString();
                     })
