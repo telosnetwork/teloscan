@@ -143,6 +143,7 @@ export default {
         lockedTlosBalance: null,
         unlockedTlosBalance: null,
         unstakePeriodSeconds: null,
+        escrowDeposits: [],
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
@@ -160,7 +161,7 @@ export default {
                 value: this.formatWeiForStats(this.stlosValue),
                 unit: 'TLOS',
             }, {
-                label: 'Unstaked',
+                label: 'Total Unstaked',
                 value: this.formatWeiForStats(this.totalUnstakedTlosBalance),
                 unit: 'TLOS',
             }, {
@@ -210,7 +211,7 @@ export default {
                 this.stlosBalance = null;
                 this.unlockedTlosBalance = null;
                 this.stlosValue = null;
-
+                this.escrowDeposits = [];
                 return;
             }
 
@@ -259,12 +260,22 @@ export default {
                     this.unlockedTlosBalance = null;
                 });
 
+            const escrowDepositsPromise = this.escrowContractInstance.depositsOf(this.address)
+                .then((deposits) => {
+                    this.escrowDeposits = deposits;
+                    console.dir(deposits);
+                })
+                .catch(({message}) => {
+                    console.error(`Failed to fetch escrow deposits: ${message}`)
+                })
+
             return Promise.all([
                 tlosPromise,
                 stlosPromise,
                 currentValuePromise,
                 totalUnstakedPromise,
                 unlockedPromise,
+                escrowDepositsPromise,
             ]);
         },
         fetchContracts() {
