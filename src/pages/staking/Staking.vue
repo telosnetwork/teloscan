@@ -93,8 +93,9 @@
                                 :stlos-contract-instance="stlosContractInstance"
                                 :escrow-contract-instance="escrowContractInstance"
                                 :stlos-balance="stlosBalance"
-                                :unlocked-stlos-balance="unlockedTlosBalance"
+                                :unlocked-tlos-balance="unlockedTlosBalance"
                                 :unstake-period-seconds="unstakePeriodSeconds"
+                                :deposits="escrowDeposits"
                                 @balance-changed="fetchBalances"
                             />
                         </div>

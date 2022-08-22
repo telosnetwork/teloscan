@@ -26,6 +26,24 @@
         Unstake successful! View Transaction:
         <transaction-field :transaction-hash="resultHash" />
     </div>
+    <div>
+        <q-table
+            :data="deposits"
+            :columns="columns"
+            :loading="loading"
+            flat
+        />
+    </div>
+    <div class="col-xs-12 col-sm-4 u-flex--right">
+        <q-btn
+            :disabled="deposits.length"
+            color="secondary"
+            text-color="black"
+            @click="claimUnlocked"
+        >
+            Claim Telos
+        </q-btn>
+    </div>
 </div>
 </template>
 
@@ -38,7 +56,6 @@ import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import TransactionField from 'components/TransactionField';
 
 import { triggerLogin } from 'components/ConnectButton';
-// import { WEI_PRECISION } from 'src/lib/utils';
 
 export default {
     name: 'UnstakeForm',
@@ -59,13 +76,17 @@ export default {
             type: String,
             default: null,
         },
-        unlockedStlosBalance: {
+        unlockedTlosBalance: {
             type: String,
             default: null,
         },
         unstakePeriodSeconds: {
             type: Number,
             default: null,
+        },
+        deposits: {
+            type: Array,
+            default: ()=>{ return [] },
         },
     },
     data: () => ({
@@ -82,6 +103,24 @@ export default {
         ctaIsLoading: false,
         debouncedTopInputHandler: null,
         debouncedBottomInputHandler: null,
+        columns: [
+            {
+                name: 'hash',
+                label: 'Transaction Hash',
+                align: 'left',
+            },
+            {
+                name: 'amount',
+                label: 'Amount',
+                align: 'left',
+            },
+            {
+                name: 'time',
+                label: 'Time Remaining',
+                align: 'left',
+            },
+        ],
+        loading: false,
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
@@ -207,6 +246,18 @@ export default {
                 })
                 .finally(() => {
                     this.ctaIsLoading = false;
+                });
+        },
+        claimUnlocked() {
+            const value = BigNumber.from(this.unlockedTlosBalance);
+
+            this.escrowContractInstance['withdraw()']({ value })
+                .then((result) => {
+                    this.resultHash = result.hash;
+                })
+                .catch(({ message }) => {
+                    console.error(`Failed to claim unlocked TLOS: ${message}`);
+                    this.resultHash = null;
                 });
         },
     },
