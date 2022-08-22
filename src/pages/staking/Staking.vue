@@ -83,7 +83,7 @@
                     <div class="row">
                         <!-- make getter, doesnt work for unauth currently -->
                         <div
-                            v-if="!stlosContractInstance || !tlosBalance || !escrowContractInstance"
+                            v-if="!stlosContractInstance || !stlosBalance || !escrowContractInstance"
                             class="col-12 u-flex--center"
                         >
                             <q-spinner />
@@ -92,8 +92,8 @@
                             <unstake-form
                                 :stlos-contract-instance="stlosContractInstance"
                                 :escrow-contract-instance="escrowContractInstance"
-                                :stlos-balance="tlosBalance"
-                                :unlocked-stlos-balance="tlosBalance"
+                                :stlos-balance="stlosBalance"
+                                :unlocked-stlos-balance="unlockedTlosBalance"
                                 :unstake-period-seconds="unstakePeriodSeconds"
                                 @balance-changed="fetchBalances"
                             />

@@ -38,10 +38,10 @@ import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import TransactionField from 'components/TransactionField';
 
 import { triggerLogin } from 'components/ConnectButton';
-import { WEI_PRECISION } from 'src/lib/utils';
+// import { WEI_PRECISION } from 'src/lib/utils';
 
 export default {
-    name: 'StakeForm',
+    name: 'UnstakeForm',
     components: {
         BaseStakingForm,
         TransactionField,
@@ -86,25 +86,18 @@ export default {
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
         topInputMaxValue() {
-            return this.isLoggedIn ? this.usableWalletBalance : null;
+            return this.isLoggedIn ? this.stakedBalance : null;
         },
 
-        // eztodo rename, see if same gas logic/naming applies (where does metamask show the gas fee as coming from?)
-        usableWalletBalance() {
-            const redeemableStlosBn = BigNumber.from(this.tlosBalance ?? '0');
-            const reservedForGas = BigNumber.from('10').pow(WEI_PRECISION);
-
-            // eztodo update low balance logic here
-            if (redeemableStlosBn.lte(reservedForGas))
-                return '0'
-
-            return redeemableStlosBn.sub(reservedForGas).toString();
+        stakedBalance() {
+            return BigNumber.from(this.stlosBalance ?? '0').toString();
         },
+
         topInputInfoText() {
             if (!this.isLoggedIn)
                 return '';
 
-            let balanceEth = ethers.utils.formatEther(this.usableWalletBalance);
+            let balanceEth = ethers.utils.formatEther(this.stakedBalance);
 
             if (balanceEth.indexOf('.') >= 0) {
                 const [integer, fraction] = balanceEth.split('.');
