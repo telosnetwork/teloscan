@@ -81,6 +81,7 @@
 
                 <q-tab-panel name="unstake">
                     <div class="row">
+                        <!-- make getter, doesnt work for unauth currently -->
                         <div
                             v-if="!stlosContractInstance || !tlosBalance || !escrowContractInstance"
                             class="col-12 u-flex--center"
@@ -126,10 +127,14 @@ export default {
     data: () => ({
         tabs,
         selectedTab: tabs.stake,
+
+
         stlosContract: null,
         escrowContract: null,
         stlosContractInstance: null,
         escrowContractInstance: null,
+
+
         tlosBalance: null,
         stlosBalance: null,
         unlockedStlosBalance: null,
@@ -168,6 +173,7 @@ export default {
                     this.$router.replace({ hash: tabs.stake });
             },
         },
+        // eztodo handle address change here
         isLoggedIn: {
             immediate: true,
             async handler(isLoggedIn, wasLoggedIn) {
@@ -237,7 +243,6 @@ export default {
             const escrowPromise = this.$contractManager.getContract(process.env.STLOS_ESCROW_CONTRACT_ADDRESS)
                 .then((contract) => {
                     this.escrowContract = contract;
-
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to get STLOS contract: ${message}`);

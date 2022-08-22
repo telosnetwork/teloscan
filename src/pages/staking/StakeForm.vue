@@ -40,6 +40,20 @@ import TransactionField from 'components/TransactionField';
 import { triggerLogin } from 'components/ConnectButton';
 import { WEI_PRECISION } from 'src/lib/utils';
 
+// reedeem(able), locked, staked, claimable, unlocked
+
+// stats at top:
+// 1. balance (TLOS)
+// 2. balance (STLOS)
+// 3. TLOS equivalent of STLOS balance (aka maxWithdraw)
+// 4. escrowed (locked TLOS is escrow)       ----\ = show total and breakdown of unlocked vs locked
+// 5. withdrawable (unlocked TLOS in escrow) ----/
+
+
+// gas is paid using account TLOS ==> unstake available balance === STLOS balance
+
+
+
 export default {
     name: 'StakeForm',
     components: {
