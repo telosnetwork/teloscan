@@ -26,23 +26,25 @@
         Unstake successful! View Transaction:
         <transaction-field :transaction-hash="resultHash" />
     </div>
-    <div>
-        <q-table
-            :data="deposits"
-            :columns="columns"
-            :loading="loading"
-            flat
-        />
-    </div>
-    <div class="col-xs-12 col-sm-4 u-flex--right">
-        <q-btn
-            :disabled="deposits.length"
-            color="secondary"
-            text-color="black"
-            @click="claimUnlocked"
-        >
-            Claim Telos
-        </q-btn>
+    <div class="deposits-container">
+        <div>
+            <q-table
+                :data="deposits"
+                :columns="columns"
+                :loading="loading"
+                flat
+            />
+        </div>
+        <div class="col-xs-12 col-sm-4 u-flex--right">
+            <q-btn
+                :disabled="deposits.length"
+                color="secondary"
+                text-color="black"
+                @click="claimUnlocked"
+            >
+                Claim TLOS
+            </q-btn>
+        </div>
     </div>
 </div>
 </template>
@@ -264,4 +266,7 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="sass">
+.deposits-container
+    margin: auto
+</style>
