@@ -137,7 +137,6 @@ export default {
         tlosBalance: null,
         stlosBalance: null,
         stlosValue: null,
-        tlosTotal: null,
         totalUnstakedTlosBalance: null,
         unlockedTlosBalance: null,
         unstakePeriodSeconds: null,
@@ -269,8 +268,14 @@ export default {
                     this.escrowDeposits = deposits;
                     console.dir(deposits);
                 })
-                .catch(({message}) => {
-                    console.error(`Failed to fetch escrow deposits: ${message}`)
+                .catch(({ message }) => {
+                    // eztodo Tom said he will change this to return an empty array rather than throw exception;
+                    // this is temporary
+                    if (message.toLowerCase().includes('No deposits for this address') >= 0) {
+                        this.escrowDeposits = [];
+                    } else {
+                        console.error(`Failed to fetch escrow deposits: ${message}`);
+                    }
                 })
 
             return Promise.all([
