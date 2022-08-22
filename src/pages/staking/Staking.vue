@@ -81,7 +81,7 @@
 
                 <q-tab-panel name="unstake">
                     <div class="row">
-                        <!-- make getter, doesnt work for unauth currently -->
+                        <!-- eztodo make getter, doesnt work for unauth currently -->
                         <div
                             v-if="!stlosContractInstance || !stlosBalance || !escrowContractInstance"
                             class="col-12 u-flex--center"
@@ -107,7 +107,9 @@
 </template>
 
 <script>
+import { BigNumber } from 'ethers';
 import { mapGetters } from 'vuex';
+
 import StakeForm from 'pages/staking/StakeForm';
 import UnstakeForm from 'pages/staking/UnstakeForm';
 
@@ -127,26 +129,27 @@ export default {
     data: () => ({
         tabs,
         selectedTab: tabs.stake,
-
-
         stlosContract: null,
         escrowContract: null,
         stlosContractInstance: null,
         escrowContractInstance: null,
-
-
         tlosBalance: null,
         stlosBalance: null,
         stlosValue: null,
         tlosTotal: null,
         totalUnstakedTlosBalance: null,
-        lockedTlosBalance: null,
         unlockedTlosBalance: null,
         unstakePeriodSeconds: null,
         escrowDeposits: [],
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
+        lockedTlosBalance() {
+            const unstakedBn = BigNumber.from(this.totalUnstakedTlosBalance ?? '0');
+            const unlockedBn = BigNumber.from(this.unlockedTlosBalance ?? '0');
+
+            return unstakedBn.sub(unlockedBn);
+        },
         stats() {
             return [{
                 label: 'Balance',
@@ -166,7 +169,7 @@ export default {
                 unit: 'TLOS',
             }, {
                 label: 'Locked',
-                value: this.formatWeiForStats(this.totalUnstakedTlosBalance - this.unlockedTlosBalance),
+                value: this.formatWeiForStats(this.lockedTlosBalance),
                 unit: 'TLOS',
             }, {
                 label: 'Unlocked',
