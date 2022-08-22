@@ -1,7 +1,7 @@
 <template>
 <div class="c-staking-page pageContainer q-pt-xl">
     <div class="row page-header q-mx-md q-mb-lg">
-        <div class="col-xs-12 col-lg-6">
+        <div class="col-xs-12 col-lg-6 c-staking-page__header-container">
             <h1 class="c-staking-page__title">
                 Telos EVM Staking
             </h1>
@@ -160,7 +160,7 @@ export default {
                 value: this.formatWeiForStats(this.stlosValue),
                 unit: 'TLOS',
             }, {
-                label: 'Total Unstaked',
+                label: 'Unstaked',
                 value: this.formatWeiForStats(this.totalUnstakedTlosBalance),
                 unit: 'TLOS',
             }, {
@@ -324,6 +324,10 @@ export default {
         font-weight: 400;
         line-height: 2rem;
         letter-spacing: 0.00735em;
+    }
+
+    &__header-container {
+        width: fit-content !important;
     }
 
     &__stats-container {
