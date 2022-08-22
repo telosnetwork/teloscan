@@ -63,7 +63,7 @@
                 <q-tab-panel name="stake">
                     <div class="row">
                         <div
-                            v-if="!stlosContractInstance || !tlosBalance"
+                            v-if="!stlosContractInstance"
                             class="col-12 u-flex--center"
                         >
                             <q-spinner />
@@ -81,9 +81,8 @@
 
                 <q-tab-panel name="unstake">
                     <div class="row">
-                        <!-- eztodo make getter, doesnt work for unauth currently -->
                         <div
-                            v-if="!stlosContractInstance || !stlosBalance || !escrowContractInstance"
+                            v-if="!stlosContractInstance || !escrowContractInstance"
                             class="col-12 u-flex--center"
                         >
                             <q-spinner />
