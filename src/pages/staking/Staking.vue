@@ -152,9 +152,13 @@ export default {
                 value: this.formatWeiForStats(this.stlosBalance),
                 unit: 'STLOS',
             }, {
+                label: 'Value',
+                value: this.formatWeiForStats(this.stlosValue),
+                unit: 'TLOS',
+            },  {
                 label: 'Unlocked',
                 value: this.formatWeiForStats(this.unlockedStlosBalance),
-                unit: 'STLOS',
+                unit: 'TLOS',
             }];
         },
     },
@@ -193,6 +197,7 @@ export default {
                 this.tlosBalance = null;
                 this.stlosBalance = null;
                 this.unlockedStlosBalance = null;
+                this.stlosValue = null;
 
                 return;
             }
@@ -215,6 +220,15 @@ export default {
                     this.stlosBalance = null;
                 });
 
+            const currentValuePromise = this.stlosContractInstance.maxWithdraw(this.address)
+                .then((valueBn) => {
+                    this.stlosValue = valueBn.toString();
+                })
+                .catch(({ message }) => {
+                    console.error(`Failed to fetch account STLOS balance value: ${message}`);
+                    this.stlosValue = null;
+                });
+
             const redeemablePromise = this.escrowContractInstance.maxWithdraw(this.address)
                 .then((amountBn) => {
                     this.unlockedStlosBalance = amountBn.toString();
@@ -228,6 +242,7 @@ export default {
                 tlosPromise,
                 stlosPromise,
                 redeemablePromise,
+                currentValuePromise,
             ]);
         },
         fetchContracts() {
