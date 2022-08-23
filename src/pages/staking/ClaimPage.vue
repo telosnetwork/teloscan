@@ -30,11 +30,8 @@
 <script>
 import { mapGetters } from 'vuex';
 import { ethers } from 'ethers';
-// import { debounce } from 'lodash';
 
 import TransactionField from 'components/TransactionField';
-
-// import { triggerLogin } from 'components/ConnectButton';
 
 export default {
     name: 'UnstakeForm',
@@ -42,10 +39,6 @@ export default {
         TransactionField,
     },
     props: {
-        // stlosContractInstance: {
-        //     type: Object,
-        //     required: true,
-        // },
         escrowContractInstance: {
             type: Object,
             required: true,
@@ -54,10 +47,6 @@ export default {
             type: String,
             default: null,
         },
-        // unstakePeriodSeconds: {
-        //     type: Number,
-        //     default: null,
-        // },
         deposits: {
             type: Array,
             default: ()=>{ return [] },
@@ -65,17 +54,6 @@ export default {
     },
     data: () => ({
         resultHash: null,
-        // header: 'Unstake sTLOS',
-        // subheader: 'Redeem matured sTLOS in exchange for TLOS',
-        // topInputLabel: 'Unstake sTLOS',
-        // topInputAmount: '0',
-        // topInputIsLoading: false,
-        // bottomInputMaxValue: null,
-        // bottomInputIsLoading: false,
-        // bottomInputLabel: 'Receive TLOS',
-        // bottomInputAmount: '0',
-        // ctaIsLoading: false,
-
         columns: [
             {
                 name: 'amount',
@@ -96,128 +74,8 @@ export default {
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
-
-
-        // stakedBalance() {
-        //     return BigNumber.from(this.stlosBalance ?? '0').toString();
-        // },
-
-        // topInputInfoText() {
-        //     if (!this.isLoggedIn)
-        //         return '';
-
-        //     let balanceEth = ethers.utils.formatEther(this.stakedBalance);
-
-        //     if (balanceEth.indexOf('.') >= 0) {
-        //         const [integer, fraction] = balanceEth.split('.');
-
-        //         balanceEth = integer.concat(`.${fraction.slice(0, 3)}`);
-        //     }
-
-        //     // eztodo update low balance here
-        //     const balanceTlos = ethers.utils.commify(balanceEth);
-
-        //     return `${balanceTlos} Available`;
-        // },
-        // topInputErrorText() {
-        //     return this.isLoggedIn ? '' : 'Wallet not connected';
-        // },
-        // ctaIsDisabled() {
-        //     const inputsInvalid = (
-        //         this.isLoggedIn &&
-        //         [this.topInputAmount, this.bottomInputAmount].some(amount => ['0', '', null, undefined].includes(amount))
-        //     );
-
-        //     return inputsInvalid ||
-        //         this.topInputIsLoading ||
-        //         this.bottomInputIsLoading ||
-        //         this.ctaIsLoading;
-        // },
-        // ctaText() {
-        //     if (this.ctaIsLoading)
-        //         return 'Loading...';
-
-        //     return this.isLoggedIn ? 'Unstake sTLOS' : 'Connect Wallet';
-        // },
     },
-    // async created() {
-    //     const debounceWaitMs = 250;
-
-    //     this.debouncedTopInputHandler = debounce(
-    //         () => {
-    //             this.stlosContractInstance.previewRedeem(this.topInputAmount)
-    //                 .then((amountBigNum) => {
-    //                     this.bottomInputAmount = amountBigNum.toString();
-    //                 })
-    //                 .catch((err) => {
-    //                     this.bottomInputAmount = '';
-    //                     console.error(`Unable to convert TLOS to STLOS: ${err}`);
-    //                 })
-    //                 .finally(() => {
-    //                     return this.bottomInputIsLoading = false;
-    //                 })
-    //         },
-    //         debounceWaitMs,
-    //     );
-
-    //     this.debouncedBottomInputHandler = debounce(
-    //         () => {
-    //             this.stlosContractInstance.previewDeposit(this.bottomInputAmount)
-    //                 .then(amountBigNum => {
-    //                     this.topInputAmount = amountBigNum.toString();
-    //                 })
-    //                 .catch(err => {
-    //                     this.topInputAmount = '';
-    //                     console.error(`Unable to convert STLOS to TLOS: ${err}`);
-    //                 })
-    //                 .finally(() => {
-    //                     this.topInputIsLoading = false;
-    //                 })
-    //         },
-    //         debounceWaitMs,
-    //     );
-    // },
     methods: {
-        // handleInputTop(newWei = '0') {
-        //     if (newWei === this.topInputAmount)
-        //         return;
-
-        //     this.bottomInputIsLoading = true;
-        //     this.topInputAmount = newWei;
-
-        //     this.debouncedTopInputHandler();
-        // },
-        // handleInputBottom(newWei = '0') {
-        //     if (newWei === this.bottomInputAmount)
-        //         return;
-
-        //     this.topInputIsLoading = true;
-        //     this.bottomInputAmount = newWei;
-
-        //     this.debouncedBottomInputHandler();
-        // },
-        // handleCtaClick() {
-        //     if (!this.isLoggedIn){
-        //         triggerLogin();
-        //         return;
-        //     }
-
-        //     this.ctaIsLoading = true;
-        //     const value = BigNumber.from(this.topInputAmount);
-
-        //     this.stlosContractInstance.withdraw(value, this.address, this.address)
-        //         .then((result) => {
-        //             this.resultHash = result.hash;
-        //             this.$emit('balance-changed');
-        //         })
-        //         .catch(({ message }) => {
-        //             console.error(`Failed to unstake sTLOS: ${message}`);
-        //             this.resultHash = null;
-        //         })
-        //         .finally(() => {
-        //             this.ctaIsLoading = false;
-        //         });
-        // },
         claimUnlocked() {
             this.escrowContractInstance.withdraw()
                 .then((result) => {
