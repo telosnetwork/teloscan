@@ -144,6 +144,9 @@ export default {
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
         lockedTlosBalance() {
+            if (!this.isLoggedIn)
+                return null;
+
             const unstakedBn = BigNumber.from(this.totalUnstakedTlosBalance ?? '0');
             const unlockedBn = BigNumber.from(this.unlockedTlosBalance ?? '0');
 
