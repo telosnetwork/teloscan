@@ -10,6 +10,7 @@
             :top-input-max-value="topInputMaxValue"
             :top-input-error-text="topInputErrorText"
             :top-input-is-loading="topInputIsLoading"
+            :top-input-tooltip="topInputTooltip"
             :bottom-input-label="bottomInputLabel"
             :bottom-input-amount="bottomInputAmount"
             :bottom-input-max-value="bottomInputMaxValue"
@@ -123,6 +124,12 @@ export default {
         },
         topInputErrorText() {
             return this.isLoggedIn ? '' : 'Wallet not connected';
+        },
+        topInputTooltip() {
+            const prettyBalance = ethers.utils.formatEther(this.usableWalletBalance).toString();
+            return 'Click to input full wallet balance\n\n' +
+                   'Precise balance (less approximate gas fees):\n' +
+                   `${prettyBalance} TLOS`;
         },
         ctaIsDisabled() {
             const inputsInvalid = (

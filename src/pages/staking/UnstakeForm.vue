@@ -10,6 +10,7 @@
             :top-input-max-value="topInputMaxValue"
             :top-input-error-text="topInputErrorText"
             :top-input-is-loading="topInputIsLoading"
+            :top-input-tooltip="topInputTooltip"
             :bottom-input-label="bottomInputLabel"
             :bottom-input-amount="bottomInputAmount"
             :bottom-input-max-value="bottomInputMaxValue"
@@ -108,11 +109,15 @@ export default {
         topInputMaxValue() {
             return this.isLoggedIn ? this.stakedBalance : null;
         },
-
+        topInputTooltip() {
+            const prettyBalance = ethers.utils.formatEther(this.stakedBalance).toString();
+            return 'Click to input full staked balance\n\n' +
+                'Precise balance (less approximate gas fees):\n' +
+                `${prettyBalance} sTLOS`;
+        },
         stakedBalance() {
             return BigNumber.from(this.stlosBalance ?? '0').toString();
         },
-
         topInputInfoText() {
             if (!this.isLoggedIn)
                 return '';

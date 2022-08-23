@@ -98,6 +98,10 @@ export default {
             type: Boolean,
             required: true,
         },
+        topInputTooltip: {
+            type: String,
+            required: true,
+        },
         bottomInputLabel: {
             type: String,
             required: true,
@@ -151,6 +155,7 @@ export default {
                 label:       this.topInputLabel,
                 infoText:    this.topInputInfoText,
                 errorText:   this.topInputErrorText,
+                tooltip:     this.topInputTooltip,
                 maxValueWei: this.topInputMaxValue ?? genericMaxWei,
                 isLoading:   this.topInputIsLoading,
             }, {

@@ -27,10 +27,7 @@
                     anchor="top middle"
                     self="top middle"
                 >
-                    <!-- eztodo improve this message - should convey that this total balance isn't exactly equal to wallet balance -->
-                    Click to input full wallet balance<br><br>
-                    Exact balance (less approx. gas fees):<br>
-                    {{ availableBalance }} TLOS
+                    <span class="c-staking-input__tooltip-text">{{ tooltip }}</span>
                 </q-tooltip>
 
                 {{ infoText }}
@@ -101,6 +98,10 @@ export default {
             type: String,
             default: '',
         },
+        tooltip: {
+            type: String,
+            default: '',
+        },
         isLoading: {
             type: Boolean,
             required: true,
@@ -109,12 +110,6 @@ export default {
             type: String,
             default: null,
             validator: str => BigNumber.from(str),
-        },
-    },
-    computed: {
-        availableBalance() {
-            const balance = formatEther(this.maxValueWei).toString();
-            return `${balance}`;
         },
     },
     watch: {
@@ -308,6 +303,10 @@ export default {
         cursor: pointer;
         width: min-content;
         white-space: nowrap;
+    }
+
+    &__tooltip-text {
+        white-space: pre;
     }
 
     &__input,
