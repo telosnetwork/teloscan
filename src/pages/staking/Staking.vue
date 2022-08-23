@@ -1,7 +1,7 @@
 <template>
 <div class="c-staking-page pageContainer q-pt-xl">
-    <div class="row page-header q-mx-md q-mb-lg">
-        <div class="col-xs-12 col-lg-6 c-staking-page__header-container">
+    <div class="row q-mx-md q-mb-lg">
+        <div class="col-xs-12 col-md-6">
             <h1 class="c-staking-page__title">
                 Telos EVM Staking
             </h1>
@@ -9,23 +9,23 @@
                 Stake sTLOS and receive sTLOS from the shared REX/EVM pool
             </p>
         </div>
-        <div class="col-xs-12 col-lg-6 c-staking-page__stats-container shadow-1">
-            <div
-                v-for="{ label, value, unit } in stats"
-                :key="label"
-                class="c-staking-page__stat"
-            >
-                <div class="c-staking-page__stat-label">
-                    {{ label }}
-                    <div class="c-staking-page__stat-unit">
-                        {{ unit }}
+        <div class="col-xs-12 col-md-6">
+            <q-card class="c-staking-page__stats-container">
+                <div
+                    v-for="{ label, value, unit } in stats"
+                    :key="label"
+                    class="c-staking-page__stat"
+                >
+                    <div class="c-staking-page__stat-label">
+                        {{ label }}
+                        <span class="c-staking-page__stat-unit">{{ unit }}</span>
+                    </div>
+
+                    <div class="c-staking-page__stat-value">
+                        {{ value }}
                     </div>
                 </div>
-
-                <div class="c-staking-page__stat-value">
-                    {{ value }}
-                </div>
-            </div>
+            </q-card>
         </div>
     </div>
     <div class="row">
@@ -166,7 +166,7 @@ export default {
                 value: this.formatWeiForStats(this.stlosValue),
                 unit: 'TLOS',
             }, {
-                label: 'Total Unstaked',
+                label: 'Total Escrowed',
                 value: this.formatWeiForStats(this.totalUnstakedTlosBalance),
                 unit: 'TLOS',
             }, {
@@ -337,7 +337,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style scoped lang="scss">
 .c-staking-page {
     &__title {
         color: $primary;
@@ -348,65 +348,33 @@ export default {
         letter-spacing: 0.00735em;
     }
 
-    &__header-container {
-        width: fit-content !important;
-    }
-
     &__stats-container {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
 
-        background-color: $dark;
-        justify-content: space-between;
-        border-radius: 10px;
-
-        @media screen and (min-width: $breakpoint-sm-min) {
-            margin-top: 24px;
-            padding: 8px 16px;
-            justify-content: space-evenly;
-        }
-
-        @media screen and (min-width: $breakpoint-lg-min) {
-            box-shadow: unset;
-            background-color: unset;
-            justify-content: flex-end;
-            margin: 0;
-            padding: 0;
-        }
+        gap: 12px;
+        padding: 8px;
 
         @at-root .body--light & {
-            background: white;
             color: $dark;
+        }
 
-            @media screen and (min-width: $breakpoint-lg-min) {
-                color: white;
-                background-color: unset;
-            }
+        @media screen and (min-width: $breakpoint-sm-min) {flex-wrap: wrap;
+            padding: 12px;
+            max-width: fit-content;
+            margin: 12px auto 16px;
+        }
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            margin: 0 0 24px auto;
         }
     }
 
     &__stat {
+        $total-gutter: 48px;
+
         text-align: left;
-        width: min-content;
-        padding: 8px;
-        margin: 0 4px;
-        border-radius: 10px;
-
-        &:first-of-type {
-            margin-left: 0;
-        }
-
-        &:last-of-type {
-            margin-right: 0;
-        }
-
-        @media screen and (min-width: $breakpoint-lg-min) {
-            text-align: center;
-            flex-wrap: nowrap;
-            padding: 16px;
-            background-color: rgba(black, 0.12);
-        }
+        flex: 1 1 calc(33.33% - #{$total-gutter});
     }
 
     &__stat-label {
@@ -420,9 +388,8 @@ export default {
         color: $secondary;
         transform: translateX(-2px);
 
-        @media screen and (min-width: $breakpoint-lg-min) {
-            vertical-align: super;
-        }
+
+        vertical-align: super;
 
         @at-root .body--light & {
             color: darken($secondary, 10%);
@@ -430,8 +397,7 @@ export default {
     }
 
     &__stat-value {
-        font-size: 16px;
-        line-height: 1.5rem;
+        font-size: 18px;
         color: $primary;
         white-space: nowrap;
     }
