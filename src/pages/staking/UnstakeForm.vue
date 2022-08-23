@@ -37,7 +37,7 @@
         </div>
         <div class="col-xs-12 col-sm-4 u-flex--right">
             <q-btn
-                :disabled="deposits.length"
+                :disabled="!unlockedTlosBalance"
                 color="secondary"
                 text-color="black"
                 @click="claimUnlocked"
@@ -250,9 +250,7 @@ export default {
                 });
         },
         claimUnlocked() {
-            const value = BigNumber.from(this.unlockedTlosBalance);
-
-            this.escrowContractInstance['withdraw()']({ value })
+            this.escrowContractInstance.withdraw()
                 .then((result) => {
                     this.resultHash = result.hash;
                 })
