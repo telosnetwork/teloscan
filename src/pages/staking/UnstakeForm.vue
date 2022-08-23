@@ -107,19 +107,18 @@ export default {
         debouncedBottomInputHandler: null,
         columns: [
             {
-                name: 'hash',
-                label: 'Transaction Hash',
-                align: 'left',
-            },
-            {
                 name: 'amount',
                 label: 'Amount',
                 align: 'left',
+                field: 'amount',
+                format: (val) => { return ethers.utils.formatEther(val.toString());},
             },
             {
                 name: 'time',
                 label: 'Time Remaining',
                 align: 'left',
+                field: 'until',
+                format: (val) => { return val.toString();},
             },
         ],
         loading: false,

@@ -268,7 +268,6 @@ export default {
             const escrowDepositsPromise = this.escrowContractInstance.depositsOf(this.address)
                 .then((deposits) => {
                     this.escrowDeposits = deposits;
-                    console.dir(deposits);
                 })
                 .catch(({ message }) => {
                     // eztodo Tom said he will change this to return an empty array rather than throw exception;
