@@ -52,6 +52,13 @@
                     push
                     label="Unstake"
                 />
+                <q-route-tab
+                    name="claim"
+                    to="#claim"
+                    exact
+                    push
+                    label="Claim"
+                />
             </q-tabs>
 
             <q-tab-panels
@@ -94,6 +101,24 @@
                                 :stlos-balance="stlosBalance"
                                 :unlocked-tlos-balance="unlockedTlosBalance"
                                 :unstake-period-seconds="unstakePeriodSeconds"
+                                @balance-changed="fetchBalances"
+                            />
+                        </div>
+                    </div>
+                </q-tab-panel>
+
+                <q-tab-panel name="claim">
+                    <div class="row">
+                        <div
+                            v-if="!escrowContractInstance"
+                            class="col-12 u-flex--center"
+                        >
+                            <q-spinner />
+                        </div>
+                        <div v-else class="col-12">
+                            <claim-page
+                                :escrow-contract-instance="escrowContractInstance"
+                                :unlocked-tlos-balance="unlockedTlosBalance"
                                 :deposits="escrowDeposits"
                                 @balance-changed="fetchBalances"
                             />
@@ -112,12 +137,14 @@ import { mapGetters } from 'vuex';
 
 import StakeForm from 'pages/staking/StakeForm';
 import UnstakeForm from 'pages/staking/UnstakeForm';
+import ClaimPage from 'pages/staking/ClaimPage.vue';
 
 import { formatBN, WEI_PRECISION } from 'src/lib/utils';
 
 const tabs = {
     stake: 'stake',
     unstake: 'unstake',
+    claim: 'claim',
 }
 
 export default {
@@ -125,6 +152,7 @@ export default {
     components: {
         StakeForm,
         UnstakeForm,
+        ClaimPage,
     },
     data: () => ({
         tabs,
@@ -184,6 +212,7 @@ export default {
         ['$route.hash']: {
             immediate: true,
             handler(newHash, oldHash) {
+                debugger;
                 if (oldHash === newHash)
                     return;
 

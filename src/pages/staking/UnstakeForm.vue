@@ -26,26 +26,6 @@
         Unstake successful! View Transaction:
         <transaction-field :transaction-hash="resultHash" />
     </div>
-    <div class="deposits-container">
-        <div>
-            <q-table
-                :data="deposits"
-                :columns="columns"
-                :loading="loading"
-                flat
-            />
-        </div>
-        <div class="col-xs-12 col-sm-4 u-flex--right">
-            <q-btn
-                :disabled="!unlockedTlosBalance"
-                color="secondary"
-                text-color="black"
-                @click="claimUnlocked"
-            >
-                Claim TLOS
-            </q-btn>
-        </div>
-    </div>
 </div>
 </template>
 
@@ -247,16 +227,6 @@ export default {
                 })
                 .finally(() => {
                     this.ctaIsLoading = false;
-                });
-        },
-        claimUnlocked() {
-            this.escrowContractInstance.withdraw()
-                .then((result) => {
-                    this.resultHash = result.hash;
-                })
-                .catch(({ message }) => {
-                    console.error(`Failed to claim unlocked TLOS: ${message}`);
-                    this.resultHash = null;
                 });
         },
     },
