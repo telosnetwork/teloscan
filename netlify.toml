@@ -3,6 +3,7 @@
   command = "quasar build"
 
 [context.production.environment]
+  NETWORK = "mainnet"
   APP_NAME = "Teloscan"
   NODE_VERSION = "14"
   NETWORK_CHAIN_ID = "4667b205c6838ef70ff7988f6e8257e8be0e1284a2f59699054a018f743b1d11"
@@ -19,6 +20,7 @@
   VERIFIED_CONTRACTS_BUCKET = "verified-evm-contracts"
 
 [context.dev.environment]
+  NETWORK = "testnet"
   APP_NAME = "Teloscan Testnet"
   NODE_VERSION = "14"
   NETWORK_CHAIN_ID = "1eaa0824707c8c16bd25145493bf062aecddfeb56c736f6ba6397f3195f33c9f"
@@ -35,6 +37,7 @@
   VERIFIED_CONTRACTS_BUCKET = "verified-evm-contracts-testnet"
 
 [context.deploy-preview.environment]
+  NETWORK = "testnet"
   APP_NAME = "Teloscan Testnet"
   NODE_VERSION = "14"
   NETWORK_CHAIN_ID = "1eaa0824707c8c16bd25145493bf062aecddfeb56c736f6ba6397f3195f33c9f"

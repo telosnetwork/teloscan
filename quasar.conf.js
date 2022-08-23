@@ -10,6 +10,8 @@
 require('dotenv').config();
 const environment = require('./env');
 
+const isMainnet = process.env.NETWORK == 'mainnet';
+
 module.exports = function(/* ctx */) {
     return {
     // https://quasar.dev/quasar-cli/supporting-ts
@@ -43,7 +45,7 @@ module.exports = function(/* ctx */) {
         // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
         build: {
             vueRouterMode: 'history', // available values: 'hash', 'history'
-            env: process.env.MAINNET ? environment.MAINNET : environment.TESTNET,
+            env: isMainnet ? environment.MAINNET : environment.TESTNET,
 
             // transpile: false,
 
