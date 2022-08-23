@@ -6,10 +6,11 @@
                 :data="deposits"
                 :columns="columns"
                 :loading="loading"
+                :hide-pagination="true"
                 flat
             />
         </div>
-        <div class="col-xs-12 col-sm-4 u-flex--right">
+        <div class="col-xs-12 col-sm-4 u-flex--center claim-button-container">
             <q-btn
                 :disabled="!unlockedTlosBalance"
                 color="secondary"
@@ -58,14 +59,14 @@ export default {
             {
                 name: 'amount',
                 label: 'Amount',
-                align: 'left',
+                align: 'center',
                 field: 'amount',
                 format: (val) => { return ethers.utils.formatEther(val.toString());},
             },
             {
                 name: 'time',
                 label: 'Time Remaining',
-                align: 'left',
+                align: 'center',
                 field: 'until',
                 format: (val) => { return val.toString();},
             },
@@ -93,4 +94,7 @@ export default {
 <style lang="sass">
 .deposits-container
     margin: auto
+
+.claim-button-container
+    margin-top: 1rem
 </style>

@@ -233,7 +233,4 @@ export default {
 }
 </script>
 
-<style lang="sass">
-.deposits-container
-    margin: auto
-</style>
+<style lang="sass"></style>
