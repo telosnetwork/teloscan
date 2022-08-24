@@ -8,6 +8,24 @@
             <p class="text-white">
                 Stake sTLOS and receive sTLOS from the shared REX/EVM pool
             </p>
+            <p
+                v-if="showAddToMetaMask"
+                class="c-staking-page__metamask-prompt u-flex--center-y"
+                tabindex="0"
+                aria-role="button"
+                aria-label="Launch MetaMask dialog to track sTLOS"
+                @click="promptAddToMetamask"
+                @keydown.space.enter="promptAddToMetamask"
+            >
+                Keep track of your sTLOS in MetaMask
+                <img
+                    :src="MetaMaskLogo"
+                    class="q-ml-xs"
+                    height="24"
+                    width="24"
+                    alt="MetaMask Fox Logo"
+                >
+            </p>
         </div>
         <div class="col-xs-12 col-md-6">
             <q-card class="c-staking-page__stats-container">
@@ -136,6 +154,9 @@
 import { BigNumber } from 'ethers';
 import { mapGetters } from 'vuex';
 
+import { promptAddToMetamask } from 'pages/staking/staking-utils';
+import MetaMaskLogo from 'src/assets/metamask-fox.svg'
+
 import StakeForm from 'pages/staking/StakeForm';
 import UnstakeForm from 'pages/staking/UnstakeForm';
 import ClaimPage from 'pages/staking/ClaimPage.vue';
@@ -157,6 +178,7 @@ export default {
     },
     data: () => ({
         tabs,
+        MetaMaskLogo,
         selectedTab: tabs.stake,
         stlosContract: null,
         escrowContract: null,
@@ -172,6 +194,9 @@ export default {
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
+        showAddToMetaMask() {
+            return this.isLoggedIn && window.ethereum.isMetaMask === true;
+        },
         lockedTlosBalance() {
             if (!this.isLoggedIn)
                 return null;
@@ -238,6 +263,7 @@ export default {
         await this.fetchContracts();
     },
     methods: {
+        promptAddToMetamask,
         fetchBalances() {
             if (!this.address) {
                 this.tlosBalance = null;
@@ -368,6 +394,12 @@ export default {
         font-weight: 400;
         line-height: 2rem;
         letter-spacing: 0.00735em;
+    }
+
+    &__metamask-prompt {
+        color: $secondary;
+        cursor: pointer;
+        width: max-content;
     }
 
     &__stats-container {
