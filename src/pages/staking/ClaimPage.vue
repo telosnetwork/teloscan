@@ -132,6 +132,7 @@ export default {
             this.escrowContractInstance.withdraw()
                 .then((result) => {
                     this.resultHash = result.hash;
+                    this.$emit('balance-changed');
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to claim unlocked TLOS: ${message}`);
