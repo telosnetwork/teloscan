@@ -1,5 +1,5 @@
 <template>
-<div class="row">
+<div>
     <div class="deposits-container">
         <div>
             <q-table
@@ -9,16 +9,21 @@
                 :hide-pagination="true"
                 flat
             >
-                <q-tr slot="header" slot-scope="props" :props="props">
+                <q-tr
+                    slot="header"
+                    slot-scope="props"
+                    :props="props"
+                    :no-hover="false"
+                >
                     <q-th
                         v-for="col in props.cols"
                         :key="col.name"
                         :props="props"
+                        :auto-width="true"
                         @click="col.name==='time' ? showAge=!showAge : null"
                     >
                         <template
                             v-if="col.name==='time'"
-                            class=""
                         >
                             {{ col.label }}
                             <q-icon name="fas fa-info-circle">
@@ -27,21 +32,20 @@
                                 </q-tooltip>
                             </q-icon>
                         </template>
-                        <template v-else>
+                        <template v-else style="text-align:center">
                             {{ col.label }}
                         </template>
                     </q-th>
                 </q-tr>
                 <q-tr
                     slot="body"
-                    key="hash"
                     slot-scope="props"
                     :props="props"
                 >
-                    <q-td key="amount" align="center">
+                    <q-td key="amount" align="left">
                         {{ formatAmount(props.row.amount) }}
                     </q-td>
-                    <q-td key="until" align="center">
+                    <q-td key="until" align="right">
                         <date-field :epoch="(props.row.until).toNumber()" :show-age="showAge" />
                     </q-td>
                 </q-tr>
@@ -58,7 +62,7 @@
             </q-btn>
         </div>
     </div>
-    <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
+    <div v-if="resultHash" class="transaction-notification col-sm-12 col-md-6 offset-md-3">
         Claim successful! View Transaction:
         <transaction-field :transaction-hash="resultHash" />
     </div>
@@ -135,4 +139,16 @@ export default {
 
 .claim-button-container
     margin-top: 1rem
+
+.transaction-notification
+    width: fit-content
+    margin-top: 1rem
+    margin-left: auto
+    margin-right: auto
+
+.q-table
+    max-width: 20rem
+    margin: auto
+    thead tr th:first-child
+        text-align: left
 </style>
