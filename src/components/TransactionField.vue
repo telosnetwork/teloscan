@@ -1,6 +1,10 @@
 <script>
+import CopyButton from './CopyButton.vue';
 export default {
     name: 'TransactionField',
+    components:{
+        CopyButton,
+    },
     props: {
         transactionHash: {
             type: String,
@@ -16,6 +20,11 @@ export default {
 </script>
 
 <template lang="pug">
-  router-link(:to="`/tx/${this.transactionHash}`") {{ transactionHash.slice(0,20) }}...
-  //- eztodo add copy button here
+div
+    router-link(:to="`/tx/${this.transactionHash}`") {{ transactionHash.slice(0,20) }}...
+    CopyButton(
+        :text="transactionHash"
+        accompanying-text=""
+        class="q-mb-md"
+    )
 </template>
