@@ -318,7 +318,7 @@ export default {
             ]);
         },
         fetchContracts() {
-            const stlosPromise = this.$contractManager.getContract(process.env.STLOS_CONTRACT_ADDRESS)
+            const stlosPromise = this.$contractManager.getContract(process.env.STAKED_TLOS_CONTRACT_ADDRESS)
                 .then((contract) => {
                     this.stlosContract = contract;
                 })
@@ -327,7 +327,7 @@ export default {
                     this.stlosContract = null;
                 });
 
-            const escrowPromise = this.$contractManager.getContract(process.env.STLOS_ESCROW_CONTRACT_ADDRESS)
+            const escrowPromise = this.$contractManager.getContract(process.env.TELOS_ESCROW_CONTRACT_ADDRESS)
                 .then((contract) => {
                     this.escrowContract = contract;
                 })
