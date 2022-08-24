@@ -212,7 +212,6 @@ export default {
         ['$route.hash']: {
             immediate: true,
             handler(newHash, oldHash) {
-                debugger;
                 if (oldHash === newHash)
                     return;
 
