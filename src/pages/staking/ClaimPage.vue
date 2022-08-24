@@ -3,6 +3,7 @@
     <div class="deposits-container">
         <div>
             <q-table
+                class="deposits-table"
                 :data="deposits"
                 :columns="columns"
                 :loading="loading"
@@ -147,12 +148,23 @@ export default {
     margin-left: auto
     margin-right: auto
 
-.q-table
+.deposits-table
+    min-height: 10rem
+    max-height: 50rem
     max-width: 20rem
     margin: auto
+
+    .q-table__top,
+    .q-table__bottom,
+    thead tr:first-child th
+        background-color: #404040
+        position: sticky
+        top:0
+        z-index: 1
+
     thead tr th:first-child
         text-align: left
 
-.q-table td.left-column
-    padding-left: 1rem
+    td.left-column
+        padding-left: 1rem
 </style>
