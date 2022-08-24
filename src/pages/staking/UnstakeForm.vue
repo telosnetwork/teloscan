@@ -27,6 +27,36 @@
         Unstake successful! View Transaction:
         <transaction-field :transaction-hash="resultHash" />
     </div>
+    <q-dialog v-model="displayConfirmModal">
+        <q-card>
+            <q-card-section>
+                <!-- eztodo check in w/ team about verbiage, wire up w/ top input & bottom input + staking period -->
+                <p>
+                    Continuing will redeem sTLOS in exchange for TLOS.
+                    Unstaked TLOS will remain locked for a period of
+                    <span class="text-primary">{{ unstakePeriodPretty }}</span>,
+                    after which it can be withdrawn to your account from the Claim tab.
+                </p>
+                Would you like to proceed?
+            </q-card-section>
+
+            <q-card-actions align="right" class="q-pb-md q-px-md">
+                <q-btn
+                    v-close-popup
+                    flat
+                    label="Cancel"
+                    color="negative"
+                />
+                <q-btn
+                    v-close-popup
+                    label="Unstake sTLOS"
+                    color="secondary"
+                    text-color="black"
+                    @click="initiateUnstake"
+                />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
 </div>
 </template>
 
@@ -34,6 +64,8 @@
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { debounce } from 'lodash';
+
+import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import TransactionField from 'components/TransactionField';
@@ -73,6 +105,7 @@ export default {
         },
     },
     data: () => ({
+        displayConfirmModal: false,
         resultHash: null,
         header: 'Unstake sTLOS',
         subheader: 'Redeem matured sTLOS in exchange for TLOS',
@@ -106,6 +139,9 @@ export default {
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
+        unstakePeriodPretty() {
+            return formatUnstakePeriod(this.unstakePeriodSeconds);
+        },
         topInputMaxValue() {
             return this.isLoggedIn ? this.stakedBalance : null;
         },
@@ -218,6 +254,9 @@ export default {
                 return;
             }
 
+            this.displayConfirmModal = true;
+        },
+        initiateUnstake() {
             this.ctaIsLoading = true;
             const value = BigNumber.from(this.topInputAmount);
 

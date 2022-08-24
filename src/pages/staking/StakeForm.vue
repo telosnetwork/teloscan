@@ -27,6 +27,39 @@
         Stake successful! View Transaction:
         <transaction-field :transaction-hash="resultHash" />
     </div>
+    <q-dialog v-model="displayConfirmModal">
+        <q-card>
+            <q-card-section>
+                <!-- eztodo check in w/ team about verbiage, wire up w/ top input & bottom input + staking period -->
+                <p>
+                    Continuing will stake TLOS in exchange for sTLOS.
+                    sTLOS can be redeemed for TLOS at any time using the Unstake tab.
+                </p>
+                <p>
+                    After TLOS has been unstaked, it will be locked for a period of
+                    <span class="text-primary">{{ unstakePeriodPretty }}</span>,
+                    after which it can be withdrawn to your account from the Claim tab.
+                </p>
+                Would you like to proceed?
+            </q-card-section>
+
+            <q-card-actions align="right" class="q-pb-md q-px-md">
+                <q-btn
+                    v-close-popup
+                    flat
+                    label="Cancel"
+                    color="negative"
+                />
+                <q-btn
+                    v-close-popup
+                    label="Stake TLOS"
+                    color="secondary"
+                    text-color="black"
+                    @click="initiateDeposit"
+                />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
 </div>
 </template>
 
@@ -35,23 +68,14 @@ import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { debounce } from 'lodash';
 
+import { formatUnstakePeriod } from 'pages/staking/staking-utils';
+
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import TransactionField from 'components/TransactionField';
 
 import { triggerLogin } from 'components/ConnectButton';
 import { WEI_PRECISION } from 'src/lib/utils';
 
-// reedeem(able), locked, staked, claimable, unlocked
-
-// stats at top:
-// 1. balance (TLOS)
-// 2. balance (STLOS)
-// 3. TLOS equivalent of STLOS balance (aka maxWithdraw)
-// 4. escrowed (locked TLOS is escrow)       ----\ = show total and breakdown of unlocked vs locked
-// 5. withdrawable (unlocked TLOS in escrow) ----/
-
-
-// gas is paid using account TLOS ==> unstake available balance === STLOS balance
 
 const reservedForGasBn = BigNumber.from('10').pow(WEI_PRECISION);
 
@@ -76,6 +100,7 @@ export default {
         },
     },
     data: () => ({
+        displayConfirmModal: false,
         resultHash: null,
         header: 'Stake TLOS',
         subheader: 'Staked sTLOS provide you with access to a steady income and access to our Defi applications',
@@ -92,6 +117,9 @@ export default {
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
+        unstakePeriodPretty() {
+            return formatUnstakePeriod(this.unstakePeriodSeconds);
+        },
         topInputMaxValue() {
             return this.isLoggedIn ? this.usableWalletBalance : null;
         },
@@ -237,6 +265,9 @@ export default {
                 window.open('https://www.kucoin.com/trade/TLOS-USDT', '_blank');
             }
 
+            this.displayConfirmModal = true;
+        },
+        initiateDeposit() {
             this.ctaIsLoading = true;
             const value = BigNumber.from(this.topInputAmount);
 
