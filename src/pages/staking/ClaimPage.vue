@@ -8,7 +8,44 @@
                 :loading="loading"
                 :hide-pagination="true"
                 flat
-            />
+            >
+                <q-tr slot="header" slot-scope="props" :props="props">
+                    <q-th
+                        v-for="col in props.cols"
+                        :key="col.name"
+                        :props="props"
+                        @click="col.name==='time' ? showAge=!showAge : null"
+                    >
+                        <template
+                            v-if="col.name==='time'"
+                            class=""
+                        >
+                            {{ col.label }}
+                            <q-icon name="fas fa-info-circle">
+                                <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                                    click to change time format
+                                </q-tooltip>
+                            </q-icon>
+                        </template>
+                        <template v-else>
+                            {{ col.label }}
+                        </template>
+                    </q-th>
+                </q-tr>
+                <q-tr
+                    slot="body"
+                    key="hash"
+                    slot-scope="props"
+                    :props="props"
+                >
+                    <q-td key="amount" align="center">
+                        {{ formatAmount(props.row.amount) }}
+                    </q-td>
+                    <q-td key="until" align="center">
+                        <date-field :epoch="(props.row.until).toNumber()" :show-age="showAge" />
+                    </q-td>
+                </q-tr>
+            </q-table>
         </div>
         <div class="col-xs-12 col-sm-4 u-flex--center claim-button-container">
             <q-btn
@@ -31,12 +68,13 @@
 <script>
 import { mapGetters } from 'vuex';
 import { ethers } from 'ethers';
-
+import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 
 export default {
     name: 'UnstakeForm',
     components: {
+        DateField,
         TransactionField,
     },
     props: {
@@ -59,24 +97,24 @@ export default {
             {
                 name: 'amount',
                 label: 'Amount',
-                align: 'center',
                 field: 'amount',
-                format: (val) => { return ethers.utils.formatEther(val.toString());},
             },
             {
                 name: 'time',
-                label: 'Time Remaining',
-                align: 'center',
+                label: 'Time Remaining To Claim',
                 field: 'until',
-                format: (val) => { return val.toString();},
             },
         ],
         loading: false,
+        showAge: true,
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
     },
     methods: {
+        formatAmount(val){
+            return ethers.utils.formatEther(val.toString());
+        },
         claimUnlocked() {
             this.escrowContractInstance.withdraw()
                 .then((result) => {
