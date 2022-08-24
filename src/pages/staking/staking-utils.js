@@ -1,8 +1,8 @@
-import stlosLogo from 'assets/stlos-logo.png';
 import { WEI_PRECISION } from 'src/lib/utils';
 
 const DAY_SECONDS = 86400;
 const HOUR_SECONDS = 3600;
+
 
 export function formatUnstakePeriod(seconds) {
     if (seconds === null)
@@ -26,7 +26,7 @@ export async function promptAddToMetamask() {
                 address: process.env.STAKED_TLOS_CONTRACT_ADDRESS,
                 symbol: 'STLOS',
                 decimals: WEI_PRECISION,
-                image: stlosLogo, // eztodo this is broken, results in a string 'img/stlos-logo.png'
+                image: `${window.location.origin}/stlos-logo.png`,
             },
         },
     }).catch(({ message }) => {
