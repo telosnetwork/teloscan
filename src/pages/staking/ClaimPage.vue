@@ -7,6 +7,7 @@
                 :columns="columns"
                 :loading="loading"
                 :hide-pagination="true"
+                :rows-per-page-options="[0]"
                 flat
             >
                 <q-tr
@@ -42,7 +43,7 @@
                     slot-scope="props"
                     :props="props"
                 >
-                    <q-td key="amount" align="left">
+                    <q-td key="amount" align="left" class="left-column">
                         {{ formatAmount(props.row.amount) }}
                     </q-td>
                     <q-td key="until" align="right">
@@ -105,7 +106,7 @@ export default {
             },
             {
                 name: 'time',
-                label: 'Time Remaining To Claim',
+                label: 'Available to Claim',
                 field: 'until',
             },
         ],
@@ -151,4 +152,7 @@ export default {
     margin: auto
     thead tr th:first-child
         text-align: left
+
+.q-table td.left-column
+    padding-left: 1rem
 </style>

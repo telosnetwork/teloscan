@@ -227,6 +227,11 @@ export default {
                     this.$emit('balance-changed');
                 })
                 .catch(({ message }) => {
+                    this.$q.notify({
+                        position: 'bottom',
+                        message: 'You have reached the maximum number of pending unstake transactions, please wait for pending unstaked TLOS to become claimable before making another deposit.',
+                        timeout: 6000,
+                    });
                     console.error(`Failed to unstake sTLOS: ${message}`);
                     this.resultHash = null;
                 })
