@@ -176,7 +176,7 @@ export default {
             return this.isLoggedIn ? '' : 'Wallet not connected';
         },
         canDeposit() {
-            return this.deposits.length < 20; //this.maxDeposits;
+            return this.deposits.length < this.maxDeposits;
         },
         ctaIsDisabled() {
             const inputsInvalid = (
