@@ -101,6 +101,7 @@
                                 :stlos-balance="stlosBalance"
                                 :unlocked-tlos-balance="unlockedTlosBalance"
                                 :unstake-period-seconds="unstakePeriodSeconds"
+                                :deposits="escrowDeposits"
                                 @balance-changed="fetchBalances"
                             />
                         </div>
@@ -305,7 +306,7 @@ export default {
                     } else {
                         console.error(`Failed to fetch escrow deposits: ${message}`);
                     }
-                })
+                });
 
             return Promise.all([
                 tlosPromise,

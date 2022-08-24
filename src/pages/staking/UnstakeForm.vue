@@ -108,7 +108,7 @@ export default {
         displayConfirmModal: false,
         resultHash: null,
         header: 'Unstake sTLOS',
-        subheader: 'Redeem matured sTLOS in exchange for TLOS',
+        subheader: 'Unstake sTLOS in exchange for TLOS',
         topInputLabel: 'Unstake sTLOS',
         topInputAmount: '0',
         topInputIsLoading: false,
@@ -136,6 +136,7 @@ export default {
             },
         ],
         loading: false,
+        maxDeposits: null,
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
@@ -174,6 +175,9 @@ export default {
         topInputErrorText() {
             return this.isLoggedIn ? '' : 'Wallet not connected';
         },
+        canDeposit() {
+            return this.deposits.length < 20; //this.maxDeposits;
+        },
         ctaIsDisabled() {
             const inputsInvalid = (
                 this.isLoggedIn &&
@@ -193,6 +197,7 @@ export default {
         },
     },
     async created() {
+        this.maxDeposits = (await this.escrowContractInstance.maxDeposits()).toNumber();
         const debounceWaitMs = 250;
 
         this.debouncedTopInputHandler = debounce(
@@ -230,6 +235,13 @@ export default {
         );
     },
     methods: {
+        notifyMaxDeposits(){
+            this.$q.notify({
+                position: 'top',
+                message: 'You have reached the maximum number of pending unstake transactions, please claim available TLOS or wait for pending unstaked TLOS to become claimable before making another deposit.',
+                timeout: 6000,
+            });
+        },
         handleInputTop(newWei = '0') {
             if (newWei === this.topInputAmount)
                 return;
@@ -257,6 +269,10 @@ export default {
             this.displayConfirmModal = true;
         },
         initiateUnstake() {
+            if (!this.canDeposit){
+                this.notifyMaxDeposits();
+                return;
+            }
             this.ctaIsLoading = true;
             const value = BigNumber.from(this.topInputAmount);
 
@@ -266,11 +282,6 @@ export default {
                     this.$emit('balance-changed');
                 })
                 .catch(({ message }) => {
-                    this.$q.notify({
-                        position: 'bottom',
-                        message: 'You have reached the maximum number of pending unstake transactions, please wait for pending unstaked TLOS to become claimable before making another deposit.',
-                        timeout: 6000,
-                    });
                     console.error(`Failed to unstake sTLOS: ${message}`);
                     this.resultHash = null;
                 })
