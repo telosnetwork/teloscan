@@ -53,7 +53,7 @@ import { WEI_PRECISION } from 'src/lib/utils';
 
 // gas is paid using account TLOS ==> unstake available balance === STLOS balance
 
-
+const reservedForGasBn = BigNumber.from('10').pow(WEI_PRECISION);
 
 export default {
     name: 'StakeForm',
@@ -95,16 +95,15 @@ export default {
         topInputMaxValue() {
             return this.isLoggedIn ? this.usableWalletBalance : null;
         },
-        usableWalletBalance() {
-            const walletBalanceBn = BigNumber.from(this.tlosBalance ?? '0');
-            const reservedForGas = BigNumber.from('10').pow(WEI_PRECISION);
-
-            // eztodo update low balance logic here
-            if (walletBalanceBn.lte(reservedForGas))
-                return '0'
-
-            return walletBalanceBn.sub(reservedForGas).toString();
+        walletBalanceBn() {
+            return BigNumber.from(this.tlosBalance ?? '0');
         },
+        usableWalletBalance() {
+            if (this.walletBalanceBn.lte(reservedForGasBn))
+                return '0';
+            return this.walletBalanceBn.sub(reservedForGasBn).toString();
+        },
+
         topInputInfoText() {
             if (!this.isLoggedIn)
                 return '';
@@ -123,7 +122,16 @@ export default {
             return `${balanceTlos} Available`;
         },
         topInputErrorText() {
-            return this.isLoggedIn ? '' : 'Wallet not connected';
+            const walletBalanceBn = BigNumber.from(this.tlosBalance ?? '0');
+
+            if (this.isLoggedIn) {
+                if (walletBalanceBn.lt(reservedForGasBn))
+                    return 'Insufficient TLOS balance to stake';
+                else
+                    return '';
+            }
+
+            return 'Wallet not connected';
         },
         topInputTooltip() {
             const prettyBalance = ethers.utils.formatEther(this.usableWalletBalance).toString();
@@ -134,7 +142,9 @@ export default {
         ctaIsDisabled() {
             const inputsInvalid = (
                 this.isLoggedIn &&
-                [this.topInputAmount, this.bottomInputAmount].some(amount => ['0', '', null, undefined].includes(amount))
+                [this.topInputAmount, this.bottomInputAmount].some((amount) => {
+                    return BigNumber.from(amount ?? '0').eq('0');
+                })
             );
 
             return inputsInvalid ||
@@ -146,7 +156,16 @@ export default {
             if (this.ctaIsLoading)
                 return 'Loading...';
 
-            return this.isLoggedIn ? 'Stake TLOS' : 'Connect Wallet';
+            const walletBalanceBn = BigNumber.from(this.tlosBalance ?? '0');
+
+            if (this.isLoggedIn) {
+                if (walletBalanceBn.lt(reservedForGasBn))
+                    return 'Get more TLOS';
+                else
+                    return 'Stake TLOS';
+            }
+
+            return 'Connect Wallet';
         },
     },
     async created() {
@@ -209,6 +228,13 @@ export default {
             if (!this.isLoggedIn){
                 triggerLogin();
                 return;
+            }
+
+            const walletBalanceBn = BigNumber.from(this.tlosBalance ?? '0');
+
+            if (walletBalanceBn.lt(reservedForGasBn)) {
+                // eztodo is there a better/more official way to add TLOS?
+                window.open('https://www.kucoin.com/trade/TLOS-USDT', '_blank');
             }
 
             this.ctaIsLoading = true;
