@@ -224,11 +224,10 @@ export default {
                     this.$router.replace({ hash: tabs.stake });
             },
         },
-        // eztodo handle address change here
-        isLoggedIn: {
+        address: {
             immediate: true,
-            async handler(isLoggedIn, wasLoggedIn) {
-                if (isLoggedIn !== wasLoggedIn) {
+            async handler(address, oldAddress) {
+                if (address !== oldAddress) {
                     await this.fetchContractInstances();
                     await this.fetchBalances();
                 }
@@ -244,6 +243,7 @@ export default {
                 this.tlosBalance = null;
                 this.stlosBalance = null;
                 this.unlockedTlosBalance = null;
+                this.totalUnstakedTlosBalance = null;
                 this.stlosValue = null;
                 this.escrowDeposits = [];
                 return;
