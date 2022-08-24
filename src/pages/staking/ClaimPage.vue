@@ -57,7 +57,7 @@
         </div>
         <div class="col-xs-12 col-sm-4 u-flex--center claim-button-container">
             <q-btn
-                :disabled="!unlockedTlosBalance"
+                :disabled="claimDisabled"
                 color="secondary"
                 text-color="black"
                 @click="claimUnlocked"
@@ -120,6 +120,9 @@ export default {
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
+        claimDisabled(){
+            return this.unlockedTlosBalance == 0;
+        },
     },
     methods: {
         formatAmount(val){
@@ -153,7 +156,6 @@ export default {
     margin-right: auto
 
 .deposits-table
-    min-height: 10rem
     max-height: 50rem
     max-width: 20rem
     margin: auto
