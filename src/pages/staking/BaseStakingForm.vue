@@ -54,11 +54,11 @@
 </template>
 
 <script>
+import { formatUnstakePeriod } from 'pages/staking/staking-utils';
+
 import StakingFormInput from 'pages/staking/StakingFormInput';
 
 const genericMaxWei = '999999999999000000000000000000';
-const DAY_SECONDS = 86400;
-const HOUR_SECONDS = 3600;
 
 export default {
     name: 'BaseStakingForm',
@@ -137,18 +137,7 @@ export default {
     }),
     computed: {
         unstakePeriodPretty() {
-            if (this.unstakePeriodSeconds === null)
-                return '--';
-
-            const seconds = this.unstakePeriodSeconds;
-
-            if (seconds < HOUR_SECONDS) {
-                return `${seconds / 60} minutes`;
-            } else if (seconds < DAY_SECONDS) {
-                return `${seconds / HOUR_SECONDS} hours`;
-            } else {
-                return `${seconds / DAY_SECONDS} days`;
-            }
+            return formatUnstakePeriod(this.unstakePeriodSeconds);
         },
         inputs() {
             return [{
