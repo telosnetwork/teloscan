@@ -49,7 +49,7 @@
                 />
                 <q-btn
                     v-close-popup
-                    label="Stake TLOS"
+                    label="Unstake sTLOS"
                     color="secondary"
                     text-color="black"
                     @click="initiateUnstake"
