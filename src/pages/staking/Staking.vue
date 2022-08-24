@@ -299,13 +299,7 @@ export default {
                     this.escrowDeposits = deposits;
                 })
                 .catch(({ message }) => {
-                    // eztodo Tom said he will change this to return an empty array rather than throw exception;
-                    // this is temporary
-                    if (message.toLowerCase().includes('No deposits for this address') >= 0) {
-                        this.escrowDeposits = [];
-                    } else {
-                        console.error(`Failed to fetch escrow deposits: ${message}`);
-                    }
+                    console.error(`Failed to fetch escrow deposits: ${message}`);
                 });
 
             return Promise.all([
