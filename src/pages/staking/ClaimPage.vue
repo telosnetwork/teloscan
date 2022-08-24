@@ -22,13 +22,15 @@
                         :key="col.name"
                         :props="props"
                         :auto-width="true"
-                        @click="col.name==='time' ? showAge=!showAge : null"
                     >
                         <template
                             v-if="col.name==='time'"
                         >
                             {{ col.label }}
-                            <q-icon name="fas fa-info-circle">
+                            <q-icon
+                                name="fas fa-info-circle"
+                                @click="showAge=!showAge"
+                            >
                                 <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
                                     click to change time format
                                 </q-tooltip>
@@ -104,11 +106,13 @@ export default {
                 name: 'amount',
                 label: 'Amount',
                 field: 'amount',
+                sortable: true,
             },
             {
                 name: 'time',
                 label: 'Available to Claim',
                 field: 'until',
+                sortable: true,
             },
         ],
         loading: false,
