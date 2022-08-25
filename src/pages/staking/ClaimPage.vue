@@ -165,7 +165,6 @@ export default {
     .q-table__top,
     .q-table__bottom,
     thead tr:first-child th
-        background-color: #404040
         position: sticky
         top:0
         z-index: 1
@@ -175,4 +174,11 @@ export default {
 
     td.left-column
         padding-left: 1rem
+
+    &.q-table--dark
+        .q-table__top,
+        .q-table__bottom,
+        thead tr:first-child th
+            background-color: #404040
+
 </style>
