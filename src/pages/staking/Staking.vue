@@ -151,7 +151,7 @@
 </template>
 
 <script>
-import { ethers, BigNumber } from 'ethers';
+import { ethers } from 'ethers';
 import Big from 'big.js';
 import { mapGetters } from 'vuex';
 
@@ -199,15 +199,6 @@ export default {
         ...mapGetters('login', ['address', 'isLoggedIn']),
         showAddToMetaMask() {
             return this.isLoggedIn && window.ethereum.isMetaMask === true;
-        },
-        lockedTlosBalance() {
-            if (!this.isLoggedIn)
-                return null;
-
-            const unstakedBn = BigNumber.from(this.totalUnstakedTlosBalance ?? '0');
-            const unlockedBn = BigNumber.from(this.unlockedTlosBalance ?? '0');
-
-            return unstakedBn.sub(unlockedBn);
         },
         stats() {
             return [{
