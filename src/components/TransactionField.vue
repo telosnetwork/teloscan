@@ -20,7 +20,7 @@ export default {
 </script>
 
 <template lang="pug">
-div
+div.transaction-field-container
     router-link(:to="`/tx/${this.transactionHash}`") {{ transactionHash.slice(0,20) }}...
     CopyButton(
         :text="transactionHash"
@@ -28,3 +28,7 @@ div
         class="q-mb-md"
     )
 </template>
+<style lang="sass">
+.transaction-field-container
+    height: 1.25rem
+</style>

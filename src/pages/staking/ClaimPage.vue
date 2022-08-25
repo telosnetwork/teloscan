@@ -29,6 +29,7 @@
                             {{ col.label }}
                             <q-icon
                                 name="fas fa-info-circle"
+                                class="info-icon"
                                 @click="showAge=!showAge"
                             >
                                 <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">

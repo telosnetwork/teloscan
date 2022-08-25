@@ -31,7 +31,7 @@
                 </q-tooltip>
 
                 {{ infoText }}
-                <q-icon name="fas fa-info-circle q-pl-xs" />
+                <q-icon name="fas fa-info-circle q-pl-xs info-icon" />
             </div>
         </div>
     </div>
