@@ -20,6 +20,7 @@
     "axios": "^0.20.0",
     "axios-time": "^1.0.0",
     "babel-loader": "^8.1.0",
+    "big.js": "^6.2.1",
     "bn.js": "^5.2.0",
     "core-js": "^3.6.5",
     "dotenv": "^8.2.0",
