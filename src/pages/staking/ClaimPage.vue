@@ -6,7 +6,7 @@
                 class="deposits-table"
                 :data="deposits"
                 :columns="columns"
-                :loading="loading"
+                :loading="isLoading"
                 :hide-pagination="true"
                 :rows-per-page-options="[0]"
                 flat
@@ -97,7 +97,7 @@ export default {
         },
         deposits: {
             type: Array,
-            default: ()=>{ return [] },
+            required: true,
         },
     },
     data: () => ({
@@ -116,13 +116,16 @@ export default {
                 sortable: true,
             },
         ],
-        loading: false,
         showAge: true,
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
         claimDisabled(){
             return this.unlockedTlosBalance == 0;
+        },
+        isLoading(){
+            return ((this.isLoggedIn && this.unlockedTlosBalance !== null) || !this.isLoggedIn) ?
+                false : true;
         },
     },
     methods: {
