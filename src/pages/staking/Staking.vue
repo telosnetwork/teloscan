@@ -234,15 +234,8 @@ export default {
                 label: 'Total Escrowed',
                 value: this.formatWeiForStats(this.totalUnstakedTlosBalance),
                 unit: 'TLOS',
-            }, {
-                label: 'Locked',
-                value: this.formatWeiForStats(this.lockedTlosBalance),
-                unit: 'TLOS',
-            }, {
-                label: 'Unlocked',
-                value: this.formatWeiForStats(this.unlockedTlosBalance),
-                unit: 'TLOS',
-            }];
+            },
+            ];
         },
     },
     watch: {
