@@ -78,12 +78,12 @@ export default {
 
 <style scoped lang='sass'>
 .q-list
-  border-radius: 10px
+  border-radius: 6px
   box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%)
 .tableWrapper
   min-width: 50vw
   max-width: 100vw
-  border-radius: 10px
+  border-radius: 6px
 .text-primary
   margin-left: .25rem
 @media only screen and (max-width: 600px)

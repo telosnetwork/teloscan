@@ -282,7 +282,7 @@ export default {
 .c-staking-input {
     height: 104px;
     padding: 16px;
-    border-radius: 10px;
+    border-radius: 6px;
     background-color: rgba($secondary, 0.03);
 
     animation-duration: 350ms;
