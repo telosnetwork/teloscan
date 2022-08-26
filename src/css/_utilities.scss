@@ -1,5 +1,7 @@
 /* General */
 .u-flex {
+    $this: &;
+
     &--left,
     &--center,
     &--center-y,
@@ -7,6 +9,10 @@
     &--space-between {
         display: flex;
         align-items: center;
+
+        &#{$this}--inline {
+            display: inline-flex;
+        }
     }
 
     &--left {

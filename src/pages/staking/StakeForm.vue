@@ -131,7 +131,6 @@ export default {
                 return '0';
             return this.walletBalanceBn.sub(reservedForGasBn).toString();
         },
-
         topInputInfoText() {
             if (!this.isLoggedIn)
                 return '';
@@ -144,7 +143,6 @@ export default {
                 balanceEth = integer.concat(`.${fraction.slice(0, 3)}`);
             }
 
-            // eztodo update low balance here
             const balanceTlos = ethers.utils.commify(balanceEth);
 
             return `${balanceTlos} Available`;
