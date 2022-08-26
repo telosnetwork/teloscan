@@ -1,3 +1,4 @@
+<!--suppress ALL -->
 <template>
 <div>
     <div class="deposits-container">
@@ -119,13 +120,12 @@ export default {
         showAge: true,
     }),
     computed: {
-        ...mapGetters('login', ['address', 'isLoggedIn']),
+        ...mapGetters('login', ['isLoggedIn']),
         claimDisabled(){
-            return this.unlockedTlosBalance == 0;
+            return this.unlockedTlosBalance === '0';
         },
         isLoading(){
-            return ((this.isLoggedIn && this.unlockedTlosBalance !== null) || !this.isLoggedIn) ?
-                false : true;
+            return (this.isLoggedIn && this.unlockedTlosBalance === null) || !this.isLoggedIn;
         },
     },
     methods: {
@@ -169,7 +169,7 @@ export default {
     .q-table__bottom,
     thead tr:first-child th
         position: sticky
-        top:0
+        top: 0
         z-index: 1
 
     thead tr th:first-child

@@ -304,7 +304,6 @@ export default {
                 return;
             }
 
-
             const rexStats = rexPoolResponse.rows[0];
             const distConfig = distConfigResponse.rows[0];
             const payoutRow = payoutsResponse.rows.find((row) => row.to === 'eosio.rex');
