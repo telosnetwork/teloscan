@@ -57,7 +57,7 @@
                 </q-tr>
             </q-table>
         </div>
-        <div class="col-xs-12 col-sm-4 u-flex--center claim-button-container">
+        <div class="col-xs-12 u-flex--center claim-button-container">
             <q-btn
                 :disabled="claimDisabled"
                 color="secondary"
@@ -122,7 +122,7 @@ export default {
     computed: {
         ...mapGetters('login', ['isLoggedIn']),
         claimDisabled(){
-            return this.unlockedTlosBalance === '0';
+            return this.unlockedTlosBalance === '0' || this.isLoading;
         },
         isLoading(){
             return (this.isLoggedIn && this.unlockedTlosBalance === null) || !this.isLoggedIn;
