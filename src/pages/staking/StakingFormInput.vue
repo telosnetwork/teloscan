@@ -10,10 +10,7 @@
             </h6>
         </div>
         <div class="col-6 u-flex--right">
-            <p
-                v-if="errorText"
-                class="text-red"
-            >
+            <p v-if="errorText" class="text-red">
                 {{ errorText }}
             </p>
 
@@ -49,10 +46,7 @@
                 @keydown="handleKeydown"
                 @input="handleInput"
             >
-            <div
-                v-if="isLoading"
-                class="c-staking-input__loading u-flex--left"
-            >
+            <div v-if="isLoading" class="c-staking-input__loading u-flex--left">
                 <i class="fa fa-spinner fa-spin" />
             </div>
         </div>
@@ -125,6 +119,9 @@ export default {
                 this.setInputValue(formattedNewVal);
                 this.handleInput();
             }
+        },
+        maxValueWei() {
+            this.handleInput();
         },
     },
     methods: {
