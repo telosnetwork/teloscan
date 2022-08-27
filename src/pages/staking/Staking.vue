@@ -137,6 +137,7 @@
                             <claim-page
                                 :escrow-contract-instance="escrowContractInstance"
                                 :unlocked-tlos-balance="unlockedTlosBalance"
+                                :total-unstaked="totalUnstakedTlosBalance"
                                 :deposits="escrowDeposits"
                                 @balance-changed="fetchBalances"
                             />

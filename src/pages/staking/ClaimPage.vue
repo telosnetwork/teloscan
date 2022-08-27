@@ -57,6 +57,14 @@
                 </q-tr>
             </q-table>
         </div>
+        <div v-show="isLoggedIn" class="escrow-stat-container">
+            <div class="escrow-stat">
+                Unstaking: {{ unstakingBalance }}
+            </div>
+            <div class="escrow-stat">
+                Available to claim: {{ unlockedBalance }}
+            </div>
+        </div>
         <div class="col-xs-12 u-flex--center claim-button-container">
             <q-btn
                 :disabled="claimDisabled"
@@ -96,6 +104,10 @@ export default {
             type: String,
             default: null,
         },
+        totalUnstaked: {
+            type: String,
+            default: null,
+        },
         deposits: {
             type: Array,
             required: true,
@@ -119,19 +131,24 @@ export default {
         ],
         showAge: true,
     }),
+
     computed: {
         ...mapGetters('login', ['isLoggedIn']),
         claimDisabled(){
             return this.unlockedTlosBalance === '0' || this.isLoading;
         },
         isLoading(){
-            return (this.isLoggedIn && this.unlockedTlosBalance === null) || !this.isLoggedIn;
+            const loading = (this.isLoggedIn && this.unlockedTlosBalance === null) || !this.isLoggedIn;
+            return loading;
+        },
+        unstakingBalance(){
+            return this.formatAmount(this.totalUnstaked - this.unlockedTlosBalance);
+        },
+        unlockedBalance(){
+            return this.formatAmount(this.unlockedTlosBalance);
         },
     },
     methods: {
-        formatAmount(val){
-            return ethers.utils.formatEther(val.toString());
-        },
         claimUnlocked() {
             this.escrowContractInstance.withdraw()
                 .then((result) => {
@@ -142,6 +159,9 @@ export default {
                     console.error(`Failed to claim unlocked TLOS: ${message}`);
                     this.resultHash = null;
                 });
+        },
+        formatAmount(val){
+            return val !== null ? ethers.utils.formatEther(val.toString()) : 0.0;
         },
     },
 }
@@ -183,5 +203,13 @@ export default {
         .q-table__bottom,
         thead tr:first-child th
             background-color: #404040
+
+.escrow-stat-container
+    width: fit-content
+    height: 1rem
+    margin: auto
+.escrow-stat
+    float: left
+    margin: .25rem
 
 </style>
