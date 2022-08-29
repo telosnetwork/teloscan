@@ -30,7 +30,7 @@
     "ethers": "^5.5.1",
     "highlight.js": "10",
     "highlightjs-solidity": "^2.0.3",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "quasar": "^1.0.0",
     "ual-anchor": "^1.0.0",
     "ual-ledger": "^0.3.0",
