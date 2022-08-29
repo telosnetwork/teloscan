@@ -274,7 +274,7 @@ export default {
                 return;
             }
             this.ctaIsLoading = true;
-            const value = BigNumber.from(this.topInputAmount);
+            const value = BigNumber.from(this.bottomInputAmount);
 
             this.stlosContractInstance.withdraw(value, this.address, this.address)
                 .then((result) => {
