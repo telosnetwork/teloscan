@@ -161,7 +161,7 @@ export default {
                 });
         },
         formatAmount(val){
-            return val !== null ? ethers.utils.formatEther(val.toString()) : 0.0;
+            return val !== null ? parseFloat(ethers.utils.formatEther(val.toString())).toFixed(2) : 0.0;
         },
     },
 }
