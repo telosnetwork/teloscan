@@ -44,6 +44,21 @@
             </q-card-section>
 
             <q-card-actions align="right" class="q-pb-md q-px-md">
+                <p
+                    class="c-staking-page__metamask-prompt u-flex--center-y"
+                    tabindex="0"
+                    aria-label="Launch MetaMask dialog to add sTLOS"
+                    @click="promptAddToMetamask"
+                >
+                    Add sTLOS to MetaMask
+                    <img
+                        :src="MetaMaskLogo"
+                        class="q-ml-xs"
+                        height="24"
+                        width="24"
+                        alt="MetaMask Fox Logo"
+                    >
+                </p>
                 <q-btn
                     v-close-popup
                     flat
@@ -67,15 +82,12 @@
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { debounce } from 'lodash';
-
-import { formatUnstakePeriod } from 'pages/staking/staking-utils';
-
+import { formatUnstakePeriod, promptAddToMetamask } from 'pages/staking/staking-utils';
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import TransactionField from 'components/TransactionField';
-
 import { triggerLogin } from 'components/ConnectButton';
 import { WEI_PRECISION } from 'src/lib/utils';
-
+import MetaMaskLogo from 'src/assets/metamask-fox.svg'
 
 const reservedForGasBn = BigNumber.from('10').pow(WEI_PRECISION);
 
@@ -100,6 +112,7 @@ export default {
         },
     },
     data: () => ({
+        MetaMaskLogo,
         displayConfirmModal: false,
         resultHash: null,
         header: 'Stake TLOS',
@@ -232,6 +245,7 @@ export default {
         );
     },
     methods: {
+        promptAddToMetamask,
         handleInputTop(newWei = '0') {
             if (newWei === this.topInputAmount)
                 return;
@@ -286,4 +300,12 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.c-staking-page__metamask-prompt{
+    color: $secondary;
+    cursor: pointer;
+    width: max-content;
+    margin-right: auto;
+    margin-bottom: 0;
+}
+</style>

@@ -12,7 +12,7 @@
                 v-if="showAddToMetaMask"
                 class="c-staking-page__metamask-prompt u-flex--center-y"
                 tabindex="0"
-                aria-label="Launch MetaMask dialog to track sTLOS"
+                aria-label="Launch MetaMask dialog to add sTLOS"
                 @click="promptAddToMetamask"
                 @keydown.space.enter="promptAddToMetamask"
             >
@@ -154,14 +154,11 @@
 import { ethers } from 'ethers';
 import Big from 'big.js';
 import { mapGetters } from 'vuex';
-
 import { promptAddToMetamask } from 'pages/staking/staking-utils';
 import MetaMaskLogo from 'src/assets/metamask-fox.svg'
-
 import StakeForm from 'pages/staking/StakeForm';
 import UnstakeForm from 'pages/staking/UnstakeForm';
 import ClaimPage from 'pages/staking/ClaimPage.vue';
-
 import { formatBN, WEI_PRECISION } from 'src/lib/utils';
 
 const tabs = {
