@@ -17,7 +17,7 @@
     "@smontero/ual-sqrl": "^0.1.22",
     "@telosnetwork/telosevm-js": "^0.2.6",
     "@telosnetwork/ual-telos-keycat": "1.10.3",
-    "axios": "^0.20.0",
+    "axios": "^0.21.2",
     "axios-time": "^1.0.0",
     "babel-loader": "^8.1.0",
     "bn.js": "^5.2.0",
