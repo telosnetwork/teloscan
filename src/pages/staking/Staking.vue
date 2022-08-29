@@ -16,7 +16,7 @@
                 @click="promptAddToMetamask"
                 @keydown.space.enter="promptAddToMetamask"
             >
-                Keep track of your sTLOS in MetaMask
+                Add sTLOS to MetaMask
                 <img
                     :src="MetaMaskLogo"
                     class="q-ml-xs"
