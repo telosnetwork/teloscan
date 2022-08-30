@@ -83,6 +83,7 @@
 </template>
 
 <script>
+import { BigNumber } from 'ethers';
 import { mapGetters } from 'vuex';
 
 import { formatBN, WEI_PRECISION } from 'src/lib/utils';
@@ -91,7 +92,7 @@ import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 
 export default {
-    name: 'UnstakeForm',
+    name: 'ClaimForm',
     components: {
         DateField,
         TransactionField,
@@ -143,7 +144,7 @@ export default {
             return loading;
         },
         unstakingBalance(){
-            return this.formatAmount(this.totalUnstaked - this.unlockedTlosBalance);
+            return this.formatAmount(BigNumber.from(this.totalUnstaked ?? '0').sub(this.unlockedTlosBalance ?? '0'));
         },
         unlockedBalance(){
             return this.formatAmount(this.unlockedTlosBalance);
@@ -164,6 +165,7 @@ export default {
         formatAmount(val) {
             if (val === null)
                 return '0.0'
+
 
             return formatBN(val, WEI_PRECISION, 2);
         },

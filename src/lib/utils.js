@@ -11,9 +11,7 @@ export function formatBN(bn, tokenDecimals, displayDecimals) {
     const formattedNoCommas = (amount / Math.pow(10, tokenDecimals)).toFixed(displayDecimals);
 
 
-    const test = Number(formattedNoCommas).toLocaleString();
-    console.log(test);
-    return test;
+    return Number(formattedNoCommas).toLocaleString();
 }
 
 export function isValidAddressFormat(ethAddressString) {
