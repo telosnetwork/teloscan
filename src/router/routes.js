@@ -60,7 +60,7 @@ const routes = [
         },
     },
     {
-        path: '*',
+        path: '/(.*)*',
         component: () => import('pages/Error404.vue'),
     },
 ];
