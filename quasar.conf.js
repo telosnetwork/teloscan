@@ -8,6 +8,7 @@
 /* eslint-env node */
 
 require('dotenv').config();
+const ESLintPlugin = require('eslint-webpack-plugin');
 
 module.exports = function(/* ctx */) {
     return {
@@ -59,6 +60,10 @@ module.exports = function(/* ctx */) {
                 STAKED_TLOS_CONTRACT_ADDRESS: process.env.STAKED_TLOS_CONTRACT_ADDRESS,
                 TELOS_ESCROW_CONTRACT_ADDRESS: process.env.TELOS_ESCROW_CONTRACT_ADDRESS,
             },
+            chainWebpack (chain) {
+                chain.plugin('eslint-webpack-plugin')
+                    .use(ESLintPlugin, [{ extensions: [ 'js', 'vue' ] }])
+            },
 
             // transpile: false,
 
@@ -78,13 +83,6 @@ module.exports = function(/* ctx */) {
 
             // https://quasar.dev/quasar-cli/handling-webpack
             extendWebpack(cfg) {
-                cfg.module.rules.push({
-                    enforce: 'pre',
-                    test: /\.(js|vue)$/,
-                    loader: 'eslint-loader',
-                    exclude: /node_modules/,
-                });
-
                 cfg.module.rules.push({
                     test: /\.pug$/,
                     loader: 'pug-plain-loader',

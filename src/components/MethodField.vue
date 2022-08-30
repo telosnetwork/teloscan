@@ -13,7 +13,7 @@ export default {
         },
         contract: {
             type: Object,
-            required: true,
+            default: null,
         },
         shorten: {
             type: Boolean,

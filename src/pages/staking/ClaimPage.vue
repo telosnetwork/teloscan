@@ -37,7 +37,7 @@
                                 </q-tooltip>
                             </q-icon>
                         </template>
-                        <template v-else style="text-align:center">
+                        <template v-else>
                             {{ col.label }}
                         </template>
                     </q-th>

@@ -34,25 +34,25 @@
             </div>
 
             <span class="c-staking-page__stat-value">
-                        {{ personalStats.staked.value.stlos }}
-                        <span v-if="isLoggedIn" class="c-staking-page__stat-unit c-staking-page__stat-unit--personal">sTLOS</span>
-                        &#32; <!-- breaking space - avoid whitespace collapsing when this long stat wraps-->
-                    </span>
+                {{ personalStats.staked.value.stlos }}
+                <span v-if="isLoggedIn" class="c-staking-page__stat-unit c-staking-page__stat-unit--personal">sTLOS</span>
+                &#32; <!-- breaking space - avoid whitespace collapsing when this long stat wraps-->
+            </span>
             <span v-if="isLoggedIn" class="c-staking-page__stat-value">
-                        <wbr>
-                        &#8776; <!-- ≈ -->
-                        {{ personalStats.staked.value.tlos }}
-                        <span class="c-staking-page__stat-unit c-staking-page__stat-unit--personal">TLOS</span>
-                    </span>
+                <wbr>
+                &#8776; <!-- ≈ -->
+                {{ personalStats.staked.value.tlos }}
+                <span class="c-staking-page__stat-unit c-staking-page__stat-unit--personal">TLOS</span>
+            </span>
 
             <q-tooltip
                 :offset="[0, 56]"
                 anchor="bottom left"
                 self="center left"
             >
-                        <span class="u-text--pre">
-                            {{ personalStats.staked.tooltip }}
-                        </span>
+                <span class="u-text--pre">
+                    {{ personalStats.staked.tooltip }}
+                </span>
             </q-tooltip>
         </div>
         <div class="c-staking-page__stat c-staking-page__stat--personal">
@@ -62,20 +62,20 @@
             </div>
 
             <span class="c-staking-page__stat-value">
-                        {{ personalStats.unstaked.value }}
-                        <span v-if="isLoggedIn" class="c-staking-page__stat-unit c-staking-page__stat-unit--personal">
-                            TLOS
-                        </span>
-                    </span>
+                {{ personalStats.unstaked.value }}
+                <span v-if="isLoggedIn" class="c-staking-page__stat-unit c-staking-page__stat-unit--personal">
+                    TLOS
+                </span>
+            </span>
 
             <q-tooltip
                 :offset="[0, 56]"
                 anchor="bottom left"
                 self="center left"
             >
-                        <span class="u-text--pre">
-                            {{ personalStats.unstaked.tooltip }}
-                        </span>
+                <span class="u-text--pre">
+                    {{ personalStats.unstaked.tooltip }}
+                </span>
             </q-tooltip>
         </div>
     </q-card>

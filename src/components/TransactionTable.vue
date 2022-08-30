@@ -63,7 +63,7 @@ export default {
         },
         initialPageSize: {
             type: Number,
-            required: true,
+            default: 1,
         },
     },
     data() {

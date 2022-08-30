@@ -12,7 +12,7 @@ import GenericContractInterface from 'components/ContractTab/GenericContractInte
 
 const web3 = new Web3();
 export default {
-    name: 'Address',
+    name: 'AccountAddress',
     components: {
         AddressField,
         ConfirmationDialog,

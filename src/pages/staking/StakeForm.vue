@@ -9,7 +9,7 @@
             class="bg-green text-black"
         >
             You have unlocked TLOS!
-            <template v-slot:action>
+            <template #action>
                 <q-btn flat color="black" label="Dismiss" />
                 <q-btn
                     flat
