@@ -8,7 +8,8 @@
 /* eslint-env node */
 
 require('dotenv').config();
-const ESLintPlugin = require("eslint-webpack-plugin");
+const ESLintPlugin = require('eslint-webpack-plugin');
+const nodePolyfillWebpackPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = function(/* ctx */) {
     return {
@@ -60,7 +61,10 @@ module.exports = function(/* ctx */) {
             },
             chainWebpack (chain) {
                 chain.plugin('eslint-webpack-plugin')
-                  .use(ESLintPlugin, [{ extensions: [ 'js', 'vue' ] }])
+                    .use(ESLintPlugin, [{ extensions: [ 'js', 'vue' ] }])
+            },
+            chainWebpack (chain) {
+                chain.plugin('node-polyfill').use(nodePolyfillWebpackPlugin)
             },
 
             // transpile: false,
