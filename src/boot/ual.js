@@ -16,11 +16,8 @@ export default boot( async({ app, store }) => {
     };
 
     const authenticators = [
-    //new KeycatAuthenticator([chain], { appName: process.env.APP_NAME }),
-    //new Sqrl([chain], { appName: process.env.APP_NAME }),
         new Anchor([chain], { appName: process.env.APP_NAME }),
         new Wombat([chain], { appName: process.env.APP_NAME }),
-    //new Scatter([chain], { appName: process.env.APP_NAME })
     ];
 
     const ual = new UAL([chain], 'ual', authenticators);
