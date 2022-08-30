@@ -12,7 +12,7 @@ const routes = [
         children: [
             { path: '',
                 name: 'address',
-                component: () => import('pages/Address.vue') },
+                component: () => import('pages/AccountAddress.vue') },
         ],
     },
     {
