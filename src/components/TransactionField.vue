@@ -16,6 +16,6 @@ export default {
 </script>
 
 <template lang="pug">
-  router-link(:to="`/tx/${this.transactionHash}`") {{ transactionHash.slice(0,20) }}...
+router-link(:to="`/tx/${this.transactionHash}`") {{ transactionHash.slice(0,20) }}...
   //- eztodo add copy button here
 </template>
