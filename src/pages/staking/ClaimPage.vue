@@ -1,4 +1,3 @@
-<!--suppress ALL -->
 <template>
 <div>
     <div class="deposits-container">
@@ -85,7 +84,9 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { ethers } from 'ethers';
+
+import { formatBN, WEI_PRECISION } from 'src/lib/utils';
+
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 
@@ -160,8 +161,11 @@ export default {
                     this.resultHash = null;
                 });
         },
-        formatAmount(val){
-            return val !== null ? parseFloat(ethers.utils.formatEther(val.toString())).toFixed(2) : 0.0;
+        formatAmount(val) {
+            if (val === null)
+                return '0.0'
+
+            return formatBN(val, WEI_PRECISION, 2);
         },
     },
 }

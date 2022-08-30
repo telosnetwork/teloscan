@@ -1,46 +1,92 @@
 <template>
-<div class="c-staking-page pageContainer q-pt-xl">
-    <div class="row q-mx-md q-mb-lg">
-        <div class="col-xs-12 col-md-6">
+<div class="c-staking-page pageContainer">
+    <div class="row q-mx-md">
+        <div class="c-staking-page__header col-xs-12 col-md-6">
             <h1 class="c-staking-page__title">
                 Telos EVM Staking
             </h1>
-            <p class="text-white">
+            <span class="text-white">
                 Stake sTLOS and receive sTLOS from the shared REX/EVM pool
-            </p>
-            <p
-                v-if="showAddToMetaMask"
-                class="c-staking-page__metamask-prompt u-flex--center-y"
-                tabindex="0"
-                aria-label="Launch MetaMask dialog to add sTLOS"
-                @click="promptAddToMetamask"
-                @keydown.space.enter="promptAddToMetamask"
-            >
-                Add sTLOS to MetaMask
-                <img
-                    :src="MetaMaskLogo"
-                    class="q-ml-xs"
-                    height="24"
-                    width="24"
-                    alt="MetaMask Fox Logo"
-                >
-            </p>
+            </span>
         </div>
-        <div class="col-xs-12 col-md-6">
-            <q-card class="c-staking-page__stats-container">
+        <div class="col-xs-12 col-md-6 c-staking-page__stats-section">
+            <div class="c-staking-page__stats-container c-staking-page__stats-container--global">
                 <div
-                    v-for="{ label, value, unit } in stats"
+                    v-for="{ label, value, unit, tooltip } in globalStats"
                     :key="label"
-                    class="c-staking-page__stat"
+                    class="c-staking-page__stat c-staking-page__stat--global"
                 >
                     <div class="c-staking-page__stat-label">
                         {{ label }}
-                        <span class="c-staking-page__stat-unit">{{ unit }}</span>
+                        <q-icon name="fas fa-info-circle" />
                     </div>
 
                     <div class="c-staking-page__stat-value">
                         {{ value }}
+                        <span class="c-staking-page__stat-unit">{{ unit }}</span>
                     </div>
+
+                    <q-tooltip
+                        :offset="[0, 56]"
+                        anchor="bottom left"
+                        self="center left"
+                    >
+                        <span class="u-text--pre">{{ tooltip }}</span>
+                    </q-tooltip>
+                </div>
+            </div>
+
+            <q-card class="c-staking-page__stats-container c-staking-page__stats-container--personal">
+                <div class="c-staking-page__stat c-staking-page__stat--personal">
+                    <div class="c-staking-page__stat-label">
+                        {{ personalStats.staked.label }}
+                        <q-icon name="fas fa-info-circle" />
+                    </div>
+
+                    <span class="c-staking-page__stat-value">
+                        {{ personalStats.staked.value.stlos }}
+                        <span class="c-staking-page__stat-unit">sTLOS</span>
+                        &#32; <!-- breaking space - avoid whitespace collapsing when this long stat wraps-->
+                    </span>
+                    <span class="c-staking-page__stat-value">
+                        <wbr>
+                        <span class="text-white">
+                            &#8776; <!-- ≈ -->
+                        </span>
+                        {{ personalStats.staked.value.tlos }}
+                        <span class="c-staking-page__stat-unit">TLOS</span>
+                    </span>
+
+                    <q-tooltip
+                        :offset="[0, 56]"
+                        anchor="bottom left"
+                        self="center left"
+                    >
+                        <span class="u-text--pre">
+                            {{ personalStats.staked.tooltip }}
+                        </span>
+                    </q-tooltip>
+                </div>
+                <div class="c-staking-page__stat c-staking-page__stat--personal">
+                    <div class="c-staking-page__stat-label">
+                        {{ personalStats.unstaked.label }}
+                        <q-icon name="fas fa-info-circle" />
+                    </div>
+
+                    <span class="c-staking-page__stat-value">
+                        {{ personalStats.unstaked.value }}
+                        <span class="c-staking-page__stat-unit">TLOS</span>
+                    </span>
+
+                    <q-tooltip
+                        :offset="[0, 56]"
+                        anchor="bottom left"
+                        self="center left"
+                    >
+                        <span class="u-text--pre">
+                            {{ personalStats.unstaked.tooltip }}
+                        </span>
+                    </q-tooltip>
                 </div>
             </q-card>
         </div>
@@ -152,12 +198,14 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { fetchStlosApy, promptAddToMetamask } from 'pages/staking/staking-utils';
+import { fetchStlosApy, formatUnstakePeriod, promptAddToMetamask } from 'pages/staking/staking-utils';
 import MetaMaskLogo from 'src/assets/metamask-fox.svg'
+
+import { formatBN, WEI_PRECISION } from 'src/lib/utils';
+
 import StakeForm from 'pages/staking/StakeForm';
 import UnstakeForm from 'pages/staking/UnstakeForm';
 import ClaimPage from 'pages/staking/ClaimPage.vue';
-import { formatBN, WEI_PRECISION } from 'src/lib/utils';
 
 const tabs = {
     stake: 'stake',
@@ -193,35 +241,59 @@ export default {
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
         showAddToMetaMask() {
+            // eztodo should this be in header or modal?
             return this.isLoggedIn && window.ethereum.isMetaMask === true;
         },
-        stats() {
+        unlockPeriodPretty() {
+            return formatUnstakePeriod(this.unstakePeriodSeconds);
+        },
+        globalStats() {
+            const exampleReturn = `1.${(this.stlosApy ?? '0').replace(/\./g, '')} TLOS`;
             return [{
-                label: 'TVL',
-                value: this.formatWeiForStats(this.stlosTvl),
-                unit: 'TLOS',
-            },{
                 label: 'APY',
-                value: this.stlosApy,
+                value: this.stlosApy ?? '--',
                 unit: '%',
-            },{
-                label: 'Balance',
-                value: this.formatWeiForStats(this.tlosBalance),
-                unit: 'TLOS',
+                // eztodo we could do with more info here about how this interest is calculated
+                // (what interval the compounding takes place on, if this percentage is fixed or under which conditions it may change),
+                tooltip: 'APY: Annual Percentage Yield\n\nThe annual rate of return after taking compound interest into account.\n\n' +
+                    'If you choose to stake your TLOS, this represents the rate at which you\'ll earn interest. This interest is ' +
+                    'awarded in the form of TLOS when you unstake sTLOS, e.g.\nif you stake 1 TLOS and receive 1 sTLOS in return, ' +
+                    `then wait exactly one year and redeem that sTLOS, you will receive ${exampleReturn}`,
             }, {
-                label: 'Staked',
-                value: this.formatWeiForStats(this.stlosBalance),
-                unit: 'STLOS',
-            }, {
-                label: 'Value',
-                value: this.formatWeiForStats(this.stlosValue),
+                label: 'TVL',
+                value: this.formatWeiForStats(this.stlosTvl), // eztodo remove decimals
                 unit: 'TLOS',
-            }, {
-                label: 'Escrowed',
-                value: this.formatWeiForStats(this.totalUnstakedTlosBalance),
-                unit: 'TLOS',
-            },
-            ];
+                // eztodo address 1. why the user should care about this number,
+                // 2. caveats to making decisions based on this figure
+                // 3. how this relates to REX / what it means to have a shared liquidity pool
+                tooltip: 'TVL: Total Value Locked\n\nThe current value, in TLOS, of all assets held in the sTLOS ' +
+                    '(Staked TLOS) smart contract, i.e. the sum of all staked TLOS at this moment.',
+            }];
+        },
+        personalStats() {
+            return {
+                staked: {
+                    label: 'Staked',
+                    value: {
+                        stlos: this.formatWeiForStats(this.stlosBalance),
+                        tlos: this.formatWeiForStats(this.stlosValue),
+                    },
+                    tooltip: 'Staked\n\n' +
+                        'The total staked amount associated with the logged-in account, i.e. ' +
+                        'your sTLOS token balance, along with its value in TLOS',
+                },
+                unstaked: {
+                    label: 'Unstaked',
+                    value: this.formatWeiForStats(this.totalUnstakedTlosBalance),
+                    tooltip: 'Unstaked\n\n' + // switch unstake to unstakesecondspretty
+                        'The total value of TLOS which you have unstaked, both locked and unlocked.\n\n' +
+                        'When you unstake\u2014i.e. redeem\u2014some value of sTLOS, the equivalent amount of ' +
+                        `TLOS is sent into escrow ("locked") for ${this.unlockPeriodPretty}; during this time, ` +
+                        'you cannot interact with this TLOS.\n\n' +
+                        'After the unlock period has elapsed, you can claim your unlocked TLOS from the Claim tab ' +
+                        'on this page, at which point it will be added to your account TLOS balance.',
+                },
+            };
         },
     },
     watch: {
@@ -395,7 +467,9 @@ export default {
             }
         },
         formatWeiForStats(wei) {
-            return wei === null ? '--': formatBN(wei, WEI_PRECISION, 3);
+            const format = val => formatBN(val, WEI_PRECISION, 3);
+
+            return wei === null ? '--' : format(wei);
         },
     },
 }
@@ -403,6 +477,16 @@ export default {
 
 <style scoped lang="scss">
 .c-staking-page {
+    margin-top: 24px;
+
+    @media screen and (min-width: $breakpoint-md-min) {
+        margin-top: 48px;
+    }
+
+    &__header {
+        margin-bottom: 32px;
+    }
+
     &__title {
         color: $primary;
         margin: 0 0 12px;
@@ -418,38 +502,134 @@ export default {
         width: max-content;
     }
 
-    &__stats-container {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+    //&__stats-container {
+    //    display: grid;
+    //    grid-template-columns: repeat(3, 1fr);
+    //
+    //    gap: 12px;
+    //    padding: 8px;
+    //
+    //    @at-root .body--light & {
+    //        color: $dark;
+    //    }
+    //
+    //    @media screen and (min-width: $breakpoint-sm-min) {flex-wrap: wrap;
+    //        padding: 12px;
+    //        max-width: fit-content;
+    //        margin: 12px auto 16px;
+    //    }
+    //
+    //    @media screen and (min-width: $breakpoint-md-min) {
+    //        margin: 0 0 24px auto;
+    //    }
+    //}
 
-        gap: 12px;
-        padding: 8px;
-
-        @at-root .body--light & {
-            color: $dark;
-        }
-
-        @media screen and (min-width: $breakpoint-sm-min) {flex-wrap: wrap;
-            padding: 12px;
-            max-width: fit-content;
-            margin: 12px auto 16px;
-        }
+    &__stats-section {
+        display: flex;
+        flex-wrap: wrap;
 
         @media screen and (min-width: $breakpoint-md-min) {
-            margin: 0 0 24px auto;
+            justify-content: flex-end;
+        }
+
+        @media screen and (min-width: $breakpoint-lg-min) {
+            flex-wrap: nowrap;
+            gap: 16px;
+        }
+    }
+
+    &__stats-container {
+        height: min-content;
+
+        &--global {
+            flex-basis: 100%;
+
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 32px;
+            margin-bottom: 32px;
+
+            @media screen and (min-width: $breakpoint-md-min) {
+                justify-content: flex-end;
+                margin: 0;
+                padding: 0 0 12px;
+            }
+
+            @media screen and (min-width: $breakpoint-lg-min) {
+                flex-basis: auto;
+                padding: 12px;
+            }
+        }
+
+        &--personal {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-evenly;
+            gap: 24px;
+            padding: 12px;
+            margin-bottom: 24px;
+
+            @media screen and (min-width: $breakpoint-sm-min) {
+                max-width: max-content;
+                margin: 0 auto 24px;
+            }
+
+            @media screen and (min-width: $breakpoint-md-min) {
+                margin: 0 0 24px;
+            }
+
+            @media screen and (min-width: $breakpoint-lg-min) {
+                margin: 0;
+            }
         }
     }
 
     &__stat {
-        $total-gutter: 48px;
+        width: fit-content;
 
-        text-align: left;
-        flex: 1 1 calc(33.33% - #{$total-gutter});
+        @media screen and (min-width: $breakpoint-md-min) {
+            width: max-content;
+        }
+
+        &--global {
+            position: relative;
+
+            &:not(:last-of-type)::after {
+                position: absolute;
+                top: 0;
+                right: -17px;
+                bottom: 0;
+                margin: auto;
+
+                height: 80%;
+                width: 2px;
+
+                content: '';
+                border-radius: 4px;
+                background-color: #8591FD;
+            }
+        }
+
+        &--personal {
+            // text-align: center;
+        }
     }
+
+    //
+    //&__stat {
+    //    $total-gutter: 48px;
+    //
+    //    text-align: left;
+    //    flex: 1 1 calc(33.33% - #{$total-gutter});
+    //}
 
     &__stat-label {
         font-size: 14px;
         white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 4px;
     }
 
     &__stat-unit {
@@ -461,9 +641,9 @@ export default {
 
         vertical-align: super;
 
-        @at-root .body--light & {
-            color: darken($secondary, 10%);
-        }
+        //@at-root .body--light & {
+        //    color: darken($secondary, 10%);
+        //}
     }
 
     &__stat-value {

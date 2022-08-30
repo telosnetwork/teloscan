@@ -8,7 +8,12 @@ export const WEI_PRECISION = 18;
 
 export function formatBN(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);
-    return `${(amount / Math.pow(10, tokenDecimals)).toFixed(displayDecimals)}`;
+    const formattedNoCommas = (amount / Math.pow(10, tokenDecimals)).toFixed(displayDecimals);
+
+
+    const test = Number(formattedNoCommas).toLocaleString();
+    console.log(test);
+    return test;
 }
 
 export function isValidAddressFormat(ethAddressString) {
