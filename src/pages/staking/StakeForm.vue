@@ -1,5 +1,25 @@
 <template>
 <div class="row">
+    <div class="col-xs-12 col-md-6 offset-lg-3">
+        <q-banner
+            v-if="hasUnlockedTlos"
+            rounded
+            inline-actions
+            dense
+            class="bg-green text-black"
+        >
+            You have unlocked TLOS!
+            <template v-slot:action>
+                <q-btn flat color="black" label="Dismiss" />
+                <q-btn
+                    flat
+                    color="black"
+                    label="Claim TLOS"
+                    @click="$router.push({ hash: 'claim' })"
+                />
+            </template>
+        </q-banner>
+    </div>
     <div class="col-12 q-mb-lg">
         <base-staking-form
             :header="header"
@@ -105,6 +125,10 @@ export default {
         tlosBalance: {
             type: String,
             default: null,
+        },
+        hasUnlockedTlos: {
+            type: Boolean,
+            required: true,
         },
         unstakePeriodSeconds: {
             type: Number,

@@ -121,6 +121,7 @@
                     exact
                     push
                     label="Claim"
+                    :alert="showClaimNotification ? 'green' : false"
                 />
             </q-tabs>
 
@@ -142,6 +143,7 @@
                             <stake-form
                                 :stlos-contract-instance="stlosContractInstance"
                                 :tlos-balance="tlosBalance"
+                                :has-unlocked-tlos="showClaimNotification"
                                 :unstake-period-seconds="unstakePeriodSeconds"
                                 @balance-changed="fetchBalances"
                             />
@@ -197,6 +199,7 @@
 </template>
 
 <script>
+import { BigNumber } from 'ethers';
 import { mapGetters } from 'vuex';
 import { fetchStlosApy, formatUnstakePeriod, promptAddToMetamask } from 'pages/staking/staking-utils';
 import MetaMaskLogo from 'src/assets/metamask-fox.svg'
@@ -240,12 +243,11 @@ export default {
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
-        showAddToMetaMask() {
-            // eztodo should this be in header or modal?
-            return this.isLoggedIn && window.ethereum.isMetaMask === true;
-        },
         unlockPeriodPretty() {
             return formatUnstakePeriod(this.unstakePeriodSeconds);
+        },
+        showClaimNotification() {
+            return BigNumber.from(this.unlockedTlosBalance ?? '0').gt('0');
         },
         globalStats() {
             const exampleReturn = `1.${(this.stlosApy ?? '0').replace(/\./g, '')} TLOS`;
