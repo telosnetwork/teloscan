@@ -212,7 +212,7 @@ export default {
 </script>
 
 <template lang='pug'>
-  div()
+div()
     q-btn( v-if='!isLoggedIn' label='Connect Wallet' @click='connect()' )
     q-btn-dropdown( v-if='isLoggedIn' :label='getLoginDisplay()' )
       q-list()

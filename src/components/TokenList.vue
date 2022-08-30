@@ -74,7 +74,7 @@ export default {
 </script>
 
 <template lang="pug">
-  .q-pa-md.row.items-start.q-gutter-md
+.q-pa-md.row.items-start.q-gutter-md
      div(v-for="token in tokens" :key="token.address" )
        .col
          q-card()

@@ -153,7 +153,7 @@ export default {
 </script>
 
 <template lang='pug'>
-  .pageContainer.q-pt-xl
+.pageContainer.q-pt-xl
     .row
       .col-12.q-px-md
         .text-h4.text-primary.q-mb-lg
@@ -288,7 +288,7 @@ export default {
                 logs-viewer( :logs="getLogs()" )
             q-tab-panel( name="internal" )
               InternalTxns( :itxs="trx.itxs" )
-    </template>
+</template>
 
 <style scoped lang="sass">
 span
