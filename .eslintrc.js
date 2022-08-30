@@ -1,7 +1,7 @@
 module.exports = {
     root: true,
     parserOptions: {
-        parser: 'babel-eslint',
+        parser: '@babel/eslint-parser',
         ecmaVersion: 2018,
         sourceType: 'module',
     },
@@ -9,6 +9,7 @@ module.exports = {
         'browser': true,
         'amd': true,
         'node': true,
+        'vue/setup-compiler-macros': true, // new!
     },
     extends: [
         'eslint:recommended',
@@ -29,14 +30,14 @@ module.exports = {
         'comma-dangle': ['error', 'always-multiline'],
         'indent': ['error', 4],
         'quotes': ['error', 'single'],
-        'vue/html-indent': ['warn', 4, { 'baseIndent': 0, }], // eztodo switch to error (after pug removal?)
+        'vue/html-indent': ['warn', 4, { 'baseIndent': 0 }], // eztodo switch to error (after pug removal?)
         'vue/max-attributes-per-line': ['warn', {
             'singleline': {
-                'max': 3
+                'max': 3,
             },
             'multiline': {
-                'max': 1
-            }
+                'max': 1,
+            },
         }],
     },
 }
