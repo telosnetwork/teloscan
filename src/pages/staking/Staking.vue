@@ -10,85 +10,7 @@
             </span>
         </div>
         <div class="col-xs-12 col-md-6 c-staking-page__stats-section">
-            <div class="c-staking-page__stats-container c-staking-page__stats-container--global">
-                <div
-                    v-for="{ label, value, unit, tooltip } in globalStats"
-                    :key="label"
-                    class="c-staking-page__stat c-staking-page__stat--global"
-                >
-                    <div class="c-staking-page__stat-label">
-                        {{ label }}
-                        <q-icon name="fas fa-info-circle" />
-                    </div>
 
-                    <div class="c-staking-page__stat-value">
-                        {{ value }}
-                        <span class="c-staking-page__stat-unit">{{ unit }}</span>
-                    </div>
-
-                    <q-tooltip
-                        :offset="[0, 56]"
-                        anchor="bottom left"
-                        self="center left"
-                    >
-                        <span class="u-text--pre">{{ tooltip }}</span>
-                    </q-tooltip>
-                </div>
-            </div>
-
-            <q-card class="c-staking-page__stats-container c-staking-page__stats-container--personal">
-                <div class="c-staking-page__stat c-staking-page__stat--personal">
-                    <div class="c-staking-page__stat-label">
-                        {{ personalStats.staked.label }}
-                        <q-icon name="fas fa-info-circle" />
-                    </div>
-
-                    <span class="c-staking-page__stat-value">
-                        {{ personalStats.staked.value.stlos }}
-                        <span class="c-staking-page__stat-unit">sTLOS</span>
-                        &#32; <!-- breaking space - avoid whitespace collapsing when this long stat wraps-->
-                    </span>
-                    <span class="c-staking-page__stat-value">
-                        <wbr>
-                        <span class="text-white">
-                            &#8776; <!-- ≈ -->
-                        </span>
-                        {{ personalStats.staked.value.tlos }}
-                        <span class="c-staking-page__stat-unit">TLOS</span>
-                    </span>
-
-                    <q-tooltip
-                        :offset="[0, 56]"
-                        anchor="bottom left"
-                        self="center left"
-                    >
-                        <span class="u-text--pre">
-                            {{ personalStats.staked.tooltip }}
-                        </span>
-                    </q-tooltip>
-                </div>
-                <div class="c-staking-page__stat c-staking-page__stat--personal">
-                    <div class="c-staking-page__stat-label">
-                        {{ personalStats.unstaked.label }}
-                        <q-icon name="fas fa-info-circle" />
-                    </div>
-
-                    <span class="c-staking-page__stat-value">
-                        {{ personalStats.unstaked.value }}
-                        <span class="c-staking-page__stat-unit">TLOS</span>
-                    </span>
-
-                    <q-tooltip
-                        :offset="[0, 56]"
-                        anchor="bottom left"
-                        self="center left"
-                    >
-                        <span class="u-text--pre">
-                            {{ personalStats.unstaked.tooltip }}
-                        </span>
-                    </q-tooltip>
-                </div>
-            </q-card>
         </div>
     </div>
     <div class="row">
@@ -502,28 +424,6 @@ export default {
         width: max-content;
     }
 
-    //&__stats-container {
-    //    display: grid;
-    //    grid-template-columns: repeat(3, 1fr);
-    //
-    //    gap: 12px;
-    //    padding: 8px;
-    //
-    //    @at-root .body--light & {
-    //        color: $dark;
-    //    }
-    //
-    //    @media screen and (min-width: $breakpoint-sm-min) {flex-wrap: wrap;
-    //        padding: 12px;
-    //        max-width: fit-content;
-    //        margin: 12px auto 16px;
-    //    }
-    //
-    //    @media screen and (min-width: $breakpoint-md-min) {
-    //        margin: 0 0 24px auto;
-    //    }
-    //}
-
     &__stats-section {
         display: flex;
         flex-wrap: wrap;
@@ -603,7 +503,7 @@ export default {
                 margin: auto;
 
                 height: 80%;
-                width: 2px;
+                width: 1px;
 
                 content: '';
                 border-radius: 4px;
@@ -616,20 +516,20 @@ export default {
         }
     }
 
-    //
-    //&__stat {
-    //    $total-gutter: 48px;
-    //
-    //    text-align: left;
-    //    flex: 1 1 calc(33.33% - #{$total-gutter});
-    //}
-
     &__stat-label {
         font-size: 14px;
         white-space: nowrap;
         display: flex;
         align-items: center;
         gap: 4px;
+
+        &--global {
+            color: $white;
+        }
+
+        &--personal {
+            color: $dark;
+        }
     }
 
     &__stat-unit {
@@ -641,9 +541,11 @@ export default {
 
         vertical-align: super;
 
-        //@at-root .body--light & {
-        //    color: darken($secondary, 10%);
-        //}
+        &--personal {
+            @at-root .body--light & {
+                color: darken($secondary, 10%);
+            }
+        }
     }
 
     &__stat-value {
