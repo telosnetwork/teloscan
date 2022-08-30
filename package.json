@@ -29,20 +29,23 @@
     "highlight.js": "10",
     "highlightjs-solidity": "^2.0.3",
     "moment": "^2.29.4",
-    "quasar": "^1.0.0",
+    "quasar": "2",
     "ual-anchor": "^1.0.0",
     "ual-ledger": "^0.3.0",
     "ual-wombat": "^0.3.3",
     "universal-authenticator-library": "^0.3.0",
+    "vue": "3",
     "vue-json-viewer": "2",
-    "web3": "^1.6.1"
+    "vue-router": "4",
+    "vuex": "4",
+    "web3": "^1.7.5"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",
-    "@quasar/app": "^2.4.0",
+    "@quasar/app-webpack": "3",
     "eslint": "^8.10.0",
     "eslint-plugin-vue": "^9.0.0",
-    "eslint-webpack-plugin": "^2.0.0",
+    "eslint-webpack-plugin": "^2.4.0",
     "pug": "^3.0.2",
     "pug-plain-loader": "^1.1.0"
   },

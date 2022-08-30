@@ -11,7 +11,7 @@ export default {
 </script>
 
 <template lang='pug'>
-  .row.q-mb-lg.relative-bottom
+.row.q-mb-lg.relative-bottom
     .col-xs-12.col-md-6
       .column.items-center
         span COPYRIGHT © {{ currentFullYear() }}

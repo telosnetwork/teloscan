@@ -106,7 +106,7 @@ export default {
 </script>
 
 <template lang="pug">
-  .pageContainer.q-pt-xl
+.pageContainer.q-pt-xl
     div
       .row(class="tableWrapper").justify-between
         div(class="homeInfo")

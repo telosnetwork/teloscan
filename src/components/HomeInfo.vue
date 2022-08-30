@@ -32,7 +32,7 @@ export default {
 </script>
 
 <template lang='pug'>
-  .row.homeInfo
+.row.homeInfo
     .col.q-pa-md
       .row.items-center
         .col-12.items-center
