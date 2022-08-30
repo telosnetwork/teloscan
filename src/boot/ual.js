@@ -1,8 +1,5 @@
 import { UAL } from 'universal-authenticator-library';
-//import { KeycatAuthenticator } from "@telosnetwork/ual-telos-keycat";
-//import { Scatter } from "ual-scatter";
 import { Wombat } from 'ual-wombat';
-//import { Sqrl } from "@smontero/ual-sqrl";
 import { Anchor } from 'ual-anchor';
 
 export default async ({ Vue, store }) => {
