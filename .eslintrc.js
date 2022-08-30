@@ -1,7 +1,7 @@
 module.exports = {
     root: true,
     parserOptions: {
-        parser: 'babel-eslint',
+        parser: '@babel/eslint-parser',
         ecmaVersion: 2018,
         sourceType: 'module',
     },
@@ -9,6 +9,7 @@ module.exports = {
         'browser': true,
         'amd': true,
         'node': true,
+        'vue/setup-compiler-macros': true // new!
     },
     extends: [
         'eslint:recommended',
