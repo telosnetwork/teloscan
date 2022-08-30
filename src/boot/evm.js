@@ -1,3 +1,4 @@
+import { boot } from 'quasar/wrappers';
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 import ContractManager from 'src/lib/ContractManager';
 import fetch from 'node-fetch';
@@ -41,11 +42,11 @@ const hyperion = axios.create({
 const contractManager = new ContractManager(hyperion);
 contractManager.init();
 
-export default ({ Vue, store }) => {
-    store.$providerManager = Vue.prototype.$providerManager = new ProviderManager();
-    store.$evm = Vue.prototype.$evm = evm;
-    store.$evmEndpoint = Vue.prototype.$evmEndpoint = hyperion;
-    store.$contractManager = Vue.prototype.$contractManager = contractManager;
-};
+export default boot(({ app, store }) => {
+    store.$providerManager = app.config.globalProperties.$providerManager = new ProviderManager();
+    store.$evm = app.config.globalProperties.$evm = evm;
+    store.$evmEndpoint = app.config.globalProperties.$evmEndpoint = hyperion;
+    store.$contractManager = app.config.globalProperties.$contractManager = contractManager;
+});
 
 export { evm };

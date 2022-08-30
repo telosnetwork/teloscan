@@ -1,8 +1,9 @@
+import { boot } from 'quasar/wrappers';
 import { UAL } from 'universal-authenticator-library';
 import { Wombat } from 'ual-wombat';
 import { Anchor } from 'ual-anchor';
 
-export default async ({ Vue, store }) => {
+export default boot( async({ app, store }) => {
     const chain = {
         chainId: process.env.NETWORK_CHAIN_ID,
         rpcEndpoints: [
@@ -24,5 +25,5 @@ export default async ({ Vue, store }) => {
 
     const ual = new UAL([chain], 'ual', authenticators);
     store['$ual'] = ual;
-    Vue.prototype.$ual = ual;
-};
+    app.config.globalProperties.$ual = ual;
+});
