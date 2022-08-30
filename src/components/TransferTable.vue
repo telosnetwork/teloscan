@@ -215,7 +215,7 @@ export default {
 };
 </script>
 <template lang="pug">
-  q-table(
+q-table(
     :data="rows"
     :columns="columns"
     :pagination.sync="pagination"
@@ -223,7 +223,7 @@ export default {
     @request="onRequest"
     :rows-per-page-options="[10, 20, 50]"
     flat
-  )
+)
     q-tr( slot="header" slot-scope="props", :props="props" )
       q-th(
         v-for="col in props.cols"
@@ -259,7 +259,7 @@ export default {
         address-field.token-name( :address="props.row.address" :name="props.row.name" )
 </template>
 
-<style lang='sass'scoped>
+<style lang='sass' scoped>
 .coin-icon
   width: 20px
   margin-right: .25rem
