@@ -2,7 +2,7 @@
 <div class="row">
     <div class="col-xs-12 col-md-6 offset-lg-3">
         <q-banner
-            v-if="hasUnlockedTlos"
+            v-if="showClaimBanner"
             rounded
             inline-actions
             dense
@@ -10,7 +10,12 @@
         >
             You have unlocked TLOS!
             <template #action>
-                <q-btn flat color="black" label="Dismiss" />
+                <q-btn
+                    flat
+                    color="black"
+                    label="Dismiss"
+                    @click="hideClaimBanner"
+                />
                 <q-btn
                     flat
                     color="black"
@@ -151,6 +156,7 @@ export default {
         ctaIsLoading: false,
         debouncedTopInputHandler: null,
         debouncedBottomInputHandler: null,
+        userDismissedBanner: false,
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
@@ -229,6 +235,9 @@ export default {
             }
 
             return 'Connect Wallet';
+        },
+        showClaimBanner() {
+            return this.hasUnlockedTlos && !this.userDismissedBanner;
         },
     },
     async created() {
@@ -319,6 +328,9 @@ export default {
                 .finally(() => {
                     this.ctaIsLoading = false;
                 });
+        },
+        hideClaimBanner() {
+            this.userDismissedBanner = true;
         },
     },
 }
