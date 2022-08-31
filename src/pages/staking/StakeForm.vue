@@ -1,6 +1,6 @@
 <template>
-<div class="row">
-    <div class="col-xs-12 col-md-6 offset-lg-3">
+<div class="c-stake-form row">
+    <div class="col-xs-12 col-md-6 offset-md-3">
         <q-banner
             v-if="showClaimBanner"
             rounded
@@ -70,7 +70,7 @@
 
             <q-card-actions align="right" class="q-pb-md q-px-md">
                 <p
-                    class="c-staking-page__metamask-prompt u-flex--center-y"
+                    class="c-stake-form__metamask-prompt u-flex--center-y"
                     tabindex="0"
                     aria-label="Launch MetaMask dialog to add sTLOS"
                     @click="promptAddToMetamask"
@@ -337,11 +337,13 @@ export default {
 </script>
 
 <style lang="scss">
-.c-staking-page__metamask-prompt{
-    color: $secondary;
-    cursor: pointer;
-    width: max-content;
-    margin-right: auto;
-    margin-bottom: 0;
+.c-stake-form {
+    &__metamask-prompt {
+        color: $secondary;
+        cursor: pointer;
+        width: max-content;
+        margin-right: auto;
+        margin-bottom: 0;
+    }
 }
 </style>

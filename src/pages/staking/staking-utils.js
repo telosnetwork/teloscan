@@ -1,5 +1,5 @@
 import Big from 'big.js';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 
 import { WEI_PRECISION } from 'src/lib/utils';
 
@@ -21,7 +21,9 @@ export function formatUnstakePeriod(seconds) {
 }
 
 export async function fetchStlosApy($api, tvl) {
-    if (tvl.eq('0')) {
+    const tvlBn = BigNumber.from(tvl);
+
+    if (tvlBn.eq('0')) {
         return '0';
     }
 
@@ -68,7 +70,7 @@ export async function fetchStlosApy($api, tvl) {
     const annualPayout = new Big(payoutRow.amount).times(new Big(60 * 60 * 24 * 365).div(payoutRow.interval));
     const fixedRatio = new Big(distConfig.ratio).div(100);
     const rexTotal = new Big(rexStats.total_lendable.split(' ')[0]);
-    const stlosTotal = new Big(ethers.utils.formatEther(tvl));
+    const stlosTotal = new Big(ethers.utils.formatEther(tvlBn));
 
     const balanceRatio = rexTotal.eq(0) ? -1 : stlosTotal.times(fixedRatio).div(rexTotal);
 
