@@ -94,8 +94,8 @@ export default {
             this.loading = true;
 
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
-
             let result = await this.$evmEndpoint.get(this.getPath(props));
+
             if (this.total == null)
                 this.pagination.rowsNumber = result.data.total.value;
 
@@ -161,9 +161,10 @@ export default {
 
 <template lang="pug">
 q-table(
-  :data="rows"
+  :rows="rows"
+  :row-key='row => row.hash'
   :columns="columns"
-  :pagination.sync="pagination"
+  v-model:pagination="pagination"
   :loading="loading"
   @request="onRequest"
   :rows-per-page-options="[10, 20, 50]"
