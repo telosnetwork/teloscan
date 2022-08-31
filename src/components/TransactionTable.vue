@@ -131,12 +131,8 @@ export default {
                     );
                 }
             }
-            this.setRows(page, rowsPerPage);
-            this.loading = false;
-        },
-        setRows() {
-            // TODO: do this differently?
             this.rows = this.transactions;
+            this.loading = false;
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
@@ -162,7 +158,6 @@ export default {
 <template lang="pug">
 q-table(
   :rows="rows"
-  :row-key='row => row.hash'
   :columns="columns"
   v-model:pagination="pagination"
   :loading="loading"
