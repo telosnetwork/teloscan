@@ -213,6 +213,7 @@ export default {
 <template lang="pug">
 q-table(
     :rows="rows"
+    :row-key='row => row.hash'
     :columns="columns"
     v-model:pagination="pagination"
     :loading="loading"
@@ -239,20 +240,20 @@ q-table(
           q-icon(name="fas fa-info-circle")
             q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
 
-
-    q-tr( slot="body" slot-scope="props" :props="props" )
-      q-td( key="hash" )
-        transaction-field( :transaction-hash="props.row.hash" )
-      q-td( key="date" )
-        date-field( :epoch="props.row.epoch", :showAge="showAge" )
-      q-td( key="from" )
-        address-field( :address="props.row.from" )
-      q-td( key="to" )
-        address-field( :address="props.row.to" )
-      q-td( key="value" ) {{ props.row.valueDisplay }}
-      q-td( key="token" )
-        q-img.coin-icon( :src="getIcon(props.row)" )
-        address-field.token-name( :address="props.row.address" :name="props.row.name" )
+    template(v-slot:body="props")
+        q-tr( :props="props" )
+            q-td( key="hash" :props="props" )
+                transaction-field( :transaction-hash="props.row.hash" )
+            q-td( key="date" :props="props" )
+                date-field( :epoch="props.row.epoch", :showAge="showAge" )
+            q-td( key="from" :props="props" )
+                address-field( :address="props.row.from" )
+            q-td( key="to" :props="props" )
+                address-field( :address="props.row.to" )
+            q-td( key="value" :props="props" ) {{ props.row.valueDisplay }}
+            q-td( key="token" :props="props" )
+                q-img.coin-icon( :src="getIcon(props.row)" )
+                address-field.token-name( :address="props.row.address" :name="props.row.name" )
 </template>
 
 <style lang='sass' scoped>
