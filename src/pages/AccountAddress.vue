@@ -103,8 +103,6 @@ export default {
         },
     },
 };
-//  goes on line 115  ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
-
 </script>
 
 <template lang="pug">
@@ -114,6 +112,7 @@ export default {
         div(class="homeInfo")
           .text-primary.text-h4.q-pr-xs {{ title }}
           q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
+          ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
           CopyButton(:text="address" :accompanyingText="address" description="address")
           span(v-if='contract')
             .text-white Created at trx&nbsp
