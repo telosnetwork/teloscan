@@ -182,12 +182,8 @@ export default {
                 ...newTransfers,
             );
 
-            this.setRows(page, rowsPerPage);
-            this.loading = false;
-        },
-        setRows() {
-            // TODO: do this differently?
             this.rows = this.transfers;
+            this.loading = false;
         },
         getIcon(row) {
             if (row.token && row.token.logoURI) {
@@ -217,7 +213,6 @@ export default {
 <template lang="pug">
 q-table(
     :rows="rows"
-    :row-key='row => row.hash'
     :columns="columns"
     v-model:pagination="pagination"
     :loading="loading"
