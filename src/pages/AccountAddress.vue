@@ -162,7 +162,7 @@ export default {
   background: white
   color: black !important
   &.q-dark
-    background: var(--q-color-dark)
+    background: $dark
     color: white !important
 
 .text-primary
