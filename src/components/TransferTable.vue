@@ -216,9 +216,10 @@ export default {
 </script>
 <template lang="pug">
 q-table(
-    :data="rows"
+    :rows="rows"
+    :row-key='row => row.hash'
     :columns="columns"
-    :pagination.sync="pagination"
+    v-model:pagination="pagination"
     :loading="loading"
     @request="onRequest"
     :rows-per-page-options="[10, 20, 50]"
