@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 const VIEW_SOURCE_PROMPT = 'This contract has been verified. You can view the source code & metadata in the \'contract\' tab';
 const VERIFY_PROMPT = 'This contract has not been verified.  Would you like to upload the contract(s) and metadata to verify source now?';
 
