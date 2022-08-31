@@ -3,7 +3,7 @@ import Web3 from 'web3';
 import TransactionTable from 'components/TransactionTable';
 import TransferTable from 'components/TransferTable';
 import TokenList from 'components/TokenList';
-// import ConfirmationDialog from 'components/ConfirmationDialog';
+import ConfirmationDialog from 'components/ConfirmationDialog';
 import ContractTab from 'components/ContractTab/ContractTab';
 import TransactionField from 'components/TransactionField';
 import AddressField from 'components/AddressField';
@@ -15,7 +15,7 @@ export default {
     name: 'AccountAddress',
     components: {
         AddressField,
-        // ConfirmationDialog,
+        ConfirmationDialog,
         ContractTab,
         CopyButton,
         GenericContractInterface,
