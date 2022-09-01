@@ -62,7 +62,7 @@
                 keep-alive
                 class="q-py-lg"
             >
-                <q-tab-panel name="stake">
+                <q-tab-panel style="height: max-content;" name="stake">
                     <div class="row">
                         <div
                             v-if="!stlosContractInstance"
@@ -357,6 +357,11 @@ export default {
             background: white;
             color: $dark;
         }
+    }
+
+    // prevent scrolling behavior on quasar tab panels, which cannot be overridden using q-tab-panel API
+    .q-panel.scroll {
+        overflow: unset;
     }
 }
 </style>
