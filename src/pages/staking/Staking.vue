@@ -76,6 +76,7 @@
                                 :tlos-balance="tlosBalance"
                                 :has-unlocked-tlos="showClaimNotification"
                                 :unstake-period-seconds="unstakePeriodSeconds"
+                                :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
                                 @balance-changed="fetchBalances"
                             />
                         </div>
@@ -98,6 +99,7 @@
                                 :unlocked-tlos-balance="unlockedTlosBalance"
                                 :unstake-period-seconds="unstakePeriodSeconds"
                                 :deposits="escrowDeposits"
+                                :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
                                 @balance-changed="fetchBalances"
                             />
                         </div>
@@ -130,7 +132,7 @@
 </template>
 
 <script>
-import { BigNumber } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { mapGetters } from 'vuex';
 import MetaMaskLogo from 'src/assets/metamask-fox.svg'
 
@@ -144,6 +146,8 @@ const tabs = {
     unstake: 'unstake',
     claim: 'claim',
 }
+
+const oneEth = ethers.utils.parseEther('1').toString();
 
 export default {
     name: 'StakingPage',
@@ -161,6 +165,7 @@ export default {
         escrowContract: null,
         stlosContractInstance: null,
         escrowContractInstance: null,
+        valueOfOneStlosInTlos: null,
         tlosBalance: null,
         stlosBalance: null,
         stlosValue: null,
@@ -215,6 +220,7 @@ export default {
                 this.totalUnstakedTlosBalance = null;
                 this.stlosValue = null;
                 this.escrowDeposits = [];
+                this.valueOfOneStlosInTlos = null;
 
                 return;
             }
@@ -273,6 +279,13 @@ export default {
                     console.error(`Failed to fetch escrow deposits: ${message}`);
                 });
 
+            const conversionRatePromise = this.stlosContractInstance.previewDeposit(oneEth)
+                .then((stlosBn) => {
+                    this.valueOfOneStlosInTlos = ethers.utils.formatEther(stlosBn);
+                })
+                .catch(({ message }) => {
+                    console.error(`Failed to fetch TLOS->sTLOS conversion rate: ${message}`);
+                });
 
             return Promise.all([
                 tlosPromise,
@@ -281,6 +294,7 @@ export default {
                 totalUnstakedPromise,
                 unlockedPromise,
                 escrowDepositsPromise,
+                conversionRatePromise,
             ]);
         },
         async fetchContracts() {

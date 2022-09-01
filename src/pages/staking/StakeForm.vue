@@ -43,6 +43,7 @@
             :cta-text="ctaText"
             :cta-disabled="ctaIsDisabled"
             :unstake-period-seconds="unstakePeriodSeconds"
+            :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
             @input-top="handleInputTop"
             @input-bottom="handleInputBottom"
             @cta-clicked="handleCtaClick"
@@ -137,6 +138,10 @@ export default {
         },
         unstakePeriodSeconds: {
             type: Number,
+            default: null,
+        },
+        valueOfOneStlosInTlos: {
+            type: String,
             default: null,
         },
     },

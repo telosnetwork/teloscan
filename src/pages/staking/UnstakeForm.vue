@@ -18,6 +18,7 @@
             :cta-text="ctaText"
             :cta-disabled="ctaIsDisabled"
             :unstake-period-seconds="unstakePeriodSeconds"
+            :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
             @input-top="handleInputTop"
             @input-bottom="handleInputBottom"
             @cta-clicked="handleCtaClick"
@@ -108,6 +109,10 @@ export default {
         deposits: {
             type: Array,
             default: ()=>{ return [] },
+        },
+        valueOfOneStlosInTlos: {
+            type: String,
+            default: null,
         },
     },
     data: () => ({
