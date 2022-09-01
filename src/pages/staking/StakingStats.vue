@@ -119,19 +119,21 @@ export default {
                 label: 'APY',
                 value: this.stlosApy ?? '--',
                 unit: '%',
-                // eztodo we could do with more info here about how this interest is calculated
-                // (what interval the compounding takes place on, if this percentage is fixed or under which conditions it may change),
+                // eztodo
+                // 1. interval of compounding
+                // 2. is the APY fixed, and if not, under which conditions can it change?
                 tooltip: 'APY: Annual Percentage Yield\n\nThe annual rate of return after taking compound interest into account.\n\n' +
                     'If you choose to stake your TLOS, this represents the rate at which you\'ll earn interest. This interest is ' +
                     'awarded in the form of TLOS when you unstake sTLOS, e.g.\nif you stake 1 TLOS and receive 1 sTLOS in return, ' +
-                    `then wait exactly one year and redeem that sTLOS, you will receive ${exampleReturn}`,
+                    `then wait exactly one year and redeem that sTLOS, you will receive ${exampleReturn}\n\n` +
+                    'Rewards come from a community reserve and are distributed to those who stake their TLOS to sTLOS.',
             }, {
                 label: 'TVL',
-                value: this.formatWeiForStats(this.stlosTvl), // eztodo remove decimals
+                value: this.formatWeiForStats(this.stlosTvl),
                 unit: 'TLOS',
-                // eztodo address 1. why the user should care about this number,
-                // 2. caveats to making decisions based on this figure
-                // 3. how this relates to REX / what it means to have a shared liquidity pool
+                // eztodo
+                // 1. why the user should care about this number & caveats to making decisions based on this figure
+                // 2. how this relates to REX / the Telos ecosystem at large (ie. non-EVM staking)
                 tooltip: 'TVL: Total Value Locked\n\nThe current value, in TLOS, of all assets held in the sTLOS ' +
                     '(Staked TLOS) smart contract, i.e. the sum of all staked TLOS at this moment.',
             }];

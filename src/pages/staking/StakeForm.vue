@@ -56,7 +56,6 @@
     <q-dialog v-model="displayConfirmModal">
         <q-card>
             <q-card-section>
-                <!-- eztodo check in w/ team about verbiage, wire up w/ top input & bottom input + staking period -->
                 <p>
                     Continuing will stake TLOS in exchange for sTLOS.
                     sTLOS can be redeemed for TLOS at any time using the Unstake tab.

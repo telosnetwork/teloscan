@@ -31,7 +31,6 @@
     <q-dialog v-model="displayConfirmModal">
         <q-card>
             <q-card-section>
-                <!-- eztodo check in w/ team about verbiage, wire up w/ top input & bottom input + staking period -->
                 <p>
                     Continuing will redeem sTLOS in exchange for TLOS.
                     Unstaked TLOS will remain locked for a period of
@@ -178,7 +177,6 @@ export default {
                 balanceEth = integer.concat(`.${fraction.slice(0, 3)}`);
             }
 
-            // eztodo update low balance here
             const balanceTlos = ethers.utils.commify(balanceEth);
 
             return `${balanceTlos} Available`;
