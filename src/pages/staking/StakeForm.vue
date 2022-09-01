@@ -211,6 +211,7 @@ export default {
         ctaIsDisabled() {
             const inputsInvalid = (
                 this.isLoggedIn &&
+                this.walletBalanceBn.gt(reservedForGasBn) &&
                 [this.topInputAmount, this.bottomInputAmount].some((amount) => {
                     return BigNumber.from(amount ?? '0').eq('0');
                 })
@@ -225,10 +226,8 @@ export default {
             if (this.ctaIsLoading)
                 return 'Loading...';
 
-            const walletBalanceBn = BigNumber.from(this.tlosBalance ?? '0');
-
             if (this.isLoggedIn) {
-                if (walletBalanceBn.lt(reservedForGasBn))
+                if (this.walletBalanceBn.lt(reservedForGasBn))
                     return 'Get more TLOS';
                 else
                     return 'Stake TLOS';
@@ -306,8 +305,8 @@ export default {
             const walletBalanceBn = BigNumber.from(this.tlosBalance ?? '0');
 
             if (walletBalanceBn.lt(reservedForGasBn)) {
-                // eztodo is there a better/more official way to add TLOS?
-                window.open('https://www.kucoin.com/trade/TLOS-USDT', '_blank');
+                window.open('https://telos.net', '_blank');
+                return;
             }
 
             this.displayConfirmModal = true;
