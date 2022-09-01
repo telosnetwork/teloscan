@@ -62,7 +62,7 @@
                 keep-alive
                 class="q-py-lg"
             >
-                <q-tab-panel style="height: max-content;" name="stake">
+                <q-tab-panel name="stake">
                     <div class="row">
                         <div
                             v-if="!stlosContractInstance"

@@ -37,6 +37,12 @@
                     <span class="text-primary">{{ unstakePeriodPretty }}</span>,
                     after which it can be withdrawn to your account from the Claim tab.
                 </p>
+                <p v-if="remainingDeposits < 10">
+                    Heads up, you may unstake <span class="text-primary">{{ remainingDeposits }}</span> more times before
+                    you reach the maximum concurrent unstake actions. When you reach the maximum, you will need to claim
+                    unlocked TLOS to continue unstaking. If you don't have any claimable TLOS at that time, you must
+                    wait until the lock duration has elapsed before you can claim unlocked TLOS and unstake more sTLOS.
+                </p>
                 Would you like to proceed?
             </q-card-section>
 
@@ -194,6 +200,9 @@ export default {
                 return 'Loading...';
 
             return this.isLoggedIn ? 'Unstake sTLOS' : 'Connect Wallet';
+        },
+        remainingDeposits() {
+            return (this.maxDeposits ?? 0) - this.deposits.length;
         },
     },
     async created() {
