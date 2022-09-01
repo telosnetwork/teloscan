@@ -1,9 +1,13 @@
 const routes = [
     {
-        path: '/',
+        path: '',
         component: () => import('layouts/MainLayout.vue'),
         children: [
-            { path: '', name: 'home', component: () => import('pages/Index.vue') },
+            {
+                path: '',
+                name: 'home',
+                component: () => import('pages/Index.vue'),
+            },
         ],
     },
     {
@@ -71,7 +75,7 @@ const routes = [
         },
     },
     {
-        path: '*',
+        path: '/(.*)*',
         component: () => import('pages/Error404.vue'),
     },
 ];
