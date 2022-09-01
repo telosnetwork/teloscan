@@ -12,7 +12,7 @@
             </div>
             <div class="row">
                 <div v-if="valueOfOneStlosInTlos !== null" class="col-12 q-mb-sm u-flex--right">
-                    <q-badge outline color="secondary" :label="`1.0 TLOS = ${valueOfOneStlosInTlos} sTLOS`" />
+                    <q-badge outline color="secondary" :label="`1 TLOS = ${valueOfOneStlosInTlos} sTLOS`" />
                 </div>
                 <div class="col-12">
                     <staking-form-input

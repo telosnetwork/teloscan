@@ -133,6 +133,7 @@
 
 <script>
 import { BigNumber, ethers } from 'ethers';
+import { formatBN, WEI_PRECISION } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 import MetaMaskLogo from 'src/assets/metamask-fox.svg'
 
@@ -281,7 +282,7 @@ export default {
 
             const conversionRatePromise = this.stlosContractInstance.previewDeposit(oneEth)
                 .then((stlosBn) => {
-                    this.valueOfOneStlosInTlos = ethers.utils.formatEther(stlosBn);
+                    this.valueOfOneStlosInTlos = formatBN(stlosBn, WEI_PRECISION, 3);
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch TLOS->sTLOS conversion rate: ${message}`);
