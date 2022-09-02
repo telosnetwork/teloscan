@@ -44,7 +44,6 @@ const MAINNET = {
     STLOS_ESCROW_CONTRACT_ADDRESS: '',
 };
 
-module.exports = {
-    TESTNET,
-    MAINNET,
-};
+const env = process.env.NETWORK === 'mainnet' ? MAINNET : TESTNET;
+
+module.exports = env;

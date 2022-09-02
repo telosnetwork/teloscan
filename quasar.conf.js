@@ -8,9 +8,7 @@
 /* eslint-env node */
 
 require('dotenv').config();
-const environment = require('./env');
-
-const isMainnet = process.env.NETWORK == 'mainnet';
+const env = require('./env');
 
 module.exports = function(/* ctx */) {
     return {
@@ -45,7 +43,7 @@ module.exports = function(/* ctx */) {
         // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
         build: {
             vueRouterMode: 'history', // available values: 'hash', 'history'
-            env: isMainnet ? environment.MAINNET : environment.TESTNET,
+            env,
 
             // transpile: false,
 
