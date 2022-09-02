@@ -33,7 +33,7 @@ export default {
             isVerified: null,
             contract: null,
             verificationDate: '',
-            tab: 'transactions',
+            tab: '#transactions',
             tokens: null,
             confirmationDialog: false,
         };
@@ -128,7 +128,7 @@ export default {
             .dataCardTile Balance
             .dataCardData {{balance}}
       q-tabs.tabs-header( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar topRounded text-white tableWrapper" :class='{"q-dark": $q.dark.isActive}' )
-        q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
+        q-route-tab(name="transactions" :to="{ hash: '#transactions' }" exact replace label="Transactions")
         q-route-tab(name="erc20transfers" :to="{ hash: '#erc20' }" exact replace label="ERC20 Transfers")
         q-route-tab(name="erc721transfers" :to="{ hash: '#erc721' }" exact replace label="ERC721 Transfers")
         q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace label="Tokens")

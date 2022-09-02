@@ -11,17 +11,12 @@ export default {
             required: true,
         },
     },
-    methods: {
-        goToAddress() {
-            this.$router.push(`/tx/${this.transactionHash}`);
-        },
-    },
 }
 </script>
 
 <template lang="pug">
 div.transaction-field-container
-    router-link(:to="`/tx/${this.transactionHash}`") {{ transactionHash.slice(0,20) }}...
+    router-link(:to="`/tx/${this.transactionHash}`" :key="$route.path" ) {{ transactionHash.slice(0,20) }}...
     CopyButton(
         :text="transactionHash"
         accompanying-text=""

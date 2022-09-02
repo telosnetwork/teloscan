@@ -196,8 +196,8 @@ q-table(
             q-td( key="method" :props="props")
                 method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shorten="true" )
             q-td( key="from" :props="props")
-                address-field( :address="props.row.from" )
+                address-field(v-if="props.row.from" :address="props.row.from" )
             q-td( key="to" :props="props")
-                address-field( :address="props.row.to" :is-contract-trx="props.row.input_data !== '0x'" )
+                address-field(v-if="props.row.to" :address="props.row.to" :is-contract-trx="props.row.input_data !== '0x'" )
             q-td( key="value" :props="props") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
 </template>

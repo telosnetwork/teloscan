@@ -11,7 +11,7 @@
                 This contract source has not been verified.
             </p>
             <p>
-                Click <router-link :to="{ name: 'sourcify' }">
+                Click <router-link :to="{ name: 'sourcify' }" :key="$route.path">
                     here
                 </router-link>
                 to upload source files and verify this contract.
