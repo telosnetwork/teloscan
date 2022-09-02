@@ -77,7 +77,6 @@ export default {
             this.trx = trxResponse.data.transactions[0];
             this.setErrorMessage();
             await this.loadContract();
-            // this.setTab();
         },
         async loadContract() {
             if (this.trx.input_data === '0x') return;
@@ -96,18 +95,6 @@ export default {
             );
             this.isContract = true;
         },
-        // setTab() {
-        //     debugger;
-        //     if (this.$route.hash === '#internal') {
-        //         this.tab = 'internal';
-        //     } else if (this.$route.hash === '#eventlog') {
-        //         this.tab = 'logs';
-        //     } else if (this.$route.hash === '#details') {
-        //         this.tab = 'details';
-        //     } else {
-        //         this.tab = 'general';
-        //     }
-        // },
         setErrorMessage() {
             if (this.trx.status !== 0)
                 return;
