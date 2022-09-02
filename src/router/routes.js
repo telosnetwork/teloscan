@@ -64,7 +64,7 @@ const routes = [
         },
     },
     {
-        path: '/(.*)*',
+        path: '/:catchAll(.*)*',
         component: () => import('pages/Error404.vue'),
     },
 ];

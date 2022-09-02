@@ -27,7 +27,7 @@ export default {
             trxNotFound: false,
             errorMessage: null,
             trx: null,
-            tab: 'general',
+            tab: '#general',
             isContract: false,
             contract: null,
             parsedTransaction: null,
@@ -58,7 +58,7 @@ export default {
         resetTransaction() {
             this.blockData = null;
             this.trx = null;
-            this.tab = 'general';
+            this.tab = '#general';
             this.isContract = false;
             this.contract = null;
             this.parsedTransaction = null;
@@ -77,7 +77,7 @@ export default {
             this.trx = trxResponse.data.transactions[0];
             this.setErrorMessage();
             await this.loadContract();
-            this.setTab();
+            // this.setTab();
         },
         async loadContract() {
             if (this.trx.input_data === '0x') return;
@@ -96,17 +96,18 @@ export default {
             );
             this.isContract = true;
         },
-        setTab() {
-            if (this.$route.hash === 'internal') {
-                this.tab = 'internal';
-            } else if (this.$route.hash === 'eventlog') {
-                this.tab = 'logs';
-            } else if (this.$route.hash === 'details') {
-                this.tab = 'details';
-            } else {
-                this.tab = 'general';
-            }
-        },
+        // setTab() {
+        //     debugger;
+        //     if (this.$route.hash === '#internal') {
+        //         this.tab = 'internal';
+        //     } else if (this.$route.hash === '#eventlog') {
+        //         this.tab = 'logs';
+        //     } else if (this.$route.hash === '#details') {
+        //         this.tab = 'details';
+        //     } else {
+        //         this.tab = 'general';
+        //     }
+        // },
         setErrorMessage() {
             if (this.trx.status !== 0)
                 return;
@@ -173,28 +174,28 @@ export default {
           )
             q-route-tab.topLeftRounded(
               name="general"
-              :to="{ hash: '' }"
+              :to="{ hash: '#general' }"
               exact
               replace
               label="General"
             )
             q-route-tab(
               name="details"
-              :to="{ hash: 'details' }"
+              :to="{ hash: '#details' }"
               exact
               replace
               label="Details"
             )
             q-route-tab(
               name="logs"
-              :to="{ hash: 'eventlog' }"
+              :to="{ hash: '#eventlog' }"
               exact
               replace
               label="Logs"
             )
             q-route-tab.topRightRounded(
               name="internal"
-              :to="{ hash: 'internal' }"
+              :to="{ hash: '#internal' }"
               exact
               replace
               label="Internal Txns"
