@@ -13,8 +13,6 @@
             <staking-stats
                 v-if="stlosContractInstance"
                 :stlos-contract-instance="stlosContractInstance"
-                :stlos-apy="stlosApy"
-                :stlos-tvl="stlosTvl"
                 :stlos-balance="stlosBalance"
                 :stlos-value="stlosValue"
                 :total-unstaked-tlos-balance="totalUnstakedTlosBalance"
@@ -170,8 +168,6 @@ export default {
         tlosBalance: null,
         stlosBalance: null,
         stlosValue: null,
-        stlosTvl: null,
-        stlosApy: null,
         totalUnstakedTlosBalance: null,
         unlockedTlosBalance: null,
         unstakePeriodSeconds: null,

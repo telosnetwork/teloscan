@@ -30,7 +30,7 @@ module.exports = {
         'comma-dangle': ['error', 'always-multiline'],
         'indent': ['error', 4],
         'quotes': ['error', 'single'],
-        'vue/html-indent': ['warn', 4, { 'baseIndent': 0 }], // eztodo switch to error (after pug removal?)
+        'vue/html-indent': ['warn', 4, { 'baseIndent': 0 }],
         'vue/max-attributes-per-line': ['warn', {
             'singleline': {
                 'max': 3,
