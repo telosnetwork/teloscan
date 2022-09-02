@@ -38,9 +38,6 @@ export default {
     },
     methods: {
         ...mapActions('evm', ['getContract']),
-        goToAddress() {
-            this.$router.push(`/address/${this.address}`);
-        },
         getDisplay() {
             if (this.name) {
                 return this.name;
@@ -49,7 +46,6 @@ export default {
             if (this.contract) {
                 return `${this.contract.getName()}`;
             }
-
             // This formats the address for us and handles zero padding we get from log events
             const address = ethers.utils.getAddress(this.address);
             return this.truncate > 0 ? `${address.slice(0, this.truncate)}...` : address;
@@ -77,8 +73,7 @@ export default {
 div.inline-div
     q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs")
       q-tooltip Contract
-    //- router-link(:to="`/address/${this.address}`") {{ getDisplay() }}
-    a(:href="`/address/${this.address}`") {{ getDisplay() }}
+    router-link( :to="`/address/${this.address}`") {{ getDisplay() }}
 </template>
 
 <style lang='sass' scoped>
