@@ -12,7 +12,7 @@ const sharedEnv = {
 
 const TESTNET = {
     ...sharedEnv,
-    APP_NAME: 'Teloscan (test net)',
+    APP_NAME: 'Teloscan (testnet)',
     NETWORK_HOST: 'testnet.telos.net',
     NETWORK_CHAIN_ID:
       '1eaa0824707c8c16bd25145493bf062aecddfeb56c736f6ba6397f3195f33c9f',
