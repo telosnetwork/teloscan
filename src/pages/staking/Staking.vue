@@ -32,21 +32,21 @@
             >
                 <q-route-tab
                     name="stake"
-                    to="#stake"
+                    :to="{ hash: '#stake'}"
                     exact
                     push
                     label="Stake"
                 />
                 <q-route-tab
                     name="unstake"
-                    to="#unstake"
+                    :to="{ hash: '#unstake'}"
                     exact
                     push
                     label="Unstake"
                 />
                 <q-route-tab
                     name="claim"
-                    to="#claim"
+                    :to="{ hash: '#claim'}"
                     exact
                     push
                     label="Claim"
@@ -140,12 +140,6 @@ import StakeForm from 'pages/staking/StakeForm';
 import StakingStats from 'pages/staking/StakingStats';
 import UnstakeForm from 'pages/staking/UnstakeForm';
 
-const tabs = {
-    stake: 'stake',
-    unstake: 'unstake',
-    claim: 'claim',
-}
-
 const oneEth = ethers.utils.parseEther('1').toString();
 
 export default {
@@ -157,9 +151,8 @@ export default {
         UnstakeForm,
     },
     data: () => ({
-        tabs,
         MetaMaskLogo,
-        selectedTab: tabs.stake,
+        selectedTab: '#stake',
         stlosContract: null,
         escrowContract: null,
         stlosContractInstance: null,
@@ -180,20 +173,6 @@ export default {
         },
     },
     watch: {
-        ['$route.hash']: {
-            immediate: true,
-            handler(newHash, oldHash) {
-                if (oldHash === newHash)
-                    return;
-
-                const hash = newHash?.replace('#', '') ?? '';
-                const tabNames = Object.values(this.tabs);
-                const shouldAddStakeHash = !tabNames.includes(hash);
-
-                if (shouldAddStakeHash)
-                    this.$router.replace({ hash: tabs.stake });
-            },
-        },
         address: {
             immediate: true,
             async handler(address, oldAddress) {

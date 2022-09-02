@@ -132,7 +132,7 @@ export default {
         q-route-tab(name="erc20transfers" :to="{ hash: '#erc20' }" exact replace label="ERC20 Transfers")
         q-route-tab(name="erc721transfers" :to="{ hash: '#erc721' }" exact replace label="ERC721 Transfers")
         q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace label="Tokens")
-        q-route-tab(v-if="isContract" name="contract" :to="{ hash: 'contract' }" exact replace label="Contract")
+        q-route-tab(v-if="isContract" name="contract" :to="{ hash: '#contract' }" exact replace label="Contract")
       .q-mb-md.tableWrapper
         q-tab-panels( v-model="tab" animated keep-alive class="shadow-2" )
           q-tab-panel( name="transactions" )
@@ -149,7 +149,7 @@ export default {
 </template>
 
 <style scoped lang="sass">
-.dataCardsContainer .dataCardItem       
+.dataCardsContainer .dataCardItem
   width: fit-content
   height: 5rem
 
