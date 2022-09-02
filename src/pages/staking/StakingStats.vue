@@ -114,22 +114,20 @@ export default {
     computed: {
         ...mapGetters('login', ['isLoggedIn']),
         globalStats() {
-            const exampleReturn = `1.${(this.stlosApy ?? '0').replace(/\./g, '')} TLOS`;
             return [{
                 label: 'APY',
                 value: this.stlosApy ?? '--',
                 unit: '%',
                 tooltip: 'APY: Annual Percentage Yield\n\nThe annual rate of return after taking compound interest into account.\n\n' +
-                    'If you choose to stake your TLOS, this represents the rate at which you\'ll earn interest. This interest is ' +
-                    'awarded in the form of TLOS when you unstake sTLOS, e.g.\nif you stake 1 TLOS and receive 1 sTLOS in return, ' +
-                    `then wait exactly one year and redeem that sTLOS, you will receive ${exampleReturn}\n\n` +
-                    'Rewards come from a community reserve and are distributed to those who stake their TLOS to sTLOS.',
+                    'Interest is compounded approximately every 30 minutes. The percentage rate is not fixed, meaning that ' +
+                    'it will change over time with the total amount of TLOS staked across Telos EVM and Native. ' +
+                    'Rewards are disbursed from a community rewards pool into the sTLOS contract.',
             }, {
                 label: 'TVL',
                 value: this.formatWeiForStats(this.stlosTvl),
                 unit: 'TLOS',
                 tooltip: 'TVL: Total Value Locked\n\nThe current value, in TLOS, of all assets held in the sTLOS ' +
-                    '(Staked TLOS) smart contract, i.e. the sum of all staked TLOS at this moment.',
+                    '(Staked TLOS) smart contract, i.e. the sum of all TLOS staked on the Telos EVM at this moment.',
             }];
         },
         personalStats() {

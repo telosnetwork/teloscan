@@ -6,7 +6,7 @@
                 Telos EVM Staking
             </h1>
             <span class="text-white">
-                Stake sTLOS and receive sTLOS from the shared REX/EVM pool
+                Stake TLOS for sTLOS to earn interest from the staking rewards pool
             </span>
         </div>
         <div class="col-xs-12 col-md-6">
@@ -201,9 +201,9 @@ export default {
                 return;
             }
 
-            const tlosPromise = this.$evm.telos.getEthAccount(this.address)
-                .then((account) => {
-                    this.tlosBalance = account.balance.toString();
+            const tlosPromise = this.$providerManager.getEthersProvider().getBalance(this.address)
+                .then((balanceBn) => {
+                    this.tlosBalance = balanceBn.toString();
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch account: ${message}`);
