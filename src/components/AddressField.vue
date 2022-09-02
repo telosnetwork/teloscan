@@ -7,7 +7,7 @@ export default {
     props: {
         address: {
             type: String,
-            default: '',
+            required: true,
         },
         name: {
             type: String,
@@ -46,14 +46,9 @@ export default {
             if (this.contract) {
                 return `${this.contract.getName()}`;
             }
-            debugger;
-            console.log(this.address);
             // This formats the address for us and handles zero padding we get from log events
-            if (this.address.length){
-                const address = ethers.utils.getAddress(this.address);
-                return this.truncate > 0 ? `${address.slice(0, this.truncate)}...` : address;
-            }
-            return ''
+            const address = ethers.utils.getAddress(this.address);
+            return this.truncate > 0 ? `${address.slice(0, this.truncate)}...` : address;
         },
         async loadContract() {
             this.contract = null;
@@ -78,8 +73,7 @@ export default {
 div.inline-div
     q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs")
       q-tooltip Contract
-    router-link(v-if="address" :to="`/address/${this.address}`") {{ getDisplay() }}
-    div(v-else) {{ getDisplay() }}
+    router-link( :to="`/address/${this.address}`") {{ getDisplay() }}
 </template>
 
 <style lang='sass' scoped>
