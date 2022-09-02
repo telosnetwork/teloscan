@@ -13,7 +13,7 @@ export default {
         },
         contract: {
             type: Object,
-            required: true,
+            default: null,
         },
         shorten: {
             type: Boolean,
@@ -43,6 +43,7 @@ export default {
 </script>
 
 <template lang="pug">
+div
   span(v-if="trx.parsedTransaction" )
     div() {{ trx.parsedTransaction.name.length > 8 && shorten ? `${trx.parsedTransaction.name.slice(0,8)}...` : trx.parsedTransaction.name  }}
     div() {{ transferAmount }}

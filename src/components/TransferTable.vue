@@ -182,12 +182,8 @@ export default {
                 ...newTransfers,
             );
 
-            this.setRows(page, rowsPerPage);
-            this.loading = false;
-        },
-        setRows() {
-            // TODO: do this differently?
             this.rows = this.transfers;
+            this.loading = false;
         },
         getIcon(row) {
             if (row.token && row.token.logoURI) {
@@ -215,15 +211,16 @@ export default {
 };
 </script>
 <template lang="pug">
-  q-table(
-    :data="rows"
+q-table(
+    :rows="rows"
+    :row-key='row => row.hash'
     :columns="columns"
-    :pagination.sync="pagination"
+    v-model:pagination="pagination"
     :loading="loading"
     @request="onRequest"
     :rows-per-page-options="[10, 20, 50]"
     flat
-  )
+)
     q-tr( slot="header" slot-scope="props", :props="props" )
       q-th(
         v-for="col in props.cols"
@@ -243,23 +240,23 @@ export default {
           q-icon(name="fas fa-info-circle")
             q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
 
-
-    q-tr( slot="body" slot-scope="props" :props="props" )
-      q-td( key="hash" )
-        transaction-field( :transaction-hash="props.row.hash" )
-      q-td( key="date" )
-        date-field( :epoch="props.row.epoch", :showAge="showAge" )
-      q-td( key="from" )
-        address-field( :address="props.row.from" )
-      q-td( key="to" )
-        address-field( :address="props.row.to" )
-      q-td( key="value" ) {{ props.row.valueDisplay }}
-      q-td( key="token" )
-        q-img.coin-icon( :src="getIcon(props.row)" )
-        address-field.token-name( :address="props.row.address" :name="props.row.name" )
+    template(v-slot:body="props")
+        q-tr( :props="props" )
+            q-td( key="hash" :props="props" )
+                transaction-field( :transaction-hash="props.row.hash" )
+            q-td( key="date" :props="props" )
+                date-field( :epoch="props.row.epoch", :showAge="showAge" )
+            q-td( key="from" :props="props" )
+                address-field( :address="props.row.from" )
+            q-td( key="to" :props="props" )
+                address-field( :address="props.row.to" )
+            q-td( key="value" :props="props" ) {{ props.row.valueDisplay }}
+            q-td( key="token" :props="props" )
+                q-img.coin-icon( :src="getIcon(props.row)" )
+                address-field.token-name( :address="props.row.address" :name="props.row.name" )
 </template>
 
-<style lang='sass'scoped>
+<style lang='sass' scoped>
 .coin-icon
   width: 20px
   margin-right: .25rem

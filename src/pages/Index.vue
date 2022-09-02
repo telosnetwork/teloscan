@@ -13,7 +13,7 @@ export default {
 </script>
 
 <template lang='pug'>
-  q-page.pageContainer
+q-page.pageContainer
     .row.justify-center.q-py-lg
       .text-h4.text-primary
         | Telos EVM Explorer

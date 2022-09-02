@@ -19,7 +19,7 @@ export default {
 </script>
 
 <template lang="pug">
-  pre
+pre
     //- div() {{ JSON.stringify(logs, null, 4) }}
     <json-viewer :value="logs" theme="jsonViewer" ></json-viewer>
 </template>

@@ -1,9 +1,13 @@
 const routes = [
     {
-        path: '/',
+        path: '',
         component: () => import('layouts/MainLayout.vue'),
         children: [
-            { path: '', name: 'home', component: () => import('pages/Index.vue') },
+            {
+                path: '',
+                name: 'home',
+                component: () => import('pages/Index.vue'),
+            },
         ],
     },
     {
@@ -12,7 +16,7 @@ const routes = [
         children: [
             { path: '',
                 name: 'address',
-                component: () => import('pages/Address.vue') },
+                component: () => import('pages/AccountAddress.vue') },
         ],
     },
     {
@@ -60,7 +64,7 @@ const routes = [
         },
     },
     {
-        path: '*',
+        path: '/(.*)*',
         component: () => import('pages/Error404.vue'),
     },
 ];
