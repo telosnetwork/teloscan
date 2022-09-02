@@ -4,7 +4,7 @@
         <div>
             <q-table
                 class="deposits-table"
-                :data="deposits"
+                :rows="deposits"
                 :columns="columns"
                 :loading="isLoading"
                 :hide-pagination="true"
@@ -12,8 +12,6 @@
                 flat
             >
                 <q-tr
-                    slot="header"
-                    slot-scope="props"
                     :props="props"
                     :no-hover="false"
                 >
@@ -43,8 +41,6 @@
                     </q-th>
                 </q-tr>
                 <q-tr
-                    slot="body"
-                    slot-scope="props"
                     :props="props"
                 >
                     <q-td key="amount" align="left" class="left-column">

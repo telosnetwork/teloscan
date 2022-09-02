@@ -9,11 +9,11 @@ module.exports = {
         'browser': true,
         'amd': true,
         'node': true,
-        'vue/setup-compiler-macros': true, // new!
+        'vue/setup-compiler-macros': true,
     },
     extends: [
         'eslint:recommended',
-        'plugin:vue/recommended',
+        'plugin:vue/vue3-essential',
     ],
     plugins: [
         'vue',

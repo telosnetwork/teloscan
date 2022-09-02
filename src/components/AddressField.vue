@@ -74,7 +74,7 @@ export default {
 </script>
 
 <template lang="pug">
-  div.inline-div
+div.inline-div
     q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs contract-icon")
       q-tooltip Contract
     //- router-link(:to="`/address/${this.address}`") {{ getDisplay() }}

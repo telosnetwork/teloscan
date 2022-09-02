@@ -57,7 +57,7 @@
             <q-item
                 v-close-popup
                 clickable
-                @click.native="routerTo('/endpoints')"
+                @click="routerTo('/endpoints')"
             >
                 <q-item-section>
                     <q-item-label>RPC Endpoints</q-item-label>
@@ -68,7 +68,7 @@
                 v-if="!mainnet"
                 v-close-popup
                 clickable
-                @click.native="goTo('https://teloscan.io/')"
+                @click="goTo('https://teloscan.io/')"
             >
                 <q-item-section>
                     <q-item-label> Teloscan Mainnet </q-item-label>
@@ -79,7 +79,7 @@
                 v-if="mainnet"
                 v-close-popup
                 clickable
-                @click.native="goTo('https://testnet.teloscan.io/')"
+                @click="goTo('https://testnet.teloscan.io/')"
             >
                 <q-item-section>
                     <q-item-label> Teloscan Testnet </q-item-label>
@@ -88,7 +88,7 @@
             <q-item
                 v-close-popup
                 clickable
-                @click.native="routerTo('/staking')"
+                @click="routerTo('/staking')"
             >
                 <q-item-section>
                     <q-item-label> Stake Telos </q-item-label>

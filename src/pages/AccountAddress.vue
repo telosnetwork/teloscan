@@ -106,7 +106,7 @@ export default {
 </script>
 
 <template lang="pug">
-  .pageContainer.q-pt-xl
+.pageContainer.q-pt-xl
     div
       .row(class="tableWrapper").justify-between.q-mb-lg
         div(class="homeInfo")
@@ -129,9 +129,9 @@ export default {
             .dataCardData {{balance}}
       q-tabs.tabs-header( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar topRounded text-white tableWrapper" :class='{"q-dark": $q.dark.isActive}' )
         q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
-        q-route-tab(name="erc20transfers" :to="{ hash: 'erc20' }" exact replace label="ERC20 Transfers")
-        q-route-tab(name="erc721transfers" :to="{ hash: 'erc721' }" exact replace label="ERC721 Transfers")
-        q-route-tab(name="tokens" :to="{ hash: 'tokens' }" exact replace label="Tokens")
+        q-route-tab(name="erc20transfers" :to="{ hash: '#erc20' }" exact replace label="ERC20 Transfers")
+        q-route-tab(name="erc721transfers" :to="{ hash: '#erc721' }" exact replace label="ERC721 Transfers")
+        q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace label="Tokens")
         q-route-tab(v-if="isContract" name="contract" :to="{ hash: 'contract' }" exact replace label="Contract")
       .q-mb-md.tableWrapper
         q-tab-panels( v-model="tab" animated keep-alive class="shadow-2" )
@@ -166,7 +166,7 @@ export default {
   background: white
   color: black !important
   &.q-dark
-    background: var(--q-color-dark)
+    background: $dark
     color: white !important
 
 .text-primary
