@@ -8,7 +8,6 @@
                 :columns="columns"
                 :loading="isLoading"
                 :hide-pagination="true"
-                :rows-per-page-options="[0]"
                 flat
             >
                 <q-tr
@@ -40,16 +39,19 @@
                         </template>
                     </q-th>
                 </q-tr>
-                <q-tr
-                    :props="props"
-                >
-                    <q-td key="amount" align="left" class="left-column">
-                        {{ formatAmount(props.row.amount) }}
-                    </q-td>
-                    <q-td key="until" align="right">
-                        <date-field :epoch="(props.row.until).toNumber()" :show-age="showAge" />
-                    </q-td>
-                </q-tr>
+                <template v-slot:body="props">
+
+                    <q-tr
+                        :props="props"
+                    >
+                        <q-td key="amount" align="left" class="left-column">
+                            {{ formatAmount(props.row.amount) }}
+                        </q-td>
+                        <q-td key="until" align="right">
+                            <date-field :epoch="(props.row.until).toNumber()" :show-age="showAge" />
+                        </q-td>
+                    </q-tr>
+                </template>
             </q-table>
         </div>
         <div v-show="isLoggedIn" class="escrow-stat-container">
