@@ -134,7 +134,10 @@ export default {
             const provider = this.getInjectedProvider();
             let checkProvider = new ethers.providers.Web3Provider(provider);
 
-            checkProvider = await this.ensureCorrectChain(checkProvider);
+            const newProviderInstance = await this.ensureCorrectChain(checkProvider);
+            if(newProviderInstance){
+                checkProvider = newProviderInstance;
+            }
             const accounts = await checkProvider.listAccounts();
             if (accounts.length > 0) {
                 checkProvider = await this.ensureCorrectChain(checkProvider);
