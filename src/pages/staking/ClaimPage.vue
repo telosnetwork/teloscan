@@ -150,6 +150,7 @@ export default {
     },
     methods: {
         claimUnlocked() {
+            debugger;
             this.escrowContractInstance.withdraw()
                 .then((result) => {
                     this.resultHash = result.hash;

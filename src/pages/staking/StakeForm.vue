@@ -20,7 +20,7 @@
                     flat
                     color="black"
                     label="Claim TLOS"
-                    @click="$router.push({ hash: 'claim' })"
+                    @click="$router.push({ hash: '#claim' })"
                 />
             </template>
         </q-banner>
