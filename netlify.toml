@@ -1,6 +1,5 @@
 [build]
   publish = "dist/spa"
-  command = "quasar build"
 
 [context.environment]
   NODE_VERSION = "14"
