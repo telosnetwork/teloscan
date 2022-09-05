@@ -107,7 +107,7 @@ export default {
         },
         deposits: {
             type: Array,
-            default: ()=>{ return [] },
+            default: () => [],
         },
         valueOfOneStlosInTlos: {
             type: String,

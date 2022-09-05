@@ -135,10 +135,10 @@ export default {
     computed: {
         ...mapGetters('login', ['isLoggedIn']),
         claimDisabled(){
-            return this.unlockedTlosBalance === '0' || this.isLoading;
+            return this.unlockedTlosBalance === '0' || this.isLoading || !this.isLoggedIn;
         },
         isLoading(){
-            return (this.isLoggedIn && this.unlockedTlosBalance === null) || !this.isLoggedIn;
+            return this.isLoggedIn && this.unlockedTlosBalance === null;
         },
         unstakingBalance(){
             const total = BigNumber.from(this.totalUnstaked ?? '0').sub(this.unlockedTlosBalance ?? '0');
