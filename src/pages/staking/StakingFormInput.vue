@@ -106,6 +106,7 @@ export default {
             validator: str => BigNumber.from(str),
         },
     },
+    emits: ['input'],
     watch: {
         value(newVal) {
             const newValWeiBn = BigNumber.from(newVal || zero);

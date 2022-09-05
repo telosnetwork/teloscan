@@ -146,6 +146,7 @@ export default {
             default: null,
         },
     },
+    emits: ['balance-changed'],
     data: () => ({
         MetaMaskLogo,
         displayConfirmModal: false,

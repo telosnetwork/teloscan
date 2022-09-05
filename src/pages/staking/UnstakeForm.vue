@@ -114,6 +114,7 @@ export default {
             default: null,
         },
     },
+    emits: ['balance-changed'],
     data: () => ({
         displayConfirmModal: false,
         resultHash: null,

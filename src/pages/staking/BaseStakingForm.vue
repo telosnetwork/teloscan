@@ -138,6 +138,11 @@ export default {
             default: null,
         },
     },
+    emits: [
+        'input-top',
+        'input-bottom',
+        'cta-clicked',
+    ],
     data: () => ({
         unstakePeriod: '',
         stlosContract: null,

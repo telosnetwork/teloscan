@@ -127,24 +127,23 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue'
+import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { formatBN, WEI_PRECISION } from 'src/lib/utils';
-import { mapGetters } from 'vuex';
 
-import ClaimPage from 'pages/staking/ClaimPage.vue';
 import StakeForm from 'pages/staking/StakeForm';
 import StakingStats from 'pages/staking/StakingStats';
-import UnstakeForm from 'pages/staking/UnstakeForm';
 
 const oneEth = ethers.utils.parseEther('1').toString();
 
 export default {
     name: 'StakingPage',
     components: {
-        ClaimPage,
+        ClaimPage: defineAsyncComponent(() => import('pages/staking/ClaimPage.vue')),
         StakeForm,
         StakingStats,
-        UnstakeForm,
+        UnstakeForm: defineAsyncComponent(() => import('pages/staking/UnstakeForm')),
     },
     data: () => ({
         selectedTab: '#stake',

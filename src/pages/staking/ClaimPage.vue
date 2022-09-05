@@ -112,6 +112,7 @@ export default {
             required: true,
         },
     },
+    emits: ['balance-changed'],
     data: () => ({
         resultHash: null,
         columns: [
