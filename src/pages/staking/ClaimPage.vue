@@ -30,7 +30,7 @@
                                 @click="showAge=!showAge"
                             >
                                 <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
-                                    click to change time format
+                                    Click to change time format
                                 </q-tooltip>
                             </q-icon>
                         </template>
@@ -81,13 +81,12 @@
 </template>
 
 <script>
-import { BigNumber } from 'ethers';
-import { mapGetters } from 'vuex';
-
-import { formatBN, WEI_PRECISION } from 'src/lib/utils';
-
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
+import { BigNumber } from 'ethers';
+
+import { formatBN, WEI_PRECISION } from 'src/lib/utils';
+import { mapGetters } from 'vuex';
 
 export default {
     name: 'ClaimForm',
@@ -138,11 +137,11 @@ export default {
             return this.unlockedTlosBalance === '0' || this.isLoading;
         },
         isLoading(){
-            const loading = (this.isLoggedIn && this.unlockedTlosBalance === null) || !this.isLoggedIn;
-            return loading;
+            return (this.isLoggedIn && this.unlockedTlosBalance === null) || !this.isLoggedIn;
         },
         unstakingBalance(){
-            return this.formatAmount(BigNumber.from(this.totalUnstaked ?? '0').sub(this.unlockedTlosBalance ?? '0'));
+            const total = BigNumber.from(this.totalUnstaked ?? '0').sub(this.unlockedTlosBalance ?? '0');
+            return this.formatAmount(total);
         },
         unlockedBalance(){
             return this.formatAmount(this.unlockedTlosBalance);
@@ -150,7 +149,7 @@ export default {
     },
     methods: {
         claimUnlocked() {
-            this.escrowContractInstance.withdraw()
+            return this.escrowContractInstance.withdraw()
                 .then((result) => {
                     this.resultHash = result.hash;
                     this.$emit('balance-changed');
@@ -164,14 +163,13 @@ export default {
             if (val === null)
                 return '0.0'
 
-
             return formatBN(val, WEI_PRECISION, 2);
         },
     },
 }
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
 .deposits-container
     margin: auto
 

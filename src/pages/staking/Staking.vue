@@ -62,10 +62,7 @@
             >
                 <q-tab-panel name="stake">
                     <div class="row">
-                        <div
-                            v-if="!stlosContractInstance"
-                            class="col-12 u-flex--center"
-                        >
+                        <div v-if="!stlosContractInstance" class="col-12 u-flex--center">
                             <q-spinner />
                         </div>
                         <div v-else class="col-12">
@@ -133,7 +130,6 @@
 import { BigNumber, ethers } from 'ethers';
 import { formatBN, WEI_PRECISION } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
-import MetaMaskLogo from 'src/assets/metamask-fox.svg'
 
 import ClaimPage from 'pages/staking/ClaimPage.vue';
 import StakeForm from 'pages/staking/StakeForm';
@@ -151,7 +147,6 @@ export default {
         UnstakeForm,
     },
     data: () => ({
-        MetaMaskLogo,
         selectedTab: '#stake',
         stlosContract: null,
         escrowContract: null,

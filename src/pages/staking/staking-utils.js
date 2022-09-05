@@ -6,20 +6,43 @@ import { WEI_PRECISION } from 'src/lib/utils';
 const DAY_SECONDS = 86400;
 const HOUR_SECONDS = 3600;
 
-
+/**
+ * Translates a number of seconds to a plain-english string, eg. 90 => "1.5 minutes"
+ *
+ * @param {number} seconds
+ * @returns {string} plain english time period
+ */
 export function formatUnstakePeriod(seconds) {
     if (seconds === null)
         return '--';
 
+    let quantity;
+    let unit;
+
     if (seconds < HOUR_SECONDS) {
-        return `${seconds / 60} minutes`;
+        quantity = seconds / 60;
+        unit = 'minutes';
     } else if (seconds < DAY_SECONDS) {
-        return `${seconds / HOUR_SECONDS} hours`;
+        quantity = seconds / HOUR_SECONDS;
+        unit = 'hours';
     } else {
-        return `${seconds / DAY_SECONDS} days`;
+        quantity = seconds / DAY_SECONDS;
+        unit = 'days';
     }
+
+    if (!Number.isInteger(quantity))
+        quantity = quantity.toFixed(1);
+
+    return `${quantity} ${unit}`;
 }
 
+/**
+ * Calculates and returns the current APY (annual percentage yield) for sTLOS
+ *
+ * @param   {object} $api     - instance of Telos API, given in a component by this.$store.$api
+ * @param   {string} tvl      - total volume locked in wei, as a string
+ * @returns {Promise<string>} - calculated APY as a unitless number, eg. "33.25"
+ */
 export async function fetchStlosApy($api, tvl) {
     const tvlBn = BigNumber.from(tvl);
 
@@ -88,6 +111,13 @@ export async function fetchStlosApy($api, tvl) {
     return apy;
 }
 
+
+/**
+ * Launches a prompt in MetaMask to add sTLOS as a tracked token, allowing the user to view their sTLOS balance
+ * at a glance from MetaMask
+ *
+ * @returns {Promise<boolean>} - true iff the user granted the request to track sTLOS
+ */
 export async function promptAddToMetamask() {
     return window.ethereum.request({
         method: 'wallet_watchAsset',

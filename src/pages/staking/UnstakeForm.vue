@@ -129,22 +129,19 @@ export default {
         ctaIsLoading: false,
         debouncedTopInputHandler: null,
         debouncedBottomInputHandler: null,
-        columns: [
-            {
-                name: 'amount',
-                label: 'Amount',
-                align: 'left',
-                field: 'amount',
-                format: (val) => { return ethers.utils.formatEther(val.toString());},
-            },
-            {
-                name: 'time',
-                label: 'Time Remaining',
-                align: 'left',
-                field: 'until',
-                format: (val) => { return val.toString();},
-            },
-        ],
+        columns: [{
+            name: 'amount',
+            label: 'Amount',
+            align: 'left',
+            field: 'amount',
+            format: val => ethers.utils.formatEther(val.toString()),
+        }, {
+            name: 'time',
+            label: 'Time Remaining',
+            align: 'left',
+            field: 'until',
+            format: val => val.toString(),
+        }],
         loading: false,
         maxDeposits: null,
     }),
@@ -209,7 +206,13 @@ export default {
         },
     },
     async created() {
-        this.maxDeposits = (await this.escrowContractInstance.maxDeposits()).toNumber();
+        try {
+            this.maxDeposits = (await this.escrowContractInstance.maxDeposits()).toNumber();
+        } catch (error) {
+            console.error(`Failed to fetch max deposits from escrow contract: ${error}`);
+            this.maxDeposits = null;
+        }
+
         const debounceWaitMs = 250;
 
         this.debouncedTopInputHandler = debounce(
@@ -250,7 +253,8 @@ export default {
         notifyMaxDeposits(){
             this.$q.notify({
                 position: 'top',
-                message: 'You have reached the maximum number of pending unstake transactions, please claim available TLOS or wait for pending unstaked TLOS to become claimable before making another deposit.',
+                message: 'You have reached the maximum number of pending unstake transactions, please claim available' +
+                    ' TLOS or wait for pending unstaked TLOS to become claimable before making another deposit.',
                 timeout: 6000,
             });
         },

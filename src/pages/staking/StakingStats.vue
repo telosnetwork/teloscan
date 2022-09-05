@@ -27,7 +27,7 @@
     </div>
 
     <q-card class="c-staking-stats__stats-container c-staking-stats__stats-container--personal">
-        <div class="c-staking-stats__stat c-staking-stats__stat--personal">
+        <div class="c-staking-stats__stat">
             <div class="c-staking-stats__stat-label">
                 {{ personalStats.staked.label }}
                 <q-icon name="fas fa-info-circle" />
@@ -53,7 +53,7 @@
                 <span class="u-text--pre">{{ personalStats.staked.tooltip }}</span>
             </q-tooltip>
         </div>
-        <div class="c-staking-stats__stat c-staking-stats__stat--personal">
+        <div class="c-staking-stats__stat">
             <div class="c-staking-stats__stat-label">
                 {{ personalStats.unstaked.label }}
                 <q-icon name="fas fa-info-circle" />
@@ -279,10 +279,6 @@ export default {
                 background-color: #8591FD;
             }
         }
-
-        &--personal {
-            // text-align: center;
-        }
     }
 
     &__stat-label {
@@ -306,8 +302,6 @@ export default {
         font-size: 10px;
         color: $secondary;
         transform: translateX(-2px);
-
-
         vertical-align: super;
 
         &--personal {

@@ -100,7 +100,7 @@ export default {
             type: Boolean,
             required: true,
         },
-        maxValueWei: {
+        maxValue: {
             type: String,
             default: null,
             validator: str => BigNumber.from(str),
@@ -120,13 +120,13 @@ export default {
                 this.handleInput();
             }
         },
-        maxValueWei() {
+        maxValue() {
             this.handleInput();
         },
     },
     methods: {
         handleInfoClick() {
-            this.$emit('input', this.maxValueWei);
+            this.$emit('input', this.maxValue);
         },
         handleKeydown(event) {
             const { input } = this.$refs;
@@ -233,8 +233,8 @@ export default {
             let workingValue = input.value.replace(notIntegerOrDotRegex, '') ?? '';
             let workingValueAsWeiBn = parseUnits(workingValue, 'ether');
 
-            if (!!this.maxValueWei && workingValueAsWeiBn.gt(this.maxValueWei)) {
-                workingValue = formatEther(this.maxValueWei);
+            if (!!this.maxValue && workingValueAsWeiBn.gt(this.maxValue)) {
+                workingValue = formatEther(this.maxValue);
                 workingValueAsWeiBn = parseUnits(workingValue, 'ether');
                 caretPosition = workingValue.length;
                 this.triggerWiggle();

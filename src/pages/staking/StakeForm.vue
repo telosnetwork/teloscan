@@ -107,12 +107,14 @@
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { debounce } from 'lodash';
+import MetaMaskLogo from 'src/assets/metamask-fox.svg'
+
 import { formatUnstakePeriod, promptAddToMetamask } from 'pages/staking/staking-utils';
+import { WEI_PRECISION } from 'src/lib/utils';
+
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import TransactionField from 'components/TransactionField';
 import { triggerLogin } from 'components/ConnectButton';
-import { WEI_PRECISION } from 'src/lib/utils';
-import MetaMaskLogo from 'src/assets/metamask-fox.svg'
 
 const reservedForGasBn = BigNumber.from('10').pow(WEI_PRECISION);
 

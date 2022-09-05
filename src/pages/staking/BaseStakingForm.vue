@@ -152,12 +152,12 @@ export default {
                 infoText:    this.topInputInfoText,
                 errorText:   this.topInputErrorText,
                 tooltip:     this.topInputTooltip,
-                maxValueWei: this.topInputMaxValue ?? genericMaxWei,
+                maxValue: this.topInputMaxValue ?? genericMaxWei,
                 isLoading:   this.topInputIsLoading,
             }, {
                 label:       this.bottomInputLabel,
                 errorText:   '',
-                maxValueWei: this.bottomInputMaxValue,
+                maxValue: this.bottomInputMaxValue,
                 isLoading:   this.bottomInputIsLoading,
             }];
         },
