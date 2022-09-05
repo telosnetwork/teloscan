@@ -182,8 +182,8 @@ q-table(
         template(
             v-if="col.name==='method'"
         )
-            q-icon(name="fas fa-info-circle")
-            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
+        q-icon(name="fas fa-info-circle").info-icon
+          q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
 
     template(v-slot:body="props")
         q-tr( :props="props" )

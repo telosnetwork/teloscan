@@ -14,9 +14,11 @@ const routes = [
         path: '/address/:address',
         component: () => import('layouts/MainLayout.vue'),
         children: [
-            { path: '',
+            {
+                path: '',
                 name: 'address',
-                component: () => import('pages/AccountAddress.vue') },
+                component: () => import('pages/AccountAddress.vue'),
+            },
         ],
     },
     {
@@ -50,6 +52,15 @@ const routes = [
                 component: () => import('pages/ContractVerification.vue'),
             },
         ],
+    },
+    {
+        path: '/staking',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            name: 'staking',
+            component: () => import('pages/staking/Staking.vue'),
+        }],
     },
     {
         path: '/endpoints',

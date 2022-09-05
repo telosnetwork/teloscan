@@ -71,7 +71,7 @@ export default {
 
 <template lang="pug">
 div.inline-div
-    q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs")
+    q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs contract-icon")
       q-tooltip Contract
     router-link( :to="`/address/${this.address}`") {{ getDisplay() }}
 </template>
@@ -79,4 +79,7 @@ div.inline-div
 <style lang='sass' scoped>
 .inline-div
   display: inline
+
+.contract-icon
+    padding-bottom: 6px
 </style>
