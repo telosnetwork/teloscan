@@ -4,6 +4,7 @@ import ContractManager from 'src/lib/ContractManager';
 import fetch from 'node-fetch';
 import axios from 'axios';
 import { ethers } from 'ethers';
+import { markRaw } from 'vue';
 
 const evm = new TelosEvmApi({
     endpoint: process.env.NETWORK_EVM_ENDPOINT,
@@ -46,7 +47,7 @@ export default boot(({ app, store }) => {
     store.$providerManager = app.config.globalProperties.$providerManager = new ProviderManager();
     store.$evm = app.config.globalProperties.$evm = evm;
     store.$evmEndpoint = app.config.globalProperties.$evmEndpoint = hyperion;
-    store.$contractManager = app.config.globalProperties.$contractManager = contractManager;
+    store.$contractManager = app.config.globalProperties.$contractManager = markRaw(contractManager);
 });
 
 export { evm };
