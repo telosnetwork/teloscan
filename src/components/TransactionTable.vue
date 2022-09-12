@@ -65,7 +65,7 @@ export default {
         },
         initialPageSize: {
             type: Number,
-            required: true,
+            default: 1,
         },
     },
     data() {
@@ -96,8 +96,8 @@ export default {
             this.loading = true;
 
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
-
             let result = await this.$evmEndpoint.get(this.getPath(props));
+
             if (this.total == null)
                 this.pagination.rowsNumber = result.data.total.value;
 
@@ -131,7 +131,7 @@ export default {
                     transaction.logs.forEach(log => {
                         log.topics.forEach(async  topic =>  {
                             let signature = topic.substring(0, 10)
-                            if(signature === TRANSFER_SIGNATURE){
+                            if (signature === TRANSFER_SIGNATURE) {
                                 if(transaction.contract && transaction.contract.token){
                                     transaction.transfers.push({'value': `${formatBN(transaction.parsedTransaction.args['amount'], transaction.contract.token.decimals, 5)}`, 'symbol': transaction.contract.token.symbol})
                                 }
@@ -145,12 +145,8 @@ export default {
                     );
                 }
             }
-            this.setRows(page, rowsPerPage);
-            this.loading = false;
-        },
-        setRows() {
-            // TODO: do this differently?
             this.rows = this.transactions;
+            this.loading = false;
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
@@ -175,49 +171,46 @@ export default {
 
 <template lang="pug">
 q-table(
-  :data="rows"
-  :columns="columns"
-  :pagination.sync="pagination"
-  :loading="loading"
-  @request="onRequest"
-  :rows-per-page-options="[10, 20, 50]"
-  flat
+    :rows="rows"
+    :row-key='row => row.hash'
+    :columns="columns"
+    v-model:pagination="pagination"
+    :loading="loading"
+    @request="onRequest"
+    :rows-per-page-options="[10, 20, 50]"
+    flat
 )
-  q-tr( slot="header" slot-scope="props", :props="props" )
-    q-th(
-      v-for="col in props.cols"
-      :key="col.name"
-      :props="props"
-      @click="col.name==='date' ? showAge=!showAge : null"
-    )
-      template(
-        v-if="col.name==='date'"
-        class=""
-      )
-        q-tooltip(anchor="bottom middle" self="bottom middle") Click to change format
-      | {{ col.label }}
-      template(
-        v-if="col.name==='method'"
+    q-tr( slot="header" slot-scope="props" :props="props" )
+        q-th(
+            v-for="col in props.cols"
+            :key="col.name"
+            :props="props"
+            @click="col.name==='date' ? showAge=!showAge : null"
         )
-        q-icon(name="fas fa-info-circle", style="margin-top: -5px; margin-left: 3px;")
-          q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
+        template( v-if="col.name==='date'" )
+            q-tooltip(anchor="bottom middle" self="bottom middle") Click to change format
+        | {{ col.label }}
+        template( v-if="col.name === 'method'" )
+        q-icon(name="fas fa-info-circle", style="margin-top: -5px; margin-left: 3px;").info-icon
+            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
 
-  q-tr( slot="body" slot-scope="props" :props="props" )
-    q-td( key="hash" )
-      transaction-field( :transaction-hash="props.row.hash" )
-    q-td( key="block" )
-      block-field( :block="props.row.block" )
-    q-td( key="date" )
-      date-field( :epoch="props.row.epoch", :showAge="showAge" )
-    q-td( key="method" )
-      method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shorten="true" )
-    q-td( key="from" )
-      address-field( :address="props.row.from" )
-    q-td( key="to" )
-      address-field( :address="props.row.to" :is-contract-trx="props.row.input_data !== '0x'" )
-    q-td( key="value" )
-      span(v-if="props.row.value > 0 ||  props.row.transfers.length == 0") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
-      div(v-else)
-        span {{ props.row.transfers[0].value }} {{ props.row.transfers[0].symbol }}
-        small(v-if="props.row.transfers.length > 1") +{{ props.row.transfers.length - 1 }}
+    template(v-slot:body="props")
+        q-tr( :props="props" )
+            q-td( key="hash" :props="props" )
+                transaction-field( :transaction-hash="props.row.hash" )
+            q-td( key="block" :props="props")
+                block-field( :block="props.row.block" )
+            q-td( key="date" :props="props")
+                date-field( :epoch="props.row.epoch", :showAge="showAge" )
+            q-td( key="method" :props="props")
+                method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shorten="true" )
+            q-td( key="from" :props="props")
+                address-field(v-if="props.row.from" :address="props.row.from" )
+            q-td( key="to" :props="props")
+                address-field(v-if="props.row.to" :address="props.row.to" :is-contract-trx="props.row.input_data !== '0x'" )
+            q-td( key="value" :props="props")
+                span(v-if="props.row.value > 0 ||  props.row.transfers.length == 0") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
+                div(v-else)
+                    span {{ props.row.transfers[0].value }} {{ props.row.transfers[0].symbol }}
+                    small(v-if="props.row.transfers.length > 1") +{{ props.row.transfers.length - 1 }}
 </template>

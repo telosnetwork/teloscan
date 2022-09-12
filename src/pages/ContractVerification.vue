@@ -281,9 +281,9 @@ span
   margin-bottom: 2rem
 
 .q-textarea, .q-uploader
-  -webkit-border-radius: 12px
-  -moz-border-radius: 12px
-  border-radius: 12px
+  -webkit-border-radius: 6px
+  -moz-border-radius: 6px
+  border-radius: 6px
   margin-top: 10rem
 
 .q-toggle

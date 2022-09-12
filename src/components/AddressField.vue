@@ -44,9 +44,6 @@ export default {
     },
     methods: {
         ...mapActions('evm', ['getContract']),
-        goToAddress() {
-            this.$router.push(`/address/${this.address}`);
-        },
         async copyAddress(){
             copyToClipboard(this.address).then(() => {
                 Notify.create({
@@ -68,7 +65,6 @@ export default {
             if (this.contract) {
                 return `${this.contract.getName()}`;
             }
-
             // This formats the address for us and handles zero padding we get from log events
             const address = ethers.utils.getAddress(this.address);
             return this.truncate > 0 ? `${address.slice(0, this.truncate)}...` : address;
@@ -93,14 +89,20 @@ export default {
 </script>
 
 <template lang="pug">
-  div.inline-div
-    //- router-link(:to="`/address/${this.address}`") {{ getDisplay() }}
-    a(:href="`/address/${this.address}`") {{ getDisplay() }}
+div.inline-div
+    q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs contract-icon")
+      q-tooltip Contract
+    router-link( :to="`/address/${this.address}`") {{ getDisplay() }}
     q-icon(v-if="this.copy" class="far fa-copy" @click.stop="copyAddress")
-      q-tooltip Copy address
+        q-tooltip Copy address
 </template>
 
 <style lang='sass' scoped>
+.inline-div
+  display: inline
+
+.contract-icon
+    padding-bottom: 6px
     .inline-div
         display: inline
 

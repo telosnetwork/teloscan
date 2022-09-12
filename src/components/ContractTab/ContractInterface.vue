@@ -42,7 +42,7 @@ export default {
 </script>
 
 <template lang='pug'>
-  div
+div
     q-list.interface-list(v-if='write')
       q-expansion-item.interface-item( v-for="func in functions.write" :label="func.name" :key="func.name" )
         FunctionInterface.interface-input( :abi="func" :contract="contract" group="write" runLabel='Write')

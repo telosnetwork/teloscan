@@ -30,7 +30,7 @@ export default {
             trx: null,
             transfers: [],
             params: [],
-            tab: 'general',
+            tab: '#general',
             isContract: false,
             contract: null,
             parsedTransaction: null,
@@ -61,7 +61,7 @@ export default {
         resetTransaction() {
             this.blockData = null;
             this.trx = null;
-            this.tab = 'general';
+            this.tab = '#general';
             this.isContract = false;
             this.contract = null;
             this.parsedTransaction = null;
@@ -74,7 +74,7 @@ export default {
             const trxResponse = await this.$evmEndpoint.get(
                 `/v2/evm/get_transactions?hash=${this.hash}`,
             );
-            if (trxResponse.data.transactions.length == 0) {
+            if (trxResponse.data.transactions.length === 0) {
                 this.trxNotFound = true;
                 return;
             }
@@ -83,7 +83,6 @@ export default {
             this.transfers = [];
             await this.loadContract();
             await this.loadTransfers();
-            this.setTab();
             this.setErrorMessage();
         },
         async loadTransfers(){
@@ -117,17 +116,6 @@ export default {
             );
             this.isContract = true;
         },
-        setTab() {
-            if (this.$route.hash === 'internal') {
-                this.tab = 'internal';
-            } else if (this.$route.hash === 'eventlog') {
-                this.tab = 'logs';
-            } else if (this.$route.hash === 'details') {
-                this.tab = 'details';
-            } else {
-                this.tab = 'general';
-            }
-        },
         setErrorMessage() {
             if (this.trx.status !== 0)
                 return;
@@ -147,14 +135,12 @@ export default {
         },
         getLogs() {
             if (this.parsedLogs) {
-                const logsObj = this.parsedLogs.map(log => {
+                return this.parsedLogs.map(log => {
                     if (log.signature && log.args) {
                         return { name: log.signature, function_signature: log.topic.substr(0, 10), args: log.args, inputs: log.eventFragment.inputs, address: log.address  };
                     }
                     return log;
                 });
-
-                return logsObj;
             }
 
             return this.trx.logs;
@@ -173,241 +159,241 @@ export default {
 </script>
 
 <template lang='pug'>
-  .pageContainer.q-pt-xl
-    .row
-      .col-12.q-px-md
-        .text-h4.text-primary.q-mb-lg
-          | Transaction Details
-        .text-h6.q-mb-lg.text-white( v-if="trxNotFound" )
-          | Not found: {{ hash }}
-    .row.tableWrapper
-      .col-12.q-py-lg
-        .content-container( v-if="trx" )
-          q-tabs.text-white.topRounded(
-            v-model="tab"
-            dense
-            active-color="secondary"
-            align="justify"
-            :class="$q.dark.isActive ? 'q-dark' : 'q-light'"
+.pageContainer.q-pt-xl
+  .row
+    .col-12.q-px-md
+      .text-h4.text-primary.q-mb-lg
+        | Transaction Details
+      .text-h6.q-mb-lg.text-white( v-if="trxNotFound" )
+        | Not found: {{ hash }}
+  .row.tableWrapper
+    .col-12.q-py-lg
+      .content-container( v-if="trx" )
+        q-tabs.text-white.topRounded(
+          v-model="tab"
+          dense
+          active-color="secondary"
+          align="justify"
+          :class="$q.dark.isActive ? 'q-dark' : 'q-light'"
+        )
+          q-route-tab.topLeftRounded(
+            name="general"
+            :to="{ hash: '#general' }"
+            exact
+            replace
+            label="General"
           )
-            q-route-tab.topLeftRounded(
-              name="general"
-              :to="{ hash: '' }"
-              exact
-              replace
-              label="General"
-            )
-            q-route-tab(
-              name="details"
-              :to="{ hash: 'details' }"
-              exact
-              replace
-              label="Details"
-            )
-            q-route-tab(
-              name="logs"
-              :to="{ hash: 'eventlog' }"
-              exact
-              replace
-              label="Logs"
-            )
-            q-route-tab.topRightRounded(
-              name="internal"
-              :to="{ hash: 'internal' }"
-              exact
-              replace
-              label="Internal Txns"
-            )
-          q-tab-panels.column.shadow-2(
-            v-model="tab"
-            animated
-            keep-alive
+          q-route-tab(
+            name="details"
+            :to="{ hash: '#details' }"
+            exact
+            replace
+            label="Details"
           )
-            q-tab-panel( name="general" :key="isContract" )
-              br
-              br
-              div(class="fit row wrap justify-start items-start content-start")
+          q-route-tab(
+            name="logs"
+            :to="{ hash: '#eventlog' }"
+            exact
+            replace
+            label="Logs"
+          )
+          q-route-tab.topRightRounded(
+            name="internal"
+            :to="{ hash: '#internal' }"
+            exact
+            replace
+            label="Internal Txns"
+          )
+        q-tab-panels.column.shadow-2(
+          v-model="tab"
+          animated
+          keep-alive
+        )
+          q-tab-panel( name="general" :key="isContract" )
+            br
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+                div(class="col-3")
+                  strong.wrapStrong Transaction Hash:&nbsp;
+                div(class="col-9") {{ hash }}
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+                div(class="col-3")
+                  strong {{ `Block Number: ` }}
+                div(class="col-9")
+                  block-field( :block="trx.block" )
+            br
+            div( @click="showAge = !showAge" class="fit row wrap justify-start items-start content-start date")
+                div(class="col-3"  )
+                  strong {{ `Date: ` }}
+                div.col-9
+                  q-icon(class="far fa-clock q-pr-xs q-pb-xs")
+                  date-field( :epoch="trx.epoch" :show-age="showAge" style="cursor: pointer;" )
+                q-tooltip Click to change date format
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ `Status: ` }}
+              div(class="col-9" style="padding: 5px 0px;")
+                span(v-if="trx.status == 1", class="positive")
+                  q-icon(name='check')
+                  span {{ "Success" }}
+                span(v-else, class="negative")
+                  q-icon(name='warning')
+                  span {{ "Failure" }}
+            br
+            div( v-if="errorMessage", class="fit row wrap justify-start items-start content-start" )
+              div(class="col-3")
+                strong {{ `Error message: ` }}
+              div(class="col-9")
+                span.text-negative {{ errorMessage }}
+            br( v-if="errorMessage" )
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ `From: ` }}
+              div(class="col-9")
+                address-field(:address="trx.from" :truncate="0" copy)
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ `To: ` }}
+              div(class="col-9")
+                address-field( :address="trx.to" :is-contract-trx="!!contract"  :truncate="0" copy)
+            br
+            div( v-if="isContract", class="fit row wrap justify-start items-start content-start" )
+              div(class="col-3")
+                strong {{ `Contract function: ` }}
+              div(class="col-9")
+                MethodField( :contract="contract" :trx="methodTrx" )
+            br(v-if="isContract")
+            div( v-if="isContract && params.length > 0" class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ `Contract parameters: ` }}
+              div(class="col")
+                div(v-for="param in params" class="fit row wrap justify-start items-start content-start")
                   div(class="col-3")
-                    strong.wrapStrong Transaction Hash:&nbsp;
-                  div(class="col-9") {{ hash }}
-              br
-              div(class="fit row wrap justify-start items-start content-start")
-                  div(class="col-3")
-                    strong {{ `Block Number: ` }}
-                  div(class="col-9")
-                    block-field( :block="trx.block" )
-              br
-              div( @click="showAge = !showAge" class="fit row wrap justify-start items-start content-start date")
-                  div(class="col-3"  )
-                    strong {{ `Date: ` }}
-                  div.col-9
-                    q-icon(class="far fa-clock q-pr-xs q-pb-xs")
-                    date-field( :epoch="trx.epoch" :show-age="showAge" style="cursor: pointer;" )
-                  q-tooltip Click to change date format
-              br
-              div(class="fit row wrap justify-start items-start content-start")
-                div(class="col-3")
-                  strong {{ `Status: ` }}
-                div(class="col-9" style="padding: 5px 0px;")
-                  span(v-if="trx.status == 1", class="positive")
-                    q-icon(name='check')
-                    span {{ "Success" }}
-                  span(v-else, class="negative")
-                    q-icon(name='warning')
-                    span {{ "Failure" }}
-              br
-              div( v-if="errorMessage", class="fit row wrap justify-start items-start content-start" )
-                div(class="col-3")
-                  strong {{ `Error message: ` }}
-                div(class="col-9")
-                  span.text-negative {{ errorMessage }}
-              br( v-if="errorMessage" )
-              div(class="fit row wrap justify-start items-start content-start")
-                div(class="col-3")
-                  strong {{ `From: ` }}
-                div(class="col-9")
-                  address-field(:address="trx.from" :truncate="0" copy)
-              br
-              div(class="fit row wrap justify-start items-start content-start")
-                div(class="col-3")
-                  strong {{ `To: ` }}
-                div(class="col-9")
-                  address-field( :address="trx.to" :is-contract-trx="!!contract"  :truncate="0" copy)
-              br
-              div( v-if="isContract", class="fit row wrap justify-start items-start content-start" )
-                div(class="col-3")
-                  strong {{ `Contract function: ` }}
-                div(class="col-9")
-                  MethodField( :contract="contract" :trx="methodTrx" )
-              br(v-if="isContract")
-              div( v-if="isContract && params.length > 0" class="fit row wrap justify-start items-start content-start")
-                div(class="col-3")
-                  strong {{ `Contract parameters: ` }}
-                div(class="col")
-                  div(v-for="param in params" class="fit row wrap justify-start items-start content-start")
-                    div(class="col-3")
-                      q-icon(name="arrow_right" class="list-arrow")
-                      span(v-if="param.name") {{ param.name }} ({{param.type}}) :
-                      span(v-else) {{param.type}} :
-                    div(v-if="param.arrayChildren" class="col-9")
-                      div(v-for="(value, index) in param.value")
-                        div(v-if="param.arrayChildren === 'tuple'" :class="index != param.value.length - 1 ? 'q-mb-sm' : ''")
-                          strong Tuple {{ '#' + index}}
-                          div(v-for="(tuple, i) in value") {{ tuple}}
-                          br(v-if="index !== param.value.length - 1")
-                        div(v-else-if="param.arrayChildren === 'address'") <AddressField :address="value" copy :name="value === contract.address && contract.name ?  contract.name : null"   />
-                        div(v-else  ) {{ value }}
-                    div(v-else-if="param.type === 'address'" class="col-9") <AddressField :address="param.value" copy :name="param.value === contract.address && contract.name ?  contract.name : null"   />
-                    div(v-else  class="col-9") {{ param.value }}
-              br( v-if="isContract && params.length > 0" )
-              div( v-if="trx.createdaddr", class="fit row wrap justify-start items-start content-start" )
-                div(class="col-3")
-                  strong {{ `Deployed contract: ` }}
-                div(class="col-9")
-                  AddressField( :address="trx.createdaddr" )
-              br( v-if="trx.createdaddr" )
-              div(class="fit row wrap justify-start items-start content-start")
-                div(class="col-3")
-                  strong {{ `Value: ` }}
-                div(class="col-9") {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
-              br
-              div(v-if="transfers.length > 0" class="fit row wrap justify-start items-start content-start")
-                div(class="col-3")
-                  strong {{ `Tokens transferred: ` }}
-                div(class="col-9" id="transfers")
-                  div(v-for="transfer in transfers" class="fit row wrap justify-start items-start content-start")
-                    div(class="col-4")
-                      q-icon(name="arrow_right" class="list-arrow")
-                      strong {{ `From : ` }}
-                      <AddressField :address="transfer.from" :truncate="16" copy :name="transfer.from === contract.address && contract.name ?  contract.name : null" />
-                    div(class="col-4")
-                      strong {{ ` To : ` }}
-                      <AddressField :address="transfer.to" :truncate="16" copy :name="transfer.to === contract.address && contract.name ?  contract.name : null" />
-                    div(class="col-4")
-                      strong {{ ` Token : ` }}
-                      span {{ transfer.value }}
-                      a(:href="'/address/' + transfer.token.address" style="margin-left: 3px;") {{ transfer.token.symbol }}
-              br(v-if="transfers.length > 0")
-              div(class="fit row wrap justify-start items-start content-start")
-                div(class="col-3")
-                  strong {{ `Gas Price Charged: ` }}
-                span {{ getGasChargedGWEI() }} GWEI
-              br
-              div(class="fit row wrap justify-start items-start content-start")
-                div(class="col-3")
-                  strong {{ `Gas Fee: ` }}
-                span {{ getGasFee() }} TLOS
-              br
-              div(class="fit row wrap justify-start items-start content-start")
-                div(class="col-3")
-                  strong {{ `Gas Used: ` }}
-                div(class="col-9") {{ trx.gasused }}
-              br
-              div(class="fit row wrap justify-start items-start content-start")
-                div(class="col-3")
-                  strong {{ `Gas Limit: ` }}
-                div(class="col-9") {{ trx.gas_limit }}
-              br
-              div(class="fit row wrap justify-start items-start content-start")
-                div(class="col-3")
-                  strong {{ `Nonce: ` }}
-                div(class="col-9") {{ trx.nonce }}
-            q-tab-panel( name="details" )
-              div
-                div(class="col-3")
-                  strong {{ `Input: ` }}
-                div(class="col-9") {{ trx.input_data }}
-              br
-              div
-                div(class="col-3")
-                  strong {{ `Output: ` }}
-                div(class="col-9") {{ trx.output }}
-            q-tab-panel( name="logs" )
-              .jsonViewer
-                logs-viewer( :logs="getLogs()" :rawLogs="trx.logs" )
-            q-tab-panel( name="internal" )
-              InternalTxns( :itxs="trx.itxs" )
-    </template>
+                    q-icon(name="arrow_right" class="list-arrow")
+                    span(v-if="param.name") {{ param.name }} ({{param.type}}) :
+                    span(v-else) {{param.type}} :
+                  div(v-if="param.arrayChildren" class="col-9")
+                    div(v-for="(value, index) in param.value")
+                      div(v-if="param.arrayChildren === 'tuple'" :class="index != param.value.length - 1 ? 'q-mb-sm' : ''")
+                        strong Tuple {{ '#' + index}}
+                        div(v-for="(tuple, i) in value") {{ tuple}}
+                        br(v-if="index !== param.value.length - 1")
+                      div(v-else-if="param.arrayChildren === 'address'") <AddressField :address="value" copy :name="value === contract.address && contract.name ?  contract.name : null"   />
+                      div(v-else  ) {{ value }}
+                  div(v-else-if="param.type === 'address'" class="col-9") <AddressField :address="param.value" copy :name="param.value === contract.address && contract.name ?  contract.name : null"   />
+                  div(v-else  class="col-9") {{ param.value }}
+            br( v-if="isContract && params.length > 0" )
+            div( v-if="trx.createdaddr", class="fit row wrap justify-start items-start content-start" )
+              div(class="col-3")
+                strong {{ `Deployed contract: ` }}
+              div(class="col-9")
+                AddressField( :address="trx.createdaddr" )
+            br( v-if="trx.createdaddr" )
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ `Value: ` }}
+              div(class="col-9") {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
+            br
+            div(v-if="transfers.length > 0" class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ `Tokens transferred: ` }}
+              div(class="col-9" id="transfers")
+                div(v-for="transfer in transfers" class="fit row wrap justify-start items-start content-start")
+                  div(class="col-4")
+                    q-icon(name="arrow_right" class="list-arrow")
+                    strong {{ `From : ` }}
+                    <AddressField :address="transfer.from" :truncate="16" copy :name="transfer.from === contract.address && contract.name ?  contract.name : null" />
+                  div(class="col-4")
+                    strong {{ ` To : ` }}
+                    <AddressField :address="transfer.to" :truncate="16" copy :name="transfer.to === contract.address && contract.name ?  contract.name : null" />
+                  div(class="col-4")
+                    strong {{ ` Token : ` }}
+                    span {{ transfer.value }}
+                    a(:href="'/address/' + transfer.token.address" style="margin-left: 3px;") {{ transfer.token.symbol }}
+            br(v-if="transfers.length > 0")
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ `Gas Price Charged: ` }}
+              span {{ getGasChargedGWEI() }} GWEI
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ `Gas Fee: ` }}
+              span {{ getGasFee() }} TLOS
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ `Gas Used: ` }}
+              div(class="col-9") {{ trx.gasused }}
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ `Gas Limit: ` }}
+              div(class="col-9") {{ trx.gas_limit }}
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ `Nonce: ` }}
+              div(class="col-9") {{ trx.nonce }}
+          q-tab-panel( name="details" )
+            div
+              div(class="col-3")
+                strong {{ `Input: ` }}
+              div(class="col-9") {{ trx.input_data }}
+            br
+            div
+              div(class="col-3")
+                strong {{ `Output: ` }}
+              div(class="col-9") {{ trx.output }}
+          q-tab-panel( name="logs" )
+            .jsonViewer
+              logs-viewer( :logs="getLogs()" :rawLogs="trx.logs" )
+          q-tab-panel( name="internal" )
+            InternalTxns( :itxs="trx.itxs" )
+</template>
 
 <style lang="sass">
-    span
-        word-wrap: break-word
+span
+    word-wrap: break-word
 
-    .col-9 .positive .q-icon, .col-9 .negative .q-icon
-        margin-top: -5px
-        margin-right: 5px
+.col-9 .positive .q-icon, .col-9 .negative .q-icon
+    margin-top: -5px
+    margin-right: 5px
 
-    .date .col-9 > div
-        display: inline-block
+.date .col-9 > div
+    display: inline-block
 
-    .list-arrow
-        font-size: 1.8em
-        margin-top: -3px
-        margin-left: -8px
-        color: #666666
+.list-arrow
+    font-size: 1.8em
+    margin-top: -3px
+    margin-left: -8px
+    color: #666666
 
-    .col-9 .positive, .col-9 .negative
-        border: 1px solid
-        border-radius: 5px
-        padding: 5px 10px
+.col-9 .positive, .col-9 .negative
+    border: 1px solid
+    border-radius: 5px
+    padding: 5px 10px
 
-    .col-9 .jv-container .jv-code
-        padding: 0
+.col-9 .jv-container .jv-code
+    padding: 0
 
-    .col-9
-        overflow-wrap: break-word
+.col-9
+    overflow-wrap: break-word
 
-    .q-tabs__content
-        margin-bottom: -1px
+.q-tabs__content
+    margin-bottom: -1px
 
-    @media (max-width: $breakpoint-sm-max)
-        #transfers
-          .row
+@media (max-width: $breakpoint-sm-max)
+    #transfers
+        .row
             display: block
             margin-bottom: 10px
             .col-4
               display: block
               width: 100%
-          .list-arrow
+        .list-arrow
             display: none
 </style>

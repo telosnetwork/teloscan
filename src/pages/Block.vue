@@ -29,9 +29,9 @@ export default {
 </script>
 
 <template lang="pug">
-  .pageContainer.q-pt-xl
+.pageContainer.q-pt-xl
     div
-      .row.justify-between
+      .row.justify-between.q-mb-lg
         div
           .text-primary.text-h4
             div Block

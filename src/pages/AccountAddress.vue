@@ -12,7 +12,7 @@ import GenericContractInterface from 'components/ContractTab/GenericContractInte
 
 const web3 = new Web3();
 export default {
-    name: 'Address',
+    name: 'AccountAddress',
     components: {
         AddressField,
         ConfirmationDialog,
@@ -33,7 +33,7 @@ export default {
             isVerified: null,
             contract: null,
             verificationDate: '',
-            tab: 'transactions',
+            tab: '#transactions',
             tokens: null,
             confirmationDialog: false,
         };
@@ -106,9 +106,9 @@ export default {
 </script>
 
 <template lang="pug">
-  .pageContainer.q-pt-xl
+.pageContainer.q-pt-xl
     div
-      .row(class="tableWrapper").justify-between
+      .row(class="tableWrapper").justify-between.q-mb-lg
         div(class="homeInfo")
           .text-primary.text-h4.q-pr-xs {{ title }}
           q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
@@ -128,11 +128,11 @@ export default {
             .dataCardTile Balance
             .dataCardData {{balance}}
       q-tabs.tabs-header( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar topRounded text-white tableWrapper" :class='{"q-dark": $q.dark.isActive}' )
-        q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
-        q-route-tab(name="erc20transfers" :to="{ hash: 'erc20' }" exact replace label="ERC20 Transfers")
-        q-route-tab(name="erc721transfers" :to="{ hash: 'erc721' }" exact replace label="ERC721 Transfers")
-        q-route-tab(name="tokens" :to="{ hash: 'tokens' }" exact replace label="Tokens")
-        q-route-tab(v-if="isContract" name="contract" :to="{ hash: 'contract' }" exact replace label="Contract")
+        q-route-tab(name="transactions" :to="{ hash: '#transactions' }" exact replace label="Transactions")
+        q-route-tab(name="erc20transfers" :to="{ hash: '#erc20' }" exact replace label="ERC20 Transfers")
+        q-route-tab(name="erc721transfers" :to="{ hash: '#erc721' }" exact replace label="ERC721 Transfers")
+        q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace label="Tokens")
+        q-route-tab(v-if="isContract" name="contract" :to="{ hash: '#contract' }" exact replace label="Contract")
       .q-mb-md.tableWrapper
         q-tab-panels( v-model="tab" animated keep-alive class="shadow-2" )
           q-tab-panel( name="transactions" )
@@ -149,6 +149,10 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.dataCardsContainer .dataCardItem
+  width: fit-content
+  height: 5rem
+
 .q-tab-panel
   padding: 0
 
@@ -162,7 +166,7 @@ export default {
   background: white
   color: black !important
   &.q-dark
-    background: var(--q-color-dark)
+    background: $dark
     color: white !important
 
 .text-primary

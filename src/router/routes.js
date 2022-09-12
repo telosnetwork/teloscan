@@ -1,18 +1,24 @@
 const routes = [
     {
-        path: '/',
+        path: '',
         component: () => import('layouts/MainLayout.vue'),
         children: [
-            { path: '', name: 'home', component: () => import('pages/Index.vue') },
+            {
+                path: '',
+                name: 'home',
+                component: () => import('pages/Index.vue'),
+            },
         ],
     },
     {
         path: '/address/:address',
         component: () => import('layouts/MainLayout.vue'),
         children: [
-            { path: '',
+            {
+                path: '',
                 name: 'address',
-                component: () => import('pages/Address.vue') },
+                component: () => import('pages/AccountAddress.vue'),
+            },
         ],
     },
     {
@@ -48,6 +54,15 @@ const routes = [
         ],
     },
     {
+        path: '/staking',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            name: 'staking',
+            component: () => import('pages/staking/Staking.vue'),
+        }],
+    },
+    {
         path: '/endpoints',
         component: () => import('layouts/MainLayout.vue'),
         children: [{ path: '', component: () => import('pages/Endpoints.vue') }],
@@ -60,7 +75,7 @@ const routes = [
         },
     },
     {
-        path: '*',
+        path: '/:catchAll(.*)*',
         component: () => import('pages/Error404.vue'),
     },
 ];
