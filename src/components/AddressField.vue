@@ -1,11 +1,14 @@
 <script>
 import { mapActions } from 'vuex';
 import { ethers } from 'ethers';
-import { copyToClipboard, Notify } from 'quasar';
 
+import CopyButton from 'components/CopyButton';
 
 export default {
     name: 'AddressField',
+    components: {
+        CopyButton,
+    },
     props: {
         address: {
             type: String,
@@ -21,7 +24,6 @@ export default {
         },
         truncate: {
             type: Number,
-            required: false,
             default: 18,
         },
         isContractTrx: {
@@ -29,11 +31,9 @@ export default {
             default: false,
         },
     },
-    data() {
-        return {
-            contract: null,
-        }
-    },
+    data: () => ({
+        contract: null,
+    }),
     watch: {
         address () {
             this.loadContract();
@@ -44,19 +44,6 @@ export default {
     },
     methods: {
         ...mapActions('evm', ['getContract']),
-        async copyAddress(){
-            copyToClipboard(this.address).then(() => {
-                Notify.create({
-                    type: 'positive',
-                    message: 'Address copied !',
-                });
-            }).catch(() => {
-                Notify.create({
-                    type: 'negative',
-                    message: 'Address could not be copied on this device',
-                });
-            });
-        },
         getDisplay() {
             if (this.name) {
                 return this.name;
@@ -89,34 +76,17 @@ export default {
 </script>
 
 <template lang="pug">
-div.inline-div
-    q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs contract-icon")
-      q-tooltip Contract
-    router-link( :to="`/address/${this.address}`") {{ getDisplay() }}
-    q-icon(v-if="this.copy" class="far fa-copy" @click.stop="copyAddress")
-        q-tooltip Copy address
+div.c-address-field
+  q-icon( v-if="contract" class="far fa-file-alt" )
+    q-tooltip Contract
+  router-link( :to="`/address/${address}`") {{ getDisplay() }}
+  copy-button( :text="address" description="address" )
 </template>
 
-<style lang='sass' scoped>
-.inline-div
-  display: inline
-
-.contract-icon
-    padding-bottom: 6px
-    .inline-div
-        display: inline
-
-    .far.fa-copy
-        margin-top: -5px
-        margin-left: 5px
-        margin-right: 15px
-        cursor: pointer
-        color: #666666
-        &:hover
-            transform: scale(1.2)
-            color: black
-
-    .body--dark .far.fa-copy
-        color: #c3c3c3
-
+<style lang="scss">
+.c-address-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
 </style>

@@ -37,7 +37,7 @@
     "ual-wombat": "^0.3.3",
     "universal-authenticator-library": "^0.3.0",
     "vue": "3",
-    "vue-json-viewer": "2",
+    "vue-json-viewer": "3",
     "vue-router": "4",
     "vuex": "4",
     "web3": "^1.7.5"

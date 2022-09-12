@@ -1,46 +1,61 @@
+<template>
+<div>
+    <div v-if="showNoLogsMessage" class="row">
+        <div class="col-12 u-flex--center">
+            <q-icon class="fa fa-info-circle" size="md" />
+            <h3>No logs found</h3>
+        </div>
+    </div>
+    <div v-else class="row">
+        <div class="col-12 u-flex--center-y">
+            <q-toggle
+                v-model="readable"
+                icon="visibility"
+                color="secondary"
+                size="lg"
+            />
+            Human-readable logs
+        </div>
+        <div class="col-12">
+            <logs-table v-if="readable" :logs="logs"/>
+            <json-viewer
+                v-else
+                :value="rawLogs.length ? rawLogs : logs"
+                theme="custom-theme"
+                class="q-mb-md"
+            />
+        </div>
+    </div>
+</div>
+</template>
+
 <script>
 import JsonViewer from 'vue-json-viewer'
-import LogsTable from './LogsTable'
+import LogsTable from 'components/Transaction/LogsTable'
 
 export default {
     name: 'LogsViewer',
     components: {
-        JsonViewer, LogsTable,
+        JsonViewer,
+        LogsTable,
     },
     props: {
         rawLogs: {
             type: Array,
-            required: false,
-            default(){
-                return [];
-            },
+            default: () => [],
         },
         logs: {
             type: Array,
             required: true,
         },
     },
-    data(){
-        return {
-            readable: true,
-        }
+    data: () => ({
+        readable: true,
+    }),
+    computed: {
+        showNoLogsMessage() {
+            return [this.rawLogs, this.logs].every(list => list.length === 0)
+        },
     },
 }
 </script>
-
-<template lang="pug">
-pre(v-if="logs.length === 0")
-  h3.text-center
-    q-icon(class="fa fa-info-circle" size="md" style="margin: -5px 20px 0px 5px;")
-    span No logs found
-pre(v-else)
-  .switch
-    <q-toggle v-model="readable" icon="visibility" color="secondary" size="lg" /> Human friendly logs
-  div(v-if="!readable")
-    <json-viewer :value="rawLogs.length ? rawLogs : logs" theme="jsonViewer" />
-    small(class="q-pa-md q-ml-sm rounded-borders bg-purple-grey")
-      q-icon(class="fa fa-info-circle" style="margin: -3px 5px 0px 0px; font-size:10px;")
-      span Click on the arrows to expand the JSON object, use ALT + click to expand or minimize all children
-  div(v-else)
-    <logs-table :logs="logs" />
-</template>
