@@ -90,7 +90,7 @@ export default {
             this.trx.logs.forEach(log => {
                 log.topics.forEach(async (topic) => {
                     if(topic.substr(0, 10) === TRANSFER_SIGNATURE){
-                        let contract = await this.$contractManager.getContract(log.address);
+                        let contract = await this.$contractManager.getContract(log.address, true);
                         if(typeof contract.token !== 'undefined'){
                             let token = {'symbol': contract.token.symbol, 'address': log.address}
                             let decimals = contract.token.decimals || 18;
