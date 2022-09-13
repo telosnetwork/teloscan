@@ -77,10 +77,10 @@ export default {
 
 <template lang="pug">
 div.c-address-field
-  q-icon( v-if="contract" class="far fa-file-alt" )
+  q-icon( v-if="contract && !copy" class="far fa-file-alt" )
     q-tooltip Contract
   router-link( :to="`/address/${address}`") {{ getDisplay() }}
-  copy-button( :text="address" description="address" )
+  copy-button(v-if="copy" :text="address" description="address" )
 </template>
 
 <style lang="scss">

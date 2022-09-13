@@ -11,6 +11,10 @@ export default {
             type: String,
             required: true,
         },
+        copy: {
+            type: Boolean,
+            default: false,
+        },
     },
 }
 </script>
@@ -18,7 +22,7 @@ export default {
 <template lang="pug">
 div.transaction-field-container
     router-link( :to="`/tx/${this.transactionHash}`" :key="$route.path" ) {{ transactionHash.slice(0,20) }}...
-    copy-button( :text="transactionHash" accompanying-text="" )
+    copy-button(v-if="copy" :text="transactionHash" accompanying-text="" )
 </template>
 
 <style lang="sass">
