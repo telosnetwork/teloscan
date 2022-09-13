@@ -268,7 +268,7 @@ export default {
             br(v-if="isContract")
             div( v-if="isContract && params.length > 0" class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
-                strong {{ `Contract parameters: ` }}
+                strong {{ `Function parameters: ` }}
               div(class="col")
                 div(v-for="param in params" class="fit row wrap justify-start items-start content-start")
                   div(class="col-3")
