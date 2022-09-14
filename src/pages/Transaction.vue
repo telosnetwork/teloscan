@@ -310,9 +310,8 @@ export default {
                     <AddressField :address="transfer.to" :truncate="16" copy :name="transfer.to === contract.address && contract.name ?  contract.name : null" />
                   div(class="col-4")
                     strong {{ ` Token : ` }}
-                    div(class="c-address-field")
-                      span {{ transfer.value }}
-                      a(:href="'/address/' + transfer.token.address" style="margin-left: 3px;") {{ transfer.token.symbol }}
+                    span {{ transfer.value }}
+                    a(:href="'/address/' + transfer.token.address" style="margin-left: 3px;") {{ transfer.token.symbol }}
             br(v-if="transfers.length > 0")
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
