@@ -1,6 +1,5 @@
 {
-  "0xa9059cbb": "function transfer(address _to, uint _value)",
-  "0xddf252ad": "function transfer(address to, uint amount)",
+  "0xa9059cbb": "function transfer(address to, uint amount)",
   "0x18cbafe5": "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)",
   "0x095ea7b3": "function approve(address spender, uint256 amount)",
   "0x7ff36ab5": "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)"
