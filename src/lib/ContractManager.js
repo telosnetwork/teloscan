@@ -64,16 +64,21 @@ export default class ContractManager {
         if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, prefix))
             return new ethers.utils.Interface([this.eventInterfaces[prefix]]);
 
-        const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`)
-        if (abiResponse) {
-            if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
-                console.error(`Unable to find event signature for event: ${data}`);
-                return;
-            }
+        try {
+            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`)
+            if (abiResponse) {
+                if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
+                    console.error(`Unable to find event signature for event: ${data}`);
+                    return;
+                }
 
-            const iface = new ethers.utils.Interface([`event ${abiResponse.data.text_signature}`]);
-            this.eventInterfaces[data] = iface;
-            return iface;
+                const iface = new ethers.utils.Interface([`event ${abiResponse.data.text_signature}`]);
+                this.eventInterfaces[data] = iface;
+                return iface;
+            }
+        } catch (e) {
+            console.log(e)
+            return;
         }
     }
 
