@@ -1,20 +1,32 @@
 {
-  "0xa9059cbb": {
-    "name" : "transfer",
-    "abi": [
-      "function transfer(address _to, uint _value)"
-    ]
-  },
-  "0xddf252ad": {
-    "name" : "transfer",
-    "abi": [
-      "function transfer(address to, uint amount) returns (bool)"
-    ]
-  },
-  "0x18cbafe5": {
-    "name": "swapExactTokensForETH",
-    "abi": [
-        "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)"
-    ]
-  }
+    "0xa9059cbb": {
+        "name": "transfer",
+        "abi": [
+            "function transfer(address _to, uint _value)"
+        ]
+    },
+    "0xddf252ad": {
+        "name": "transfer",
+        "abi": [
+            "function transfer(address to, uint amount) returns (bool)"
+        ]
+    },
+    "0x18cbafe5": {
+        "name": "swapExactTokensForETH",
+        "abi": [
+            "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)"
+        ]
+    },
+    "0x095ea7b3": {
+        "name": "approve",
+        "abi": [
+            "function approve(address spender, uint256 amount)"
+        ]
+    },
+    "0x7ff36ab5": {
+        "name": "swapExactETHForTokens",
+        "abi": [
+            "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)"
+        ]
+    }
 }
