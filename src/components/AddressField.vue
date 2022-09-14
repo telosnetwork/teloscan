@@ -86,7 +86,7 @@ div.c-address-field
   copy-button(v-if="copy && address" :text="address" description="address" )
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .c-address-field {
     display: inline-flex;
     align-items: center;

@@ -355,7 +355,7 @@ export default {
             InternalTxns( :itxs="trx.itxs" )
 </template>
 
-<style lang="sass">
+<style lang="sass" scoped>
 span
     word-wrap: break-word
 
