@@ -1,25 +1,61 @@
+<template>
+<div>
+    <div v-if="showNoLogsMessage" class="row">
+        <div class="col-12 u-flex--center">
+            <q-icon class="fa fa-info-circle" size="md" />
+            <h3>No logs found</h3>
+        </div>
+    </div>
+    <div v-else class="row">
+        <div class="col-12 u-flex--center-y">
+            <q-toggle
+                v-model="readable"
+                icon="visibility"
+                color="secondary"
+                size="lg"
+            />
+            Human-readable logs
+        </div>
+        <div class="col-12">
+            <logs-table v-if="readable" :logs="logs"/>
+            <json-viewer
+                v-else
+                :value="rawLogs.length ? rawLogs : logs"
+                theme="custom-theme"
+                class="q-mb-md"
+            />
+        </div>
+    </div>
+</div>
+</template>
+
 <script>
 import JsonViewer from 'vue-json-viewer'
+import LogsTable from 'components/Transaction/LogsTable'
+
 export default {
     name: 'LogsViewer',
     components: {
         JsonViewer,
+        LogsTable,
     },
     props: {
+        rawLogs: {
+            type: Array,
+            default: () => [],
+        },
         logs: {
             type: Array,
             required: true,
         },
-        contract: {
-            type: Object,
-            required: true,
+    },
+    data: () => ({
+        readable: true,
+    }),
+    computed: {
+        showNoLogsMessage() {
+            return [this.rawLogs, this.logs].every(list => list.length === 0)
         },
     },
 }
 </script>
-
-<template lang="pug">
-pre
-    //- div() {{ JSON.stringify(logs, null, 4) }}
-    <json-viewer :value="logs" theme="jsonViewer" ></json-viewer>
-</template>

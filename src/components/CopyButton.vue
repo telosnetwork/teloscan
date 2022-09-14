@@ -53,7 +53,7 @@ export default {
             return `c-copy-button ${extraClass}`;
         },
         iconClasses() {
-            return `${this.iconClass} q-pa-sm`;
+            return `${this.iconClass} q-pl-xs`;
         },
         defaultHint() {
             return `Copy ${this.description} to clipboard`;
@@ -81,6 +81,7 @@ export default {
 .c-copy-button {
     display: inline-flex;
     justify-content: center;
+    margin-top: -2px;
     align-items: center;
     cursor: pointer;
 

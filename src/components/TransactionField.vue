@@ -1,5 +1,6 @@
 <script>
-import CopyButton from './CopyButton.vue';
+import CopyButton from 'components/CopyButton';
+
 export default {
     name: 'TransactionField',
     components:{
@@ -10,20 +11,22 @@ export default {
             type: String,
             required: true,
         },
+        copy: {
+            type: Boolean,
+            default: false,
+        },
     },
 }
 </script>
 
 <template lang="pug">
 div.transaction-field-container
-    router-link(:to="`/tx/${this.transactionHash}`" :key="$route.path" ) {{ transactionHash.slice(0,20) }}...
-    CopyButton(
-        :text="transactionHash"
-        accompanying-text=""
-        class="q-mb-md"
-    )
+    router-link( :to="`/tx/${this.transactionHash}`" :key="$route.path" ) {{ transactionHash.slice(0,20) }}...
+    copy-button(v-if="copy" :text="transactionHash" accompanying-text="" )
 </template>
+
 <style lang="sass">
 .transaction-field-container
-    height: 1.25rem
+    display: inline-flex
+    align-items: center
 </style>
