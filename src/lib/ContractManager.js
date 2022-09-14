@@ -39,13 +39,11 @@ export default class ContractManager {
 
     async getFunctionIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
-        
-        for(let i = 0; i < this.overrides.length; i++){
-            if(this.overrides[i].signature === prefix){
-                return new ethers.utils.Interface(this.overrides[i].abi);
-            }
-        }
-        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, 'prefix'))
+
+        if (Object.prototype.hasOwnProperty.call(this.overrides, prefix))
+            return new ethers.utils.Interface(this.overrides[prefix].abi);
+
+        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, prefix))
             return this.functionInterfaces[prefix];
 
         const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`)
@@ -62,7 +60,7 @@ export default class ContractManager {
     }
 
     async getEventIface(data) {
-        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, 'data'))
+        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, data))
             return this.eventInterfaces[data];
 
         const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`)
@@ -79,6 +77,9 @@ export default class ContractManager {
     }
 
     async getContractCreation(address) {
+        if (!address)
+            return;
+
         try {
             const v2ContractResponse = await this.evmEndpoint.get(`/v2/evm/get_contract?contract=${address}`)
             return v2ContractResponse.data
@@ -90,6 +91,9 @@ export default class ContractManager {
     // suspectedToken is so we don't try to check for ERC20 info via eth_call unless we think this is a token...
     //    this is coming from the token transfer page where we're looking for a contract based on a token transfer event
     async getContract(address, suspectedToken) {
+        if (!address)
+            return;
+
         const addressLower = address.toLowerCase();
 
         if (this.contracts[addressLower]) {

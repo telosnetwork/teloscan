@@ -1,16 +1,20 @@
-[
-  {
-    "signature" : "0xa9059cbb",
+{
+  "0xa9059cbb": {
     "name" : "transfer",
     "abi": [
       "function transfer(address _to, uint _value)"
     ]
   },
-  {
-    "signature" : "0xddf252ad",
+  "0xddf252ad": {
     "name" : "transfer",
     "abi": [
       "function transfer(address to, uint amount) returns (bool)"
     ]
+  },
+  "0x18cbafe5": {
+    "name": "swapExactTokensForETH",
+    "abi": [
+        "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)"
+    ]
   }
-]
+}
