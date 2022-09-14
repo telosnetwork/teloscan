@@ -7,7 +7,7 @@ import InternalTxns from 'components/Transaction/InternalTxns';
 import MethodField from 'components/MethodField';
 import JsonViewer from 'vue-json-viewer';
 import {formatBN , parseErrorMessage} from 'src/lib/utils';
-import { TRANSFER_SIGNATURES } from 'src/lib/functionSignatures';
+import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/functionSignatures';
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
@@ -88,7 +88,7 @@ export default {
             this.transfers = [];
             this.trx.logs.forEach(log => {
                 log.topics.forEach(async (topic) => {
-                    if(TRANSFER_SIGNATURES.includes(topic.substr(0, 10))){
+                    if(TRANSFER_FUNCTION_SIGNATURES.includes(topic.substr(0, 10))){
                         let contract = await this.$contractManager.getContract(log.address, true);
                         if(typeof contract.token !== 'undefined'){
                             let token = {'symbol': contract.token.symbol, 'address': log.address}
@@ -173,6 +173,7 @@ export default {
           dense
           active-color="secondary"
           align="justify"
+          narrow-indicator
           :class="$q.dark.isActive ? 'q-dark' : 'q-light'"
         )
           q-route-tab.topLeftRounded(
@@ -298,7 +299,7 @@ export default {
             br
             div(v-if="transfers.length > 0" class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
-                strong {{ `Tokens transferred: ` }}
+                strong {{ `ERC20 transfers: ` }}
               div(class="col-9" id="transfers")
                 div(v-for="transfer in transfers" class="fit row wrap justify-start items-start content-start")
                   div(class="col-4")

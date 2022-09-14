@@ -5,7 +5,7 @@ import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import MethodField from 'components/MethodField';
 import { formatBN } from 'src/lib/utils';
-import { TRANSFER_SIGNATURES } from 'src/lib/functionSignatures';
+import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/functionSignatures';
 
 const columns = [
     {
@@ -131,7 +131,7 @@ export default {
                     transaction.logs.forEach(log => {
                         log.topics.forEach(async  topic =>  {
                             let signature = topic.substring(0, 10)
-                            if (TRANSFER_SIGNATURES.includes(signature)) {
+                            if (TRANSFER_FUNCTION_SIGNATURES.includes(signature)) {
                                 if(transaction.contract && transaction.contract.token && transaction.parsedTransaction.args['amount']){
                                     transaction.transfers.push({'value': `${formatBN(transaction.parsedTransaction.args['amount'], transaction.contract.token.decimals, 5)}`, 'symbol': transaction.contract.token.symbol})
                                 }

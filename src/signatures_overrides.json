@@ -1,16 +1,4 @@
-[
-  {
-    "signature" : "0xa9059cbb",
-    "name" : "transfer",
-    "abi": [
-      "function transfer(address to, uint amount)"
-    ]
-  },
-  {
-    "signature" : "0xddf252ad",
-    "name" : "transfer",
-    "abi": [
-      "function transfer(address to, uint amount) returns (bool)"
-    ]
-  }
-]
+{
+  "0xa9059cbb": "function transfer(address _to, uint _value)",
+  "0xddf252ad": "function transfer(address to, uint amount) returns (bool)"
+}
