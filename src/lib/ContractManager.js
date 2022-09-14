@@ -54,7 +54,7 @@ export default class ContractManager {
                 return iface;
             }
         } catch (e) {
-            console.log(e)
+            console.error(`Error trying to find event signature for function ${prefix}: ${e.message}`);
             return;
         }
     }
@@ -77,7 +77,7 @@ export default class ContractManager {
                 return iface;
             }
         } catch (e) {
-            console.log(e)
+            console.error(`Error trying to find event signature for event ${data}: ${e.message}`);
             return;
         }
     }
