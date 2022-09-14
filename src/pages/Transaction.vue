@@ -209,7 +209,7 @@ export default {
           animated
           keep-alive
         )
-          q-tab-panel( name="general" :key="isContract" )
+          q-tab-panel( name="general" :key="transfers.length + isContract" )
             br
             br
             div(class="fit row wrap justify-start items-start content-start")
