@@ -35,7 +35,8 @@ export default {
                 return;
 
             if (this.trx.parsedTransaction.sighash === ERC20_SIGHASH && this.contract) {
-                this.transferAmount = `${formatBN(this.trx.parsedTransaction.args['amount'], this.contract.token.decimals, 5)} ${this.contract.token.symbol}`;
+                console.log(this.trx.parsedTransaction);
+                this.transferAmount = `${formatBN(this.trx.parsedTransaction.args[1], this.contract.token.decimals, 5)} ${this.contract.token.symbol}`;
             }
         },
     },

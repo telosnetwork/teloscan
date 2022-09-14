@@ -1,6 +1,7 @@
 import Contract from 'src/lib/Contract';
 import { ethers } from 'ethers';
 import signatures_overrides from '../signatures_overrides.json';
+import events_overrides from '../events_overrides.json';
 import Web3 from 'web3';
 import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
@@ -17,9 +18,8 @@ export default class ContractManager {
     constructor(evmEndpoint) {
         this.tokenList = null;
         this.contracts = {};
-        this.functionInterfaces = {};
-        this.eventInterfaces = {};
-        this.functionOverrides = signatures_overrides;
+        this.functionInterfaces = signatures_overrides;
+        this.eventInterfaces = events_overrides;
         this.evmEndpoint = evmEndpoint;
         this.web3 = new Web3(process.env.NETWORK_EVM_RPC);
         this.ethersProvider = new ethers.providers.JsonRpcProvider(process.env.NETWORK_EVM_RPC);
@@ -38,8 +38,8 @@ export default class ContractManager {
     }
     async getFunctionIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
-        if (Object.prototype.hasOwnProperty.call(this.functionOverrides, prefix))
-            return new ethers.utils.Interface([this.functionOverrides[prefix]]);
+        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, prefix))
+            return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
 
 
         const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`)
@@ -56,6 +56,11 @@ export default class ContractManager {
     }
 
     async getEventIface(data) {
+        let prefix = data.toLowerCase().slice(0, 10);
+        console.log(prefix);
+        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, prefix))
+            return new ethers.utils.Interface([this.eventInterfaces[prefix]]);
+
         const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`)
         if (abiResponse) {
             if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
