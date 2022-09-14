@@ -7,7 +7,7 @@ import InternalTxns from 'components/Transaction/InternalTxns';
 import MethodField from 'components/MethodField';
 import JsonViewer from 'vue-json-viewer';
 import {formatBN , parseErrorMessage} from 'src/lib/utils';
-import { TRANSFER_SIGNATURE } from 'src/lib/functionSignatures';
+import { TRANSFER_SIGNATURES } from 'src/lib/functionSignatures';
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
@@ -80,7 +80,6 @@ export default {
             }
 
             this.trx = trxResponse.data.transactions[0];
-            this.transfers = [];
             await this.loadContract();
             await this.loadTransfers();
             this.setErrorMessage();
@@ -89,7 +88,7 @@ export default {
             this.transfers = [];
             this.trx.logs.forEach(log => {
                 log.topics.forEach(async (topic) => {
-                    if(topic.substr(0, 10) === TRANSFER_SIGNATURE){
+                    if(TRANSFER_SIGNATURES.includes(topic.substr(0, 10))){
                         let contract = await this.$contractManager.getContract(log.address, true);
                         if(typeof contract.token !== 'undefined'){
                             let token = {'symbol': contract.token.symbol, 'address': log.address}
@@ -311,8 +310,9 @@ export default {
                     <AddressField :address="transfer.to" :truncate="16" copy :name="transfer.to === contract.address && contract.name ?  contract.name : null" />
                   div(class="col-4")
                     strong {{ ` Token : ` }}
-                    span {{ transfer.value }}
-                    a(:href="'/address/' + transfer.token.address" style="margin-left: 3px;") {{ transfer.token.symbol }}
+                    div(class="c-address-field")
+                      span {{ transfer.value }}
+                      a(:href="'/address/' + transfer.token.address" style="margin-left: 3px;") {{ transfer.token.symbol }}
             br(v-if="transfers.length > 0")
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")

@@ -45,6 +45,9 @@ export default {
     methods: {
         ...mapActions('evm', ['getContract']),
         getDisplay() {
+            if(!this.address){
+                return;
+            }
             if (this.name) {
                 return this.name;
             }
@@ -80,7 +83,7 @@ div.c-address-field
   q-icon( v-if="contract && !copy" class="far fa-file-alt" )
     q-tooltip Contract
   router-link( :to="`/address/${address}`") {{ getDisplay() }}
-  copy-button(v-if="copy" :text="address" description="address" )
+  copy-button(v-if="copy && address" :text="address" description="address" )
 </template>
 
 <style lang="scss">

@@ -1,5 +1,6 @@
 import Contract from 'src/lib/Contract';
 import { ethers } from 'ethers';
+import signatures_overrides from '../signatures_overrides.json';
 import Web3 from 'web3';
 import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
@@ -18,6 +19,7 @@ export default class ContractManager {
         this.contracts = {};
         this.functionInterfaces = {};
         this.eventInterfaces = {};
+        this.overrides = signatures_overrides;
         this.evmEndpoint = evmEndpoint;
         this.web3 = new Web3(process.env.NETWORK_EVM_RPC);
         this.ethersProvider = new ethers.providers.JsonRpcProvider(process.env.NETWORK_EVM_RPC);
@@ -34,10 +36,14 @@ export default class ContractManager {
     getEthersProvider() {
         return this.ethersProvider;
     }
-
     async getFunctionIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
-        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, 'prefix'))
+        for(let i = 0; i < this.overrides.length; i++){
+            if(this.overrides[i].signature === prefix){
+                return new ethers.utils.Interface(this.overrides[i].abi);
+            }
+        }
+        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, prefix))
             return this.functionInterfaces[prefix];
 
         const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`)
@@ -54,7 +60,7 @@ export default class ContractManager {
     }
 
     async getEventIface(data) {
-        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, 'data'))
+        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, data))
             return this.eventInterfaces[data];
         const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`)
         if (abiResponse) {
@@ -122,16 +128,17 @@ export default class ContractManager {
     }
 
     async getVerifiedContract(address, metadata, creationInfo) {
-        const token = await this.getToken(address);
-        const contract =
-      new Contract({
-          name: Object.values(metadata.settings.compilationTarget)[0],
-          address,
-          abi: metadata.output.abi,
-          manager: this,
-          token, creationInfo,
-          verified: true,
-      });
+        let token = await this.getToken(address);
+
+        const contract = new Contract({
+            name: Object.values(metadata.settings.compilationTarget)[0],
+            address,
+            abi: metadata.output.abi,
+            manager: this,
+            token: token,
+            creationInfo,
+            verified: true,
+        });
         this.contracts[address] = contract;
         return contract;
     }
@@ -214,7 +221,8 @@ export default class ContractManager {
                 return this.tokenList.tokens[i];
             }
         }
-        return null;
+        const token = await this.getTokenData(address, 'erc20');
+        return token;
     }
 
     async getContractFromTokenList(address, creationInfo) {

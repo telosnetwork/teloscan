@@ -1,1 +1,1 @@
-export const TRANSFER_SIGNATURE = '0xddf252ad'
+export const TRANSFER_SIGNATURES = ['0xddf252ad', '0xa9059cbb']

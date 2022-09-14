@@ -5,7 +5,7 @@ import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import MethodField from 'components/MethodField';
 import { formatBN } from 'src/lib/utils';
-import { TRANSFER_SIGNATURE } from 'src/lib/functionSignatures';
+import { TRANSFER_SIGNATURES } from 'src/lib/functionSignatures';
 
 const columns = [
     {
@@ -115,7 +115,7 @@ export default {
                 try {
                     transaction.transfers = [];
                     if (transaction.input_data === '0x') continue;
-
+                    if(!transaction.to) continue;
                     const contract = await this.$contractManager.getContract(
                         transaction.to,
                     );
@@ -131,8 +131,8 @@ export default {
                     transaction.logs.forEach(log => {
                         log.topics.forEach(async  topic =>  {
                             let signature = topic.substring(0, 10)
-                            if (signature === TRANSFER_SIGNATURE) {
-                                if(transaction.contract && transaction.contract.token){
+                            if (TRANSFER_SIGNATURES.includes(signature)) {
+                                if(transaction.contract && transaction.contract.token && transaction.parsedTransaction.args['amount']){
                                     transaction.transfers.push({'value': `${formatBN(transaction.parsedTransaction.args['amount'], transaction.contract.token.decimals, 5)}`, 'symbol': transaction.contract.token.symbol})
                                 }
                             }
@@ -209,8 +209,8 @@ q-table(
             q-td( key="to" :props="props")
                 address-field(v-if="props.row.to" :address="props.row.to" :is-contract-trx="props.row.input_data !== '0x'" )
             q-td( key="value" :props="props")
-                span(v-if="props.row.value > 0 ||  props.row.transfers.length == 0") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
+                span(v-if="props.row.value > 0 ||  !props.row.transfers || props.row.transfers.length == 0") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
                 div(v-else)
-                    span {{ props.row.transfers[0].value }} {{ props.row.transfers[0].symbol }}
-                    small(v-if="props.row.transfers.length > 1") +{{ props.row.transfers.length - 1 }}
+                    span(v-if="props.row.transfers &&  props.row.transfers.length > 0") {{ props.row.transfers[0].value }} {{ props.row.transfers[0].symbol }}
+                    small(v-if="props.row.transfers &&  props.row.transfers.length > 1") +{{ props.row.transfers.length - 1 }}
 </template>
