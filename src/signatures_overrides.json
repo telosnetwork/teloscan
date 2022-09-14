@@ -1,4 +1,4 @@
 {
   "0xa9059cbb": "function transfer(address _to, uint _value)",
-  "0xddf252ad": "function transfer(address to, uint amount) returns (bool)"
+  "0xddf252ad": "function transfer(address to, uint amount)"
 }

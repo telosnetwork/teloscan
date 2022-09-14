@@ -55,6 +55,9 @@ export default {
             if (this.contract) {
                 return `${this.contract.getName()}`;
             }
+            if (!this.address) {
+                return '';
+            }
             // This formats the address for us and handles zero padding we get from log events
             const address = ethers.utils.getAddress(this.address);
             return this.truncate > 0 ? `${address.slice(0, this.truncate)}...` : address;

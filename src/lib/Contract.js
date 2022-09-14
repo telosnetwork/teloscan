@@ -78,7 +78,6 @@ export default class Contract {
   }
 
   async parseLogs(logsArray) {
-
     if (this.iface) {
       let parsedArray = logsArray.map(log => {
         try {

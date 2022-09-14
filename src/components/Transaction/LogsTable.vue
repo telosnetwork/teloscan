@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { TRANSFER_SIGNATURE } from 'src/lib/functionSignatures';
+import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/functionSignatures';
 
 import LogsTableRow from 'components/Transaction/LogsTableRow'
 
@@ -39,7 +39,7 @@ export default {
         this.logs.forEach(async (log) => {
             let shapedLog = log;
 
-            if (log.function_signature !== TRANSFER_SIGNATURE) {
+            if (!TRANSFER_FUNCTION_SIGNATURES.includes(log.function_signature)) {
                 await this.$contractManager.getContract(log.address)
                     .then(({ token }) => {
                         shapedLog = {

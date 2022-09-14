@@ -57,7 +57,6 @@ export default class ContractManager {
 
     async getEventIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
-        console.log(prefix);
         if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, prefix))
             return new ethers.utils.Interface([this.eventInterfaces[prefix]]);
 
@@ -75,6 +74,7 @@ export default class ContractManager {
     }
 
     async getContractCreation(address) {
+        if (!address) return;
         try {
             const v2ContractResponse = await this.evmEndpoint.get(`/v2/evm/get_contract?contract=${address}`)
             return v2ContractResponse.data
@@ -86,6 +86,7 @@ export default class ContractManager {
     // suspectedToken is so we don't try to check for ERC20 info via eth_call unless we think this is a token...
     //    this is coming from the token transfer page where we're looking for a contract based on a token transfer event
     async getContract(address, suspectedToken) {
+        if (!address) return;
         const addressLower = address.toLowerCase();
 
         if (this.contracts[addressLower]) {
@@ -170,7 +171,7 @@ export default class ContractManager {
     }
 
     async getTokenData(address, type) {
-        const contract = new ethers.Contract(address, type === 'erc20' ? erc20Abi : erc721Abi, this.getEthersProvider());
+        const contract = new ethers.Contract(address, type === 'erc721' ? erc721Abi : erc20Abi, this.getEthersProvider());
         try {
             let tokenData = {};
             tokenData.name = await contract.name.call();
