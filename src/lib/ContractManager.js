@@ -5,6 +5,7 @@ import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
 import erc721Abi from './erc721';
 import { toChecksumAddress } from './utils';
+import signatures_overrides from '../signatures_overrides.json';
 
 const contractsBucket = axios.create({
     baseURL: `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com`,
@@ -18,6 +19,7 @@ export default class ContractManager {
         this.contracts = {};
         this.functionInterfaces = {};
         this.eventInterfaces = {};
+        this.overrides = signatures_overrides;
         this.evmEndpoint = evmEndpoint;
         this.web3 = new Web3(process.env.NETWORK_EVM_RPC);
         this.ethersProvider = new ethers.providers.JsonRpcProvider(process.env.NETWORK_EVM_RPC);
@@ -37,6 +39,12 @@ export default class ContractManager {
 
     async getFunctionIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
+        
+        for(let i = 0; i < this.overrides.length; i++){
+            if(this.overrides[i].signature === prefix){
+                return new ethers.utils.Interface(this.overrides[i].abi);
+            }
+        }
         if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, 'prefix'))
             return this.functionInterfaces[prefix];
 
