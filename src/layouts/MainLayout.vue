@@ -51,6 +51,7 @@
         :breakpoint="500"
         overlay
         bordered
+        elevated
     >
         <q-list>
             <q-item
@@ -84,6 +85,17 @@
                     <q-item-label> Teloscan Testnet </q-item-label>
                 </q-item-section>
             </q-item>
+            <!--
+            <q-item
+                v-close-popup
+                clickable
+                @click="routerTo('/staking')"
+            >
+                <q-item-section>
+                    <q-item-label> Stake Telos </q-item-label>
+                </q-item-section>
+            </q-item>
+            -->
         </q-list>
     </q-drawer>
 
@@ -108,7 +120,7 @@ export default {
     components: { Search, ConnectButton, FooterMain },
     data() {
         return {
-            mainnet: process.env.NETWORK_EVM_CHAIN_ID === '40',
+            mainnet: parseInt(process.env.NETWORK_EVM_CHAIN_ID) === 40,
             accountConnected: false,
             drawer: false,
         };
@@ -163,7 +175,7 @@ export default {
 };
 </script>
 
-<style lang="sass" scoped>
+<style lang="sass">
 .banner
   z-index: -1
   height: 280px
@@ -185,4 +197,9 @@ export default {
   overflow: hidden
   text-overflow: ellipsis
 
+.q-drawer
+  margin-top:16px
+  height: fit-content
+  border-top-left-radius: 4px
+  border-bottom-left-radius: 4px
 </style>

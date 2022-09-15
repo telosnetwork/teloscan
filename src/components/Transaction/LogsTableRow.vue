@@ -1,0 +1,116 @@
+<template>
+<div class="c-log-table-row">
+    <div class="c-log-table-row__head" @click="expanded = !expanded">
+        <q-icon :name="arrowIcon" size="sm" />
+        <strong v-if="log.name">
+            {{ log.name }}
+        </strong>
+        <strong v-else>
+            Unknown ({{ log.topics[0].substr(0, 10) }})
+        </strong>
+    </div>
+    <div class="q-pl-md" v-if="expanded">
+        <div v-if="log.name">
+            <div
+                v-for="(param, index) in log.inputs"
+                :key="`log-${index}`"
+                class="fit row justify-start items-start content-start"
+            >
+                <div class="col-2">
+                    <template v-if="param.name">
+                        {{ param.name }} ({{ param.type }}) :
+                    </template>
+
+                    <template v-else>
+                        {{ param.type }}:
+                    </template>
+                </div>
+
+                <div class="col-9">
+                    <address-field
+                        v-if="param.type === 'address'"
+                        :address="log.args[index]"
+                        :truncate="0"
+                        :copy="true"
+                    />
+
+                    <template v-else-if="param.type === 'uint256'">
+                        <div v-if="log.isTransfer && log.token">
+                            {{ log.args[index] / (10 ** log.token.decimals) }}
+                            <router-link :to="`/address/${log.address}`">
+                                {{ log.token.symbol }}
+                            </router-link>
+                        </div>
+
+                        <div v-else>
+                            {{ log.args[index] }}
+                        </div>
+                    </template>
+
+                    <template v-else>
+                        {{ log.args[index] }}
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <json-viewer
+            v-else
+            :value="log"
+            theme="custom-theme"
+            class="q-mb-md"
+        />
+    </div>
+</div>
+</template>
+
+<script>
+import JsonViewer from 'vue-json-viewer'
+
+import AddressField from 'components/AddressField';
+
+export default {
+    name: 'LogsTableRow',
+    components: {
+        AddressField,
+        JsonViewer,
+    },
+    props: {
+        log: {
+            type: Object,
+            required: true,
+        },
+    },
+    data: () => ({
+        expanded: false,
+    }),
+    computed: {
+        arrowIcon() {
+            return this.expanded ? 'arrow_drop_down' : 'arrow_right';
+        },
+    },
+}
+</script>
+
+<style lang="scss">
+.c-log-table-row {
+    margin-bottom: 24px;
+
+    &__head {
+        background: rgba(0, 0, 0, 0.1);
+        padding: 10px 20px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: 300ms background-color ease;
+
+        @at-root .body--dark & {
+            background: rgba(0, 0, 0, 0.25);
+        }
+    }
+
+    &__log {
+        white-space: pre;
+    }
+}
+</style>

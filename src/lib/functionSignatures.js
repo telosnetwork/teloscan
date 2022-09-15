@@ -1,0 +1,1 @@
+export const TRANSFER_FUNCTION_SIGNATURES = ['0xddf252ad', '0xa9059cbb']

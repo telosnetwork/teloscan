@@ -108,7 +108,7 @@ export default {
 <template lang="pug">
 .pageContainer.q-pt-xl
     div
-      .row(class="tableWrapper").justify-between
+      .row(class="tableWrapper").justify-between.q-mb-lg
         div(class="homeInfo")
           .text-primary.text-h4.q-pr-xs {{ title }}
           q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
@@ -149,6 +149,10 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.dataCardsContainer .dataCardItem
+  width: fit-content
+  height: 5rem
+
 .q-tab-panel
   padding: 0
 

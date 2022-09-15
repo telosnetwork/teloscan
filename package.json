@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "quasar dev",
     "lint": "eslint --ext .js,.vue ./",
-    "test": "echo \"No test specified\" && exit 0"
+    "test": "echo \"No test specified\" && exit 0",
+    "nuke": "rm -rf node_modules && yarn cache clean && yarn install"
   },
   "dependencies": {
     "@eosrio/hyperion-stream-client": "^0.4.0-beta.5",
@@ -18,6 +19,7 @@
     "axios": "^0.21.2",
     "axios-time": "^1.0.0",
     "babel-loader": "^8.1.0",
+    "big.js": "^6.2.1",
     "bn.js": "^5.2.0",
     "core-js": "^3.6.5",
     "dotenv": "^8.2.0",
@@ -26,6 +28,7 @@
     "erc-20-abi": "^1.0.0",
     "ethereumjs-util": "^7.1.4",
     "ethers": "^5.5.1",
+    "fs": "^0.0.1-security",
     "highlight.js": "10",
     "highlightjs-solidity": "^2.0.3",
     "moment": "^2.29.4",
@@ -35,7 +38,7 @@
     "ual-wombat": "^0.3.3",
     "universal-authenticator-library": "^0.3.0",
     "vue": "3",
-    "vue-json-viewer": "2",
+    "vue-json-viewer": "3",
     "vue-router": "4",
     "vuex": "4",
     "web3": "^1.7.5"
@@ -43,7 +46,8 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",
     "@quasar/app-webpack": "3",
-    "eslint": "^8.10.0",
+    "@types/lodash": "^4.14.182",
+    "eslint": "8.22.0",
     "eslint-plugin-vue": "^9.0.0",
     "eslint-webpack-plugin": "^2.4.0",
     "node-polyfill-webpack-plugin": "^2.0.1",

@@ -1,12 +1,17 @@
-import {BigNumber} from 'ethers';
+import { BigNumber } from 'ethers';
 import moment from 'moment';
 const createKeccakHash = require('keccak')
 const REVERT_FUNCTION_SELECTOR = '0x08c379a0'
 const REVERT_PANIC_SELECTOR = '0x4e487b71'
 
+export const WEI_PRECISION = 18;
+
 export function formatBN(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);
-    return `${(amount / Math.pow(10, tokenDecimals)).toFixed(displayDecimals)}`;
+    const formattedNoCommas = (amount / Math.pow(10, tokenDecimals)).toFixed(displayDecimals);
+
+
+    return Number(formattedNoCommas).toLocaleString();
 }
 
 export function isValidAddressFormat(ethAddressString) {
@@ -14,7 +19,7 @@ export function isValidAddressFormat(ethAddressString) {
     return pattern.test(ethAddressString);
 }
 
-export function formatIsoDateTime(dateTimezone){
+export function formatIsoDateTime(dateTimezone) {
     return moment(dateTimezone).utc().format('DD/MM/YYYY');
 }
 

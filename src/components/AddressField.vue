@@ -2,8 +2,13 @@
 import { mapActions } from 'vuex';
 import { ethers } from 'ethers';
 
+import CopyButton from 'components/CopyButton';
+
 export default {
     name: 'AddressField',
+    components: {
+        CopyButton,
+    },
     props: {
         address: {
             type: String,
@@ -13,9 +18,12 @@ export default {
             type: String,
             default: '',
         },
+        copy: {
+            type: Boolean,
+            default: false,
+        },
         truncate: {
             type: Number,
-            required: false,
             default: 18,
         },
         isContractTrx: {
@@ -23,11 +31,9 @@ export default {
             default: false,
         },
     },
-    data() {
-        return {
-            contract: null,
-        }
-    },
+    data: () => ({
+        contract: null,
+    }),
     watch: {
         address () {
             this.loadContract();
@@ -39,12 +45,18 @@ export default {
     methods: {
         ...mapActions('evm', ['getContract']),
         getDisplay() {
+            if(!this.address){
+                return;
+            }
             if (this.name) {
                 return this.name;
             }
 
             if (this.contract) {
                 return `${this.contract.getName()}`;
+            }
+            if (!this.address) {
+                return '';
             }
             // This formats the address for us and handles zero padding we get from log events
             const address = ethers.utils.getAddress(this.address);
@@ -70,13 +82,17 @@ export default {
 </script>
 
 <template lang="pug">
-div.inline-div
-    q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs")
-      q-tooltip Contract
-    router-link( :to="`/address/${this.address}`") {{ getDisplay() }}
+div.c-address-field
+  q-icon( v-if="contract && !copy" class="far fa-file-alt" )
+    q-tooltip Contract
+  router-link( :to="`/address/${address}`") {{ getDisplay() }}
+  copy-button(v-if="copy && address" :text="address" description="address" )
 </template>
 
-<style lang='sass' scoped>
-.inline-div
-  display: inline
+<style lang="scss" scoped>
+.c-address-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
 </style>

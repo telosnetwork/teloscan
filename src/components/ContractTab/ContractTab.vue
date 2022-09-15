@@ -84,5 +84,5 @@ export default {
 .contract-tab
     margin-left: 2rem
     margin-right: 2rem
-    margin-top: 1rem
+    padding-top: 1rem
 </style>

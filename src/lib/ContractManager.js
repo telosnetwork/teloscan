@@ -1,5 +1,7 @@
 import Contract from 'src/lib/Contract';
 import { ethers } from 'ethers';
+import signatures_overrides from '../signatures_overrides.json';
+import events_overrides from '../events_overrides.json';
 import Web3 from 'web3';
 import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
@@ -16,8 +18,8 @@ export default class ContractManager {
     constructor(evmEndpoint) {
         this.tokenList = null;
         this.contracts = {};
-        this.functionInterfaces = {};
-        this.eventInterfaces = {};
+        this.functionInterfaces = signatures_overrides;
+        this.eventInterfaces = events_overrides;
         this.evmEndpoint = evmEndpoint;
         this.web3 = new Web3(process.env.NETWORK_EVM_RPC);
         this.ethersProvider = new ethers.providers.JsonRpcProvider(process.env.NETWORK_EVM_RPC);
@@ -34,11 +36,11 @@ export default class ContractManager {
     getEthersProvider() {
         return this.ethersProvider;
     }
-
     async getFunctionIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
-        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, 'prefix'))
-            return this.functionInterfaces[prefix];
+        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, prefix))
+            return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
+
 
         const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`)
         if (abiResponse) {
@@ -54,8 +56,9 @@ export default class ContractManager {
     }
 
     async getEventIface(data) {
-        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, 'data'))
-            return this.eventInterfaces[data];
+        let prefix = data.toLowerCase().slice(0, 10);
+        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, prefix))
+            return new ethers.utils.Interface([this.eventInterfaces[prefix]]);
 
         const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`)
         if (abiResponse) {
@@ -71,6 +74,7 @@ export default class ContractManager {
     }
 
     async getContractCreation(address) {
+        if (!address) return;
         try {
             const v2ContractResponse = await this.evmEndpoint.get(`/v2/evm/get_contract?contract=${address}`)
             return v2ContractResponse.data
@@ -82,6 +86,7 @@ export default class ContractManager {
     // suspectedToken is so we don't try to check for ERC20 info via eth_call unless we think this is a token...
     //    this is coming from the token transfer page where we're looking for a contract based on a token transfer event
     async getContract(address, suspectedToken) {
+        if (!address) return;
         const addressLower = address.toLowerCase();
 
         if (this.contracts[addressLower]) {
@@ -123,16 +128,17 @@ export default class ContractManager {
     }
 
     async getVerifiedContract(address, metadata, creationInfo) {
-        const token = await this.getToken(address);
-        const contract =
-      new Contract({
-          name: Object.values(metadata.settings.compilationTarget)[0],
-          address,
-          abi: metadata.output.abi,
-          manager: this,
-          token, creationInfo,
-          verified: true,
-      });
+        let token = await this.getToken(address);
+
+        const contract = new Contract({
+            name: Object.values(metadata.settings.compilationTarget)[0],
+            address,
+            abi: metadata.output.abi,
+            manager: this,
+            token: token,
+            creationInfo,
+            verified: true,
+        });
         this.contracts[address] = contract;
         return contract;
     }
@@ -165,7 +171,7 @@ export default class ContractManager {
     }
 
     async getTokenData(address, type) {
-        const contract = new ethers.Contract(address, type === 'erc20' ? erc20Abi : erc721Abi, this.getEthersProvider());
+        const contract = new ethers.Contract(address, type === 'erc721' ? erc721Abi : erc20Abi, this.getEthersProvider());
         try {
             let tokenData = {};
             tokenData.name = await contract.name.call();
@@ -184,7 +190,6 @@ export default class ContractManager {
             // TODO: if this is erc721, could we get more info about it and maybe read the metadata to link to the image?
             // can't be sure if this contract would support ERC721Metadata, but something like:
             // if (type == 'erc721') tokenData.baseURI = await contract.baseURI();
-
             return tokenData;
         } catch (e) {
             return;
@@ -216,7 +221,8 @@ export default class ContractManager {
                 return this.tokenList.tokens[i];
             }
         }
-        return null;
+        const token = await this.getTokenData(address, 'erc20');
+        return token;
     }
 
     async getContractFromTokenList(address, creationInfo) {

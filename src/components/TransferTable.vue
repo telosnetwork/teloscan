@@ -6,6 +6,7 @@ import {ethers, BigNumber} from 'ethers';
 import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
 
 const TRANSFER_EVENT_SIGNATURE = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/functionSignatures';
 
 // TODO: Add icon column and render it
 const columns = [
@@ -123,7 +124,8 @@ export default {
                         if (this.expectedTopicLength !== log.topics.length)
                             continue;
 
-                        if (log.topics[0].toLowerCase() !== TRANSFER_EVENT_SIGNATURE.toLocaleLowerCase())
+
+                        if (!TRANSFER_FUNCTION_SIGNATURES.includes(log.topics[0].substr(0, 10).toLowerCase()))
                             continue;
 
                         const address = `0x${log.address.substring(log.address.length - 40)}`;
@@ -237,7 +239,7 @@ q-table(
         template(
           v-if="col.name==='method'"
         )
-          q-icon(name="fas fa-info-circle")
+          q-icon(name="fas fa-info-circle").info-icon
             q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
 
     template(v-slot:body="props")

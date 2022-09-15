@@ -8,6 +8,8 @@ const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
 const PROVIDER_WEB3_INJECTED = 'injectedWeb3'
 
+export const triggerLogin = () => document.querySelector('#c-connect-button__login-button')?.click();
+
 export default {
     name: 'ConnectButton',
     data() {
@@ -216,7 +218,7 @@ export default {
 
 <template lang='pug'>
 div()
-    q-btn( v-if='!isLoggedIn' label='Connect Wallet' @click='connect()' )
+    q-btn( v-if='!isLoggedIn' id='c-connect-button__login-button' label='Connect Wallet' @click='connect()' )
     q-btn-dropdown( v-if='isLoggedIn' :label='getLoginDisplay()' )
       q-list()
         q-item( clickable v-close-popup @click='goToAddress()' )

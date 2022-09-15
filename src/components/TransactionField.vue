@@ -1,16 +1,32 @@
 <script>
+import CopyButton from 'components/CopyButton';
+
 export default {
     name: 'TransactionField',
+    components:{
+        CopyButton,
+    },
     props: {
         transactionHash: {
             type: String,
             required: true,
+        },
+        copy: {
+            type: Boolean,
+            default: false,
         },
     },
 }
 </script>
 
 <template lang="pug">
-router-link(:to="`/tx/${this.transactionHash}`" :key="$route.path" ) {{ transactionHash.slice(0,20) }}...
-  //- eztodo add copy button here
+div.transaction-field-container
+    router-link( :to="`/tx/${this.transactionHash}`" :key="$route.path" ) {{ transactionHash.slice(0,20) }}...
+    copy-button(v-if="copy" :text="transactionHash" accompanying-text="" )
 </template>
+
+<style lang="sass">
+.transaction-field-container
+    display: inline-flex
+    align-items: center
+</style>
