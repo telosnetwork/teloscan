@@ -90,7 +90,7 @@ export default {
                 log.topics.forEach(async (topic) => {
                     if(TRANSFER_FUNCTION_SIGNATURES.includes(topic.substr(0, 10))){
                         let contract = await this.$contractManager.getContract(log.address, true);
-                        if(typeof contract.token !== 'undefined'){
+                        if(typeof contract.token !== 'undefined' && contract.token !== null){
                             let token = {'symbol': contract.token.symbol, 'address': log.address}
                             let decimals = contract.token.decimals || 18;
                             this.transfers.push({'value' : formatBN(log.data, decimals, 5), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
@@ -132,18 +132,6 @@ export default {
             })
             return args;
         },
-        getLogs() {
-            if (this.parsedLogs) {
-                return this.parsedLogs.map(log => {
-                    if (log.signature && log.args) {
-                        return { name: log.signature, function_signature: log.topic.substr(0, 10), args: log.args, inputs: log.eventFragment.inputs, address: log.address  };
-                    }
-                    return log;
-                });
-            }
-
-            return this.trx.logs;
-        },
         getGasFee() {
             return (
                 (this.trx.charged_gas_price * this.trx.gasused) /
@@ -156,7 +144,30 @@ export default {
     },
 };
 </script>
+<style scope lang="sass">
+    @media screen and (max-width: 650px)
+        #function-parameters
+            width: 100%
+            flex: auto
+            margin-top: 20px
 
+        #transaction-page
+            .col-3
+                width: 100%
+            .col-9
+                width: 100%
+
+    @media only screen and (max-width: 900px)
+        #function-parameters
+            .row
+                .col-4
+                    width: 100%
+                    padding-left: 15px
+                .col-8
+                    padding-bottom: 10px
+                    padding-left: 30px
+                    width: 100%
+</style>
 <template lang='pug'>
 .pageContainer.q-pt-xl
   .row
@@ -167,7 +178,7 @@ export default {
         | Not found: {{ hash }}
   .row.tableWrapper
     .col-12.q-py-lg
-      .content-container( v-if="trx" )
+      .content-container( v-if="trx"  :key="transfers.length + isContract" )
         q-tabs.text-white.topRounded(
           v-model="tab"
           dense
@@ -209,7 +220,7 @@ export default {
           animated
           keep-alive
         )
-          q-tab-panel( name="general" :key="isContract" )
+          q-tab-panel( name="general" id="transaction-page" )
             br
             br
             div(class="fit row wrap justify-start items-start content-start")
@@ -251,13 +262,13 @@ export default {
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
                 strong {{ `From: ` }}
-              div(class="col-9")
+              div(class="col-9 word-break")
                 address-field(:address="trx.from" :truncate="0" copy)
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
                 strong {{ `To: ` }}
-              div(class="col-9")
+              div(class="col-9 word-break")
                 address-field( :address="trx.to" :is-contract-trx="!!contract"  :truncate="0" copy)
             br
             div( v-if="isContract", class="fit row wrap justify-start items-start content-start" )
@@ -269,13 +280,13 @@ export default {
             div( v-if="isContract && params.length > 0" class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
                 strong {{ `Function parameters: ` }}
-              div(class="col")
+              div(class="col" id="function-parameters")
                 div(v-for="param in params" class="fit row wrap justify-start items-start content-start")
-                  div(class="col-3")
+                  div(class="col-4")
                     q-icon(name="arrow_right" class="list-arrow")
                     span(v-if="param.name") {{ param.name }} ({{param.type}}) :
                     span(v-else) {{param.type}} :
-                  div(v-if="param.arrayChildren" class="col-9")
+                  div(v-if="param.arrayChildren" class="col-8 word-break")
                     div(v-for="(value, index) in param.value")
                       div(v-if="param.arrayChildren === 'tuple'" :class="index != param.value.length - 1 ? 'q-mb-sm' : ''")
                         strong Tuple {{ '#' + index}}
@@ -283,13 +294,13 @@ export default {
                         br(v-if="index !== param.value.length - 1")
                       div(v-else-if="param.arrayChildren === 'address'") <AddressField :address="value" copy :name="value === contract.address && contract.name ?  contract.name : null"   />
                       div(v-else  ) {{ value }}
-                  div(v-else-if="param.type === 'address'" class="col-9") <AddressField :address="param.value" copy :name="param.value === contract.address && contract.name ?  contract.name : null"   />
-                  div(v-else  class="col-9") {{ param.value }}
+                  div(v-else-if="param.type === 'address'" class="col-8 word-break") <AddressField :address="param.value" copy :name="param.value === contract.address && contract.name ?  contract.name : null"   />
+                  div(v-else  class="col-8 word-break") {{ param.value }}
             br( v-if="isContract && params.length > 0" )
             div( v-if="trx.createdaddr", class="fit row wrap justify-start items-start content-start" )
               div(class="col-3")
                 strong {{ `Deployed contract: ` }}
-              div(class="col-9")
+              div(class="col-9 word-break")
                 AddressField( :address="trx.createdaddr" )
             br( v-if="trx.createdaddr" )
             div(class="fit row wrap justify-start items-start content-start")
@@ -350,7 +361,7 @@ export default {
               div(class="col-9") {{ trx.output }}
           q-tab-panel( name="logs" )
             .jsonViewer
-              logs-viewer( :logs="getLogs()" :rawLogs="trx.logs" )
+              logs-viewer(:logs="trx.logs" :contract="contract" )
           q-tab-panel( name="internal" )
             InternalTxns( :itxs="trx.itxs" )
 </template>

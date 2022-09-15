@@ -1,6 +1,8 @@
 /* eslint-disable */
 
 import { ethers } from "ethers";
+import { markRaw } from 'vue'
+
 export default class Contract {
 
   constructor({address, creationInfo, name, abi, manager, token, verified = false}) {
@@ -9,7 +11,7 @@ export default class Contract {
     this.abi = abi
     this.manager = manager;
     if (abi){
-      this.iface = new ethers.utils.Interface(abi);
+      this.iface = markRaw(new ethers.utils.Interface(abi));
     }
     if (token){
       this.token = token;
@@ -64,16 +66,20 @@ export default class Contract {
   async parseTransaction(data) {
     if (this.iface) {
       try {
-        return this.iface.parseTransaction({data});
+
+        return await this.iface.parseTransaction({data});
       } catch (e) {
-        console.error(`Failed to parse transaction data ${data} using abi for ${this.address}`);
+        console.log(`Failed to parse transaction data ${data} using abi for ${this.address}`);
       }
     }
-
-    // this functionIface is an interface for a single function signature as discovered via 4bytes.directory... only use it for this function
-    const functionIface = await this.manager.getFunctionIface(data);
-    if (functionIface) {
-      return functionIface.parseTransaction({data});
+    try {
+      // this functionIface is an interface for a single function signature as discovered via 4bytes.directory... only use it for this function
+      const functionIface = await this.manager.getFunctionIface(data);
+      if (functionIface) {
+        return functionIface.parseTransaction({data});
+      }
+    } catch (e) {
+      console.error(`Failed to parse transaction data ${data} using abi for ${this.address}`);
     }
   }
 
@@ -85,12 +91,12 @@ export default class Contract {
           parsedLog.address = log.address;
           return parsedLog;
         } catch (e) {
-          console.log(`Failed parsing log event: ${e.message}`)
+          console.error(`Failed parsing log event: ${e.message}`)
           return log;
         }
       });
       parsedArray.forEach(parsed => {
-        if(parsed.name){
+        if(parsed.name && parsed.eventFragment){
           parsed.inputs = parsed.eventFragment.inputs;
         }
       })
@@ -103,9 +109,10 @@ export default class Contract {
       const eventIface = await this.manager.getEventIface(log.topics[0]);
       if (eventIface) {
         try {
-          return eventIface.parseLog(log);
-        } catch {
-          console.error(`Failed to parse log ${JSON.stringify(log, null, 4)}\n\nfrom event interface: ${JSON.stringify(eventIface, null, 4)}`)
+          let parsedLog = eventIface.parseLog(log);
+          parsedLog.address = log.address;
+        } catch(e) {
+          console.error(`Failed to parse log ${JSON.stringify(log, null, 4)}\n\nfrom event interface: ${JSON.stringify(eventIface, null, 4)} : ${e.message}`)
         }
       }
       return log;

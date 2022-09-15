@@ -196,16 +196,16 @@ body.body--dark
 .negative
   color: $negative
 
+.word-break
+  word-break: break-word
+
 .tableWrapper
   max-width: 100vw
 
-@media only screen and (max-width: 550px)
-  .selectorContainer .text-h6
-    font-size: 0.8rem
-  .q-input
-    font-size: 1.2rem
-
 @media screen and (max-width: 650px)
+  body
+    font-size: 12px
+
   .homeInfo
       color: white
       max-width: 100vw
@@ -219,3 +219,9 @@ body.body--dark
 
   .q-btn__wrapper
     padding: 4px !important
+
+@media only screen and (max-width: 550px)
+  .selectorContainer .text-h6
+    font-size: 0.8rem
+  .q-input
+    font-size: 1.2rem
