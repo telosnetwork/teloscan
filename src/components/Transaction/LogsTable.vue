@@ -40,15 +40,21 @@ export default {
         shapedLogs: null,
     }),
     created() {
+        let contracts = {};
         this.logs.forEach(async (log) => {
             let shapedLog = log;
             if(!this.contract || log.address !== this.contract.address){
-                const metadata = await this.$contractManager.checkBucket(log.address);
                 let log_contract;
-                if (metadata) {
-                    log_contract = await this.$contractManager.getVerifiedContract(log.address.toLowerCase(), metadata);
+                if (Object.prototype.hasOwnProperty.call(contracts, log.address)){
+                    log_contract = contracts[log.address]
                 } else {
-                    log_contract = await this.$contractManager.getContract(log.address.toLowerCase());
+                    const metadata = await this.$contractManager.checkBucket(log.address);
+                    if (metadata) {
+                        log_contract = await this.$contractManager.getVerifiedContract(log.address.toLowerCase(), metadata);
+                    } else {
+                        log_contract = await this.$contractManager.getContract(log.address.toLowerCase());
+                    }
+                    contracts[log.address] = log_contract;
                 }
                 if(log_contract){
                     let logs = await log_contract.parseLogs([log]);

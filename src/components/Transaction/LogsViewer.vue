@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div v-if="showNoLogsMessage" class="row">
+    <div v-if="logs.length === 0" class="row">
         <div class="col-12 u-flex--center">
             <q-icon class="fa fa-info-circle" size="md" />
             <h3>No logs found</h3>
@@ -17,10 +17,10 @@
             Human-readable logs
         </div>
         <div class="col-12">
-            <logs-table v-if="human_readable && logs.length > 0" :logs="logs" :contract="contract"/>
+            <logs-table v-if="human_readable" :logs="logs" :contract="contract"/>
             <json-viewer
                 v-else
-                :value="rawLogs.length ? rawLogs : logs"
+                :value="logs"
                 theme="custom-theme"
                 class="q-mb-md"
             />
@@ -44,22 +44,16 @@ export default {
             type: Object,
             required: true,
         },
-        rawLogs: {
-            type: Array,
-            default: () => [],
-        },
         logs: {
             type: Array,
             required: true,
         },
     },
+    mounted(){
+        console.log(this.logs);
+    },
     data: () => ({
         human_readable: true,
     }),
-    computed: {
-        showNoLogsMessage() {
-            return [this.rawLogs, this.logs].every(list => list.length === 0)
-        },
-    },
 }
 </script>

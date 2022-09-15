@@ -97,7 +97,7 @@ export default class Contract {
         }
       });
       parsedArray.forEach(parsed => {
-        if(parsed.name){
+        if(parsed.name && parsed.eventFragment){
           parsed.inputs = parsed.eventFragment.inputs;
         }
       })

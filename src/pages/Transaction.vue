@@ -350,7 +350,7 @@ export default {
               div(class="col-9") {{ trx.output }}
           q-tab-panel( name="logs" )
             .jsonViewer
-              logs-viewer( :logs="getLogs()" :rawLogs="trx.logs" :contract="contract" )
+              logs-viewer(:logs="trx.logs" :contract="contract" )
           q-tab-panel( name="internal" )
             InternalTxns( :itxs="trx.itxs" )
 </template>
