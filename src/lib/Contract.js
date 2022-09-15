@@ -71,9 +71,13 @@ export default class Contract {
     }
 
     // this functionIface is an interface for a single function signature as discovered via 4bytes.directory... only use it for this function
-    const functionIface = await this.manager.getFunctionIface(data);
-    if (functionIface) {
-      return functionIface.parseTransaction({data});
+    try {
+      const functionIface = await this.manager.getFunctionIface(data);
+      if (functionIface) {
+        return functionIface.parseTransaction({data});
+      }
+    } catch (e) {
+      console.error(`Failed to parse transaction data ${data} using abi for ${this.address}`);
     }
   }
 
