@@ -16,7 +16,7 @@
                 :key="`log-${index}`"
                 class="fit row justify-start items-start content-start"
             >
-                <div class="col-2">
+                <div class="col-4">
                     <template v-if="param.name">
                         {{ param.name }} ({{ param.type }}) :
                     </template>
@@ -26,7 +26,7 @@
                     </template>
                 </div>
 
-                <div class="col-9">
+                <div class="col-8">
                     <address-field
                         v-if="param.type === 'address'"
                         :address="log.args[index]"
@@ -34,7 +34,7 @@
                         :copy="true"
                     />
 
-                    <template v-else-if="param.type === 'uint256'">
+                    <template v-else-if="param.type === 'uint256' || param.type === 'uint128'">
                         <div v-if="log.isTransfer && log.token">
                             {{ log.args[index] / (10 ** log.token.decimals) }}
                             <router-link :to="`/address/${log.address}`">
@@ -46,7 +46,13 @@
                             {{ log.args[index] }}
                         </div>
                     </template>
-
+                    <template v-else-if="param.arrayChildren && log.args[index]">
+                        <div>[</div>
+                        <div v-for="i in log.args[index].length - 1" class="q-pl-xl" :key="'param.type' + i">
+                            {{ log.args[index][i] }},
+                        </div>
+                        <div>]</div>
+                    </template>
                     <template v-else>
                         {{ log.args[index] }}
                     </template>
