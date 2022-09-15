@@ -15,13 +15,17 @@
                 size="lg"
             />
             Human-readable logs
+            <small v-if="!allVerified">
+                <q-icon name="info" class="q-mb-xs q-ml-xs" size="14px"/>
+                <q-tooltip>Verify the related contracts of each log to see its human readable version</q-tooltip>
+            </small>
         </div>
         <div class="col-12">
             <logs-table
                 v-if="human_readable"
-                :rowCount="logs.length"
                 :rawLogs="logs"
                 :logs="shapedLogs"
+                :allVerified="allVerified"
                 :contract="contract"
             />
             <json-viewer
@@ -70,6 +74,7 @@ export default {
 
     created() {
         let contracts = {};
+        let verified = 0;
         this.logs.forEach(async (log) => {
             let shapedLog = { ...log };
             shapedLog.isTransfer = false;
@@ -81,6 +86,7 @@ export default {
                     log_contract = await this.getLogContract(log);
                     contracts[log.address] = log_contract;
                 }
+                verified = (log_contract.isVerified()) ? verified + 1: verified;
                 if(log_contract){
                     let logs = await log_contract.parseLogs([shapedLog]);
                     shapedLog = logs[0];
@@ -99,6 +105,7 @@ export default {
                     console.error(`Failed to retrieve contract with address ${log.address}: ${e.message}`);
                 }
             }
+            this.allVerified = (verified == this.logs.length);
             this.shapedLogs.push(shapedLog);
             this.shapedLogs.sort((a,b) => BigNumber.from(a.logIndex).toNumber() - BigNumber.from(b.logIndex).toNumber());
         });
@@ -106,6 +113,7 @@ export default {
     data: () => ({
         human_readable: true,
         shapedLogs: [],
+        allVerified: false,
     }),
 }
 </script>
