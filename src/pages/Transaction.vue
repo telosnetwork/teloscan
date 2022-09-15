@@ -132,18 +132,6 @@ export default {
             })
             return args;
         },
-        getLogs() {
-            if (this.parsedLogs) {
-                return this.parsedLogs.map(log => {
-                    if (log.signature && log.args) {
-                        return { name: log.signature, function_signature: log.topic.substr(0, 10), args: log.args, inputs: log.eventFragment.inputs, address: log.address  };
-                    }
-                    return log;
-                });
-            }
-
-            return this.trx.logs;
-        },
         getGasFee() {
             return (
                 (this.trx.charged_gas_price * this.trx.gasused) /
