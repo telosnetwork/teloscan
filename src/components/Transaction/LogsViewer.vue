@@ -70,8 +70,7 @@ export default {
         let contracts = {};
         this.logs.forEach(async (log) => {
             let shapedLog = { ...log };
-            console.log(shapedLog)
-            console.log(log)
+            shapedLog.isTransfer = false;
             if(!this.contract || log.address !== this.contract.address){
                 let log_contract;
                 if (Object.prototype.hasOwnProperty.call(contracts, log.address)){
