@@ -40,6 +40,16 @@ export default {
         JsonViewer,
         LogsTable,
     },
+    methods: {
+        async getLogContract(log){
+            const metadata = await this.$contractManager.checkBucket(log.address);
+            if (metadata) {
+                return  await this.$contractManager.getVerifiedContract(log.address.toLowerCase(), metadata);
+            } else {
+                return  await this.$contractManager.getContract(log.address.toLowerCase());
+            }
+        },
+    },
     props: {
         contract : {
             type: Object,
@@ -54,22 +64,19 @@ export default {
     created() {
         let contracts = {};
         this.logs.forEach(async (log) => {
-            let shapedLog = log;
+            let shapedLog = { ...log };
+            console.log(shapedLog)
+            console.log(log)
             if(!this.contract || log.address !== this.contract.address){
                 let log_contract;
                 if (Object.prototype.hasOwnProperty.call(contracts, log.address)){
                     log_contract = contracts[log.address]
                 } else {
-                    const metadata = await this.$contractManager.checkBucket(log.address);
-                    if (metadata) {
-                        log_contract = await this.$contractManager.getVerifiedContract(log.address.toLowerCase(), metadata);
-                    } else {
-                        log_contract = await this.$contractManager.getContract(log.address.toLowerCase());
-                    }
+                    log_contract = await this.getLogContract(log);
                     contracts[log.address] = log_contract;
                 }
                 if(log_contract){
-                    let logs = await log_contract.parseLogs([log]);
+                    let logs = await log_contract.parseLogs([shapedLog]);
                     shapedLog = logs[0];
                     shapedLog.address = log.address;
                     shapedLog.function_signature = shapedLog.topic ? shapedLog.topic.substr(0, 10) : shapedLog.topics[0].substr(0, 10);
