@@ -85,6 +85,7 @@
                     <q-item-label> Teloscan Testnet </q-item-label>
                 </q-item-section>
             </q-item>
+            <!--
             <q-item
                 v-close-popup
                 clickable
@@ -94,6 +95,7 @@
                     <q-item-label> Stake Telos </q-item-label>
                 </q-item-section>
             </q-item>
+            -->
         </q-list>
     </q-drawer>
 
@@ -118,7 +120,7 @@ export default {
     components: { Search, ConnectButton, FooterMain },
     data() {
         return {
-            mainnet: process.env.NETWORK_EVM_CHAIN_ID === '40',
+            mainnet: parseInt(process.env.NETWORK_EVM_CHAIN_ID) === 40,
             accountConnected: false,
             drawer: false,
         };
