@@ -17,7 +17,12 @@
             Human-readable logs
         </div>
         <div class="col-12">
-            <logs-table v-if="human_readable" :logs="shapedLogs" :contract="contract"/>
+            <logs-table
+                v-if="human_readable"
+                :rowCount="logs.length"
+                :logs="shapedLogs"
+                :contract="contract"
+            />
             <json-viewer
                 v-else
                 :value="logs"
