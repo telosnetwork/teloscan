@@ -100,7 +100,6 @@ export default {
                 }
             }
             this.shapedLogs.push(shapedLog);
-            console.log(shapedLog.logIndex);
             this.shapedLogs.sort((a,b) => BigNumber.from(a.logIndex).toNumber() - BigNumber.from(b.logIndex).toNumber());
         });
     },

@@ -52,8 +52,12 @@ export default {
                 return this.name;
             }
 
-            if (this.contract) {
-                return `${this.contract.getName()}`;
+            if (this.contract && this.contract.getName()) {
+                const name = this.contract.getName();
+                if(name[0] === '0' && name[1] === 'x'){
+                    return this.truncate > 0 ? `${this.address.slice(0, this.truncate)}...` : this.address;
+                }
+                return `${name}`;
             }
             if (!this.address) {
                 return '';
