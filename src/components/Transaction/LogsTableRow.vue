@@ -34,7 +34,7 @@
                         :copy="true"
                     />
 
-                    <template v-else-if="param.type === 'uint256' || param.type === 'uint128'">
+                    <div v-else-if="param.type === 'uint256' || param.type === 'uint128'">
                         <div v-if="log.isTransfer && log.token">
                             {{ log.args[index] / (10 ** log.token.decimals) }}
                             <router-link :to="`/address/${log.address}`">
@@ -42,20 +42,20 @@
                             </router-link>
                         </div>
 
-                        <div v-else>
+                        <div v-else class="text-wrap">
                             {{ log.args[index] }}
                         </div>
-                    </template>
-                    <template v-else-if="param.arrayChildren && log.args[index]">
+                    </div>
+                    <div v-else-if="param.arrayChildren && log.args[index]">
                         <div>[</div>
-                        <div v-for="i in log.args[index].length - 1" class="q-pl-xl" :key="'param.type' + i">
+                        <div v-for="i in log.args[index].length - 1" class="q-pl-xl text-wrap" :key="'param.type' + i">
                             {{ log.args[index][i] }},
                         </div>
                         <div>]</div>
-                    </template>
-                    <template v-else>
+                    </div>
+                    <div v-else class="text-wrap">
                         {{ log.args[index] }}
-                    </template>
+                    </div>
                 </div>
             </div>
         </div>
