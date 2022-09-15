@@ -90,7 +90,7 @@ export default {
                 log.topics.forEach(async (topic) => {
                     if(TRANSFER_FUNCTION_SIGNATURES.includes(topic.substr(0, 10))){
                         let contract = await this.$contractManager.getContract(log.address, true);
-                        if(typeof contract.token !== 'undefined'){
+                        if(typeof contract.token !== 'undefined' && contract.token !== null){
                             let token = {'symbol': contract.token.symbol, 'address': log.address}
                             let decimals = contract.token.decimals || 18;
                             this.transfers.push({'value' : formatBN(log.data, decimals, 5), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
@@ -167,7 +167,7 @@ export default {
         | Not found: {{ hash }}
   .row.tableWrapper
     .col-12.q-py-lg
-      .content-container( v-if="trx" )
+      .content-container( v-if="trx"  :key="transfers.length + isContract" )
         q-tabs.text-white.topRounded(
           v-model="tab"
           dense
@@ -209,7 +209,7 @@ export default {
           animated
           keep-alive
         )
-          q-tab-panel( name="general" :key="transfers.length + isContract" )
+          q-tab-panel( name="general" )
             br
             br
             div(class="fit row wrap justify-start items-start content-start")
@@ -282,7 +282,7 @@ export default {
                         div(v-for="(tuple, i) in value") {{ tuple}}
                         br(v-if="index !== param.value.length - 1")
                       div(v-else-if="param.arrayChildren === 'address'") <AddressField :address="value" copy :name="value === contract.address && contract.name ?  contract.name : null"   />
-                      div(v-else  ) {{ value }},
+                      div(v-else  ) {{ value }}
                   div(v-else-if="param.type === 'address'" class="col-8 word-break") <AddressField :address="param.value" copy :name="param.value === contract.address && contract.name ?  contract.name : null"   />
                   div(v-else  class="col-8 word-break") {{ param.value }}
             br( v-if="isContract && params.length > 0" )

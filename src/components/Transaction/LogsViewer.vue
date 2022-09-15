@@ -9,7 +9,7 @@
     <div v-else class="row">
         <div class="col-12 u-flex--center-y">
             <q-toggle
-                v-model="readable"
+                v-model="human_readable"
                 icon="visibility"
                 color="secondary"
                 size="lg"
@@ -17,7 +17,7 @@
             Human-readable logs
         </div>
         <div class="col-12">
-            <logs-table v-if="readable" :logs="logs"/>
+            <logs-table v-if="human_readable && logs.length > 0" :logs="logs"/>
             <json-viewer
                 v-else
                 :value="rawLogs.length ? rawLogs : logs"
@@ -50,7 +50,7 @@ export default {
         },
     },
     data: () => ({
-        readable: true,
+        human_readable: true,
     }),
     computed: {
         showNoLogsMessage() {
