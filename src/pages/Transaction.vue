@@ -239,13 +239,13 @@ export default {
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
                 strong {{ `From: ` }}
-              div(class="col-9")
+              div(class="col-9 word-break")
                 address-field(:address="trx.from" :truncate="0" copy)
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
                 strong {{ `To: ` }}
-              div(class="col-9")
+              div(class="col-9 word-break")
                 address-field( :address="trx.to" :is-contract-trx="!!contract"  :truncate="0" copy)
             br
             div( v-if="isContract", class="fit row wrap justify-start items-start content-start" )
@@ -257,7 +257,7 @@ export default {
             div( v-if="isContract && params.length > 0" class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
                 strong {{ `Function parameters: ` }}
-              div(class="col")
+              div(class="col" id="function-parameters")
                 div(v-for="param in params" class="fit row wrap justify-start items-start content-start")
                   div(class="col-4")
                     q-icon(name="arrow_right" class="list-arrow")
@@ -277,7 +277,7 @@ export default {
             div( v-if="trx.createdaddr", class="fit row wrap justify-start items-start content-start" )
               div(class="col-3")
                 strong {{ `Deployed contract: ` }}
-              div(class="col-9")
+              div(class="col-9 word-break")
                 AddressField( :address="trx.createdaddr" )
             br( v-if="trx.createdaddr" )
             div(class="fit row wrap justify-start items-start content-start")
