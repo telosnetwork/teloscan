@@ -135,7 +135,7 @@ export default {
         getLogs() {
             if (this.parsedLogs) {
                 return this.parsedLogs.map(log => {
-                    if (log.signature) {
+                    if (log.signature && log.args) {
                         return { name: log.signature, function_signature: log.topic.substr(0, 10), args: log.args, inputs: log.eventFragment.inputs, address: log.address  };
                     }
                     return log;
@@ -350,7 +350,7 @@ export default {
               div(class="col-9") {{ trx.output }}
           q-tab-panel( name="logs" )
             .jsonViewer
-              logs-viewer( :logs="getLogs()" :rawLogs="trx.logs" )
+              logs-viewer( :logs="getLogs()" :rawLogs="trx.logs" :contract="contract" )
           q-tab-panel( name="internal" )
             InternalTxns( :itxs="trx.itxs" )
 </template>

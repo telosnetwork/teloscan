@@ -93,8 +93,6 @@ export default class Contract {
           return parsedLog;
         } catch (e) {
           console.error(`Failed parsing log event: ${e.message}`)
-          console.log(log)
-          console.log(this.iface)
           return log;
         }
       });

@@ -27,6 +27,10 @@ export default {
         LogsTableRow,
     },
     props: {
+        contract : {
+            type: Object,
+            required: true,
+        },
         logs: {
             type: Array,
             required: true,
@@ -38,7 +42,16 @@ export default {
     created() {
         this.logs.forEach(async (log) => {
             let shapedLog = log;
-            if (TRANSFER_FUNCTION_SIGNATURES.includes(log.function_signature)) {
+            if(log.address !== this.contract.address){
+                let log_contract = await this.$contractManager.getContract(log.address);
+                let logs = await log_contract.parseLogs([log]);
+                shapedLog = logs[0];
+                shapedLog.address = log.address;
+                shapedLog.function_signature = shapedLog.topic.substr(0, 10);
+                shapedLog.name = shapedLog.signature;
+            }
+
+            if (TRANSFER_FUNCTION_SIGNATURES.includes(shapedLog.function_signature)) {
                 shapedLog.isTransfer = true;
                 try {
                     shapedLog.token = await this.$contractManager.getTokenData(log.address, 'erc20');

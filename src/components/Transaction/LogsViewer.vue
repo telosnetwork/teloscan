@@ -17,7 +17,7 @@
             Human-readable logs
         </div>
         <div class="col-12">
-            <logs-table v-if="human_readable && logs.length > 0" :logs="logs"/>
+            <logs-table v-if="human_readable && logs.length > 0" :logs="logs" :contract="contract"/>
             <json-viewer
                 v-else
                 :value="rawLogs.length ? rawLogs : logs"
@@ -40,6 +40,10 @@ export default {
         LogsTable,
     },
     props: {
+        contract : {
+            type: Object,
+            required: true,
+        },
         rawLogs: {
             type: Array,
             default: () => [],
