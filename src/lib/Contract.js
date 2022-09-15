@@ -80,7 +80,7 @@ export default class Contract {
         return functionIface.parseTransaction({data});
       }
     } catch (e) {
-      console.error(`Failed to parse transaction data ${data} using abi for ${this.address}`);
+      console.error(`Failed to parse transaction data ${data} using abi for ${this.address}: ${e}`);
     }
   }
 

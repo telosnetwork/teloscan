@@ -48,13 +48,11 @@ export default class ContractManager {
                     console.error(`Unable to find function signature for sig: ${prefix}`);
                     return;
                 }
-
-                const iface = new ethers.utils.Interface([`function ${abiResponse.data.text_signature}`]);
-                this.functionInterfaces[prefix] = iface;
-                return iface;
+                this.functionInterfaces[prefix] = `function ${abiResponse.data.text_signature}`;
+                return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
             }
         } catch (e) {
-            console.error(`Error trying to find event signature for function ${prefix}: ${e.message}`);
+            console.error(`Error trying to find event signature for function ${prefix}`);
             return;
         }
     }

@@ -129,11 +129,11 @@ export default {
                         transaction.contract = contract;
                     }
                     transaction.logs.forEach(log => {
-                        log.topics.forEach(async  topic =>  {
+                        log.topics.forEach(async topic =>  {
                             let signature = topic.substring(0, 10)
                             if (TRANSFER_FUNCTION_SIGNATURES.includes(signature)) {
-                                if(transaction.contract && transaction.contract.token && transaction.parsedTransaction.args['amount']){
-                                    transaction.transfers.push({'value': `${formatBN(transaction.parsedTransaction.args['amount'], transaction.contract.token.decimals, 5)}`, 'symbol': transaction.contract.token.symbol})
+                                if(transaction.contract && transaction.contract.token ){
+                                    transaction.transfers.push({'value': `${formatBN(log.data, transaction.contract.token.decimals, 5)}`, 'symbol': transaction.contract.token.symbol})
                                 }
                             }
                         })
