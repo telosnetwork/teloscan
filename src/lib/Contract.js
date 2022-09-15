@@ -1,6 +1,8 @@
 /* eslint-disable */
 
-import { ethers } from "ethers"; import { markRaw } from 'vue'
+import { ethers } from "ethers";
+import { markRaw } from 'vue'
+
 export default class Contract {
 
   constructor({address, creationInfo, name, abi, manager, token, verified = false}) {
@@ -9,7 +11,7 @@ export default class Contract {
     this.abi = abi
     this.manager = manager;
     if (abi){
-      this.iface =   markRaw(new ethers.utils.Interface(abi));
+      this.iface = markRaw(new ethers.utils.Interface(abi));
     }
     if (token){
       this.token = token;
@@ -67,7 +69,7 @@ export default class Contract {
 
         return await this.iface.parseTransaction({data});
       } catch (e) {
-        console.error(`Failed to parse transaction data ${data} using abi for ${this.address}: ${e.message}`);
+        console.error(`Failed to parse transaction data ${data} using abi for ${this.address}`);
         console.log(this.iface);
       }
     }
@@ -109,8 +111,8 @@ export default class Contract {
       if (eventIface) {
         try {
           return eventIface.parseLog(log);
-        } catch {
-          console.error(`Failed to parse log ${JSON.stringify(log, null, 4)}\n\nfrom event interface: ${JSON.stringify(eventIface, null, 4)}`)
+        } catch(e) {
+          console.error(`Failed to parse log ${JSON.stringify(log, null, 4)}\n\nfrom event interface: ${JSON.stringify(eventIface, null, 4)} : ${e.message}`)
         }
       }
       return log;

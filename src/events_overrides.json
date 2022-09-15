@@ -1,3 +1,8 @@
 {
-  "0xddf252ad": "event Transfer(address indexed from, address indexed to, uint256 value)"
+  "0xddf252ad": "event Transfer(address indexed from, address indexed to, uint256 value)",
+  "0x8c5be1e5": "event Approval(address indexed owner, address indexed spender, uint256 value)",
+  "0x71bab65c": "event Harvest(address indexed sender, uint256 performanceFee, uint256 callFee)",
+  "0xf279e6a1": "event Withdraw(address indexed user, uint256 indexed pid, uint256 amount)",
+  "0x90890809": "event Deposit(address indexed user, uint256 indexed pid, uint256 amount)",
+  "0xd78ad95f": "event Swap(address indexed sender, uint256 amount0In, uint256 amount1In, uint256 amount0Out, uint256 amount1Out, address indexed to)"
 }

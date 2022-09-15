@@ -1,7 +1,7 @@
 <template>
 <div class="c-log-table-row">
     <div class="c-log-table-row__head" @click="expanded = !expanded">
-        <q-icon :name="arrowIcon" size="sm" />
+        <q-icon :name="arrowIcon" size="sm" class="q-mb-xs" />
         <strong v-if="log.name">
             {{ log.name }}
         </strong>
