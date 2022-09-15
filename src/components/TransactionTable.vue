@@ -212,5 +212,5 @@ q-table(
                 span(v-if="props.row.value > 0 ||  !props.row.transfers || props.row.transfers.length == 0") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
                 div(v-else)
                     span(v-if="props.row.transfers &&  props.row.transfers.length > 0") {{ props.row.transfers[0].value }} {{ props.row.transfers[0].symbol }}
-                    small(v-if="props.row.transfers &&  props.row.transfers.length > 1") +{{ props.row.transfers.length - 1 }}
+                    sup(v-if="props.row.transfers &&  props.row.transfers.length > 1" class="q-ml-xs") +{{ props.row.transfers.length - 1 }}
 </template>

@@ -60,7 +60,7 @@
 
         <json-viewer
             v-else
-            :value="log"
+            :value="rawLog"
             theme="custom-theme"
             class="q-mb-md"
         />
@@ -81,6 +81,10 @@ export default {
     },
     props: {
         log: {
+            type: Object,
+            required: true,
+        },
+        rawLog: {
             type: Object,
             required: true,
         },

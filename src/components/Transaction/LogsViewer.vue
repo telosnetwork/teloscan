@@ -20,6 +20,7 @@
             <logs-table
                 v-if="human_readable"
                 :rowCount="logs.length"
+                :rawLogs="logs"
                 :logs="shapedLogs"
                 :contract="contract"
             />
@@ -38,6 +39,7 @@
 import JsonViewer from 'vue-json-viewer'
 import LogsTable from 'components/Transaction/LogsTable'
 import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/functionSignatures';
+import { BigNumber } from 'ethers';
 
 export default {
     name: 'LogsViewer',
@@ -58,7 +60,7 @@ export default {
     props: {
         contract : {
             type: Object,
-            required: true,
+            required: false,
         },
         logs: {
             type: Array,
@@ -82,6 +84,7 @@ export default {
                 if(log_contract){
                     let logs = await log_contract.parseLogs([shapedLog]);
                     shapedLog = logs[0];
+                    shapedLog.logIndex = log.logIndex;
                     shapedLog.address = log.address;
                     shapedLog.function_signature = shapedLog.topic ? shapedLog.topic.substr(0, 10) : shapedLog.topics[0].substr(0, 10);
                     shapedLog.name = shapedLog.signature;
@@ -96,8 +99,9 @@ export default {
                     console.error(`Failed to retrieve contract with address ${log.address}: ${e.message}`);
                 }
             }
-
-            this.shapedLogs.push(shapedLog)
+            this.shapedLogs.push(shapedLog);
+            console.log(shapedLog.logIndex);
+            this.shapedLogs.sort((a,b) => BigNumber.from(a.logIndex).toNumber() - BigNumber.from(b.logIndex).toNumber());
         });
     },
     data: () => ({

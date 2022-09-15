@@ -7,6 +7,7 @@
                 v-for="(log, index) in logs"
                 :key="`log-row-${index}`"
                 :log="log"
+                :rawLog="rawLogs[index]"
             />
         </div>
         <div v-if="logs.length !== rowCount" class="col-12 u-flex--center">
@@ -31,6 +32,10 @@ export default {
         },
         rowCount: {
             type: Number,
+            required: true,
+        },
+        rawLogs: {
+            type: Array,
             required: true,
         },
         logs: {
