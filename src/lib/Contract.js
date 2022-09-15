@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { ethers } from "ethers";
+import { ethers } from "ethers"; import { markRaw } from 'vue'
 export default class Contract {
 
   constructor({address, creationInfo, name, abi, manager, token, verified = false}) {
@@ -9,7 +9,7 @@ export default class Contract {
     this.abi = abi
     this.manager = manager;
     if (abi){
-      this.iface = new ethers.utils.Interface(abi);
+      this.iface =   markRaw(new ethers.utils.Interface(abi));
     }
     if (token){
       this.token = token;
@@ -64,14 +64,15 @@ export default class Contract {
   async parseTransaction(data) {
     if (this.iface) {
       try {
-        return this.iface.parseTransaction({data});
+
+        return await this.iface.parseTransaction({data});
       } catch (e) {
-        console.error(`Failed to parse transaction data ${data} using abi for ${this.address}`);
+        console.error(`Failed to parse transaction data ${data} using abi for ${this.address}: ${e.message}`);
+        console.log(this.iface);
       }
     }
-
-    // this functionIface is an interface for a single function signature as discovered via 4bytes.directory... only use it for this function
     try {
+      // this functionIface is an interface for a single function signature as discovered via 4bytes.directory... only use it for this function
       const functionIface = await this.manager.getFunctionIface(data);
       if (functionIface) {
         return functionIface.parseTransaction({data});
