@@ -33,15 +33,13 @@
                         :truncate="0"
                         :copy="true"
                     />
-
-                    <div v-else-if="param.type === 'uint256' || param.type === 'uint128'">
+                    <div v-else-if="param.type === 'uint256' || param.type === 'uint128'"  class="word-break">
                         <div v-if="log.isTransfer && log.token">
                             {{ log.args[index] / (10 ** log.token.decimals) }}
                             <router-link :to="`/address/${log.address}`">
                                 {{ log.token.symbol }}
                             </router-link>
                         </div>
-
                         <div v-else class="word-break">
                             {{ log.args[index] }}
                         </div>

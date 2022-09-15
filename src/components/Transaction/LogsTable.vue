@@ -38,18 +38,13 @@ export default {
     created() {
         this.logs.forEach(async (log) => {
             let shapedLog = log;
-
-            if (!TRANSFER_FUNCTION_SIGNATURES.includes(log.function_signature)) {
-                await this.$contractManager.getContract(log.address)
-                    .then(({ token }) => {
-                        shapedLog = {
-                            ...log,
-                            token,
-                        }
-                    })
-                    .catch((error) => {
-                        console.error(`Failed to retrieve contract with address ${log.address}: ${error}`);
-                    });
+            if (TRANSFER_FUNCTION_SIGNATURES.includes(log.function_signature)) {
+                shapedLog.isTransfer = true;
+                try {
+                    shapedLog.token = await this.$contractManager.getTokenData(log.address, 'erc20');
+                } catch (e) {
+                    console.error(`Failed to retrieve contract with address ${log.address}: ${e.message}`);
+                }
             }
 
             if (!Array.isArray(this.shapedLogs))

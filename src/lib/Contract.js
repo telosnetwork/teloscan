@@ -92,7 +92,9 @@ export default class Contract {
           parsedLog.address = log.address;
           return parsedLog;
         } catch (e) {
-          console.log(`Failed parsing log event: ${e.message}`)
+          console.error(`Failed parsing log event: ${e.message}`)
+          console.log(log)
+          console.log(this.iface)
           return log;
         }
       });
@@ -110,7 +112,8 @@ export default class Contract {
       const eventIface = await this.manager.getEventIface(log.topics[0]);
       if (eventIface) {
         try {
-          return eventIface.parseLog(log);
+          let parsedLog = eventIface.parseLog(log);
+          parsedLog.address = log.address;
         } catch(e) {
           console.error(`Failed to parse log ${JSON.stringify(log, null, 4)}\n\nfrom event interface: ${JSON.stringify(eventIface, null, 4)} : ${e.message}`)
         }

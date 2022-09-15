@@ -70,9 +70,8 @@ export default class ContractManager {
                     return;
                 }
 
-                const iface = new ethers.utils.Interface([`event ${abiResponse.data.text_signature}`]);
-                this.eventInterfaces[data] = iface;
-                return iface;
+                this.eventInterfaces[data] = `event ${abiResponse.data.text_signature}`;
+                return new ethers.utils.Interface([this.eventInterfaces[data]]);
             }
         } catch (e) {
             console.error(`Error trying to find event signature for event ${data}: ${e.message}`);

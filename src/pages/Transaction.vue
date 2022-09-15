@@ -135,7 +135,7 @@ export default {
         getLogs() {
             if (this.parsedLogs) {
                 return this.parsedLogs.map(log => {
-                    if (log.signature && log.args) {
+                    if (log.signature) {
                         return { name: log.signature, function_signature: log.topic.substr(0, 10), args: log.args, inputs: log.eventFragment.inputs, address: log.address  };
                     }
                     return log;
