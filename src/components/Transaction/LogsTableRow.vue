@@ -1,7 +1,7 @@
 <template>
-<div class="c-log-table-row">
+<div class="c-log-table-row"  >
     <div class="c-log-table-row__head" @click="expanded = !expanded">
-        <q-icon :name="arrowIcon" size="sm" />
+        <q-icon :name="arrowIcon" size="sm" class="q-mb-xs" />
         <strong v-if="log.name">
             {{ log.name }}
         </strong>
@@ -10,13 +10,13 @@
         </strong>
     </div>
     <div class="q-pl-md" v-if="expanded">
-        <div v-if="log.name">
+        <div v-if="log.name" :key="log.name">
             <div
                 v-for="(param, index) in log.inputs"
                 :key="`log-${index}`"
                 class="fit row justify-start items-start content-start"
             >
-                <div class="col-2">
+                <div class="col-4">
                     <template v-if="param.name">
                         {{ param.name }} ({{ param.type }}) :
                     </template>
@@ -26,37 +26,41 @@
                     </template>
                 </div>
 
-                <div class="col-9">
+                <div class="col-8">
                     <address-field
                         v-if="param.type === 'address'"
                         :address="log.args[index]"
                         :truncate="0"
                         :copy="true"
                     />
-
-                    <template v-else-if="param.type === 'uint256'">
+                    <div v-else-if="param.type === 'uint256' || param.type === 'uint128'"  class="word-break">
                         <div v-if="log.isTransfer && log.token">
                             {{ log.args[index] / (10 ** log.token.decimals) }}
                             <router-link :to="`/address/${log.address}`">
                                 {{ log.token.symbol }}
                             </router-link>
                         </div>
-
-                        <div v-else>
+                        <div v-else class="word-break">
                             {{ log.args[index] }}
                         </div>
-                    </template>
-
-                    <template v-else>
+                    </div>
+                    <div v-else-if="param.arrayChildren && log.args[index]">
+                        <div>[</div>
+                        <div v-for="i in log.args[index].length - 1" class="q-pl-xl word-break" :key="'param.type' + i">
+                            {{ log.args[index][i] }},
+                        </div>
+                        <div>]</div>
+                    </div>
+                    <div v-else class="word-break">
                         {{ log.args[index] }}
-                    </template>
+                    </div>
                 </div>
             </div>
         </div>
 
         <json-viewer
             v-else
-            :value="log"
+            :value="rawLog"
             theme="custom-theme"
             class="q-mb-md"
         />
@@ -77,6 +81,10 @@ export default {
     },
     props: {
         log: {
+            type: Object,
+            required: true,
+        },
+        rawLog: {
             type: Object,
             required: true,
         },
