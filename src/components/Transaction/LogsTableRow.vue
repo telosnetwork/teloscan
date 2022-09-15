@@ -1,5 +1,5 @@
 <template>
-<div class="c-log-table-row">
+<div class="c-log-table-row"  >
     <div class="c-log-table-row__head" @click="expanded = !expanded">
         <q-icon :name="arrowIcon" size="sm" class="q-mb-xs" />
         <strong v-if="log.name">
@@ -10,7 +10,7 @@
         </strong>
     </div>
     <div class="q-pl-md" v-if="expanded">
-        <div v-if="log.name">
+        <div v-if="log.name" :key="log.name">
             <div
                 v-for="(param, index) in log.inputs"
                 :key="`log-${index}`"
@@ -42,18 +42,18 @@
                             </router-link>
                         </div>
 
-                        <div v-else class="text-wrap">
+                        <div v-else class="word-break">
                             {{ log.args[index] }}
                         </div>
                     </div>
                     <div v-else-if="param.arrayChildren && log.args[index]">
                         <div>[</div>
-                        <div v-for="i in log.args[index].length - 1" class="q-pl-xl text-wrap" :key="'param.type' + i">
+                        <div v-for="i in log.args[index].length - 1" class="q-pl-xl word-break" :key="'param.type' + i">
                             {{ log.args[index][i] }},
                         </div>
                         <div>]</div>
                     </div>
-                    <div v-else class="text-wrap">
+                    <div v-else class="word-break">
                         {{ log.args[index] }}
                     </div>
                 </div>
