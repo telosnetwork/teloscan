@@ -7,6 +7,8 @@
   "0xe1fffcc4": "event Deposit(address indexed sender, uint256 value)",
   "0x4c209b5f": "event Mint(address indexed sender, uint256 amount0, uint256 amount1)",
   "0xd78ad95f": "event Swap(address indexed sender, uint256 amount0In, uint256 amount1In, uint256 amount0Out, uint256 amount1Out, address indexed to)",
+  "0xa2c38e2d": "event Claim(address indexed account, uint256 amount, bool indexed automatic)",
+  "0xee503bee": "event DividendWithdrawn(address indexed to, uint256 weiAmount)",
   "0xc3d58168": "event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value)",
   "0x0559884f": "event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 updatedAt)",
   "0x1c411e9a": "event Sync(uint112 reserve0, uint112 reserve1)"

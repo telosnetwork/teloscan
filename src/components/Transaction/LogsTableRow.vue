@@ -43,7 +43,7 @@
                             </div>
                             <div v-else>
                                 <router-link :to="`/address/${log.address}`">
-                                    {{ log.token.name }}
+                                    {{ log.token.symbol }}
                                 </router-link>
                                 #{{ log.args[index] }}
                             </div>

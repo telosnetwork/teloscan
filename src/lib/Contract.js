@@ -85,16 +85,16 @@ export default class Contract {
 
   async parseLogs(logsArray) {
     if (this.iface) {
-      let parsedArray = logsArray.map(log => {
+      let parsedArray = await Promise.all(logsArray.map(async (log) => {
         try {
           let parsedLog = this.iface.parseLog(log);
           parsedLog.address = log.address;
           return parsedLog;
         } catch (e) {
-          console.error(`Failed parsing log event: ${e.message}`)
-          return log;
+          console.log(`Failed parsing log ${log.logIndex} from contract interface: ${e.message}`)
+          return await this.parseEvent(log);
         }
-      });
+      }));
       parsedArray.forEach(parsed => {
         if(parsed.name && parsed.eventFragment){
           parsed.inputs = parsed.eventFragment.inputs;
@@ -106,17 +106,22 @@ export default class Contract {
     // TODO: This works very inconsistently... need to dig deeper, example http://localhost:8080/tx/0x817b1596365bb402c45b53d67be7808fb204e3842cf61587777d92a3ce909d16
     //   note that the Sync event works fine, but the rest do not
     return await Promise.all(logsArray.map(async log => {
-      const eventIface = await this.manager.getEventIface(log.topics[0]);
-      if (eventIface) {
-        try {
-          let parsedLog = eventIface.parseLog(log);
-          parsedLog.address = log.address;
-        } catch(e) {
-          console.error(`Failed to parse log ${JSON.stringify(log, null, 4)}\n\nfrom event interface: ${JSON.stringify(eventIface, null, 4)} : ${e.message}`)
-        }
-      }
-      return log;
+      return await this.parseEvent(log);
     }))
+  }
+
+  async parseEvent(log){
+    const eventIface = await this.manager.getEventIface(log.topics[0]);
+    if (eventIface) {
+      try {
+        let parsedLog = eventIface.parseLog(log);
+        parsedLog.address = log.address;
+        return parsedLog;
+      } catch(e) {
+        console.log(`Failed to parse log ${log.logIndex} from event interface`)
+      }
+    }
+    return log;
   }
 
 }

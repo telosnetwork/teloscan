@@ -89,9 +89,9 @@ export default {
             this.setErrorMessage();
         },
         loadTransfers(){
-            this.erc20Transfers = [];
             this.trx.logs.forEach(async (log) => {
-                // ERC20 & ERC721 transfers (ERC721 has 4 log topics, ERC20 has 3)
+                // ERC20 & ERC721 transfers (ERC721 has 4 log topics for transfers, ERC20 has 3 log topics)
+                // TODO: handle erc1155, shouldn't be too different from erc721
                 if(TRANSFER_FUNCTION_SIGNATURES.includes(log.topics[0].substr(0, 10))){
                     let contract = await this.$contractManager.getContract(log.address, (log.topics.length === 4) ? 'erc721' : 'erc20');
                     if(typeof contract.token !== 'undefined' && contract.token !== null){

@@ -95,7 +95,7 @@ export default class ContractManager {
         if (!address) return;
         const addressLower = address.toLowerCase();
 
-        if (this.contracts[addressLower] && !suspectedToken || this.contracts[addressLower] && this.contracts[addressLower].isVerified() || this.contracts[addressLower] && this.contracts[addressLower].token) {
+        if (this.contracts[addressLower] && !suspectedToken || this.contracts[addressLower] && this.contracts[addressLower].token) {
             return this.contracts[addressLower];
         }
 
