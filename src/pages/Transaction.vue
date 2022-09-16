@@ -5,6 +5,8 @@ import AddressField from 'components/AddressField';
 import LogsViewer from 'components/Transaction/LogsViewer';
 import InternalTxns from 'components/Transaction/InternalTxns';
 import MethodField from 'components/MethodField';
+import ERCTransferList from 'components/Transaction/ERCTransferList';
+import ParameterList from 'components/Transaction/ParameterList';
 import JsonViewer from 'vue-json-viewer';
 import {formatBN , parseErrorMessage} from 'src/lib/utils';
 import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/functionSignatures';
@@ -20,6 +22,8 @@ export default {
         DateField,
         MethodField,
         JsonViewer,
+        ERCTransferList,
+        ParameterList,
     },
     data() {
         return {
@@ -28,13 +32,13 @@ export default {
             trxNotFound: false,
             errorMessage: null,
             trx: null,
-            transfers: [],
+            erc20Transfers: [],
+            erc721Transfers: [],
             params: [],
             tab: '#general',
             isContract: false,
             contract: null,
             parsedTransaction: null,
-            parsedLogs: null,
             methodTrx: null,
             showAge: true,
         };
@@ -65,9 +69,9 @@ export default {
             this.isContract = false;
             this.contract = null;
             this.parsedTransaction = null;
-            this.parsedLogs = null;
             this.methodTrx = null;
-            this.transfers = [];
+            this.erc20Transfers = [];
+            this.erc721Transfers = [];
             this.params = [];
         },
         async loadTransaction() {
@@ -84,19 +88,22 @@ export default {
             await this.loadTransfers();
             this.setErrorMessage();
         },
-        async loadTransfers(){
-            this.transfers = [];
-            this.trx.logs.forEach(log => {
-                log.topics.forEach(async (topic) => {
-                    if(TRANSFER_FUNCTION_SIGNATURES.includes(topic.substr(0, 10))){
-                        let contract = await this.$contractManager.getContract(log.address, true);
-                        if(typeof contract.token !== 'undefined' && contract.token !== null){
-                            let token = {'symbol': contract.token.symbol, 'address': log.address}
-                            let decimals = contract.token.decimals || 18;
-                            this.transfers.push({'value' : formatBN(log.data, decimals, 5), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
+        loadTransfers(){
+            this.erc20Transfers = [];
+            this.trx.logs.forEach(async (log) => {
+                // ERC20 & ERC721 transfers (ERC721 has 4 log topics, ERC20 has 3)
+                if(TRANSFER_FUNCTION_SIGNATURES.includes(log.topics[0].substr(0, 10))){
+                    let contract = await this.$contractManager.getContract(log.address, (log.topics.length === 4) ? 'erc721' : 'erc20');
+                    if(typeof contract.token !== 'undefined' && contract.token !== null){
+                        let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name}
+                        let decimals = contract.token.decimals || 18;
+                        if(log.topics.length === 4) {
+                            this.erc721Transfers.push({'tokenId' : formatBN(log.topics[3], 0, 0), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
+                        } else {
+                            this.erc20Transfers.push({'value' : formatBN(log.data, decimals, 5), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
                         }
                     }
-                });
+                }
             });
         },
         async loadContract() {
@@ -107,7 +114,6 @@ export default {
 
             this.contract = contract;
             this.parsedTransaction = await this.contract.parseTransaction(this.trx.input_data);
-            this.parsedLogs = await this.contract.parseLogs(this.trx.logs);
             this.params = this.getFunctionParams();
             this.methodTrx = Object.assign(
                 { parsedTransaction: this.parsedTransaction },
@@ -144,7 +150,7 @@ export default {
     },
 };
 </script>
-<style scope lang="sass">
+<style scoped lang="sass">
     @media screen and (max-width: 650px)
         #function-parameters
             width: 100%
@@ -178,7 +184,7 @@ export default {
         | Not found: {{ hash }}
   .row.tableWrapper
     .col-12.q-py-lg
-      .content-container( v-if="trx"  :key="transfers.length + isContract" )
+      .content-container( v-if="trx"  :key="erc20Transfers.length + isContract" )
         q-tabs.text-white.topRounded(
           v-model="tab"
           dense
@@ -281,21 +287,7 @@ export default {
               div(class="col-3")
                 strong {{ `Function parameters: ` }}
               div(class="col" id="function-parameters")
-                div(v-for="param in params" class="fit row wrap justify-start items-start content-start")
-                  div(class="col-4")
-                    q-icon(name="arrow_right" class="list-arrow")
-                    span(v-if="param.name") {{ param.name }} ({{param.type}}) :
-                    span(v-else) {{param.type}} :
-                  div(v-if="param.arrayChildren" class="col-8 word-break")
-                    div(v-for="(value, index) in param.value")
-                      div(v-if="param.arrayChildren === 'tuple'" :class="index != param.value.length - 1 ? 'q-mb-sm' : ''")
-                        strong Tuple {{ '#' + index}}
-                        div(v-for="(tuple, i) in value") {{ tuple}}
-                        br(v-if="index !== param.value.length - 1")
-                      div(v-else-if="param.arrayChildren === 'address'") <AddressField :address="value" copy :name="value === contract.address && contract.name ?  contract.name : null"   />
-                      div(v-else  ) {{ value }}
-                  div(v-else-if="param.type === 'address'" class="col-8 word-break") <AddressField :address="param.value" copy :name="param.value === contract.address && contract.name ?  contract.name : null"   />
-                  div(v-else  class="col-8 word-break") {{ param.value }}
+                ParameterList(:params="params" :contract="contract")
             br( v-if="isContract && params.length > 0" )
             div( v-if="trx.createdaddr", class="fit row wrap justify-start items-start content-start" )
               div(class="col-3")
@@ -308,23 +300,8 @@ export default {
                 strong {{ `Value: ` }}
               div(class="col-9") {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
             br
-            div(v-if="transfers.length > 0" class="fit row wrap justify-start items-start content-start")
-              div(class="col-3")
-                strong {{ `ERC20 transfers: ` }}
-              div(class="col-9" id="transfers")
-                div(v-for="transfer in transfers" class="fit row wrap justify-start items-start content-start")
-                  div(class="col-4")
-                    q-icon(name="arrow_right" class="list-arrow")
-                    strong {{ `From : ` }}
-                    <AddressField :address="transfer.from" :truncate="16" copy :name="transfer.from === contract.address && contract.name ?  contract.name : null" />
-                  div(class="col-4")
-                    strong {{ ` To : ` }}
-                    <AddressField :address="transfer.to" :truncate="16" copy :name="transfer.to === contract.address && contract.name ?  contract.name : null" />
-                  div(class="col-4")
-                    strong {{ ` Token : ` }}
-                    span {{ transfer.value }}
-                    a(:href="'/address/' + transfer.token.address" style="margin-left: 3px;") {{ transfer.token.symbol }}
-            br(v-if="transfers.length > 0")
+            ERCTransferList( v-if="erc20Transfers.length > 0" type="ERC20" :contract="contract" :transfers="erc20Transfers")
+            ERCTransferList( v-if="erc721Transfers.length > 0" type="ERC721" :contract="contract" :transfers="erc721Transfers")
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
                 strong {{ `Gas Price Charged: ` }}
@@ -368,7 +345,7 @@ export default {
 
 <style lang="sass" scoped>
 span
-    word-wrap: break-word
+    word-break: break-word
 
 .col-9 .positive .q-icon, .col-9 .negative .q-icon
     margin-top: -5px
@@ -392,19 +369,8 @@ span
     padding: 0
 
 .col-9
-    overflow-wrap: break-word
+    word-break: break-word
 
 .q-tabs__content
     margin-bottom: -1px
-
-@media (max-width: $breakpoint-sm-max)
-    #transfers
-        .row
-            display: block
-            margin-bottom: 10px
-            .col-4
-              display: block
-              width: 100%
-        .list-arrow
-            display: none
 </style>

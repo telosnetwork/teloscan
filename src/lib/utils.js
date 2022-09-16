@@ -10,7 +10,6 @@ export function formatBN(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);
     const formattedNoCommas = (amount / Math.pow(10, tokenDecimals)).toFixed(displayDecimals);
 
-
     return Number(formattedNoCommas).toLocaleString();
 }
 

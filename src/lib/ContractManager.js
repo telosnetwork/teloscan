@@ -95,7 +95,7 @@ export default class ContractManager {
         if (!address) return;
         const addressLower = address.toLowerCase();
 
-        if (this.contracts[addressLower]) {
+        if (this.contracts[addressLower] && !suspectedToken || this.contracts[addressLower] && this.contracts[addressLower].isVerified() || this.contracts[addressLower] && this.contracts[addressLower].token) {
             return this.contracts[addressLower];
         }
 
@@ -153,7 +153,7 @@ export default class ContractManager {
         const contract = new Contract({
             name: tokenData.symbol ? `${tokenData.name} (${tokenData.symbol})` : tokenData.name,
             address,
-            abi: erc20Abi,
+            abi: tokenData.type === 'erc721' ?  erc721Abi : erc20Abi,
             manager: this,
             creationInfo,
             token: Object.assign({
@@ -177,7 +177,7 @@ export default class ContractManager {
     }
 
     async getTokenData(address, type) {
-        const contract = new ethers.Contract(address, type === 'erc721' ? erc721Abi : erc20Abi, this.getEthersProvider());
+        const contract = new ethers.Contract(address, (type === 'erc721') ? erc721Abi : erc20Abi, this.getEthersProvider());
         try {
             let tokenData = {};
             tokenData.name = await contract.name.call();
@@ -189,13 +189,12 @@ export default class ContractManager {
             if (!tokenData.symbol)
                 return;
 
-            if (type == 'erc20') {
-                tokenData.decimals = await contract.decimals();
+            tokenData.type = type;
+
+            if (type === 'erc20') {
+                tokenData.decimals = await contract.decimals.call();
             }
 
-            // TODO: if this is erc721, could we get more info about it and maybe read the metadata to link to the image?
-            // can't be sure if this contract would support ERC721Metadata, but something like:
-            // if (type == 'erc721') tokenData.baseURI = await contract.baseURI();
             return tokenData;
         } catch (e) {
             return;
