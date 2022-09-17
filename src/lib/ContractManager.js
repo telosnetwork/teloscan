@@ -210,7 +210,7 @@ export default class ContractManager {
                 return false;
             }
         }
-        return 'erc20';
+        return type;
     }
 
     getTokenABI(type){

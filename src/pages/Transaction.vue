@@ -97,6 +97,7 @@ export default {
                     if(typeof contract.token !== 'undefined' && contract.token !== null){
                         let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name}
                         if(log.topics.length === 4) {
+                            console.log(token)
                             this.erc721Transfers.push({'tokenId' : formatBN(log.topics[3], 0, 0), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
                         } else {
                             this.erc20Transfers.push({'value' : formatBN(log.data, contract.token.decimals, 5), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
