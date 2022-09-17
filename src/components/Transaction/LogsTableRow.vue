@@ -12,7 +12,7 @@
     <div class="q-pl-md" v-if="expanded">
         <div v-if="log.name" :key="log.name">
             <div
-                v-for="(param, index) in log.inputs"
+                v-for="(param, index) in log.eventFragment.inputs"
                 :key="`log-${index}`"
                 class="fit row justify-start items-start content-start"
             >
