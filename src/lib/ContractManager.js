@@ -94,7 +94,6 @@ export default class ContractManager {
     async getContract(address, suspectedToken) {
         if (!address) return;
         const addressLower = address.toLowerCase();
-
         if (this.contracts[addressLower] && !suspectedToken || this.contracts[addressLower] && this.contracts[addressLower].token) {
             return this.contracts[addressLower];
         }
@@ -103,7 +102,7 @@ export default class ContractManager {
 
         const metadata = await this.checkBucket(address);
         if (metadata) {
-            return await this.getVerifiedContract(addressLower, metadata, creationInfo)
+            return await this.getVerifiedContract(addressLower, metadata, creationInfo, suspectedToken);
         }
         // TODO: there's some in this list that are not ERC20... they have extra stuff like the Swapin method
         const contract = await this.getContractFromTokenList(address, creationInfo);
@@ -133,8 +132,8 @@ export default class ContractManager {
         }
     }
 
-    async getVerifiedContract(address, metadata, creationInfo) {
-        let token = await this.getToken(address);
+    async getVerifiedContract(address, metadata, creationInfo, suspectedType) {
+        let token = await this.getToken(address, suspectedType);
 
         const contract = new Contract({
             name: Object.values(metadata.settings.compilationTarget)[0],
@@ -216,7 +215,7 @@ export default class ContractManager {
         return this.tokenList;
     }
 
-    async getToken(address) {
+    async getToken(address, suspectedType) {
         if (!this.tokenList)
             await this.loadTokenList();
 
@@ -226,7 +225,7 @@ export default class ContractManager {
                 return this.tokenList.tokens[i];
             }
         }
-        const token = await this.getTokenData(address, 'erc20');
+        const token = await this.getTokenData(address, suspectedType);
         return token;
     }
 

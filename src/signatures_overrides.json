@@ -10,5 +10,7 @@
   "0xe8e33700": "function addLiquidity(address tokenA, address tokenB, uint256 amountADesired, uint256 amountBDesired, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline)",
   "0x4a25d94a": "function swapTokensForExactETH(uint256 amountOut, uint256 amountInMax, address[] calldata path, address to, uint256 deadline)",
   "0x5c11d795": "function swapExactTokensForTokensSupportingFeeOnTransferTokens(uint256 amountIn, uint256 amountOutMin, address[] path, address to, uint256 deadline)",
-  "0x0cd5840b": "function create(address[] offerProperties_, uint256[] offerIds_, uint256[] offerValues_, address[] demandProperties_, uint256[] demandIds_, uint256[] demandValues_)"
+  "0x0cd5840b": "function create(address[] offerProperties_, uint256[] offerIds_, uint256[] offerValues_, address[] demandProperties_, uint256[] demandIds_, uint256[] demandValues_)",
+  "0xb583cc2c": "function setSaleStartEnd(string eventCode, uint256 start, uint256 end)",
+  "0xbea9849e": "function setUniswapRouter(address _new)"
 }

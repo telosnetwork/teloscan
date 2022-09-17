@@ -103,6 +103,7 @@ export default {
                             this.erc20Transfers.push({'value' : formatBN(log.data, decimals, 5), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
                         }
                     }
+                    console.log(this.erc721Transfers)
                 }
             });
         },
