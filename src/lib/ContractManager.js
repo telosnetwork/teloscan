@@ -6,6 +6,7 @@ import Web3 from 'web3';
 import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
 import erc721Abi from './erc721';
+import supportsInterfaceAbi from './supportsInterface';
 import { toChecksumAddress } from './utils';
 
 const contractsBucket = axios.create({
@@ -180,25 +181,54 @@ export default class ContractManager {
         return contract;
     }
 
-    async getTokenData(address, type) {
+    async supportsInterface(address, iface){
+        const contract = new ethers.Contract(address, supportsInterfaceAbi, this.getEthersProvider());
+        try {
+            return await contract.supportsInterface(iface);
+        } catch (e) {
+            return false;
+        }
+    }
+
+    async isTokenType(address, type){
+        if(type === 'erc721'){
+            if(!await this.supportsInterface(address, '0x80ac58cd')){
+                return false;
+            }
+        } else if(type === 'erc1155') {
+            if(!await this.supportsInterface(address, '0xd9b67a26')){
+                return false;
+            }
+        }
+        return type;
+    }
+
+    async getTokenData(address, suspectedType) {
+        const type = await this.isTokenType(address, suspectedType);
+        if(type === false){
+            return;
+        }
         const contract = new ethers.Contract(address, (type === 'erc721') ? erc721Abi : erc20Abi, this.getEthersProvider());
         try {
             let tokenData = {};
-            tokenData.name = await contract.name.call();
+            tokenData.name = await contract.name();
             if (!tokenData.name)
                 return;
 
-            tokenData.symbol = await contract.symbol.call();
+            tokenData.symbol = await contract.symbol();
 
             if (!tokenData.symbol)
                 return;
 
             tokenData.type = type;
 
-            if (type !== 'erc721') {
-                tokenData.decimals = await contract.decimals.call();
+            if (type === 'erc20') {
+                tokenData.decimals = await contract.decimals();
+            } else if(type === 'erc721'){
+                tokenData.iERC721Metadata = await this.supportsInterface(address, '0x5b5e139f')
+                //tokenData.iERC721Enumerable = await this.supportsInterface(address, '0x780e9d63')
             }
-
+            console.log(tokenData)
             return tokenData;
         } catch (e) {
             return;
