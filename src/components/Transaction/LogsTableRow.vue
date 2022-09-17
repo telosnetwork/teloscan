@@ -37,14 +37,18 @@
                         <div v-if="log.isTransfer && log.token  ">
                             <div v-if="!log.token.type || log.token.type === 'erc20'">
                                 {{ log.args[index] / (10 ** log.token.decimals) }}
-                                <router-link :to="`/address/${log.address}`">
-                                    {{ log.token.symbol }}
-                                </router-link>
+                                <address-field
+                                        :address="log.args[index][i]"
+                                        :truncate="0"
+                                        :name="log.token.symbol"
+                                />
                             </div>
                             <div v-else>
-                                <router-link :to="`/address/${log.address}`">
-                                    {{ log.token.symbol }}
-                                </router-link>
+                                <address-field
+                                        :address="log.args[index][i]"
+                                        :truncate="0"
+                                        :name="log.token.symbol"
+                                />
                                 #{{ log.args[index] }}
                             </div>
                         </div>
@@ -52,9 +56,17 @@
                             {{ log.args[index] }}
                         </div>
                     </div>
-                    <div v-else-if="param.arrayChildren && log.args[index]">
+                    <div v-else-if="param.type === 'tuple'" v-on:click.stop="toggle(index, 'expanded')">
                         <div>[ </div>
-                        <div v-for="i in log.args[index].length - 1" class="q-pl-xl word-break" :key="param.type + i">
+                        <div v-for="(i) in log.args[index].length - 1" :class="(expanded_parameters[index]['expanded']) ? 'q-pl-xl word-break' : 'q-pl-xl word-break hidden'" :key="param.type + i">
+                            {{ i }},
+                        </div>
+                        <div v-if="!expanded_parameters[index]['expanded']" class="q-px-sm ellipsis-label q-mb-xs">...</div>
+                        <div>]</div>
+                    </div>
+                    <div v-else-if="param.arrayChildren && log.args[index]" v-on:click.stop="toggle(index, 'expanded')">
+                        <div>[ </div>
+                        <div v-for="i in log.args[index].length - 1" :class="(expanded_parameters[index]['expanded']) ? 'q-pl-xl word-break' : 'q-pl-xl word-break hidden'" :key="param.type + i">
                             <div v-if="param.arrayChildren.type === 'address'">
                                 <address-field
                                     :address="log.args[index][i]"
@@ -64,6 +76,7 @@
                             </div>
                             <span v-else>{{ log.args[index][i] }},</span>
                         </div>
+                        <div v-if="!expanded_parameters[index]['expanded']" class="q-px-sm ellipsis-label q-mb-xs">...</div>
                         <div>]</div>
                     </div>
                     <div v-else class="word-break">
@@ -72,7 +85,6 @@
                 </div>
             </div>
         </div>
-
         <json-viewer
             v-else
             :value="rawLog"
@@ -103,12 +115,28 @@ export default {
             required: true,
         },
     },
-    data: () => ({
-        expanded: false,
-    }),
+    data(){
+        let expanded_parameters = [];
+        for(let i=0; i < this.log.eventFragment.inputs.length;i++){
+            expanded_parameters.push([]);
+        }
+
+        return {
+            expanded: false,
+            expanded_parameters: expanded_parameters,
+        }
+    },
+    methods: {
+        toggle(param, index) {
+            this.expanded_parameters[param][index] = (this.expanded_parameters[param][index]) ? false : true;
+        },
+    },
     computed: {
         arrowIcon() {
             return this.expanded ? 'arrow_drop_down' : 'arrow_right';
+        },
+        arrowIconParameters(param, index) {
+            return this.expanded_parameters[param] && this.expanded_parameters[param][index] ? 'arrow_drop_down' : 'arrow_right';
         },
     },
 }

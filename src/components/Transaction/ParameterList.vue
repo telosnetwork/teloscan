@@ -20,6 +20,7 @@ export default {
         for(let i=0; i < this.params.length;i++){
             expanded.push([]);
         }
+
         return {
             expanded: expanded,
         }
@@ -61,22 +62,11 @@ div(v-for="param, pIndex in params" class="fit row wrap justify-start items-star
                 div(v-for="(value3) in value2" class="q-pl-sm") {{ value3 }},
                 div ]
             div(v-else) {{ value2 }},
-        div(v-if="!expanded[pIndex][index]" class="q-px-sm ellipsis") ...
+        div(v-if="!expanded[pIndex][index]" class="q-px-sm ellipsis-label q-mb-xs") ...
         div ]
       div(v-else) {{ value }},
-    div(v-if="!expanded[pIndex]['expanded']" class="q-px-sm ellipsis") ...
+    div(v-if="!expanded[pIndex]['expanded']" class="q-px-sm ellipsis-label q-mb-xs") ...
     div ]
   div(v-else-if="param.type === 'address'" class="col-8 word-break") <AddressField :address="param.value" copy :name="param.value === contract.address && contract.name ?  contract.name : null"   />
   div(v-else  class="col-8 word-break") {{ param.value }}
 </template>
-<style scoped lang="sass">
-.ellipsis
-    border-radius: 5px
-    display: inline-block
-    margin-left: 10px
-    color: $purpleSoft
-    cursor: pointer
-    line-height: 10px
-    height: 15px
-    background-color: $grey-0
-</style>
