@@ -1,7 +1,7 @@
 import Contract from 'src/lib/Contract';
 import { ethers } from 'ethers';
-import signatures_overrides from '../signatures_overrides.json';
-import events_overrides from '../events_overrides.json';
+import functions_overrides from '../functions_signatures_overrides.json';
+import events_overrides from '../events_signatures_overrides.json';
 import Web3 from 'web3';
 import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
@@ -18,7 +18,7 @@ export default class ContractManager {
     constructor(evmEndpoint) {
         this.tokenList = null;
         this.contracts = {};
-        this.functionInterfaces = signatures_overrides;
+        this.functionInterfaces = functions_overrides;
         this.eventInterfaces = events_overrides;
         this.evmEndpoint = evmEndpoint;
         this.web3 = new Web3(process.env.NETWORK_EVM_RPC);
