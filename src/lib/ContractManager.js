@@ -201,7 +201,6 @@ export default class ContractManager {
     }
 
     async isTokenType(address, type){
-        console.log(type)
         if(type === 'erc721'){
             if(!await this.supportsInterface(address, '0x80ac58cd')){
                 return false;
@@ -247,7 +246,6 @@ export default class ContractManager {
                 tokenData.iERC721Metadata = await this.supportsInterface(address, '0x5b5e139f')
                 //tokenData.iERC721Enumerable = await this.supportsInterface(address, '0x780e9d63')
             }
-            console.log(tokenData)
             return tokenData;
         } catch (e) {
             return;

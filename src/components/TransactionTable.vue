@@ -129,10 +129,11 @@ export default {
                         transaction.contract = contract;
                     }
 
+                    // Get ERC20 transfer from main function call
                     let signature = transaction.input_data.substring(0, 10);
                     if (signature && TRANSFER_FUNCTION_SIGNATURES.includes(signature) && transaction.parsedTransaction.args['amount']) {
                         let token = await this.$contractManager.getTokenData(transaction.to, 'erc20');
-                        if(transaction.contract && token){
+                        if(transaction.contract && token && token.decimals){
                             transaction.transfers.push({'value': `${formatBN(transaction.parsedTransaction.args['amount'], token.decimals, 5)}`, 'symbol': token.symbol})
                         }
                     }
