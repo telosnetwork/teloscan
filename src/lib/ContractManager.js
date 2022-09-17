@@ -94,7 +94,7 @@ export default class ContractManager {
     async getContract(address, suspectedToken) {
         if (!address) return;
         const addressLower = address.toLowerCase();
-        if (this.contracts[addressLower] && !suspectedToken || this.contracts[addressLower] && this.contracts[addressLower].token) {
+        if (this.contracts[addressLower] && !suspectedToken || this.contracts[addressLower] && this.contracts[addressLower].isVerified() || this.contracts[addressLower] && this.contracts[addressLower].token) {
             return this.contracts[addressLower];
         }
 
@@ -134,13 +134,19 @@ export default class ContractManager {
 
     async getVerifiedContract(address, metadata, creationInfo, suspectedType) {
         let token = await this.getToken(address, suspectedType);
-
+        let tokenData;
+        if(token){
+            tokenData = await this.getTokenData(address, suspectedType);
+            tokenData.type = suspectedType;
+        }
         const contract = new Contract({
             name: Object.values(metadata.settings.compilationTarget)[0],
             address,
             abi: metadata.output.abi,
             manager: this,
-            token: token,
+            token: Object.assign({
+                address,
+            }, tokenData),
             creationInfo,
             verified: true,
         });
