@@ -18,7 +18,7 @@
             >
                 <div class="col-4">
                     <template v-if="param.name">
-                        {{ param.name }} ({{ param.type }}) :
+                        {{ param.name }} ({{ param.type }}):
                     </template>
 
                     <template v-else>

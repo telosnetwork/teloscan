@@ -196,7 +196,7 @@ export default class ContractManager {
 
             tokenData.type = type;
 
-            if (type === 'erc20') {
+            if (type !== 'erc721') {
                 tokenData.decimals = await contract.decimals.call();
             }
 
