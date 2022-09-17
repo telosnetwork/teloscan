@@ -94,7 +94,7 @@ export default class ContractManager {
     async getContract(address, suspectedToken) {
         if (!address) return;
         const addressLower = address.toLowerCase();
-        if (this.contracts[addressLower] && !suspectedToken || this.contracts[addressLower] && this.contracts[addressLower].isVerified() || this.contracts[addressLower] && this.contracts[addressLower].token) {
+        if (this.contracts[addressLower] && !suspectedToken || this.contracts[addressLower] && this.contracts[addressLower].isVerified() || this.contracts[addressLower] && this.contracts[addressLower].token.type === suspectedToken) {
             return this.contracts[addressLower];
         }
 
@@ -105,7 +105,7 @@ export default class ContractManager {
             return await this.getVerifiedContract(addressLower, metadata, creationInfo, suspectedToken);
         }
         // TODO: there's some in this list that are not ERC20... they have extra stuff like the Swapin method
-        const contract = await this.getContractFromTokenList(address, creationInfo);
+        const contract = await this.getContractFromTokenList(address, creationInfo, suspectedToken);
         if (contract) {
             this.contracts[addressLower] = contract;
             return contract;
@@ -235,15 +235,17 @@ export default class ContractManager {
         return token;
     }
 
-    async getContractFromTokenList(address, creationInfo) {
-        const token = await this.getToken(address);
+    async getContractFromTokenList(address, creationInfo, suspectedType) {
+        const token = await this.getToken(address, suspectedType);
         if (token) {
             return new Contract({
                 name: `${token.name} (${token.symbol})`,
                 address, creationInfo,
-                abi: erc20Abi,
+                abi: (suspectedType && suspectedType === 'erc721') ? erc721Abi : erc20Abi,
                 manager: this,
-                token,
+                token: Object.assign({
+                    address,
+                }, token),
             });
         }
     }
