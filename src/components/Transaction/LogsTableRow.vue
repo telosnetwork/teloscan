@@ -116,18 +116,17 @@ export default {
         },
     },
     data(){
-        let expanded_parameters = [];
+        return {
+            expanded: false,
+            expanded_parameters: [],
+        }
+    },
+    created(){
         let inputs = this.log.eventFragment ? this.log.eventFragment.inputs : this.log.inputs;
         if(inputs){
             for(let i=0; i < inputs.length;i++){
-                expanded_parameters.push([]);
+                this.expanded_parameters.push([]);
             }
-        }
-
-        return {
-            expanded: false,
-            inputs: inputs,
-            expanded_parameters: expanded_parameters,
         }
     },
     methods: {
@@ -136,6 +135,9 @@ export default {
         },
     },
     computed: {
+        inputs(){
+            return this.log.eventFragment ? this.log.eventFragment.inputs : this.log.inputs;
+        },
         arrowIcon() {
             return this.expanded ? 'arrow_drop_down' : 'arrow_right';
         },
