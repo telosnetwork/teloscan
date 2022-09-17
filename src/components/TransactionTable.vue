@@ -128,16 +128,13 @@ export default {
                         transaction.parsedTransaction = parsedTransaction;
                         transaction.contract = contract;
                     }
-                    transaction.logs.forEach(log => {
-                        log.topics.forEach(async topic =>  {
-                            let signature = topic.substring(0, 10)
-                            if (TRANSFER_FUNCTION_SIGNATURES.includes(signature)) {
-                                if(transaction.contract && transaction.contract.token ){
-                                    transaction.transfers.push({'value': `${formatBN(log.data, transaction.contract.token.decimals, 5)}`, 'symbol': transaction.contract.token.symbol})
-                                }
-                            }
-                        })
-                    })
+                    let signature = transaction.logs[0]?.topics[0]?.substring(0, 10)
+                    if (signature && TRANSFER_FUNCTION_SIGNATURES.includes(signature) && transaction.logs[0]?.topics.length === 3) {
+                        let token = await this.$contractManager.getTokenData(transaction.logs[0].address, 'erc20');
+                        if(transaction.contract && token){
+                            transaction.transfers.push({'value': `${formatBN(transaction.logs[0].data, token.decimals, 5)}`, 'symbol': token.symbol})
+                        }
+                    }
                     transaction.transfers.sort((a,b) => a.value - b.value);
                 } catch (e) {
                     console.error(
