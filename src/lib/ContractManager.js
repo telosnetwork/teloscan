@@ -91,13 +91,23 @@ export default class ContractManager {
     }
 
     // suspectedToken is so we don't try to check for ERC20 info via eth_call unless we think this is a token...
-    //    this is coming from the token transfer page where we're looking for a contract based on a token transfer event
+    // this is coming from the token transfer & transaction (general + logs tabs) pages where we're looking for a contract based on a token transfer event
     async getContract(address, suspectedToken) {
         if (!address) return;
         const addressLower = address.toLowerCase();
-        if (this.contracts[addressLower] && !suspectedToken || this.contracts[addressLower] && this.contracts[addressLower].token?.type === suspectedToken) {
+
+        // Get from already queried contracts, add token data if needed & not present (ie: queried beforehand w/o suspectedToken or a wrong suspectedToken)
+        if (this.contracts[addressLower]) {
+            if (!suspectedToken || this.contracts[addressLower].token && this.contracts[addressLower].token.type === suspectedToken) {
+                return this.contracts[addressLower];
+            }
+            let tokenData = await this.getTokenData(address, suspectedToken);
+            this.contracts[addressLower].token = Object.assign({
+                address,
+            }, tokenData);
             return this.contracts[addressLower];
         }
+
 
         const creationInfo = await this.getContractCreation(addressLower);
 
@@ -191,6 +201,7 @@ export default class ContractManager {
     }
 
     async isTokenType(address, type){
+        console.log(type)
         if(type === 'erc721'){
             if(!await this.supportsInterface(address, '0x80ac58cd')){
                 return false;
@@ -200,15 +211,23 @@ export default class ContractManager {
                 return false;
             }
         }
-        return type;
+        return 'erc20';
     }
 
+    getTokenABI(type){
+        if(type === 'erc721'){
+            return erc721Abi
+        } else if(type === 'erc1155'){
+            return erc721Abi
+        }
+        return erc20Abi;
+    }
     async getTokenData(address, suspectedType) {
         const type = await this.isTokenType(address, suspectedType);
         if(type === false){
             return;
         }
-        const contract = new ethers.Contract(address, (type === 'erc721') ? erc721Abi : erc20Abi, this.getEthersProvider());
+        const contract = new ethers.Contract(address, this.getTokenABI(type), this.getEthersProvider());
         try {
             let tokenData = {};
             tokenData.name = await contract.name();
@@ -270,7 +289,7 @@ export default class ContractManager {
             return new Contract({
                 name: `${token.name} (${token.symbol})`,
                 address, creationInfo,
-                abi: (suspectedType && suspectedType === 'erc721') ? erc721Abi : erc20Abi,
+                abi: this.getTokenABI(suspectedType),
                 manager: this,
                 token: Object.assign({
                     address,
