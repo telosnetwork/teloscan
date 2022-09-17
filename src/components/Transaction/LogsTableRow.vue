@@ -117,7 +117,7 @@ export default {
     },
     data(){
         let expanded_parameters = [];
-        let inputs = log.eventFragment ? log.eventFragment.inputs : log.inputs;
+        let inputs = this.log.eventFragment ? this.log.eventFragment.inputs : this.log.inputs;
         for(let i=0; i < inputs.length;i++){
             expanded_parameters.push([]);
         }
