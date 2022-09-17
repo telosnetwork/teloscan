@@ -6,7 +6,7 @@ import {ethers, BigNumber} from 'ethers';
 import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
 
 const TRANSFER_EVENT_SIGNATURE = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
-import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/functionSignatures';
+import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/abi/signature/functionSignatures';
 
 // TODO: Add icon column and render it
 const columns = [

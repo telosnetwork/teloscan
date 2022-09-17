@@ -1,12 +1,12 @@
 import Contract from 'src/lib/Contract';
 import { ethers } from 'ethers';
-import functions_overrides from '../functions_signatures_overrides.json';
-import events_overrides from '../events_signatures_overrides.json';
+import functions_overrides from './abi/signature/functions_signatures_overrides.json';
+import events_overrides from './abi/signature/events_signatures_overrides.json';
 import Web3 from 'web3';
 import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
-import erc721Abi from './erc721';
-import supportsInterfaceAbi from './supportsInterface';
+import erc721Abi from './abi/erc721';
+import supportsInterfaceAbi from './abi/supportsInterface';
 import { toChecksumAddress } from './utils';
 
 const contractsBucket = axios.create({

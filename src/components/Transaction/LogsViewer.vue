@@ -42,7 +42,7 @@
 <script>
 import JsonViewer from 'vue-json-viewer'
 import LogsTable from 'components/Transaction/LogsTable'
-import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/functionSignatures';
+import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/abi/signature/functionSignatures';
 import { BigNumber } from 'ethers';
 
 export default {
@@ -73,7 +73,7 @@ export default {
         this.logs.forEach(async (log) => {
             let parsedLog = { ...log };
             let log_contract;
-            const function_signature = parsedLog.topic ? parsedLog.topic.substr(0, 10) : parsedLog.topics[0].substr(0, 10);
+            const function_signature = parsedLog.topics[0].substr(0, 10);
             if (Object.prototype.hasOwnProperty.call(contracts, log.address)){
                 log_contract = contracts[log.address]
             } else if(TRANSFER_FUNCTION_SIGNATURES.includes(function_signature)) {
@@ -104,6 +104,7 @@ export default {
                     parsedLog.token = log_contract.token;
                 }
             }
+            console.log(parsedLog)
             this.allVerified = (verified == this.logs.length);
             this.parsedLogs.push(parsedLog);
             this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).toNumber() - BigNumber.from(b.logIndex).toNumber());

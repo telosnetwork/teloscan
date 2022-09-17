@@ -9,7 +9,7 @@ import ERCTransferList from 'components/Transaction/ERCTransferList';
 import ParameterList from 'components/Transaction/ParameterList';
 import JsonViewer from 'vue-json-viewer';
 import {formatBN , parseErrorMessage} from 'src/lib/utils';
-import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/functionSignatures';
+import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/abi/signature/functionSignatures';
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {

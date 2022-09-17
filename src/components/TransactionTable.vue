@@ -5,7 +5,7 @@ import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import MethodField from 'components/MethodField';
 import { formatBN } from 'src/lib/utils';
-import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/functionSignatures';
+import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/abi/signature/functionSignatures';
 
 const columns = [
     {
