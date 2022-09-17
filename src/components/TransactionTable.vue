@@ -113,7 +113,7 @@ export default {
             );
             for (const transaction of this.transactions) {
                 try {
-                    transaction.transfers = [];
+                    transaction.transfer = false;
                     if (transaction.input_data === '0x') continue;
                     if(!transaction.to) continue;
                     const contract = await this.$contractManager.getContract(
@@ -134,10 +134,9 @@ export default {
                     if (signature && TRANSFER_FUNCTION_SIGNATURES.includes(signature) && transaction.parsedTransaction.args['amount']) {
                         let token = await this.$contractManager.getTokenData(transaction.to, 'erc20');
                         if(transaction.contract && token && token.decimals){
-                            transaction.transfers.push({'value': `${formatBN(transaction.parsedTransaction.args['amount'], token.decimals, 5)}`, 'symbol': token.symbol})
+                            transaction.transfer = {'value': `${formatBN(transaction.parsedTransaction.args['amount'], token.decimals, 5)}`, 'symbol': token.symbol};
                         }
                     }
-                    transaction.transfers.sort((a,b) => a.value - b.value);
                 } catch (e) {
                     console.error(
                         `Failed to parse data for transaction, error was: ${e.message}`,
@@ -208,7 +207,7 @@ q-table(
             q-td( key="to" :props="props")
                 address-field(v-if="props.row.to" :address="props.row.to" :is-contract-trx="props.row.input_data !== '0x'" )
             q-td( key="value" :props="props")
-                span(v-if="props.row.value > 0 ||  !props.row.transfers || props.row.transfers.length == 0") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
+                span(v-if="props.row.value > 0 ||  !props.row.transfer ") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
                 div(v-else)
-                    span(v-if="props.row.transfers &&  props.row.transfers.length > 0") {{ props.row.transfers[0].value }} {{ props.row.transfers[0].symbol }}
+                    span(v-if="props.row.transfer") {{ props.row.transfer.value }} {{ props.row.transfer.symbol }}
 </template>
