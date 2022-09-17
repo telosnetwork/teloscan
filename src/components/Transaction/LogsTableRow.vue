@@ -12,7 +12,7 @@
     <div class="q-pl-md" v-if="expanded">
         <div v-if="log.name" :key="log.name">
             <div
-                v-for="(param, index) in log.eventFragment.inputs"
+                v-for="(param, index) in inputs"
                 :key="`log-${index}`"
                 class="fit row justify-start items-start content-start"
             >
@@ -117,12 +117,14 @@ export default {
     },
     data(){
         let expanded_parameters = [];
-        for(let i=0; i < this.log.eventFragment.inputs.length;i++){
+        let inputs = log.eventFragment ? log.eventFragment.inputs : log.inputs;
+        for(let i=0; i < inputs.length;i++){
             expanded_parameters.push([]);
         }
 
         return {
             expanded: false,
+            inputs: inputs,
             expanded_parameters: expanded_parameters,
         }
     },
