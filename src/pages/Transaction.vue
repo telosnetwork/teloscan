@@ -96,6 +96,7 @@ export default {
                     let contract = await this.$contractManager.getContract(log.address, (log.topics.length === 4) ? 'erc721' : 'erc20');
                     if(typeof contract.token !== 'undefined' && contract.token !== null){
                         let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name}
+                        console.log(contract.token)
                         let decimals = contract.token.decimals || 18;
                         if(log.topics.length === 4) {
                             this.erc721Transfers.push({'tokenId' : formatBN(log.topics[3], 0, 0), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })

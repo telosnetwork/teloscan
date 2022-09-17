@@ -94,7 +94,7 @@ export default class ContractManager {
     async getContract(address, suspectedToken) {
         if (!address) return;
         const addressLower = address.toLowerCase();
-        if (this.contracts[addressLower] && !suspectedToken || this.contracts[addressLower] && this.contracts[addressLower].isVerified() || this.contracts[addressLower] && this.contracts[addressLower].token?.type === suspectedToken) {
+        if (this.contracts[addressLower] && !suspectedToken || this.contracts[addressLower] && this.contracts[addressLower].token?.type === suspectedToken) {
             return this.contracts[addressLower];
         }
 
@@ -110,7 +110,6 @@ export default class ContractManager {
             this.contracts[addressLower] = contract;
             return contract;
         }
-
         if (suspectedToken) {
             const tokenData = await this.getTokenData(address, suspectedToken);
             if (tokenData) {
