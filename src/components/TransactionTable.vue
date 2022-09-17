@@ -131,7 +131,7 @@ export default {
                     let signature = transaction.logs[0]?.topics[0]?.substring(0, 10)
                     if (signature && TRANSFER_FUNCTION_SIGNATURES.includes(signature) && transaction.logs[0]?.topics.length === 3) {
                         let token = await this.$contractManager.getTokenData(transaction.logs[0].address, 'erc20');
-                        if(transaction.contract && token){
+                        if(transaction.contract && token && transaction.from === '0x' + transaction.logs[0].topics[1].substr(transaction.logs[0].topics[1].length - 40, 40)){
                             transaction.transfers.push({'value': `${formatBN(transaction.logs[0].data, token.decimals, 5)}`, 'symbol': token.symbol})
                         }
                     }
@@ -209,5 +209,4 @@ q-table(
                 span(v-if="props.row.value > 0 ||  !props.row.transfers || props.row.transfers.length == 0") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
                 div(v-else)
                     span(v-if="props.row.transfers &&  props.row.transfers.length > 0") {{ props.row.transfers[0].value }} {{ props.row.transfers[0].symbol }}
-                    sup(v-if="props.row.transfers &&  props.row.transfers.length > 1" class="q-ml-xs") +{{ props.row.transfers.length - 1 }}
 </template>

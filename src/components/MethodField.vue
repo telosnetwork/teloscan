@@ -1,8 +1,7 @@
 <script>
 
 import { formatBN } from 'src/lib/utils';
-
-const ERC20_SIGHASH = '0xa9059cbb';
+import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/functionSignatures';
 
 export default {
     name: 'MethodField',
@@ -34,8 +33,7 @@ export default {
             if (!this.trx.parsedTransaction)
                 return;
 
-            if (this.trx.parsedTransaction.sighash === ERC20_SIGHASH && this.contract) {
-                console.log(this.trx.parsedTransaction);
+            if (TRANSFER_FUNCTION_SIGNATURES.includes(this.trx.parsedTransaction.sighash) && this.contract && this.contract.token) {
                 this.transferAmount = `${formatBN(this.trx.parsedTransaction.args[1], this.contract.token.decimals, 5)} ${this.contract.token.symbol}`;
             }
         },
