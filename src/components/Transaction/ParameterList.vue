@@ -40,7 +40,7 @@ export default {
 <template lang="pug">
 div(v-for="param, pIndex in params" class="fit row wrap justify-start items-start content-start")
   div(class="col-4")
-    q-icon(name="arrow_right" class="list-arrow q-mb-xs" size="sm")
+    q-icon(name="arrow_right" class="list-arrow")
     span(v-if="param.name") {{ param.name }} ({{ param.type }}) :
     span(v-else) {{ param.type }} :
   div(v-if="param.arrayChildren || param.type === 'tuple'" class="col-8 word-break" v-on:click.stop="(expanded[pIndex]['expanded']) ? minimize(pIndex, 'expanded') : expand(pIndex, 'expanded')")

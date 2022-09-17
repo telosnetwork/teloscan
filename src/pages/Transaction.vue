@@ -354,12 +354,6 @@ span
 .date .col-9 > div
     display: inline-block
 
-.list-arrow
-    font-size: 1.8em
-    margin-top: -3px
-    margin-left: -8px
-    color: #666666
-
 .col-9 .positive, .col-9 .negative
     border: 1px solid
     border-radius: 5px
