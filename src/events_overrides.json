@@ -10,7 +10,9 @@
   "0xa2c38e2d": "event Claim(address indexed account, uint256 amount, bool indexed automatic)",
   "0xee503bee": "event DividendWithdrawn(address indexed to, uint256 weiAmount)",
   "0xc3d58168": "event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value)",
+  "0x38567aa9": "event NewTransmission(uint32 indexed aggregatorRoundId, int192 answer, address transmitter, uint32 observationsTimestamp)",
+  "0x0109fc6f": "event NewRound(uint256 indexed roundId, address indexed startedBy, uint256 startedAt)",
   "0x0559884f": "event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 updatedAt)",
   "0x1c411e9a": "event Sync(uint112 reserve0, uint112 reserve1)",
-  "0x5beea7b3": "event EvInventoryUpdate(uint256 indexed id, (address,address,address,uint256,uint256,uint256,uint8,uint8) inventory)"
+  "0x5beea7b3": "event EvInventoryUpdate(uint256 indexed id, tuple(address,address,address,uint256,uint256,uint256,uint8,uint8) inventory)"
 }

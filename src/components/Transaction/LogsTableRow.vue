@@ -53,9 +53,16 @@
                         </div>
                     </div>
                     <div v-else-if="param.arrayChildren && log.args[index]">
-                        <div>[</div>
-                        <div v-for="i in log.args[index].length - 1" class="q-pl-xl word-break" :key="'param.type' + i">
-                            {{ log.args[index][i] }},
+                        <div>[ </div>
+                        <div v-for="i in log.args[index].length - 1" class="q-pl-xl word-break" :key="param.type + i">
+                            <div v-if="param.arrayChildren.type === 'address'">
+                                <address-field
+                                    :address="log.args[index][i]"
+                                    :truncate="0"
+                                    :copy="true"
+                                />
+                            </div>
+                            <span v-else>{{ log.args[index][i] }},</span>
                         </div>
                         <div>]</div>
                     </div>
@@ -78,7 +85,6 @@
 
 <script>
 import JsonViewer from 'vue-json-viewer'
-
 import AddressField from 'components/AddressField';
 
 export default {
