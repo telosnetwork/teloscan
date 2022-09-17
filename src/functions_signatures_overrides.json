@@ -13,6 +13,6 @@
   "0x0cd5840b": "function create(address[] offerProperties_, uint256[] offerIds_, uint256[] offerValues_, address[] demandProperties_, uint256[] demandIds_, uint256[] demandValues_)",
   "0xb583cc2c": "function setSaleStartEnd(string eventCode, uint256 start, uint256 end)",
   "0xbea9849e": "function setUniswapRouter(address _new)",
-  "0x860665b3": "event openTrove(uint256 _maxFeePercentage, uint256 _LUSDAmount, address _upperHint, address _lowerHint)",
-  "0x2195995c": "event removeLiquidityWithPermit(address tokenA, address tokenB, uint256 liquidity, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline, bool approveMax, uint8 v, bytes32 r, bytes32 s)"
+  "0x860665b3": "function openTrove(uint256 _maxFeePercentage, uint256 _LUSDAmount, address _upperHint, address _lowerHint)",
+  "0x2195995c": "function removeLiquidityWithPermit(address tokenA, address tokenB, uint256 liquidity, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline, bool approveMax, uint8 v, bytes32 r, bytes32 s)"
 }
