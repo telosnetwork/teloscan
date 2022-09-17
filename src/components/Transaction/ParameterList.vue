@@ -47,8 +47,9 @@ div(v-for="param, pIndex in params" class="fit row wrap justify-start items-star
     div [
     div(v-for="(value, index) in param.value" :class="(expanded[pIndex]['expanded']) ? 'q-pl-md' : 'q-pl-md hidden'")
       div(v-if="param.arrayChildren === 'tuple'" :class="index != param.value.length - 1 ? 'q-mb-md' : ''")
-        strong Tuple {{ '#' + index}}
-        div(v-for="(tuple, i) in value") {{ tuple }}
+        div [
+        div(v-for="(tuple, i) in value" class="q-pl-md") {{ tuple }}
+        div ]
         br(v-if="index !== param.value.length - 1")
       div(v-else-if="param.arrayChildren === 'address'") <AddressField :address="value" copy :name="value === contract.address && contract.name ?  contract.name : null"   />
       div(v-else-if="param.arrayChildren === 'uint128' || param.arrayChildren === 'uint256'") {{ value }},

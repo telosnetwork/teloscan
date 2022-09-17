@@ -2,7 +2,7 @@
 <div>
     <div v-if="logs.length === 0" class="row">
         <div class="col-12 u-flex--center">
-            <q-icon class="fa fa-info-circle" size="md" />
+            <q-icon class="fa fa-info-circle q-mr-md" size="md" />
             <h3>No logs found</h3>
         </div>
     </div>

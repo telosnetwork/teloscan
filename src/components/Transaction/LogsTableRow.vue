@@ -34,20 +34,20 @@
                         :copy="true"
                     />
                     <div v-else-if="param.type === 'uint256' || param.type === 'uint128'"  class="word-break">
-                        <div v-if="log.isTransfer && log.token  ">
+                        <div v-if="log.isTransfer && log.token">
                             <div v-if="!log.token.type || log.token.type === 'erc20'">
                                 {{ log.args[index] / (10 ** log.token.decimals) }}
                                 <address-field
-                                        :address="log.args[index][i]"
-                                        :truncate="0"
-                                        :name="log.token.symbol"
+                                    :address="log.token.address"
+                                    :truncate="0"
+                                    :name="log.token.symbol"
                                 />
                             </div>
                             <div v-else>
                                 <address-field
-                                        :address="log.args[index][i]"
-                                        :truncate="0"
-                                        :name="log.token.symbol"
+                                    :address="log.token.address"
+                                    :truncate="0"
+                                    :name="log.token.symbol"
                                 />
                                 #{{ log.args[index] }}
                             </div>
