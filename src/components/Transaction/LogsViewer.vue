@@ -42,7 +42,7 @@
 <script>
 import JsonViewer from 'vue-json-viewer'
 import LogsTable from 'components/Transaction/LogsTable'
-import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/abi/signature/functionSignatures';
+import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 import { BigNumber } from 'ethers';
 
 export default {
@@ -77,7 +77,7 @@ export default {
         this.logs.forEach(async (log) => {
             let contract;
             const function_signature = log.topics[0].substr(0, 10);
-            if(TRANSFER_FUNCTION_SIGNATURES.includes(function_signature)) {
+            if(TRANSFER_SIGNATURES.includes(function_signature)) {
                 contract = await this.getLogContract(log, (log.topics.length === 4) ? 'erc721': 'erc20');
             } else {
                 contract = await this.getLogContract(log);

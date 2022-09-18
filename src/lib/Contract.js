@@ -2,7 +2,7 @@
 
 import { ethers } from "ethers";
 import { markRaw } from 'vue';
-import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/abi/signature/functionSignatures';
+import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 export default class Contract {
 
@@ -82,7 +82,7 @@ export default class Contract {
 
   formatLog(log, parsedLog){
     parsedLog.function_signature = log.topics[0].substr(0, 10);
-    parsedLog.isTransfer = TRANSFER_FUNCTION_SIGNATURES.includes(parsedLog.function_signature);
+    parsedLog.isTransfer = TRANSFER_SIGNATURES.includes(parsedLog.function_signature);
     parsedLog.logIndex = log.logIndex;
     parsedLog.address = log.address;
     parsedLog.name = (parsedLog.signature) ? parsedLog.signature : null;

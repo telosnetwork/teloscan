@@ -1,7 +1,7 @@
 <script>
 
 import { formatBN } from 'src/lib/utils';
-import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/abi/signature/functionSignatures';
+import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 export default {
     name: 'MethodField',
@@ -33,7 +33,7 @@ export default {
             if (!this.trx.parsedTransaction)
                 return;
 
-            if (TRANSFER_FUNCTION_SIGNATURES.includes(this.trx.parsedTransaction.sighash) && this.contract && this.contract.token && this.contract.token.decimals) {
+            if (TRANSFER_SIGNATURES.includes(this.trx.parsedTransaction.sighash) && this.contract && this.contract.token && this.contract.token.decimals) {
                 this.transferAmount = `${formatBN(this.trx.parsedTransaction.args[1], this.contract.token.decimals, 5)} ${this.contract.token.symbol}`;
             }
         },

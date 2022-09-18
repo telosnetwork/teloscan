@@ -5,7 +5,7 @@ import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import MethodField from 'components/MethodField';
 import { formatBN } from 'src/lib/utils';
-import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/abi/signature/functionSignatures';
+import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 const columns = [
     {
@@ -131,7 +131,7 @@ export default {
 
                     // Get ERC20 transfer from main function call
                     let signature = transaction.input_data.substring(0, 10);
-                    if (signature && TRANSFER_FUNCTION_SIGNATURES.includes(signature) && transaction.parsedTransaction.args['amount']) {
+                    if (signature && TRANSFER_SIGNATURES.includes(signature) && transaction.parsedTransaction.args['amount']) {
                         let token = await this.$contractManager.getTokenData(transaction.to, 'erc20');
                         if(transaction.contract && token && token.decimals){
                             transaction.transfer = {'value': `${formatBN(transaction.parsedTransaction.args['amount'], token.decimals, 5)}`, 'symbol': token.symbol};
