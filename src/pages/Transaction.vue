@@ -8,6 +8,7 @@ import MethodField from 'components/MethodField';
 import ERCTransferList from 'components/Transaction/ERCTransferList';
 import ParameterList from 'components/Transaction/ParameterList';
 import JsonViewer from 'vue-json-viewer';
+import { BigNumber } from 'ethers';
 import {formatBN , parseErrorMessage} from 'src/lib/utils';
 import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/abi/signature/functionSignatures';
 
@@ -99,10 +100,10 @@ export default {
                         if(log.topics.length === 4) {
                             if(contract.token.iERC721Metadata){
                                 try {
-                                    token = await this.$contractManager.loadTokenMetadata(log.address, token, formatBN(log.topics[3], 0, 0));
+                                    token = await this.$contractManager.loadTokenMetadata(log.address, token, BigNumber.from(log.topics[3]).toNumber());
                                 } catch (e) { console.log(e)}
                             }
-                            this.erc721Transfers.push({'tokenId' : formatBN(log.topics[3], 0, 0), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
+                            this.erc721Transfers.push({'tokenId' : BigNumber.from(log.topics[3]).toNumber(), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
                         } else {
                             this.erc20Transfers.push({'value' : formatBN(log.data, contract.token.decimals, 5), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
                         }
