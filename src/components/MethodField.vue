@@ -23,12 +23,16 @@ export default {
         return {
             transferAmount: null,
             transferTo: null,
+            expand: false,
         }
     },
     mounted() {
         this.setValues();
     },
     methods: {
+        toggle(){
+            this.expand = !this.expand;
+        },
         async setValues() {
             if (!this.trx.parsedTransaction)
                 return;
@@ -44,12 +48,13 @@ export default {
 <template lang="pug">
 div
   span(v-if="trx.parsedTransaction" )
-    span() {{ trx.parsedTransaction.name.length > 8 && shorten ? `${trx.parsedTransaction.name.slice(0,8)}...` : trx.parsedTransaction.name  }}
+    span() {{  trx.parsedTransaction.name  }}
     span(v-if="transferAmount")  ({{ transferAmount }})
     q-tooltip(v-if="shorten" anchor="center middle" self="center middle")
       | {{ trx.parsedTransaction.name }}
-  span(v-else)
-    span() {{trx.input_data.length > 8 && shorten ? `${trx.input_data.slice(0,8)}...` : trx.input_data}}
-    q-tooltip( v-if="shorten" anchor="center middle" self="center middle")
-      | {{ trx.input_data.slice(0,8) }}
+  span(v-else :class="shorten && 'clickable'")
+    span(v-if="!expand" v-on:click="shorten && toggle()" clickable) {{trx.input_data.length > 10 && shorten ? `${trx.input_data.slice(0,10)}` : trx.input_data}}
+    q-tooltip( v-if="shorten && !expand") Click to expand the function signature
+    span( v-if="shorten && expand" anchor="center middle" class="word-break" self="center middle" v-on:click="toggle()")
+      | {{ trx.input_data }}
 </template>

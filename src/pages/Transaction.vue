@@ -286,7 +286,7 @@ export default {
               div(class="col-3")
                 strong {{ `Contract function: ` }}
               div(class="col-9")
-                MethodField( :contract="contract" :trx="methodTrx" )
+                MethodField( :contract="contract" :trx="methodTrx" shorten )
             br(v-if="isContract")
             div( v-if="isContract && params.length > 0" class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
