@@ -5,6 +5,7 @@
             <div class="q-py-sm">
                 <router-link
                     to="/"
+                    id="logo"
                     class="row items-center q-gutter-x-xs"
                 >
                     <img
@@ -25,6 +26,7 @@
             />
 
             <q-btn
+                id="dark-mode-toggle"
                 flat
                 dark
                 standout
@@ -33,7 +35,7 @@
                 @click="toggleDarkMode()"
             />
 
-            <connect-button />
+            <connect-button id="connect-button" />
             <q-btn
                 flat
                 round
@@ -85,6 +87,7 @@
                     <q-item-label> Teloscan Testnet </q-item-label>
                 </q-item-section>
             </q-item>
+            <!--
             <q-item
                 v-close-popup
                 clickable
@@ -94,6 +97,7 @@
                     <q-item-label> Stake Telos </q-item-label>
                 </q-item-section>
             </q-item>
+            -->
         </q-list>
     </q-drawer>
 
@@ -118,7 +122,7 @@ export default {
     components: { Search, ConnectButton, FooterMain },
     data() {
         return {
-            mainnet: parseInt(process.env.NETWORK_EVM_CHAIN_ID) === 40,
+            mainnet: process.env.NETWORK_EVM_CHAIN_ID === '40',
             accountConnected: false,
             drawer: false,
         };

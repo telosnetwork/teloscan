@@ -183,7 +183,7 @@ export default {
 .pageContainer.q-pt-xl
   .row
     .col-12.q-px-md
-      .text-h4.text-primary.q-mb-lg
+      .text-h4.text-primary.q-mb-lg.title
         | Transaction Details
       .text-h6.q-mb-lg.text-white( v-if="trxNotFound" )
         | Not found: {{ hash }}
@@ -372,4 +372,7 @@ span
 
 .q-tabs__content
     margin-bottom: -1px
+
+@media only screen and (max-width: 550px)
+
 </style>

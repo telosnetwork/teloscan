@@ -65,4 +65,17 @@ br
                 width: 100%
         .list-arrow
             display: none
+
+@media screen and (max-width: 650px)
+    .row
+        .col-9
+            padding-left: 20px
+
+@media screen and (max-width: 420px)
+    .row
+        .col-3, .col-9
+            width: 100%
+            padding-left: 0px
+        .col-9
+            padding-top: 10px
 </style>
