@@ -6,6 +6,7 @@ import Web3 from 'web3';
 import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
 import erc721Abi from './abi/erc721';
+import erc721MetadataAbi from './abi/erc721Metadata';
 import supportsInterfaceAbi from './abi/supportsInterface';
 import { toChecksumAddress } from './utils';
 
@@ -57,7 +58,20 @@ export default class ContractManager {
             return;
         }
     }
-
+    async loadTokenMetadata(address, token, tokenId){
+        if(token.type === 'erc1155'){
+            console.error('Loading ERC1155 Metadata not implemented yet')
+            return;
+        }
+        const contract = await this.getContractFromAbi(address, erc721MetadataAbi);
+        token.metadata = await contract.tokenURI(tokenId);
+        token.metadata = token.metadata.replace('ipfs://', 'https://ipfs.io/ipfs/')
+        const response = await axios.get(token.metadata);
+        if(response.status === 200){
+            token.image = response.data?.properties?.image?.description?.replace('ipfs://', 'https://ipfs.io/ipfs/');
+        }
+        return token;
+    }
     async getEventIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
         if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, prefix))
@@ -101,13 +115,7 @@ export default class ContractManager {
             if (!suspectedToken || this.contracts[addressLower].token && this.contracts[addressLower].token.type === suspectedToken) {
                 return this.contracts[addressLower];
             }
-            let tokenData = await this.getTokenData(address, suspectedToken);
-            this.contracts[addressLower].token = Object.assign({
-                address,
-            }, tokenData);
-            return this.contracts[addressLower];
         }
-
 
         const creationInfo = await this.getContractCreation(addressLower);
 
@@ -115,12 +123,14 @@ export default class ContractManager {
         if (metadata) {
             return await this.getVerifiedContract(addressLower, metadata, creationInfo, suspectedToken);
         }
+
         // TODO: there's some in this list that are not ERC20... they have extra stuff like the Swapin method
         const contract = await this.getContractFromTokenList(address, creationInfo, suspectedToken);
         if (contract) {
             this.contracts[addressLower] = contract;
             return contract;
         }
+
         if (suspectedToken) {
             const tokenData = await this.getTokenData(address, suspectedToken);
             if (tokenData) {
@@ -221,6 +231,9 @@ export default class ContractManager {
         }
         return erc20Abi;
     }
+    async getContractFromAbi(address, abi){
+        return  new ethers.Contract(address, abi, this.getEthersProvider());
+    }
     async getTokenData(address, suspectedType) {
         const type = await this.isTokenType(address, suspectedType);
         if(type === false){
@@ -277,8 +290,7 @@ export default class ContractManager {
                 return this.tokenList.tokens[i];
             }
         }
-        const token = await this.getTokenData(address, suspectedType);
-        return token;
+        return await this.getTokenData(address, suspectedType);
     }
 
     async getContractFromTokenList(address, creationInfo, suspectedType) {
@@ -287,7 +299,7 @@ export default class ContractManager {
             return new Contract({
                 name: `${token.name} (${token.symbol})`,
                 address, creationInfo,
-                abi: this.getTokenABI(suspectedType),
+                abi: this.getTokenABI(token.type),
                 manager: this,
                 token: Object.assign({
                     address,

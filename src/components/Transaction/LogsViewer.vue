@@ -104,7 +104,6 @@ export default {
                     parsedLog.token = log_contract.token;
                 }
             }
-            console.log(parsedLog)
             this.allVerified = (verified == this.logs.length);
             this.parsedLogs.push(parsedLog);
             this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).toNumber() - BigNumber.from(b.logIndex).toNumber());
