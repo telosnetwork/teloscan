@@ -1,7 +1,8 @@
 /* eslint-disable */
 
 import { ethers } from "ethers";
-import { markRaw } from 'vue'
+import { markRaw } from 'vue';
+import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/abi/signature/functionSignatures';
 
 export default class Contract {
 
@@ -83,16 +84,27 @@ export default class Contract {
     }
   }
 
+  parseLog(log, parsedLog){
+    parsedLog.function_signature = log.topics[0].substr(0, 10);
+    parsedLog.isTransfer = TRANSFER_FUNCTION_SIGNATURES.includes(parsedLog.function_signature);
+    parsedLog.logIndex = log.logIndex;
+    parsedLog.address = log.address;
+    parsedLog.name = parsedLog.signature;
+    console.log(parsedLog)
+    return parsedLog;
+  }
+
   async parseLogs(logsArray) {
     if (this.iface) {
       let parsedArray = await Promise.all(logsArray.map(async (log) => {
         try {
           let parsedLog = this.iface.parseLog(log);
-          parsedLog.address = log.address;
+          parsedLog = this.parseLog(log, parsedLog);
           return parsedLog;
         } catch (e) {
           console.log(`Failed parsing log ${log.logIndex} from contract interface: ${e.message}`)
-          return await this.parseEvent(log);
+          let parsedLog = await this.parseEvent(log);
+          parsedLog = this.parseLog(log, parsedLog);
         }
       }));
       parsedArray.forEach(parsed => {
@@ -106,7 +118,8 @@ export default class Contract {
     // TODO: This works very inconsistently... need to dig deeper, example http://localhost:8080/tx/0x817b1596365bb402c45b53d67be7808fb204e3842cf61587777d92a3ce909d16
     //   note that the Sync event works fine, but the rest do not
     return await Promise.all(logsArray.map(async log => {
-      return await this.parseEvent(log);
+      let parsedLog = await this.parseEvent(log);
+      parsedLog = this.parseLog(log, parsedLog);
     }))
   }
 
