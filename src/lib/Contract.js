@@ -85,6 +85,7 @@ export default class Contract {
     parsedLog.isTransfer = TRANSFER_SIGNATURES.includes(parsedLog.function_signature);
     parsedLog.logIndex = log.logIndex;
     parsedLog.address = log.address;
+    parsedLog.token = this.token;
     parsedLog.name = (parsedLog.signature) ? parsedLog.signature : null;
     return parsedLog;
   }
