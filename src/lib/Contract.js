@@ -97,7 +97,7 @@ export default class Contract {
           parsedLog = this.formatLog(log, parsedLog);
           return parsedLog;
         } catch (e) {
-          console.log(`Failed parsing log ${log.logIndex} from contract interface: ${e.message}`)
+          console.log(`Failed parsing log ${log.logIndex} from contract interface`)
           let parsedLog = await this.parseEvent(log);
           parsedLog = this.formatLog(log, parsedLog);
         }
@@ -110,8 +110,7 @@ export default class Contract {
       return parsedArray;
     }
 
-    // TODO: This works very inconsistently... need to dig deeper, example http://localhost:8080/tx/0x817b1596365bb402c45b53d67be7808fb204e3842cf61587777d92a3ce909d16
-    //   note that the Sync event works fine, but the rest do not
+
     return await Promise.all(logsArray.map(async log => {
       let parsedLog = await this.parseEvent(log);
       parsedLog = this.formatLog(log, parsedLog);

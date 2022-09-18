@@ -53,7 +53,11 @@ export default {
     },
     methods: {
         async getLogContract(log, type){
-            return  await this.$contractManager.getContract(log.address.toLowerCase(), type);
+            try {
+                return  await this.$contractManager.getContract(log.address.toLowerCase(), type);
+            } catch (e) {
+                console.error(`Failed to retrieve contract with address ${log.address}`);
+            }
         },
     },
     props: {
@@ -69,27 +73,24 @@ export default {
 
     created() {
         let verified = 0;
+
         this.logs.forEach(async (log) => {
-            let parsedLog = { ...log };
-            const function_signature = parsedLog.topics[0].substr(0, 10);
             let contract;
+            const function_signature = log.topics[0].substr(0, 10);
             if(TRANSFER_FUNCTION_SIGNATURES.includes(function_signature)) {
-                try {
-                    contract = await this.getLogContract(log, (log.topics.length === 4) ? 'erc721': 'erc20');
-                } catch (e) {
-                    console.error(`Failed to retrieve contract with address ${log.address}`);
-                }
-            } else if(!contract) {
+                contract = await this.getLogContract(log, (log.topics.length === 4) ? 'erc721': 'erc20');
+            } else {
                 contract = await this.getLogContract(log);
             }
             if (contract){
                 verified = (contract.isVerified()) ? verified + 1: verified;
-                parsedLog = await contract.parseLogs([parsedLog]);
+                let parsedLog = await contract.parseLogs([log]);
                 this.parsedLogs.push(parsedLog[0]);
                 this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).toNumber() - BigNumber.from(b.logIndex).toNumber());
             }
-            this.allVerified = (verified == this.logs.length);
         });
+
+        this.allVerified = (verified == this.logs.length);
     },
     data: () => ({
         human_readable: true,
