@@ -100,10 +100,10 @@ export default {
                         if(log.topics.length === 4) {
                             if(contract.token.iERC721Metadata){
                                 try {
-                                    token = await this.$contractManager.loadTokenMetadata(log.address, token, BigNumber.from(log.topics[3]).toNumber());
+                                    token = await this.$contractManager.loadTokenMetadata(log.address, token, BigNumber.from(log.topics[3]).toString());
                                 } catch (e) { console.log(e)}
                             }
-                            this.erc721Transfers.push({'tokenId' : BigNumber.from(log.topics[3]).toNumber(), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
+                            this.erc721Transfers.push({'tokenId' : BigNumber.from(log.topics[3]).toString(), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
                         } else {
                             this.erc20Transfers.push({'value' : formatBN(log.data, contract.token.decimals, 5), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
                         }
