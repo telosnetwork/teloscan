@@ -56,7 +56,7 @@ export function parseErrorMessage(output) {
         message = parsePanicReason(output);
 
 
-    return message.replace(/[^a-zA-Z0-9 /./'/"/,]/g, '');
+    return message.replace(/[^a-zA-Z0-9 /./'/"/,/@/+/-/_/(/)/[]/g, '');
 }
 
 export function parseRevertReason(revertOutput) {
