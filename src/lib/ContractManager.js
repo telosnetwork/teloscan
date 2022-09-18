@@ -20,7 +20,6 @@ export default class ContractManager {
     constructor(evmEndpoint) {
         this.tokenList = null;
         this.contracts = {};
-        this.ipfsGateway = `${process.env.IPFS_GATEWAY}`;
         this.functionInterfaces = functions_overrides;
         this.eventInterfaces = events_overrides;
         this.evmEndpoint = evmEndpoint;
@@ -66,14 +65,14 @@ export default class ContractManager {
         }
         const contract = await this.getContractFromAbi(address, erc721MetadataAbi);
         token.metadata = await contract.tokenURI(tokenId);
-        token.metadata = token.metadata.replace('ipfs://', this.ipfsGateway);
+        token.metadata = token.metadata.replace('ipfs://', 'https://dweb.link/ipfs/');
         /* TODO: Need to implement own IPFS node or equivalent to get the JSON files, free services are VERY limited...
         try {
             const response = await axios.get(token.metadata);
             if(response.status === 200){
                 token.image = (response.data?.image) ?
-                    response.data.image.replace('ipfs://', this.ipfsGateway) :
-                    response.data?.properties?.image?.description?.replace('ipfs://', this.ipfsGateway)
+                    response.data.image.replace('ipfs://', 'https://dweb.link/ipfs/') :
+                    response.data?.properties?.image?.description?.replace('ipfs://', 'https://dweb.link/ipfs/')
                 ;
             }
         } catch (e) {
