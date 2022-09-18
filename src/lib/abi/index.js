@@ -1,6 +1,4 @@
-import erc721Abi from './erc721';
-import erc721MetadataAbi from './erc721Metadata';
-import erc1155Abi from './erc1155';
-import supportsInterfaceAbi from './supportsInterface';
-
-export default [erc721Abi, erc1155Abi, erc721MetadataAbi, supportsInterfaceAbi];
+export * from './erc721';
+export * from './erc721Metadata';
+export * from './erc1155';
+export * from './supportsInterface';

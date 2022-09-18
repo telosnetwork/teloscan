@@ -162,19 +162,17 @@ export default class ContractManager {
 
     async getVerifiedContract(address, metadata, creationInfo, suspectedType) {
         let token = await this.getToken(address, suspectedType);
-        let tokenData;
         if(token){
-            tokenData = await this.getTokenData(address, suspectedType);
-            tokenData.type = suspectedType;
+            token.type = suspectedType;
+            token.address = address;
         }
+
         const contract = new Contract({
             name: Object.values(metadata.settings.compilationTarget)[0],
             address,
             abi: metadata.output.abi,
             manager: this,
-            token: Object.assign({
-                address,
-            }, tokenData),
+            token: token,
             creationInfo,
             verified: true,
         });
