@@ -68,7 +68,10 @@ export default class ContractManager {
         token.metadata = token.metadata.replace('ipfs://', 'https://ipfs.io/ipfs/')
         const response = await axios.get(token.metadata);
         if(response.status === 200){
-            token.image = response.data?.properties?.image?.description?.replace('ipfs://', 'https://ipfs.io/ipfs/');
+            token.image = (response.data?.image) ?
+                response.data.image.replace('ipfs://', 'https://ipfs.io/ipfs/') :
+                response.data?.properties?.image?.description?.replace('ipfs://', 'https://ipfs.io/ipfs/')
+            ;
         }
         return token;
     }
