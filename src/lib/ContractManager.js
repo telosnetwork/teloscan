@@ -72,6 +72,7 @@ export default class ContractManager {
         }
         const contract = await this.getContractFromAbi(address, erc721MetadataAbi);
         token.metadata = await contract.tokenURI(tokenId);
+        /* TODO: Need to implement own IPFS node or equivalent to get the JSON files...
         token.metadata = token.metadata.replace('ipfs://', this.ipfsGateway);
         try {
             const response = await axios.get(token.metadata);
@@ -87,6 +88,7 @@ export default class ContractManager {
             this.switchIPFS();
             console.log('Switching IPFS: ' + e);
         }
+         */
         return token;
     }
     async getEventIface(data) {
