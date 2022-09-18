@@ -9,7 +9,6 @@ import erc721Abi from './abi/erc721';
 import erc721MetadataAbi from './abi/erc721Metadata';
 import supportsInterfaceAbi from './abi/supportsInterface';
 import { toChecksumAddress } from './utils';
-import IPFSGateways from './ipfsGateways';
 
 const contractsBucket = axios.create({
     baseURL: `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com`,
@@ -21,8 +20,7 @@ export default class ContractManager {
     constructor(evmEndpoint) {
         this.tokenList = null;
         this.contracts = {};
-        this.ipfsGateway = IPFSGateways[0];
-        this.ipfsGatewayIndex = 0;
+        this.ipfsGateway = `${process.env.IPFS_GATEWAY}`;
         this.functionInterfaces = functions_overrides;
         this.eventInterfaces = events_overrides;
         this.evmEndpoint = evmEndpoint;
@@ -61,10 +59,6 @@ export default class ContractManager {
             return;
         }
     }
-    switchIPFS() {
-        this.ipfsGatewayIndex = (this.ipfsGatewayIndex == IPFSGateways.length - 1) ? 0 : this.ipfsGatewayIndex + 1;
-        this.ipfsGateway = IPFSGateways[this.ipfsGatewayIndex];
-    }
     async loadTokenMetadata(address, token, tokenId){
         if(token.type === 'erc1155'){
             console.error('Loading ERC1155 Metadata not implemented yet')
@@ -72,21 +66,18 @@ export default class ContractManager {
         }
         const contract = await this.getContractFromAbi(address, erc721MetadataAbi);
         token.metadata = await contract.tokenURI(tokenId);
-        /* TODO: Need to implement own IPFS node or equivalent to get the JSON files...
         token.metadata = token.metadata.replace('ipfs://', this.ipfsGateway);
+        /* TODO: Need to implement own IPFS node or equivalent to get the JSON files, free services are VERY limited...
         try {
             const response = await axios.get(token.metadata);
             if(response.status === 200){
                 token.image = (response.data?.image) ?
-                    response.data.image.replace('ipfs://', 'https://ipfs.io/ipfs/') :
-                    response.data?.properties?.image?.description?.replace('ipfs://', 'https://ipfs.io/ipfs/')
+                    response.data.image.replace('ipfs://', this.ipfsGateway) :
+                    response.data?.properties?.image?.description?.replace('ipfs://', this.ipfsGateway)
                 ;
-            } else {
-                this.switchIPFS();
             }
         } catch (e) {
-            this.switchIPFS();
-            console.log('Switching IPFS: ' + e);
+            console.log(e);
         }
          */
         return token;
