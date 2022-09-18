@@ -5,7 +5,7 @@ import events_overrides from './abi/signature/events_signatures_overrides.json';
 import Web3 from 'web3';
 import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
-import { erc721Abi, erc1155Abi, erc721MetadataAbi, supportsInterfaceAbi }   from './abi/erc721';
+import { erc721Abi, erc1155Abi, erc721MetadataAbi, supportsInterfaceAbi }   from './abi';
 import { toChecksumAddress } from './utils';
 
 const contractsBucket = axios.create({
