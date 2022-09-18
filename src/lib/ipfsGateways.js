@@ -1,3 +1,3 @@
 module.exports = [
-    'dweb.link', 'ipfs.io', 'ipfs-gateway.cloud', 'nftstorage.link',
+    'https://dweb.link/ipfs/',  'https://ipfs.io/ipfs/', 'https://ipfs-gateway.cloud/ipfs/', 'https://nftstorage.link/ipfs/'
 ]
