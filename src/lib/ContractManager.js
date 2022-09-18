@@ -5,9 +5,7 @@ import events_overrides from './abi/signature/events_signatures_overrides.json';
 import Web3 from 'web3';
 import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
-import erc721Abi from './abi/erc721';
-import erc721MetadataAbi from './abi/erc721Metadata';
-import supportsInterfaceAbi from './abi/supportsInterface';
+import { erc721Abi, erc1155Abi, erc721MetadataAbi, supportsInterfaceAbi }   from './abi/erc721';
 import { toChecksumAddress } from './utils';
 
 const contractsBucket = axios.create({
@@ -237,7 +235,7 @@ export default class ContractManager {
         if(type === 'erc721'){
             return erc721Abi;
         } else if(type === 'erc1155'){
-            return erc721Abi; // TODO: Implement ERC1155
+            return erc1155Abi;
         }
         return erc20Abi;
     }

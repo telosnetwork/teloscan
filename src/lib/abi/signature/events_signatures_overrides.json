@@ -17,5 +17,6 @@
   "0x5beea7b3": "event EvInventoryUpdate(uint256 indexed id, tuple(address,address,address,uint256,uint256,uint256,uint8,uint8) inventory)",
   "0x8be0079c": "event OwnershipTransferred(address previousOwner, address newOwner)",
   "0x34fcbac0": "event Claim(address indexed user, uint256 indexed pid, uint256 amount)",
-  "0xda919360" : "event BorrowAllowanceDelegated(address indexed fromUser, address indexed toUser, address asset, uint256 amount)"
+  "0xda919360" : "event BorrowAllowanceDelegated(address indexed fromUser, address indexed toUser, address asset, uint256 amount)",
+  "0xdccd412f" : "event Burn(address indexed sender, uint256 amount0, uint256 amount1, address indexed to)"
 }

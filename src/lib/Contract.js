@@ -98,7 +98,6 @@ export default class Contract {
           parsedLog = this.formatLog(log, parsedLog);
           return parsedLog;
         } catch (e) {
-          console.log(`Failed parsing log ${log.logIndex} from contract interface`)
           let parsedLog = await this.parseEvent(log);
           return  this.formatLog(log, parsedLog);
         }
