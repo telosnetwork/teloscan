@@ -68,34 +68,27 @@ export default {
     },
 
     created() {
-        let contracts = {};
         let verified = 0;
         this.logs.forEach(async (log) => {
             let parsedLog = { ...log };
-            let log_contract;
             const function_signature = parsedLog.topics[0].substr(0, 10);
-            if (Object.prototype.hasOwnProperty.call(contracts, log.address)){
-                log_contract = contracts[log.address]
-            } else if(TRANSFER_FUNCTION_SIGNATURES.includes(function_signature)) {
+            let contract;
+            if(TRANSFER_FUNCTION_SIGNATURES.includes(function_signature)) {
                 try {
-                    const type = (log.topics.length === 4) ? 'erc721': 'erc20';
-                    log_contract = await this.getLogContract(log, type);
-                    contracts[log.address] = log_contract;
+                    contract = await this.getLogContract(log, (log.topics.length === 4) ? 'erc721': 'erc20');
                 } catch (e) {
-                    console.error(`Failed to retrieve contract with address ${log_contract.address}`);
+                    console.error(`Failed to retrieve contract with address ${log.address}`);
                 }
-            } else {
-                log_contract = await this.getLogContract(log);
-                contracts[log.address] = log_contract;
+            } else if(!contract) {
+                contract = await this.getLogContract(log);
             }
-            verified = (log_contract.isVerified()) ? verified + 1: verified;
-            if(log_contract){
-                let logs = await log_contract.parseLogs([parsedLog]);
-                parsedLog = logs[0];
+            if (contract){
+                verified = (contract.isVerified()) ? verified + 1: verified;
+                parsedLog = await contract.parseLogs([parsedLog]);
+                this.parsedLogs.push(parsedLog[0]);
+                this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).toNumber() - BigNumber.from(b.logIndex).toNumber());
             }
             this.allVerified = (verified == this.logs.length);
-            this.parsedLogs.push(parsedLog);
-            this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).toNumber() - BigNumber.from(b.logIndex).toNumber());
         });
     },
     data: () => ({

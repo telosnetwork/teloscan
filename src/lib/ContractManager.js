@@ -66,7 +66,7 @@ export default class ContractManager {
         const contract = await this.getContractFromAbi(address, erc721MetadataAbi);
         token.metadata = await contract.tokenURI(tokenId);
         token.metadata = token.metadata.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/');
-        /* TODO: Need to implement own IPFS node or equivalent to get the JSON files, free services are VERY limited...
+        /* TODO: Need to store medias or metadata JSON file in S3 to get it in < a few seconds, IPFS is very slow (or setup our own node ?)
         try {
             const response = await axios.get(token.metadata);
             if(response.status === 200){
@@ -114,7 +114,8 @@ export default class ContractManager {
     }
 
     // suspectedToken is so we don't try to check for ERC20 info via eth_call unless we think this is a token...
-    // this is coming from the token transfer & transaction (general + logs tabs) pages where we're looking for a contract based on a token transfer event
+    // this is coming from the token transfer, transactions table & transaction (general + logs tabs) pages where we're looking for a contract based on a token transfer event
+    // handles erc721 & erc20 (w/ stubs for erc1155)
     async getContract(address, suspectedToken) {
         if (!address) return;
         const addressLower = address.toLowerCase();
@@ -187,7 +188,7 @@ export default class ContractManager {
         const contract = new Contract({
             name: tokenData.symbol ? `${tokenData.name} (${tokenData.symbol})` : tokenData.name,
             address,
-            abi: tokenData.type === 'erc721' ?  erc721Abi : erc20Abi,
+            abi: this.getTokenABI(tokenData.type),
             manager: this,
             creationInfo,
             token: Object.assign({
@@ -234,15 +235,17 @@ export default class ContractManager {
 
     getTokenABI(type){
         if(type === 'erc721'){
-            return erc721Abi
+            return erc721Abi;
         } else if(type === 'erc1155'){
-            return erc721Abi
+            return erc721Abi; // TODO: Implement ERC1155
         }
         return erc20Abi;
     }
+
     async getContractFromAbi(address, abi){
         return  new ethers.Contract(address, abi, this.getEthersProvider());
     }
+
     async getTokenData(address, suspectedType) {
         const type = await this.isTokenType(address, suspectedType);
         if(type === false){
@@ -267,6 +270,8 @@ export default class ContractManager {
             } else if(type === 'erc721'){
                 tokenData.iERC721Metadata = await this.supportsInterface(address, '0x5b5e139f')
                 //tokenData.iERC721Enumerable = await this.supportsInterface(address, '0x780e9d63')
+            } else if(type === 'erc1155'){
+                // TODO: Implement ERC1155
             }
             return tokenData;
         } catch (e) {

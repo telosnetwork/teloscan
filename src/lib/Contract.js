@@ -60,10 +60,6 @@ export default class Contract {
     return this.contract;
   }
 
-  call(functionName, args) {
-
-  }
-
   async parseTransaction(data) {
     if (this.iface) {
       try {
@@ -84,13 +80,12 @@ export default class Contract {
     }
   }
 
-  parseLog(log, parsedLog){
+  formatLog(log, parsedLog){
     parsedLog.function_signature = log.topics[0].substr(0, 10);
     parsedLog.isTransfer = TRANSFER_FUNCTION_SIGNATURES.includes(parsedLog.function_signature);
     parsedLog.logIndex = log.logIndex;
     parsedLog.address = log.address;
-    parsedLog.name = parsedLog.signature;
-    console.log(parsedLog)
+    parsedLog.name = (parsedLog.signature) ? parsedLog.signature : null;
     return parsedLog;
   }
 
@@ -99,16 +94,16 @@ export default class Contract {
       let parsedArray = await Promise.all(logsArray.map(async (log) => {
         try {
           let parsedLog = this.iface.parseLog(log);
-          parsedLog = this.parseLog(log, parsedLog);
+          parsedLog = this.formatLog(log, parsedLog);
           return parsedLog;
         } catch (e) {
           console.log(`Failed parsing log ${log.logIndex} from contract interface: ${e.message}`)
           let parsedLog = await this.parseEvent(log);
-          parsedLog = this.parseLog(log, parsedLog);
+          parsedLog = this.formatLog(log, parsedLog);
         }
       }));
       parsedArray.forEach(parsed => {
-        if(parsed.name && parsed.eventFragment){
+        if(parsed.name && parsed.eventFragment && parsed.eventFragment.inputs){
           parsed.inputs = parsed.eventFragment.inputs;
         }
       })
@@ -119,7 +114,7 @@ export default class Contract {
     //   note that the Sync event works fine, but the rest do not
     return await Promise.all(logsArray.map(async log => {
       let parsedLog = await this.parseEvent(log);
-      parsedLog = this.parseLog(log, parsedLog);
+      parsedLog = this.formatLog(log, parsedLog);
     }))
   }
 
@@ -128,7 +123,7 @@ export default class Contract {
     if (eventIface) {
       try {
         let parsedLog = eventIface.parseLog(log);
-        parsedLog.address = log.address;
+        parsedLog = this.formatLog(log, parsedLog);
         return parsedLog;
       } catch(e) {
         console.log(`Failed to parse log ${log.logIndex} from event interface`)
