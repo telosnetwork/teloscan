@@ -65,14 +65,14 @@ export default class ContractManager {
         }
         const contract = await this.getContractFromAbi(address, erc721MetadataAbi);
         token.metadata = await contract.tokenURI(tokenId);
-        token.metadata = token.metadata.replace('ipfs://', 'https://dweb.link/ipfs/');
+        token.metadata = token.metadata.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/');
         /* TODO: Need to implement own IPFS node or equivalent to get the JSON files, free services are VERY limited...
         try {
             const response = await axios.get(token.metadata);
             if(response.status === 200){
                 token.image = (response.data?.image) ?
-                    response.data.image.replace('ipfs://', 'https://dweb.link/ipfs/') :
-                    response.data?.properties?.image?.description?.replace('ipfs://', 'https://dweb.link/ipfs/')
+                    response.data.image.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/') :
+                    response.data?.properties?.image?.description?.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/')
                 ;
             }
         } catch (e) {
