@@ -48,11 +48,15 @@ export function parseErrorMessage(output) {
     if (!output)
         return;
 
+    let message;
     if (output.startsWith(REVERT_FUNCTION_SELECTOR))
-        return parseRevertReason(output);
+        message = parseRevertReason(output);
 
     if (output.startsWith(REVERT_PANIC_SELECTOR))
-        return parsePanicReason(output);
+        message = parsePanicReason(output);
+
+
+    return message.replace(/[^a-zA-Z0-9 /./'/"/,]/g, '');
 }
 
 export function parseRevertReason(revertOutput) {
