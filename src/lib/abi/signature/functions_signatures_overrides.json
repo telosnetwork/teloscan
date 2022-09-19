@@ -3,6 +3,7 @@
   "0x18cbafe5": "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)",
   "0x095ea7b3": "function approve(address spender, uint256 amount)",
   "0x7ff36ab5": "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)",
+  "0xfb3bdb41": "swapETHForExactTokens(uint256 amountOut, address[] path, address to, uint256 deadline)",
   "0xded9382a": "function removeLiquidityETHWithPermit(address token, uint256 liquidity, uint256 amountTokenMin, uint256 amountETHMin, address to, uint256 deadline, bool approveMax, uint8 v, bytes32 r, bytes32 s)",
   "0xf305d719": "function addLiquidityETH(address token, uint256 amountTokenDesired, uint256 amountTokenMin, uint256 amountETHMin, address to, uint256 deadline)",
   "0xa22cb465": "function setApprovalForAll(address to, bool approved)",
