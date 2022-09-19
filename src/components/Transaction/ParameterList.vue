@@ -71,3 +71,10 @@ div(v-for="param, pIndex in params" class="fit row wrap justify-start items-star
   div(v-else-if="param.type === 'address'" class="col-8 word-break") <AddressField :address="param.value" copy :name="param.value === contract.address && contract.name ?  contract.name : null"   />
   div(v-else  class="col-8 word-break") {{ param.value }}
 </template>
+<style lang="sass" scoped>
+@media only screen and (max-width: 550px)
+    .col-4, .col-8
+        width: 100%
+    .col-8
+        padding-left: 14px
+</style>
