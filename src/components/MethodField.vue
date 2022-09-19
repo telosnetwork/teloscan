@@ -54,7 +54,7 @@ div
   span(v-if="trx.parsedTransaction" )
     span() {{ trx.parsedTransaction.name.length > 11 && shortenName ? `${trx.parsedTransaction.name.slice(0,8)}...` : trx.parsedTransaction.name }}
     span(v-if="transferAmount")  ({{ transferAmount }})
-    q-tooltip(v-if="shorten" anchor="center middle" self="center middle")
+    q-tooltip(v-if="shortenName" anchor="center middle" self="center middle")
       | {{ trx.parsedTransaction.name }}
   span(v-else :class="shortenSignature && 'clickable'")
     span(v-if="!expand" v-on:click="shortenSignature && toggle()" clickable) {{trx.input_data.length > 10 && shortenSignature ? `${trx.input_data.slice(0,10)}` : trx.input_data}}
