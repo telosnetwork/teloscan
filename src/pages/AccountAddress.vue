@@ -171,4 +171,16 @@ export default {
 
 .text-primary
   display: inline-block
+
+@media only screen and (max-width: 550px)
+    .pageContainer
+        padding-top: 30px
+        background: linear-gradient(#252a5e 17.19%, #2d4684 45.83%, #000000 65.83%)
+    .tableWrapper
+        justify-content: center
+    .homeInfo
+        text-align: center
+        margin-bottom: 30px
+        .text-h4
+            margin-bottom: 10px
 </style>
