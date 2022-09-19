@@ -92,7 +92,6 @@ export default {
         loadTransfers(){
             this.trx.logs.forEach(async (log) => {
                 // ERC20 & ERC721 transfers (ERC721 has 4 log topics for transfers, ERC20 has 3 log topics)
-                // TODO: handle erc1155, shouldn't be too different from erc721
                 if(TRANSFER_SIGNATURES.includes(log.topics[0].substr(0, 10))){
                     let contract = await this.$contractManager.getContract(log.address, (log.topics.length === 4) ? 'erc721' : 'erc20');
                     if(typeof contract.token !== 'undefined' && contract.token !== null){
@@ -101,7 +100,9 @@ export default {
                             if(contract.token.iERC721Metadata){
                                 try {
                                     token = await this.$contractManager.loadTokenMetadata(log.address, token, BigNumber.from(log.topics[3]).toString());
-                                } catch (e) { console.log(e)}
+                                } catch (e) {
+                                    console.error(`Could not retreive ERC721 Metadata for ${contract.address}: ${e.message}`)
+                                }
                             }
                             this.erc721Transfers.push({'tokenId' : BigNumber.from(log.topics[3]).toString(), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
                         } else {

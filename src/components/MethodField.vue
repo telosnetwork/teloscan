@@ -41,7 +41,7 @@ export default {
             if (!this.trx.parsedTransaction)
                 return;
 
-            if (TRANSFER_SIGNATURES.includes(this.trx.parsedTransaction.sighash) && this.contract && this.contract.token && this.contract.token.decimals) {
+            if (TRANSFER_SIGNATURES.includes(this.trx.parsedTransaction.sighash) && this?.contract?.token?.decimals) {
                 this.transferAmount = `${formatBN(this.trx.parsedTransaction.args[1], this.contract.token.decimals, 5)} ${this.contract.token.symbol}`;
             }
         },

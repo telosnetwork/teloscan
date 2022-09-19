@@ -86,11 +86,11 @@ export default {
                 verified = (contract.isVerified()) ? verified + 1: verified;
                 let parsedLog = await contract.parseLogs([log]);
                 this.parsedLogs.push(parsedLog[0]);
-                this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).toNumber() - BigNumber.from(b.logIndex).toNumber());
+                this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());
             }
         });
 
-        this.allVerified = (verified == this.logs.length);
+        this.allVerified = (verified === this.logs.length);
     },
     data: () => ({
         human_readable: true,

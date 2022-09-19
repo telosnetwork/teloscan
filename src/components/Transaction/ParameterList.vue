@@ -16,13 +16,8 @@ export default {
         },
     },
     data(){
-        let expanded = [];
-        for(let i=0; i < this.params.length;i++){
-            expanded.push([]);
-        }
-
         return {
-            expanded: expanded,
+            expanded: Array(this.params.length).fill([]),
         }
     },
     props: {

@@ -135,7 +135,7 @@ export default {
     },
     methods: {
         toggle(param, index) {
-            this.expanded_parameters[param][index] = (this.expanded_parameters[param][index]) ? false : true;
+            this.expanded_parameters[param][index] = !this.expanded_parameters[param][index];
         },
     },
     computed: {
@@ -144,9 +144,6 @@ export default {
         },
         arrowIcon() {
             return this.expanded ? 'arrow_drop_down' : 'arrow_right';
-        },
-        arrowIconParameters(param, index) {
-            return this.expanded_parameters[param] && this.expanded_parameters[param][index] ? 'arrow_drop_down' : 'arrow_right';
         },
     },
 }

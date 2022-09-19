@@ -64,19 +64,7 @@ export default class ContractManager {
         const contract = await this.getContractFromAbi(address, erc721MetadataAbi);
         token.metadata = await contract.tokenURI(tokenId);
         token.metadata = token.metadata.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/');
-        /* TODO: Need to store medias or metadata JSON file in S3 to get it in < a few seconds, IPFS is very slow (or setup our own node ?)
-        try {
-            const response = await axios.get(token.metadata);
-            if(response.status === 200){
-                token.image = (response.data?.image) ?
-                    response.data.image.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/') :
-                    response.data?.properties?.image?.description?.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/')
-                ;
-            }
-        } catch (e) {
-            console.log(e);
-        }
-         */
+
         return token;
     }
     async getEventIface(data) {
@@ -212,6 +200,7 @@ export default class ContractManager {
         try {
             return await contract.supportsInterface(iface);
         } catch (e) {
+            // Contract does not support interface, not necessarly an error
             return false;
         }
     }
@@ -265,9 +254,8 @@ export default class ContractManager {
                 tokenData.decimals = await contract.decimals();
             } else if(type === 'erc721'){
                 tokenData.iERC721Metadata = await this.supportsInterface(address, '0x5b5e139f')
-                //tokenData.iERC721Enumerable = await this.supportsInterface(address, '0x780e9d63')
             } else if(type === 'erc1155'){
-                // TODO: Implement ERC1155
+                // ERC1155 extensions
             }
             return tokenData;
         } catch (e) {

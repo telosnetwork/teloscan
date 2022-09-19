@@ -36,7 +36,7 @@ div(class="fit row wrap justify-start items-start content-start")
         <AddressField :address="transfer.to" :truncate="16" copy :name="transfer.to === contract.address && contract.name ?  contract.name : null" />
       div(v-if="type==='ERC721' || type==='ERC1155'" class="col-4")
         strong {{ ` Token : ` }}
-        a(:href="'/address/' + transfer.token.address" style="margin-left: 3px;") {{ transfer.token.symbol }}
+        router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs") {{ transfer.token.symbol }}
         span(class="word-break") {{ ' #' + transfer.tokenId }}
         span(class="word-break" v-if="transfer.token.metadata")
           span
@@ -50,7 +50,7 @@ div(class="fit row wrap justify-start items-start content-start")
       div(v-else class="col-4")
         strong {{ ` Token : ` }}
         span {{ transfer.value }}
-        a(:href="'/address/' + transfer.token.address" style="margin-left: 3px;") {{ transfer.token.symbol }}
+        router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs") {{ transfer.token.symbol }}
   br
 br
 </template>
