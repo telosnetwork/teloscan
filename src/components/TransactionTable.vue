@@ -201,7 +201,7 @@ q-table(
             q-td( key="date" :props="props")
                 date-field( :epoch="props.row.epoch", :showAge="showAge" )
             q-td( key="method" :props="props")
-                method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shorten="true" )
+                method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"  )
             q-td( key="from" :props="props")
                 address-field(v-if="props.row.from" :address="props.row.from" )
             q-td( key="to" :props="props")

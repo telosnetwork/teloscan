@@ -14,7 +14,11 @@ export default {
             type: Object,
             default: null,
         },
-        shorten: {
+        shortenSignature: {
+            type: Boolean,
+            default: false,
+        },
+        shortenName: {
             type: Boolean,
             default: false,
         },
@@ -48,13 +52,13 @@ export default {
 <template lang="pug">
 div
   span(v-if="trx.parsedTransaction" )
-    span() {{  trx.parsedTransaction.name  }}
+    span() {{ trx.parsedTransaction.name.length > 11 && shortenName ? `${trx.parsedTransaction.name.slice(0,8)}...` : trx.parsedTransaction.name }}
     span(v-if="transferAmount")  ({{ transferAmount }})
     q-tooltip(v-if="shorten" anchor="center middle" self="center middle")
       | {{ trx.parsedTransaction.name }}
-  span(v-else :class="shorten && 'clickable'")
-    span(v-if="!expand" v-on:click="shorten && toggle()" clickable) {{trx.input_data.length > 10 && shorten ? `${trx.input_data.slice(0,10)}` : trx.input_data}}
-    q-tooltip( v-if="shorten && !expand") Click to expand the function signature
-    span( v-if="shorten && expand" anchor="center middle" class="word-break" self="center middle" v-on:click="toggle()")
+  span(v-else :class="shortenSignature && 'clickable'")
+    span(v-if="!expand" v-on:click="shortenSignature && toggle()" clickable) {{trx.input_data.length > 10 && shortenSignature ? `${trx.input_data.slice(0,10)}` : trx.input_data}}
+    q-tooltip( v-if="shortenSignature && !expand") Click to expand the function signature
+    span( v-if="shortenSignature && expand" anchor="center middle" class="word-break" self="center middle" v-on:click="toggle()")
       | {{ trx.input_data }}
 </template>
