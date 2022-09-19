@@ -172,6 +172,12 @@ export default {
 .text-primary
   display: inline-block
 
+@media only screen and (max-width: 1200px)
+    .pageContainer
+        div
+            .tableWrapper
+                &:first-child
+                    padding: 20px
 @media only screen and (max-width: 550px)
     .pageContainer
         padding-top: 30px
@@ -179,8 +185,13 @@ export default {
     .tableWrapper
         justify-content: center
     .homeInfo
+        padding: 20px
         text-align: center
         margin-bottom: 30px
+        .c-copy-button
+            width: 100%
         .text-h4
             margin-bottom: 10px
+            word-break: break-word
+            line-height: 1.3em
 </style>
