@@ -178,10 +178,15 @@ export default {
             .tableWrapper
                 &:first-child
                     padding: 20px
-@media only screen and (max-width: 550px)
+@media only screen and (max-width: 768px)
+    .dataCardsContainer
+        width: 100%
+        justify-content: center
+    .dataCardsContainer
+        width: 100%
     .pageContainer
         padding-top: 30px
-        background: linear-gradient(#252a5e 17.19%, #2d4684 45.83%, #000000 65.83%)
+        background: linear-gradient(#252a5e 17.19%, #2d4684 45.83%, #121212 65.83%)
     .tableWrapper
         justify-content: center
     .homeInfo
