@@ -39,14 +39,14 @@ div(class="fit row wrap justify-start items-start content-start")
         a(:href="'/address/' + transfer.token.address" style="margin-left: 3px;") {{ transfer.token.symbol }}
         span(class="word-break") {{ ' #' + transfer.tokenId }}
         span(class="word-break" v-if="transfer.token.metadata")
-          span( class="q-pl-xs")
-          a(clickable :href="transfer.token.metadata" target="_blank")
-            q-tooltip Consult metadata
-            q-icon(name="description" size="14px" class="q-pb-sm")
-          a(v-if="transfer.token.image" clickable :href="transfer.token.image" target="_blank" class="q-pl-xs")
-            q-tooltip Consult media
-            q-icon(name="image" size="14px" class="q-pb-sm")
           span
+            a(clickable :href="transfer.token.metadata" target="_blank")
+              q-icon(name="description" size="14px" class="q-pb-sm")
+            q-tooltip Consult metadata
+          span
+            a(v-if="transfer.token.image" clickable :href="transfer.token.image" target="_blank" class="q-pl-xs")
+              q-icon(name="image" size="14px" class="q-pb-sm")
+            q-tooltip Consult media
       div(v-else class="col-4")
         strong {{ ` Token : ` }}
         span {{ transfer.value }}

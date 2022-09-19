@@ -31,6 +31,7 @@
                         v-if="param.type === 'address'"
                         :address="log.args[index]"
                         :truncate="0"
+                        class="word-break"
                         :copy="true"
                     />
                     <div v-else-if="param.type === 'uint256' || param.type === 'uint128'"  class="word-break">
@@ -41,6 +42,7 @@
                                     :address="log.token.address"
                                     :truncate="0"
                                     :name="log.token.symbol"
+                                    class="word-break"
                                 />
                             </div>
                             <div v-else>
@@ -48,6 +50,7 @@
                                     :address="log.token.address"
                                     :truncate="0"
                                     :name="log.token.symbol"
+                                    class="word-break"
                                 />
                                 #{{ log.args[index] }}
                             </div>
@@ -71,10 +74,11 @@
                                 <address-field
                                     :address="log.args[index][i]"
                                     :truncate="0"
+                                    class="word-break"
                                     :copy="true"
                                 />
                             </div>
-                            <span v-else>{{ log.args[index][i] }},</span>
+                            <span v-else class="word-break">{{ log.args[index][i] }},</span>
                         </div>
                         <div v-if="!expanded_parameters[index]['expanded']" class="q-px-sm ellipsis-label q-mb-xs">...</div>
                         <div>]</div>

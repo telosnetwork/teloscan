@@ -182,8 +182,8 @@ export default {
     .dataCardsContainer
         width: 100%
         justify-content: center
-    .dataCardItem
-        width: 100%
+        .dataCardItem
+            width: 100%
     .pageContainer
         padding-top: 30px
         background: linear-gradient(#252a5e 17.19%, #2d4684 45.83%, transparent 65.83%)
@@ -199,4 +199,5 @@ export default {
             margin-bottom: 10px
             word-break: break-word
             line-height: 1.3em
+            font-size: 2.4em
 </style>
