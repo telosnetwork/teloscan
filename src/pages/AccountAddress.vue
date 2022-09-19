@@ -182,11 +182,11 @@ export default {
     .dataCardsContainer
         width: 100%
         justify-content: center
-    .dataCardsContainer
+    .dataCardItem
         width: 100%
     .pageContainer
         padding-top: 30px
-        background: linear-gradient(#252a5e 17.19%, #2d4684 45.83%, #121212 65.83%)
+        background: linear-gradient(#252a5e 17.19%, #2d4684 45.83%, transparent 65.83%)
     .tableWrapper
         justify-content: center
     .homeInfo
