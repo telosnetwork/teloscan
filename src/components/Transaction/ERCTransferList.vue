@@ -41,11 +41,11 @@ div(class="fit row wrap justify-start items-start content-start")
         span(class="word-break" v-if="transfer.token.metadata")
           span
             a(clickable :href="transfer.token.metadata" target="_blank")
-              q-icon(name="description" size="14px" class="q-pb-sm")
+              q-icon(name="description" size="14px" class="q-pb-sm q-ml-xs")
             q-tooltip Consult metadata
           span
             a(v-if="transfer.token.image" clickable :href="transfer.token.image" target="_blank" class="q-pl-xs")
-              q-icon(name="image" size="14px" class="q-pb-sm")
+              q-icon(name="image" size="14px" class="q-pb-sm q-ml-xs")
             q-tooltip Consult media
       div(v-else class="col-4")
         strong {{ ` Token : ` }}
