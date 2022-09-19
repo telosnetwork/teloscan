@@ -19,5 +19,4 @@
   "0x34fcbac0": "event Claim(address indexed user, uint256 indexed pid, uint256 amount)",
   "0xda919360" : "event BorrowAllowanceDelegated(address indexed fromUser, address indexed toUser, address asset, uint256 amount)",
   "0xdccd412f" : "event Burn(address indexed sender, uint256 amount0, uint256 amount1, address indexed to)",
-  "0xfb3bdb41" : "event swapETHForExactTokens(uint256 amountOut, address[] path, address to, uint256 deadline)"
 }
