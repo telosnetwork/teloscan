@@ -2,15 +2,15 @@
 <div class="c-log-table-row"  >
     <div class="c-log-table-row__head" @click="expanded = !expanded">
         <q-icon :name="arrowIcon" size="sm" />
-        <strong v-if="log.name">
+        <strong v-if="log?.name">
             {{ log.name }}
         </strong>
         <strong v-else>
-            Unknown ({{ log.topics[0].substr(0, 10) }})
+            Unknown ({{ rawLog.topics[0].substr(0, 10) }})
         </strong>
     </div>
     <div class="q-pl-md" v-if="expanded">
-        <div v-if="log.name" :key="log.name">
+        <div v-if="log?.name" :key="log.name">
             <div
                 v-for="(param, index) in inputs"
                 :key="`log-${index}`"
@@ -112,7 +112,8 @@ export default {
     props: {
         log: {
             type: Object,
-            required: true,
+            required: false,
+            default: false,
         },
         rawLog: {
             type: Object,
