@@ -126,6 +126,7 @@ export default {
         }
     },
     created(){
+        if(!this.log) return;
         let inputs = this.log.eventFragment ? this.log.eventFragment.inputs : this.log.inputs;
         if(inputs){
             for(let i=0; i < inputs.length;i++){
