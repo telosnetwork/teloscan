@@ -81,12 +81,13 @@ export default class Contract {
   }
 
   formatLog(log, parsedLog){
+    if(!parsedLog.signature) return log;
     parsedLog.function_signature = log.topics[0].substr(0, 10);
     parsedLog.isTransfer = TRANSFER_SIGNATURES.includes(parsedLog.function_signature);
     parsedLog.logIndex = log.logIndex;
     parsedLog.address = log.address;
     parsedLog.token = this.token;
-    parsedLog.name = (parsedLog.signature) ? parsedLog.signature : null;
+    parsedLog.name = parsedLog.signature;
     return parsedLog;
   }
 
