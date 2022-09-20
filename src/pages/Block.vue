@@ -61,7 +61,6 @@ export default {
     .row.justify-between.q-mb-lg
         div
             &:first-child
-                display: block
                 text-align: center
                 width: 100%
     .dataCardsContainer
