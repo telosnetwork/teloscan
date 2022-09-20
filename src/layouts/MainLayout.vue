@@ -35,7 +35,7 @@
                 @click="toggleDarkMode()"
             />
 
-            <connect-button id="connect-button" />
+            <connect-button />
             <q-btn
                 flat
                 round
