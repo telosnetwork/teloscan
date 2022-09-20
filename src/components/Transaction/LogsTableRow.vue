@@ -1,7 +1,7 @@
 <template>
 <div class="c-log-table-row"  >
     <div class="c-log-table-row__head" @click="expanded = !expanded">
-        <q-icon :name="arrowIcon" size="sm" class="q-mb-xs" />
+        <q-icon :name="arrowIcon" size="sm" />
         <strong v-if="log.name">
             {{ log.name }}
         </strong>
@@ -156,7 +156,10 @@ export default {
     &__head {
         background: rgba(0, 0, 0, 0.1);
         padding: 10px 20px;
+        display: flex;
+        align-items: center;
         margin-bottom: 12px;
+        word-break: break-word;
         cursor: pointer;
         border-radius: 5px;
         transition: 300ms background-color ease;
@@ -168,6 +171,13 @@ export default {
 
     &__log {
         white-space: pre;
+    }
+}
+@media only screen and (max-width: 400px){
+    .c-log-table-row {
+        &__head {
+            font-size: 0.9em;
+        }
     }
 }
 </style>
