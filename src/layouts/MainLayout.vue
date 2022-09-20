@@ -200,8 +200,29 @@ export default {
   text-overflow: ellipsis
 
 .q-drawer
-  margin-top:16px
+  margin-top: 16px
   height: fit-content
   border-top-left-radius: 4px
   border-bottom-left-radius: 4px
+
+@media screen and (max-width: 768px)
+    .taskbarSearch
+        display: none
+@media only screen and (max-width: 550px)
+    #dark-mode-toggle
+        padding-right: 5px
+        .q-icon
+            font-size: 1.3em
+    #logo
+        .text-h5
+            font-size: 1.3rem
+        img
+            width: 32px
+
+@media only screen and (max-width: 400px)
+    #logo
+        .text-h5
+            font-size: 1.1rem
+        img
+            width: 24px
 </style>

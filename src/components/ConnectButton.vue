@@ -260,4 +260,9 @@ div()
         width: 3.5rem
         margin: .5rem .5rem 0 .5rem
 
+@media only screen and (max-width: 550px)
+    .q-btn
+        font-size: 0.9em
+        padding: 4px 10px
+
 </style>
