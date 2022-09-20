@@ -173,17 +173,17 @@ export default {
 };
 </script>
 
-<style lang="sass">
+<style scoped lang="sass">
 .banner
   z-index: -1
-  height: 280px
+  height: 40vh
   position: absolute
   left: 0
   right: 0
   top: 0
-  background: linear-gradient(#252a5e 27.19%, #2d4684 65.83%)
+  background: linear-gradient(180deg, rgb(37,42,94) 0%, rgba(45,70,132) 60%, transparent 99%)
   &.home
-    height: 400px
+    height: 50vh
 
 .connection
   font-size: .5rem
@@ -196,7 +196,7 @@ export default {
   text-overflow: ellipsis
 
 .q-drawer
-  margin-top:16px
+  margin-top: 16px
   height: fit-content
   border-top-left-radius: 4px
   border-bottom-left-radius: 4px
