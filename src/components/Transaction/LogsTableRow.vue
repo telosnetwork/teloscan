@@ -112,7 +112,7 @@ export default {
     props: {
         log: {
             type: Object,
-            required: false
+            required: false,
         },
         rawLog: {
             type: Object,
