@@ -152,7 +152,10 @@ export default {
         displayConfirmModal: false,
         resultHash: null,
         header: 'Stake TLOS',
-        subheader: 'Staked sTLOS provide you with access to a steady income and access to our Defi applications',
+        subheader: 'Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, ' +
+            'further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change ' +
+            'over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be ' +
+            'auto-compounded. No further action is required.',
         topInputLabel: 'Stake TLOS',
         topInputAmount: '0',
         topInputIsLoading: false,
