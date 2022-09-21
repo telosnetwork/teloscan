@@ -34,10 +34,10 @@ div(class="fit row wrap justify-start items-start content-start")
       div(class="col-4")
         q-icon(name="arrow_right" class="list-arrow")
         strong {{ `From : ` }}
-        <AddressField :class="trxFrom === transfer.from && transfers.length > 1 ? 'address-yellow' : ''" :address="transfer.from" :truncate="16" copy :name="transfer.from === contract.address && contract.name ?  contract.name : null" />
+        <AddressField :class="trxFrom === transfer.from && transfers.length > 1 ? 'address-highlight' : ''" :address="transfer.from" :truncate="16" copy :name="transfer.from === contract.address && contract.name ?  contract.name : null" />
       div(class="col-4")
         strong {{ ` To : ` }}
-        <AddressField :class="trxFrom === transfer.to && transfers.length > 1  ? 'address-yellow' : ''" :address="transfer.to" :truncate="16" copy :name="transfer.to === contract.address && contract.name ?  contract.name : null" />
+        <AddressField :class="trxFrom === transfer.to && transfers.length > 1  ? 'address-highlight' : ''" :address="transfer.to" :truncate="16" copy :name="transfer.to === contract.address && contract.name ?  contract.name : null" />
       div(v-if="type==='ERC721' || type==='ERC1155'" class="col-4")
         strong {{ ` Token : ` }}
         router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs") {{ transfer.token.symbol }}

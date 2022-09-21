@@ -275,7 +275,7 @@ export default {
               div(class="col-3")
                 strong {{ `From: ` }}
               div(class="col-9 word-break")
-                address-field(:address="trx.from" :truncate="0" :class="erc20Transfers.length + erc721Transfers.length > 1 ? 'address-yellow' : ''" copy)
+                address-field(:address="trx.from" :truncate="0" :class="erc20Transfers.length + erc721Transfers.length > 1 ? 'address-highlight' : ''" copy)
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
