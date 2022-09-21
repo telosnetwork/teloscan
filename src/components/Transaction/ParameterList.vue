@@ -50,7 +50,7 @@ div(v-for="param, pIndex in params" class="fit row wrap justify-start items-star
       div(v-else-if="param.arrayChildren === 'address'") <AddressField :address="value" copy :name="value === contract.address && contract.name ?  contract.name : null"   />
       div(v-else-if="param.arrayChildren === 'uint128' || param.arrayChildren === 'uint256'") {{ value }},
       div(v-else-if="!isNaN(value)") {{ value }},
-      div(v-else-if="typeof value === 'object'" v-on:click.stop="value.length > 1 && toggle(pIndex, index) || toggle(pIndex, 'expanded')")
+      div(v-else-if="typeof value === 'object'" v-on:click.stop="value.length > 1 && toggle(pIndex, index) || value.length === 1 && toggle(pIndex, 'expanded')")
         div [
         div(v-for="(value2) in value" :class="(expanded[pIndex][index] || value.length === 1) ? 'q-pl-md' : 'q-pl-md hidden'" )
             div(v-if="!isNaN(value2)") {{ value2 }},
