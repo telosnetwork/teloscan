@@ -39,12 +39,13 @@
                 round
                 dense
                 icon="menu"
-                @click="drawer = !drawer"
+                @click="toggleDrawer"
             />
         </q-toolbar>
     </q-header>
 
     <q-drawer
+        v-click-away="handleClickaway"
         v-model="drawer"
         side="right"
         :width="200"
@@ -108,19 +109,29 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import { directive as ClickAway } from 'vue3-click-away';
+
 import Search from 'src/components/Search.vue';
 import FooterMain from 'src/components/Footer.vue';
 import ConnectButton from 'components/ConnectButton';
-import {mapGetters} from 'vuex';
 
 export default {
     name: 'MainLayout',
-    components: { Search, ConnectButton, FooterMain },
+    directives: {
+        ClickAway,
+    },
+    components: {
+        Search,
+        ConnectButton,
+        FooterMain,
+    },
     data() {
         return {
             mainnet: parseInt(process.env.NETWORK_EVM_CHAIN_ID) === 40,
             accountConnected: false,
             drawer: false,
+            clickawayDisabled: false,
         };
     },
     computed: {
@@ -168,6 +179,23 @@ export default {
                         }
                     });
             }
+        },
+        toggleDrawer() {
+            if (!this.drawer) {
+                // handle race condition between vmodel and clickaway.
+                // without this, because clickaway is instantly triggered when clicking the menu icon,
+                // the drawer re-closes before it has had a chance to open
+                this.clickawayDisabled = true;
+                setTimeout(
+                    () => { this.clickawayDisabled = false; },
+                    400,
+                )
+            }
+            this.drawer = !this.drawer;
+        },
+        handleClickaway() {
+            if (this.drawer === true && !this.clickawayDisabled)
+                this.drawer = false;
         },
     },
 };
