@@ -8,16 +8,17 @@ export default {
         AddressField,
     },
     methods: {
-        expand(param, value) {
-            this.expanded[param][value] = true;
-        },
-        minimize(param, value) {
-            this.expanded[param][value] = false;
+        toggle(param, value) {
+            this.expanded[param][value] = !this.expanded[param][value];
         },
     },
     data(){
+        let expanded = [];
+        for(var i = 0; i < this.params.length;i++){
+            expanded.push({'expanded' : false})
+        }
         return {
-            expanded: Array(this.params.length).fill([]),
+            expanded: expanded,
         }
     },
     props: {
@@ -38,7 +39,7 @@ div(v-for="param, pIndex in params" class="fit row wrap justify-start items-star
     q-icon(name="arrow_right" class="list-arrow")
     span(v-if="param.name") {{ param.name }} ({{ param.type }}) :
     span(v-else) {{ param.type }} :
-  div(v-if="param.arrayChildren || param.type === 'tuple'" class="col-8 word-break" v-on:click.stop="(expanded[pIndex]['expanded']) ? minimize(pIndex, 'expanded') : expand(pIndex, 'expanded')")
+  div(v-if="param.arrayChildren || param.type === 'tuple'" class="col-8 word-break" v-on:click.stop="param.value.length > 1 && toggle(pIndex, 'expanded')")
     div [
     div(v-for="(value, index) in param.value" :class="(expanded[pIndex]['expanded'] || param.value.length === 1) ? 'q-pl-md' : 'q-pl-md hidden'")
       div(v-if="param.arrayChildren === 'tuple'" :class="index != param.value.length - 1 ? 'q-mb-md' : ''")
@@ -49,9 +50,9 @@ div(v-for="param, pIndex in params" class="fit row wrap justify-start items-star
       div(v-else-if="param.arrayChildren === 'address'") <AddressField :address="value" copy :name="value === contract.address && contract.name ?  contract.name : null"   />
       div(v-else-if="param.arrayChildren === 'uint128' || param.arrayChildren === 'uint256'") {{ value }},
       div(v-else-if="!isNaN(value)") {{ value }},
-      div(v-else-if="typeof value === 'object'" v-on:click.stop="(expanded[pIndex][index]) ? minimize(pIndex, index) : expand(pIndex, index)")
+      div(v-else-if="typeof value === 'object'" v-on:click.stop="value.length > 1 && toggle(pIndex, index) || toggle(pIndex, 'expanded')")
         div [
-        div(v-for="(value2) in value" :class="(expanded[pIndex][index] || value.length === 1) ? 'q-pl-md' : 'q-pl-md hidden'")
+        div(v-for="(value2) in value" :class="(expanded[pIndex][index] || value.length === 1) ? 'q-pl-md' : 'q-pl-md hidden'" )
             div(v-if="!isNaN(value2)") {{ value2 }},
             div(v-else-if="typeof value2 === 'object'")
                 div [
