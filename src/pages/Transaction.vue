@@ -275,7 +275,7 @@ export default {
               div(class="col-3")
                 strong {{ `From: ` }}
               div(class="col-9 word-break")
-                address-field(:address="trx.from" :truncate="0" copy)
+                address-field(:address="trx.from" :truncate="0" :class="erc20Transfers.length + erc721Transfers.length > 1 ? 'address-yellow' : ''" copy)
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
@@ -306,8 +306,8 @@ export default {
                 strong {{ `Value: ` }}
               div(class="col-9") {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
             br
-            ERCTransferList( v-if="erc20Transfers.length > 0" type="ERC20" :contract="contract" :transfers="erc20Transfers")
-            ERCTransferList( v-if="erc721Transfers.length > 0" type="ERC721" :contract="contract" :transfers="erc721Transfers")
+            ERCTransferList( v-if="erc20Transfers.length > 0" type="ERC20" :trxFrom="trx.from" :contract="contract" :transfers="erc20Transfers")
+            ERCTransferList( v-if="erc721Transfers.length > 0" type="ERC721" :trxFrom="trx.from" :contract="contract" :transfers="erc721Transfers")
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
                 strong {{ `Gas Price Charged: ` }}
