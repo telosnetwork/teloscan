@@ -8,21 +8,21 @@
                 :columns="columns"
                 :loading="isLoading"
                 :hide-pagination="true"
+                :pagination="{
+                    rowsPerPage: deposits.length,
+                    rowsNumber: deposits.length
+                }"
+                no-data-label="No claimable positions"
                 flat
             >
-                <q-tr
-                    :props="props"
-                    :no-hover="false"
-                >
+                <q-tr :props="props" :no-hover="false">
                     <q-th
                         v-for="col in props.cols"
                         :key="col.name"
                         :props="props"
                         :auto-width="true"
                     >
-                        <template
-                            v-if="col.name==='time'"
-                        >
+                        <template v-if="col.name==='time'">
                             {{ col.label }}
                             <q-icon
                                 name="fas fa-info-circle"
@@ -40,10 +40,7 @@
                     </q-th>
                 </q-tr>
                 <template v-slot:body="props">
-
-                    <q-tr
-                        :props="props"
-                    >
+                    <q-tr :props="props">
                         <q-td key="amount" align="left" class="left-column">
                             {{ formatAmount(props.row.amount) }}
                         </q-td>
@@ -131,7 +128,6 @@ export default {
         ],
         showAge: true,
     }),
-
     computed: {
         ...mapGetters('login', ['isLoggedIn']),
         claimDisabled(){
