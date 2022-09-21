@@ -308,9 +308,10 @@ export default {
                 console.error(`Failed to retrieve unstaking period: ${message}`)
             }
         },
-        handleBalanceChanged() {
+        async handleBalanceChanged() {
             // note this method of attaining account balance is different from that in fetchBalances(), which
             // seems to update slowly, yet is able (unlike this method) to handle new accounts with 0 balance
+            await this.fetchBalances();
             this.$evm.telos.getEthAccount(this.address)
                 .then((account) => {
                     this.tlosBalance = account.balance.toString();
