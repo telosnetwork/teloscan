@@ -212,6 +212,7 @@ export default {
         topInputTooltip() {
             const prettyBalance = ethers.utils.formatEther(this.usableWalletBalance).toString();
             return 'Click to input full wallet balance\n\n' +
+                   'Balance displayed is reduced by 1 TLOS to keep your account actionable.\n' +
                    'Precise balance (less approximate gas fees):\n' +
                    `${prettyBalance} TLOS`;
         },
