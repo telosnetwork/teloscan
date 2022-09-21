@@ -18,8 +18,8 @@
 
             <q-tooltip
                 :offset="[0, 56]"
-                anchor="bottom left"
-                self="center left"
+                anchor="bottom middle"
+                self="center middle"
             >
                 <span class="u-text--pre">{{ tooltip }}</span>
             </q-tooltip>
@@ -47,8 +47,8 @@
 
             <q-tooltip
                 :offset="[0, 56]"
-                anchor="bottom left"
-                self="center left"
+                anchor="bottom middle"
+                self="center middle"
             >
                 <span class="u-text--pre">{{ personalStats.staked.tooltip }}</span>
             </q-tooltip>
@@ -68,8 +68,8 @@
 
             <q-tooltip
                 :offset="[0, 56]"
-                anchor="bottom left"
-                self="center left"
+                anchor="bottom middle"
+                self="center middle"
             >
                 <span class="u-text--pre">{{ personalStats.unstaked.tooltip }}</span>
             </q-tooltip>
