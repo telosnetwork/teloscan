@@ -72,7 +72,7 @@
                                 :has-unlocked-tlos="showClaimNotification"
                                 :unstake-period-seconds="unstakePeriodSeconds"
                                 :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
-                                @balance-changed="fetchBalances"
+                                @balance-changed="handleBalanceChanged"
                             />
                         </div>
                     </div>
@@ -95,7 +95,7 @@
                                 :unstake-period-seconds="unstakePeriodSeconds"
                                 :deposits="escrowDeposits"
                                 :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
-                                @balance-changed="fetchBalances"
+                                @balance-changed="handleBalanceChanged"
                             />
                         </div>
                     </div>
@@ -115,7 +115,7 @@
                                 :unlocked-tlos-balance="unlockedTlosBalance"
                                 :total-unstaked="totalUnstakedTlosBalance"
                                 :deposits="escrowDeposits"
-                                @balance-changed="fetchBalances"
+                                @balance-changed="handleBalanceChanged"
                             />
                         </div>
                     </div>
@@ -307,6 +307,18 @@ export default {
             } catch({ message }) {
                 console.error(`Failed to retrieve unstaking period: ${message}`)
             }
+        },
+        handleBalanceChanged() {
+            // note this method of attaining account balance is different from that in fetchBalances(), which
+            // seems to update slowly, yet is able (unlike this method) to handle new accounts with 0 balance
+            this.$evm.telos.getEthAccount(this.address)
+                .then((account) => {
+                    this.tlosBalance = account.balance.toString();
+                })
+                .catch(({ message }) => {
+                    console.error(`Failed to fetch account: ${message}`);
+                    this.tlosBalance = null;
+                });
         },
     },
 }
