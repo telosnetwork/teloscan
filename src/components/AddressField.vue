@@ -104,7 +104,7 @@ div.c-address-field
     gap: 4px;
 }
 a.highlighted {
-    color: #66aeff;
+    color: #bb9200;
 }
 body.body--dark a.highlighted {
     color: $yellow;
