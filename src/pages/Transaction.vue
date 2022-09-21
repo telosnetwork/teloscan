@@ -293,7 +293,7 @@ export default {
               div(class="col-3")
                 strong {{ `Function parameters: ` }}
               div(class="col" id="function-parameters")
-                ParameterList(:params="params" :contract="contract")
+                ParameterList(:params="params" :contract="contract" :trxFrom="trx.from")
             br( v-if="isContract && params.length > 0" )
             div( v-if="trx.createdaddr", class="fit row wrap justify-start items-start content-start" )
               div(class="col-3")
