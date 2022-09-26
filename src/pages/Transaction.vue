@@ -89,7 +89,7 @@ export default {
             this.trx.logs.forEach(log => {
                 log.topics.forEach(async (topic) => {
                     if(TRANSFER_FUNCTION_SIGNATURES.includes(topic.substr(0, 10))){
-                        let contract = await this.$contractManager.getContract(log.address, true);
+                        let contract = await this.$contractManager.getContract(log.address, 'erc20');
                         if(typeof contract.token !== 'undefined' && contract.token !== null){
                             let token = {'symbol': contract.token.symbol, 'address': log.address}
                             let decimals = contract.token.decimals || 18;
@@ -316,14 +316,14 @@ export default {
                   div(class="col-4")
                     q-icon(name="arrow_right" class="list-arrow")
                     strong {{ `From : ` }}
-                    <AddressField :address="transfer.from" :truncate="16" copy :name="transfer.from === contract.address && contract.name ?  contract.name : null" />
+                    <AddressField v-if="transfer.from" :address="transfer.from" :truncate="16" copy :name="transfer.from === contract?.address && contract.name ?  contract.name : null" />
                   div(class="col-4")
                     strong {{ ` To : ` }}
-                    <AddressField :address="transfer.to" :truncate="16" copy :name="transfer.to === contract.address && contract.name ?  contract.name : null" />
+                    <AddressField v-if="transfer.to" :address="transfer.to" :truncate="16" copy :name="transfer.to === contract?.address && contract.name ?  contract.name : null" />
                   div(class="col-4")
                     strong {{ ` Token : ` }}
                     span {{ transfer.value }}
-                    a(:href="'/address/' + transfer.token.address" style="margin-left: 3px;") {{ transfer.token.symbol }}
+                    a( :href="'/address/' + transfer.token.address" style="margin-left: 3px;") {{ transfer.token.symbol }}
             br(v-if="transfers.length > 0")
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
