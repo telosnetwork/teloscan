@@ -89,27 +89,41 @@ export default {
             await this.loadTransfers();
             this.setErrorMessage();
         },
-        loadTransfers(){
-            this.trx.logs.forEach(async (log) => {
-                // ERC20 & ERC721 transfers (ERC721 has 4 log topics for transfers, ERC20 has 3 log topics)
-                if(TRANSFER_SIGNATURES.includes(log.topics[0].substr(0, 10))){
-                    let contract = await this.$contractManager.getContract(log.address, (log.topics.length === 4) ? 'erc721' : 'erc20');
-                    if(typeof contract.token !== 'undefined' && contract.token !== null){
-                        let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name}
-                        if(log.topics.length === 4) {
-                            if(contract.token.iERC721Metadata){
-                                try {
-                                    token = await this.$contractManager.loadTokenMetadata(log.address, token, BigNumber.from(log.topics[3]).toString());
-                                } catch (e) {
-                                    console.error(`Could not retreive ERC721 Metadata for ${contract.address}: ${e.message}`)
+        async loadTransfers()
+        {
+            this.transfers = [];
+            this.trx.logs.forEach(log => {
+                log.topics.forEach(async (topic) => {
+                    // ERC20 & ERC721 transfers (ERC721 has 4 log topics for transfers, ERC20 has 3 log topics)
+                    if (TRANSFER_SIGNATURES.includes(log.topics[0].substr(0, 10))) {
+                        let contract = await this.$contractManager.getContract(log.address, (log.topics.length === 4) ? 'erc721' : 'erc20');
+                        if (typeof contract.token !== 'undefined' && contract.token !== null) {
+                            let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name}
+                            if (log.topics.length === 4) {
+                                if (contract.token.iERC721Metadata) {
+                                    try {
+                                        token = await this.$contractManager.loadTokenMetadata(log.address, token, BigNumber.from(log.topics[3]).toString());
+                                    } catch (e) {
+                                        console.error(`Could not retreive ERC721 Metadata for ${contract.address}: ${e.message}`);
+                                    }
                                 }
+                                this.erc721Transfers.push({
+                                    'tokenId': BigNumber.from(log.topics[3]).toString(),
+                                    'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
+                                    'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
+                                    'token': token,
+                                })
+                            } else {
+                                this.erc20Transfers.push({
+                                    'value': formatBN(log.data, contract.token.decimals, 5),
+                                    'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
+                                    'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
+                                    'token': token,
+                                })
                             }
-                            this.erc721Transfers.push({'tokenId' : BigNumber.from(log.topics[3]).toString(), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
-                        } else {
-                            this.erc20Transfers.push({'value' : formatBN(log.data, contract.token.decimals, 5), 'to' : '0x' + log.topics[2].substr(log.topics[2].length - 40, 40), 'from' : '0x' + log.topics[1].substr(log.topics[1].length - 40, 40), 'token' : token })
                         }
                     }
-                }
+                });
             });
         },
         async loadContract() {
