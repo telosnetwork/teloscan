@@ -39,12 +39,13 @@
                 round
                 dense
                 icon="menu"
-                @click="drawer = !drawer"
+                @click="toggleDrawer"
             />
         </q-toolbar>
     </q-header>
 
     <q-drawer
+        v-click-away="handleClickaway"
         v-model="drawer"
         side="right"
         :width="200"
@@ -85,7 +86,6 @@
                     <q-item-label> Teloscan Testnet </q-item-label>
                 </q-item-section>
             </q-item>
-            <!--
             <q-item
                 v-close-popup
                 clickable
@@ -95,7 +95,6 @@
                     <q-item-label> Stake Telos </q-item-label>
                 </q-item-section>
             </q-item>
-            -->
         </q-list>
     </q-drawer>
 
@@ -110,19 +109,29 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import { directive as ClickAway } from 'vue3-click-away';
+
 import Search from 'src/components/Search.vue';
 import FooterMain from 'src/components/Footer.vue';
 import ConnectButton from 'components/ConnectButton';
-import {mapGetters} from 'vuex';
 
 export default {
     name: 'MainLayout',
-    components: { Search, ConnectButton, FooterMain },
+    directives: {
+        ClickAway,
+    },
+    components: {
+        Search,
+        ConnectButton,
+        FooterMain,
+    },
     data() {
         return {
             mainnet: parseInt(process.env.NETWORK_EVM_CHAIN_ID) === 40,
             accountConnected: false,
             drawer: false,
+            clickawayDisabled: false,
         };
     },
     computed: {
@@ -171,21 +180,38 @@ export default {
                     });
             }
         },
+        toggleDrawer() {
+            if (!this.drawer) {
+                // handle race condition between vmodel and clickaway.
+                // without this, because clickaway is instantly triggered when clicking the menu icon,
+                // the drawer re-closes before it has had a chance to open
+                this.clickawayDisabled = true;
+                setTimeout(
+                    () => { this.clickawayDisabled = false; },
+                    400,
+                )
+            }
+            this.drawer = !this.drawer;
+        },
+        handleClickaway() {
+            if (this.drawer === true && !this.clickawayDisabled)
+                this.drawer = false;
+        },
     },
 };
 </script>
 
-<style lang="sass">
+<style scoped lang="sass">
 .banner
   z-index: -1
-  height: 280px
+  height: 40vh
   position: absolute
   left: 0
   right: 0
   top: 0
-  background: linear-gradient(#252a5e 27.19%, #2d4684 65.83%)
+  background: linear-gradient(180deg, rgb(37,42,94) 0%, rgba(45,70,132) 60%, transparent 99%)
   &.home
-    height: 400px
+    height: 50vh
 
 .connection
   font-size: .5rem
@@ -198,7 +224,7 @@ export default {
   text-overflow: ellipsis
 
 .q-drawer
-  margin-top:16px
+  margin-top: 16px
   height: fit-content
   border-top-left-radius: 4px
   border-bottom-left-radius: 4px
