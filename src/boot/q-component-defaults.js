@@ -1,5 +1,5 @@
 import { boot } from 'quasar/wrappers'
-import { QTooltip } from 'quasar';
+import { QTooltip, Platform } from 'quasar';
 
 const setDefault = (component, key, value) => {
     const prop = component.props[key];
@@ -28,10 +28,7 @@ export default boot((/* { app, router, ... } */) => {
     // behave incorrectly (delaying tooltip close after mouseleave) for desktop. This solution is to simply set
     // the default hide delay based on touch vs non-touch client. This value can then be overridden per-instance if
     // required, as this only changes the default prop value
-    const isTouchDevice = ( 'ontouchstart' in window ) ||
-        ( navigator.maxTouchPoints > 0 ) ||
-        ( navigator.msMaxTouchPoints > 0 );
-
+    const isTouchDevice = Platform.has.touch && Platform.is.mobile;
     const tooltipHideDelay =  isTouchDevice ? 9999999 : undefined;
     setDefault(QTooltip, 'hideDelay', tooltipHideDelay);
 })
