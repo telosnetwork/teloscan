@@ -95,7 +95,7 @@ export async function fetchStlosApy($api, tvl) {
     const rexTotal = new Big(rexStats.total_lendable.split(' ')[0]);
     const stlosTotal = new Big(ethers.utils.formatEther(tvlBn));
 
-    const balanceRatio = rexTotal.eq(0) ? -1 : stlosTotal.times(fixedRatio).div(rexTotal);
+    const balanceRatio = rexTotal.eq(0) ? -1 : stlosTotal.times(fixedRatio).div(rexTotal.add(stlosTotal));
 
     if (balanceRatio.eq(0)) {
         return '0';
