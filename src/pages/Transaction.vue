@@ -92,7 +92,7 @@ export default {
         async loadTransfers()
         {
             this.transfers = [];
-            this.trx.logs.forEach(async(log) => {
+            for (const log of this.trx.logs) {
                 // ERC20 & ERC721 transfers (ERC721 has 4 log topics for transfers, ERC20 has 3 log topics)
                 if (TRANSFER_SIGNATURES.includes(log.topics[0].substr(0, 10))) {
                     let contract = await this.$contractManager.getContract(log.address, (log.topics.length === 4) ? 'erc721' : 'erc20');
@@ -122,7 +122,7 @@ export default {
                         }
                     }
                 }
-            });
+            }
         },
         async loadContract() {
             if (this.trx.input_data === '0x') return;
