@@ -105,8 +105,6 @@ export async function fetchStlosApy($api, tvl) {
     const stlosPayout = annualPayout.minus(rexPayout);
 
     const apy = stlosPayout.div(stlosTotal).times(100).toFixed(2);
-    console.log(`Rex APY: ${rexPayout.div(rexTotal).times(100).toFixed(2)}%`);
-    console.log(`sTLOS APY: ${apy}%`);
 
     return apy;
 }
