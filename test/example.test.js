@@ -1,15 +1,24 @@
-import { shallowMount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils'
 
 import Footer from 'components/Footer';
 
+// eztodo
+/*
+    add to docs:
+    - snapshot testing
+    - conventions for router / other plugins
+    - test naming & nesting
+    - directory structure of test directory
+ */
+
 describe('Example test', () => {
     it('should be able to find the Footer component', () => {
-        const wrapper = shallowMount(Footer, {
+        const wrapper = mount(Footer, {
             global: {
-                stubs: ['router-link'],
+                plugins: ['router'],
             },
         });
 
-        expect(wrapper.text()).toContain('2022')
+        expect(wrapper.element).toMatchSnapshot()
     });
 });
