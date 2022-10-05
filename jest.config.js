@@ -23,4 +23,5 @@ module.exports = {
             'node-addons',
         ],
     },
+    snapshotSerializers: ['jest-serializer-vue'],
 };
