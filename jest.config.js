@@ -4,6 +4,15 @@
  */
 
 module.exports = {
+    rootDir: './',
+    moduleNameMapper: {
+        '^components(.*)$': '<rootDir>/src/components$1',
+    },
+    moduleFileExtensions: ['js', 'vue'],
+    transform: {
+        '^.+\\.js$': 'babel-jest',
+        '^.+\\.vue$': '@vue/vue3-jest',
+    },
     testMatch: [
         '**/*.test.js',
     ],
