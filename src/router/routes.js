@@ -53,7 +53,6 @@ const routes = [
             },
         ],
     },
-    /*
     {
         path: '/staking',
         component: () => import('layouts/MainLayout.vue'),
@@ -63,7 +62,6 @@ const routes = [
             component: () => import('pages/staking/Staking.vue'),
         }],
     },
-    */
     {
         path: '/endpoints',
         component: () => import('layouts/MainLayout.vue'),
