@@ -19,7 +19,22 @@ const setDefault = (component, key, value) => {
         throw new Error('unhandled type: ' + typeof prop);
     }
 };
+// Method 3: Modernizer way
+function isTouchDevice() {
+    var prefixes = ' -webkit- -moz- -o- -ms- '.split(' ');
+    var mq = function(query) {
+        return window.matchMedia(query).matches;
+    }
 
+    if (('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch) {
+        return true;
+    }
+
+    // include the 'heartz' as a way to have a non matching MQ to help terminate the join
+    // https://git.io/vznFH
+    var query = ['(', prefixes.join('touch-enabled),('), 'heartz', ')'].join('');
+    return mq(query);
+}
 // more info on params: https://v2.quasar.dev/quasar-cli/boot-files
 export default boot((/* { app, router, ... } */) => {
     // https://github.com/quasarframework/quasar/discussions/8761#discussioncomment-1042529
@@ -28,10 +43,6 @@ export default boot((/* { app, router, ... } */) => {
     // behave incorrectly (delaying tooltip close after mouseleave) for desktop. This solution is to simply set
     // the default hide delay based on touch vs non-touch client. This value can then be overridden per-instance if
     // required, as this only changes the default prop value
-    const isTouchDevice = ( 'ontouchstart' in window ) ||
-        ( navigator.maxTouchPoints > 0 ) ||
-        ( navigator.msMaxTouchPoints > 0 );
-
-    const tooltipHideDelay =  isTouchDevice ? 9999999 : undefined;
+    const tooltipHideDelay =  isTouchDevice() ? 9999999 : undefined;
     setDefault(QTooltip, 'hideDelay', tooltipHideDelay);
 })
