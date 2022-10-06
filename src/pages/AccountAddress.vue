@@ -134,9 +134,9 @@ export default {
         q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace label="Tokens")
         q-route-tab(v-if="isContract" name="contract" :to="{ hash: '#contract' }" exact replace label="Contract")
       .q-mb-md.tableWrapper
-        q-tab-panels( v-model="tab" animated keep-alive class="shadow-2" )
+        q-tab-panels( v-model="tab" animated keep-alive class="shadow-2"  :key="address" )
           q-tab-panel( name="transactions" )
-            transaction-table( :key="address" :title="address" :filter="{address}" )
+            transaction-table( :title="address" :filter="{address}" )
           q-tab-panel( name="erc20transfers" )
             transfer-table( title="ERC-20 Transfers" token-type="erc20" :address="address" )
           q-tab-panel( name="erc721transfers" )
