@@ -88,7 +88,6 @@
                     <q-item-label> Teloscan Testnet </q-item-label>
                 </q-item-section>
             </q-item>
-            <!--
             <q-item
                 v-close-popup
                 clickable
@@ -98,7 +97,6 @@
                     <q-item-label> Stake Telos </q-item-label>
                 </q-item-section>
             </q-item>
-            -->
         </q-list>
     </q-drawer>
 
