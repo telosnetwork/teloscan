@@ -22,6 +22,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        highlight: {
+            type: Boolean,
+            default: false,
+        },
         truncate: {
             type: Number,
             default: 18,
@@ -89,7 +93,7 @@ export default {
 div.c-address-field
   q-icon( v-if="contract && !copy" class="far fa-file-alt" )
     q-tooltip Contract
-  router-link( :to="`/address/${address}`") {{ getDisplay() }}
+  router-link( :to="`/address/${address}`" :class="highlight ? 'highlighted' : ''") {{ getDisplay() }}
   copy-button(v-if="copy && address" :text="address" description="address" )
 </template>
 
@@ -98,5 +102,11 @@ div.c-address-field
     display: inline-flex;
     align-items: center;
     gap: 4px;
+}
+a.highlighted {
+    color: #bb9200;
+}
+body.body--dark a.highlighted {
+    color: $yellow;
 }
 </style>

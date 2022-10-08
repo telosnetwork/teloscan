@@ -10,7 +10,6 @@ export function formatBN(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);
     const formattedNoCommas = (amount / Math.pow(10, tokenDecimals)).toFixed(displayDecimals);
 
-
     return Number(formattedNoCommas).toLocaleString();
 }
 
@@ -49,11 +48,15 @@ export function parseErrorMessage(output) {
     if (!output)
         return;
 
+    let message;
     if (output.startsWith(REVERT_FUNCTION_SELECTOR))
-        return parseRevertReason(output);
+        message = parseRevertReason(output);
 
     if (output.startsWith(REVERT_PANIC_SELECTOR))
-        return parsePanicReason(output);
+        message = parsePanicReason(output);
+
+
+    return message.replace(/[^a-zA-Z0-9 /./'/"/,/@/+/-/_/(/)/[]/g, '');
 }
 
 export function parseRevertReason(revertOutput) {
