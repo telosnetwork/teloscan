@@ -41,8 +41,9 @@ yarn lint
 yarn build
 ```
 
-### Customize the configuration
-See [Configuring quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js).
+## Documentation
+Telos - [docs.telos.net](https://docs.telos.net)
 
-### More Information
-See  [https://quasar.dev](https://quasar.dev/).
+Quasar - [quasar.dev](https://quasar.dev/)
+
+Quasar Configuration - [quasar.conf.js](https://quasar.dev/quasar-cli/quasar-conf-js)
