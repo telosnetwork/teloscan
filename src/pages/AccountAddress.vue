@@ -134,9 +134,9 @@ export default {
         q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace label="Tokens")
         q-route-tab(v-if="isContract" name="contract" :to="{ hash: '#contract' }" exact replace label="Contract")
       .q-mb-md.tableWrapper
-        q-tab-panels( v-model="tab" animated keep-alive class="shadow-2" )
+        q-tab-panels( v-model="tab" animated keep-alive class="shadow-2"  :key="address" )
           q-tab-panel( name="transactions" )
-            transaction-table( :key="address" :title="address" :filter="{address}" )
+            transaction-table( :title="address" :filter="{address}" )
           q-tab-panel( name="erc20transfers" )
             transfer-table( title="ERC-20 Transfers" token-type="erc20" :address="address" )
           q-tab-panel( name="erc721transfers" )
@@ -171,4 +171,33 @@ export default {
 
 .text-primary
   display: inline-block
+
+@media only screen and (max-width: 1200px)
+    .pageContainer
+        div
+            .tableWrapper
+                &:first-child
+                    padding: 20px
+@media only screen and (max-width: 768px)
+    .dataCardsContainer
+        width: 100%
+        justify-content: center
+        .dataCardItem
+            width: 100%
+    .pageContainer
+        padding-top: 30px
+        background: linear-gradient(#252a5e 17.19%, #2d4684 45.83%, transparent 65.83%)
+    .tableWrapper
+        justify-content: center
+    .homeInfo
+        padding: 20px
+        text-align: center
+        margin-bottom: 30px
+        .c-copy-button
+            width: 100%
+        .text-h4
+            margin-bottom: 10px
+            word-break: break-word
+            line-height: 1.3em
+            font-size: 2.4em
 </style>
