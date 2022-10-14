@@ -103,6 +103,7 @@
 </template>
 
 <script>
+import { toChecksumAddress } from "src/lib/utils";
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
@@ -222,49 +223,109 @@ export default {
 
             return formatted;
         },
-        formatValue(value, type) {
-            const uint256ArrayRegex = /^uint256\[\d+]$/g;
+
+        parseUint256FromString(str = '') {
+            const uint256StringRegex = /^\d{1,256}$/g;
+            const stringRepresentsValidUint256 = uint256StringRegex.test(str);
+
+            if (!stringRepresentsValidUint256) {
+                return undefined;
+            }
+
+            return BigNumber.from(str);
+        },
+        parseUint256ArrayString(str = '', expectedLength) {
+            if (str === '[]' && expectedLength === undefined)
+                return [];
+
+            const arrayOfUint256Regex = /^\[(\d{1,256}, *)*(\d{1,256})]$/g;
+            const stringRepresentsValidUint256Array = arrayOfUint256Regex.test(str);
+
+            if (!stringRepresentsValidUint256Array) {
+                return undefined;
+            }
+
+            const bigNumberArray = str.match(/\d+/g).map(intString => BigNumber.from(intString))
+
+            if (Number.isInteger(expectedLength)) {
+                const actualLength = bigNumberArray.length;
+
+                if (actualLength !== expectedLength)
+                    return undefined;
+            }
+
+            return bigNumberArray;
+        },
+        parseAddressString(str) {
+            try {
+                return ethers.utils.getAddress(str);
+            } catch {
+                return undefined;
+            }
+        },
+        parseAddressArrayString(str, expectedLength) {
+            if (str === '[]' && expectedLength === undefined)
+                return [];
+
+            const arrayOfAddressRegex = /^\[((0x[a-zA-Z0-9]{40}, *)*(0x[a-zA-Z0-9]{40}))]$/g;
+            const stringRepresentsValidAddressArray = arrayOfAddressRegex.test(str);
+
+            if (!stringRepresentsValidAddressArray) {
+                return undefined;
+            }
+
+            let addressArray;
+
+            try {
+                const addressStringArray = str.match(/0x[a-zA-Z0-9]{40}/g);
+                addressArray = addressStringArray.map(addressString => ethers.utils.getAddress(addressString));
+            } catch {
+                return undefined;
+            }
+
+            if (Number.isInteger(expectedLength)) {
+                const actualLength = addressArray.length;
+
+                if (actualLength !== expectedLength)
+                    return undefined;
+            }
+
+            return addressArray;
+        },
+
+        formatValue(rawValue, type) {
+            const value = rawValue.trim();
+            const expectedArrayLengthRegex = /\d+(?=]$)/g;
+            const expectedArrayLength = (+type.match(expectedArrayLengthRegex)?.[0]) || undefined;
+
+            // non-array types
             const typeIsUint256 = type === 'uint256';
-            const typeIsUint256Array = type.match(uint256ArrayRegex)?.length === 1;
+            const typeIsAddress = type === 'address';
+
+            // array types
+            const typeIsUint256Array = /^uint256\[\d*]/g.test(type);
+            const typeIsAddressArray = /^address\[\d*]/g.test(type);
+
+            let parsedValue;
 
             if (typeIsUint256) {
-                return BigNumber.from(value);
+                parsedValue = this.parseUint256FromString(value);
             } else if (typeIsUint256Array) {
-                const uintArrayLengthRegex = /\d+(?=]$)/g;
-                const notDigitOrCommaRegex = /[^\d,]/g;
-
-                const paramsLength = +type.match(uintArrayLengthRegex)[0];
-                const expectedIntsWithTrailingCommas = (() => {
-                    const length = paramsLength - 1;
-                    return length < 0 ? 0 : length;
-                })();
-                // for easier reading, regex without template string escapes: /^\[(\d+, ?){x}\d+\]$/g
-                // where x = expectedIntsWithTrailingCommas
-                const arrayOfIntegersRegex = new RegExp(`^\\[(\\d+, ?){${expectedIntsWithTrailingCommas}}\\d+\\]$`, 'g');
-                const valueRepresentsAnArrayOfCorrectLength = arrayOfIntegersRegex.test(value ?? '');
-
-                if (!valueRepresentsAnArrayOfCorrectLength) {
-                    const exampleArray = Array(paramsLength).fill('')
-                        .map((_, index) => index)
-                        .toString()
-                        .replace(/,/g, ', ');
-
-                    const line1 = 'Invalid array format';
-                    const line2 = `Args array of type ${type} should be formatted like [${exampleArray}] (spaces optional)`;
-                    const line3 = `\tReceived: ${value}`;
-
-                    console.error(`${line1}\n${line2}\n${line3}`);
-                    return undefined;
-                }
-
-                return value
-                    .replace(notDigitOrCommaRegex, '')
-                    .split(',')
-                    .map(valString => BigNumber.from(valString))
-                    .slice(0, paramsLength);
+                parsedValue = this.parseUint256ArrayString(value, expectedArrayLength);
+            } else if (typeIsAddress) {
+                parsedValue = this.parseAddressString(value);
+            } else if (typeIsAddressArray) {
+                parsedValue = this.parseAddressArrayString(value, expectedArrayLength);
             } else {
-                return value;
+                return value; //eztodo should this actually be done? or fail here. is it ever helpful to pass string along to contract fn?
             }
+
+            if (parsedValue === undefined) {
+                // eztodo err handling & messaging
+                // return something
+            }
+
+            return parsedValue;
         },
         async run() {
             this.loading = true;
@@ -369,7 +430,7 @@ export default {
             this.endLoading();
         },
         async runEVM(opts) {
-            const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());       
+            const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
             const result = await func(...this.getFormattedParams(), opts);
             this.hash = result.hash;
             this.endLoading();
