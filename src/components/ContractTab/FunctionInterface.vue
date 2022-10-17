@@ -55,15 +55,16 @@
     <div
         v-for="(param, idx) in abi.inputs"
         :key="idx"
+        :class="{
+            'q-mb-md': !!getHintForInput(param.type),
+        }"
     >
         <q-input
             v-model="params[idx]"
             :label="makeLabel(param, idx)"
+            :placeholder="getHintForInput(param.type)"
         >
-            <template
-                v-if="param.type === 'uint256'"
-                #append
-            >
+            <template v-if="parameterTypeIsUint256(param.type)" #append>
                 <q-icon
                     class="cursor-pointer"
                     name="pin"
@@ -71,6 +72,12 @@
                 />
             </template>
         </q-input>
+        <p v-if="!parameterTypeIsImplemented(param.type)" class="q-px-md">
+            ⚠️Warning: Implementation of input for type <code>{{ param.type }}</code> is under development; argument
+            will be passed as the exact string entered. This may lead to unexpected results if the method is not
+            expecting a string.
+        </p>
+
     </div>
     <q-btn
         v-if="enableRun"
@@ -82,14 +89,10 @@
         icon="send"
         @click="run"
     />
-
     <p class="text-red output-container">
         {{ errorMessage }}
     </p>
-    <div
-        v-if="result"
-        class="output-container"
-    >
+    <div v-if="result" class="output-container">
         Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
     </div>
     <div
@@ -103,7 +106,6 @@
 </template>
 
 <script>
-import { toChecksumAddress } from "src/lib/utils";
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
@@ -223,7 +225,44 @@ export default {
 
             return formatted;
         },
+        getHintForInput(type) {
+            if (this.parameterTypeIsAddress(type)) {
+                return 'e.g. 0x0000000000000000000000000000000000000000';
+            } else if (this.parameterTypeIsAddressArray(type)) {
+                return 'e.g. [0x0000000000000000000000000000000000000000, 0x1111111111111111111111111111111111111111]';
+            } else if (this.parameterTypeIsUint256(type)) {
+                return 'e.g. 12345';
+            } else if (this.parameterTypeIsUint256Array(type)) {
+                return 'e.g. [1234, 5678]';
+            }
 
+            return '';
+        },
+
+
+        //eztodo move these to utils file
+        parameterTypeIsImplemented(type) {
+            return this.parameterTypeIsUint256(type)      ||
+                   this.parameterTypeIsUint256Array(type) ||
+                   this.parameterTypeIsAddress(type)      ||
+                   this.parameterTypeIsAddressArray(type);
+        },
+        parameterTypeIsUint256(type) {
+            return type === 'uint256'
+        },
+        parameterTypeIsUint256Array(type) {
+            return /^uint256\[\d*]/g.test(type);
+        },
+        parameterTypeIsAddress(type) {
+            return type === 'address';
+        },
+        parameterTypeIsAddressArray(type) {
+            return /^address\[\d*]/g.test(type);
+        },
+        getExpectedArrayLengthFromParameterType(type) {
+            const expectedArrayLengthRegex = /\d+(?=]$)/g;
+            return (+type.match(expectedArrayLengthRegex)?.[0]) || undefined;
+        },
         parseUint256FromString(str = '') {
             const uint256StringRegex = /^\d{1,256}$/g;
             const stringRepresentsValidUint256 = uint256StringRegex.test(str);
@@ -293,18 +332,15 @@ export default {
             return addressArray;
         },
 
+
         formatValue(rawValue, type) {
             const value = rawValue.trim();
-            const expectedArrayLengthRegex = /\d+(?=]$)/g;
-            const expectedArrayLength = (+type.match(expectedArrayLengthRegex)?.[0]) || undefined;
+            const expectedArrayLength = this.getExpectedArrayLengthFromParameterType(type);
 
-            // non-array types
-            const typeIsUint256 = type === 'uint256';
-            const typeIsAddress = type === 'address';
-
-            // array types
-            const typeIsUint256Array = /^uint256\[\d*]/g.test(type);
-            const typeIsAddressArray = /^address\[\d*]/g.test(type);
+            const typeIsUint256      = this.parameterTypeIsUint256(type);
+            const typeIsAddress      = this.parameterTypeIsAddress(type);
+            const typeIsUint256Array = this.parameterTypeIsUint256Array(type);
+            const typeIsAddressArray = this.parameterTypeIsAddressArray(type);
 
             let parsedValue;
 
