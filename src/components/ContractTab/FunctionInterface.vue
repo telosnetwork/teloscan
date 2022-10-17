@@ -234,6 +234,10 @@ export default {
                 return 'e.g. 12345';
             } else if (this.parameterTypeIsUint256Array(type)) {
                 return 'e.g. [1234, 5678]';
+            } else if (this.parameterTypeIsBoolean(type)) {
+                return 'e.g. false';
+            } else if (this.parameterTypeIsBooleanArray(type)) {
+                return 'e.g. [false, true]';
             }
 
             return '';
@@ -245,7 +249,9 @@ export default {
             return this.parameterTypeIsUint256(type)      ||
                    this.parameterTypeIsUint256Array(type) ||
                    this.parameterTypeIsAddress(type)      ||
-                   this.parameterTypeIsAddressArray(type);
+                   this.parameterTypeIsAddressArray(type) ||
+                   this.parameterTypeIsBoolean(type)      ||
+                   this.parameterTypeIsBooleanArray(type);
         },
         parameterTypeIsUint256(type) {
             return type === 'uint256'
@@ -261,6 +267,9 @@ export default {
         },
         parameterTypeIsBoolean(type) {
             return type === 'bool';
+        },
+        parameterTypeIsBooleanArray(type) {
+            return /^bool\[\d*]/.test(type);
         },
         getExpectedArrayLengthFromParameterType(type) {
             const expectedArrayLengthRegex = /\d+(?=]$)/;
@@ -283,9 +292,8 @@ export default {
             const arrayOfUint256Regex = /^\[(\d{1,256}, *)*(\d{1,256})]$/;
             const stringRepresentsValidUint256Array = arrayOfUint256Regex.test(str);
 
-            if (!stringRepresentsValidUint256Array) {
+            if (!stringRepresentsValidUint256Array)
                 return undefined;
-            }
 
             const bigNumberArray = str.match(/\d+/g).map(intString => BigNumber.from(intString))
 
@@ -312,9 +320,8 @@ export default {
             const arrayOfAddressRegex = /^\[((0x[a-zA-Z0-9]{40}, *)*(0x[a-zA-Z0-9]{40}))]$/;
             const stringRepresentsValidAddressArray = arrayOfAddressRegex.test(str);
 
-            if (!stringRepresentsValidAddressArray) {
+            if (!stringRepresentsValidAddressArray)
                 return undefined;
-            }
 
             let addressArray;
 
@@ -346,6 +353,27 @@ export default {
 
             return undefined;
         },
+        parseBooleanArrayString(str, expectedLength) {
+
+            const booleanArrayStringRegex = /^\[((true|false), *)*(true|false)]$/i;
+
+            const stringRepresentValidBoolArray = booleanArrayStringRegex.test(str);
+            if (!stringRepresentValidBoolArray)
+                return undefined;
+
+            const booleanRegex = /true|false/gi;
+            const trueRegex = /true/i;
+            const boolArray = str.match(booleanRegex).map(bool => trueRegex.test(bool));
+
+            if (Number.isInteger(expectedLength)) {
+                const actualLength = boolArray.length;
+
+                if (actualLength !== expectedLength)
+                    return undefined;
+            }
+
+            return boolArray;
+        },
 
 
         formatValue(rawValue, type) {
@@ -356,7 +384,8 @@ export default {
             const typeIsAddress      = this.parameterTypeIsAddress(type);
             const typeIsUint256Array = this.parameterTypeIsUint256Array(type);
             const typeIsAddressArray = this.parameterTypeIsAddressArray(type);
-            const typeIsBoolean = this.parameterTypeIsBoolean(type);
+            const typeIsBoolean      = this.parameterTypeIsBoolean(type);
+            const typeIsBooleanArray = this.parameterTypeIsBooleanArray(type);
 
             let parsedValue;
 
@@ -370,6 +399,8 @@ export default {
                 parsedValue = this.parseAddressArrayString(value, expectedArrayLength);
             } else if (typeIsBoolean) {
                 parsedValue = this.parseBooleanString(value);
+            }  else if (typeIsBooleanArray) {
+                parsedValue = this.parseBooleanArrayString(value, expectedArrayLength);
             } else {
                 return value; //eztodo should this actually be done? or fail here. is it ever helpful to pass string along to contract fn?
             }
