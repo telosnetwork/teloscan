@@ -251,20 +251,23 @@ export default {
             return type === 'uint256'
         },
         parameterTypeIsUint256Array(type) {
-            return /^uint256\[\d*]/g.test(type);
+            return /^uint256\[\d*]/.test(type);
         },
         parameterTypeIsAddress(type) {
             return type === 'address';
         },
         parameterTypeIsAddressArray(type) {
-            return /^address\[\d*]/g.test(type);
+            return /^address\[\d*]/.test(type);
+        },
+        parameterTypeIsBoolean(type) {
+            return type === 'bool';
         },
         getExpectedArrayLengthFromParameterType(type) {
-            const expectedArrayLengthRegex = /\d+(?=]$)/g;
+            const expectedArrayLengthRegex = /\d+(?=]$)/;
             return (+type.match(expectedArrayLengthRegex)?.[0]) || undefined;
         },
         parseUint256FromString(str = '') {
-            const uint256StringRegex = /^\d{1,256}$/g;
+            const uint256StringRegex = /^\d{1,256}$/;
             const stringRepresentsValidUint256 = uint256StringRegex.test(str);
 
             if (!stringRepresentsValidUint256) {
@@ -277,7 +280,7 @@ export default {
             if (str === '[]' && expectedLength === undefined)
                 return [];
 
-            const arrayOfUint256Regex = /^\[(\d{1,256}, *)*(\d{1,256})]$/g;
+            const arrayOfUint256Regex = /^\[(\d{1,256}, *)*(\d{1,256})]$/;
             const stringRepresentsValidUint256Array = arrayOfUint256Regex.test(str);
 
             if (!stringRepresentsValidUint256Array) {
@@ -306,7 +309,7 @@ export default {
             if (str === '[]' && expectedLength === undefined)
                 return [];
 
-            const arrayOfAddressRegex = /^\[((0x[a-zA-Z0-9]{40}, *)*(0x[a-zA-Z0-9]{40}))]$/g;
+            const arrayOfAddressRegex = /^\[((0x[a-zA-Z0-9]{40}, *)*(0x[a-zA-Z0-9]{40}))]$/;
             const stringRepresentsValidAddressArray = arrayOfAddressRegex.test(str);
 
             if (!stringRepresentsValidAddressArray) {
@@ -331,6 +334,18 @@ export default {
 
             return addressArray;
         },
+        parseBooleanString(str) {
+            const trueRegex  = /^true$/i;
+            const falseRegex = /^false$/i;
+
+            if (trueRegex.test(str))
+                return true;
+
+            if (falseRegex.test(str))
+                return false;
+
+            return undefined;
+        },
 
 
         formatValue(rawValue, type) {
@@ -341,6 +356,7 @@ export default {
             const typeIsAddress      = this.parameterTypeIsAddress(type);
             const typeIsUint256Array = this.parameterTypeIsUint256Array(type);
             const typeIsAddressArray = this.parameterTypeIsAddressArray(type);
+            const typeIsBoolean = this.parameterTypeIsBoolean(type);
 
             let parsedValue;
 
@@ -352,6 +368,8 @@ export default {
                 parsedValue = this.parseAddressString(value);
             } else if (typeIsAddressArray) {
                 parsedValue = this.parseAddressArrayString(value, expectedArrayLength);
+            } else if (typeIsBoolean) {
+                parsedValue = this.parseBooleanString(value);
             } else {
                 return value; //eztodo should this actually be done? or fail here. is it ever helpful to pass string along to contract fn?
             }
