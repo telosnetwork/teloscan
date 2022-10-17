@@ -52,13 +52,7 @@
             </template>
         </q-input>
     </div>
-    <div
-        v-for="(param, idx) in abi.inputs"
-        :key="idx"
-        :class="{
-            'q-mb-md': !!getHintForInput(param.type),
-        }"
-    >
+    <div v-for="(param, idx) in abi.inputs" :key="idx">
         <q-input
             v-model="params[idx]"
             :label="makeLabel(param, idx)"
