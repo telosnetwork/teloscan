@@ -264,7 +264,6 @@ export default {
             const value = rawValue.trim();
             const expectedArrayLength = getExpectedArrayLengthFromParameterType(type);
 
-
             const typeIsUint256      = parameterTypeIsUint256(type);
             const typeIsAddress      = parameterTypeIsAddress(type);
             const typeIsUint256Array = parameterTypeIsUint256Array(type);
@@ -291,8 +290,7 @@ export default {
             }
 
             if (parsedValue === undefined) {
-                // eztodo err handling & messaging
-                // return something
+                throw `Invalid value for type ${type}`;
             }
 
             return parsedValue;
@@ -401,9 +399,19 @@ export default {
         },
         async runEVM(opts) {
             const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
-            const result = await func(...this.getFormattedParams(), opts);
+
+            let params;
+            try {
+                params = this.getFormattedParams();
+            } catch (e) {
+                this.errorMessage = e;
+
+                throw e;
+            }
+            const result = await func(...params, opts);
             this.hash = result.hash;
             this.endLoading();
+            this.errorMessage = null;
         },
         endLoading() {
             this.loading = false;
