@@ -104,6 +104,23 @@ import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
 
+import {
+    getExpectedArrayLengthFromParameterType,
+    parameterTypeIsImplemented,
+    parameterTypeIsUint256,
+    parameterTypeIsAddress,
+    parameterTypeIsUint256Array,
+    parameterTypeIsAddressArray,
+    parameterTypeIsBoolean,
+    parameterTypeIsBooleanArray,
+    parseUint256FromString,
+    parseUint256ArrayString,
+    parseAddressString,
+    parseAddressArrayString,
+    parseBooleanString,
+    parseBooleanArrayString,
+} from 'components/ContractTab/function-interface-utils';
+
 import TransactionField from 'components/TransactionField';
 
 const decimalOptions = [{
@@ -187,6 +204,8 @@ export default {
         },
     },
     methods: {
+        parameterTypeIsImplemented,
+        parameterTypeIsUint256,
         makeLabel(abiParam, position) {
             return `${abiParam.name ? abiParam.name : `Param ${position}`} (${abiParam.type})`
         },
@@ -220,183 +239,55 @@ export default {
             return formatted;
         },
         getHintForInput(type) {
-            if (this.parameterTypeIsAddress(type)) {
-                return 'e.g. 0x0000000000000000000000000000000000000000';
-            } else if (this.parameterTypeIsAddressArray(type)) {
-                return 'e.g. [0x0000000000000000000000000000000000000000, 0x1111111111111111111111111111111111111111]';
-            } else if (this.parameterTypeIsUint256(type)) {
-                return 'e.g. 12345';
-            } else if (this.parameterTypeIsUint256Array(type)) {
-                return 'e.g. [1234, 5678]';
-            } else if (this.parameterTypeIsBoolean(type)) {
-                return 'e.g. false';
-            } else if (this.parameterTypeIsBooleanArray(type)) {
-                return 'e.g. [false, true]';
+            let example;
+
+            if (parameterTypeIsAddress(type)) {
+                example = '0x0000000000000000000000000000000000000000';
+            } else if (parameterTypeIsAddressArray(type)) {
+                example = '[0x0000000000000000000000000000000000000000, 0x1111111111111111111111111111111111111111]';
+            } else if (parameterTypeIsUint256(type)) {
+                example = '12345';
+            } else if (parameterTypeIsUint256Array(type)) {
+                example = '[1234, 5678]';
+            } else if (parameterTypeIsBoolean(type)) {
+                example = 'false';
+            } else if (parameterTypeIsBooleanArray(type)) {
+                example = '[false, true]';
             }
+
+            if (example)
+                return `e.g. ${example}`;
 
             return '';
         },
-
-
-        //eztodo move these to utils file
-        parameterTypeIsImplemented(type) {
-            return this.parameterTypeIsUint256(type)      ||
-                   this.parameterTypeIsUint256Array(type) ||
-                   this.parameterTypeIsAddress(type)      ||
-                   this.parameterTypeIsAddressArray(type) ||
-                   this.parameterTypeIsBoolean(type)      ||
-                   this.parameterTypeIsBooleanArray(type);
-        },
-        parameterTypeIsUint256(type) {
-            return type === 'uint256'
-        },
-        parameterTypeIsUint256Array(type) {
-            return /^uint256\[\d*]/.test(type);
-        },
-        parameterTypeIsAddress(type) {
-            return type === 'address';
-        },
-        parameterTypeIsAddressArray(type) {
-            return /^address\[\d*]/.test(type);
-        },
-        parameterTypeIsBoolean(type) {
-            return type === 'bool';
-        },
-        parameterTypeIsBooleanArray(type) {
-            return /^bool\[\d*]/.test(type);
-        },
-        getExpectedArrayLengthFromParameterType(type) {
-            const expectedArrayLengthRegex = /\d+(?=]$)/;
-            return (+type.match(expectedArrayLengthRegex)?.[0]) || undefined;
-        },
-        parseUint256FromString(str = '') {
-            const uint256StringRegex = /^\d{1,256}$/;
-            const stringRepresentsValidUint256 = uint256StringRegex.test(str);
-
-            if (!stringRepresentsValidUint256) {
-                return undefined;
-            }
-
-            return BigNumber.from(str);
-        },
-        parseUint256ArrayString(str = '', expectedLength) {
-            if (str === '[]' && expectedLength === undefined)
-                return [];
-
-            const arrayOfUint256Regex = /^\[(\d{1,256}, *)*(\d{1,256})]$/;
-            const stringRepresentsValidUint256Array = arrayOfUint256Regex.test(str);
-
-            if (!stringRepresentsValidUint256Array)
-                return undefined;
-
-            const bigNumberArray = str.match(/\d+/g).map(intString => BigNumber.from(intString))
-
-            if (Number.isInteger(expectedLength)) {
-                const actualLength = bigNumberArray.length;
-
-                if (actualLength !== expectedLength)
-                    return undefined;
-            }
-
-            return bigNumberArray;
-        },
-        parseAddressString(str) {
-            try {
-                return ethers.utils.getAddress(str);
-            } catch {
-                return undefined;
-            }
-        },
-        parseAddressArrayString(str, expectedLength) {
-            if (str === '[]' && expectedLength === undefined)
-                return [];
-
-            const arrayOfAddressRegex = /^\[((0x[a-zA-Z0-9]{40}, *)*(0x[a-zA-Z0-9]{40}))]$/;
-            const stringRepresentsValidAddressArray = arrayOfAddressRegex.test(str);
-
-            if (!stringRepresentsValidAddressArray)
-                return undefined;
-
-            let addressArray;
-
-            try {
-                const addressStringArray = str.match(/0x[a-zA-Z0-9]{40}/g);
-                addressArray = addressStringArray.map(addressString => ethers.utils.getAddress(addressString));
-            } catch {
-                return undefined;
-            }
-
-            if (Number.isInteger(expectedLength)) {
-                const actualLength = addressArray.length;
-
-                if (actualLength !== expectedLength)
-                    return undefined;
-            }
-
-            return addressArray;
-        },
-        parseBooleanString(str) {
-            const trueRegex  = /^true$/i;
-            const falseRegex = /^false$/i;
-
-            if (trueRegex.test(str))
-                return true;
-
-            if (falseRegex.test(str))
-                return false;
-
-            return undefined;
-        },
-        parseBooleanArrayString(str, expectedLength) {
-
-            const booleanArrayStringRegex = /^\[((true|false), *)*(true|false)]$/i;
-
-            const stringRepresentValidBoolArray = booleanArrayStringRegex.test(str);
-            if (!stringRepresentValidBoolArray)
-                return undefined;
-
-            const booleanRegex = /true|false/gi;
-            const trueRegex = /true/i;
-            const boolArray = str.match(booleanRegex).map(bool => trueRegex.test(bool));
-
-            if (Number.isInteger(expectedLength)) {
-                const actualLength = boolArray.length;
-
-                if (actualLength !== expectedLength)
-                    return undefined;
-            }
-
-            return boolArray;
-        },
-
-
         formatValue(rawValue, type) {
             const value = rawValue.trim();
-            const expectedArrayLength = this.getExpectedArrayLengthFromParameterType(type);
+            const expectedArrayLength = getExpectedArrayLengthFromParameterType(type);
 
-            const typeIsUint256      = this.parameterTypeIsUint256(type);
-            const typeIsAddress      = this.parameterTypeIsAddress(type);
-            const typeIsUint256Array = this.parameterTypeIsUint256Array(type);
-            const typeIsAddressArray = this.parameterTypeIsAddressArray(type);
-            const typeIsBoolean      = this.parameterTypeIsBoolean(type);
-            const typeIsBooleanArray = this.parameterTypeIsBooleanArray(type);
+
+            const typeIsUint256      = parameterTypeIsUint256(type);
+            const typeIsAddress      = parameterTypeIsAddress(type);
+            const typeIsUint256Array = parameterTypeIsUint256Array(type);
+            const typeIsAddressArray = parameterTypeIsAddressArray(type);
+            const typeIsBoolean      = parameterTypeIsBoolean(type);
+            const typeIsBooleanArray = parameterTypeIsBooleanArray(type);
 
             let parsedValue;
 
             if (typeIsUint256) {
-                parsedValue = this.parseUint256FromString(value);
+                parsedValue = parseUint256FromString(value);
             } else if (typeIsUint256Array) {
-                parsedValue = this.parseUint256ArrayString(value, expectedArrayLength);
+                parsedValue = parseUint256ArrayString(value, expectedArrayLength);
             } else if (typeIsAddress) {
-                parsedValue = this.parseAddressString(value);
+                parsedValue = parseAddressString(value);
             } else if (typeIsAddressArray) {
-                parsedValue = this.parseAddressArrayString(value, expectedArrayLength);
+                parsedValue = parseAddressArrayString(value, expectedArrayLength);
             } else if (typeIsBoolean) {
-                parsedValue = this.parseBooleanString(value);
+                parsedValue = parseBooleanString(value);
             }  else if (typeIsBooleanArray) {
-                parsedValue = this.parseBooleanArrayString(value, expectedArrayLength);
+                parsedValue = parseBooleanArrayString(value, expectedArrayLength);
             } else {
-                return value; //eztodo should this actually be done? or fail here. is it ever helpful to pass string along to contract fn?
+                return value;
             }
 
             if (parsedValue === undefined) {
