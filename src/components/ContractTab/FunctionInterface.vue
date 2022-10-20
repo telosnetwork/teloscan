@@ -118,7 +118,7 @@ import {
     parseAddressString,
     parseAddressArrayString,
     parseBooleanString,
-    parseBooleanArrayString,
+    parseBooleanArrayString, parameterTypeIsString,
 } from 'components/ContractTab/function-interface-utils';
 
 import TransactionField from 'components/TransactionField';
@@ -253,6 +253,8 @@ export default {
                 example = 'false';
             } else if (parameterTypeIsBooleanArray(type)) {
                 example = '[false, true]';
+            } else if (parameterTypeIsString(type)) {
+                example = 'Example string';
             }
 
             if (example)
@@ -270,6 +272,7 @@ export default {
             const typeIsAddressArray = parameterTypeIsAddressArray(type);
             const typeIsBoolean      = parameterTypeIsBoolean(type);
             const typeIsBooleanArray = parameterTypeIsBooleanArray(type);
+            const typeIsString       = parameterTypeIsString(type);
 
             let parsedValue;
 
@@ -285,6 +288,8 @@ export default {
                 parsedValue = parseBooleanString(value);
             }  else if (typeIsBooleanArray) {
                 parsedValue = parseBooleanArrayString(value, expectedArrayLength);
+            } else if (typeIsString) {
+                return value;
             } else {
                 return value;
             }
