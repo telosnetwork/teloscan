@@ -113,12 +113,13 @@ import {
     parameterTypeIsAddressArray,
     parameterTypeIsBoolean,
     parameterTypeIsBooleanArray,
-    parseUint256FromString,
+    parseUint256String,
     parseUint256ArrayString,
     parseAddressString,
     parseAddressArrayString,
     parseBooleanString,
-    parseBooleanArrayString, parameterTypeIsString,
+    parseBooleanArrayString,
+    parameterTypeIsString,
 } from 'components/ContractTab/function-interface-utils';
 
 import TransactionField from 'components/TransactionField';
@@ -277,7 +278,7 @@ export default {
             let parsedValue;
 
             if (typeIsUint256) {
-                parsedValue = parseUint256FromString(value);
+                parsedValue = parseUint256String(value);
             } else if (typeIsUint256Array) {
                 parsedValue = parseUint256ArrayString(value, expectedArrayLength);
             } else if (typeIsAddress) {
@@ -336,6 +337,7 @@ export default {
 
             try {
                 params = this.getFormattedParams();
+                this.errorMessage = null;
             } catch (e) {
                 this.errorMessage = e;
                 return Promise.reject(e);
@@ -343,7 +345,10 @@ export default {
 
             return this.getEthersFunction()
                 .then(func => func(...params)
-                    .then(response => { this.result = response })
+                    .then(response => {
+                        this.result = response;
+                        this.errorMessage = null;
+                    })
                     .catch((msg) => {
                         this.errorMessage = msg;
                     })
@@ -417,6 +422,7 @@ export default {
             let params;
             try {
                 params = this.getFormattedParams();
+                this.errorMessage = null;
             } catch (e) {
                 this.errorMessage = e;
 
@@ -425,7 +431,6 @@ export default {
             const result = await func(...params, opts);
             this.hash = result.hash;
             this.endLoading();
-            this.errorMessage = null;
         },
         endLoading() {
             this.loading = false;
