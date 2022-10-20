@@ -6,7 +6,8 @@ export function parameterTypeIsImplemented(type) {
         parameterTypeIsAddress(type)      ||
         parameterTypeIsAddressArray(type) ||
         parameterTypeIsBoolean(type)      ||
-        parameterTypeIsBooleanArray(type);
+        parameterTypeIsBooleanArray(type) ||
+        parameterTypeIsString(type);
 }
 
 export function parameterTypeIsUint256(type) {
@@ -31,6 +32,10 @@ export function parameterTypeIsBoolean(type) {
 
 export function parameterTypeIsBooleanArray(type) {
     return /^bool\[\d*]/.test(type);
+}
+
+export function parameterTypeIsString(type) {
+    return type === 'string';
 }
 
 export function getExpectedArrayLengthFromParameterType(type) {
