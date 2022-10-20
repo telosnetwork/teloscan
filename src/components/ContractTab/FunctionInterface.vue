@@ -327,8 +327,17 @@ export default {
             return contractInstance[this.getFunctionAbi()];
         },
         runRead() {
+            let params;
+
+            try {
+                params = this.getFormattedParams();
+            } catch (e) {
+                this.errorMessage = e;
+                return Promise.reject(e);
+            }
+
             return this.getEthersFunction()
-                .then(func => func(...this.getFormattedParams())
+                .then(func => func(...params)
                     .then(response => { this.result = response })
                     .catch((msg) => {
                         this.errorMessage = msg;
