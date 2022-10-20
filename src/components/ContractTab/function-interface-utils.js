@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from 'ethers';
 
-export function parameterTypeIsImplemented(type) {
+function parameterTypeIsImplemented(type) {
     return parameterTypeIsUint256(type)   ||
         parameterTypeIsUint256Array(type) ||
         parameterTypeIsAddress(type)      ||
@@ -10,40 +10,40 @@ export function parameterTypeIsImplemented(type) {
         parameterTypeIsString(type);
 }
 
-export function parameterTypeIsUint256(type) {
+function parameterTypeIsUint256(type) {
     return type === 'uint256';
 }
 
-export function parameterTypeIsUint256Array(type) {
+function parameterTypeIsUint256Array(type) {
     return /^uint256\[\d*]/.test(type);
 }
 
-export function parameterTypeIsAddress(type) {
+function parameterTypeIsAddress(type) {
     return type === 'address';
 }
 
-export function parameterTypeIsAddressArray(type) {
+function parameterTypeIsAddressArray(type) {
     return /^address\[\d*]/.test(type);
 }
 
-export function parameterTypeIsBoolean(type) {
+function parameterTypeIsBoolean(type) {
     return type === 'bool';
 }
 
-export function parameterTypeIsBooleanArray(type) {
+function parameterTypeIsBooleanArray(type) {
     return /^bool\[\d*]/.test(type);
 }
 
-export function parameterTypeIsString(type) {
+function parameterTypeIsString(type) {
     return type === 'string';
 }
 
-export function getExpectedArrayLengthFromParameterType(type) {
+function getExpectedArrayLengthFromParameterType(type) {
     const expectedArrayLengthRegex = /\d+(?=]$)/;
     return (+type.match(expectedArrayLengthRegex)?.[0]) || undefined;
 }
 
-export function parseUint256FromString(str = '') {
+function parseUint256String(str = '') {
     const uint256StringRegex = /^\d{1,256}$/;
     const stringRepresentsValidUint256 = uint256StringRegex.test(str);
 
@@ -54,17 +54,17 @@ export function parseUint256FromString(str = '') {
     return BigNumber.from(str);
 }
 
-export function parseUint256ArrayString(str = '', expectedLength) {
+function parseUint256ArrayString(str = '', expectedLength) {
     if (str === '[]' && expectedLength === undefined)
         return [];
 
-    const arrayOfUint256Regex = /^\[(\d{1,256} *)*(\d{1,256})]$/;
+    const arrayOfUint256Regex = /^\[(\d{1,256}, *)*(\d{1,256})]$/;
     const stringRepresentsValidUint256Array = arrayOfUint256Regex.test(str);
 
     if (!stringRepresentsValidUint256Array)
         return undefined;
 
-    const bigNumberArray = str.match(/\d+/g).map(intString => BigNumber.from(intString))
+    const bigNumberArray = str.match(/\d+/g).map(intString => BigNumber.from(intString));
 
     if (Number.isInteger(expectedLength)) {
         const actualLength = bigNumberArray.length;
@@ -76,7 +76,7 @@ export function parseUint256ArrayString(str = '', expectedLength) {
     return bigNumberArray;
 }
 
-export function parseAddressString(str) {
+function parseAddressString(str) {
     try {
         return ethers.utils.getAddress(str);
     } catch {
@@ -84,11 +84,11 @@ export function parseAddressString(str) {
     }
 }
 
-export function parseAddressArrayString(str, expectedLength) {
+function parseAddressArrayString(str, expectedLength) {
     if (str === '[]' && expectedLength === undefined)
         return [];
 
-    const arrayOfAddressRegex = /^\[((0x[a-zA-Z0-9]{40} *)*(0x[a-zA-Z0-9]{40}))]$/;
+    const arrayOfAddressRegex = /^\[((0x[a-zA-Z0-9]{40}, *)*(0x[a-zA-Z0-9]{40}))]$/;
     const stringRepresentsValidAddressArray = arrayOfAddressRegex.test(str);
 
     if (!stringRepresentsValidAddressArray)
@@ -113,7 +113,7 @@ export function parseAddressArrayString(str, expectedLength) {
     return addressArray;
 }
 
-export function parseBooleanString(str) {
+function parseBooleanString(str) {
     const trueRegex  = /^true$/i;
     const falseRegex = /^false$/i;
 
@@ -126,7 +126,9 @@ export function parseBooleanString(str) {
     return undefined;
 }
 
-export function parseBooleanArrayString(str, expectedLength) {
+function parseBooleanArrayString(str, expectedLength) {
+    if (str === '[]' && expectedLength === undefined)
+        return [];
 
     const booleanArrayStringRegex = /^\[((true|false), *)*(true|false)]$/i;
 
@@ -146,4 +148,23 @@ export function parseBooleanArrayString(str, expectedLength) {
     }
 
     return boolArray;
+}
+
+
+export {
+    parameterTypeIsImplemented,
+    parameterTypeIsUint256,
+    parameterTypeIsUint256Array,
+    parameterTypeIsAddress,
+    parameterTypeIsAddressArray,
+    parameterTypeIsBoolean,
+    parameterTypeIsBooleanArray,
+    parameterTypeIsString,
+    getExpectedArrayLengthFromParameterType,
+    parseUint256String,
+    parseUint256ArrayString,
+    parseAddressString,
+    parseAddressArrayString,
+    parseBooleanString,
+    parseBooleanArrayString,
 }
