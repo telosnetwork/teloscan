@@ -34,7 +34,7 @@ export function formatUnstakePeriod(seconds) {
 }
 
 export async function fetchStlosApy($api, tvl) {
-    await $api.fetchStlosApy(tvl);
+    return await $api.fetchStlosApy(tvl);
 }
 
 /**
