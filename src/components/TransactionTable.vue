@@ -114,13 +114,13 @@ export default {
             for (const transaction of this.transactions) {
                 try {
                     transaction.transfer = false;
-                    if (transaction.input_data === '0x') console.log(transaction.hash);
                     if (transaction.input_data === '0x') continue;
                     if(!transaction.to) continue;
+
                     const contract = await this.$contractManager.getContract(
                         transaction.to,
                     );
-                    if (!contract) console.log(transaction.hash);
+
                     if (!contract) continue;
 
                     const parsedTransaction = await contract.parseTransaction(
