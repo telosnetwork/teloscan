@@ -206,7 +206,7 @@ q-table(
             q-td( key="from" :props="props")
                 address-field(v-if="props.row.from" :address="props.row.from" )
             q-td( key="to" :props="props")
-                address-field(v-if="props.row.to" :key="props.row.to + (props.row.contract)" :address="props.row.to" :isContractTrx="(props.row.contract) ? true : false" )
+                address-field(v-if="props.row.to" :key="props.row.to + ((props.row.contract) ? '1' : '0')" :address="props.row.to" :isContractTrx="(props.row.contract) ? true : false" )
             q-td( key="value" :props="props")
                 span(v-if="props.row.value > 0 ||  !props.row.transfer ") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
                 div(v-else)
