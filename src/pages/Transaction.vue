@@ -261,10 +261,10 @@ export default {
             div( @click="showAge = !showAge" class="fit row wrap justify-start items-start content-start date")
                 div(class="col-3"  )
                   strong {{ `Date: ` }}
-                div.col-9
-                  q-icon(class="far fa-clock q-pr-xs q-pb-xs")
-                  date-field( :epoch="trx.epoch" :show-age="showAge" style="cursor: pointer;" )
-                q-tooltip Click to change date format
+                div.u-flex--left
+                  q-icon(class="far fa-clock q-mr-xs")
+                  date-field( :epoch="trx.epoch" :show-age="showAge" )
+                  q-tooltip Click to change date format
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
