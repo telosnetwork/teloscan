@@ -69,6 +69,9 @@ export default {
             this.telosAccount = account.account;
             this.isContract = account.code.length > 0;
 
+            if (this.isContract === false)
+                this.contract = null;
+
             const isVerifiedContract = this.isContract && this.isVerified;
             const knownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address.toLowerCase() === this.address.toLowerCase());
 
