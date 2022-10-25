@@ -74,7 +74,7 @@
                 @click="goTo('https://teloscan.io/')"
             >
                 <q-item-section>
-                    <q-item-label> Teloscan Mainnet </q-item-label>
+                    <q-item-label>Teloscan Mainnet</q-item-label>
                 </q-item-section>
             </q-item>
 
@@ -130,7 +130,7 @@ export default {
     },
     data() {
         return {
-            mainnet: process.env.NETWORK_EVM_CHAIN_ID === '40',
+            mainnet: '' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40',
             accountConnected: false,
             drawer: false,
             clickawayDisabled: false,
