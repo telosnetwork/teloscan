@@ -5,6 +5,7 @@
             <div class="q-py-sm">
                 <router-link
                     to="/"
+                    id="logo"
                     class="row items-center q-gutter-x-xs"
                 >
                     <img
@@ -25,6 +26,7 @@
             />
 
             <q-btn
+                id="dark-mode-toggle"
                 flat
                 dark
                 standout
@@ -72,7 +74,7 @@
                 @click="goTo('https://teloscan.io/')"
             >
                 <q-item-section>
-                    <q-item-label> Teloscan Mainnet </q-item-label>
+                    <q-item-label>Teloscan Mainnet</q-item-label>
                 </q-item-section>
             </q-item>
 
@@ -128,7 +130,7 @@ export default {
     },
     data() {
         return {
-            mainnet: parseInt(process.env.NETWORK_EVM_CHAIN_ID) === 40,
+            mainnet: '' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40',
             accountConnected: false,
             drawer: false,
             clickawayDisabled: false,
@@ -228,4 +230,25 @@ export default {
   height: fit-content
   border-top-left-radius: 4px
   border-bottom-left-radius: 4px
+
+@media screen and (max-width: 768px)
+    .taskbarSearch
+        display: none
+@media only screen and (max-width: 550px)
+    #dark-mode-toggle
+        padding-right: 5px
+        .q-icon
+            font-size: 1.3em
+    #logo
+        .text-h5
+            font-size: 1.3rem
+        img
+            width: 32px
+
+@media only screen and (max-width: 400px)
+    #logo
+        .text-h5
+            font-size: 1.1rem
+        img
+            width: 24px
 </style>

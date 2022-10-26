@@ -25,5 +25,12 @@ export default {
 </script>
 
 <template lang="pug">
-div {{ friendlyDate }}
+div.c-date-field {{ friendlyDate }}
 </template>
+
+<style lang="scss">
+.c-date-field {
+    cursor: pointer;
+    max-width: max-content;
+}
+</style>

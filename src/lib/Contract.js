@@ -1,7 +1,8 @@
 /* eslint-disable */
 
 import { ethers } from "ethers";
-import { markRaw } from 'vue'
+import { markRaw } from 'vue';
+import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 export default class Contract {
 
@@ -59,10 +60,6 @@ export default class Contract {
     return this.contract;
   }
 
-  call(functionName, args) {
-
-  }
-
   async parseTransaction(data) {
     if (this.iface) {
       try {
@@ -83,40 +80,56 @@ export default class Contract {
     }
   }
 
+  formatLog(log, parsedLog){
+    if(!parsedLog.signature) return log;
+    parsedLog.function_signature = log.topics[0].substr(0, 10);
+    parsedLog.isTransfer = TRANSFER_SIGNATURES.includes(parsedLog.function_signature);
+    parsedLog.logIndex = log.logIndex;
+    parsedLog.address = log.address;
+    parsedLog.token = this.token;
+    parsedLog.name = parsedLog.signature;
+    return parsedLog;
+  }
+
   async parseLogs(logsArray) {
     if (this.iface) {
-      let parsedArray = logsArray.map(log => {
+      let parsedArray = await Promise.all(logsArray.map(async (log) => {
         try {
           let parsedLog = this.iface.parseLog(log);
-          parsedLog.address = log.address;
+          parsedLog = this.formatLog(log, parsedLog);
           return parsedLog;
         } catch (e) {
-          console.error(`Failed parsing log event: ${e.message}`)
-          return log;
+          let parsedLog = await this.parseEvent(log);
+          return  this.formatLog(log, parsedLog);
         }
-      });
+      }));
       parsedArray.forEach(parsed => {
-        if(parsed.name && parsed.eventFragment){
+        if(parsed.name && parsed.eventFragment && parsed.eventFragment.inputs){
           parsed.inputs = parsed.eventFragment.inputs;
         }
       })
       return parsedArray;
     }
 
-    // TODO: This works very inconsistently... need to dig deeper, example http://localhost:8080/tx/0x817b1596365bb402c45b53d67be7808fb204e3842cf61587777d92a3ce909d16
-    //   note that the Sync event works fine, but the rest do not
+
     return await Promise.all(logsArray.map(async log => {
-      const eventIface = await this.manager.getEventIface(log.topics[0]);
-      if (eventIface) {
-        try {
-          let parsedLog = eventIface.parseLog(log);
-          parsedLog.address = log.address;
-        } catch(e) {
-          console.error(`Failed to parse log ${JSON.stringify(log, null, 4)}\n\nfrom event interface: ${JSON.stringify(eventIface, null, 4)} : ${e.message}`)
-        }
-      }
-      return log;
+      let parsedLog = await this.parseEvent(log);
+      parsedLog = this.formatLog(log, parsedLog);
     }))
+  }
+
+  async parseEvent(log){
+    const eventIface = await this.manager.getEventIface(log.topics[0]);
+    if (eventIface) {
+      try {
+        let parsedLog = eventIface.parseLog(log);
+        parsedLog = this.formatLog(log, parsedLog);
+        return parsedLog;
+      } catch(e) {
+        console.log(`Failed to parse log ${log.logIndex} from event interface`)
+      }
+    }
+    return log;
   }
 
 }

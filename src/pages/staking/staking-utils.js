@@ -95,7 +95,7 @@ export async function fetchStlosApy($api, tvl) {
     const rexTotal = new Big(rexStats.total_lendable.split(' ')[0]);
     const stlosTotal = new Big(ethers.utils.formatEther(tvlBn));
 
-    const balanceRatio = rexTotal.eq(0) ? -1 : stlosTotal.times(fixedRatio).div(rexTotal);
+    const balanceRatio = rexTotal.eq(0) ? -1 : stlosTotal.times(fixedRatio).div(rexTotal.add(stlosTotal));
 
     if (balanceRatio.eq(0)) {
         return '0';
@@ -105,8 +105,6 @@ export async function fetchStlosApy($api, tvl) {
     const stlosPayout = annualPayout.minus(rexPayout);
 
     const apy = stlosPayout.div(stlosTotal).times(100).toFixed(2);
-    console.log(`Rex APY: ${rexPayout.div(rexTotal).times(100).toFixed(2)}%`);
-    console.log(`sTLOS APY: ${apy}%`);
 
     return apy;
 }

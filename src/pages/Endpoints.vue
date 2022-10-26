@@ -10,6 +10,7 @@ export default {
     data() {
         return {
             endpoints: [],
+            blockHeight: 0,
         };
     },
     mounted() {
@@ -25,6 +26,20 @@ export default {
 
             return 'red';
         },
+        getBlockClass(currentHeight, block) {
+            if (currentHeight === 0)
+                return 'text-green';
+
+            const diff = (currentHeight - block);
+
+            if (diff > 50)
+                return 'text-red';
+
+            if (diff > 20)
+                return 'text-yellow';
+
+            return 'text-green';
+        },
         async checkEndpoints() {
             await this.loadEndpoints();
             this.endpoints.forEach((endpoint, idx) => {
@@ -36,21 +51,28 @@ export default {
             this.endpoints = results.data;
         },
         async doCheck(endpoint, idx) {
-            const checker = axios.create({
-                timeout: TIMEOUT_MS,
-            });
+            try {
+                const checker = axios.create({
+                    timeout: TIMEOUT_MS,
+                });
 
-            axiosTime(checker);
-            const result = await checker.post(endpoint.http, {
-                'jsonrpc':'2.0',
-                'method':'eth_blockNumber',
-                'params':[],
-                'id':1,
-            });
+                axiosTime(checker);
+                const result = await checker.post(endpoint.http, {
+                    'jsonrpc': '2.0',
+                    'method': 'eth_blockNumber',
+                    'params': [],
+                    'id': 1,
+                });
 
-            this.$set(this.endpoints[idx], 'latency', result.timings.elapsedTime);
-            //this.endpoints[idx].latency = result.timings.elapsedTime;
-            this.endpoints[idx].block = parseInt(result.data.result, 16);
+                const block = parseInt(result.data.result, 16);
+                if (this.blockHeight < block)
+                    this.blockHeight = block;
+
+                this.endpoints[idx].latency = result.timings.elapsedTime;
+                this.endpoints[idx].block = block;
+            } catch (e) {
+                this.endpoints[idx].error = e.message;
+            }
         },
     },
 };
@@ -73,7 +95,9 @@ export default {
             q-item-label(v-if="endpoint.latency" side top)
               span Latency: {{ endpoint.latency }}ms
               q-icon(name="wifi" :color="getLatencyColor(endpoint.latency)")
-            q-item-label(v-if="endpoint.block" side top) Block height: {{ endpoint.block }}
+            q-item-label(v-if="endpoint.block" side top ) Block height:&nbsp
+              span(:class="getBlockClass(blockHeight, endpoint.block)") {{ endpoint.block }}
+            q-item-label(v-if="endpoint.error" side top).text-red Error: {{ endpoint.error }}
 </template>
 
 <style scoped lang='sass'>

@@ -199,7 +199,7 @@ export default {
                                         decimals: 18,
                                     },
                                     rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
-                                    blockExplorerUrls: [`https://${mainnet ? '' : 'testnet'}.teloscan.io`],
+                                    blockExplorerUrls: [`https://${mainnet ? '' : 'testnet.'}teloscan.io`],
                                 }],
                             });
                             return true;
@@ -248,7 +248,7 @@ div()
 
 <style lang='sass'>
     .wallet-icon
-        width: 4.5rem
+        width: 42%
         display: inline-block
         margin: .5rem
         padding: .5rem
@@ -259,5 +259,12 @@ div()
     .wallet-img
         width: 3.5rem
         margin: .5rem .5rem 0 .5rem
+
+@media only screen and (max-width: 550px)
+    .wallet-icon
+        width: 92%
+    .q-btn
+        font-size: 0.9em
+        padding: 4px 10px
 
 </style>

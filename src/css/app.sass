@@ -5,6 +5,9 @@
 a
  color: rgb(100, 111, 211)
  text-decoration: none
+ transition: 400ms color ease
+ &:hover
+   color: $secondary
 
 .toolbar
   background: radial-gradient( circle at 50% 50%, rgba(97, 8, 183, 1) 1%, rgba(0, 188, 212, 1) 53%, rgba(213, 109, 213, 1) 100%)
@@ -128,6 +131,27 @@ body.body--dark
 .info-icon
     margin-left: 4px
 
+.ellipsis-label
+  color: #999
+  background-color: #eee
+  display: inline-block
+  line-height: 6px
+  margin-left: 15px
+  height: 12px
+  font-size: 0.9em
+  padding: 0px 4px 2px 4px
+  border-radius: 3px
+  vertical-align: 2px
+  cursor: pointer
+  -webkit-user-select: none
+  user-select: none
+
+.list-arrow
+  font-size: 1.8em
+  margin-top: -3px
+  margin-left: -8px
+  color: #666666
+
 .pageContainer
   flex: 0 1 1200px
   max-width: 1200px
@@ -200,6 +224,9 @@ body.body--dark
 .negative
   color: $negative
 
+.clickable
+  cursor: pointer
+
 .word-break
   word-break: break-word
 
@@ -225,7 +252,23 @@ body.body--dark
     padding: 4px !important
 
 @media only screen and (max-width: 550px)
+  .homeInfo
+    .text-h6
+      font-size: 1.3em
+  .q-tab__label
+    font-size: 11px
+  .title
+    font-size: 1.7rem
   .selectorContainer .text-h6
     font-size: 0.8rem
-  .q-input
-    font-size: 1.2rem
+
+@media only screen and (max-width: 400px)
+  .homeInfo
+    .text-h6
+      font-size: 1em
+    .text-subtitle2
+      font-size: 1.1em
+    .q-pa-md
+      padding: 5px
+  .title
+    font-size: 1.5rem

@@ -5,7 +5,7 @@ import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import MethodField from 'components/MethodField';
 import { formatBN } from 'src/lib/utils';
-import { TRANSFER_FUNCTION_SIGNATURES } from 'src/lib/functionSignatures';
+import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 const columns = [
     {
@@ -113,12 +113,14 @@ export default {
             );
             for (const transaction of this.transactions) {
                 try {
-                    transaction.transfers = [];
+                    transaction.transfer = false;
                     if (transaction.input_data === '0x') continue;
                     if(!transaction.to) continue;
+
                     const contract = await this.$contractManager.getContract(
                         transaction.to,
                     );
+
                     if (!contract) continue;
 
                     const parsedTransaction = await contract.parseTransaction(
@@ -128,17 +130,14 @@ export default {
                         transaction.parsedTransaction = parsedTransaction;
                         transaction.contract = contract;
                     }
-                    transaction.logs.forEach(log => {
-                        log.topics.forEach(async topic =>  {
-                            let signature = topic.substring(0, 10)
-                            if (TRANSFER_FUNCTION_SIGNATURES.includes(signature)) {
-                                if(transaction.contract && transaction.contract.token ){
-                                    transaction.transfers.push({'value': `${formatBN(log.data, transaction.contract.token.decimals, 5)}`, 'symbol': transaction.contract.token.symbol})
-                                }
-                            }
-                        })
-                    })
-                    transaction.transfers.sort((a,b) => a.value - b.value);
+                    // Get ERC20 transfer from main function call
+                    let signature = transaction.input_data.substring(0, 10);
+                    if (signature && TRANSFER_SIGNATURES.includes(signature) && transaction.parsedTransaction.args['amount']) {
+                        let token = await this.$contractManager.getTokenData(transaction.to, 'erc20');
+                        if(transaction.contract && token && token.decimals){
+                            transaction.transfer = {'value': `${formatBN(transaction.parsedTransaction.args['amount'], token.decimals, 5)}`, 'symbol': token.symbol};
+                        }
+                    }
                 } catch (e) {
                     console.error(
                         `Failed to parse data for transaction, error was: ${e.message}`,
@@ -195,7 +194,7 @@ q-table(
             q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
 
     template(v-slot:body="props")
-        q-tr( :props="props" )
+        q-tr( :props="props")
             q-td( key="hash" :props="props" )
                 transaction-field( :transaction-hash="props.row.hash" )
             q-td( key="block" :props="props")
@@ -203,14 +202,13 @@ q-table(
             q-td( key="date" :props="props")
                 date-field( :epoch="props.row.epoch", :showAge="showAge" )
             q-td( key="method" :props="props")
-                method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shorten="true" )
+                method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"  )
             q-td( key="from" :props="props")
                 address-field(v-if="props.row.from" :address="props.row.from" )
             q-td( key="to" :props="props")
-                address-field(v-if="props.row.to" :address="props.row.to" :is-contract-trx="props.row.input_data !== '0x'" )
+                address-field(v-if="props.row.to" :key="props.row.to + ((props.row.contract) ? '1' : '0')" :address="props.row.to" :isContractTrx="(props.row.contract) ? true : false" )
             q-td( key="value" :props="props")
-                span(v-if="props.row.value > 0 ||  !props.row.transfers || props.row.transfers.length == 0") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
+                span(v-if="props.row.value > 0 ||  !props.row.transfer ") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
                 div(v-else)
-                    span(v-if="props.row.transfers &&  props.row.transfers.length > 0") {{ props.row.transfers[0].value }} {{ props.row.transfers[0].symbol }}
-                    sup(v-if="props.row.transfers &&  props.row.transfers.length > 1" class="q-ml-xs") +{{ props.row.transfers.length - 1 }}
+                    span(v-if="props.row.transfer") {{ props.row.transfer.value }} {{ props.row.transfer.symbol }}
 </template>
