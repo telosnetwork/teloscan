@@ -2,8 +2,9 @@ import { mount } from '@vue/test-utils'
 
 import Footer from 'components/Footer';
 
-// eztodo
 /*
+    TODO https://github.com/telosnetwork/teloscan/issues/203
+    
     add to docs:
     - snapshot testing
     - conventions for router / other plugins
