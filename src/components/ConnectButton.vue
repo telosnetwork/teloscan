@@ -1,6 +1,6 @@
 <script>
 import MetamaskLogo from 'src/assets/metamask-fox.svg'
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 import { ethers } from 'ethers';
 
 const providersError = 'More than one provider is active, disable additional providers.';
@@ -27,6 +27,7 @@ export default {
             'address',
             'nativeAccount',
         ]),
+        ...mapState('general', ['browserSupportsEthereum']),
     },
     async mounted() {
         const loginData = localStorage.getItem('loginData');
@@ -82,6 +83,11 @@ export default {
             this.$router.push(`/address/${this.address}`);
         },
         async injectedWeb3Login() {
+            if (!this.browserSupportsEthereum) {
+                window.open('https://metamask.app.link/dapp/teloscan.io');
+                return;
+            }
+
             const address = await this.getInjectedAddress();
             if (address) {
                 this.setLogin({
@@ -252,7 +258,7 @@ export default {
                 <q-tab-panel name="web3">
                     <q-card class="wallet-icon cursor-pointer" @click="injectedWeb3Login()">
                         <q-img class="wallet-img" :src="metamaskLogo"></q-img>
-                        <p>Metamask</p>
+                        <p>{{ !browserSupportsEthereum ? 'Continue on ' : '' }}Metamask</p>
                     </q-card>
                 </q-tab-panel>
                 <q-tab-panel name="native">
