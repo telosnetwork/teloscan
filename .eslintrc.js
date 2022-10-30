@@ -10,6 +10,7 @@ module.exports = {
         'amd': true,
         'node': true,
         'vue/setup-compiler-macros': true,
+        'jest/globals': true,
     },
     extends: [
         'eslint:recommended',
@@ -17,9 +18,9 @@ module.exports = {
     ],
     plugins: [
         'vue',
+        'jest',
     ],
     globals: {
-        ga: true, // Google Analytics
         __statics: true,
         process: true,
     },

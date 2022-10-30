@@ -116,9 +116,11 @@ export default {
                     transaction.transfer = false;
                     if (transaction.input_data === '0x') continue;
                     if(!transaction.to) continue;
+
                     const contract = await this.$contractManager.getContract(
                         transaction.to,
                     );
+
                     if (!contract) continue;
 
                     const parsedTransaction = await contract.parseTransaction(
@@ -128,7 +130,6 @@ export default {
                         transaction.parsedTransaction = parsedTransaction;
                         transaction.contract = contract;
                     }
-
                     // Get ERC20 transfer from main function call
                     let signature = transaction.input_data.substring(0, 10);
                     if (signature && TRANSFER_SIGNATURES.includes(signature) && transaction.parsedTransaction.args['amount']) {
@@ -193,7 +194,7 @@ q-table(
             q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
 
     template(v-slot:body="props")
-        q-tr( :props="props" )
+        q-tr( :props="props")
             q-td( key="hash" :props="props" )
                 transaction-field( :transaction-hash="props.row.hash" )
             q-td( key="block" :props="props")
@@ -205,7 +206,7 @@ q-table(
             q-td( key="from" :props="props")
                 address-field(v-if="props.row.from" :address="props.row.from" )
             q-td( key="to" :props="props")
-                address-field(v-if="props.row.to" :address="props.row.to" :is-contract-trx="props.row.input_data !== '0x'" )
+                address-field(v-if="props.row.to" :key="props.row.to + ((props.row.contract) ? '1' : '0')" :address="props.row.to" :isContractTrx="(props.row.contract) ? true : false" )
             q-td( key="value" :props="props")
                 span(v-if="props.row.value > 0 ||  !props.row.transfer ") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
                 div(v-else)

@@ -199,7 +199,7 @@ export default {
                                         decimals: 18,
                                     },
                                     rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
-                                    blockExplorerUrls: [`https://${mainnet ? '' : 'testnet'}.teloscan.io`],
+                                    blockExplorerUrls: [`https://${mainnet ? '' : 'testnet.'}teloscan.io`],
                                 }],
                             });
                             return true;
