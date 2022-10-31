@@ -51,17 +51,12 @@ div(class="fit row wrap justify-start items-start content-start")
             a(v-if="transfer.token.image" clickable :href="transfer.token.image" target="_blank" class="q-pl-xs")
               q-icon(name="image" size="14px" class="q-pb-sm q-ml-xs")
             q-tooltip Consult media
-      div(v-else class="col-5 clickable" @click="transfer.showWei = !transfer.showWei")
+      div(v-else class="col-5X")
         strong {{ ` Token : ` }}
-        span(v-if="!transfer.showWei")
-            span {{ transfer.value }}
-            router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs") {{ transfer.token.symbol.slice(0, 10) }}
+        span {{ transfer.value }}
+        router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs")
+            span(@click="transfer.showWei = true") {{ transfer.token.symbol.slice(0, 10) }}
             span(v-if="transfer.token.symbol.length > 10") ...
-            q-tooltip Show wei
-        span(v-else)
-            span {{ transfer.wei }}
-            q-tooltip Show {{ transfer.token.symbol }}
-  br
 br
 </template>
 <style scoped lang="sass">
