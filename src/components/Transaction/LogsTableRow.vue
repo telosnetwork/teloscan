@@ -38,13 +38,13 @@
                         <div v-if="log.isTransfer && log.token">
                             <div @click="showWei = !showWei" class="clickable" v-if="!log.token.type || log.token.type === 'erc20'">
                                 <span v-if="!showWei">
-                                    <span> {{ log.args[index] / (10 ** log.token.decimals) }}</span>
+                                    <span> {{ formatWei(log.args[index], log.token.decimals) }}</span>
                                     <q-tooltip>Show wei</q-tooltip>
                                     <address-field
-                                            :address="log.token.address"
-                                            :truncate="0"
-                                            :name="log.token.symbol"
-                                            class="word-break q-ml-xs"
+                                        :address="log.token.address"
+                                        :truncate="0"
+                                        :name="log.token.symbol"
+                                        class="word-break q-ml-xs"
                                     />
                                 </span>
                                 <span v-else>
@@ -108,6 +108,8 @@
 <script>
 import JsonViewer from 'vue-json-viewer'
 import AddressField from 'components/AddressField';
+import { formatWei } from 'src/lib/utils';
+import { BigNumber } from 'ethers';
 
 export default {
     name: 'LogsTableRow',
@@ -144,6 +146,9 @@ export default {
     methods: {
         toggle(param, index) {
             this.expanded_parameters[param][index] = !this.expanded_parameters[param][index];
+        },
+        formatWei(number, decimals){
+            return formatWei(BigNumber.from(number), decimals);
         },
     },
     computed: {
