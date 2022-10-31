@@ -85,7 +85,7 @@ export default {
                 return;
             }
             this.trx = trxResponse.data.transactions[0];
-            this.trx.value = BigNumber.from(this.trx.value.toString());
+            this.trx.value = BigNumber.from(this.trx.value.toString(16));
             await this.loadContract();
             await this.loadTransfers();
             this.setErrorMessage();
