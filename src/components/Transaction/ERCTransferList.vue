@@ -34,10 +34,10 @@ div(class="fit row wrap justify-start items-start content-start")
       div(class="col-4")
         q-icon(name="arrow_right" class="list-arrow")
         strong {{ `From : ` }}
-        <AddressField :highlight="trxFrom === transfer.from && transfers.length > 1" :address="transfer.from" :truncate="16" copy :name="transfer.from === contract.address && contract.name ?  contract.name : null" />
-      div(class="col-4")
+        <AddressField :highlight="trxFrom === transfer.from && transfers.length > 1" :address="transfer.from" :truncate="15" copy :name="transfer.from === contract.address && contract.name ?  contract.name : null" />
+      div(class="col-3")
         strong {{ ` To : ` }}
-        <AddressField :highlight="trxFrom === transfer.to && transfers.length > 1" :address="transfer.to" :truncate="16" copy :name="transfer.to === contract.address && contract.name ?  contract.name : null" />
+        <AddressField :highlight="trxFrom === transfer.to && transfers.length > 1" :address="transfer.to" :truncate="15" copy :name="transfer.to === contract.address && contract.name ?  contract.name : null" />
       div(v-if="type==='ERC721' || type==='ERC1155'" class="col-4")
         strong {{ ` Token : ` }}
         router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs") {{ transfer.token.symbol }}
@@ -51,15 +51,15 @@ div(class="fit row wrap justify-start items-start content-start")
             a(v-if="transfer.token.image" clickable :href="transfer.token.image" target="_blank" class="q-pl-xs")
               q-icon(name="image" size="14px" class="q-pb-sm q-ml-xs")
             q-tooltip Consult media
-      div(v-else class="col-4 clickable" @click="transfer.showWei = !transfer.showWei")
+      div(v-else class="col-5 clickable" @click="transfer.showWei = !transfer.showWei")
         strong {{ ` Token : ` }}
         span(v-if="!transfer.showWei")
             span {{ transfer.value }}
+            router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs") {{ transfer.token.symbol.slice(0, 10) }}
             q-tooltip Show wei
         span(v-else)
             span {{ transfer.wei }}
             q-tooltip Show {{ transfer.token.symbol }}
-        router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs") {{ transfer.token.symbol }}
   br
 br
 </template>
