@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import moment from 'moment';
 const createKeccakHash = require('keccak')
 const REVERT_FUNCTION_SELECTOR = '0x08c379a0'
@@ -8,9 +8,10 @@ export const WEI_PRECISION = 18;
 
 export function formatWei(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);
-    const formatted = amount / 10 ** tokenDecimals;
+    const formatted = ethers.utils.formatUnits(amount.toString(), tokenDecimals);
     let str = formatted.toString();
-    if(displayDecimals && str.includes('.')) {
+    // Use string, do not convert to number so we never loose precision
+    if(displayDecimals > 0 && str.includes('.')) {
         const parts = str.split('.');
         return parts[0] + '.' + parts[1].slice(0, displayDecimals);
     }

@@ -115,7 +115,8 @@ export default {
                             })
                         } else {
                             this.erc20Transfers.push({
-                                'value': formatWei(log.data, contract.token.decimals, 5),
+                                'value': formatWei(log.data, contract.token.decimals),
+                                'wei': BigNumber.from(log.data).toString(),
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                                 'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
                                 'token': token,
