@@ -219,7 +219,7 @@ export default {
 <template lang='pug'>
 div()
     q-btn( v-if='!isLoggedIn' id='c-connect-button__login-button' label='Connect Wallet' @click='connect()' )
-    q-btn-dropdown( v-if='isLoggedIn' :label='getLoginDisplay()' )
+    q-btn-dropdown.q-ml-sm(flat round v-if='isLoggedIn' :label='getLoginDisplay()' )
       q-list()
         q-item( clickable v-close-popup @click='goToAddress()' )
           q-item-section()
@@ -259,6 +259,9 @@ div()
     .wallet-img
         width: 3.5rem
         margin: .5rem .5rem 0 .5rem
+
+    .q-menu
+        margin-top: 10px !important
 
 @media only screen and (max-width: 550px)
     .wallet-icon

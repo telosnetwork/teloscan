@@ -195,7 +195,7 @@ export default {
                     width: 100%
 </style>
 <template lang='pug'>
-.pageContainer.q-pt-xl
+.pageContainer
   .row
     .col-12.q-px-md
       .text-h4.text-primary.q-mb-lg.title.q-pt-xl

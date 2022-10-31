@@ -37,88 +37,80 @@
                 />
 
                 <connect-button class="connect-button" />
-                <q-btn
-                    flat
-                    round
+
+                <q-btn-dropdown
+                    dropdown-icon="menu"
                     dense
-                    icon="menu"
-                    @click="toggleDrawer"
-                />
+                    round
+                    flat
+                >
+                    <q-list>
+                        <q-item
+                            v-close-popup
+                            clickable
+                            @click="routerTo('/endpoints')"
+                        >
+                            <q-item-section>
+                                <q-item-label>RPC Endpoints</q-item-label>
+                            </q-item-section>
+                        </q-item>
+
+                        <q-item
+                            v-if="!mainnet"
+                            v-close-popup
+                            clickable
+                            @click="goTo('https://teloscan.io/')"
+                        >
+                            <q-item-section>
+                                <q-item-label>Teloscan Mainnet</q-item-label>
+                            </q-item-section>
+                        </q-item>
+
+                        <q-item
+                            v-if="mainnet"
+                            v-close-popup
+                            clickable
+                            @click="goTo('https://testnet.teloscan.io/')"
+                        >
+                            <q-item-section>
+                                <q-item-label> Teloscan Testnet </q-item-label>
+                            </q-item-section>
+                        </q-item>
+                        <q-item
+                            v-close-popup
+                            clickable
+                            @click="routerTo('/staking')"
+                        >
+                            <q-item-section>
+                                <q-item-label> Stake Telos </q-item-label>
+                            </q-item-section>
+                        </q-item>
+
+                        <q-item
+                            v-if="mainnet"
+                            v-close-popup
+                            clickable
+                            @click="goTo('https://monitor.telos.net/')"
+                        >
+                            <q-item-section>
+                                <q-item-label> Telos Monitor Mainnet </q-item-label>
+                            </q-item-section>
+                        </q-item>
+
+                        <q-item
+                            v-if="!mainnet"
+                            v-close-popup
+                            clickable
+                            @click="goTo('https://monitor-test.telos.net/')"
+                        >
+                            <q-item-section>
+                                <q-item-label> Telos Monitor Testnet </q-item-label>
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
+                </q-btn-dropdown>
             </q-toolbar>
-            <q-drawer
-                v-click-away="handleClickaway"
-                v-model="drawer"
-                side="right"
-                :width="200"
-                :breakpoint="500"
-                overlay
-                bordered
-            >
-                <q-list>
-                    <q-item
-                        v-close-popup
-                        clickable
-                        @click="routerTo('/endpoints')"
-                    >
-                        <q-item-section>
-                            <q-item-label>RPC Endpoints</q-item-label>
-                        </q-item-section>
-                    </q-item>
 
-                    <q-item
-                        v-if="!mainnet"
-                        v-close-popup
-                        clickable
-                        @click="goTo('https://teloscan.io/')"
-                    >
-                        <q-item-section>
-                            <q-item-label>Teloscan Mainnet</q-item-label>
-                        </q-item-section>
-                    </q-item>
-
-                    <q-item
-                        v-if="mainnet"
-                        v-close-popup
-                        clickable
-                        @click="goTo('https://testnet.teloscan.io/')"
-                    >
-                        <q-item-section>
-                            <q-item-label> Teloscan Testnet </q-item-label>
-                        </q-item-section>
-                    </q-item>
-                    <q-item
-                        v-close-popup
-                        clickable
-                        @click="routerTo('/staking')"
-                    >
-                        <q-item-section>
-                            <q-item-label> Stake Telos </q-item-label>
-                        </q-item-section>
-                    </q-item>
-
-                    <q-item
-                        v-if="mainnet"
-                        v-close-popup
-                        clickable
-                        @click="goTo('https://monitor.telos.net/')"
-                    >
-                        <q-item-section>
-                            <q-item-label> Telos Monitor Mainnet </q-item-label>
-                        </q-item-section>
-                    </q-item>
-
-                    <q-item
-                        v-if="!mainnet"
-                        v-close-popup
-                        clickable
-                        @click="goTo('https://monitor-test.telos.net/')"
-                    >
-                        <q-item-section>
-                            <q-item-label> Telos Monitor Testnet </q-item-label>
-                        </q-item-section>
-                    </q-item>
-                </q-list>
-            </q-drawer>
         </q-header>
 
 
@@ -250,17 +242,8 @@ export default {
 .q-header
   position: relative
 
-.q-drawer-container
-  border-radius: 0px 0px 15px 15px
-
 body.body--light .q-drawer
  color: black
-
-.q-drawer
-  position: absolute !important
-  height: 192px
-  border-radius: 10px
-  margin-top: -12px
 
 .connect-button
     background: #282828
