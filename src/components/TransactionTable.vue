@@ -4,7 +4,7 @@ import BlockField from 'components/BlockField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import MethodField from 'components/MethodField';
-import { formatBN } from 'src/lib/utils';
+import { formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 const columns = [
@@ -135,7 +135,7 @@ export default {
                     if (signature && TRANSFER_SIGNATURES.includes(signature) && transaction.parsedTransaction.args['amount']) {
                         let token = await this.$contractManager.getTokenData(transaction.to, 'erc20');
                         if(transaction.contract && token && token.decimals){
-                            transaction.transfer = {'value': `${formatBN(transaction.parsedTransaction.args['amount'], token.decimals, 5)}`, 'symbol': token.symbol};
+                            transaction.transfer = {'value': `${formatWei(transaction.parsedTransaction.args['amount'], token.decimals)}`, 'symbol': token.symbol};
                         }
                     }
                 } catch (e) {
@@ -208,7 +208,7 @@ q-table(
             q-td( key="to" :props="props")
                 address-field(v-if="props.row.to" :key="props.row.to + ((props.row.contract) ? '1' : '0')" :address="props.row.to" :isContractTrx="(props.row.contract) ? true : false" )
             q-td( key="value" :props="props")
-                span(v-if="props.row.value > 0 ||  !props.row.transfer ") {{ (props.row.value / 1000000000000000000).toFixed(5) }} TLOS
+                span(v-if="props.row.value > 0 ||  !props.row.transfer ") {{ (props.row.value / 1000000000000000000) }} TLOS
                 div(v-else)
                     span(v-if="props.row.transfer") {{ props.row.transfer.value }} {{ props.row.transfer.symbol }}
 </template>

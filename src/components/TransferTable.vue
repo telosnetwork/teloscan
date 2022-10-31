@@ -152,14 +152,14 @@ export default {
                                 }
 
                                 if (valueStr.length > 50)
-                                    valueStr = `${valueStr.slice(0, 20)} ...`
+                                    valueStr = `${valueStr.slice(0, 20)} ...`;
 
-                                valueDisplay = valueStr + ' ' + token.symbol
+                                valueDisplay = valueStr + ' ' + token.symbol;
                             } else {
                                 valueDisplay = 'Unknown precision';
                             }
                         } else {
-                            valueDisplay = `Id #${parseInt(log.topics[3], 16)}`
+                            valueDisplay = `Id #${parseInt(log.topics[3], 16)}`;
                         }
 
                         const transfer = {

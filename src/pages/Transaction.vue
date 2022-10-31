@@ -9,7 +9,7 @@ import ERCTransferList from 'components/Transaction/ERCTransferList';
 import ParameterList from 'components/Transaction/ParameterList';
 import JsonViewer from 'vue-json-viewer';
 import { BigNumber } from 'ethers';
-import {formatBN , parseErrorMessage} from 'src/lib/utils';
+import { formatWei, parseErrorMessage} from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
@@ -42,6 +42,7 @@ export default {
             parsedTransaction: null,
             methodTrx: null,
             showAge: true,
+            showWei: false,
         };
     },
     watch: {
@@ -114,7 +115,7 @@ export default {
                             })
                         } else {
                             this.erc20Transfers.push({
-                                'value': formatBN(log.data, contract.token.decimals, 5),
+                                'value': formatWei(log.data, contract.token.decimals, 5),
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                                 'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
                                 'token': token,
@@ -316,7 +317,12 @@ export default {
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
                 strong {{ `Value: ` }}
-              div(class="col-9") {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
+              div(class="col-9 clickable" @click="showWei = !showWei")
+                div(v-if="showWei")
+                    span {{ trx.value }}
+                span(v-else)
+                    span {{ (trx.value / 1000000000000000000) }} TLOS
+                    q-tooltip Click to show in wei
             br
             ERCTransferList( v-if="erc20Transfers.length > 0" type="ERC20" :trxFrom="trx.from" :contract="contract" :transfers="erc20Transfers")
             ERCTransferList( v-if="erc721Transfers.length > 0" type="ERC721" :trxFrom="trx.from" :contract="contract" :transfers="erc721Transfers")

@@ -6,11 +6,15 @@ const REVERT_PANIC_SELECTOR = '0x4e487b71'
 
 export const WEI_PRECISION = 18;
 
-export function formatBN(bn, tokenDecimals, displayDecimals) {
+export function formatWei(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);
-    const formattedNoCommas = (amount / Math.pow(10, tokenDecimals)).toFixed(displayDecimals);
-
-    return Number(formattedNoCommas).toLocaleString();
+    const formatted = amount / 10 ** tokenDecimals;
+    let str = formatted.toString();
+    if(displayDecimals && str.includes('.')) {
+        const parts = str.split('.');
+        return parts[0] + '.' + parts[1].slice(0, displayDecimals);
+    }
+    return str;
 }
 
 export function isValidAddressFormat(ethAddressString) {
