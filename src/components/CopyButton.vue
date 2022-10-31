@@ -74,7 +74,7 @@ export default {
                     this.hint = this.defaultHint;
                 }, 1500);
             }).catch(() => {
-               
+
             })
         },
     },

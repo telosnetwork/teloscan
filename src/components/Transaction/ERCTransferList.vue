@@ -56,6 +56,7 @@ div(class="fit row wrap justify-start items-start content-start")
         span(v-if="!transfer.showWei")
             span {{ transfer.value }}
             router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs") {{ transfer.token.symbol.slice(0, 10) }}
+            span(v-if="transfer.token.symbol.lenght > 10")...
             q-tooltip Show wei
         span(v-else)
             span {{ transfer.wei }}
