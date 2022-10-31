@@ -84,8 +84,8 @@ export default {
                 this.trxNotFound = true;
                 return;
             }
-
             this.trx = trxResponse.data.transactions[0];
+            this.trx.value = BigNumber.from(this.trx.value);
             await this.loadContract();
             await this.loadTransfers();
             this.setErrorMessage();
@@ -320,7 +320,7 @@ export default {
                 strong {{ `Value: ` }}
               div(class="col-9 clickable" @click="showWei = !showWei")
                 div(v-if="showWei")
-                    span {{ trx.value }}
+                    span {{ trx.value.toLocaleString('fullwide', {useGrouping:false}) }}
                 span(v-else)
                     span {{ (trx.value / 1000000000000000000) }} TLOS
                     q-tooltip Click to show in wei

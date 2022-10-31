@@ -237,7 +237,8 @@ body.body--light .q-drawer
 .q-drawer
   position: absolute !important
   height: 150px
-  border-radius: 0px 0px 15px 15px
+  border-radius: 10px
+  margin-top: -12px
 
 @media screen and (max-width: 768px)
     .taskbarSearch
