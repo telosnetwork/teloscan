@@ -73,7 +73,7 @@ export default {
     )
   div( v-for='(item, key, index) in contracts')
     p.file-label {{ item.name }}
-    pre.source-container(v-html='item.content')
+    pre.source-container.q-pa-md(v-html='item.content')
 </template>
 
 <style lang='sass'>

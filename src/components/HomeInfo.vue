@@ -76,8 +76,7 @@ export default {
 </template>
 <style scoped lang="sass">
 .homeInfo
-    > .row
-        margin: auto
+    user-select: none
 @media screen and (max-width: 768px)
     .homeInfo
         .col-8

@@ -36,7 +36,7 @@
                     @click="toggleDarkMode()"
                 />
 
-                <connect-button />
+                <connect-button class="connect-button" />
                 <q-btn
                     flat
                     round
@@ -93,6 +93,28 @@
                     >
                         <q-item-section>
                             <q-item-label> Stake Telos </q-item-label>
+                        </q-item-section>
+                    </q-item>
+
+                    <q-item
+                        v-if="mainnet"
+                        v-close-popup
+                        clickable
+                        @click="goTo('https://monitor.telos.net/')"
+                    >
+                        <q-item-section>
+                            <q-item-label> Telos Monitor Mainnet </q-item-label>
+                        </q-item-section>
+                    </q-item>
+
+                    <q-item
+                        v-if="!mainnet"
+                        v-close-popup
+                        clickable
+                        @click="goTo('https://monitor-test.telos.net/')"
+                    >
+                        <q-item-section>
+                            <q-item-label> Telos Monitor Testnet </q-item-label>
                         </q-item-section>
                     </q-item>
                 </q-list>
@@ -236,9 +258,19 @@ body.body--light .q-drawer
 
 .q-drawer
   position: absolute !important
-  height: 150px
+  height: 192px
   border-radius: 10px
   margin-top: -12px
+
+.connect-button
+    background: #282828
+    color: #ffffff
+    border-radius: 5px
+
+body.body--light .connect-button
+    background: #ffffff
+    color: black
+
 
 @media screen and (max-width: 768px)
     .taskbarSearch
