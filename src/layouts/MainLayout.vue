@@ -1,6 +1,6 @@
 <template>
 <q-layout view="lhh Lpr lFf">
-    <q-header class="transparent">
+    <q-header class="transparent pageContainer">
         <q-toolbar class="text-white toolbar transparent">
             <div class="q-py-sm">
                 <router-link
@@ -102,10 +102,9 @@
 
     <div :class="`banner ${onHomePage ? 'home' : ''}`" />
 
-    <q-page-container class="flex flex-center ">
+    <q-page-container class="flex flex-center">
         <router-view />
     </q-page-container>
-
     <footer-main />
 </q-layout>
 </template>

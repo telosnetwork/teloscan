@@ -198,7 +198,7 @@ export default {
 .pageContainer.q-pt-xl
   .row
     .col-12.q-px-md
-      .text-h4.text-primary.q-mb-lg.title
+      .text-h4.text-primary.q-mb-lg.title.q-pt-xl
         | Transaction Details
       .text-h6.q-mb-lg.text-white( v-if="trxNotFound" )
         | Not found: {{ hash }}
