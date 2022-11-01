@@ -40,6 +40,7 @@
 
                 <q-btn-dropdown
                     dropdown-icon="menu"
+                    class="q-ml-sm"
                     dense
                     round
                     flat
