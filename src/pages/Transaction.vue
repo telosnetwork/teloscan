@@ -64,9 +64,7 @@ export default {
         await this.loadTransaction();
     },
     methods: {
-        formatWei(number, decimals){
-            return formatWei(number, decimals);
-        },
+        formatWei,
         resetTransaction() {
             this.blockData = null;
             this.trx = null;
@@ -162,13 +160,10 @@ export default {
             return args;
         },
         getGasFee() {
-            return (
-                (this.trx.charged_gas_price * this.trx.gasused) /
-                1000000000000000000
-            ).toFixed(5);
+            return formatWei(BigNumber.from(this.trx.charged_gas_price).mul(this.trx.gasused).toLocaleString('fullwide', {useGrouping:false}), 18, 5);
         },
         getGasChargedGWEI() {
-            return (this.trx.charged_gas_price / 1000000000).toFixed(2);
+            return formatWei(BigNumber.from(this.trx.charged_gas_price).mul(this.trx.gasused).toLocaleString('fullwide', {useGrouping:false}), 9, 2);
         },
     },
 };
@@ -323,7 +318,7 @@ export default {
                 strong {{ `Value: ` }}
               div(class="col-9 clickable" @click="showWei = !showWei")
                 div(v-if="showWei")
-                    span {{ trx.value.toLocaleString('fullwide', {useGrouping:false}) }}
+                    span {{ trx.value }}
                 span(v-else)
                     span {{ formatWei(trx.value, 18) }} TLOS
                     q-tooltip Click to show in wei

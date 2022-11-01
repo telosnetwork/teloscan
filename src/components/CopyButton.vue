@@ -73,8 +73,8 @@ export default {
                     this.iconClass = icons.copy;
                     this.hint = this.defaultHint;
                 }, 1500);
-            }).catch(() => {
-
+            }).catch((err) => {
+                console.error(`Failed to copy to clipboard: ${err}`);
             })
         },
     },

@@ -8,7 +8,7 @@ export const WEI_PRECISION = 18;
 
 export function formatWei(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);
-    const formatted = ethers.utils.formatUnits(amount.toString(), tokenDecimals);
+    const formatted = ethers.utils.formatUnits(amount.toString(), (tokenDecimals || WEI_PRECISION));
     let str = formatted.toString();
     // Use string, do not convert to number so we never loose precision
     if(displayDecimals > 0 && str.includes('.')) {

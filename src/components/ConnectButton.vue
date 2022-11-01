@@ -219,7 +219,7 @@ export default {
 <template lang='pug'>
 div()
     q-btn( v-if='!isLoggedIn' id='c-connect-button__login-button' label='Connect Wallet' @click='connect()' )
-    q-btn-dropdown.q-ml-sm(flat round v-if='isLoggedIn' :label='getLoginDisplay()' )
+    q-btn-dropdown(flat round v-if='isLoggedIn' :label='getLoginDisplay()' )
       q-list()
         q-item( clickable v-close-popup @click='goToAddress()' )
           q-item-section()

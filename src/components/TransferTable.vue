@@ -2,7 +2,8 @@
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
-import {ethers, BigNumber} from 'ethers';
+import {ethers} from 'ethers';
+import { formatWei } from 'src/lib/utils';
 import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
 
 const TRANSFER_EVENT_SIGNATURE = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
@@ -142,19 +143,8 @@ export default {
                         const token = contract.token;
                         let valueDisplay;
                         if (this.tokenType === 'erc20') {
-                            const valueBn = BigNumber.from(log.data);
                             if (token && typeof token.decimals === 'number') {
-                                let valueStr = ethers.utils.formatUnits(valueBn, token.decimals)
-                                let decimalIndex = valueStr.indexOf('.');
-                                if (decimalIndex >= 0) {
-                                    // TODO: what if the value is .0000000000234 then it becomes .000000??
-                                    valueStr = valueStr.substring(0, decimalIndex + 6);
-                                }
-
-                                if (valueStr.length > 50)
-                                    valueStr = `${valueStr.slice(0, 20)} ...`;
-
-                                valueDisplay = valueStr + ' ' + token.symbol;
+                                valueDisplay = formatWei(log.data, token.decimals)
                             } else {
                                 valueDisplay = 'Unknown precision';
                             }
@@ -255,7 +245,7 @@ q-table(
             q-td( key="value" :props="props" ) {{ props.row.valueDisplay }}
             q-td( key="token" :props="props" )
                 q-img.coin-icon( :src="getIcon(props.row)" )
-                address-field.token-name( :address="props.row.address" :name="props.row.name" )
+                address-field.token-name( :address="props.row.address" :name="props.row.name" truncate="15" )
 </template>
 
 <style lang='sass' scoped>

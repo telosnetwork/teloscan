@@ -51,12 +51,13 @@ div(class="fit row wrap justify-start items-start content-start")
             a(v-if="transfer.token.image" clickable :href="transfer.token.image" target="_blank" class="q-pl-xs")
               q-icon(name="image" size="14px" class="q-pb-sm q-ml-xs")
             q-tooltip Consult media
-      div(v-else class="col-5X")
+      div(v-else class="col-5")
         strong {{ ` Token : ` }}
         span {{ transfer.value }}
-        router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs")
-            span(@click="transfer.showWei = true") {{ transfer.token.symbol.slice(0, 10) }}
-            span(v-if="transfer.token.symbol.length > 10") ...
+        router-link(:to="`/address/${transfer.token.address}`" class="q-ml-xs")
+            span
+                span {{ transfer.token.symbol.slice(0, 10) }}
+                span(v-if="transfer.token.symbol.length > 10") ...
             q-tooltip(v-if="transfer.token.symbol.length > 10") {{ transfer.token.symbol }}
 br
 </template>

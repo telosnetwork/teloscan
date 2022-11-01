@@ -114,6 +114,7 @@ export default {
             for (const transaction of this.transactions) {
                 try {
                     transaction.transfer = false;
+                    transaction.value = formatWei(transaction.value.toLocaleString(0, {useGrouping: false}), 18);
                     if (transaction.input_data === '0x') continue;
                     if(!transaction.to) continue;
 
@@ -208,7 +209,7 @@ q-table(
             q-td( key="to" :props="props")
                 address-field(v-if="props.row.to" :key="props.row.to + ((props.row.contract) ? '1' : '0')" :address="props.row.to" :isContractTrx="(props.row.contract) ? true : false" )
             q-td( key="value" :props="props")
-                span(v-if="props.row.value > 0 ||  !props.row.transfer ") {{ (props.row.value / 1000000000000000000) }} TLOS
+                span(v-if="props.row.value > 0 ||  !props.row.transfer ") {{ props.row.value }} TLOS
                 div(v-else)
                     span(v-if="props.row.transfer") {{ props.row.transfer.value }} {{ props.row.transfer.symbol }}
 </template>
