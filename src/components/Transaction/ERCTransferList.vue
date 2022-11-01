@@ -57,6 +57,7 @@ div(class="fit row wrap justify-start items-start content-start")
         router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs")
             span(@click="transfer.showWei = true") {{ transfer.token.symbol.slice(0, 10) }}
             span(v-if="transfer.token.symbol.length > 10") ...
+            q-tooltip(v-if="transfer.token.symbol.length > 10") {{ transfer.token.symbol }}
 br
 </template>
 <style scoped lang="sass">
