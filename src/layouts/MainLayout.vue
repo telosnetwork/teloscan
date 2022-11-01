@@ -91,21 +91,10 @@
                             v-if="mainnet"
                             v-close-popup
                             clickable
-                            @click="goTo('https://monitor.telos.net/')"
+                            @click="mainnet ? goTo('https://monitor.telos.net/') : goTo('https://monitor-test.telos.net/')"
                         >
                             <q-item-section>
-                                <q-item-label> Telos Monitor Mainnet </q-item-label>
-                            </q-item-section>
-                        </q-item>
-
-                        <q-item
-                            v-if="!mainnet"
-                            v-close-popup
-                            clickable
-                            @click="goTo('https://monitor-test.telos.net/')"
-                        >
-                            <q-item-section>
-                                <q-item-label> Telos Monitor Testnet </q-item-label>
+                                <q-item-label> Telos Monitor</q-item-label>
                             </q-item-section>
                         </q-item>
                     </q-list>

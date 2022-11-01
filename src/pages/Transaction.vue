@@ -64,6 +64,9 @@ export default {
         await this.loadTransaction();
     },
     methods: {
+        formatWei(number, decimals){
+            return formatWei(number, decimals);
+        },
         resetTransaction() {
             this.blockData = null;
             this.trx = null;
@@ -322,7 +325,7 @@ export default {
                 div(v-if="showWei")
                     span {{ trx.value.toLocaleString('fullwide', {useGrouping:false}) }}
                 span(v-else)
-                    span {{ (trx.value / 1000000000000000000) }} TLOS
+                    span {{ formatWei(trx.value, 18) }} TLOS
                     q-tooltip Click to show in wei
             br
             ERCTransferList( v-if="erc20Transfers.length > 0" type="ERC20" :trxFrom="trx.from" :contract="contract" :transfers="erc20Transfers")
