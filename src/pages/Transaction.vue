@@ -163,7 +163,7 @@ export default {
             return formatWei(BigNumber.from(this.trx.charged_gas_price).mul(this.trx.gasused).toLocaleString('fullwide', {useGrouping:false}), 18, 5);
         },
         getGasChargedGWEI() {
-            return formatWei(BigNumber.from(this.trx.charged_gas_price).mul(this.trx.gasused).toLocaleString('fullwide', {useGrouping:false}), 9, 2);
+            return formatWei(BigNumber.from(this.trx.charged_gas_price).toLocaleString('fullwide', {useGrouping:false}), 9, 2);
         },
     },
 };
