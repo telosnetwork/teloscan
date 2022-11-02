@@ -252,7 +252,9 @@ q-table(
 .coin-icon
   width: 20px
   margin-right: .25rem
+  vertical-align: middle
 
 .token-name
+  vertical-align: middle
   display: inline-block
 </style>
