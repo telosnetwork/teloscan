@@ -40,9 +40,9 @@ export default {
 <template lang='pug'>
 .row.homeInfo
     .col.q-pa-md
-      .row.items-center
+      .row
         .col-2
-        .col-2.items-center
+        .col-2
             img(:src="exchangeImage" width="40")
         .col-8.q-pl-sm
             .col-12
@@ -51,9 +51,9 @@ export default {
               .column.text-h6.text-weight-bold
                 | $ {{ tlosPrice }}
     .col.q-pa-md
-      .row.items-center
+      .row
         .col-2
-        .col-2.items-center
+        .col-2
             img(:src="gasImage" width="40")
         .col-8.q-pl-sm
             .col-12
@@ -62,9 +62,9 @@ export default {
               .column.text-h6.text-weight-bold
                 | {{ gasPriceGwei }} Gwei
     .col.q-pa-md
-      .row.items-center
+      .row
         .col-2
-        .col-2.items-center
+        .col-2
             img(:src="blockImage" width="40")
         .col-8.q-pl-sm
             .col-12

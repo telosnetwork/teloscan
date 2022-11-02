@@ -251,6 +251,10 @@ body.body--light .connect-button
     .q-drawer
         margin-top: 50px
 @media only screen and (max-width: 550px)
+    .q-btn-dropdown.q-ml-sm
+        margin-left: 0
+        padding: 4px 0px 4px 8px
+
     #dark-mode-toggle
         padding-right: 5px
         .q-icon

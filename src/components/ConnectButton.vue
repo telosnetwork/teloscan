@@ -267,6 +267,8 @@ div()
 @media only screen and (max-width: 550px)
     .wallet-icon
         width: 92%
+    .connect-button
+        margin-left: 5px
     .q-btn
         font-size: 0.9em
         padding: 4px 10px
