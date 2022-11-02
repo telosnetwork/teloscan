@@ -256,7 +256,6 @@ export default {
 
     &__stat {
         width: fit-content;
-
         @media screen and (min-width: $breakpoint-md-min) {
             width: max-content;
         }
@@ -313,7 +312,7 @@ export default {
 
     &__stat-value {
         font-size: 18px;
-        color: $primary;
+        color: $accent;
         white-space: nowrap;
     }
 }
