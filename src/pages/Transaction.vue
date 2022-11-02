@@ -9,7 +9,7 @@ import ERCTransferList from 'components/Transaction/ERCTransferList';
 import ParameterList from 'components/Transaction/ParameterList';
 import JsonViewer from 'vue-json-viewer';
 import { BigNumber } from 'ethers';
-import { formatWei, parseErrorMessage} from 'src/lib/utils';
+import { WEI_PRECISION, formatWei, parseErrorMessage} from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
@@ -160,10 +160,10 @@ export default {
             return args;
         },
         getGasFee() {
-            return formatWei(BigNumber.from(this.trx.charged_gas_price).mul(this.trx.gasused).toLocaleString('fullwide', {useGrouping:false}), 18, 5);
+            return formatWei(BigNumber.from(this.trx.charged_gas_price).mul(this.trx.gasused).toLocaleString('fullwide', {useGrouping:false}), WEI_PRECISION, 5);
         },
         getGasChargedGWEI() {
-            return formatWei(BigNumber.from(this.trx.charged_gas_price).toLocaleString('fullwide', {useGrouping:false}), 9, 2);
+            return formatWei(this.trx.charged_gas_price, 9, 2);
         },
     },
 };

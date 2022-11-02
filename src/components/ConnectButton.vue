@@ -2,6 +2,7 @@
 import MetamaskLogo from 'src/assets/metamask-fox.svg'
 import { mapGetters, mapMutations } from 'vuex';
 import { ethers } from 'ethers';
+import { WEI_PRECISION } from 'src/lib/utils';
 const providersError = 'More than one provider is active, disable additional providers.';
 const unsupportedError ='current EVM wallet provider is not supported.';
 const LOGIN_EVM = 'evm';
@@ -196,7 +197,7 @@ export default {
                                     nativeCurrency: {
                                         name: 'Telos',
                                         symbol: 'TLOS',
-                                        decimals: 18,
+                                        decimals: WEI_PRECISION,
                                     },
                                     rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
                                     blockExplorerUrls: [`https://${mainnet ? '' : 'testnet.'}teloscan.io`],
