@@ -186,7 +186,12 @@ export default {
                     });
                     return true;
                 } catch (e) {
-                    if (e.code === 4902) {  // 'Chain <hex chain id> hasn't been added'
+                    const chainNotAddedCodes = [
+                        4902,
+                        -32603, // https://github.com/MetaMask/metamask-mobile/issues/2944
+                    ];
+
+                    if (chainNotAddedCodes.includes(e.code)) {  // 'Chain <hex chain id> hasn't been added'
                         try {
                             await provider.request({
                                 method: 'wallet_addEthereumChain',
