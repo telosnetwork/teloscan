@@ -197,7 +197,10 @@ export default {
                 event.preventDefault();
         },
         handleInput() {
-            const emit = val => (val !== this.value) && this.$emit('input', val);
+            const emit = val => {
+                if (val !== this.value)
+                    this.$emit('input', val);
+            };
 
             const { input } = this.$refs;
 
