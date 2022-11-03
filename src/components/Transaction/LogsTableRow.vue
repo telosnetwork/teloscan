@@ -36,14 +36,20 @@
                     />
                     <div v-else-if="param.type === 'uint256' || param.type === 'uint128'"  class="word-break">
                         <div v-if="log.isTransfer && log.token">
-                            <div v-if="!log.token.type || log.token.type === 'erc20'">
-                                {{ log.args[index] / (10 ** log.token.decimals) }}
-                                <address-field
-                                    :address="log.token.address"
-                                    :truncate="0"
-                                    :name="log.token.symbol"
-                                    class="word-break"
-                                />
+                            <div @click="showWei = !showWei" class="clickable" v-if="!log.token.type || log.token.type === 'erc20'">
+                                <span v-if="!showWei">
+                                    <span> {{ formatWei(log.args[index], log.token.decimals) }}</span>
+                                    <q-tooltip>Show wei</q-tooltip>
+                                    <address-field
+                                        :address="log.token.address"
+                                        :truncate="0"
+                                        :name="log.token.symbol"
+                                        class="word-break q-ml-xs"
+                                    />
+                                </span>
+                                <span v-else>
+                                    {{ log.args[index] }}
+                                </span>
                             </div>
                             <div v-else>
                                 <address-field
@@ -102,6 +108,8 @@
 <script>
 import JsonViewer from 'vue-json-viewer'
 import AddressField from 'components/AddressField';
+import { formatWei } from 'src/lib/utils';
+import { BigNumber } from 'ethers';
 
 export default {
     name: 'LogsTableRow',
@@ -121,6 +129,7 @@ export default {
     },
     data(){
         return {
+            showWei: false,
             expanded: false,
             expanded_parameters: [],
         }
@@ -137,6 +146,9 @@ export default {
     methods: {
         toggle(param, index) {
             this.expanded_parameters[param][index] = !this.expanded_parameters[param][index];
+        },
+        formatWei(number, decimals){
+            return formatWei(BigNumber.from(number), decimals);
         },
     },
     computed: {

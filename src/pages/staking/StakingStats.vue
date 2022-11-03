@@ -80,7 +80,7 @@
 
 <script>
 import { fetchStlosApy, formatUnstakePeriod } from 'pages/staking/staking-utils';
-import { formatBN, WEI_PRECISION } from 'src/lib/utils';
+import { formatWei, WEI_PRECISION } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -185,7 +185,7 @@ export default {
             }
         },
         formatWeiForStats(wei) {
-            const format = val => formatBN(val, WEI_PRECISION, 3);
+            const format = val => formatWei(val, WEI_PRECISION, 3);
 
             return wei === null ? '--' : format(wei);
         },
@@ -256,7 +256,6 @@ export default {
 
     &__stat {
         width: fit-content;
-
         @media screen and (min-width: $breakpoint-md-min) {
             width: max-content;
         }
@@ -313,7 +312,7 @@ export default {
 
     &__stat-value {
         font-size: 18px;
-        color: $primary;
+        color: $accent;
         white-space: nowrap;
     }
 }

@@ -2,7 +2,7 @@
 import MetamaskLogo from 'src/assets/metamask-fox.svg'
 import { mapGetters, mapMutations, mapState } from 'vuex';
 import { ethers } from 'ethers';
-
+import { WEI_PRECISION } from 'src/lib/utils';
 const providersError = 'More than one provider is active, disable additional providers.';
 const unsupportedError ='current EVM wallet provider is not supported.';
 const LOGIN_EVM = 'evm';
@@ -203,7 +203,7 @@ export default {
                                     nativeCurrency: {
                                         name: 'Telos',
                                         symbol: 'TLOS',
-                                        decimals: 18,
+                                        decimals: WEI_PRECISION,
                                     },
                                     rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
                                     blockExplorerUrls: [`https://${mainnet ? '' : 'testnet.'}teloscan.io`],
@@ -222,7 +222,6 @@ export default {
     },
 }
 </script>
-
 <template>
 <div class="c-connect-button">
     <q-btn
@@ -232,7 +231,7 @@ export default {
         @click="connect"
     />
 
-    <q-btn-dropdown v-else :label="getLoginDisplay()">
+    <q-btn-dropdown flat round v-else :label="getLoginDisplay()">
         <q-list>
             <q-item clickable="clickable" v-close-popup @click="goToAddress()">
                 <q-item-section>
@@ -292,9 +291,14 @@ export default {
         width: 3.5rem
         margin: .5rem .5rem 0 .5rem
 
+    .q-menu
+        margin-top: 10px !important
+
 @media only screen and (max-width: 550px)
     .wallet-icon
         width: 92%
+    .connect-button
+        margin-left: 5px
     .q-btn
         font-size: 0.9em
         padding: 4px 10px
