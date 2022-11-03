@@ -178,7 +178,7 @@ export default {
                 return;
 
             try {
-                this.stlosApy = await fetchStlosApy(this.$telosApi, this.stlosTvl);
+                this.stlosApy = await fetchStlosApy(this.$telosApi);
             } catch ({ message: apyError }) {
                 console.error(`Failed to fetch sTLOS APY: ${apyError}`);
                 this.stlosApy = null;
