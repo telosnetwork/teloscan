@@ -78,7 +78,7 @@ export default {
         value: {
             type: String,
             required: true,
-            validator: str => BigNumber.from(str),
+            validator: str => typeof str === 'string' && /^\d{1,256}$/.test(str),
         },
         label: {
             type: String,
