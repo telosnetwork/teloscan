@@ -4,11 +4,12 @@ import Footer from 'components/Footer';
 
 /*
     TODO https://github.com/telosnetwork/teloscan/issues/203
-    
+
     add to docs:
     - snapshot testing
     - conventions for router / other plugins
     - test naming & nesting
+        - "it" sentence structure and nesting
     - directory structure of test directory
  */
 
