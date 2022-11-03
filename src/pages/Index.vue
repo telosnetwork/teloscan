@@ -15,10 +15,10 @@ export default {
 <template lang='pug'>
 q-page.pageContainer
     .row.justify-center.q-py-lg
-      .text-h4.text-primary.title
+      .text-h4.text-primary.title.q-mt-xl.bold
         | Telos EVM Explorer
     .row.q-pt-xl.q-pb-md.tableWrapper
-      .col-sm-12.col-md-10.offset-md-1
+      .col-12
         HomeInfo
     .row.tableWrapper
       .col-12.q-pb-lg

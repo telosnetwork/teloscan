@@ -1,111 +1,115 @@
 <template>
-<q-layout view="lhh Lpr lFf">
-    <q-header class="transparent">
-        <q-toolbar class="text-white toolbar transparent">
-            <div class="q-py-sm">
-                <router-link
-                    to="/"
-                    id="logo"
-                    class="row items-center q-gutter-x-xs"
-                >
-                    <img
-                        alt="Telos EVM logo"
-                        src="~assets/evm_logo.png"
-                        width="45"
+<q-layout view="lhh Lpr lFf ">
+    <div class="pageContainer">
+        <q-header class="transparent pageContainer">
+            <q-toolbar class="text-white toolbar transparent">
+                <div class="q-py-sm">
+                    <router-link
+                        to="/"
+                        id="logo"
+                        class="row items-center q-gutter-x-xs"
                     >
-                    <div class="text-h5 text-white">
-                        Teloscan
-                    </div>
-                </router-link>
-            </div>
-            <q-space />
+                        <img
+                            alt="Telos EVM logo"
+                            src="~assets/evm_logo.png"
+                            width="45"
+                        >
+                        <div class="text-h5 text-white">
+                            Teloscan
+                        </div>
+                    </router-link>
+                </div>
+                <q-space />
 
-            <search
-                class="taskbarSearch desktop-only text-center "
-                :toolbar="true"
-            />
+                <search
+                    class="taskbarSearch desktop-only text-center "
+                    :toolbar="true"
+                />
 
-            <q-btn
-                id="dark-mode-toggle"
-                flat
-                dark
-                standout
-                class="q-px-md"
-                :icon="$q.dark.isActive ? 'fas fa-sun' : 'fas fa-moon'"
-                @click="toggleDarkMode()"
-            />
+                <q-btn
+                    id="dark-mode-toggle"
+                    flat
+                    dark
+                    standout
+                    class="q-px-md"
+                    :icon="$q.dark.isActive ? 'fas fa-sun' : 'fas fa-moon'"
+                    @click="toggleDarkMode()"
+                />
 
-            <connect-button />
-            <q-btn
-                flat
-                round
-                dense
-                icon="menu"
-                @click="toggleDrawer"
-            />
-        </q-toolbar>
-    </q-header>
+                <connect-button class="connect-button" />
 
-    <q-drawer
-        v-click-away="handleClickaway"
-        v-model="drawer"
-        side="right"
-        :width="200"
-        :breakpoint="500"
-        overlay
-        bordered
-        elevated
-    >
-        <q-list>
-            <q-item
-                v-close-popup
-                clickable
-                @click="routerTo('/endpoints')"
-            >
-                <q-item-section>
-                    <q-item-label>RPC Endpoints</q-item-label>
-                </q-item-section>
-            </q-item>
+                <q-btn-dropdown
+                    dropdown-icon="menu"
+                    class="q-ml-sm"
+                    dense
+                    round
+                    flat
+                >
+                    <q-list>
+                        <q-item
+                            v-close-popup
+                            clickable
+                            @click="routerTo('/endpoints')"
+                        >
+                            <q-item-section>
+                                <q-item-label>RPC Endpoints</q-item-label>
+                            </q-item-section>
+                        </q-item>
 
-            <q-item
-                v-if="!mainnet"
-                v-close-popup
-                clickable
-                @click="goTo('https://teloscan.io/')"
-            >
-                <q-item-section>
-                    <q-item-label>Teloscan Mainnet</q-item-label>
-                </q-item-section>
-            </q-item>
+                        <q-item
+                            v-if="!mainnet"
+                            v-close-popup
+                            clickable
+                            @click="goTo('https://teloscan.io/')"
+                        >
+                            <q-item-section>
+                                <q-item-label>Teloscan Mainnet</q-item-label>
+                            </q-item-section>
+                        </q-item>
 
-            <q-item
-                v-if="mainnet"
-                v-close-popup
-                clickable
-                @click="goTo('https://testnet.teloscan.io/')"
-            >
-                <q-item-section>
-                    <q-item-label> Teloscan Testnet </q-item-label>
-                </q-item-section>
-            </q-item>
-            <q-item
-                v-close-popup
-                clickable
-                @click="routerTo('/staking')"
-            >
-                <q-item-section>
-                    <q-item-label> Stake Telos </q-item-label>
-                </q-item-section>
-            </q-item>
-        </q-list>
-    </q-drawer>
+                        <q-item
+                            v-if="mainnet"
+                            v-close-popup
+                            clickable
+                            @click="goTo('https://testnet.teloscan.io/')"
+                        >
+                            <q-item-section>
+                                <q-item-label> Teloscan Testnet </q-item-label>
+                            </q-item-section>
+                        </q-item>
+                        <q-item
+                            v-close-popup
+                            clickable
+                            @click="routerTo('/staking')"
+                        >
+                            <q-item-section>
+                                <q-item-label> Stake Telos </q-item-label>
+                            </q-item-section>
+                        </q-item>
 
+                        <q-item
+                            v-if="mainnet"
+                            v-close-popup
+                            clickable
+                            @click="mainnet ? goTo('https://monitor.telos.net/') : goTo('https://monitor-test.telos.net/')"
+                        >
+                            <q-item-section>
+                                <q-item-label> Telos Monitor</q-item-label>
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
+                </q-btn-dropdown>
+            </q-toolbar>
+
+        </q-header>
+
+
+    </div>
     <div :class="`banner ${onHomePage ? 'home' : ''}`" />
 
-    <q-page-container class="flex flex-center ">
+    <q-page-container class="flex flex-center">
         <router-view />
     </q-page-container>
-
     <footer-main />
 </q-layout>
 </template>
@@ -203,7 +207,7 @@ export default {
 };
 </script>
 
-<style scoped lang="sass">
+<style lang="sass">
 .banner
   z-index: -1
   height: 40vh
@@ -225,16 +229,32 @@ export default {
   overflow: hidden
   text-overflow: ellipsis
 
-.q-drawer
-  margin-top: 16px
-  height: fit-content
-  border-top-left-radius: 4px
-  border-bottom-left-radius: 4px
+.q-header
+  position: relative
+
+body.body--light .q-drawer
+ color: black
+
+.connect-button
+    background: #282828
+    color: #ffffff
+    border-radius: 5px
+
+body.body--light .connect-button
+    background: #ffffff
+    color: black
+
 
 @media screen and (max-width: 768px)
     .taskbarSearch
         display: none
+    .q-drawer
+        margin-top: 50px
 @media only screen and (max-width: 550px)
+    .q-btn-dropdown.q-ml-sm
+        margin-left: 0
+        padding: 4px 0px 4px 8px
+
     #dark-mode-toggle
         padding-right: 5px
         .q-icon

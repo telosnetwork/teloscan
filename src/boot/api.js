@@ -65,4 +65,6 @@ export default boot(async ({ store }) => {
         getAccount: getAccount.bind(store),
         getRpc: getRpc.bind(store),
     };
+
+    store.dispatch('general/fetchBrowserEthereumSupport');
 });

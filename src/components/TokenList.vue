@@ -1,6 +1,6 @@
 <script>
 import AddressField from 'components/AddressField';
-import {formatBN} from 'src/lib/utils';
+import { formatWei } from 'src/lib/utils';
 
 export default {
     name: 'TokenList',
@@ -35,7 +35,7 @@ export default {
 
                 try {
                     const balance = await contractInstance.balanceOf(this.address);
-                    token.balance = `${formatBN(balance, token.decimals, 5)} ${token.symbol}`;
+                    token.balance = `${formatWei(balance, token.decimals)} ${token.symbol}`;
                 } catch (e) {
                     throw `Failed to fetch balance:\n${e}`
                 }

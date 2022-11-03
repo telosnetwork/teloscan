@@ -82,7 +82,7 @@ import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import { BigNumber } from 'ethers';
 
-import { formatBN, WEI_PRECISION } from 'src/lib/utils';
+import { formatWei, WEI_PRECISION } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 
 export default {
@@ -160,7 +160,7 @@ export default {
             if (val === null)
                 return '0.0'
 
-            return formatBN(val, WEI_PRECISION, 2);
+            return formatWei(val, WEI_PRECISION, 2);
         },
     },
 }
