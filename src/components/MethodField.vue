@@ -1,6 +1,6 @@
 <script>
 
-import { formatBN } from 'src/lib/utils';
+import { formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 export default {
@@ -42,7 +42,7 @@ export default {
                 return;
 
             if (TRANSFER_SIGNATURES.includes(this.trx.parsedTransaction.sighash) && this?.contract?.token?.decimals) {
-                this.transferAmount = `${formatBN(this.trx.parsedTransaction.args[1], this.contract.token.decimals, 5)} ${this.contract.token.symbol}`;
+                this.transferAmount = `${formatWei(this.trx.parsedTransaction.args[1], this.contract.token.decimals)} ${this.contract.token.symbol}`;
             }
         },
     },

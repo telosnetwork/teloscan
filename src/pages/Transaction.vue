@@ -9,7 +9,7 @@ import ERCTransferList from 'components/Transaction/ERCTransferList';
 import ParameterList from 'components/Transaction/ParameterList';
 import JsonViewer from 'vue-json-viewer';
 import { BigNumber } from 'ethers';
-import {formatBN , parseErrorMessage} from 'src/lib/utils';
+import { WEI_PRECISION, formatWei, parseErrorMessage} from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
@@ -42,6 +42,7 @@ export default {
             parsedTransaction: null,
             methodTrx: null,
             showAge: true,
+            showWei: false,
         };
     },
     watch: {
@@ -63,6 +64,7 @@ export default {
         await this.loadTransaction();
     },
     methods: {
+        formatWei,
         resetTransaction() {
             this.blockData = null;
             this.trx = null;
@@ -83,8 +85,8 @@ export default {
                 this.trxNotFound = true;
                 return;
             }
-
             this.trx = trxResponse.data.transactions[0];
+            this.trx.value = BigNumber.from(this.trx.value.toLocaleString('fullwide', {useGrouping:false}));
             await this.loadContract();
             await this.loadTransfers();
             this.setErrorMessage();
@@ -114,7 +116,8 @@ export default {
                             })
                         } else {
                             this.erc20Transfers.push({
-                                'value': formatBN(log.data, contract.token.decimals, 5),
+                                'value': formatWei(log.data, contract.token.decimals),
+                                'wei': BigNumber.from(log.data).toString(),
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                                 'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
                                 'token': token,
@@ -157,13 +160,10 @@ export default {
             return args;
         },
         getGasFee() {
-            return (
-                (this.trx.charged_gas_price * this.trx.gasused) /
-                1000000000000000000
-            ).toFixed(5);
+            return formatWei(BigNumber.from(this.trx.charged_gas_price).mul(this.trx.gasused).toLocaleString('fullwide', {useGrouping:false}), WEI_PRECISION, 5);
         },
         getGasChargedGWEI() {
-            return (this.trx.charged_gas_price / 1000000000).toFixed(2);
+            return formatWei(this.trx.charged_gas_price, 9, 2);
         },
     },
 };
@@ -193,10 +193,10 @@ export default {
                     width: 100%
 </style>
 <template lang='pug'>
-.pageContainer.q-pt-xl
+.pageContainer
   .row
     .col-12.q-px-md
-      .text-h4.text-primary.q-mb-lg.title
+      .text-h4.text-primary.q-mb-lg.title.q-pt-xl
         | Transaction Details
       .text-h6.q-mb-lg.text-white( v-if="trxNotFound" )
         | Not found: {{ hash }}
@@ -316,7 +316,12 @@ export default {
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
                 strong {{ `Value: ` }}
-              div(class="col-9") {{ (trx.value / 1000000000000000000).toFixed(5) }} TLOS
+              div(class="col-9 clickable" @click="showWei = !showWei")
+                div(v-if="showWei")
+                    span {{ trx.value }}
+                span(v-else)
+                    span {{ formatWei(trx.value, 18) }} TLOS
+                    q-tooltip Click to show in wei
             br
             ERCTransferList( v-if="erc20Transfers.length > 0" type="ERC20" :trxFrom="trx.from" :contract="contract" :transfers="erc20Transfers")
             ERCTransferList( v-if="erc721Transfers.length > 0" type="ERC721" :trxFrom="trx.from" :contract="contract" :transfers="erc721Transfers")

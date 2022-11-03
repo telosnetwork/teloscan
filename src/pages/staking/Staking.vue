@@ -130,7 +130,7 @@
 import { defineAsyncComponent } from 'vue'
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
-import { formatBN, WEI_PRECISION } from 'src/lib/utils';
+import { formatWei, WEI_PRECISION } from 'src/lib/utils';
 
 import StakeForm from 'pages/staking/StakeForm';
 import StakingStats from 'pages/staking/StakingStats';
@@ -251,7 +251,7 @@ export default {
 
             const conversionRatePromise = this.stlosContractInstance.previewDeposit(oneEth)
                 .then((stlosBn) => {
-                    this.valueOfOneStlosInTlos = formatBN(stlosBn, WEI_PRECISION, 3);
+                    this.valueOfOneStlosInTlos = formatWei(stlosBn, WEI_PRECISION, 3);
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch TLOS->sTLOS conversion rate: ${message}`);

@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import { copyToClipboard } from 'quasar'
+
 const icons = {
     copy: 'far fa-copy',
     success: 'fas fa-check',
@@ -64,14 +66,16 @@ export default {
     },
     methods: {
         handleClick() {
-            navigator.clipboard.writeText(this.text);
-            this.iconClass = icons.success;
-            this.hint = 'Copied';
-
-            setTimeout(() => {
-                this.iconClass = icons.copy;
-                this.hint = this.defaultHint;
-            }, 1500);
+            copyToClipboard(this.text).then(() => {
+                this.iconClass = icons.success;
+                this.hint = 'Copied';
+                setTimeout(() => {
+                    this.iconClass = icons.copy;
+                    this.hint = this.defaultHint;
+                }, 1500);
+            }).catch((err) => {
+                console.error(`Failed to copy to clipboard: ${err}`);
+            })
         },
     },
 }
