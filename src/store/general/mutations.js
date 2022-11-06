@@ -10,3 +10,6 @@ export const setIsLoading = (state, isLoading) => {
     state.isLoading = isLoading;
 };
 
+export const setBrowserSupportsEthereum = (state, browserSupportsEthereum) => {
+    state.browserSupportsEthereum = browserSupportsEthereum;
+};

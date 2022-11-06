@@ -1,7 +1,8 @@
 <script>
 import MetamaskLogo from 'src/assets/metamask-fox.svg'
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapState } from 'vuex';
 import { ethers } from 'ethers';
+import { WEI_PRECISION } from 'src/lib/utils';
 const providersError = 'More than one provider is active, disable additional providers.';
 const unsupportedError ='current EVM wallet provider is not supported.';
 const LOGIN_EVM = 'evm';
@@ -26,6 +27,7 @@ export default {
             'address',
             'nativeAccount',
         ]),
+        ...mapState('general', ['browserSupportsEthereum']),
     },
     async mounted() {
         const loginData = localStorage.getItem('loginData');
@@ -81,6 +83,11 @@ export default {
             this.$router.push(`/address/${this.address}`);
         },
         async injectedWeb3Login() {
+            if (!this.browserSupportsEthereum) {
+                window.open('https://metamask.app.link/dapp/teloscan.io');
+                return;
+            }
+
             const address = await this.getInjectedAddress();
             if (address) {
                 this.setLogin({
@@ -186,7 +193,12 @@ export default {
                     });
                     return true;
                 } catch (e) {
-                    if (e.code === 4902) {  // 'Chain <hex chain id> hasn't been added'
+                    const chainNotAddedCodes = [
+                        4902,
+                        -32603, // https://github.com/MetaMask/metamask-mobile/issues/2944
+                    ];
+
+                    if (chainNotAddedCodes.includes(e.code)) {  // 'Chain <hex chain id> hasn't been added'
                         try {
                             await provider.request({
                                 method: 'wallet_addEthereumChain',
@@ -196,7 +208,7 @@ export default {
                                     nativeCurrency: {
                                         name: 'Telos',
                                         symbol: 'TLOS',
-                                        decimals: 18,
+                                        decimals: WEI_PRECISION,
                                     },
                                     rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
                                     blockExplorerUrls: [`https://${mainnet ? '' : 'testnet.'}teloscan.io`],
@@ -215,35 +227,59 @@ export default {
     },
 }
 </script>
+<template>
+<div class="c-connect-button">
+    <q-btn
+        v-if="!isLoggedIn"
+        id="c-connect-button__login-button"
+        label="Connect Wallet"
+        @click="connect"
+    />
 
-<template lang='pug'>
-div()
-    q-btn( v-if='!isLoggedIn' id='c-connect-button__login-button' label='Connect Wallet' @click='connect()' )
-    q-btn-dropdown( v-if='isLoggedIn' :label='getLoginDisplay()' )
-      q-list()
-        q-item( clickable v-close-popup @click='goToAddress()' )
-          q-item-section()
-            q-item-label() View address
-        q-item( clickable v-close-popup @click='disconnect()' )
-          q-item-section()
-            q-item-label() Disconnect
-    q-dialog( v-model='showLogin' )
-      q-card( rounded )
-        q-tabs( v-model='tab' )
-          q-tab( name='web3' label='EVM Wallets' )
-          q-tab( name='native' label='Native Wallets' )
-        q-separator()
-        q-tab-panels( v-model='tab' animated )
-          q-tab-panel( name='web3' )
-            q-card.wallet-icon.cursor-pointer( @click='injectedWeb3Login()' )
-              q-img.wallet-img( :src='metamaskLogo' )
-              p Metamask
-          q-tab-panel( name='native' )
-            q-card.wallet-icon.cursor-pointer( v-for='(wallet, idx) in $ual.authenticators'
-              :key='wallet.getStyle().text'
-              @click='ualLogin(wallet)' )
-              q-img.wallet-img( :src='wallet.getStyle().icon' )
-              p {{ wallet.getStyle().text }}
+    <q-btn-dropdown flat round v-else :label="getLoginDisplay()">
+        <q-list>
+            <q-item clickable="clickable" v-close-popup @click="goToAddress()">
+                <q-item-section>
+                    <q-item-label>View address</q-item-label>
+                </q-item-section>
+            </q-item>
+            <q-item clickable="clickable" v-close-popup @click="disconnect()">
+                <q-item-section>
+                    <q-item-label>Disconnect</q-item-label>
+                </q-item-section>
+            </q-item>
+        </q-list>
+    </q-btn-dropdown>
+
+    <q-dialog v-model="showLogin">
+        <q-card rounded="rounded">
+            <q-tabs v-model="tab">
+                <q-tab name="web3" label="EVM Wallets"></q-tab>
+                <q-tab name="native" label="Native Wallets"></q-tab>
+            </q-tabs>
+            <q-separator/>
+            <q-tab-panels v-model="tab" animated="animated">
+                <q-tab-panel name="web3">
+                    <q-card class="wallet-icon cursor-pointer" @click="injectedWeb3Login()">
+                        <q-img class="wallet-img" :src="metamaskLogo"></q-img>
+                        <p>{{ !browserSupportsEthereum ? 'Continue on ' : '' }}Metamask</p>
+                    </q-card>
+                </q-tab-panel>
+                <q-tab-panel name="native">
+                    <q-card
+                        class="wallet-icon cursor-pointer"
+                        v-for="wallet in $ual.authenticators"
+                        :key="wallet.getStyle().text"
+                        @click="ualLogin(wallet)"
+                    >
+                        <q-img class="wallet-img" :src="wallet.getStyle().icon"></q-img>
+                        <p>{{ wallet.getStyle().text }}</p>
+                    </q-card>
+                </q-tab-panel>
+            </q-tab-panels>
+        </q-card>
+    </q-dialog>
+</div>
 </template>
 
 <style lang='sass'>
@@ -260,9 +296,14 @@ div()
         width: 3.5rem
         margin: .5rem .5rem 0 .5rem
 
+    .q-menu
+        margin-top: 10px !important
+
 @media only screen and (max-width: 550px)
     .wallet-icon
         width: 92%
+    .connect-button
+        margin-left: 5px
     .q-btn
         font-size: 0.9em
         padding: 4px 10px
