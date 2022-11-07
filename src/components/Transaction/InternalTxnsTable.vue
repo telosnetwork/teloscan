@@ -1,9 +1,9 @@
 <script>
-import LogsTableRow from 'components/Transaction/LogsTableRow'
+import FragmentTableRow from 'components/Transaction/FragmentTableRow'
 export default {
     name: 'InternalTxnsTable',
     components: {
-        LogsTableRow,
+        FragmentTableRow,
     },
     props: {
         itxs: {
@@ -26,7 +26,7 @@ export default {
 <div class="q-pa-md" :key="parsedItxs.length">
     <div class="row">
         <div class="col-12">
-            <LogsTableRow
+            <FragmentTableRow
                 :key="'ltr' + i"
                 v-for="(itx, i) in itxs"
                 :rawLog="itx"
