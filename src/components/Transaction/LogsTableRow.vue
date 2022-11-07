@@ -1,13 +1,23 @@
 <template>
 <div class="c-log-table-row" v-if="log"  >
-    <div class="c-log-table-row__head" @click="expanded = !expanded">
-        <q-icon :name="arrowIcon" size="sm" />
-        <strong v-if="log?.name">
-            {{ log.name }}
-        </strong>
-        <strong v-else>
-            Unknown ({{ rawLog.topics[0].substr(0, 10) }})
-        </strong>
+    <div class="c-log-table-row__head justify-between items-center" @click="expanded = !expanded">
+        <span class="row items-center">
+            <q-icon :name="arrowIcon" size="sm" />
+            <strong v-if="log?.name">
+                {{ log.name }}
+            </strong>
+            <strong v-else>
+                Unknown ({{ rawLog.topics[0].substr(0, 10) }})
+            </strong>
+        </span>
+        <small v-if="log.contract">
+            <address-field
+                :address="log.contract.address"
+                :truncate="0"
+                class="word-break"
+                :copy="true"
+            />
+        </small>
     </div>
     <div class="q-pl-md" v-if="expanded">
         <div v-if="log?.name" :key="log.name">
@@ -94,6 +104,14 @@
                     </div>
                 </div>
             </div>
+            <div class="fit row justify-start items-start content-start" v-if="log.value">
+                <div class="col-4">
+                    value
+                </div>
+                <div class="col-8">
+                    {{ log.value }} TLOS
+                </div>
+            </div>
         </div>
         <json-viewer
             v-else
@@ -139,7 +157,7 @@ export default {
         let inputs = this.log.eventFragment ? this.log.eventFragment.inputs : this.log.inputs;
         if(inputs){
             for(let i=0; i < inputs.length;i++){
-                this.expanded_parameters.push([]);
+                this.expanded_parameters.push({});
             }
         }
     },
