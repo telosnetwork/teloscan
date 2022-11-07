@@ -8,8 +8,11 @@ import Footer from 'components/Footer';
     add to docs:
     - snapshot testing
     - conventions for router / other plugins
-    - test naming & nesting
+    - test naming & nesting & best practices
         - "it" sentence structure and nesting
+        - async / await all setProps type methods
+        - sanity check passing tests to catch things like wrapper.emitted is function
+        - always check length of emitted/tohavebeencalledtimes along with actual value
     - directory structure of test directory
  */
 

@@ -236,7 +236,12 @@ export default {
         @click="connect"
     />
 
-    <q-btn-dropdown flat round v-else :label="getLoginDisplay()">
+    <q-btn-dropdown
+        flat
+        round
+        v-else
+        :label="getLoginDisplay()"
+    >
         <q-list>
             <q-item clickable="clickable" v-close-popup @click="goToAddress()">
                 <q-item-section>
