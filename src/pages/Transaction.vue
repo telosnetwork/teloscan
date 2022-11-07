@@ -1,4 +1,5 @@
 <script>
+import { mapGetters, mapActions } from 'vuex';
 import DateField from 'components/DateField';
 import BlockField from 'components/BlockField';
 import AddressField from 'components/AddressField';
@@ -45,6 +46,9 @@ export default {
             showWei: false,
         };
     },
+    computed: {
+        ...mapGetters('evm', ['tlosPrice']),
+    },
     watch: {
         '$route.params': {
             handler(newValue) {
@@ -63,7 +67,11 @@ export default {
     async mounted() {
         await this.loadTransaction();
     },
+    async created() {
+        this.fetchTlosPrice();
+    },
     methods: {
+        ...mapActions('evm', ['fetchTlosPrice']),
         formatWei,
         resetTransaction() {
             this.blockData = null;
@@ -334,6 +342,7 @@ export default {
               div(class="col-3")
                 strong {{ `Gas Fee: ` }}
               span {{ getGasFee() }} TLOS
+                small.q-pl-sm (~ ${{ (getGasFee() * tlosPrice).toFixed(5) }})
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
