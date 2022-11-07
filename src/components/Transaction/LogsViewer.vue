@@ -14,7 +14,7 @@
                 color="secondary"
                 size="lg"
             />
-            Human-readable logs
+            Human-readable
             <small v-if="!allVerified">
                 <q-icon name="info" class="q-mb-xs q-ml-xs" size="14px"/>
                 <q-tooltip>Verify the related contract for each log to see its human readable version</q-tooltip>
