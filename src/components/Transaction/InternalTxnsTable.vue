@@ -15,11 +15,6 @@ export default {
             required: true,
         },
     },
-    data () {
-        return {
-
-        }
-    },
 }
 </script>
 <template>
@@ -29,8 +24,8 @@ export default {
             <FragmentTableRow
                 :key="'ltr' + i"
                 v-for="(itx, i) in itxs"
-                :rawLog="itx"
-                :log="parsedItxs[i]"
+                :rawFragment="itx"
+                :fragment="parsedItxs[i]"
             />
         </div>
         <div v-if="itxs.length !== parsedItxs.length" class="col-12 u-flex--center">
