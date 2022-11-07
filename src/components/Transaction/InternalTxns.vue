@@ -1,6 +1,7 @@
 <script>
 import JsonViewer from 'vue-json-viewer'
 import InternalTxnsTable from './InternalTxnsTable.vue'
+import { WEI_PRECISION, formatWei} from 'src/lib/utils';
 
 export default {
     name: 'InternalTxns',
@@ -15,7 +16,7 @@ export default {
         },
         contract: {
             type: Object,
-            required: true,
+            required: false,
         },
     },
     methods: {
@@ -31,17 +32,20 @@ export default {
         this.itxs.forEach(async (itx) => {
             let contract = await this.getContract(itx.to);
             let fnsig = itx.input.slice(0, 8);
-            let name = 'Unknown (0x' + fnsig + ')';
+            let name = fnsig ? 'Unknown (0x' + fnsig + ')' : 'ETH transfer';
             let inputs = null;
             let args = null;
 
-            const parsedTransaction = await contract.parseTransaction(
-                '0x' + itx.input_trimmed,
-            );
-            if(parsedTransaction){
-                args = parsedTransaction.args;
-                name = parsedTransaction.signature;
-                inputs = parsedTransaction.functionFragment ? parsedTransaction.functionFragment.inputs : parsedTransaction.inputs;
+            if(itx.input_trimmed){
+                const parsedTransaction = await contract.parseTransaction(
+                    '0x' + itx.input_trimmed,
+                );
+
+                if(parsedTransaction){
+                    args = parsedTransaction.args;
+                    name = parsedTransaction.signature;
+                    inputs = parsedTransaction.functionFragment ? parsedTransaction.functionFragment.inputs : parsedTransaction.inputs;
+                }
             }
 
             this.parsedItxs.push({
@@ -54,10 +58,8 @@ export default {
                 depth: itx.depth,
                 to: itx.to,
                 contract: contract,
-                value: itx.value,
+                value: itx.value ? formatWei('0x' + itx.value, WEI_PRECISION): 0,
             });
-            // Todo: get contract & try to use ether parseLog ???
-            console.log(this.parsedItxs);
         });
 
     },
