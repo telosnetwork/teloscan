@@ -32,7 +32,7 @@ export default {
         this.itxs.forEach(async (itx) => {
             let contract = await this.getContract(itx.to);
             let fnsig = itx.input.slice(0, 8);
-            let name = fnsig ? 'Unknown (0x' + fnsig + ')' : 'ETH transfer';
+            let name = fnsig ? 'Unknown (0x' + fnsig + ')' : 'TLOS transfer';
             let inputs = null;
             let args = null;
 
