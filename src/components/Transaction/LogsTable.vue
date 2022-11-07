@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import LogsTableRow from 'components/Transaction/LogsTableRow'
+import LogsTableRow from 'components/Transaction/FragmentTableRow'
 
 export default {
     name: 'LogsTable',
