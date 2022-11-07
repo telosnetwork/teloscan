@@ -23,7 +23,7 @@ export default {
 }
 </script>
 <template>
-<div class="q-pa-md">
+<div class="q-pa-md" :key="parsedItxs.length">
     <div class="row">
         <div class="col-12">
             <LogsTableRow

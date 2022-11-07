@@ -372,7 +372,7 @@ export default {
             .jsonViewer
               logs-viewer(:logs="trx.logs" :contract="contract" )
           q-tab-panel( name="internal" )
-            InternalTxns( :itxs="trx.itxs" )
+            InternalTxns( :itxs="trx.itxs" :contract="contract" )
 </template>
 
 <style lang="sass" scoped>
