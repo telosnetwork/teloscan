@@ -18,11 +18,46 @@ export default {
             required: true,
         },
     },
+    methods: {
+        async getContract(address){
+            try {
+                return  await this.$contractManager.getContract(address);
+            } catch (e) {
+                console.error(`Failed to retrieve contract with address ${address}`);
+            }
+        },
+    },
     created() {
-
         this.itxs.forEach(async (itx) => {
-            console.log(itx);
-            this.parsedItxs.push(itx);
+            let contract = await this.getContract(itx.to);
+            let fnsig = itx.input.slice(0, 8);
+            let name = 'Unknown (0x' + fnsig + ')';
+            let inputs = null;
+            let args = null;
+
+            const parsedTransaction = await contract.parseTransaction(
+                '0x' + itx.input_trimmed,
+            );
+            if(parsedTransaction){
+                args = parsedTransaction.args;
+                name = parsedTransaction.signature;
+                inputs = parsedTransaction.functionFragment ? parsedTransaction.functionFragment.inputs : parsedTransaction.inputs;
+            }
+
+            this.parsedItxs.push({
+                args: args,
+                name: name,
+                from: itx.from,
+                fnsig: fnsig,
+                inputs: inputs,
+                type: itx.callType,
+                depth: itx.depth,
+                to: itx.to,
+                contract: contract,
+                value: itx.value,
+            });
+            // Todo: get contract & try to use ether parseLog ???
+            console.log(this.parsedItxs);
         });
 
     },
@@ -55,8 +90,8 @@ export default {
         <div class="col-12">
             <internal-txns-table
                 v-if="human_readable"
-                :rawLogs="itxs"
-                :logs="parsedItxs"
+                :itxs="itxs"
+                :parsedItxs="parsedItxs"
                 :contract="contract"
             />
             <json-viewer

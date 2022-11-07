@@ -1,5 +1,5 @@
 <template>
-<div class="c-log-table-row"  >
+<div class="c-log-table-row" v-if="log"  >
     <div class="c-log-table-row__head" @click="expanded = !expanded">
         <q-icon :name="arrowIcon" size="sm" />
         <strong v-if="log?.name">
