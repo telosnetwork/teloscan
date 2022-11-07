@@ -15,6 +15,7 @@
                 :address="fragment.contract.address"
                 :truncate="0"
                 class="word-break"
+                :name="fragment.contract.name"
                 :copy="true"
             />
         </small>
