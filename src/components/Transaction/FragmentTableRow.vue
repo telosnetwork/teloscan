@@ -130,7 +130,7 @@ import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
 
 export default {
-    name: 'LogsTableRow',
+    name: 'FragmentTableRow',
     components: {
         AddressField,
         JsonViewer,
