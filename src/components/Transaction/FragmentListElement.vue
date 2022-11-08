@@ -1,5 +1,5 @@
 <template>
-<div class="c-fragment-table-row" v-if="fragment"  >
+<div class="c-fragment-table-row" :style="style" v-if="fragment"  >
     <div class="c-fragment-table-row__head justify-between items-center" @click="expanded = !expanded">
         <span class="row items-center">
             <q-icon :name="arrowIcon" size="sm" />
@@ -13,7 +13,7 @@
         <small v-if="fragment.contract">
             <address-field
                 :address="fragment.contract.address"
-                :truncate="0"
+                :truncate="15"
                 class="word-break"
                 :name="fragment.contract.name"
                 :copy="true"
@@ -131,7 +131,7 @@ import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
 
 export default {
-    name: 'FragmentTableRow',
+    name: 'FragmentListElement',
     components: {
         AddressField,
         JsonViewer,
@@ -171,6 +171,10 @@ export default {
         },
     },
     computed: {
+        style(){
+            if(typeof this.fragment.depth === 'undefined') return;
+            return {marginLeft: ((this.fragment.depth * 20)  + 20) + 'px'};
+        },
         inputs(){
             return this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
         },

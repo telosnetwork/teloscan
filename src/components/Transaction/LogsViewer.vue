@@ -21,12 +21,10 @@
             </small>
         </div>
         <div class="col-12">
-            <logs-table
+            <FragmentList
                 v-if="human_readable"
-                :rawLogs="logs"
-                :logs="parsedLogs"
-                :allVerified="allVerified"
-                :contract="contract"
+                :fragments="logs"
+                :parsedFragments="parsedLogs"
             />
             <json-viewer
                 v-else
@@ -41,7 +39,7 @@
 
 <script>
 import JsonViewer from 'vue-json-viewer'
-import LogsTable from 'components/Transaction/LogsTable'
+import FragmentList from 'components/Transaction/FragmentList'
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 import { BigNumber } from 'ethers';
 
@@ -49,7 +47,7 @@ export default {
     name: 'LogsViewer',
     components: {
         JsonViewer,
-        LogsTable,
+        FragmentList,
     },
     methods: {
         async getLogContract(log, type){
@@ -85,7 +83,9 @@ export default {
             if (contract){
                 verified = (contract.isVerified()) ? verified + 1: verified;
                 let parsedLog = await contract.parseLogs([log]);
-                parsedLog[0].contract = contract;
+                if(parsedLog[0]){
+                    parsedLog[0].contract = contract;
+                }
                 this.parsedLogs.push(parsedLog[0]);
                 this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());
             }
