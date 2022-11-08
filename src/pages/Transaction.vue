@@ -107,7 +107,7 @@ export default {
                 if (TRANSFER_SIGNATURES.includes(log.topics[0].substr(0, 10))) {
                     let contract = await this.$contractManager.getContract(log.address, (log.topics.length === 4) ? 'erc721' : 'erc20');
                     if (typeof contract.token !== 'undefined' && contract.token !== null) {
-                        let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name}
+                        let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name, 'decimals': contract.token.decimals}
                         if (log.topics.length === 4) {
                             if (contract.token.iERC721Metadata) {
                                 try {
