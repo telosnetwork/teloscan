@@ -9,7 +9,7 @@ export default {
     props: {
         transactionHash: {
             type: String,
-            required: true,
+            required: false,
         },
         copy: {
             type: Boolean,
@@ -21,7 +21,7 @@ export default {
 
 <template lang="pug">
 div.transaction-field-container
-    router-link( :to="`/tx/${this.transactionHash}`" :key="$route.path" ) {{ transactionHash.slice(0,20) }}...
+    router-link( :to="`/tx/${this.transactionHash}`" :key="$route.path" ) {{ transactionHash && transactionHash.slice(0,20) }}...
     copy-button(v-if="copy" :text="transactionHash" accompanying-text="" )
 </template>
 
