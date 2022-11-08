@@ -1,5 +1,5 @@
 <template>
-<div class="c-fragment-table-row" :style="style" v-if="fragment"  >
+<div class="c-fragment-table-row" :style="depthStyle" v-if="fragment"  >
     <div class="c-fragment-table-row__head justify-between items-center" @click="expanded = !expanded">
         <span class="row items-center">
             <q-icon :name="arrowIcon" size="sm" />
@@ -10,7 +10,7 @@
                 Unknown ({{ rawFragment.topics[0].substr(0, 10) }})
             </strong>
         </span>
-        <small v-if="fragment.contract">
+        <small v-if="'0x' + fragment.contract">
             <address-field
                 :address="fragment.contract.address"
                 :truncate="15"
@@ -171,7 +171,7 @@ export default {
         },
     },
     computed: {
-        style(){
+        depthStyle(){
             if(typeof this.fragment.depth === 'undefined') return;
             return {marginLeft: ((this.fragment.depth * 20)  + 20) + 'px'};
         },
