@@ -12,17 +12,17 @@ Test Net: [testnet.teloscan.io](https://testnet.teloscan.io/) [![Netlify Status]
 
 ## Install the dependencies
 
-### Install yarn package manager
+Install yarn package manager
 Follow the installation instructions at [classic.yarnpkg.com](https://classic.yarnpkg.com/en/)
 
 
-### Add Vue and Quasar packages
+Add Vue and Quasar packages
 ```bash
 yarn global add @vue/cli
 yarn global add @quasar/cli
 ```
-### Clone this repo to your local machine
-### Copy the example .env file to .env
+Clone this repo to your local machine
+Copy the example .env file to .env
 ```bash
 cp .env.example .env
 ```
