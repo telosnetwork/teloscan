@@ -1,13 +1,13 @@
 <script>
 import JsonViewer from 'vue-json-viewer'
-import InternalTxnsTable from './InternalTxnsTable.vue'
+import FragmentList from './FragmentList.vue'
 import { WEI_PRECISION, formatWei} from 'src/lib/utils';
 
 export default {
     name: 'InternalTxns',
     components: {
         JsonViewer,
-        InternalTxnsTable,
+        FragmentList,
     },
     props: {
         itxs: {
@@ -33,8 +33,7 @@ export default {
             let contract = await this.getContract(itx.to);
             let fnsig = itx.input.slice(0, 8);
             let name = fnsig ? 'Unknown (0x' + fnsig + ')' : 'TLOS transfer';
-            let inputs = null;
-            let args = null;
+            let inputs, outputs, args = null;
 
             if(itx.input_trimmed){
                 const parsedTransaction = await contract.parseTransaction(
@@ -42,18 +41,21 @@ export default {
                 );
 
                 if(parsedTransaction){
+                    console.log(itx);
+                    console.log(parsedTransaction);
                     args = parsedTransaction.args;
                     name = parsedTransaction.signature;
+                    outputs = parsedTransaction.functionFragment ? parsedTransaction.functionFragment.outputs : parsedTransaction.outputs;
                     inputs = parsedTransaction.functionFragment ? parsedTransaction.functionFragment.inputs : parsedTransaction.inputs;
                 }
             }
-
             this.parsedItxs.push({
                 args: args,
                 name: name,
                 from: itx.from,
                 fnsig: fnsig,
                 inputs: inputs,
+                outputs: outputs,
                 type: itx.callType,
                 depth: itx.depth,
                 to: itx.to,
@@ -90,13 +92,12 @@ export default {
             Human-readable
         </div>
         <div class="col-12">
-            <internal-txns-table
+            <FragmentList
                 v-if="human_readable"
-                :itxs="itxs"
-                :parsedItxs="parsedItxs"
-                :contract="contract"
+                :fragments="itxs"
+                :parsedFragments="parsedItxs"
             />
-            <json-viewer
+            <JsonViewer
                 v-else
                 :value="itxs"
                 theme="custom-theme"
