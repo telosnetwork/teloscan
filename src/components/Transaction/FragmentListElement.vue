@@ -1,5 +1,5 @@
 <template>
-<div class="c-fragment-table-row" :style="depthStyle" v-if="fragment"  >
+<div :class="(isExpandable) ? 'clickable c-fragment-table-row' : 'c-fragment-table-row'" :style="depthStyle" v-if="fragment"  >
     <div class="c-fragment-table-row__head justify-between items-center" @click="expanded = !expanded">
         <span class="row items-center">
             <q-icon :name="arrowIcon" size="sm" />
@@ -178,7 +178,11 @@ export default {
         inputs(){
             return this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
         },
+        isExpandable(){
+            return (this.fragment.inputs && this.fragment.inputs.length > 0 || this.fragment.value);
+        },
         arrowIcon() {
+            if(!this.isExpandable) return '';
             return this.expanded ? 'arrow_drop_down' : 'arrow_right';
         },
     },
@@ -196,7 +200,6 @@ export default {
         align-items: center;
         margin-bottom: 12px;
         word-break: break-word;
-        cursor: pointer;
         border-radius: 5px;
         transition: 300ms background-color ease;
 
