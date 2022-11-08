@@ -73,7 +73,7 @@ export default {
         let verified = 0;
         for(let i = 0; i < this.logs.length; i++){
             let contract;
-            let log = this.logs[i];
+            const log = this.logs[i];
             const function_signature = log.topics[0].substr(0, 10);
             if(TRANSFER_SIGNATURES.includes(function_signature)) {
                 contract = await this.getLogContract(log, (log.topics.length === 4) ? 'erc721': 'erc20');
@@ -87,7 +87,9 @@ export default {
                     parsedLog[0].contract = contract;
                     this.parsedLogs.push(parsedLog[0]);
                 } else {
-                    this.parsedLogs.push(log);
+                    let nLog = Object.assign({}, log);
+                    nLog.contract = contract;
+                    this.parsedLogs.push(nLog);
                 }
                 this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());
             }
