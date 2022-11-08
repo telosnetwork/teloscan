@@ -35,7 +35,8 @@ export default {
 
                 try {
                     const balance = await contractInstance.balanceOf(this.address);
-                    token.balance = `${formatWei(balance, token.decimals)} ${token.symbol}`;
+                    token.balance = `${formatWei(balance, token.decimals, 4)}`;
+                    token.fullBalance = `${formatWei(balance, token.decimals)}`;
                 } catch (e) {
                     throw `Failed to fetch balance:\n${e}`
                 }
@@ -84,7 +85,11 @@ export default {
             .text-h6
               div() {{ token.name }}
             address-field( :address="token.address" )
-            div() Balance: {{ token.balance || '(error fetching balance)' }}
+            div()
+                span.q-pr-xs() Balance:
+                span(v-if="token.balance === '0.0000'") {{ '< 0.0001 ' + token.symbol }}
+                span(v-else) {{ token.balance + ' ' + token.symbol || '(error fetching balance)' }}
+                q-tooltip(v-if="token.fullBalance > token.balance") {{ token.fullBalance + ' ' + token.symbol || 'error fetching balance' }}
 </template>
 
 <style lang="sass" scoped>
