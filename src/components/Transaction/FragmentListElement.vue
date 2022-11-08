@@ -12,7 +12,7 @@
         </span>
         <small v-if="fragment.contract">
             <address-field
-                :address="'0x' + fragment.contract.address"
+                :address="(fragment.contract.address[0] === '0' && fragment.contract.address[1] === 'x') ? fragment.contract.address : '0x' + fragment.contract.address"
                 :truncate="15"
                 class="word-break"
                 :name="fragment.contract.name"
