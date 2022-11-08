@@ -3,6 +3,8 @@ import MetamaskLogo from 'src/assets/metamask-fox.svg'
 import { mapGetters, mapMutations, mapState } from 'vuex';
 import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
+import { tlos } from 'src/lib/logos';
+
 const providersError = 'More than one provider is active, disable additional providers.';
 const unsupportedError ='current EVM wallet provider is not supported.';
 const LOGIN_EVM = 'evm';
@@ -212,6 +214,7 @@ export default {
                                     },
                                     rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
                                     blockExplorerUrls: [`https://${mainnet ? '' : 'testnet.'}teloscan.io`],
+                                    iconUrls: [tlos],
                                 }],
                             });
                             return true;
