@@ -190,12 +190,13 @@ export default {
 </script>
 
 <style lang="scss">
-.c-fragment-table-row {
+.c-fragment-list-element {
     margin-bottom: 24px;
 
     &__head {
         background: rgba(0, 0, 0, 0.1);
         padding: 10px 20px;
+        user-select: none;
         display: flex;
         align-items: center;
         margin-bottom: 12px;
@@ -213,7 +214,7 @@ export default {
     }
 }
 @media only screen and (max-width: 400px){
-    .c-fragment-table-row {
+    .c-fragment-list-element {
         &__head {
             font-size: 0.9em;
         }

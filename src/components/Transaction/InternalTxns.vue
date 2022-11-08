@@ -45,8 +45,6 @@ export default {
                 );
 
                 if(parsedTransaction){
-                    console.log(itx);
-                    console.log(parsedTransaction);
                     args = parsedTransaction.args;
                     name = parsedTransaction.signature;
                     outputs = parsedTransaction.functionFragment ? parsedTransaction.functionFragment.outputs : parsedTransaction.outputs;
