@@ -226,6 +226,16 @@ export default {
   font-size: .5rem
   margin-right: 0.2rem
 
+.q-item
+    .q-icon
+        transition: 400ms color ease
+        
+.q-item:hover
+    .grayscale
+        filter: grayscale(0)
+    .q-icon
+        color: $secondary
+
 .account
   width: 120px
   white-space: nowrap
