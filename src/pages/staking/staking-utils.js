@@ -1,4 +1,5 @@
 import { WEI_PRECISION } from 'src/lib/utils';
+import { stlos } from 'src/lib/logos.js';
 
 const DAY_SECONDS = 86400;
 const HOUR_SECONDS = 3600;
@@ -56,7 +57,7 @@ export async function promptAddToMetamask() {
                 address: process.env.STAKED_TLOS_CONTRACT_ADDRESS,
                 symbol: 'STLOS',
                 decimals: WEI_PRECISION,
-                image: `${window.location.origin}/stlos-logo.png`,
+                image: stlos,
             },
         },
     }).catch(({ message }) => {

@@ -1,0 +1,1 @@
+export const stlos = 'https://raw.githubusercontent.com/telosnetwork/teloscan/master/public/stlos-logo.png';
