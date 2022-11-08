@@ -186,7 +186,7 @@ export default class ContractManager {
 
     async getEmptyContract(address, creationInfo) {
         const contract = new Contract({
-            name: `${address.slice(0, 16)}...`,
+            name: `0x${address.slice(0, 16)}...`,
             address, creationInfo,
             abi: undefined,
             manager: this,

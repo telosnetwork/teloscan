@@ -1,7 +1,8 @@
 <script>
 import JsonViewer from 'vue-json-viewer'
 import FragmentList from './FragmentList.vue'
-import { WEI_PRECISION, formatWei} from 'src/lib/utils';
+import { WEI_PRECISION, formatWei } from 'src/lib/utils';
+import { BigNumber } from 'ethers';
 
 export default {
     name: 'InternalTxns',
@@ -29,11 +30,14 @@ export default {
         },
     },
     created() {
+        let i = 0;
         this.itxs.forEach(async (itx) => {
             let contract = await this.getContract(itx.to);
             let fnsig = itx.input.slice(0, 8);
             let name = fnsig ? 'Unknown (0x' + fnsig + ')' : 'TLOS transfer';
             let inputs, outputs, args = null;
+            itx.index = i;
+            i++;
 
             if(itx.input_trimmed){
                 const parsedTransaction = await contract.parseTransaction(
@@ -50,7 +54,9 @@ export default {
                 }
             }
             this.parsedItxs.push({
+                index: itx.index,
                 args: args,
+                parent: itx.traceAddress[0] || itx.index,
                 name: name,
                 from: itx.from,
                 fnsig: fnsig,
@@ -62,6 +68,7 @@ export default {
                 contract: contract,
                 value: itx.value ? formatWei('0x' + itx.value, WEI_PRECISION): 0,
             });
+            this.parsedItxs.sort((a,b) => BigNumber.from(a.parent + '' + a.index).sub(BigNumber.from(b.parent + '' + b.index)).toNumber());
         });
 
     },
