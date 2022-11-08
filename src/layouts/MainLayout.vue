@@ -53,7 +53,7 @@
                             class="separator"
                         >
                             <q-item-section>
-                                <q-item-label class="flex items-center"><img class="grayscale" src="https://raw.githubusercontent.com/telosnetwork/teloscan/master/public/stlos-logo.png" width="14" /> <span class="q-pl-sm">Stake Telos</span> </q-item-label>
+                                <q-item-label class="flex items-center"><img class="grayscale" :src="stlosLogo" width="14" /> <span class="q-pl-sm">Stake Telos</span> </q-item-label>
                             </q-item-section>
                         </q-item>
                         <q-item
@@ -120,7 +120,8 @@ import { directive as ClickAway } from 'vue3-click-away';
 
 import Search from 'src/components/Search.vue';
 import FooterMain from 'src/components/Footer.vue';
-import ConnectButton from 'components/ConnectButton';
+import ConnectButton from 'src/components/ConnectButton';
+import { stlos } from 'src/lib/logos.js';
 
 export default {
     name: 'MainLayout',
@@ -134,6 +135,7 @@ export default {
     },
     data() {
         return {
+            stlosLogo: stlos,
             mainnet: '' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40',
             accountConnected: false,
             drawer: false,
