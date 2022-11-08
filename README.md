@@ -2,9 +2,9 @@
 ## About
 Teloscan is the official Telos EVM block explorer. Explore accounts, transactions, and blocks. View and interact with verified contract ABIs. Connect MetaMask wallet to stake TLOS for sTLOS. 
 
-Main Net: [![Netlify Status](https://api.netlify.com/api/v1/badges/1a750b68-90d9-4e80-8ac9-74084bc475ae/deploy-status)](https://app.netlify.com/sites/teloscan/deploys) [teloscan.io](https://www.teloscan.io/)  
+Main Net: [teloscan.io](https://www.teloscan.io/) [![Netlify Status](https://api.netlify.com/api/v1/badges/1a750b68-90d9-4e80-8ac9-74084bc475ae/deploy-status)](https://app.netlify.com/sites/teloscan/deploys)  
 
-Test Net: [![Netlify Status](https://api.netlify.com/api/v1/badges/21a714ec-2847-458f-880e-67ffaf31b89a/deploy-status)](https://app.netlify.com/sites/testnet-teloscan/deploys) [testnet.teloscan.io](https://testnet.teloscan.io/)
+Test Net: [testnet.teloscan.io](https://testnet.teloscan.io/) [![Netlify Status](https://api.netlify.com/api/v1/badges/21a714ec-2847-458f-880e-67ffaf31b89a/deploy-status)](https://app.netlify.com/sites/testnet-teloscan/deploys)
 
 ![Alt](https://repobeats.axiom.co/api/embed/fbc67fae1abc36c6eff5d717f3840280afd1a109.svg "Repobeats analytics image")
 
