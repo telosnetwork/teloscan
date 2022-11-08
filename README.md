@@ -6,6 +6,8 @@ Main Net: [teloscan.io](https://www.teloscan.io/) [![Netlify Status](https://api
 
 Test Net: [testnet.teloscan.io](https://testnet.teloscan.io/) [![Netlify Status](https://api.netlify.com/api/v1/badges/21a714ec-2847-458f-880e-67ffaf31b89a/deploy-status)](https://app.netlify.com/sites/testnet-teloscan/deploys)
 
+## Recent Contributions
+
 ![Alt](https://repobeats.axiom.co/api/embed/fbc67fae1abc36c6eff5d717f3840280afd1a109.svg "Repobeats analytics image")
 
 ## Install the dependencies
