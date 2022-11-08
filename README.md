@@ -1,4 +1,6 @@
-# Telos EVM Explorer
+# Teloscan
+## About
+Teloscan is the official Telos EVM block explorer. Explore accounts, transactions, and blocks. View and interact with verified contract ABIs. Connect MetaMask wallet to stake TLOS for sTLOS. 
 
 ![Alt](https://repobeats.axiom.co/api/embed/fbc67fae1abc36c6eff5d717f3840280afd1a109.svg "Repobeats analytics image")
 
