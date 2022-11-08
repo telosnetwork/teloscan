@@ -5,6 +5,7 @@ import BlockField from 'components/BlockField';
 import AddressField from 'components/AddressField';
 import LogsViewer from 'components/Transaction/LogsViewer';
 import InternalTxns from 'components/Transaction/InternalTxns';
+import CopyButton from 'components/CopyButton';
 import MethodField from 'components/MethodField';
 import ERCTransferList from 'components/Transaction/ERCTransferList';
 import ParameterList from 'components/Transaction/ParameterList';
@@ -21,6 +22,7 @@ export default {
         InternalTxns,
         AddressField,
         BlockField,
+        CopyButton,
         DateField,
         MethodField,
         JsonViewer,
@@ -258,7 +260,9 @@ export default {
             div(class="fit row wrap justify-start items-start content-start")
                 div(class="col-3")
                   strong.wrapStrong Transaction Hash:&nbsp;
-                div(class="col-9") {{ hash }}
+                div(class="col-9")
+                  span {{ hash }}
+                  copy-button(:text="hash")
             br
             div(class="fit row wrap justify-start items-start content-start")
                 div(class="col-3")
