@@ -18,7 +18,7 @@ export default {
 }
 </script>
 <template>
-<div class="q-pa-md" :key="parsedFragments.length">
+<div class="q-pa-md" :key="parsedFragments.length == fragments.length">
     <div class="row">
         <div class="col-12">
             <FragmentListElement

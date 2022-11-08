@@ -36,8 +36,10 @@ export default {
             let fnsig = itx.input.slice(0, 8);
             let name = fnsig ? 'Unknown (0x' + fnsig + ')' : 'TLOS transfer';
             let inputs, outputs, args = null;
-            itx.index = i;
-            i++;
+            if(itx.traceAddress.length < 2){
+                itx.index = i;
+                i++;
+            }
 
             if(itx.input_trimmed){
                 const parsedTransaction = await contract.parseTransaction(
@@ -60,13 +62,18 @@ export default {
                 fnsig: fnsig,
                 inputs: inputs,
                 outputs: outputs,
-                type: itx.callType,
                 depth: itx.depth,
                 to: itx.to,
                 contract: contract,
                 value: itx.value ? formatWei('0x' + itx.value, WEI_PRECISION): 0,
             });
-            this.parsedItxs.sort((a,b) => BigNumber.from(a.parent + '' + a.index).sub(BigNumber.from(b.parent + '' + b.index)).toNumber());
+            console.log(itx.traceAddress);
+            console.log(itx);
+            console.log(this.parsedItxs[this.parsedItxs.length - 1]);
+            this.parsedItxs.sort((a,b) => {
+                if(a.parent === b.parent) return a.depth - b.depth;
+                return BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber();
+            });
         });
 
     },
