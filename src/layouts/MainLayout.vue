@@ -229,7 +229,7 @@ export default {
 .q-item
     .q-icon
         transition: 400ms color ease
-        
+
 .q-item:hover
     .grayscale
         filter: grayscale(0)
