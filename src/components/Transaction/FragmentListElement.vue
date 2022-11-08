@@ -1,6 +1,6 @@
 <template>
-<div :class="(isExpandable) ? 'clickable c-fragment-table-row' : 'c-fragment-table-row'" :style="depthStyle" v-if="fragment"  >
-    <div class="c-fragment-table-row__head justify-between items-center" @click="expanded = !expanded">
+<div :class="(isExpandable) ? 'clickable c-fragment-list-element' : 'c-fragment-list-element'" :style="depthStyle" v-if="fragment"  >
+    <div class="c-fragment-list-element__head justify-between items-center" @click="expanded = !expanded">
         <span class="row items-center">
             <q-icon :name="arrowIcon" size="sm" />
             <strong v-if="fragment?.name">
@@ -10,9 +10,9 @@
                 Unknown ({{ rawFragment.topics[0].substr(0, 10) }})
             </strong>
         </span>
-        <small v-if="'0x' + fragment.contract">
+        <small v-if="fragment.contract">
             <address-field
-                :address="fragment.contract.address"
+                :address="'0x' + fragment.contract.address"
                 :truncate="15"
                 class="word-break"
                 :name="fragment.contract.name"
