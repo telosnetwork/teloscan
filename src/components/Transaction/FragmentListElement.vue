@@ -1,6 +1,6 @@
 <template>
-<div :class="(isExpandable) ? 'clickable c-fragment-list-element' : 'c-fragment-list-element'" :style="depthStyle" v-if="fragment"  >
-    <div class="c-fragment-list-element__head justify-between items-center" @click="expanded = !expanded">
+<div class="c-fragment-list-element" :style="depthStyle" v-if="fragment"  >
+    <div :class="fragmentClass" @click="expanded = !expanded">
         <span class="row items-center">
             <q-icon :name="arrowIcon" size="sm" />
             <strong v-if="fragment?.name">
@@ -179,6 +179,10 @@ export default {
         },
         inputs(){
             return this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
+        },
+        fragmentClass(){
+            let fragmentClass = 'c-fragment-list-element__head justify-between items-center';
+            return (this.isExpandable) ? fragmentClass + ' clickable' : fragmentClass;
         },
         isExpandable(){
             return (this.fragment.inputs && this.fragment.inputs.length > 0 || this.fragment.value || !this.fragment.name);
