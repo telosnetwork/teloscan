@@ -45,7 +45,7 @@
                     round
                     flat
                 >
-                    <q-list class="q-pt-sm">
+                    <q-list>
                         <q-item
                             v-close-popup
                             clickable
