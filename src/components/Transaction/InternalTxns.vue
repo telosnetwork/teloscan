@@ -67,9 +67,6 @@ export default {
                 contract: contract,
                 value: itx.value ? formatWei('0x' + itx.value, WEI_PRECISION): 0,
             });
-            console.log(itx.traceAddress);
-            console.log(itx);
-            console.log(this.parsedItxs[this.parsedItxs.length - 1]);
             this.parsedItxs.sort((a,b) => {
                 if(a.parent === b.parent) return a.depth - b.depth;
                 return BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber();
