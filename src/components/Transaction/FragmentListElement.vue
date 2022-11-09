@@ -7,7 +7,7 @@
                 {{ fragment.name }}
             </strong>
             <strong v-else>
-                Unknown ({{ rawFragment.topics[0].substr(0, 10) }})
+                Unknown ({{ fragment.sig }})
             </strong>
         </span>
         <small v-if="fragment.contract">
@@ -21,7 +21,7 @@
         </small>
     </div>
     <div class="q-pl-md" v-if="expanded">
-        <div v-if="fragment?.inputs" :key="fragment.name">
+        <div v-if="fragment?.name" :key="fragment.name">
             <div
                 v-for="(param, index) in inputs"
                 :key="`fragment-${index}`"
@@ -181,10 +181,10 @@ export default {
             return this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
         },
         isExpandable(){
-            return (this.fragment.inputs && this.fragment.inputs.length > 0 || this.fragment.value);
+            return (this.fragment.inputs && this.fragment.inputs.length > 0 || this.fragment.value || !this.fragment.name);
         },
         arrowIcon() {
-            if(!this.fragment.inputs && this.fragment.name || this.fragment.inputs.length === 0 && this.fragment.name) return '';
+            if(!this.isExpandable) return '';
             return this.expanded ? 'arrow_drop_down' : 'arrow_right';
         },
     },

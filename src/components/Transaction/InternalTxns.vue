@@ -35,8 +35,8 @@ export default {
             let itx = this.itxs[k];
             let contract = await this.getContract(itx.to);
             let fnsig = itx.input.slice(0, 8);
-            let name = fnsig ? 'Unknown (0x' + fnsig + ')' : 'TLOS transfer';
-            let inputs, outputs, args = null;
+            let name = fnsig ? false : 'TLOS transfer';
+            let inputs, outputs, args  = false;
             if(itx.traceAddress.length < 2){
                 itx.index = i;
                 i++;
@@ -60,7 +60,7 @@ export default {
                 parent: itx.traceAddress[0] || itx.index,
                 name: name,
                 from: itx.from,
-                fnsig: fnsig,
+                sig: '0x' + fnsig,
                 inputs: inputs,
                 outputs: outputs,
                 depth: itx.depth,
