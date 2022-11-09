@@ -21,7 +21,7 @@
         </small>
     </div>
     <div class="q-pl-md" v-if="expanded">
-        <div v-if="fragment?.name" :key="fragment.name">
+        <div v-if="fragment?.inputs" :key="fragment.name">
             <div
                 v-for="(param, index) in inputs"
                 :key="`fragment-${index}`"
@@ -105,12 +105,14 @@
                     </div>
                 </div>
             </div>
-            <div class="fit row justify-start items-start content-start" v-if="fragment.value">
-                <div class="col-4">
-                    value
-                </div>
-                <div class="col-8">
-                    {{ fragment.value }} TLOS
+            <div v-if="fragment.value">
+                <div class="fit row justify-start items-start content-start">
+                    <div class="col-4">
+                        value (uint256):
+                    </div>
+                    <div class="col-8">
+                        {{ fragment.value }} TLOS
+                    </div>
                 </div>
             </div>
         </div>
@@ -182,14 +184,13 @@ export default {
             return (this.fragment.inputs && this.fragment.inputs.length > 0 || this.fragment.value);
         },
         arrowIcon() {
-            if(!this.isExpandable) return '';
             return this.expanded ? 'arrow_drop_down' : 'arrow_right';
         },
     },
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .c-fragment-list-element {
     margin-bottom: 24px;
 
@@ -212,6 +213,9 @@ export default {
     &__fragment {
         white-space: pre;
     }
+}
+.jv-container .jv-code {
+    padding: 10px 10px 10px 10px;
 }
 @media only screen and (max-width: 400px){
     .c-fragment-list-element {
