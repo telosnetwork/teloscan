@@ -184,6 +184,7 @@ export default {
             return (this.fragment.inputs && this.fragment.inputs.length > 0 || this.fragment.value);
         },
         arrowIcon() {
+            if(!this.fragment.inputs && this.fragment.name || this.fragment.inputs.length === 0 && this.fragment.name) return '';
             return this.expanded ? 'arrow_drop_down' : 'arrow_right';
         },
     },
