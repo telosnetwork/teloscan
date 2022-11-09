@@ -22,8 +22,8 @@ export default {
     <div class="row">
         <div class="col-12">
             <FragmentListElement
-                :key="'ltr' + i"
                 v-for="(fragment, i) in fragments"
+                :key="'ltr' + (parsedFragments[i]) ? '1' : '0' + i"
                 :rawFragment="fragment"
                 :fragment="parsedFragments[i]"
             />
