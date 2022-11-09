@@ -33,9 +33,11 @@ describe('StakingFormInput.vue', () => {
     });
 
     describe('v-model implementation', () => {
-        const oneEthInWei = `1${'0'.repeat(18)}`;
-        const onePointFiveEthInWei = `15${'0'.repeat(17)}`;
-        const onePointOneEthInWei = `11${'0'.repeat(17)}`;
+        const oneEthInWei                    =  `1${'0'.repeat(18)}`;
+        const onePointFiveEthInWei           = `15${'0'.repeat(17)}`;
+        const onePointOneEthInWei            = `11${'0'.repeat(17)}`;
+        const oneHundredFiftyEthInWei        = `15${'0'.repeat(19)}`;
+        const oneThousandFiveHundredEthInWei = `15${'0'.repeat(20)}`;
 
         const getInputValue = (wrapper) => wrapper.find('input').element.value;
 
@@ -117,13 +119,13 @@ describe('StakingFormInput.vue', () => {
             // and the input's value should be formatted
 
             // single keypress: 1 => formatted value === "1"
-            // a new modelValue should be emitted, as value changes from 0 to 1e10^18 wei
+            // a new modelValue should be emitted, as value changes from 0 to 1e+18 wei
             await simulateUserInput(wrapper, '1', '1');
             emitCounter++;
             await checkInputExpectations(wrapper, emitCounter, oneEthInWei, '1');
 
             // single keypress: 1 => formatted value === "1."
-            // component should not emit as wei value has not changed from 1e10^18 wei
+            // component should not emit as wei value has not changed from 1e+18 wei
             await simulateUserInput(wrapper, '.', '1.');
             await checkInputExpectations(wrapper, emitCounter, oneEthInWei, '1.');
 
@@ -135,14 +137,32 @@ describe('StakingFormInput.vue', () => {
             await checkInputExpectations(wrapper, emitCounter, onePointFiveEthInWei, '1.5');
 
             // single keypress: 0 (inserted at end) => formatted value === "1.50"
-            // component should not emit as wei value has not changed from 1.5e10^17 wei
+            // component should not emit as wei value has not changed from 1.5e+17 wei
             await simulateUserInput(wrapper, '0', '1.50');
             await checkInputExpectations(wrapper, emitCounter, onePointFiveEthInWei, '1.50');
 
             // single keypress: 0 (inserted at beginning) => formatted value === "1.50" (leading zeroes stripped)
-            // component should not emit as wei value has not changed from 1.5e10^17 wei
+            // component should not emit as wei value has not changed from 1.5e+17 wei
             await simulateUserInput(wrapper, '0', '01.50');
             await checkInputExpectations(wrapper, emitCounter, onePointFiveEthInWei, '1.50');
+
+            // single keypress: backspace (with the caret before the '.') => formatted value === "150"
+            // component should emit as new wei value should be 1.5e+19 wei
+            await simulateUserInput(wrapper, 'Delete', '150');
+            emitCounter++;
+            await checkInputExpectations(wrapper, emitCounter, oneHundredFiftyEthInWei, '150');
+
+            // single keypress: 0 (inserted at end) => formatted value === "1,500"
+            // component should emit as new wei value should be 1.5e+20 wei
+            await simulateUserInput(wrapper, '0', '1500');
+            emitCounter++;
+            await checkInputExpectations(wrapper, emitCounter, oneThousandFiveHundredEthInWei, '1,500');
+
+            // single keypress: 0 (with all selected) => formatted value === "0"
+            // component should emit as new wei value should be 0 wei
+            await simulateUserInput(wrapper, '0', '0');
+            emitCounter++;
+            await checkInputExpectations(wrapper, emitCounter, '0', '0');
         });
     });
 });
