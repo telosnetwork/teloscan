@@ -89,6 +89,7 @@ export default {
                 } else {
                     let nLog = Object.assign({}, log);
                     nLog.contract = contract;
+                    nLog.sig = nLog.topics[0].substr(0, 10);
                     this.parsedLogs.push(nLog);
                 }
                 this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());
