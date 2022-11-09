@@ -29,9 +29,10 @@ export default {
             }
         },
     },
-    created() {
+    async created() {
         let i = 0;
-        this.itxs.forEach(async (itx) => {
+        for(let k = 0; k < this.itxs.length;k++){
+            let itx = this.itxs[k];
             let contract = await this.getContract(itx.to);
             let fnsig = itx.input.slice(0, 8);
             let name = fnsig ? 'Unknown (0x' + fnsig + ')' : 'TLOS transfer';
@@ -67,10 +68,9 @@ export default {
                 contract: contract,
                 value: itx.value ? formatWei('0x' + itx.value, WEI_PRECISION): 0,
             });
-            this.parsedItxs.sort((a,b) => {
-                if(a.parent === b.parent) return a.depth - b.depth;
-                return BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber();
-            });
+        }
+        this.parsedItxs.sort((a,b) => {
+            return BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber();
         });
 
     },
