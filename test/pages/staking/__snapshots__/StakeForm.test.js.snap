@@ -1,0 +1,149 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StakeForm should render a banner when the user has unlocked TLOS 1`] = `
+<div
+  class="c-stake-form row"
+>
+  <div
+    class="col-xs-12 col-md-6 offset-md-3"
+  >
+    <!--v-if-->
+  </div>
+  <div
+    class="col-12 q-mb-lg"
+  >
+    <base-staking-form-stub
+      bottominputamount="0"
+      bottominputisloading="false"
+      bottominputlabel="Receive sTLOS"
+      ctadisabled="false"
+      ctatext="Get more TLOS"
+      header="Stake TLOS"
+      subheader="Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be auto-compounded. No further action is required."
+      topinputamount="0"
+      topinputerrortext="Insufficient TLOS balance to stake"
+      topinputinfotext="0.0 Available"
+      topinputisloading="false"
+      topinputlabel="Stake TLOS"
+      topinputmaxvalue="0"
+      topinputtooltip="Click to input full wallet balance
+
+Balance displayed is reduced by 1 TLOS to keep your account actionable.
+Precise balance (less approximate gas fees):
+0.0 TLOS"
+      unstakeperiodseconds="60"
+      valueofonestlosintlos="1.23456789"
+    />
+  </div>
+  <!--v-if-->
+  <q-dialog-stub
+    modelvalue="false"
+  />
+</div>
+`;
+
+exports[`StakeForm should render a banner when the user has unlocked TLOS 2`] = `
+<div
+  class="c-stake-form row"
+>
+  <div
+    class="col-xs-12 col-md-6 offset-md-3"
+  >
+    <q-banner-stub
+      class="bg-green text-black"
+      dense=""
+      inline-actions=""
+      rounded=""
+    >
+      
+       You have unlocked TLOS! 
+      
+       
+      
+      <q-btn-stub
+        color="black"
+        flat=""
+        label="Dismiss"
+      />
+      <q-btn-stub
+        color="black"
+        flat=""
+        label="Claim TLOS"
+      />
+      
+    </q-banner-stub>
+  </div>
+  <div
+    class="col-12 q-mb-lg"
+  >
+    <base-staking-form-stub
+      bottominputamount="0"
+      bottominputisloading="false"
+      bottominputlabel="Receive sTLOS"
+      ctadisabled="false"
+      ctatext="Get more TLOS"
+      header="Stake TLOS"
+      subheader="Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be auto-compounded. No further action is required."
+      topinputamount="0"
+      topinputerrortext="Insufficient TLOS balance to stake"
+      topinputinfotext="0.0 Available"
+      topinputisloading="false"
+      topinputlabel="Stake TLOS"
+      topinputmaxvalue="0"
+      topinputtooltip="Click to input full wallet balance
+
+Balance displayed is reduced by 1 TLOS to keep your account actionable.
+Precise balance (less approximate gas fees):
+0.0 TLOS"
+      unstakeperiodseconds="60"
+      valueofonestlosintlos="1.23456789"
+    />
+  </div>
+  <!--v-if-->
+  <q-dialog-stub
+    modelvalue="false"
+  />
+</div>
+`;
+
+exports[`StakeForm should render properly when the user is not logged in 1`] = `
+<div
+  class="c-stake-form row"
+>
+  <div
+    class="col-xs-12 col-md-6 offset-md-3"
+  >
+    <!--v-if-->
+  </div>
+  <div
+    class="col-12 q-mb-lg"
+  >
+    <base-staking-form-stub
+      bottominputamount="0"
+      bottominputisloading="false"
+      bottominputlabel="Receive sTLOS"
+      ctadisabled="false"
+      ctatext="Get more TLOS"
+      header="Stake TLOS"
+      subheader="Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be auto-compounded. No further action is required."
+      topinputamount="0"
+      topinputerrortext="Insufficient TLOS balance to stake"
+      topinputinfotext="0.0 Available"
+      topinputisloading="false"
+      topinputlabel="Stake TLOS"
+      topinputmaxvalue="0"
+      topinputtooltip="Click to input full wallet balance
+
+Balance displayed is reduced by 1 TLOS to keep your account actionable.
+Precise balance (less approximate gas fees):
+0.0 TLOS"
+      unstakeperiodseconds="60"
+      valueofonestlosintlos="1.23456789"
+    />
+  </div>
+  <!--v-if-->
+  <q-dialog-stub
+    modelvalue="false"
+  />
+</div>
+`;

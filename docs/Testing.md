@@ -68,19 +68,26 @@ Files named properly will automatically be included in coverage and git pre-push
     });
     ```
 - `describe` and `it`/`test` blocks should generally be nested no more than 3 levels
-- when checking if a particular event has been emitted, always check the length of the `wrapper.emitted()` array.
+- when checking if a particular event has been emitted or mock called, always check the length of the relevant array.
 It isn't enough to check that an event has been emitted, it should also be emitted the correct number of times.
-Tests get difficult to debug without this, and unwanted emits may lead to unwanted behavior in a parent component.
+Tests get difficult to debug without this, and unwanted emits/calls may lead to unwanted behavior in a parent component.
     ```js
     // ✅ Good
     expect(wrapper.emitted()['update:modelValue'].length).toBe(4);
     expect(wrapper.emitted()['update:modelValue'][3]).toBe('some value');
+
+    // ✅ Good
+    expect(someMockFunction).toHaveBeenCalledTimes(1);
+    expect(someMockFunction).toHaveBeenLastCalledWith('a value');
     ```
 
 
 ### Snapshots <a name="#snapshots"></a>
+TODO
 
 ### Tips <a name="#tips"></a>
+- **TODO working with quasar components**
+- all Quasar components will need to be manually added or stubbed via `stubs`
 - make sure when viewing `vue-test-utils` documentation that the root URL is https://test-utils.vuejs.org. Search results
 often direct you to the docs for v1 (for Vue 2) which will lead to unexpected errors. The links to go to the correct
 documentation from `v1` docs are broken at the time of writing this.
