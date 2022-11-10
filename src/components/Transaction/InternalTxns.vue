@@ -85,9 +85,9 @@ export default {
 <template>
 <div>
     <div v-if="itxs.length === 0" class="row">
-        <div class="col-12 u-flex--center">
-            <q-icon class="fa fa-info-circle q-mr-md" size="md" />
-            <h3>No internal transactions found</h3>
+        <div class="col-12 flex items-center justify-center">
+            <q-icon class="fa fa-info-circle" size="md" />
+            <h5 class="text-center  q-ma-md">No internal transactions found</h5>
         </div>
     </div>
     <div v-else class="row">
