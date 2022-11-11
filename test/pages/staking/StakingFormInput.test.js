@@ -1,4 +1,10 @@
 import { mount } from '@vue/test-utils'
+import {
+    oneEthInWei,
+    oneHundredFiftyEthInWei,
+    onePointFiveEthInWei,
+    onePointOneEthInWei, oneThousandFiveHundredEthInWei
+} from 'test/testing-helpers';
 import { BigNumber } from 'ethers';
 import StakingFormInput from 'pages/staking/StakingFormInput';
 
@@ -33,12 +39,6 @@ describe('StakingFormInput.vue', () => {
     });
 
     describe('v-model implementation', () => {
-        const oneEthInWei                    =  `1${'0'.repeat(18)}`;
-        const onePointFiveEthInWei           = `15${'0'.repeat(17)}`;
-        const onePointOneEthInWei            = `11${'0'.repeat(17)}`;
-        const oneHundredFiftyEthInWei        = `15${'0'.repeat(19)}`;
-        const oneThousandFiveHundredEthInWei = `15${'0'.repeat(20)}`;
-
         const getInputValue = (wrapper) => wrapper.find('input').element.value;
 
         const simulateUserInput = async (wrapper, key, newInputValue) => {
