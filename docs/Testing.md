@@ -87,6 +87,7 @@ TODO
 
 ### Tips <a name="#tips"></a>
 - **TODO working with quasar components**
+- **TODO keep in mind dom vs warpper types, find vs findcomponent, attributes vs props**
 - all Quasar components will need to be manually added or stubbed via `stubs`
 - make sure when viewing `vue-test-utils` documentation that the root URL is https://test-utils.vuejs.org. Search results
 often direct you to the docs for v1 (for Vue 2) which will lead to unexpected errors. The links to go to the correct

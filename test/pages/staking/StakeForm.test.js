@@ -1,6 +1,10 @@
 import { shallowMount } from '@vue/test-utils';
-import StakeForm from 'pages/staking/StakeForm';
 import { createStore } from 'vuex';
+
+import { flushTimersAndPromises, oneEthInWei, onePointFiveEthInWei } from 'test/testing-helpers';
+
+import BaseStakingForm from 'pages/staking/BaseStakingForm';
+import StakeForm from 'pages/staking/StakeForm';
 
 
 describe('StakeForm.vue', () => {
@@ -29,6 +33,7 @@ describe('StakeForm.vue', () => {
             'q-card': true,
             'q-card-section': { template: '<component is="q-card-section-stub"> <slot /> </component>'},
             'q-card-actions': { template: '<component is="q-card-actions-stub"> <slot /> </component>'},
+            'base-staking-form-stub': { template: '<component is="base-staking-form-stub"></component>'},
         },
     };
     const stlosContractInstanceMock = {
@@ -36,7 +41,6 @@ describe('StakeForm.vue', () => {
         previewRedeem: jest.fn(),
         ['depositTLOS()']: jest.fn(),
     };
-
     const defaultProps = {
         stlosContractInstance: { ...stlosContractInstanceMock },
         tlosBalance: '15',
@@ -46,30 +50,28 @@ describe('StakeForm.vue', () => {
     };
 
     beforeEach(() => {
-        jest.restoreAllMocks();
-        isLoggedInMock = jest.fn();
+        jest.clearAllMocks();
+        isLoggedInMock.mockImplementation(() => true);
     });
 
     it('should have the correct name', () => {
         expect(StakeForm.name).toBe('StakeForm');
     });
 
-
-    it('should render properly when the user is not logged in', async () => {
+    it('should render correctly when the user is not logged in', async () => {
         isLoggedInMock.mockImplementation(() => false);
         const wrapper = shallowMount(StakeForm, {
-            props: { ...defaultProps },
-            global: { ...globalMock },
+            props:  { ...defaultProps },
+            global: { ...globalMock   },
         });
 
         expect(wrapper.element).toMatchSnapshot();
     });
 
     it('should render a banner when the user has unlocked TLOS', async () => {
-        // isLoggedInMock.mockImplementation(() => true);
         const wrapper = shallowMount(StakeForm, {
-            props: { ...defaultProps },
-            global: { ...globalMock },
+            props:  { ...defaultProps },
+            global: { ...globalMock   },
         });
 
         // no banner
@@ -81,7 +83,73 @@ describe('StakeForm.vue', () => {
         expect(wrapper.element).toMatchSnapshot();
     });
 
+    describe('user input should be correctly handled', () => {
+        jest.useFakeTimers();
+        let wrapper;
+        let formStub;
+
+        beforeEach(() => {
+            jest.clearAllMocks();
+            wrapper = shallowMount(StakeForm, {
+                props:  { ...defaultProps },
+                global: { ...globalMock   },
+            });
+            formStub = wrapper.findComponent(BaseStakingForm);
+        });
+
+        const runInputExpects = async (topOrBottomInput) => {
+            const mockedContractMethod = topOrBottomInput === 'top' ? 'previewDeposit' : 'previewRedeem';
+            const eventToSimulateUserInput = `input-${topOrBottomInput}`;
+
+            // mock 1 TLOS === 1.5 STLOS
+            stlosContractInstanceMock[mockedContractMethod]
+                .mockImplementationOnce(() => Promise.resolve(onePointFiveEthInWei));
+
+            formStub.vm.$emit(eventToSimulateUserInput, oneEthInWei);
+            await flushTimersAndPromises();
+
+            expect(stlosContractInstanceMock[mockedContractMethod]).toHaveBeenCalledTimes(1);
+            expect(stlosContractInstanceMock[mockedContractMethod]).toHaveBeenLastCalledWith(oneEthInWei);
+            expect(wrapper.element).toMatchSnapshot();
+
+
+            stlosContractInstanceMock[mockedContractMethod]
+                .mockImplementationOnce(() => Promise.resolve('0'));
+
+            formStub.vm.$emit(eventToSimulateUserInput, '0');
+            await flushTimersAndPromises();
+
+            expect(stlosContractInstanceMock[mockedContractMethod]).toHaveBeenCalledTimes(2);
+            expect(stlosContractInstanceMock[mockedContractMethod]).toHaveBeenLastCalledWith('0');
+            expect(wrapper.element).toMatchSnapshot();
+        }
+
+        ['top', 'bottom'].forEach((topOrBottom) => {
+            test(`for the ${topOrBottom} input`, async() => {
+                await runInputExpects(topOrBottom);
+            })
+        });
+    });
+
+
+
+
+
+    it('should handle user input events correctly', async () => {
+
+
+
+    });
+
+
     it('should render properly when the user has successfully staked TLOS', () => {
+        const wrapper = shallowMount(StakeForm, {
+            props: { ...defaultProps },
+            global: { ...globalMock },
+        });
+
+        //
+
         // display confirm modal
         // check mm logo?
         // submit

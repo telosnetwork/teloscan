@@ -10,6 +10,7 @@ module.exports = {
         '^components(.*)$': '<rootDir>/src/components$1',
         '^pages(.*)$': '<rootDir>/src/pages$1',
         '^store(.*)$': '<rootDir>/src/store$1',
+        '^test(.*)$': '<rootDir>/test$1',
     },
     moduleFileExtensions: ['js', 'vue'],
     transform: {
