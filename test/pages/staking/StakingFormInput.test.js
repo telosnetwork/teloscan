@@ -3,7 +3,8 @@ import {
     oneEthInWei,
     oneHundredFiftyEthInWei,
     onePointFiveEthInWei,
-    onePointOneEthInWei, oneThousandFiveHundredEthInWei
+    onePointOneEthInWei,
+    oneThousandFiveHundredEthInWei,
 } from 'test/testing-helpers';
 import { BigNumber } from 'ethers';
 import StakingFormInput from 'pages/staking/StakingFormInput';

@@ -1,7 +1,14 @@
 import { shallowMount } from '@vue/test-utils';
+import { BigNumber } from 'ethers';
 import { createStore } from 'vuex';
 
-import { flushTimersAndPromises, oneEthInWei, onePointFiveEthInWei } from 'test/testing-helpers';
+import {
+    flushTimersAndPromises,
+    oneEthInWei,
+    oneHundredFiftyEthInWei,
+    onePointFiveEthInWei,
+    stubWithSlot,
+} from 'test/testing-helpers';
 
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import StakeForm from 'pages/staking/StakeForm';
@@ -28,12 +35,12 @@ describe('StakeForm.vue', () => {
         ],
         stubs: {
             'q-btn': true,
-            'q-banner': { template: '<component is="q-banner-stub"> <slot /> <slot name="action" /> </component>'},
-            'q-dialog': true,
-            'q-card': true,
-            'q-card-section': { template: '<component is="q-card-section-stub"> <slot /> </component>'},
-            'q-card-actions': { template: '<component is="q-card-actions-stub"> <slot /> </component>'},
-            'base-staking-form-stub': { template: '<component is="base-staking-form-stub"></component>'},
+            'q-banner': stubWithSlot('q-banner', ['action']),
+            'q-card': stubWithSlot('q-card'),
+            'q-card-section': stubWithSlot('q-card-section'),
+            'q-card-actions': stubWithSlot('q-card-actions'),
+            'q-dialog':  stubWithSlot('q-dialog'),
+            'transaction-field': stubWithSlot('transaction-field', undefined),
         },
     };
     const stlosContractInstanceMock = {
@@ -43,7 +50,7 @@ describe('StakeForm.vue', () => {
     };
     const defaultProps = {
         stlosContractInstance: { ...stlosContractInstanceMock },
-        tlosBalance: '15',
+        tlosBalance: oneHundredFiftyEthInWei,
         hasUnlockedTlos: false,
         unstakePeriodSeconds: 60,
         valueOfOneStlosInTlos: '1.23456789',
@@ -131,28 +138,43 @@ describe('StakeForm.vue', () => {
         });
     });
 
+    it('should render properly when the user has successfully staked TLOS', async () => {
+        jest.useFakeTimers();
+        stlosContractInstanceMock['depositTLOS()'].mockImplementationOnce(() => Promise.resolve({
+            hash: '0x123',
+        }));
 
-
-
-
-    it('should handle user input events correctly', async () => {
-
-
-
-    });
-
-
-    it('should render properly when the user has successfully staked TLOS', () => {
         const wrapper = shallowMount(StakeForm, {
-            props: { ...defaultProps },
-            global: { ...globalMock },
+            props:  { ...defaultProps },
+            global: { ...globalMock   },
+        });
+        const formStub = wrapper.findComponent(BaseStakingForm);
+
+        // mock 1 TLOS === 1.5 STLOS
+        stlosContractInstanceMock.previewDeposit
+            .mockImplementationOnce(() => Promise.resolve(onePointFiveEthInWei));
+
+        formStub.vm.$emit('input-top', oneEthInWei);
+        await flushTimersAndPromises();
+        expect(wrapper.element).toMatchSnapshot();
+
+        await formStub.vm.$emit('cta-clicked');
+
+        // q-dialog expects a boolean v-model binding to show/hide the element
+        expect(wrapper.element).toMatchSnapshot();
+
+        const confirmStakeButton = wrapper.findComponent('[label="Stake TLOS"]');
+        confirmStakeButton.vm.$emit('click');
+
+        expect(stlosContractInstanceMock['depositTLOS()']).toHaveBeenCalledTimes(1);
+        expect(stlosContractInstanceMock['depositTLOS()']).toHaveBeenLastCalledWith({
+            value: BigNumber.from(oneEthInWei),
         });
 
-        //
+        await flushTimersAndPromises();
+        expect(wrapper.emitted('balance-changed').length).toBe(1);
 
-        // display confirm modal
-        // check mm logo?
-        // submit
-        // tx link
+        // should now have a <transaction-field-stub ... />
+        expect(wrapper.element).toMatchSnapshot();
     });
 });
