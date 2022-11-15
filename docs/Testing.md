@@ -83,11 +83,36 @@ Tests get difficult to debug without this, and unwanted emits/calls may lead to 
 
 
 ### Snapshots <a name="#snapshots"></a>
-TODO
+Snapshots are one of the most important tools in the testing toolset. They allow one to verify the state of the rendered
+markup (as well as other things) deterministically. Rather than manually checking that a stub component or an element
+has specific props, you can call `expect(wrapper.element).toMatchSnapshot()`
+
+Two things to keep in mind:
+1. it is extremely important that you check generated snapshots for validity _manually_ every time they are created or
+changed. If you do not validate that the rendered markup looks as expected, the snapshot is rendered 100% worthless
+2. object and function type props cannot be verified using snapshots, as the markup looks like
+`prop-name="[Object object]` and thus those props must be checked manually, e.g.
+    ```js
+    expect(wrapper.findComponent('some-stub').props('prop-name'))
+        .toMatchObject(expect.objectContaining({
+            propertyA: 'value',
+            propertyB: 'value-2',
+        })
+   );
+    ```
 
 ### Tips <a name="#tips"></a>
-- **TODO working with quasar components**
-- **TODO keep in mind dom vs warpper types, find vs findcomponent, attributes vs props**
+- working with quasar components can be tricky and the patterns for doing so are still under exploration. For now,
+you can refer to `test/pages/staking/StakeForm.test.js` where several Quasar components are stubbed, with and without
+named slots
+- tests may contain more than one snapshot, which will be numbered in the snap file, e.g.
+    ```js
+    //                                                                            ⬇️ here
+    exports[`StakeForm.vue should render a banner when the user has unlocked TLOS 3`] = `...`
+    ```
+- keep in mind the return types of `wrapper``find`/`findAll` and `findComponent` as DOM elements vs Vue component
+Wrappers. This can be easy to forget while troubleshooting, resulting in different behaviors of
+`attributes()` and `props()`
 - all Quasar components will need to be manually added or stubbed via `stubs`
 - make sure when viewing `vue-test-utils` documentation that the root URL is https://test-utils.vuejs.org. Search results
 often direct you to the docs for v1 (for Vue 2) which will lead to unexpected errors. The links to go to the correct

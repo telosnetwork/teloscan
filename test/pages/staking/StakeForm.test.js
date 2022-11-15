@@ -40,7 +40,7 @@ describe('StakeForm.vue', () => {
             'q-card-section': stubWithSlot('q-card-section'),
             'q-card-actions': stubWithSlot('q-card-actions'),
             'q-dialog':  stubWithSlot('q-dialog'),
-            'transaction-field': stubWithSlot('transaction-field', undefined),
+            'transaction-field': stubWithSlot('transaction-field'),
         },
     };
     const stlosContractInstanceMock = {
