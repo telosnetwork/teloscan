@@ -49,13 +49,33 @@
                         <q-item
                             v-close-popup
                             clickable
+                            @click="routerTo('/staking')"
+                            class="separator"
+                        >
+                            <q-item-section>
+                                <q-item-label class="flex items-center"><img class="grayscale" :src="stlosLogo" width="14" /> <span class="q-pl-sm">Stake Telos</span> </q-item-label>
+                            </q-item-section>
+                        </q-item>
+                        <q-item
+                            v-close-popup
+                            clickable
                             @click="routerTo('/endpoints')"
                         >
                             <q-item-section>
-                                <q-item-label>RPC Endpoints</q-item-label>
+                                <q-item-label class="flex items-center"><q-icon name="dns" /> <span class="q-pl-sm">RPC Endpoints</span></q-item-label>
                             </q-item-section>
                         </q-item>
 
+                        <q-item
+                            v-close-popup
+                            clickable
+                            @click="mainnet ? goTo('https://monitor.telos.net/') : goTo('https://monitor-test.telos.net/')"
+                            class="separator"
+                        >
+                            <q-item-section>
+                                <q-item-label class="flex items-center"><q-icon name="crisis_alert" />  <span class="q-pl-sm">Telos Monitor</span></q-item-label>
+                            </q-item-section>
+                        </q-item>
                         <q-item
                             v-if="!mainnet"
                             v-close-popup
@@ -63,7 +83,7 @@
                             @click="goTo('https://teloscan.io/')"
                         >
                             <q-item-section>
-                                <q-item-label>Teloscan Mainnet</q-item-label>
+                                <q-item-label class="flex items-center"><q-icon name="swap_horiz" />  <span class="q-pl-sm">Teloscan Mainnet</span></q-item-label>
                             </q-item-section>
                         </q-item>
 
@@ -74,27 +94,7 @@
                             @click="goTo('https://testnet.teloscan.io/')"
                         >
                             <q-item-section>
-                                <q-item-label> Teloscan Testnet </q-item-label>
-                            </q-item-section>
-                        </q-item>
-                        <q-item
-                            v-close-popup
-                            clickable
-                            @click="routerTo('/staking')"
-                        >
-                            <q-item-section>
-                                <q-item-label> Stake Telos </q-item-label>
-                            </q-item-section>
-                        </q-item>
-
-                        <q-item
-                            v-if="mainnet"
-                            v-close-popup
-                            clickable
-                            @click="mainnet ? goTo('https://monitor.telos.net/') : goTo('https://monitor-test.telos.net/')"
-                        >
-                            <q-item-section>
-                                <q-item-label> Telos Monitor</q-item-label>
+                                <q-item-label class="flex items-center"><q-icon name="swap_horiz" />  <span class="q-pl-sm"> Teloscan Testnet</span> </q-item-label>
                             </q-item-section>
                         </q-item>
                     </q-list>
@@ -120,7 +120,8 @@ import { directive as ClickAway } from 'vue3-click-away';
 
 import Search from 'src/components/Search.vue';
 import FooterMain from 'src/components/Footer.vue';
-import ConnectButton from 'components/ConnectButton';
+import ConnectButton from 'src/components/ConnectButton';
+import { stlos } from 'src/lib/logos.js';
 
 export default {
     name: 'MainLayout',
@@ -134,6 +135,7 @@ export default {
     },
     data() {
         return {
+            stlosLogo: stlos,
             mainnet: '' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40',
             accountConnected: false,
             drawer: false,
@@ -207,7 +209,10 @@ export default {
 };
 </script>
 
-<style lang="sass">
+<style lang="sass" scoped>
+.separator
+  border-bottom: 1px solid lightgrey
+
 .banner
   z-index: -1
   height: 40vh
@@ -222,6 +227,16 @@ export default {
 .connection
   font-size: .5rem
   margin-right: 0.2rem
+
+.q-item
+    .q-icon
+        transition: 400ms color ease
+
+.q-item:hover
+    .grayscale
+        filter: grayscale(0)
+    .q-icon
+        color: $secondary
 
 .account
   width: 120px

@@ -4,7 +4,7 @@
     :aria-label="hint"
     aria-role="button"
     tabindex="0"
-    @click="handleClick"
+    @click.stop="handleClick"
     @keydown.space.enter="handleClick"
 >
     <q-tooltip

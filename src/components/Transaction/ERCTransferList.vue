@@ -1,5 +1,8 @@
 <script>
 import AddressField from 'components/AddressField';
+import { formatWei } from 'src/lib/utils';
+import { BigNumber } from 'ethers';
+
 export default {
     name: 'ERCTransfersList',
     components: {
@@ -22,6 +25,14 @@ export default {
             type: Object,
             required: true,
         },
+    },
+    methods: {
+        formatWei,
+    },
+    data() {
+        return {
+            BigNumber: BigNumber,
+        }
     },
 }
 </script>
@@ -53,7 +64,11 @@ div(class="fit row wrap justify-start items-start content-start")
             q-tooltip Consult media
       div(v-else class="col-5")
         strong {{ ` Token : ` }}
-        span {{ transfer.value }}
+        span.clickable(@click="transfer.showWei = !transfer.showWei")
+            span(v-if="transfer.showWei") {{ BigNumber.from(transfer.value) }}
+                q-tooltip Show total
+            span(v-else) {{ formatWei(transfer.value, transfer.token.decimals) }}
+                q-tooltip Show wei
         router-link(:to="`/address/${transfer.token.address}`" class="q-ml-xs")
             span
                 span {{ transfer.token.symbol.slice(0, 10) }}

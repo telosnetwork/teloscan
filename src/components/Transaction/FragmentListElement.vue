@@ -1,19 +1,30 @@
 <template>
-<div class="c-log-table-row"  >
-    <div class="c-log-table-row__head" @click="expanded = !expanded">
-        <q-icon :name="arrowIcon" size="sm" />
-        <strong v-if="log?.name">
-            {{ log.name }}
-        </strong>
-        <strong v-else>
-            Unknown ({{ rawLog.topics[0].substr(0, 10) }})
-        </strong>
+<div class="c-fragment-list-element" :style="depthStyle" v-if="fragment"  >
+    <div :class="fragmentClass" @click="expanded = !expanded">
+        <span class="row items-center">
+            <q-icon :name="arrowIcon" size="sm" />
+            <strong v-if="fragment?.name">
+                {{ fragment.name }}
+            </strong>
+            <strong v-else>
+                Unknown ({{ fragment.sig }})
+            </strong>
+        </span>
+        <small v-if="fragment.contract">
+            <address-field
+                :address="(fragment.contract.address[0] === '0' && fragment.contract.address[1] === 'x') ? fragment.contract.address : '0x' + fragment.contract.address"
+                :truncate="15"
+                class="word-break"
+                :name="fragment.contract.name"
+                :copy="true"
+            />
+        </small>
     </div>
     <div class="q-pl-md" v-if="expanded">
-        <div v-if="log?.name" :key="log.name">
+        <div v-if="fragment?.name" :key="fragment.name">
             <div
                 v-for="(param, index) in inputs"
-                :key="`log-${index}`"
+                :key="`fragment-${index}`"
                 class="fit row justify-start items-start content-start"
             >
                 <div class="col-4">
@@ -29,75 +40,85 @@
                 <div class="col-8">
                     <address-field
                         v-if="param.type === 'address'"
-                        :address="log.args[index]"
+                        :address="fragment.args[index]"
                         :truncate="0"
                         class="word-break"
                         :copy="true"
                     />
                     <div v-else-if="param.type === 'uint256' || param.type === 'uint128'"  class="word-break">
-                        <div v-if="log.isTransfer && log.token">
-                            <div @click="showWei = !showWei" class="clickable" v-if="!log.token.type || log.token.type === 'erc20'">
+                        <div v-if="fragment.isTransfer && fragment.token">
+                            <div @click="showWei = !showWei" class="clickable" v-if="!fragment.token.type || fragment.token.type === 'erc20'">
                                 <span v-if="!showWei">
-                                    <span> {{ formatWei(log.args[index], log.token.decimals) }}</span>
+                                    <span> {{ formatWei(fragment.args[index], fragment.token.decimals) }}</span>
                                     <q-tooltip>Show wei</q-tooltip>
                                     <address-field
-                                        :address="log.token.address"
+                                        :address="fragment.token.address"
                                         :truncate="0"
-                                        :name="log.token.symbol"
+                                        :name="fragment.token.symbol"
                                         class="word-break q-ml-xs"
                                     />
                                 </span>
                                 <span v-else>
-                                    {{ log.args[index] }}
+                                    {{ fragment.args[index] }}
                                 </span>
                             </div>
                             <div v-else>
                                 <address-field
-                                    :address="log.token.address"
+                                    :address="fragment.token.address"
                                     :truncate="0"
-                                    :name="log.token.symbol"
+                                    :name="fragment.token.symbol"
                                     class="word-break"
                                 />
-                                #{{ log.args[index] }}
+                                #{{ fragment.args[index] }}
                             </div>
                         </div>
                         <div v-else class="word-break">
-                            {{ log.args[index] }}
+                            {{ fragment.args[index] }}
                         </div>
                     </div>
                     <div v-else-if="param.type === 'tuple'" v-on:click.stop="toggle(index, 'expanded')">
                         <div>[ </div>
-                        <div v-for="(i) in log.args[index].length - 1" :class="(expanded_parameters[index]['expanded']) ? 'q-pl-xl word-break' : 'q-pl-xl word-break hidden'" :key="param.type + i">
+                        <div v-for="(i) in fragment.args[index].length - 1" :class="(expanded_parameters[index]['expanded']) ? 'q-pl-xl word-break' : 'q-pl-xl word-break hidden'" :key="param.type + i">
                             {{ i }},
                         </div>
                         <div v-if="!expanded_parameters[index]['expanded']" class="q-px-sm ellipsis-label q-mb-xs">...</div>
                         <div>]</div>
                     </div>
-                    <div v-else-if="param.arrayChildren && log.args[index]" v-on:click.stop="toggle(index, 'expanded')">
+                    <div v-else-if="param.arrayChildren && fragment.args[index]" v-on:click.stop="toggle(index, 'expanded')">
                         <div>[ </div>
-                        <div v-for="i in log.args[index].length - 1" :class="(expanded_parameters[index]['expanded']) ? 'q-pl-xl word-break' : 'q-pl-xl word-break hidden'" :key="param.type + i">
+                        <div v-for="i in fragment.args[index].length - 1" :class="(expanded_parameters[index]['expanded']) ? 'q-pl-xl word-break' : 'q-pl-xl word-break hidden'" :key="param.type + i">
                             <div v-if="param.arrayChildren.type === 'address'">
                                 <address-field
-                                    :address="log.args[index][i]"
+                                    :address="fragment.args[index][i]"
                                     :truncate="0"
                                     class="word-break"
                                     :copy="true"
                                 />
                             </div>
-                            <span v-else class="word-break">{{ log.args[index][i] }},</span>
+                            <span v-else class="word-break">{{ fragment.args[index][i] }},</span>
                         </div>
                         <div v-if="!expanded_parameters[index]['expanded']" class="q-px-sm ellipsis-label q-mb-xs">...</div>
                         <div>]</div>
                     </div>
                     <div v-else class="word-break">
-                        {{ log.args[index] }}
+                        {{ fragment.args[index] }}
+                    </div>
+                </div>
+            </div>
+            <div v-if="fragment.value">
+                <div class="fit row justify-start items-start content-start">
+                    <div class="col-4">
+                        value (uint256):
+                    </div>
+                    <div class="col-8">
+                        {{ fragment.value }} TLOS
                     </div>
                 </div>
             </div>
         </div>
         <json-viewer
             v-else
-            :value="rawLog"
+            :value="rawFragment"
             theme="custom-theme"
             class="q-mb-md"
         />
@@ -112,17 +133,17 @@ import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
 
 export default {
-    name: 'LogsTableRow',
+    name: 'FragmentListElement',
     components: {
         AddressField,
         JsonViewer,
     },
     props: {
-        log: {
+        fragment: {
             type: Object,
             required: false,
         },
-        rawLog: {
+        rawFragment: {
             type: Object,
             required: true,
         },
@@ -135,11 +156,11 @@ export default {
         }
     },
     created(){
-        if(!this.log) return;
-        let inputs = this.log.eventFragment ? this.log.eventFragment.inputs : this.log.inputs;
+        if(!this.fragment) return;
+        let inputs = this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
         if(inputs){
             for(let i=0; i < inputs.length;i++){
-                this.expanded_parameters.push([]);
+                this.expanded_parameters.push({});
             }
         }
     },
@@ -152,28 +173,40 @@ export default {
         },
     },
     computed: {
+        depthStyle(){
+            if(typeof this.fragment.depth === 'undefined') return;
+            return {marginLeft: ((this.fragment.depth * 20)  + 20) + 'px'};
+        },
         inputs(){
-            return this.log.eventFragment ? this.log.eventFragment.inputs : this.log.inputs;
+            return this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
+        },
+        fragmentClass(){
+            let fragmentClass = 'c-fragment-list-element__head justify-between items-center';
+            return (this.isExpandable) ? fragmentClass + ' clickable' : fragmentClass;
+        },
+        isExpandable(){
+            return (this.fragment.inputs && this.fragment.inputs.length > 0 || this.fragment.value || !this.fragment.name);
         },
         arrowIcon() {
+            if(!this.isExpandable) return '';
             return this.expanded ? 'arrow_drop_down' : 'arrow_right';
         },
     },
 }
 </script>
 
-<style lang="scss">
-.c-log-table-row {
+<style lang="scss" scoped>
+.c-fragment-list-element {
     margin-bottom: 24px;
 
     &__head {
         background: rgba(0, 0, 0, 0.1);
         padding: 10px 20px;
+        user-select: none;
         display: flex;
         align-items: center;
         margin-bottom: 12px;
         word-break: break-word;
-        cursor: pointer;
         border-radius: 5px;
         transition: 300ms background-color ease;
 
@@ -182,12 +215,15 @@ export default {
         }
     }
 
-    &__log {
+    &__fragment {
         white-space: pre;
     }
 }
+.jv-container .jv-code {
+    padding: 10px 10px 10px 10px;
+}
 @media only screen and (max-width: 400px){
-    .c-log-table-row {
+    .c-fragment-list-element {
         &__head {
             font-size: 0.9em;
         }

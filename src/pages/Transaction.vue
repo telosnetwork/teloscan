@@ -1,9 +1,11 @@
 <script>
+import { mapGetters, mapActions } from 'vuex';
 import DateField from 'components/DateField';
 import BlockField from 'components/BlockField';
 import AddressField from 'components/AddressField';
 import LogsViewer from 'components/Transaction/LogsViewer';
 import InternalTxns from 'components/Transaction/InternalTxns';
+import CopyButton from 'components/CopyButton';
 import MethodField from 'components/MethodField';
 import ERCTransferList from 'components/Transaction/ERCTransferList';
 import ParameterList from 'components/Transaction/ParameterList';
@@ -20,6 +22,7 @@ export default {
         InternalTxns,
         AddressField,
         BlockField,
+        CopyButton,
         DateField,
         MethodField,
         JsonViewer,
@@ -45,6 +48,9 @@ export default {
             showWei: false,
         };
     },
+    computed: {
+        ...mapGetters('evm', ['tlosPrice']),
+    },
     watch: {
         '$route.params': {
             handler(newValue) {
@@ -63,7 +69,11 @@ export default {
     async mounted() {
         await this.loadTransaction();
     },
+    async created() {
+        this.fetchTlosPrice();
+    },
     methods: {
+        ...mapActions('evm', ['fetchTlosPrice']),
         formatWei,
         resetTransaction() {
             this.blockData = null;
@@ -99,7 +109,7 @@ export default {
                 if (TRANSFER_SIGNATURES.includes(log.topics[0].substr(0, 10))) {
                     let contract = await this.$contractManager.getContract(log.address, (log.topics.length === 4) ? 'erc721' : 'erc20');
                     if (typeof contract.token !== 'undefined' && contract.token !== null) {
-                        let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name}
+                        let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name, 'decimals': contract.token.decimals}
                         if (log.topics.length === 4) {
                             if (contract.token.iERC721Metadata) {
                                 try {
@@ -116,7 +126,7 @@ export default {
                             })
                         } else {
                             this.erc20Transfers.push({
-                                'value': formatWei(log.data, contract.token.decimals),
+                                'value': log.data,
                                 'wei': BigNumber.from(log.data).toString(),
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                                 'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
@@ -250,7 +260,9 @@ export default {
             div(class="fit row wrap justify-start items-start content-start")
                 div(class="col-3")
                   strong.wrapStrong Transaction Hash:&nbsp;
-                div(class="col-9") {{ hash }}
+                div(class="col-9")
+                  span {{ hash }}
+                  copy-button(:text="hash")
             br
             div(class="fit row wrap justify-start items-start content-start")
                 div(class="col-3")
@@ -334,6 +346,7 @@ export default {
               div(class="col-3")
                 strong {{ `Gas Fee: ` }}
               span {{ getGasFee() }} TLOS
+                small.q-pl-sm (~ ${{ (getGasFee() * tlosPrice).toFixed(5) }})
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
@@ -363,7 +376,7 @@ export default {
             .jsonViewer
               logs-viewer(:logs="trx.logs" :contract="contract" )
           q-tab-panel( name="internal" )
-            InternalTxns( :itxs="trx.itxs" )
+            InternalTxns( :itxs="trx.itxs" :contract="contract" )
 </template>
 
 <style lang="sass" scoped>

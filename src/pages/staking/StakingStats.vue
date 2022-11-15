@@ -124,7 +124,7 @@ export default {
                     'Rewards are disbursed from a community rewards pool into the sTLOS contract.',
             }, {
                 label: 'TVL',
-                value: this.formatWeiForStats(this.stlosTvl),
+                value: this.formatWeiForStats(this.stlosTvl, true).replace(/\B(?=(\d{3})+(?!\d))/g, ' '),
                 unit: 'TLOS',
                 tooltip: 'TVL: Total Value Locked\n\nThe current value, in TLOS, of all assets held in the sTLOS ' +
                     '(Staked TLOS) smart contract, i.e. the sum of all TLOS staked on the Telos EVM at this moment.',
@@ -178,7 +178,7 @@ export default {
                 return;
 
             try {
-                this.stlosApy = await fetchStlosApy(this.$store.$api, this.stlosTvl);
+                this.stlosApy = await fetchStlosApy(this.$telosApi);
             } catch ({ message: apyError }) {
                 console.error(`Failed to fetch sTLOS APY: ${apyError}`);
                 this.stlosApy = null;

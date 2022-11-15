@@ -3,7 +3,7 @@
     <div v-if="logs.length === 0" class="row">
         <div class="col-12 u-flex--center">
             <q-icon class="fa fa-info-circle q-mr-md" size="md" />
-            <h3>No logs found</h3>
+            <h5>No logs found</h5>
         </div>
     </div>
     <div v-else class="row">
@@ -14,19 +14,17 @@
                 color="secondary"
                 size="lg"
             />
-            Human-readable logs
+            Human-readable
             <small v-if="!allVerified">
                 <q-icon name="info" class="q-mb-xs q-ml-xs" size="14px"/>
                 <q-tooltip>Verify the related contract for each log to see its human readable version</q-tooltip>
             </small>
         </div>
         <div class="col-12">
-            <logs-table
+            <FragmentList
                 v-if="human_readable"
-                :rawLogs="logs"
-                :logs="parsedLogs"
-                :allVerified="allVerified"
-                :contract="contract"
+                :fragments="logs"
+                :parsedFragments="parsedLogs"
             />
             <json-viewer
                 v-else
@@ -41,7 +39,7 @@
 
 <script>
 import JsonViewer from 'vue-json-viewer'
-import LogsTable from 'components/Transaction/LogsTable'
+import FragmentList from 'components/Transaction/FragmentList'
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 import { BigNumber } from 'ethers';
 
@@ -49,7 +47,7 @@ export default {
     name: 'LogsViewer',
     components: {
         JsonViewer,
-        LogsTable,
+        FragmentList,
     },
     methods: {
         async getLogContract(log, type){
@@ -71,11 +69,11 @@ export default {
         },
     },
 
-    created() {
+    async created() {
         let verified = 0;
-
-        this.logs.forEach(async (log) => {
+        for(let i = 0; i < this.logs.length; i++){
             let contract;
+            const log = this.logs[i];
             const function_signature = log.topics[0].substr(0, 10);
             if(TRANSFER_SIGNATURES.includes(function_signature)) {
                 contract = await this.getLogContract(log, (log.topics.length === 4) ? 'erc721': 'erc20');
@@ -85,10 +83,19 @@ export default {
             if (contract){
                 verified = (contract.isVerified()) ? verified + 1: verified;
                 let parsedLog = await contract.parseLogs([log]);
-                this.parsedLogs.push(parsedLog[0]);
+                if(parsedLog[0]){
+                    parsedLog[0].contract = contract;
+                    this.parsedLogs.push(parsedLog[0]);
+                } else {
+                    let nLog = Object.assign({}, log);
+                    nLog.contract = contract;
+                    nLog.sig = nLog.topics[0].substr(0, 10);
+                    this.parsedLogs.push(nLog);
+                }
                 this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());
             }
-        });
+
+        }
 
         this.allVerified = (verified === this.logs.length);
     },

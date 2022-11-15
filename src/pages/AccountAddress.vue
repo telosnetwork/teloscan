@@ -156,6 +156,9 @@ export default {
   width: fit-content
   height: 5rem
 
+.homeInfo .text-secondary .q-icon
+  color: white !important
+
 .q-tab-panel
   padding: 0
 
