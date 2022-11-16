@@ -74,23 +74,58 @@ export default {
 }
 </script>
 
-<template lang="pug">
-.q-pa-md.row.items-start.q-gutter-md
-     div(v-for="token in tokens" :key="token.address" )
-       .col
-         q-card()
-          q-card-section()
-            q-avatar()
-              img( :src="token.logoURI" )
-            .text-h6
-              div() {{ token.name }}
-            address-field( :address="token.address" )
-            div()
-                span.q-pr-xs() Balance:
-                span(v-if="token.balance === '0.0000'") {{ '< 0.0001 ' + token.symbol }}
-                span(v-else) {{ token.balance + ' ' + token.symbol || '(error fetching balance)' }}
-                q-tooltip(v-if="token.fullBalance > token.balance") {{ token.fullBalance + ' ' + token.symbol || 'error fetching balance' }}
+<template>
+<div class="q-pa-md row items-start q-gutter-md">
+    <div v-for="token in tokens" :key="token.address">
+        <div class="col">
+            <q-card>
+                <q-card-section>
+                    <q-avatar>
+                        <img :src="token.logoURI" alt="Token Logo">
+                        <div></div>
+                    </q-avatar>
+                    <div class="text-h6">
+                        {{ token.name }}
+                    </div>
+                    <address-field :address="token.address" />
+                    <div>
+                        <span class="q-pr-xs">
+                            Balance:
+                        </span>
+                        <span v-if="token.balance === '0.0000'">
+                            {{ '< 0.0001 ' + token.symbol }}
+                        </span>
+                        <span v-else>
+                            {{ token.balance + ' ' + token.symbol || '(error fetching balance)' }}
+                        </span>
+                        <q-tooltip v-if="token.fullBalance > token.balance">
+                            {{ token.fullBalance + ' ' + token.symbol || 'error fetching balance' }}
+                        </q-tooltip>
+                    </div>
+                </q-card-section>
+            </q-card>
+        </div>
+    </div>
+</div>
 </template>
+
+<!--<template lang="pug">-->
+<!--.q-pa-md.row.items-start.q-gutter-md-->
+<!--     div(v-for="token in tokens" :key="token.address" )-->
+<!--       .col-->
+<!--         q-card()-->
+<!--          q-card-section()-->
+<!--            q-avatar()-->
+<!--              img( :src="token.logoURI" )-->
+<!--            .text-h6-->
+<!--              div() {{ token.name }}-->
+<!--            address-field( :address="token.address" )-->
+<!--            div()-->
+<!--                span.q-pr-xs() Balance:-->
+<!--                span(v-if="token.balance === '0.0000'") {{ '< 0.0001 ' + token.symbol }}-->
+<!--                span(v-else) {{ token.balance + ' ' + token.symbol || '(error fetching balance)' }}-->
+<!--                q-tooltip(v-if="token.fullBalance > token.balance") {{ token.fullBalance + ' ' + token.symbol || 'error fetching balance' }}-->
+<!--</template>-->
 
 <style lang="sass" scoped>
 .token-card
