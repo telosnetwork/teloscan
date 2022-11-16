@@ -1,8 +1,8 @@
 import { WEI_PRECISION } from 'src/lib/utils';
 
 /**
- * Launches a prompt in MetaMask to add sTLOS as a tracked token, allowing the user to view their sTLOS balance
- * at a glance from MetaMask
+ * Launches a prompt in MetaMask to add a given token as a tracked token, allowing the user to view their balance of
+ * that token at a glance from MetaMask
  *
  * @param {string}    address - the address of the token contract
 
