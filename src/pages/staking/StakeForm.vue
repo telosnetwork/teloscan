@@ -70,6 +70,7 @@
 
             <q-card-actions align="right" class="q-pb-md q-px-md">
                 <p
+                    v-if="showMetamaskPrompt"
                     class="c-stake-form__metamask-prompt u-flex--center-y"
                     tabindex="0"
                     aria-label="Launch MetaMask dialog to add sTLOS"
@@ -185,6 +186,7 @@ export default {
         usableWalletBalance() {
             if (this.walletBalanceBn.lte(reservedForGasBn))
                 return '0';
+
             return this.walletBalanceBn.sub(reservedForGasBn).toString();
         },
         topInputInfoText() {
@@ -251,6 +253,9 @@ export default {
         },
         showClaimBanner() {
             return this.hasUnlockedTlos && !this.userDismissedBanner;
+        },
+        showMetamaskPrompt() {
+            return window?.ethereum?.isMetaMask === true;
         },
     },
     async created() {

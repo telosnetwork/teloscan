@@ -1,5 +1,6 @@
 <script>
 import AddressField from 'components/AddressField';
+import { promptAddToMetamask } from 'src/lib/token-utils';
 import { formatWei } from 'src/lib/utils';
 
 export default {
@@ -16,10 +17,16 @@ export default {
             tokens: null,
         }
     },
+    computed: {
+        showMetamaskPrompt() {
+            return window?.ethereum?.isMetaMask === true;
+        },
+    },
     mounted() {
         this.loadTokens();
     },
     methods: {
+        promptAddToMetamask,
         async loadTokens() {
             const tokenList = await this.$contractManager.getTokenList();
             let tokens = tokenList.tokens
@@ -76,31 +83,44 @@ export default {
 
 <template>
 <div class="q-pa-md row items-start q-gutter-md">
-    <div v-for="token in tokens" :key="token.address">
+    <div
+        v-for="{ name, logoURI, address, balance, symbol, fullBalance, type, decimals } in tokens"
+        :key="address"
+    >
         <div class="col">
             <q-card>
-                <q-card-section>
-                    <q-avatar>
-                        <img :src="token.logoURI" alt="Token Logo">
-                        <div></div>
+                <q-card-section class="u-flex--center-y">
+                    <q-avatar class="q-mr-md">
+                        <img :src="logoURI" alt="Token Logo">
                     </q-avatar>
-                    <div class="text-h6">
-                        {{ token.name }}
-                    </div>
-                    <address-field :address="token.address" />
                     <div>
-                        <span class="q-pr-xs">
-                            Balance:
+                        <div class="text-h6">
+                            {{ name }}
+                        </div>
+                        <address-field :address="address" class="q-mb-sm"/>
+                        <div class="q-mb-sm">
+                            <span class="q-pr-xs">
+                                Balance:
+                            </span>
+                            <span v-if="balance === '0.0000'">
+                                {{ '< 0.0001 ' + symbol }}
+                            </span>
+                            <span v-else>
+                                {{ balance + ' ' + symbol || '(error fetching balance)' }}
+                            </span>
+                            <q-tooltip v-if="fullBalance > balance">
+                                {{ fullBalance + ' ' + symbol || 'error fetching balance' }}
+                            </q-tooltip>
+                        </div>
+                        <span
+                            v-if="showMetamaskPrompt"
+                            class="c-token-list__metamask-prompt"
+                            tabindex="0"
+                            :aria-label="`Launch MetaMask dialog to add ${symbol}`"
+                            @click="promptAddToMetamask(address, symbol, logoURI, type, decimals)"
+                        >
+                            Track {{ symbol }} in MetaMask
                         </span>
-                        <span v-if="token.balance === '0.0000'">
-                            {{ '< 0.0001 ' + token.symbol }}
-                        </span>
-                        <span v-else>
-                            {{ token.balance + ' ' + token.symbol || '(error fetching balance)' }}
-                        </span>
-                        <q-tooltip v-if="token.fullBalance > token.balance">
-                            {{ token.fullBalance + ' ' + token.symbol || 'error fetching balance' }}
-                        </q-tooltip>
                     </div>
                 </q-card-section>
             </q-card>
@@ -109,26 +129,11 @@ export default {
 </div>
 </template>
 
-<!--<template lang="pug">-->
-<!--.q-pa-md.row.items-start.q-gutter-md-->
-<!--     div(v-for="token in tokens" :key="token.address" )-->
-<!--       .col-->
-<!--         q-card()-->
-<!--          q-card-section()-->
-<!--            q-avatar()-->
-<!--              img( :src="token.logoURI" )-->
-<!--            .text-h6-->
-<!--              div() {{ token.name }}-->
-<!--            address-field( :address="token.address" )-->
-<!--            div()-->
-<!--                span.q-pr-xs() Balance:-->
-<!--                span(v-if="token.balance === '0.0000'") {{ '< 0.0001 ' + token.symbol }}-->
-<!--                span(v-else) {{ token.balance + ' ' + token.symbol || '(error fetching balance)' }}-->
-<!--                q-tooltip(v-if="token.fullBalance > token.balance") {{ token.fullBalance + ' ' + token.symbol || 'error fetching balance' }}-->
-<!--</template>-->
-
-<style lang="sass" scoped>
-.token-card
-  width: 100%
-  max-width: 250px
+<style lang="scss">
+.c-token-list {
+    &__metamask-prompt {
+        color: $secondary;
+        cursor: pointer ;
+    }
+}
 </style>
