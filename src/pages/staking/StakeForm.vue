@@ -108,8 +108,11 @@ import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { debounce } from 'lodash';
 import MetaMaskLogo from 'src/assets/metamask-fox.svg'
+import { stlos } from 'src/lib/logos';
 
-import { formatUnstakePeriod, promptAddToMetamask } from 'pages/staking/staking-utils';
+
+import { formatUnstakePeriod } from 'pages/staking/staking-utils';
+import { promptAddToMetamask } from 'src/lib/token-utils';
 import { WEI_PRECISION } from 'src/lib/utils';
 
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
@@ -288,7 +291,15 @@ export default {
         );
     },
     methods: {
-        promptAddToMetamask,
+        promptAddToMetamask() {
+            return promptAddToMetamask(
+                process.env.STAKED_TLOS_CONTRACT_ADDRESS,
+                'STLOS',
+                stlos,
+                'ERC20',
+                WEI_PRECISION,
+            );
+        },
         handleInputTop(newWei = '0') {
             if (newWei === this.topInputAmount)
                 return;
