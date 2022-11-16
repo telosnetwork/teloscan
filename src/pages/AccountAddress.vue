@@ -29,6 +29,7 @@ export default {
             title: '',
             telosAccount: null,
             balance: null,
+            nonce: null,
             isContract: false,
             isVerified: null,
             contract: null,
@@ -69,8 +70,10 @@ export default {
             this.telosAccount = account.account;
             this.isContract = account.code.length > 0;
 
-            if (this.isContract === false)
+            if (this.isContract === false){
                 this.contract = null;
+                this.nonce = account.nonce;
+            }
 
             const isVerifiedContract = this.isContract && this.isVerified;
             const knownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address.toLowerCase() === this.address.toLowerCase());
@@ -122,6 +125,9 @@ export default {
               TransactionField(:transaction-hash="contract.getCreationTrx()" )
             .text-white by address&nbsp
               AddressField(:address="contract.getCreator()")
+          span(v-else)
+            .text-white Nonce:
+              span.q-pl-xs {{ nonce }}
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount")
             .dataCardTile Native account
