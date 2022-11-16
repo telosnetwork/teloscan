@@ -45,12 +45,12 @@
                     label="Unstake"
                 />
                 <q-route-tab
-                    name="claim"
-                    :to="{ hash: '#claim'}"
+                    name="withdraw"
+                    :to="{ hash: '#withdraw'}"
                     exact
                     push
-                    label="Claim"
-                    :alert="showClaimNotification ? 'green' : false"
+                    label="Withdraw"
+                    :alert="showWithdrawNotification ? 'green' : false"
                 />
             </q-tabs>
 
@@ -69,7 +69,7 @@
                             <stake-form
                                 :stlos-contract-instance="stlosContractInstance"
                                 :tlos-balance="tlosBalance"
-                                :has-unlocked-tlos="showClaimNotification"
+                                :has-unlocked-tlos="showWithdrawNotification"
                                 :unstake-period-seconds="unstakePeriodSeconds"
                                 :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
                                 @balance-changed="handleBalanceChanged"
@@ -101,7 +101,7 @@
                     </div>
                 </q-tab-panel>
 
-                <q-tab-panel name="claim">
+                <q-tab-panel name="withdraw">
                     <div class="row">
                         <div
                             v-if="!escrowContractInstance"
@@ -110,7 +110,7 @@
                             <q-spinner />
                         </div>
                         <div v-else class="col-12">
-                            <claim-page
+                            <withdraw-page
                                 :escrow-contract-instance="escrowContractInstance"
                                 :unlocked-tlos-balance="unlockedTlosBalance"
                                 :total-unstaked="totalUnstakedTlosBalance"
@@ -140,7 +140,7 @@ const oneEth = ethers.utils.parseEther('1').toString();
 export default {
     name: 'StakingPage',
     components: {
-        ClaimPage: defineAsyncComponent(() => import('pages/staking/ClaimPage.vue')),
+        WithdrawPage: defineAsyncComponent(() => import('pages/staking/WithdrawPage.vue')),
         StakeForm,
         StakingStats,
         UnstakeForm: defineAsyncComponent(() => import('pages/staking/UnstakeForm')),
@@ -162,7 +162,7 @@ export default {
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn']),
-        showClaimNotification() {
+        showWithdrawNotification() {
             return BigNumber.from(this.unlockedTlosBalance ?? '0').gt('0');
         },
     },
