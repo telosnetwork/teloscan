@@ -1,4 +1,4 @@
-import { flushPromises } from "@vue/test-utils";
+import { flushPromises } from '@vue/test-utils';
 
 export const oneEthInWei                    =  `1${'0'.repeat(18)}`;
 export const onePointFiveEthInWei           = `15${'0'.repeat(17)}`;

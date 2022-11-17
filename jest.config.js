@@ -5,6 +5,11 @@
 
 module.exports = {
     rootDir: './',
+    globals: {
+        'vue-jest': {
+            pug: { doctype: 'html' },
+        },
+    },
     moduleNameMapper: {
         '^src(.*)$': '<rootDir>/src$1',
         '^components(.*)$': '<rootDir>/src/components$1',
@@ -29,4 +34,36 @@ module.exports = {
         ],
     },
     snapshotSerializers: ['jest-serializer-vue'],
+
+    // coverage config
+    collectCoverage: false,
+    coverageDirectory: '<rootDir>/test/coverage',
+    collectCoverageFrom: [
+        '<rootDir>/src/**/*.vue',
+        '<rootDir>/src/**/*.js',
+        '<rootDir>/src/**/*.ts',
+        '<rootDir>/src/**/*.jsx',
+        '<rootDir>/src/**/*.tsx',
+    ],
+    coveragePathIgnorePatterns: ['/node_modules/'],
+    coverageThreshold: {
+        global: {
+            statements: 1.2,
+            branches: 0,
+            functions: 0,
+            lines: 1.24,
+        },
+        './src/components/': {
+            statements: 1.18,
+            branches: 0,
+            functions: 0,
+            lines: 1.23,
+        },
+        './src/pages/': {
+            statements: 5.38,
+            branches: 2.97,
+            functions: 0.75,
+            lines: 5.49,
+        },
+    },
 };
