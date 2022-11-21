@@ -1,7 +1,7 @@
 <template>
 <div class="row">
     <div class="col-12">
-        <p class="text-h5">Inputs</p>
+        <p class="text-h5 text-white">Inputs</p>
     </div>
     <q-card class="col-12">
         <div class="row q-pa-md">

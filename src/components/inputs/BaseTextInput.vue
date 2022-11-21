@@ -3,6 +3,7 @@
     <q-input
         :model-value="inputModel"
         v-bind="quasarProps"
+        color="secondary"
         @change="inputModel = $event"
     />
 </div>
