@@ -67,6 +67,12 @@ export default class ContractManager {
 
         return token;
     }
+
+    getTokenTypeFromLog(log){
+        let sig = log.topics[0].substr(0, 10);
+        let type = (log.topics.length === 4) ? 'erc721' : 'erc20';
+        return (sig === '0xc3d58168') ? 'erc1155' : type;
+    }
     async getEventIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
         if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, prefix))
@@ -248,15 +254,16 @@ export default class ContractManager {
             if (!tokenData.symbol)
                 return;
 
-            tokenData.type = type;
-
             if (type === 'erc20') {
                 tokenData.decimals = await contract.decimals();
             } else if(type === 'erc721'){
-                tokenData.iERC721Metadata = await this.supportsInterface(address, '0x5b5e139f')
+                tokenData.metadata = await this.supportsInterface(address, '0x5b5e139f')
             } else if(type === 'erc1155'){
-                // ERC1155 extensions
+                tokenData.metadata = await this.supportsInterface(address, '0x0e89341c')
             }
+
+            tokenData.type = type;
+
             return tokenData;
         } catch (e) {
             return;
