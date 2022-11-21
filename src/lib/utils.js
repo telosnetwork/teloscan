@@ -52,7 +52,7 @@ export function parseErrorMessage(output) {
     if (!output)
         return;
 
-    let message;
+    let message = '';
     if (output.startsWith(REVERT_FUNCTION_SELECTOR))
         message = parseRevertReason(output);
 

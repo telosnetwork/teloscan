@@ -125,8 +125,8 @@ export default {
               TransactionField(:transaction-hash="contract.getCreationTrx()" )
             .text-white by address&nbsp
               AddressField(:address="contract.getCreator()")
-          span(v-else)
-            .text-white Nonce:
+          small(v-else)
+            .text-white Number used once (nonce):
               span.q-pl-xs {{ nonce }}
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount")
@@ -140,6 +140,7 @@ export default {
         q-route-tab(name="transactions" :to="{ hash: '#transactions' }" exact replace label="Transactions")
         q-route-tab(name="erc20transfers" :to="{ hash: '#erc20' }" exact replace label="ERC20 Transfers")
         q-route-tab(name="erc721transfers" :to="{ hash: '#erc721' }" exact replace label="ERC721 Transfers")
+        q-route-tab(name="erc1155transfers" :to="{ hash: '#erc1155' }" exact replace label="ERC1155 Transfers")
         q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace label="Tokens")
         q-route-tab(v-if="isContract" name="contract" :to="{ hash: '#contract' }" exact replace label="Contract")
       .q-mb-md.tableWrapper
@@ -148,6 +149,8 @@ export default {
             transaction-table( :title="address" :filter="{address}" )
           q-tab-panel( name="erc20transfers" )
             transfer-table( title="ERC-20 Transfers" token-type="erc20" :address="address" )
+          q-tab-panel( name="erc1155transfers" )
+            transfer-table( title="ERC-1155 Transfers" token-type="erc1155" :address="address" )
           q-tab-panel( name="erc721transfers" )
             transfer-table( title="ERC-721 Transfers" token-type="erc721" :address="address" )
           q-tab-panel( name="tokens" )

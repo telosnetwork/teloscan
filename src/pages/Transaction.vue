@@ -114,23 +114,32 @@ export default {
                     let contract = await this.$contractManager.getContract(log.address, type);
                     if (typeof contract.token !== 'undefined' && contract.token !== null) {
                         let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name, 'decimals': contract.token.decimals}
-                        if (contract.token.extensions?.metadata) {
-                            try {
-                                token = await this.$contractManager.loadTokenMetadata(log.address, contract.token, BigNumber.from(log.topics[3]).toString());
-                            } catch (e) {
-                                console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
-                            }
-                        }
                         if (contract.token.type === 'erc721') {
+                            let tokenId = BigNumber.from(log.topics[3]).toString();
+                            if (contract.token.extensions?.metadata) {
+                                try {
+                                    token = await this.$contractManager.loadTokenMetadata(log.address, contract.token, tokenId);
+                                } catch (e) {
+                                    console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
+                                }
+                            }
                             this.erc721Transfers.push({
-                                'tokenId': BigNumber.from(log.topics[3]).toString(),
+                                'tokenId': tokenId,
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                                 'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
                                 'token': token,
                             });
                         } else if (contract.token.type === 'erc1155') {
+                            let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
+                            if (contract.token.extensions?.metadata) {
+                                try {
+                                    token = await this.$contractManager.loadTokenMetadata(log.address, contract.token, tokenId);
+                                } catch (e) {
+                                    console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
+                                }
+                            }
                             this.erc1155Transfers.push({
-                                'tokenId': BigNumber.from(log.data.substr(0, 66)).toString(),
+                                'tokenId': tokenId,
                                 'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
                                 'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                                 'token': token,

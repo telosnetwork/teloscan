@@ -49,19 +49,20 @@ div(class="fit row wrap justify-start items-start content-start")
       div(class="col-3")
         strong {{ ` To : ` }}
         <AddressField :highlight="trxFrom === transfer.to && transfers.length > 1" :address="transfer.to" :truncate="15" copy :name="transfer.to === contract.address && contract.name ?  contract.name : null" />
-      div(v-if="type==='ERC721' || type==='ERC1155'" class="col-4")
-        strong {{ ` Token : ` }}
+      div.flex(v-if="type === 'ERC721' || type==='ERC1155'" class="col-4")
+        strong.col-2 {{ ` Token : ` }}
         router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs") {{ transfer.token.symbol }}
-        span(class="word-break") {{ ' #' + transfer.tokenId }}
-        span(class="word-break" v-if="transfer.token.metadata")
-          span
-            a(clickable :href="transfer.token.metadata" target="_blank")
-              q-icon(name="description" size="14px" class="q-pb-sm q-ml-xs")
-            q-tooltip Consult metadata
-          span
-            a(v-if="transfer.token.image" clickable :href="transfer.token.image" target="_blank" class="q-pl-xs")
-              q-icon(name="image" size="14px" class="q-pb-sm q-ml-xs")
-            q-tooltip Consult media
+        div.col
+          span(class="word-break") {{ ' #' + transfer.tokenId }}
+          span(class="word-break" v-if="transfer.token.metadata")
+            span
+              a(clickable :href="transfer.token.metadata" target="_blank")
+                q-icon(name="description" size="14px" class="q-pb-sm q-ml-xs")
+              q-tooltip Consult metadata
+            span
+              a(v-if="transfer.token.image" clickable :href="transfer.token.image" target="_blank" class="q-pl-xs")
+                q-icon(name="image" size="14px" class="q-pb-sm q-ml-xs")
+              q-tooltip Consult media
       div(v-else class="col-5")
         strong {{ ` Token : ` }}
         span.clickable(@click="transfer.showWei = !transfer.showWei")
