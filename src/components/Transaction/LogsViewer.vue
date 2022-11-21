@@ -76,7 +76,9 @@ export default {
             const log = this.logs[i];
             const function_signature = log.topics[0].substr(0, 10);
             if(TRANSFER_SIGNATURES.includes(function_signature)) {
-                contract = await this.getLogContract(log, (log.topics.length === 4) ? 'erc721': 'erc20');
+                let type = (log.topics.length === 4) ? 'erc721': 'erc20';
+                type = (function_signature === '0xc3d58168') ? 'erc1155' : type;
+                contract = await this.getLogContract(log, type);
             } else {
                 contract = await this.getLogContract(log);
             }

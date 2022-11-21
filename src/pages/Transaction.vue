@@ -111,7 +111,6 @@ export default {
                 let sig = log.topics[0].substr(0, 10);
                 if (TRANSFER_SIGNATURES.includes(sig)) {
                     let type = this.$contractManager.getTokenTypeFromLog(log);
-                    console.log(type)
                     let contract = await this.$contractManager.getContract(log.address, type);
                     if (typeof contract.token !== 'undefined' && contract.token !== null) {
                         let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name, 'decimals': contract.token.decimals}
@@ -128,12 +127,12 @@ export default {
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                                 'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
                                 'token': token,
-                            })
+                            });
                         } else if (contract.token.type === 'erc1155') {
-                            console.log('is 1155')
                             this.erc1155Transfers.push({
+                                'tokenId': BigNumber.from(log.data.substr(0, 66)).toString(),
                                 'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
-                                'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
+                                'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                                 'token': token,
                             });
                         } else {
@@ -143,7 +142,7 @@ export default {
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                                 'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
                                 'token': token,
-                            })
+                            });
                         }
                     }
                 }

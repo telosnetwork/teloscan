@@ -247,7 +247,6 @@ export default class ContractManager {
             return;
         }
         const contract = new ethers.Contract(address, this.getTokenABI(type), this.getEthersProvider());
-        console.log(contract);
         try {
             let tokenData = {};
             if (type === 'erc20') {
@@ -261,6 +260,7 @@ export default class ContractManager {
                     metadata: await this.supportsInterface(address, '0x5b5e139f'),
                 }
             } else if(type === 'erc1155'){
+                tokenData.name = contract.name || contract.address;
                 tokenData.extensions = {
                     metadata: await this.supportsInterface(address, '0x0e89341c'),
                 }
