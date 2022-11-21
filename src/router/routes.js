@@ -63,6 +63,17 @@ const routes = [
         }],
     },
     {
+        path: '/demo',
+        name: 'demo',
+        // component: () => import('layouts/MainLayout.vue'),
+        component: () => import('pages/demo/DemoIndexPage.vue'),
+        children: [{
+            path: 'inputs',
+            name: 'inputs-demo',
+            component: () => import('pages/demo/inputs/InputsDemo.vue'),
+        }],
+    },
+    {
         path: '/endpoints',
         component: () => import('layouts/MainLayout.vue'),
         children: [{ path: '', component: () => import('pages/Endpoints.vue') }],
