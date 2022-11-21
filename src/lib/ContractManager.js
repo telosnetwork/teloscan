@@ -58,11 +58,12 @@ export default class ContractManager {
     }
     async loadTokenMetadata(address, token, tokenId){
         if(token.type === 'erc1155'){
-            console.error('Loading ERC1155 Metadata not implemented yet')
-            return;
+            const contract = await this.getContractFromAbi(address, erc1155Abi);
+            token.metadata = await contract.uri(tokenId);
+        } else {
+            const contract = await this.getContractFromAbi(address, erc721MetadataAbi);
+            token.metadata = await contract.tokenURI(tokenId);
         }
-        const contract = await this.getContractFromAbi(address, erc721MetadataAbi);
-        token.metadata = await contract.tokenURI(tokenId);
         token.metadata = token.metadata.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/');
 
         return token;
@@ -212,7 +213,10 @@ export default class ContractManager {
     }
 
     async isTokenType(address, type){
-        if(type === 'erc721'){
+        if(typeof type === 'undefined'){
+            return false;
+        }
+        else if(type === 'erc721'){
             if(!await this.supportsInterface(address, '0x80ac58cd')){
                 return false;
             }
@@ -243,27 +247,26 @@ export default class ContractManager {
             return;
         }
         const contract = new ethers.Contract(address, this.getTokenABI(type), this.getEthersProvider());
+        console.log(contract);
         try {
             let tokenData = {};
-            tokenData.name = await contract.name();
-            if (!tokenData.name)
-                return;
-
-            tokenData.symbol = await contract.symbol();
-
-            if (!tokenData.symbol)
-                return;
-
             if (type === 'erc20') {
+                tokenData.symbol = await contract.symbol();
+                tokenData.name = await contract.name();
                 tokenData.decimals = await contract.decimals();
             } else if(type === 'erc721'){
-                tokenData.metadata = await this.supportsInterface(address, '0x5b5e139f')
+                tokenData.symbol = await contract.symbol();
+                tokenData.name = await contract.name();
+                tokenData.extensions = {
+                    metadata: await this.supportsInterface(address, '0x5b5e139f'),
+                }
             } else if(type === 'erc1155'){
-                tokenData.metadata = await this.supportsInterface(address, '0x0e89341c')
+                tokenData.extensions = {
+                    metadata: await this.supportsInterface(address, '0x0e89341c'),
+                }
             }
 
             tokenData.type = type;
-
             return tokenData;
         } catch (e) {
             return;

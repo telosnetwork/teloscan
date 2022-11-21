@@ -111,18 +111,18 @@ export default {
                 let sig = log.topics[0].substr(0, 10);
                 if (TRANSFER_SIGNATURES.includes(sig)) {
                     let type = this.$contractManager.getTokenTypeFromLog(log);
+                    console.log(type)
                     let contract = await this.$contractManager.getContract(log.address, type);
                     if (typeof contract.token !== 'undefined' && contract.token !== null) {
-                        console.log(type)
                         let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name, 'decimals': contract.token.decimals}
-                        if (contract.token.type === 'erc721') {
-                            if (contract.token.iERC721Metadata) {
-                                try {
-                                    token = await this.$contractManager.loadTokenMetadata(log.address, token, BigNumber.from(log.topics[3]).toString());
-                                } catch (e) {
-                                    console.error(`Could not retreive ERC721 Metadata for ${contract.address}: ${e.message}`);
-                                }
+                        if (contract.token.extensions?.metadata) {
+                            try {
+                                token = await this.$contractManager.loadTokenMetadata(log.address, contract.token, BigNumber.from(log.topics[3]).toString());
+                            } catch (e) {
+                                console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
                             }
+                        }
+                        if (contract.token.type === 'erc721') {
                             this.erc721Transfers.push({
                                 'tokenId': BigNumber.from(log.topics[3]).toString(),
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
@@ -132,6 +132,8 @@ export default {
                         } else if (contract.token.type === 'erc1155') {
                             console.log('is 1155')
                             this.erc1155Transfers.push({
+                                'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
+                                'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
                                 'token': token,
                             });
                         } else {
