@@ -27,7 +27,6 @@ export const quasarInputProps = {
     rules: {
         type: Array,
         default: undefined,
-        validator: rules => rules.forEach(rule => ['function', 'string'].includes(typeof rule)),
     },
     ['reactive-rules']: {
         type: Boolean,
