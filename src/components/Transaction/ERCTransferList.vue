@@ -54,10 +54,10 @@ div(class="fit row wrap justify-start items-start content-start")
         router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs") {{ transfer.token.symbol }}
         div.col
           span(v-if="transfer.tokenId.length > 15")
-            span(class="word-break") {{ ' #' + transfer.tokenId.slice(0, 15) + '...' }}
+            span(class="word-break q-pl-xs") {{ ' #' + transfer.tokenId.slice(0, 15) + '...' }}
               q-tooltip {{ '#' + transfer.tokenId }}
           span(v-else)
-              span(class="word-break") {{ ' #' + transfer.tokenId }}
+              span(class="word-break q-pl-xs") {{ ' #' + transfer.tokenId }}
           span(class="word-break" v-if="transfer.token.metadata")
             span
               a(clickable :href="transfer.token.metadata" target="_blank")

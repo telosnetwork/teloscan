@@ -34,7 +34,8 @@ export default {
         for(let k = 0; k < this.itxs.length;k++){
             let itx = this.itxs[k];
             let contract = await this.getContract(itx.to);
-            let name = (itx.type === 'create')  ? 'Contract deployment' : 'TLOS transfer';
+            let name = (itx.value)  ? 'TLOS transfer' : 'Unknown (' + '0x' + itx.input.slice(0, 8) +')';
+            name = (itx.type === 'create')  ? 'Contract deployment' : name;
             let inputs, outputs, args  = false;
             if(itx.traceAddress.length < 2){
                 itx.index = i;
