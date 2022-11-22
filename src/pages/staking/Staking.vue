@@ -22,105 +22,107 @@
     </div>
     <div class="row">
         <div class="col-12">
-            <q-tabs
-                v-model="selectedTab"
-                dense
-                active-color="secondary"
-                align="justify"
-                narrow-indicator
-                class="c-staking-page__tabs-header tabsBar topRounded tableWrapper"
-            >
-                <q-route-tab
-                    name="stake"
-                    :to="{ hash: '#stake'}"
-                    exact
-                    push
-                    label="Stake"
-                />
-                <q-route-tab
-                    name="unstake"
-                    :to="{ hash: '#unstake'}"
-                    exact
-                    push
-                    label="Unstake"
-                />
-                <q-route-tab
-                    name="withdraw"
-                    :to="{ hash: '#withdraw'}"
-                    exact
-                    push
-                    label="Withdraw"
-                    :alert="showWithdrawNotification ? 'green' : false"
-                />
-            </q-tabs>
+            <div v-if="!isLoggedInEVM" class="bg-negative q-pa-md q-mb-xl text-white flex items-center rounded-borders"><q-icon name="warning" /> <span class="q-pl-xs"><span v-if="isLoggedIn">Please logout and log back in</span><span v-else>Please login</span> using an EVM wallet such as Metamask to access staking</span></div>
+            <div v-else>
+                <q-tabs
+                    v-model="selectedTab"
+                    dense
+                    active-color="secondary"
+                    align="justify"
+                    narrow-indicator
+                    class="c-staking-page__tabs-header tabsBar topRounded tableWrapper"
+                >
+                    <q-route-tab
+                        name="stake"
+                        :to="{ hash: '#stake'}"
+                        exact
+                        push
+                        label="Stake"
+                    />
+                    <q-route-tab
+                        name="unstake"
+                        :to="{ hash: '#unstake'}"
+                        exact
+                        push
+                        label="Unstake"
+                    />
+                    <q-route-tab
+                        name="withdraw"
+                        :to="{ hash: '#withdraw'}"
+                        exact
+                        push
+                        label="Withdraw"
+                        :alert="showWithdrawNotification ? 'green' : false"
+                    />
+                </q-tabs>
+                <q-tab-panels
+                    v-model="selectedTab"
+                    animated
+                    keep-alive
+                    class="q-py-lg"
+                >
+                    <q-tab-panel name="stake">
+                        <div class="row">
+                            <div v-if="!stlosContractInstance" class="col-12 u-flex--center">
+                                <q-spinner />
+                            </div>
+                            <div v-else class="col-12">
+                                <stake-form
+                                    :stlos-contract-instance="stlosContractInstance"
+                                    :tlos-balance="tlosBalance"
+                                    :has-unlocked-tlos="showWithdrawNotification"
+                                    :unstake-period-seconds="unstakePeriodSeconds"
+                                    :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
+                                    @balance-changed="handleBalanceChanged"
+                                />
+                            </div>
+                        </div>
+                    </q-tab-panel>
 
-            <q-tab-panels
-                v-model="selectedTab"
-                animated
-                keep-alive
-                class="q-py-lg"
-            >
-                <q-tab-panel name="stake">
-                    <div class="row">
-                        <div v-if="!stlosContractInstance" class="col-12 u-flex--center">
-                            <q-spinner />
+                    <q-tab-panel name="unstake">
+                        <div class="row">
+                            <div
+                                v-if="!stlosContractInstance || !escrowContractInstance"
+                                class="col-12 u-flex--center"
+                            >
+                                <q-spinner />
+                            </div>
+                            <div v-else class="col-12">
+                                <unstake-form
+                                    :stlos-contract-instance="stlosContractInstance"
+                                    :escrow-contract-instance="escrowContractInstance"
+                                    :stlos-balance="stlosBalance"
+                                    :unlocked-tlos-balance="unlockedTlosBalance"
+                                    :unstake-period-seconds="unstakePeriodSeconds"
+                                    :deposits="escrowDeposits"
+                                    :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
+                                    @balance-changed="handleBalanceChanged"
+                                />
+                            </div>
                         </div>
-                        <div v-else class="col-12">
-                            <stake-form
-                                :stlos-contract-instance="stlosContractInstance"
-                                :tlos-balance="tlosBalance"
-                                :has-unlocked-tlos="showWithdrawNotification"
-                                :unstake-period-seconds="unstakePeriodSeconds"
-                                :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
-                                @balance-changed="handleBalanceChanged"
-                            />
-                        </div>
-                    </div>
-                </q-tab-panel>
+                    </q-tab-panel>
 
-                <q-tab-panel name="unstake">
-                    <div class="row">
-                        <div
-                            v-if="!stlosContractInstance || !escrowContractInstance"
-                            class="col-12 u-flex--center"
-                        >
-                            <q-spinner />
+                    <q-tab-panel name="withdraw">
+                        <div class="row">
+                            <div
+                                v-if="!escrowContractInstance"
+                                class="col-12 u-flex--center"
+                            >
+                                <q-spinner />
+                            </div>
+                            <div v-else class="col-12">
+                                <withdraw-page
+                                    :escrow-contract-instance="escrowContractInstance"
+                                    :unlocked-tlos-balance="unlockedTlosBalance"
+                                    :total-unstaked="totalUnstakedTlosBalance"
+                                    :deposits="escrowDeposits"
+                                    @balance-changed="handleBalanceChanged"
+                                />
+                            </div>
                         </div>
-                        <div v-else class="col-12">
-                            <unstake-form
-                                :stlos-contract-instance="stlosContractInstance"
-                                :escrow-contract-instance="escrowContractInstance"
-                                :stlos-balance="stlosBalance"
-                                :unlocked-tlos-balance="unlockedTlosBalance"
-                                :unstake-period-seconds="unstakePeriodSeconds"
-                                :deposits="escrowDeposits"
-                                :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
-                                @balance-changed="handleBalanceChanged"
-                            />
-                        </div>
-                    </div>
-                </q-tab-panel>
-
-                <q-tab-panel name="withdraw">
-                    <div class="row">
-                        <div
-                            v-if="!escrowContractInstance"
-                            class="col-12 u-flex--center"
-                        >
-                            <q-spinner />
-                        </div>
-                        <div v-else class="col-12">
-                            <withdraw-page
-                                :escrow-contract-instance="escrowContractInstance"
-                                :unlocked-tlos-balance="unlockedTlosBalance"
-                                :total-unstaked="totalUnstakedTlosBalance"
-                                :deposits="escrowDeposits"
-                                @balance-changed="handleBalanceChanged"
-                            />
-                        </div>
-                    </div>
-                </q-tab-panel>
-            </q-tab-panels>
+                    </q-tab-panel>
+                </q-tab-panels>
+            </div>
         </div>
     </div>
 </div>
@@ -165,11 +167,21 @@ export default {
         showWithdrawNotification() {
             return BigNumber.from(this.unlockedTlosBalance ?? '0').gt('0');
         },
+        isLoggedInEVM() {
+            if(!this.isLoggedIn) return false;
+            try {
+                if(this.$providerManager.getEthersProvider()) return true;
+            } catch (e) {
+                return false;
+            }
+            return false;
+        },
     },
     watch: {
         address: {
             immediate: true,
             async handler(address, oldAddress) {
+                if(!this.isLoggedInEVM) return;
                 if (address !== oldAddress) {
                     await this.fetchContractInstances();
                     await this.fetchBalances();
@@ -178,6 +190,7 @@ export default {
         },
     },
     async created() {
+        if(!this.isLoggedInEVM) return;
         await this.fetchContracts();
         await this.fetchContractInstances();
     },

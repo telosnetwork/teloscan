@@ -157,7 +157,7 @@ export default {
                                 valueDisplay = 'Unknown precision';
                             }
                         } else {
-                            let tokenId = BigNumber.from(log.topics[3]).toString();
+                            let tokenId = (this.tokenType === 'erc1155') ? BigNumber.from(log.data.substr(0, 66)).toString() : BigNumber.from(log.topics[3]).toString();
                             if(tokenId.length > 15){
                                 tokenId = tokenId.substr(0, 15) + '...'
                             }
