@@ -22,6 +22,7 @@
                         label="Unsigned Integer Input"
                         name="base input"
                         size="8"
+                        required="required"
                     />
                 </div>
             </div>
@@ -46,7 +47,6 @@ export default {
         baseTextInputValue: '',
         uintInputValue: '',
     }),
-
 }
 </script>
 

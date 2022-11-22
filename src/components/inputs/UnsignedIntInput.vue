@@ -1,5 +1,6 @@
 <template>
 <base-text-input
+    v-bind="$attrs"
     :model-value="modelValue"
     :label="shapedLabel"
     :name="name"
@@ -14,7 +15,6 @@
 
 <script>
 import BaseTextInput from 'components/inputs/BaseTextInput';
-// import { BigNumber } from 'ethers';
 
 export default {
     name: 'UnsignedIntInput',
@@ -26,7 +26,7 @@ export default {
     ],
     props: {
         modelValue: {
-            type: [String, Number],
+            type: String,
             required: true,
         },
         label: {
@@ -51,9 +51,10 @@ export default {
         rules() {
             const errMessageTooLong = `Maximum number of digits for uint${this.size} is ${this.size}`;
             const errMessageNoNegative = `Value for uint${this.size} must not be negative`;
+
             return [
                 val => val.length <= +this.size || errMessageTooLong,
-                val => val > 0 || errMessageNoNegative,
+                val => val[0] !== '-' || errMessageNoNegative,
             ];
         },
         shapedLabel() {
@@ -61,9 +62,9 @@ export default {
         },
     },
     methods: {
-        handleChange(value) {
-            if (value !== this.modelValue) {
-                this.$emit('update:modelValue', this.modelValue);
+        handleChange(newValue) {
+            if (newValue !== this.modelValue) {
+                this.$emit('update:modelValue', newValue);
             }
         },
     },
