@@ -260,7 +260,7 @@ q-table(
                 address-field( :address="props.row.to" )
             q-td( key="value" :props="props" ) {{ props.row.valueDisplay }}
             q-td( key="token" :props="props" )
-                q-img.coin-icon( :src="getIcon(props.row)" )
+                q-img.coin-icon(v-if="tokenType==='erc20'" :src="getIcon(props.row)" )
                 address-field.token-name( :address="props.row.address" :name="props.row.name" :truncate="15" )
 </template>
 
