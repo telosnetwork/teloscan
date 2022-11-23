@@ -181,7 +181,6 @@ export default {
         address: {
             immediate: true,
             async handler(address, oldAddress) {
-                if(!this.isLoggedInEVM) return;
                 if (address !== oldAddress) {
                     await this.fetchContractInstances();
                     await this.fetchBalances();
@@ -190,13 +189,12 @@ export default {
         },
     },
     async created() {
-        if(!this.isLoggedInEVM) return;
         await this.fetchContracts();
         await this.fetchContractInstances();
     },
     methods: {
         async fetchBalances() {
-            if (!this.address) {
+            if (!this.isLoggedInEVM || !this.address) {
                 this.tlosBalance = null;
                 this.stlosBalance = null;
                 this.unlockedTlosBalance = null;
