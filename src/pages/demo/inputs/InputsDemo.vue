@@ -49,6 +49,18 @@
                     />
                 </div>
             </div>
+
+            <div class="row">
+                <div class="col-3">
+                    <signed-int-input
+                        v-model="intInputValue"
+                        v-bind="universalToggles"
+                        label="Signed Integer Input"
+                        name="base input"
+                        :size="8"
+                    />
+                </div>
+            </div>
         </div>
 
 
@@ -59,12 +71,14 @@
 <script>
 import BaseTextInput from 'components/inputs/BaseTextInput';
 import UnsignedIntInput from 'components/inputs/UnsignedIntInput';
+import SignedIntInput from 'components/inputs/SignedIntInput';
 
 export default {
     name: 'InputDemo',
     components: {
-        UnsignedIntInput,
         BaseTextInput,
+        SignedIntInput,
+        UnsignedIntInput,
     },
     data: () => ({
         allRequired: false,
@@ -72,6 +86,7 @@ export default {
         allReadonly: false,
         baseTextInputValue: '',
         uintInputValue: '',
+        intInputValue: '',
     }),
     computed: {
         universalToggles() {
