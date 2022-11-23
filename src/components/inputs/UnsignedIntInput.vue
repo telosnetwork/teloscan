@@ -14,6 +14,8 @@
 </template>
 
 <script>
+import { BigNumber } from 'ethers';
+
 import BaseTextInput from 'components/inputs/BaseTextInput';
 
 export default {
@@ -37,6 +39,8 @@ export default {
             type: String,
             required: true,
         },
+        // size in bits, in increments of 8 (i.e. bytes): // https://docs.soliditylang.org/en/latest/types.html#integers
+        // e.g. a size of 64 produces a type === uint64
         size: {
             type: [Number, String],
             required: true,
@@ -49,11 +53,13 @@ export default {
     },
     computed: {
         rules() {
-            const errMessageTooLong = `Maximum number of digits for uint${this.size} is ${this.size}`;
+            const maximum = +this.size === 0 ? '0' : BigNumber.from(2).pow(+this.size).sub(1);
+
+            const errMessageTooLong = `Maximum value for uint${this.size} is ${maximum.toString()}`;
             const errMessageNoNegative = `Value for uint${this.size} must not be negative`;
 
             return [
-                val => val.length <= +this.size || errMessageTooLong,
+                val => BigNumber.from(val).lte(maximum) || errMessageTooLong,
                 val => val[0] !== '-' || errMessageNoNegative,
             ];
         },
