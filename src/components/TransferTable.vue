@@ -134,8 +134,8 @@ export default {
                         const address = `0x${log.address.substring(log.address.length - 40)}`;
                         let from, to;
                         if(this.tokenType === 'erc1155'){
-                            from = `0x${log.topics[1].substring(log.topics[2].length - 40)}`;
-                            to = `0x${log.topics[2].substring(log.topics[3].length - 40)}`;
+                            from = `0x${log.topics[2].substring(log.topics[2].length - 40)}`;
+                            to = `0x${log.topics[3].substring(log.topics[3].length - 40)}`;
                         } else {
                             from = `0x${log.topics[1].substring(log.topics[1].length - 40)}`;
                             to = `0x${log.topics[2].substring(log.topics[2].length - 40)}`;
@@ -192,7 +192,7 @@ export default {
         getIcon(row) {
             if (row.token && row.token.logoURI) {
                 if (row.token.logoURI.startsWith('ipfs://')) {
-                    return `https://ipfs.io/ipfs/${row.token.logoURI.replace(/ipfs:\/\//, '')}`
+                    return row.token.logoURI.replace(/ipfs:\/\//, 'https://ipfs.io/ipfs/')
                 }
                 return row.token.logoURI;
             } else {
@@ -202,9 +202,9 @@ export default {
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
             let path = `/v2/evm/get_transactions?limit=${
-                rowsPerPage === 0 ? 500 : rowsPerPage
+                rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
-            // TODO: switch path according to ERC type
+            // TODO: switch path according to ERC type (ERC20 & ERC721 have same sig)
             let signature = TRANSFER_EVENT_ERC20_SIGNATURE;
             if(this.tokenType === 'erc1155'){
                 signature = TRANSFER_EVENT_ERC1155_SIGNATURE;

@@ -87,11 +87,12 @@ export default {
                 let parsedLog = await contract.parseLogs([log]);
                 if(parsedLog[0]){
                     parsedLog[0].contract = contract;
+                    parsedLog[0].sig = function_signature;
                     this.parsedLogs.push(parsedLog[0]);
                 } else {
                     let nLog = Object.assign({}, log);
                     nLog.contract = contract;
-                    nLog.sig = nLog.topics[0].substr(0, 10);
+                    nLog.sig = function_signature;
                     this.parsedLogs.push(nLog);
                 }
                 this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());
