@@ -22,7 +22,7 @@
     </div>
     <div class="row">
         <div class="col-12">
-            <div v-if="!isLoggedInEVM" class="bg-negative q-pa-md q-mb-xl text-white flex items-center rounded-borders"><q-icon name="warning" /> <span class="q-pl-xs"><span v-if="isLoggedIn">Please logout and log back in</span><span v-else>Please login</span> using an EVM wallet such as Metamask to access staking</span></div>
+            <div v-if="!isLoggedInEVM" class="bg-negative q-pa-md q-mb-xl text-white flex items-center rounded-borders"><q-icon name="warning" size="32" /> <span class="q-pl-sm"><span v-if="isLoggedIn">Please logout and log back in</span><span v-else>Please login</span> using an <strong>EVM wallet</strong> such as Metamask to access staking</span></div>
             <div v-else>
                 <q-tabs
                     v-model="selectedTab"
