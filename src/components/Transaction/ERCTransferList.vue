@@ -58,6 +58,10 @@ div(class="fit row wrap justify-start items-start content-start")
               q-tooltip {{ '#' + transfer.tokenId }}
           span(v-else)
               span(class="word-break q-pl-xs") {{ ' #' + transfer.tokenId }}
+          span(v-if="type==='ERC1155'")
+            a(clickable :href="'/address/' + transfer.token.address" target="_blank")
+              q-icon(name="library_books" size="14px" class="q-pb-sm q-ml-xs")
+            q-tooltip Consult collection
           span(class="word-break" v-if="transfer.token.metadata")
             span
               a(clickable :href="transfer.token.metadata" target="_blank")
