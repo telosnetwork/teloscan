@@ -1,7 +1,9 @@
 <template>
 <div class="c-base-input">
     <q-input
+        ref="input"
         :model-value="modelValue"
+        :reactive-rules="true"
         v-bind="binding"
         autocomplete="off"
         color="secondary"
@@ -85,6 +87,14 @@ export default {
                 rules: this.mergedRules,
                 label: `${this.label}${this.required ? '*' : ''}`,
             };
+        },
+    },
+    watch: {
+        required(newValue, oldValue) {
+            if (newValue !== oldValue) {
+                // prevent 'field is required' error from persisting if 'required' prop changes
+                this.$refs.input.resetValidation();
+            }
         },
     },
     methods: {
