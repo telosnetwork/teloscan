@@ -1,14 +1,37 @@
 <template>
 <div class="row">
-    <div class="col-12">
-        <p class="text-h5 text-white">Inputs</p>
+    <div class="col-12 text-white">
+        <p class="text-h5">Inputs</p>
+        <p>
+            These inputs wrap <code>QInput</code> components, and all text-based inputs are compatible with
+            <a href="https://quasar.dev/vue-components/input" target="_blank" rel="noopener noreferrer">
+                quasar props
+            </a>
+            (other than style props, which are generally fixed)
+        </p>
     </div>
     <q-card class="col-12">
+        <div class="row">
+            <div class="col-6 q-pa-md">
+                <input v-model="allRequired" type="checkbox" id="allRequired">
+                <label for="allRequired">&nbsp;All inputs required?</label>
+                <br>
+
+                <input v-model="allDisabled" type="checkbox" id="allDisabled">
+                <label for="allDisabled">&nbsp;All inputs disabled?</label>
+                <br>
+
+                <input v-model="allReadonly" type="checkbox" id="allReadonly">
+                <label for="allReadonly">&nbsp;All inputs readonly?</label>
+                <br>
+            </div>
+        </div>
         <div class="q-pa-md">
             <div class="row">
                 <div class="col-3">
                     <base-text-input
                         v-model="baseTextInputValue"
+                        v-bind="universalToggles"
                         label="Base Text Input"
                         name="base input"
                     />
@@ -19,10 +42,10 @@
                 <div class="col-3">
                     <unsigned-int-input
                         v-model="uintInputValue"
+                        v-bind="universalToggles"
                         label="Unsigned Integer Input"
                         name="base input"
                         size="8"
-                        required="required"
                     />
                 </div>
             </div>
@@ -44,9 +67,21 @@ export default {
         BaseTextInput,
     },
     data: () => ({
+        allRequired: false,
+        allDisabled: false,
+        allReadonly: false,
         baseTextInputValue: '',
         uintInputValue: '',
     }),
+    computed: {
+        universalToggles() {
+            return {
+                required: this.allRequired,
+                disabled: this.allDisabled,
+                readonly: this.allReadonly,
+            };
+        },
+    },
 }
 </script>
 

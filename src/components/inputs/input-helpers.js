@@ -65,7 +65,7 @@ export const quasarInputProps = {
         type: String,
         required: true,
     },
-    ['stake-label']: {
+    ['stack-label']: {
         type: Boolean,
         default: false,
     },

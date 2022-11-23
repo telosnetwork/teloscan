@@ -7,6 +7,13 @@
         color="secondary"
         @update:modelValue="handleChange"
     />
+    <q-tooltip
+        v-if="readonly"
+        anchor="bottom middle"
+        self="center right"
+    >
+        <span class="u-text--pre">This field is readonly</span>
+    </q-tooltip>
 </div>
 </template>
 
@@ -25,13 +32,25 @@ export default {
             type: String,
             required: true,
         },
+        required: {
+            type: [String, Boolean],
+            default: undefined,
+        },
+        disabled: {
+            type: [String, Boolean],
+            default: undefined,
+        },
+        readonly: {
+            type: [String, Boolean],
+            default: undefined,
+        },
     },
     computed: {
         mergedRules() {
             let requiredRule = [];
 
-            if (['required', true, 'true'].includes(this.$attrs.required)) {
-                requiredRule.push(val => val?.length !== 0 || 'This field is required')
+            if (['required', true, 'true'].includes(this.required)) {
+                requiredRule.push(val => (val?.length ?? 0) > 0 || 'This field is required')
             }
 
             return [
@@ -51,15 +70,20 @@ export default {
             );
         },
         binding() {
+            // 'required' case is handled in mergedRules; due to a bug, a defined for the required attribute value
+            // incorrectly causes the label to be always raised
+            const required = undefined;
+            const disable  = (this.disable  || ['disabled', true, 'true'].includes(this.disabled)) || undefined;
+            const readonly = (this.readonly || ['readonly', true, 'true'].includes(this.readonly)) || undefined;
+
             return {
                 ...this.quasarProps,
                 ...this.$attrs,
-
-                required: undefined, // required case is handled in mergedRules; a defined value incorrectly causes the label to be always raised
+                required,
+                disable,
+                readonly,
                 rules: this.mergedRules,
-                label: `${this.label}${this.$attrs.required ? '*' : ''}`,
-                disable: this.disable || ['disabled', true, 'true'].includes(this.$attrs.disabled),
-                readonly: this.readonly || ['readonly', true, 'true'].includes(this.$attrs.readonly),
+                label: `${this.label}${this.required ? '*' : ''}`,
             };
         },
     },
