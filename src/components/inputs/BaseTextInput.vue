@@ -1,5 +1,5 @@
 <template>
-<div class="c-base-input">
+<div class="c-base-input q-mx-sm">
     <q-input
         ref="input"
         :model-value="modelValue"

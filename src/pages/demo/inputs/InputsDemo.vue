@@ -28,7 +28,7 @@
         </div>
         <div class="q-pa-md">
             <div class="row">
-                <div class="col-3">
+                <div class="col-xs-12 col-md-3 col-xl-2">
                     <base-text-input
                         v-model="baseTextInputValue"
                         v-bind="universalToggles"
@@ -36,10 +36,17 @@
                         name="base input"
                     />
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-3">
+                <div class="col-xs-12 col-md-3 col-xl-2">
+                    <string-input
+                        v-model="stringInputValue"
+                        v-bind="universalToggles"
+                        label="String Input"
+                        name="string input"
+                    />
+                </div>
+
+                <div class="col-xs-12 col-md-3 col-xl-2">
                     <unsigned-int-input
                         v-model="uintInputValue"
                         v-bind="universalToggles"
@@ -48,10 +55,8 @@
                         size="8"
                     />
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-3">
+                <div class="col-xs-12 col-md-3 col-xl-2">
                     <signed-int-input
                         v-model="intInputValue"
                         v-bind="universalToggles"
@@ -60,16 +65,13 @@
                         :size="8"
                     />
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="col-3">
+                <div class="col-xs-12 col-md-3 col-xl-2">
                     <address-input
                         v-model="addressInputValue"
                         v-bind="universalToggles"
                         label="Address Input"
                         name="address input"
-                        :size="8"
                     />
                 </div>
             </div>
@@ -83,8 +85,9 @@
 <script>
 import AddressInput from 'components/inputs/AddressInput';
 import BaseTextInput from 'components/inputs/BaseTextInput';
-import UnsignedIntInput from 'components/inputs/UnsignedIntInput';
 import SignedIntInput from 'components/inputs/SignedIntInput';
+import StringInput from 'components/inputs/StringInput';
+import UnsignedIntInput from 'components/inputs/UnsignedIntInput';
 
 export default {
     name: 'InputDemo',
@@ -92,6 +95,7 @@ export default {
         AddressInput,
         BaseTextInput,
         SignedIntInput,
+        StringInput,
         UnsignedIntInput,
     },
     data: () => ({
@@ -99,6 +103,7 @@ export default {
         allDisabled: false,
         allReadonly: false,
         baseTextInputValue: '',
+        stringInputValue: '',
         uintInputValue: '',
         intInputValue: '',
         addressInputValue: '',
