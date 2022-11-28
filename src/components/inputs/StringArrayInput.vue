@@ -24,6 +24,7 @@ export default {
     },
     emits: [
         'update:modelValue',
+        'valueParsed',
     ],
     props: {
         modelValue: {
@@ -47,6 +48,7 @@ export default {
     data: () => ({
         placeholder: '["some value", ... , "final value"]',
         hint: 'Double quotes within strings must be escaped (\\")',
+        previousParsedValue: undefined,
     }),
     computed: {
         rules() {
@@ -91,6 +93,18 @@ export default {
         handleChange(newValue) {
             if (newValue !== this.modelValue) {
                 this.$emit('update:modelValue', newValue);
+
+                let newParsed;
+                try {
+                    newParsed = JSON.parse(newValue);
+                } catch {
+                    newParsed = undefined;
+                }
+
+                if (this.previousParsedValue !== newParsed) {
+                    this.$emit('valueParsed', newParsed);
+                    this.previousParsedValue = newParsed;
+                }
             }
         },
     },
