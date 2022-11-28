@@ -45,8 +45,8 @@ export default {
         },
     },
     data: () => ({
-        placeholder: '["some value", "another value", ...]',
-        hint: 'Note: Double quotes within strings (") must be escaped (\\")',
+        placeholder: '["some value", ... , "final value"]',
+        hint: 'Double quotes within strings must be escaped (\\")',
     }),
     computed: {
         rules() {

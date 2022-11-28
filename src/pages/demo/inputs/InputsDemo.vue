@@ -11,24 +11,29 @@
         </p>
     </div>
     <q-card class="col-12">
-        <div class="row">
-            <div class="col-6 q-pa-md">
-                <input v-model="allRequired" type="checkbox" id="allRequired">
-                <label for="allRequired">&nbsp;All inputs required?</label>
-                <br>
-
-                <input v-model="allDisabled" type="checkbox" id="allDisabled">
-                <label for="allDisabled">&nbsp;All inputs disabled?</label>
-                <br>
-
-                <input v-model="allReadonly" type="checkbox" id="allReadonly">
-                <label for="allReadonly">&nbsp;All inputs readonly?</label>
-                <br>
-            </div>
-        </div>
         <div class="q-pa-md">
             <div class="row">
-                <div class="col-xs-12 col-md-3 col-xl-2">
+                <div class="col-6">
+                    <input v-model="allRequired" type="checkbox" id="allRequired">
+                    <label for="allRequired">&nbsp;All inputs required?</label>
+                    <br>
+
+                    <input v-model="allDisabled" type="checkbox" id="allDisabled">
+                    <label for="allDisabled">&nbsp;All inputs disabled?</label>
+                    <br>
+
+                    <input v-model="allReadonly" type="checkbox" id="allReadonly">
+                    <label for="allReadonly">&nbsp;All inputs readonly?</label>
+                    <br>
+
+                    <input v-model="allArraysFixedSize" type="checkbox" id="allArraysFixedSize">
+                    <label for="allArraysFixedSize">&nbsp;All array inputs have fixed size?</label>
+                    <br>
+                </div>
+            </div>
+
+            <div class="row q-mb-lg">
+                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
                     <base-text-input
                         v-model="baseTextInputValue"
                         v-bind="universalToggles"
@@ -37,7 +42,7 @@
                     />
                 </div>
 
-                <div class="col-xs-12 col-md-3 col-xl-2">
+                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
                     <string-input
                         v-model="stringInputValue"
                         v-bind="universalToggles"
@@ -46,7 +51,7 @@
                     />
                 </div>
 
-                <div class="col-xs-12 col-md-3 col-xl-2">
+                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
                     <unsigned-int-input
                         v-model="uintInputValue"
                         v-bind="universalToggles"
@@ -56,7 +61,7 @@
                     />
                 </div>
 
-                <div class="col-xs-12 col-md-3 col-xl-2">
+                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
                     <signed-int-input
                         v-model="intInputValue"
                         v-bind="universalToggles"
@@ -66,7 +71,7 @@
                     />
                 </div>
 
-                <div class="col-xs-12 col-md-3 col-xl-2">
+                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
                     <address-input
                         v-model="addressInputValue"
                         v-bind="universalToggles"
@@ -75,30 +80,18 @@
                     />
                 </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="col-6 q-pa-md">
-                <input v-model="allArraysFixedSize" type="checkbox" id="allArraysFixedSize">
-                <label for="allArraysFixedSize">&nbsp;All array inputs have fixed size?</label>
-                <br>
-            </div>
-        </div>
-
-        <div class="q-pa-md">
             <div class="row">
-                <div class="col-xs-12 col-md-3 col-xl-2">
+                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
                     <string-array-input
                         v-model="stringArrayInputValue"
                         v-bind="arrayToggles"
-                        label="String array Input"
+                        label="String Array Input"
                         name="string array input"
                     />
                 </div>
             </div>
         </div>
-
-
     </q-card>
 </div>
 </template>
