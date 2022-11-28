@@ -103,6 +103,12 @@ export default {
                 this.$emit('update:modelValue', newValue);
             }
         },
+        validate() {
+            this.$refs.input.validate();
+        },
+        resetValidation() {
+            this.$refs.input.resetValidation();
+        },
     },
 }
 </script>

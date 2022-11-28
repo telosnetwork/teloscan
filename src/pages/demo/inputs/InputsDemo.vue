@@ -77,6 +77,27 @@
             </div>
         </div>
 
+        <div class="row">
+            <div class="col-6 q-pa-md">
+                <input v-model="allArraysFixedSize" type="checkbox" id="allArraysFixedSize">
+                <label for="allArraysFixedSize">&nbsp;All array inputs have fixed size?</label>
+                <br>
+            </div>
+        </div>
+
+        <div class="q-pa-md">
+            <div class="row">
+                <div class="col-xs-12 col-md-3 col-xl-2">
+                    <string-array-input
+                        v-model="stringArrayInputValue"
+                        v-bind="arrayToggles"
+                        label="String array Input"
+                        name="string array input"
+                    />
+                </div>
+            </div>
+        </div>
+
 
     </q-card>
 </div>
@@ -86,12 +107,14 @@
 import AddressInput from 'components/inputs/AddressInput';
 import BaseTextInput from 'components/inputs/BaseTextInput';
 import SignedIntInput from 'components/inputs/SignedIntInput';
+import StringArrayInput from 'components/inputs/StringArrayInput';
 import StringInput from 'components/inputs/StringInput';
 import UnsignedIntInput from 'components/inputs/UnsignedIntInput';
 
 export default {
     name: 'InputDemo',
     components: {
+        StringArrayInput,
         AddressInput,
         BaseTextInput,
         SignedIntInput,
@@ -102,11 +125,13 @@ export default {
         allRequired: false,
         allDisabled: false,
         allReadonly: false,
+        allArraysFixedSize: undefined,
         baseTextInputValue: '',
         stringInputValue: '',
         uintInputValue: '',
         intInputValue: '',
         addressInputValue: '',
+        stringArrayInputValue: '',
     }),
     computed: {
         universalToggles() {
@@ -115,6 +140,12 @@ export default {
                 disabled: this.allDisabled,
                 readonly: this.allReadonly,
             };
+        },
+        arrayToggles() {
+            return {
+                ...this.universalToggles,
+                size: this.allArraysFixedSize ? 3 : -1,
+            }
         },
     },
 }

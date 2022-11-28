@@ -38,6 +38,10 @@ function parameterTypeIsString(type) {
     return type === 'string';
 }
 
+function parameterTypeIsStringArray(type) {
+    return /^string\[\d*]/.test(type);
+}
+
 function getExpectedArrayLengthFromParameterType(type) {
     const expectedArrayLengthRegex = /\d+(?=]$)/;
     return (+type.match(expectedArrayLengthRegex)?.[0]) || undefined;
@@ -150,21 +154,51 @@ function parseBooleanArrayString(str, expectedLength) {
     return boolArray;
 }
 
+function parseStringArray(str, expectedLength) {
+    let parsedArrayOfStrings;
+
+    try {
+        parsedArrayOfStrings = JSON.parse(str);
+    } catch {
+        return undefined;
+    }
+
+    const valueIsArrayOfStrings = Array.isArray(parsedArrayOfStrings) &&
+        parsedArrayOfStrings.every(val => typeof val === 'string');
+
+    if (!valueIsArrayOfStrings) {
+        return undefined;
+    }
+
+    if (Number.isInteger(expectedLength)) {
+        const actualLength = parsedArrayOfStrings.length;
+
+        if (actualLength !== expectedLength)
+            return undefined;
+    }
+
+    return parsedArrayOfStrings;
+}
+
 
 export {
-    parameterTypeIsImplemented,
-    parameterTypeIsUint256,
-    parameterTypeIsUint256Array,
+    getExpectedArrayLengthFromParameterType,
+
     parameterTypeIsAddress,
     parameterTypeIsAddressArray,
     parameterTypeIsBoolean,
     parameterTypeIsBooleanArray,
+    parameterTypeIsImplemented,
     parameterTypeIsString,
-    getExpectedArrayLengthFromParameterType,
-    parseUint256String,
-    parseUint256ArrayString,
-    parseAddressString,
+    parameterTypeIsStringArray,
+    parameterTypeIsUint256,
+    parameterTypeIsUint256Array,
+
     parseAddressArrayString,
-    parseBooleanString,
+    parseAddressString,
     parseBooleanArrayString,
+    parseBooleanString,
+    parseStringArray,
+    parseUint256ArrayString,
+    parseUint256String,
 }
