@@ -44,7 +44,7 @@
                         v-model="uintInputValue"
                         v-bind="universalToggles"
                         label="Unsigned Integer Input"
-                        name="base input"
+                        name="uint input"
                         size="8"
                     />
                 </div>
@@ -56,7 +56,19 @@
                         v-model="intInputValue"
                         v-bind="universalToggles"
                         label="Signed Integer Input"
-                        name="base input"
+                        name="int input"
+                        :size="8"
+                    />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-3">
+                    <address-input
+                        v-model="addressInputValue"
+                        v-bind="universalToggles"
+                        label="Address Input"
+                        name="address input"
                         :size="8"
                     />
                 </div>
@@ -69,6 +81,7 @@
 </template>
 
 <script>
+import AddressInput from 'components/inputs/AddressInput';
 import BaseTextInput from 'components/inputs/BaseTextInput';
 import UnsignedIntInput from 'components/inputs/UnsignedIntInput';
 import SignedIntInput from 'components/inputs/SignedIntInput';
@@ -76,6 +89,7 @@ import SignedIntInput from 'components/inputs/SignedIntInput';
 export default {
     name: 'InputDemo',
     components: {
+        AddressInput,
         BaseTextInput,
         SignedIntInput,
         UnsignedIntInput,
@@ -87,6 +101,7 @@ export default {
         baseTextInputValue: '',
         uintInputValue: '',
         intInputValue: '',
+        addressInputValue: '',
     }),
     computed: {
         universalToggles() {
