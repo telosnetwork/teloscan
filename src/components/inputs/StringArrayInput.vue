@@ -15,6 +15,7 @@
 
 <script>
 import { parseStringArray } from 'components/ContractTab/function-interface-utils';
+
 import BaseTextInput from 'components/inputs/BaseTextInput';
 
 export default {
@@ -94,12 +95,7 @@ export default {
             if (newValue !== this.modelValue) {
                 this.$emit('update:modelValue', newValue);
 
-                let newParsed;
-                try {
-                    newParsed = JSON.parse(newValue);
-                } catch {
-                    newParsed = undefined;
-                }
+                const newParsed = parseStringArray(newValue);
 
                 if (this.previousParsedValue !== newParsed) {
                     this.$emit('valueParsed', newParsed);
