@@ -100,6 +100,15 @@
                         name="string array input"
                     />
                 </div>
+
+                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
+                    <address-array-input
+                        v-model="addressArrayInputValue"
+                        v-bind="arrayToggles"
+                        label="Address Array Input"
+                        name="address array input"
+                    />
+                </div>
             </div>
         </div>
     </q-card>
@@ -108,6 +117,7 @@
 
 <script>
 import AddressInput from 'components/inputs/AddressInput';
+import AddressArrayInput from 'components/inputs/AddressArrayInput';
 import BaseTextInput from 'components/inputs/BaseTextInput';
 import SignedIntInput from 'components/inputs/SignedIntInput';
 import StringArrayInput from 'components/inputs/StringArrayInput';
@@ -117,10 +127,11 @@ import UnsignedIntInput from 'components/inputs/UnsignedIntInput';
 export default {
     name: 'InputDemo',
     components: {
-        StringArrayInput,
+        AddressArrayInput,
         AddressInput,
         BaseTextInput,
         SignedIntInput,
+        StringArrayInput,
         StringInput,
         UnsignedIntInput,
     },
@@ -135,6 +146,7 @@ export default {
         intInputValue: '',
         addressInputValue: '',
         stringArrayInputValue: '',
+        addressArrayInputValue: '',
     }),
     computed: {
         universalToggles() {

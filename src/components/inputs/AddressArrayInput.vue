@@ -6,7 +6,6 @@
     :label="shapedLabel"
     :name="name"
     :placeholder="placeholder"
-    :hint="hint"
     :rules="rules"
     :lazy-rules="false"
     @update:modelValue="handleChange"
@@ -14,12 +13,12 @@
 </template>
 
 <script>
-import { parseStringArrayString } from 'components/ContractTab/function-interface-utils';
+import { parseAddressArrayString } from 'components/ContractTab/function-interface-utils';
 
 import BaseTextInput from 'components/inputs/BaseTextInput';
 
 export default {
-    name: 'StringArrayInput',
+    name: 'AddressArrayInput',
     components: {
         BaseTextInput,
     },
@@ -48,13 +47,12 @@ export default {
         },
     },
     data: () => ({
-        placeholder: '["some value", ... , "final value"]',
-        hint: 'Double quotes within strings must be escaped (\\")',
+        placeholder: `[0x${'0'.repeat(40)}, ...]`,
         previousParsedValue: undefined,
     }),
     computed: {
         rules() {
-            const validateParsedArray = (value) => Array.isArray(parseStringArrayString(value)) || value === '';
+            const validateParsedArray = (value) => Array.isArray(parseAddressArrayString(value)) || value === '';
 
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
@@ -63,13 +61,13 @@ export default {
                     return true;
 
                 const expectedLength = +this.size;
-                const parsedArrayLength = (parseStringArrayString(value) ?? []).length;
+                const parsedArrayLength = (parseAddressArrayString(value) ?? []).length;
 
                 return parsedArrayLength === expectedLength;
             };
 
-            const incorrectArrayLengthMessage = `There should be ${+this.size} strings in the array`;
-            const invalidArrayStringMessage = 'Entered value does not represent an array of strings';
+            const incorrectArrayLengthMessage = `There should be ${+this.size} addresses in the array`;
+            const invalidArrayStringMessage = 'Entered value does not represent an array of addresses';
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,
@@ -78,7 +76,7 @@ export default {
         },
         shapedLabel() {
             const size = (Number.isInteger(+this.size) && +this.size !== -1) ? `${+this.size}` : '';
-            return `${this.label} (string[${size}])`
+            return `${this.label} (address[${size}])`
         },
     },
     watch: {
@@ -97,7 +95,7 @@ export default {
                 this.$emit('update:modelValue', newValue);
 
                 const expectedSize = +this.size === -1 ? undefined : +this.size;
-                const newParsed = parseStringArrayString(newValue, expectedSize);
+                const newParsed = parseAddressArrayString(newValue, expectedSize);
 
                 if (this.previousParsedValue !== newParsed) {
                     this.$emit('valueParsed', newParsed);

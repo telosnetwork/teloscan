@@ -154,7 +154,7 @@ function parseBooleanArrayString(str, expectedLength) {
     return boolArray;
 }
 
-function parseStringArray(str, expectedLength) {
+function parseStringArrayString(str, expectedLength) {
     let parsedArrayOfStrings;
 
     try {
@@ -198,7 +198,7 @@ export {
     parseAddressString,
     parseBooleanArrayString,
     parseBooleanString,
-    parseStringArray,
+    parseStringArrayString,
     parseUint256ArrayString,
     parseUint256String,
 }
