@@ -61,7 +61,7 @@ export default {
             const errMessageTooSmall = `Minimum value for int${this.size} is ${minimum.toString()}`;
 
             return [
-                val => /^-?\d*$/.test(val) || errMessageInvalidInput,
+                val => /^-?\d+$/.test(val) || errMessageInvalidInput,
                 val => BigNumber.from(val || 0).lte(maximum) || errMessageTooLarge,
                 val => BigNumber.from(val || 0).gte(minimum) || errMessageTooSmall,
             ];

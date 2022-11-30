@@ -124,8 +124,6 @@ function parseUintArrayString (str, expectedLength, expectedIntSize) {
         expectedIntSize >= 0 &&
         expectedIntSize <= 256
     );
-    // debugger;
-
 
     if (!stringRepresentsUintArray || !expectedSizeIsLegal) {
         return undefined;
@@ -155,6 +153,74 @@ function parseUintArrayString (str, expectedLength, expectedIntSize) {
     return intBigNums;
 }
 
+function parseSignedIntString (str, expectedSizeInBits) {
+    const signedIntStringRegex = /^-?\d+$/;
+    const stringRepresentsValidInt = signedIntStringRegex.test(str);
+    const expectedSizeIsLegal = expectedSizeInBits === undefined || (
+        Number.isInteger(expectedSizeInBits) &&
+        expectedSizeInBits % 8 === 0 &&
+        expectedSizeInBits >= 0 &&
+        expectedSizeInBits <= 128
+    );
+
+    if (!stringRepresentsValidInt || !expectedSizeIsLegal) {
+        return undefined;
+    }
+
+    const intBigNumber = BigNumber.from(str);
+    const maxValue = BigNumber.from(2).pow(expectedSizeInBits).sub(1);
+    const minValue = maxValue.mul(-1);
+
+    let intIsCorrectSize;
+
+    if (expectedSizeInBits === undefined) {
+        intIsCorrectSize = true;
+    } else {
+        intIsCorrectSize = intBigNumber.lte(maxValue) && intBigNumber.gte(minValue);
+    }
+
+
+    return intIsCorrectSize ? intBigNumber : undefined;
+}
+
+function parseSignedIntArrayString (str, expectedLength, expectedIntSize) {
+    const signedIntArrayRegex = /^\[(-?\d+, *)*(-?\d+)]$/;
+    const stringRepresentsIntArray = signedIntArrayRegex.test(str);
+    const expectedSizeIsLegal = expectedIntSize === undefined || (
+        Number.isInteger(expectedIntSize) &&
+        expectedIntSize % 8 === 0 &&
+        expectedIntSize >= 0 &&
+        expectedIntSize <= 128
+    );
+
+    if (!stringRepresentsIntArray || !expectedSizeIsLegal) {
+        return undefined;
+    }
+
+    const intStrings = str.match(/-?\d+/g) ?? [];
+
+    if (expectedLength !== undefined && intStrings.length !== expectedLength) {
+        return undefined;
+    }
+
+    let intBigNums;
+
+    try {
+        intBigNums = intStrings.map(int => BigNumber.from(int))
+    } catch {
+        return undefined;
+    }
+
+    const maxValue = BigNumber.from(2).pow(expectedIntSize).sub(1);
+    const minValue = maxValue.mul(-1);
+    const allIntsAreValidSize = intBigNums.every(intBigNum => intBigNum.lte(maxValue) && intBigNum.gte(minValue));
+
+    if (!allIntsAreValidSize) {
+        return undefined;
+    }
+
+    return intBigNums;
+}
 
 
 
@@ -279,9 +345,11 @@ export {
     parseAddressString,
     parseBooleanArrayString,
     parseBooleanString,
+    parseSignedIntArrayString,
+    parseSignedIntString,
     parseStringArrayString,
-    parseUintString,
     parseUintArrayString,
+    parseUintString,
 
     // eztodo yeet
     parseUint256ArrayString,

@@ -13,12 +13,13 @@
 </template>
 
 <script>
-import { parseUintArrayString } from 'components/ContractTab/function-interface-utils';
+import { parseSignedIntArrayString } from 'components/ContractTab/function-interface-utils';
 
 import BaseTextInput from 'components/inputs/BaseTextInput';
+import { BigNumber } from 'ethers';
 
 export default {
-    name: 'UnsignedIntArrayInput',
+    name: 'SignedIntArrayInput',
     components: {
         BaseTextInput,
     },
@@ -40,19 +41,19 @@ export default {
             required: true,
         },
         // size in bits, in increments of 8 (i.e. bytes): // https://docs.soliditylang.org/en/latest/types.html#integers
-        // e.g. a size of 64 produces a type === uint64
-        uintSize: {
+        // e.g. a size of 64 produces a type === int64
+        intSize: {
             type: [Number, String],
             required: true,
             validator: size => {
                 return Number.isInteger(+size) &&
                     +size % 8 === 0 &&
-                    +size <= 256 &&
+                    +size <= 128 &&
                     +size >= 0;
             },
         },
-        // expected size of the uint array
-        // if size is undefined or -1, array size is unconstrained; else it is fixed-size (e.g. uint256[3])
+        // expected size of the int array
+        // if size is undefined or -1, array size is unconstrained; else it is fixed-size (e.g. int256[3])
         size: {
             type: [Number, String],
             default: -1,
@@ -60,7 +61,7 @@ export default {
         },
     },
     data: () => ({
-        placeholder: '[123, 456, ...]',
+        placeholder: '[123, -456, ...]',
         previousParsedValue: undefined,
     }),
     computed: {
@@ -68,8 +69,13 @@ export default {
             return +this.size === -1 ? undefined : +this.size;
         },
         rules() {
-            const validateParsedArray = (value) => Array.isArray(parseUintArrayString(value, undefined, +this.uintSize)) || value === '';
+            const maximum = +this.intSize === 0 ? '0' : BigNumber.from(2).pow(+this.intSize).sub(1);
+            const minimum = maximum.mul(-1);
 
+            const getIntsFromString = (str) => str.match(/-?\d+/g) ?? [];
+            const validateMaximum = (val) => getIntsFromString(val).every(int => BigNumber.from(int).lte(maximum));
+            const validateMinimum = (val) => getIntsFromString(val).every(int => BigNumber.from(int).gte(minimum));
+            const validateParsedArray = (value) => /^\[(-?\d+, *)*(-?\d+)]$/.test(value) || value === '';
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
 
@@ -77,22 +83,26 @@ export default {
                     return true;
 
                 const expectedLength = +this.size;
-                const parsedArrayLength = (parseUintArrayString(value, this.expectedArraySize, +this.uintSize) ?? []).length;
+                const parsedArrayLength = (parseSignedIntArrayString(value, this.expectedArraySize, +this.intSize) ?? []).length;
 
                 return parsedArrayLength === expectedLength;
             };
 
-            const incorrectArrayLengthMessage = `There should be ${+this.size} unsigned integers in the array`;
-            const invalidArrayStringMessage = 'Entered value does not represent an array of unsigned integers';
+            const incorrectArrayLengthMessage = `There should be ${+this.size} signed integers in the array`;
+            const invalidArrayStringMessage = 'Entered value does not represent an array of signed integers';
+            const errMessageTooLarge = `Maximum value for int${this.intSize} is ${maximum.toString()}`;
+            const errMessageTooSmall = `Minimum value for int${this.intSize} is ${minimum.toString()}`;
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,
+                val => validateMaximum(val) || errMessageTooLarge,
+                val => validateMinimum(val) || errMessageTooSmall,
                 val => validateArrayLength(val) || incorrectArrayLengthMessage,
             ];
         },
         shapedLabel() {
             const size = (Number.isInteger(+this.size) && +this.size !== -1) ? `${+this.size}` : '';
-            return `${this.label} (uint${this.uintSize}[${size}])`
+            return `${this.label} (int${this.intSize}[${size}])`
         },
     },
     watch: {
@@ -110,7 +120,7 @@ export default {
             if (newValue !== this.modelValue) {
                 this.$emit('update:modelValue', newValue);
 
-                const newParsed = parseUintArrayString(newValue, this.expectedArraySize, +this.uintSize);
+                const newParsed = parseSignedIntArrayString(newValue, this.expectedArraySize, +this.intSize);
 
                 if (this.previousParsedValue !== newParsed) {
                     this.$emit('valueParsed', newParsed);
