@@ -70,6 +70,7 @@ export default {
             return `${this.label} (int${this.size})`
         },
     },
+    // eztodo add handler to emit parsed values, see stringarrayinput
     methods: {
         handleChange(newValue) {
             if (newValue !== this.modelValue) {

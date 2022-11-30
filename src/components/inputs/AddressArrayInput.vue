@@ -39,7 +39,7 @@ export default {
             type: String,
             required: true,
         },
-        // if size is undefined or -1, array size is unconstrained; else it is fixed-size (e.g. string[3])
+        // if size is undefined or -1, array size is unconstrained; else it is fixed-size (e.g. address[3])
         size: {
             type: [Number, String],
             default: -1,
@@ -61,9 +61,7 @@ export default {
                     return true;
 
                 const expectedLength = +this.size;
-                const parsedArrayLength = (parseAddressArrayString(value) ?? []).length;
-
-                return parsedArrayLength === expectedLength;
+                return Array.isArray(parseAddressArrayString(value, expectedLength));
             };
 
             const incorrectArrayLengthMessage = `There should be ${+this.size} addresses in the array`;

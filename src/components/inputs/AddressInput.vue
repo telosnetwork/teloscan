@@ -55,6 +55,7 @@ export default {
             return `${this.label} (address)`
         },
     },
+    // eztodo add handler to emit validated values, see stringarrayinput
     methods: {
         handleChange(newValue) {
             if (newValue !== this.modelValue) {

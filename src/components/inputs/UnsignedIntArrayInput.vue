@@ -6,7 +6,6 @@
     :label="shapedLabel"
     :name="name"
     :placeholder="placeholder"
-    :hint="hint"
     :rules="rules"
     :lazy-rules="false"
     @update:modelValue="handleChange"
@@ -14,12 +13,12 @@
 </template>
 
 <script>
-import { parseStringArrayString } from 'components/ContractTab/function-interface-utils';
+import { parseUintArrayString } from 'components/ContractTab/function-interface-utils';
 
 import BaseTextInput from 'components/inputs/BaseTextInput';
 
 export default {
-    name: 'StringArrayInput',
+    name: 'UnsignedIntArrayInput',
     components: {
         BaseTextInput,
     },
@@ -40,21 +39,36 @@ export default {
             type: String,
             required: true,
         },
-        // if size is undefined or -1, array size is unconstrained; else it is fixed-size (e.g. string[3])
+        // size in bits, in increments of 8 (i.e. bytes): // https://docs.soliditylang.org/en/latest/types.html#integers
+        // e.g. a size of 64 produces a type === uint64
+        uintSize: {
+            type: [Number, String],
+            required: true,
+            validator: size => {
+                return Number.isInteger(+size) &&
+                    +size % 8 === 0 &&
+                    +size <= 256 &&
+                    +size >= 0;
+            },
+        },
+        // expected size of the uint array
+        // if size is undefined or -1, array size is unconstrained; else it is fixed-size (e.g. uint256[3])
         size: {
             type: [Number, String],
             default: -1,
-            validator: length => +length >= -1,
+            validator: length => +length >= -1 && +length <= 256,
         },
     },
     data: () => ({
-        placeholder: '["some value", ... , "final value"]',
-        hint: 'Double quotes within strings must be escaped (\\")',
+        placeholder: '[123, 456, ...]',
         previousParsedValue: undefined,
     }),
     computed: {
+        expectedArraySize() {
+            return +this.size === -1 ? undefined : +this.size;
+        },
         rules() {
-            const validateParsedArray = (value) => Array.isArray(parseStringArrayString(value)) || value === '';
+            const validateParsedArray = (value) => Array.isArray(parseUintArrayString(value, undefined, +this.uintSize)) || value === '';
 
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
@@ -63,11 +77,13 @@ export default {
                     return true;
 
                 const expectedLength = +this.size;
-                return Array.isArray(parseStringArrayString(value, expectedLength));
+                const parsedArrayLength = (parseUintArrayString(value, this.expectedArraySize, +this.uintSize) ?? []).length;
+
+                return parsedArrayLength === expectedLength;
             };
 
-            const incorrectArrayLengthMessage = `There should be ${+this.size} strings in the array`;
-            const invalidArrayStringMessage = 'Entered value does not represent an array of strings';
+            const incorrectArrayLengthMessage = `There should be ${+this.size} unsigned integers in the array`;
+            const invalidArrayStringMessage = 'Entered value does not represent an array of unsigned integers';
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,
@@ -76,7 +92,7 @@ export default {
         },
         shapedLabel() {
             const size = (Number.isInteger(+this.size) && +this.size !== -1) ? `${+this.size}` : '';
-            return `${this.label} (string[${size}])`
+            return `${this.label} (uint${this.uintSize}[${size}])`
         },
     },
     watch: {
@@ -94,8 +110,7 @@ export default {
             if (newValue !== this.modelValue) {
                 this.$emit('update:modelValue', newValue);
 
-                const expectedSize = +this.size === -1 ? undefined : +this.size;
-                const newParsed = parseStringArrayString(newValue, expectedSize);
+                const newParsed = parseUintArrayString(newValue, this.expectedArraySize, +this.uintSize);
 
                 if (this.previousParsedValue !== newParsed) {
                     this.$emit('valueParsed', newParsed);

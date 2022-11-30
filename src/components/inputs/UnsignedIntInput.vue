@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { parseUintString } from 'components/ContractTab/function-interface-utils';
 import { BigNumber } from 'ethers';
 
 import BaseTextInput from 'components/inputs/BaseTextInput';
@@ -47,10 +48,15 @@ export default {
             validator: size => {
                 return Number.isInteger(+size) &&
                        +size % 8 === 0 &&
-                       +size <= 256;
+                       +size <= 256 &&
+                       +size >= 0;
             },
         },
     },
+    data: () => ({
+        previousParsedValue: undefined,
+    }),
+
     computed: {
         rules() {
             const maximum = +this.size === 0 ? '0' : BigNumber.from(2).pow(+this.size).sub(1);
@@ -69,10 +75,19 @@ export default {
             return `${this.label} (uint${this.size})`
         },
     },
+    // eztodo add handler to emit parsed values, see stringarrayinput
     methods: {
         handleChange(newValue) {
             if (newValue !== this.modelValue) {
                 this.$emit('update:modelValue', newValue);
+
+                const expectedSize = +this.size === -1 ? undefined : +this.size;
+                const newParsed = parseUintString(newValue, expectedSize);
+
+                if (this.previousParsedValue !== newParsed) {
+                    this.$emit('valueParsed', newParsed);
+                    this.previousParsedValue = newParsed;
+                }
             }
         },
     },

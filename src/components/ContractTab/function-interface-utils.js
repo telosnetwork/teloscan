@@ -47,6 +47,7 @@ function getExpectedArrayLengthFromParameterType(type) {
     return (+type.match(expectedArrayLengthRegex)?.[0]) || undefined;
 }
 
+// eztodo deprecated and incorrect; remove
 function parseUint256String(str = '') {
     const uint256StringRegex = /^\d{1,256}$/;
     const stringRepresentsValidUint256 = uint256StringRegex.test(str);
@@ -58,6 +59,7 @@ function parseUint256String(str = '') {
     return BigNumber.from(str);
 }
 
+// eztodo deprecated and incorrect; remove
 function parseUint256ArrayString(str = '', expectedLength) {
     if (str === '[]' && expectedLength === undefined)
         return [];
@@ -79,6 +81,85 @@ function parseUint256ArrayString(str = '', expectedLength) {
 
     return bigNumberArray;
 }
+
+
+
+
+
+function parseUintString (str, expectedSizeInBits) {
+    const uintStringRegex = /^\d+$/;
+    const stringRepresentsValidUint = uintStringRegex.test(str);
+    const expectedSizeIsLegal = expectedSizeInBits === undefined || (
+        Number.isInteger(expectedSizeInBits) &&
+        expectedSizeInBits % 8 === 0 &&
+        expectedSizeInBits >= 0 &&
+        expectedSizeInBits <= 256
+    );
+
+    if (!stringRepresentsValidUint || !expectedSizeIsLegal) {
+        return undefined;
+    }
+
+    const intBigNumber = BigNumber.from(str);
+    const maxValue = BigNumber.from(2).pow(expectedSizeInBits).sub(1);
+
+    let intIsCorrectSize;
+
+    if (expectedSizeInBits === undefined) {
+        intIsCorrectSize = true;
+    } else {
+        intIsCorrectSize = intBigNumber.lte(maxValue);
+    }
+
+
+    return intIsCorrectSize ? intBigNumber : undefined;
+}
+
+function parseUintArrayString (str, expectedLength, expectedIntSize) {
+    const uintArrayRegex = /^\[(\d+, *)*(\d+)]$/;
+    const stringRepresentsUintArray = uintArrayRegex.test(str);
+    const expectedSizeIsLegal = expectedIntSize === undefined || (
+        Number.isInteger(expectedIntSize) &&
+        expectedIntSize % 8 === 0 &&
+        expectedIntSize >= 0 &&
+        expectedIntSize <= 256
+    );
+    // debugger;
+
+
+    if (!stringRepresentsUintArray || !expectedSizeIsLegal) {
+        return undefined;
+    }
+
+    const intStrings = str.match(/\d+/g) ?? [];
+
+    if (expectedLength !== undefined && intStrings.length !== expectedLength) {
+        return undefined;
+    }
+
+    let intBigNums;
+
+    try {
+        intBigNums = intStrings.map(int => BigNumber.from(int))
+    } catch {
+        return undefined;
+    }
+
+    const maxValue = BigNumber.from(2).pow(expectedIntSize).sub(1);
+    const allIntsAreValidSize = intBigNums.every(intBigNum => intBigNum.lte(maxValue));
+
+    if (!allIntsAreValidSize) {
+        return undefined;
+    }
+
+    return intBigNums;
+}
+
+
+
+
+
+
 
 function parseAddressString(str) {
     try {
@@ -199,6 +280,10 @@ export {
     parseBooleanArrayString,
     parseBooleanString,
     parseStringArrayString,
+    parseUintString,
+    parseUintArrayString,
+
+    // eztodo yeet
     parseUint256ArrayString,
     parseUint256String,
 }

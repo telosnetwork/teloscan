@@ -109,6 +109,16 @@
                         name="address array input"
                     />
                 </div>
+
+                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
+                    <unsigned-int-array-input
+                        v-model="uintArrayInputValue"
+                        v-bind="arrayToggles"
+                        label="Unsigned Int Array Input"
+                        name="uint array input"
+                        uint-size="8"
+                    />
+                </div>
             </div>
         </div>
     </q-card>
@@ -122,6 +132,7 @@ import BaseTextInput from 'components/inputs/BaseTextInput';
 import SignedIntInput from 'components/inputs/SignedIntInput';
 import StringArrayInput from 'components/inputs/StringArrayInput';
 import StringInput from 'components/inputs/StringInput';
+import UnsignedIntArrayInput from 'components/inputs/UnsignedIntArrayInput';
 import UnsignedIntInput from 'components/inputs/UnsignedIntInput';
 
 export default {
@@ -133,6 +144,7 @@ export default {
         SignedIntInput,
         StringArrayInput,
         StringInput,
+        UnsignedIntArrayInput,
         UnsignedIntInput,
     },
     data: () => ({
@@ -147,6 +159,7 @@ export default {
         addressInputValue: '',
         stringArrayInputValue: '',
         addressArrayInputValue: '',
+        uintArrayInputValue: '',
     }),
     computed: {
         universalToggles() {
