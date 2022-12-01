@@ -138,6 +138,15 @@
                         int-size="8"
                     />
                 </div>
+
+                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
+                    <boolean-array-input
+                        v-model="boolArrayInputValue"
+                        v-bind="arrayToggles"
+                        label="Boolean Array Input"
+                        name="bool array input"
+                    />
+                </div>
             </div>
         </div>
     </q-card>
@@ -148,6 +157,7 @@
 import AddressInput from 'components/inputs/AddressInput';
 import AddressArrayInput from 'components/inputs/AddressArrayInput';
 import BaseTextInput from 'components/inputs/BaseTextInput';
+import BooleanArrayInput from 'components/inputs/BooleanArrayInput';
 import BooleanInput from 'components/inputs/BooleanInput';
 import SignedIntInput from 'components/inputs/SignedIntInput';
 import StringArrayInput from 'components/inputs/StringArrayInput';
@@ -159,6 +169,7 @@ import SignedIntArrayInput from 'components/inputs/SignedIntArrayInput';
 export default {
     name: 'InputDemo',
     components: {
+        BooleanArrayInput,
         BooleanInput,
         AddressArrayInput,
         AddressInput,
@@ -185,6 +196,7 @@ export default {
         uintArrayInputValue: '',
         signedIntArrayInputValue: '',
         booleanInputValue: null,
+        boolArrayInputValue: '',
     }),
     computed: {
         universalToggles() {

@@ -6,7 +6,6 @@
     :label="shapedLabel"
     :name="name"
     :placeholder="placeholder"
-    :hint="hint"
     :rules="rules"
     :lazy-rules="false"
     @update:modelValue="handleChange"
@@ -14,12 +13,12 @@
 </template>
 
 <script>
-import { parseStringArrayString } from 'components/ContractTab/function-interface-utils';
+import { parseBooleanArrayString } from 'components/ContractTab/function-interface-utils';
 
 import BaseTextInput from 'components/inputs/BaseTextInput';
 
 export default {
-    name: 'StringArrayInput',
+    name: 'BooleanArrayInput',
     components: {
         BaseTextInput,
     },
@@ -40,7 +39,7 @@ export default {
             type: String,
             required: true,
         },
-        // if size is undefined or -1, array size is unconstrained; else it is fixed-size (e.g. string[3])
+        // if size is undefined or -1, array size is unconstrained; else it is fixed-size (e.g. bool[3])
         size: {
             type: [Number, String],
             default: -1,
@@ -48,13 +47,12 @@ export default {
         },
     },
     data: () => ({
-        placeholder: '["some value", ... , "final value"]',
-        hint: 'Double quotes in strings must be escaped (\\")',
+        placeholder: '[true, false, true, ...]',
         previousParsedValue: undefined,
     }),
     computed: {
         rules() {
-            const validateParsedArray = (value) => Array.isArray(parseStringArrayString(value)) || value === '';
+            const validateParsedArray = (value) => Array.isArray(parseBooleanArrayString(value)) || value === '';
 
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
@@ -63,11 +61,11 @@ export default {
                     return true;
 
                 const expectedLength = +this.size;
-                return Array.isArray(parseStringArrayString(value, expectedLength));
+                return Array.isArray(parseBooleanArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage = `There should be ${+this.size} strings in the array`;
-            const invalidArrayStringMessage = 'Entered value does not represent an array of strings';
+            const incorrectArrayLengthMessage = `There should be ${+this.size} booleans in the array`;
+            const invalidArrayStringMessage = 'Entered value does not represent an array of bool';
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,
@@ -76,7 +74,7 @@ export default {
         },
         shapedLabel() {
             const size = (Number.isInteger(+this.size) && +this.size !== -1) ? `${+this.size}` : '';
-            return `${this.label} (string[${size}])`
+            return `${this.label} (bool[${size}])`
         },
     },
     watch: {
@@ -95,7 +93,7 @@ export default {
                 this.$emit('update:modelValue', newValue);
 
                 const expectedSize = +this.size === -1 ? undefined : +this.size;
-                const newParsed = parseStringArrayString(newValue, expectedSize);
+                const newParsed = parseBooleanArrayString(newValue, expectedSize);
 
                 if (this.previousParsedValue !== newParsed) {
                     this.$emit('valueParsed', newParsed);

@@ -281,14 +281,14 @@ function parseBooleanArrayString(str, expectedLength) {
     if (str === '[]' && expectedLength === undefined)
         return [];
 
-    const booleanArrayStringRegex = /^\[((true|false), *)*(true|false)]$/i;
+    const booleanArrayStringRegex = /^\[((true|false), *)*(true|false)]$/;
 
     const stringRepresentValidBoolArray = booleanArrayStringRegex.test(str);
     if (!stringRepresentValidBoolArray)
         return undefined;
 
-    const booleanRegex = /true|false/gi;
-    const trueRegex = /true/i;
+    const booleanRegex = /true|false/g;
+    const trueRegex = /true/;
     const boolArray = str.match(booleanRegex).map(bool => trueRegex.test(bool));
 
     if (Number.isInteger(expectedLength)) {
