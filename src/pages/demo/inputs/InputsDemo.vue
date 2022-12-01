@@ -86,6 +86,15 @@
                         name="address input"
                     />
                 </div>
+
+                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
+                    <boolean-input
+                        v-model="booleanInputValue"
+                        v-bind="universalToggles"
+                        label="Boolean Input"
+                        name="bool input"
+                    />
+                </div>
             </div>
 
             <div class="row">
@@ -139,6 +148,7 @@
 import AddressInput from 'components/inputs/AddressInput';
 import AddressArrayInput from 'components/inputs/AddressArrayInput';
 import BaseTextInput from 'components/inputs/BaseTextInput';
+import BooleanInput from 'components/inputs/BooleanInput';
 import SignedIntInput from 'components/inputs/SignedIntInput';
 import StringArrayInput from 'components/inputs/StringArrayInput';
 import StringInput from 'components/inputs/StringInput';
@@ -149,6 +159,7 @@ import SignedIntArrayInput from 'components/inputs/SignedIntArrayInput';
 export default {
     name: 'InputDemo',
     components: {
+        BooleanInput,
         AddressArrayInput,
         AddressInput,
         BaseTextInput,
@@ -173,6 +184,7 @@ export default {
         addressArrayInputValue: '',
         uintArrayInputValue: '',
         signedIntArrayInputValue: '',
+        booleanInputValue: null,
     }),
     computed: {
         universalToggles() {

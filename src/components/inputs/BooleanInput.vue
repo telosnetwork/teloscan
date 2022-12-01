@@ -1,75 +1,69 @@
 <template>
-<div class="c-base-input q-mx-sm">
-    <q-input
-        ref="input"
-        :model-value="modelValue"
-        :reactive-rules="true"
-        v-bind="binding"
-        autocomplete="off"
-        color="secondary"
-        @update:modelValue="handleChange"
-    />
-    <q-tooltip
-        v-if="readonly"
-        anchor="bottom middle"
-        self="center right"
-    >
-        <span class="u-text--pre">This field is readonly</span>
-    </q-tooltip>
-</div>
+<q-select
+    ref="input"
+    v-bind="binding"
+    :model-value="modelValue"
+    :options="options"
+    :clearable="true"
+    :name="name"
+    :rules="rules"
+    color="secondary"
+    @update:modelValue="handleChange"
+/>
 </template>
 
 <script>
-
-import { quasarInputProps } from 'components/inputs/input-helpers';
-
 export default {
-    name: 'BaseTextInput',
+    name: 'BooleanInput',
     emits: [
         'update:modelValue',
     ],
     props: {
-        ...quasarInputProps,
         modelValue: {
+            type: Boolean,
+            default: null,
+        },
+        label: {
+            type: String,
+            required: true,
+        },
+        name: {
             type: String,
             required: true,
         },
         required: {
-            type: [String, Boolean],
-            default: undefined,
+            type: Boolean,
+            default: false,
         },
         disabled: {
-            type: [String, Boolean],
-            default: undefined,
+            type: Boolean,
+            default: false,
+        },
+        // added for compatibility with quasar input props
+        disable: {
+            type: Boolean,
+            default: false,
         },
         readonly: {
-            type: [String, Boolean],
-            default: undefined,
+            type: Boolean,
+            default: false,
         },
     },
     computed: {
-        mergedRules() {
-            let requiredRule = [];
-
-            if (['required', true, 'true'].includes(this.required)) {
-                requiredRule.push(val => (val?.length ?? 0) > 0 || 'This field is required')
-            }
-
+        options() {
             return [
-                ...(this.rules || []),
-                ...requiredRule,
+                'true',
+                'false',
             ];
         },
-        quasarProps() {
-            const propNames = Object.keys(quasarInputProps);
+        rules() {
+            if (['required', true, 'true'].includes(this.required)) {
+                return [
+                    val => [true, false].includes(val) || 'This field is required',
+                ]
+            }
 
-            return propNames.reduce(
-                (acc, name) => ({
-                    [name]: this.$props[name],
-                    ...acc,
-                }),
-                {},
-            );
+            return [];
         },
         binding() {
             // 'required' case is handled in mergedRules; due to a bug, a defined for the required attribute value
@@ -80,13 +74,11 @@ export default {
             const readonly = (this.readonly || ['readonly', true, 'true'].includes(this.readonly)) || undefined;
 
             return {
-                ...this.quasarProps,
                 ...this.$attrs,
                 required,
                 disable,
                 readonly,
-                rules: this.mergedRules,
-                label: `${this.label}${isRequired ? '*' : ''}`,
+                label: `${this.label}  (bool)${isRequired ? '*' : ''}`,
             };
         },
     },
@@ -100,8 +92,16 @@ export default {
     },
     methods: {
         handleChange(newValue) {
+            let newBool = null;
+
+            if (newValue === 'false') {
+                newBool = false;
+            } else if (newValue === 'true') {
+                newBool = true;
+            }
+
             if (newValue !== this.modelValue) {
-                this.$emit('update:modelValue', newValue);
+                this.$emit('update:modelValue', newBool)
             }
         },
         validate() {
@@ -115,7 +115,5 @@ export default {
 </script>
 
 <style>
-.c-base-input {
 
-}
 </style>
