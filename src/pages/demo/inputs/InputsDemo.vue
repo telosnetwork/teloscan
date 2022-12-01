@@ -147,6 +147,15 @@
                         name="bool array input"
                     />
                 </div>
+
+                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
+                    <bytes-array-input
+                        v-model="bytesArrayInputValue"
+                        v-bind="arrayToggles"
+                        label="Bytes Array Input"
+                        name="bytes array input"
+                    />
+                </div>
             </div>
         </div>
     </q-card>
@@ -159,6 +168,7 @@ import AddressArrayInput from 'components/inputs/AddressArrayInput';
 import BaseTextInput from 'components/inputs/BaseTextInput';
 import BooleanArrayInput from 'components/inputs/BooleanArrayInput';
 import BooleanInput from 'components/inputs/BooleanInput';
+import BytesArrayInput from 'components/inputs/BytesArrayInput';
 import SignedIntInput from 'components/inputs/SignedIntInput';
 import StringArrayInput from 'components/inputs/StringArrayInput';
 import StringInput from 'components/inputs/StringInput';
@@ -169,11 +179,12 @@ import SignedIntArrayInput from 'components/inputs/SignedIntArrayInput';
 export default {
     name: 'InputDemo',
     components: {
-        BooleanArrayInput,
-        BooleanInput,
         AddressArrayInput,
         AddressInput,
         BaseTextInput,
+        BooleanArrayInput,
+        BooleanInput,
+        BytesArrayInput,
         SignedIntArrayInput,
         SignedIntInput,
         StringArrayInput,
@@ -197,6 +208,7 @@ export default {
         signedIntArrayInputValue: '',
         booleanInputValue: null,
         boolArrayInputValue: '',
+        bytesArrayInputValue: '',
     }),
     computed: {
         universalToggles() {

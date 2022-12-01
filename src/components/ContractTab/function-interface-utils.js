@@ -301,6 +301,29 @@ function parseBooleanArrayString(str, expectedLength) {
     return boolArray;
 }
 
+function parseBytesArrayString(str, expectedLength) {
+    if (str === '[]' && expectedLength === undefined)
+        return [];
+
+    const bytesArrayStringRegex = /^\[(([0-9A-Fa-f]{2}), *)*([0-9A-Fa-f]{2})]$/;
+
+    const stringRepresentValidBoolArray = bytesArrayStringRegex.test(str);
+    if (!stringRepresentValidBoolArray)
+        return undefined;
+
+    const byteRegex = /[0-9A-Fa-f]{2}/g;
+    const bytesArray = str.match(byteRegex);
+
+    if (Number.isInteger(expectedLength)) {
+        const actualLength = bytesArray.length;
+
+        if (actualLength !== expectedLength)
+            return undefined;
+    }
+
+    return bytesArray;
+}
+
 function parseStringArrayString(str, expectedLength) {
     let parsedArrayOfStrings;
 
@@ -345,6 +368,7 @@ export {
     parseAddressString,
     parseBooleanArrayString,
     parseBooleanString,
+    parseBytesArrayString,
     parseSignedIntArrayString,
     parseSignedIntString,
     parseStringArrayString,
