@@ -82,55 +82,82 @@ export default {
 </script>
 
 <template>
-<div class="q-pa-md row items-start q-gutter-md">
+<div class="c-token-list">
     <div
+        class="c-token-list__token-card"
         v-for="{ name, logoURI, address, balance, symbol, fullBalance, type, decimals } in tokens"
         :key="address"
     >
-        <div class="col">
-            <q-card>
-                <q-card-section class="u-flex--center-y">
-                    <q-avatar class="q-mr-md">
-                        <img :src="logoURI" alt="Token Logo">
-                    </q-avatar>
-                    <div>
-                        <div class="text-h6">
-                            {{ name }}
-                        </div>
-                        <address-field :address="address" class="q-mb-sm"/>
-                        <div class="q-mb-sm">
-                            <span class="q-pr-xs">
-                                Balance:
-                            </span>
-                            <span v-if="balance === '0.0000'">
-                                {{ '< 0.0001 ' + symbol }}
-                            </span>
-                            <span v-else>
-                                {{ balance + ' ' + symbol || '(error fetching balance)' }}
-                            </span>
-                            <q-tooltip v-if="fullBalance > balance">
-                                {{ fullBalance + ' ' + symbol || 'error fetching balance' }}
-                            </q-tooltip>
-                        </div>
-                        <span
-                            v-if="showMetamaskPrompt"
-                            class="c-token-list__metamask-prompt"
-                            tabindex="0"
-                            :aria-label="`Launch MetaMask dialog to add ${symbol}`"
-                            @click="promptAddToMetamask(address, symbol, logoURI, type, decimals)"
-                        >
-                            Track {{ symbol }} in MetaMask
-                        </span>
+        <q-card>
+            <q-card-section class="u-flex--center-y">
+                <q-avatar class="q-mr-md">
+                    <img :src="logoURI" alt="Token Logo">
+                </q-avatar>
+                <div class="c-token-list__token-info-container">
+                    <div class="text-h6 c-token-list__token-name" :title="name">
+                        {{ name }}
                     </div>
-                </q-card-section>
-            </q-card>
-        </div>
+                    <address-field :address="address" class="q-mb-sm"/>
+                    <div class="q-mb-sm">
+                        <span class="q-pr-xs">
+                            Balance:
+                        </span>
+                        <span v-if="balance === '0.0000'">
+                            {{ '< 0.0001 ' + symbol }}
+                        </span>
+                        <span v-else>
+                            {{ balance + ' ' + symbol || '(error fetching balance)' }}
+                        </span>
+                        <q-tooltip v-if="fullBalance > balance">
+                            {{ fullBalance + ' ' + symbol || 'error fetching balance' }}
+                        </q-tooltip>
+                    </div>
+                    <span
+                        v-if="showMetamaskPrompt"
+                        class="c-token-list__metamask-prompt"
+                        tabindex="0"
+                        :aria-label="`Launch MetaMask dialog to add ${symbol}`"
+                        @click="promptAddToMetamask(address, symbol, logoURI, type, decimals)"
+                    >
+                        Add {{ symbol }} to MetaMask
+                    </span>
+                </div>
+            </q-card-section>
+        </q-card>
     </div>
 </div>
 </template>
 
 <style lang="scss">
 .c-token-list {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(1, 1fr);
+
+    padding: 24px;
+
+    @media screen and (min-width: $breakpoint-sm-min) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media screen and (min-width: $breakpoint-lg-min) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    &__token-card {
+        min-width: 0;
+    }
+
+    &__token-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__token-info-container {
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
     &__metamask-prompt {
         color: $secondary;
         cursor: pointer ;
