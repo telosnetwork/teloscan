@@ -114,7 +114,7 @@ named slots
 Wrappers. This can be easy to forget while troubleshooting, resulting in different behaviors of
 `attributes()` and `props()`
 - all Quasar components will need to be manually added or stubbed via `stubs`
-- make sure when viewing `vue-test-utils` documentation that the root URL is https://test-utils.vuejs.org. Search results
+- make sure when viewing `vue-test-utils` documentation that the root URL is `https://test-utils.vuejs.org`. Search results
 often direct you to the docs for v1 (for Vue 2) which will lead to unexpected errors. The links to go to the correct
 documentation from `v1` docs are broken at the time of writing this.
 - some `vue-test-utils` methods, especially those changing the state of a component in some way
