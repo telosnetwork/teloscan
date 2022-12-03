@@ -8,6 +8,8 @@
     :placeholder="placeholder"
     :rules="rules"
     :lazy-rules="false"
+    :size="undefined"
+    :int-size="undefined"
     @update:modelValue="handleChange"
 />
 </template>

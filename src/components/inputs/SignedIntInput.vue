@@ -8,6 +8,7 @@
     :max="size"
     :min="0"
     :rules="rules"
+    :size="undefined"
     type="number"
     @update:modelValue="handleChange"
 />

@@ -1,22 +1,7 @@
 import { BigNumber, ethers } from 'ethers';
 
-function parameterTypeIsImplemented(type) {
-    return parameterTypeIsUint256(type)   ||
-        parameterTypeIsUint256Array(type) ||
-        parameterTypeIsAddress(type)      ||
-        parameterTypeIsAddressArray(type) ||
-        parameterTypeIsBoolean(type)      ||
-        parameterTypeIsBooleanArray(type) ||
-        parameterTypeIsString(type);
-}
 
-function parameterTypeIsUint256(type) {
-    return type === 'uint256';
-}
 
-function parameterTypeIsUint256Array(type) {
-    return /^uint256\[\d*]/.test(type);
-}
 
 function parameterTypeIsAddress(type) {
     return type === 'address';
@@ -34,6 +19,18 @@ function parameterTypeIsBooleanArray(type) {
     return /^bool\[\d*]/.test(type);
 }
 
+function parameterTypeIsBytes(type) {
+    return /^bytes/.test(type)
+}
+
+function parameterTypeIsSignedInt(type) {
+    return /^int\d+/.test(type)
+}
+
+function parameterTypeIsSignedIntArray(type) {
+    return /^int\[\d*]/.test(type)
+}
+
 function parameterTypeIsString(type) {
     return type === 'string';
 }
@@ -42,9 +39,38 @@ function parameterTypeIsStringArray(type) {
     return /^string\[\d*]/.test(type);
 }
 
+function parameterTypeIsUnsignedInt(type) {
+    return /^uint\d+/.test(type)
+}
+
+function parameterTypeIsUnsignedIntArray(type) {
+    return /^uint\[\d*]/.test(type)
+}
+
+
+
+function parameterIsArrayType(type) {
+    return /\[\d*]$/.test(type);
+}
+
+function parameterIsIntegerType(type) {
+    return /int\d+$/.test(type);
+}
+
+
+
 function getExpectedArrayLengthFromParameterType(type) {
     const expectedArrayLengthRegex = /\d+(?=]$)/;
     return (+type.match(expectedArrayLengthRegex)?.[0]) || undefined;
+}
+
+function getIntegerBits(type) {
+    if (!parameterIsIntegerType(type)) {
+        return undefined;
+    }
+
+    const bitsRegex = /\d+$/;
+    return (+type.match(bitsRegex)?.[0]) || undefined;
 }
 
 // eztodo deprecated and incorrect; remove
@@ -352,17 +378,22 @@ function parseStringArrayString(str, expectedLength) {
 
 
 export {
+    parameterIsArrayType,
+    parameterIsIntegerType,
     getExpectedArrayLengthFromParameterType,
+    getIntegerBits,
 
     parameterTypeIsAddress,
     parameterTypeIsAddressArray,
     parameterTypeIsBoolean,
     parameterTypeIsBooleanArray,
-    parameterTypeIsImplemented,
+    parameterTypeIsBytes,
+    parameterTypeIsSignedInt,
+    parameterTypeIsSignedIntArray,
     parameterTypeIsString,
     parameterTypeIsStringArray,
-    parameterTypeIsUint256,
-    parameterTypeIsUint256Array,
+    parameterTypeIsUnsignedInt,
+    parameterTypeIsUnsignedIntArray,
 
     parseAddressArrayString,
     parseAddressString,

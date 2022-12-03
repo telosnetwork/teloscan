@@ -9,6 +9,7 @@
     :hint="hint"
     :rules="rules"
     :lazy-rules="false"
+    :size="undefined"
     @update:modelValue="handleChange"
 />
 </template>

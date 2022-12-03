@@ -5,7 +5,7 @@
         :model-value="modelValue"
         :reactive-rules="true"
         v-bind="binding"
-        autocomplete="off"
+        autocomplete="new-password"
         color="secondary"
         @update:modelValue="handleChange"
     />
@@ -79,9 +79,12 @@ export default {
             const disable  = (this.disable  || ['disabled', true, 'true'].includes(this.disabled)) || undefined;
             const readonly = (this.readonly || ['readonly', true, 'true'].includes(this.readonly)) || undefined;
 
+            const filteredAttrs = { ...this.$attrs };
+            delete filteredAttrs.size; // size=undefined causes DOM warnings
+
             return {
                 ...this.quasarProps,
-                ...this.$attrs,
+                ...filteredAttrs,
                 required,
                 disable,
                 readonly,

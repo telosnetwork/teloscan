@@ -70,7 +70,7 @@ div
   border-color: gray
   border-radius: .25rem
   margin: 0 1rem 1rem 1rem
-  padding-bottom: 1rem
+  padding-bottom: 2rem
   padding-right: 1rem
   padding-left: 1rem
 

@@ -52,27 +52,24 @@
             </template>
         </q-input>
     </div>
-    <div v-for="(param, idx) in abi.inputs" :key="idx">
-        <q-input
-            v-model="params[idx]"
-            :label="makeLabel(param, idx)"
-            :placeholder="getHintForInput(param.type)"
-        >
-            <template v-if="parameterTypeIsUint256(param.type)" #append>
-                <q-icon
-                    class="cursor-pointer"
-                    name="pin"
-                    @click="showAmountDialog(idx)"
-                />
-            </template>
-        </q-input>
-        <p v-if="!parameterTypeIsImplemented(param.type)" class="q-px-md">
-            ⚠️Warning: Implementation of input for type <code>{{ param.type }}</code> is under development; argument
-            will be passed as the exact string entered. This may lead to unexpected results if the method is not
-            expecting a string.
-        </p>
+
+
+
+
+    <div v-for="(component, index) in inputComponents" :key="index">
+        <component
+            :is="component.is"
+            v-bind="component.bindings"
+            @valueParsed="component.handleValueParsed($event, index)"
+            @update:modelValue="component.handleModelValueChange($event, index)"
+            class="q-pb-md"
+        />
 
     </div>
+
+
+
+
     <q-btn
         v-if="enableRun"
         :loading="loading"
@@ -100,26 +97,24 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
 
 import {
-    getExpectedArrayLengthFromParameterType,
-    parameterTypeIsImplemented,
-    parameterTypeIsUint256,
     parameterTypeIsAddress,
-    parameterTypeIsUint256Array,
     parameterTypeIsAddressArray,
     parameterTypeIsBoolean,
     parameterTypeIsBooleanArray,
-    parseUint256String,
-    parseUint256ArrayString,
-    parseAddressString,
-    parseAddressArrayString,
-    parseBooleanString,
-    parseBooleanArrayString,
     parameterTypeIsString,
+    parameterTypeIsStringArray,
+    parameterTypeIsUnsignedIntArray,
+    parameterTypeIsUnsignedInt,
+    parameterTypeIsSignedIntArray,
+    parameterTypeIsSignedInt,
+    parameterTypeIsBytes,
+    getExpectedArrayLengthFromParameterType, parameterIsArrayType, parameterIsIntegerType, getIntegerBits,
 } from 'components/ContractTab/function-interface-utils';
 
 import TransactionField from 'components/TransactionField';
@@ -140,10 +135,24 @@ const decimalOptions = [{
     label: 'Custom',
     value: 'custom',
 }];
+const asyncComponents = {
+    AddressInput: defineAsyncComponent(() => import('components/inputs/AddressInput')),
+    AddressArrayInput: defineAsyncComponent(() => import('components/inputs/AddressArrayInput')),
+    BooleanArrayInput: defineAsyncComponent(() => import('components/inputs/BooleanArrayInput')),
+    BooleanInput: defineAsyncComponent(() => import('components/inputs/BooleanInput')),
+    BytesArrayInput: defineAsyncComponent(() => import('components/inputs/BytesArrayInput')),
+    SignedIntInput: defineAsyncComponent(() => import('components/inputs/SignedIntInput')),
+    StringArrayInput: defineAsyncComponent(() => import('components/inputs/StringArrayInput')),
+    StringInput: defineAsyncComponent(() => import('components/inputs/StringInput')),
+    UnsignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntArrayInput')),
+    UnsignedIntInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntInput')),
+    SignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/SignedIntArrayInput')),
+};
 
 export default {
     name: 'FunctionInterface',
     components: {
+        ...asyncComponents,
         TransactionField,
     },
     props: {
@@ -187,6 +196,82 @@ export default {
             'isNative',
             'nativeAccount',
         ]),
+        inputComponents() {
+            if (!Array.isArray(this.abi?.inputs))
+                return [];
+
+            // i.e. input component emits @valueParsed rather than rely on @update:modelValue (v-model)
+            const inputIsComplex = (type) => (
+                parameterTypeIsBytes(type)          ||
+                parameterTypeIsAddressArray(type)   ||
+                parameterTypeIsBooleanArray(type)   ||
+                parameterTypeIsSignedIntArray(type) ||
+                parameterTypeIsStringArray(type)    ||
+                parameterTypeIsUnsignedIntArray(type)
+            );
+
+            const getComponentForInputType = (type) => {
+                if (parameterTypeIsString(type)) {
+                    return asyncComponents.StringInput;
+                } else if (parameterTypeIsStringArray(type)) {
+                    return asyncComponents.StringArrayInput;
+                } else if (parameterTypeIsAddress(type)) {
+                    return asyncComponents.AddressInput;
+                } else if (parameterTypeIsAddressArray(type)) {
+                    return asyncComponents.AddressArrayInput;
+                } else if (parameterTypeIsBoolean(type)) {
+                    return asyncComponents.BooleanInput;
+                } else if (parameterTypeIsBooleanArray(type)) {
+                    return asyncComponents.BooleanArrayInput;
+                } else if (parameterTypeIsBytes(type)) {
+                    return asyncComponents.BytesArrayInput;
+                } else if (parameterTypeIsSignedInt(type)) {
+                    return asyncComponents.SignedIntInput;
+                } else if (parameterTypeIsSignedIntArray(type)) {
+                    return asyncComponents.SignedIntArrayInput;
+                } else if (parameterTypeIsUnsignedInt(type)) {
+                    return asyncComponents.UnsignedIntInput;
+                } else if (parameterTypeIsUnsignedIntArray(type)) {
+                    return asyncComponents.UnsignedIntArrayInput;
+                }
+
+                return {};
+            };
+            const getExtraBindingsForType = ({ type, name }, index) => {
+                const label = `${name ? name : `Param ${index}`}`;
+                const extras = {};
+
+                // represents integer bits for int types, or array length for array types
+                let size = undefined;
+                if (parameterIsArrayType(type)) {
+                    size = getExpectedArrayLengthFromParameterType(type)
+                } else if (parameterIsIntegerType(type)) {
+                    size = getIntegerBits(type)
+                }
+
+                if (/^uint[\d*]$/.test(type)) {
+                    extras['uint-size'] = type.match(/\d+/)[0];
+                } else if (/^int[\d*]$/.test(type)) {
+                    extras['int-size'] = type.match(/\d+/)[0];
+                }
+
+                return {
+                    ...extras,
+                    label,
+                    size,
+                    modelValue: this.params[index] ?? '',
+                    name: '',
+                };
+            };
+
+            return this.abi.inputs.map((input, index) => ({
+                bindings: getExtraBindingsForType(input, index),
+                is: getComponentForInputType(input.type),
+                inputType: input.type,
+                handleModelValueChange:  inputIsComplex(input.type) ? () => {} : (value, index) => this.params[index] = value,
+                handleValueParsed:      !inputIsComplex(input.type) ? () => {} : (value, index) => this.params[index] = value,
+            }));
+        },
         enableRun() {
             return this.isLoggedIn || this.abi.stateMutability === 'view'
         },
@@ -205,8 +290,6 @@ export default {
         },
     },
     methods: {
-        parameterTypeIsImplemented,
-        parameterTypeIsUint256,
         makeLabel(abiParam, position) {
             return `${abiParam.name ? abiParam.name : `Param ${position}`} (${abiParam.type})`
         },
@@ -239,67 +322,9 @@ export default {
 
             return formatted;
         },
-        getHintForInput(type) {
-            let example;
-
-            if (parameterTypeIsAddress(type)) {
-                example = '0x0000000000000000000000000000000000000000';
-            } else if (parameterTypeIsAddressArray(type)) {
-                example = '[0x0000000000000000000000000000000000000000, 0x1111111111111111111111111111111111111111]';
-            } else if (parameterTypeIsUint256(type)) {
-                example = '12345';
-            } else if (parameterTypeIsUint256Array(type)) {
-                example = '[1234, 5678]';
-            } else if (parameterTypeIsBoolean(type)) {
-                example = 'false';
-            } else if (parameterTypeIsBooleanArray(type)) {
-                example = '[false, true]';
-            } else if (parameterTypeIsString(type)) {
-                example = 'Example string';
-            }
-
-            if (example)
-                return `e.g. ${example}`;
-
-            return '';
-        },
         formatValue(rawValue, type) {
-            const value = rawValue.trim();
-            const expectedArrayLength = getExpectedArrayLengthFromParameterType(type);
-
-            const typeIsUint256      = parameterTypeIsUint256(type);
-            const typeIsAddress      = parameterTypeIsAddress(type);
-            const typeIsUint256Array = parameterTypeIsUint256Array(type);
-            const typeIsAddressArray = parameterTypeIsAddressArray(type);
-            const typeIsBoolean      = parameterTypeIsBoolean(type);
-            const typeIsBooleanArray = parameterTypeIsBooleanArray(type);
-            const typeIsString       = parameterTypeIsString(type);
-
-            let parsedValue;
-
-            if (typeIsUint256) {
-                parsedValue = parseUint256String(value);
-            } else if (typeIsUint256Array) {
-                parsedValue = parseUint256ArrayString(value, expectedArrayLength);
-            } else if (typeIsAddress) {
-                parsedValue = parseAddressString(value);
-            } else if (typeIsAddressArray) {
-                parsedValue = parseAddressArrayString(value, expectedArrayLength);
-            } else if (typeIsBoolean) {
-                parsedValue = parseBooleanString(value);
-            }  else if (typeIsBooleanArray) {
-                parsedValue = parseBooleanArrayString(value, expectedArrayLength);
-            } else if (typeIsString) {
-                return value;
-            } else {
-                return value;
-            }
-
-            if (parsedValue === undefined) {
-                throw `Invalid value for type ${type}`;
-            }
-
-            return parsedValue;
+            console.log(rawValue, type);
+            return rawValue;
         },
         async run() {
             this.loading = true;
@@ -439,16 +464,19 @@ export default {
 }
 </script>
 
-<style lang='sass'>
-.amount-dialog.q-card
-    padding: 1.5rem !important
+<style lang="scss">
+.amount-dialog.q-card {
+    padding: 1.5rem !important;
+}
 
-.output-container
-    margin: 0 1rem 1rem 1rem
-    font-weight: 500
-    font-size: .75rem
+.output-container {
+    margin: 0 1rem 1rem 1rem;
+    font-weight: 500;
+    font-size: .75rem;
+}
 
-.run-button
-    margin: 0 1rem 1rem 1rem
-    border-radius: .25rem
+.run-button {
+    margin: 0 1rem 1rem 1rem;
+    border-radius: .25rem;
+}
 </style>
