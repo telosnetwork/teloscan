@@ -222,7 +222,7 @@ export default {
         boolArrayInputValue: '',
         bytesArrayInputValue: '',
         selectedIntSizeOption: 8,
-        intSizeOptions: (() => {
+        intSizeOptions: (() => { // eztodo handle signed 128 limit
             const arr = [];
             for (let index = 1; index <= 32; index++) {
                 arr.push(8*index)
