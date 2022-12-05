@@ -64,7 +64,6 @@
             @update:modelValue="component.handleModelValueChange($event, index)"
             class="q-pb-md"
         />
-
     </div>
 
 
@@ -114,7 +113,10 @@ import {
     parameterTypeIsSignedIntArray,
     parameterTypeIsSignedInt,
     parameterTypeIsBytes,
-    getExpectedArrayLengthFromParameterType, parameterIsArrayType, parameterIsIntegerType, getIntegerBits,
+    getExpectedArrayLengthFromParameterType,
+    parameterIsArrayType,
+    parameterIsIntegerType,
+    getIntegerBits,
 } from 'components/ContractTab/function-interface-utils';
 
 import TransactionField from 'components/TransactionField';
@@ -200,7 +202,7 @@ export default {
             if (!Array.isArray(this.abi?.inputs))
                 return [];
 
-            // i.e. input component emits @valueParsed rather than rely on @update:modelValue (v-model)
+            // i.e. input component emits @valueParsed rather than relying on @update:modelValue (i.e. v-model)
             const inputIsComplex = (type) => (
                 parameterTypeIsBytes(type)          ||
                 parameterTypeIsAddressArray(type)   ||
@@ -238,10 +240,10 @@ export default {
                 return {};
             };
             const getExtraBindingsForType = ({ type, name }, index) => {
-                const label = `${name ? name : `Param ${index}`}`;
+                const label = `${name ? name : `Param ${index + 1}`}`;
                 const extras = {};
 
-                // represents integer bits for int types, or array length for array types
+                // represents integer bits (e.g. uint256) for int types, or array length for array types
                 let size = undefined;
                 if (parameterIsArrayType(type)) {
                     size = getExpectedArrayLengthFromParameterType(type)
@@ -290,9 +292,6 @@ export default {
         },
     },
     methods: {
-        makeLabel(abiParam, position) {
-            return `${abiParam.name ? abiParam.name : `Param ${position}`} (${abiParam.type})`
-        },
         showAmountDialog(param) {
             this.amountParam = param;
             this.amountDecimals = 18;

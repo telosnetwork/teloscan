@@ -1,69 +1,140 @@
 import { BigNumber, ethers } from 'ethers';
 
-
-
-
+/**
+ * Given a function interface type, returns true iff that type is "address"
+ * @param {string} type
+ * @returns {boolean}
+ */
 function parameterTypeIsAddress(type) {
     return type === 'address';
 }
 
+/**
+ * Given a function interface type, returns true iff that type is an array of addresses
+ * @param {string} type
+ * @returns {boolean}
+ */
 function parameterTypeIsAddressArray(type) {
     return /^address\[\d*]/.test(type);
 }
 
+/**
+ * Given a function interface type, returns true iff that type is boolean
+ * @param {string} type
+ * @returns {boolean}
+ */
 function parameterTypeIsBoolean(type) {
     return type === 'bool';
 }
 
+/**
+ * Given a function interface type, returns true iff that type is a boolean array
+ * @param {string} type
+ * @returns {boolean}
+ */
 function parameterTypeIsBooleanArray(type) {
     return /^bool\[\d*]/.test(type);
 }
 
+/**
+ * Given a function interface type, returns true iff that type is bytes, e.g. bytes32 or bytes[]
+ * @param {string} type
+ * @returns {boolean}
+ */
 function parameterTypeIsBytes(type) {
     return /^bytes/.test(type)
 }
 
+/**
+ * Given a function interface type, returns true iff that type is signed integer, e.g. int32
+ * @param {string} type
+ * @returns {boolean}
+ */
 function parameterTypeIsSignedInt(type) {
     return /^int\d+/.test(type)
 }
 
+/**
+ * Given a function interface type, returns true iff that type array of signed integers, e.g. int32[]
+ * @param {string} type
+ * @returns {boolean}
+ */
 function parameterTypeIsSignedIntArray(type) {
     return /^int\[\d*]/.test(type)
 }
 
+/**
+ * Given a function interface type, returns true iff that type is string
+ * @param {string} type
+ * @returns {boolean}
+ */
 function parameterTypeIsString(type) {
     return type === 'string';
 }
 
+/**
+ * Given a function interface type, returns true iff that type is array of string
+ * @param {string} type
+ * @returns {boolean}
+ */
 function parameterTypeIsStringArray(type) {
     return /^string\[\d*]/.test(type);
 }
 
+/**
+ * Given a function interface type, returns true iff that type represents unsigned integer, e.g. uint32
+ * @param {string} type
+ * @returns {boolean}
+ */
 function parameterTypeIsUnsignedInt(type) {
     return /^uint\d+/.test(type)
 }
 
+/**
+ * Given a function interface type, returns true iff that type represents unsigned integer array, e.g. uint32[]
+ * @param {string} type
+ * @returns {boolean}
+ */
 function parameterTypeIsUnsignedIntArray(type) {
     return /^uint\[\d*]/.test(type)
 }
 
 
 
+/**
+ * Given a function interface type, returns true iff that type represents an array of any kind, e.g. string[] or uint8[]
+ * @param {string} type
+ * @returns {boolean}
+ */
 function parameterIsArrayType(type) {
     return /\[\d*]$/.test(type);
 }
 
+/**
+ * Given a function interface type, returns true iff that type represents an integer, either signed or unsigned
+ * @param {string} type
+ * @returns {boolean}
+ */
 function parameterIsIntegerType(type) {
     return /int\d+$/.test(type);
 }
 
 
-
+/**
+ * Given a function interface type, returns the expected size of the array iff it is defined
+ * @param {string} type
+ * @returns {number|undefined}
+ */
 function getExpectedArrayLengthFromParameterType(type) {
     const expectedArrayLengthRegex = /\d+(?=]$)/;
     return (+type.match(expectedArrayLengthRegex)?.[0]) || undefined;
 }
 
+/**
+ * Given a function interface type, returns the expected number of bits iff the type is an integer (uint or int)
+ * @param {string} type
+ * @returns {number|undefined}
+ */
 function getIntegerBits(type) {
     if (!parameterIsIntegerType(type)) {
         return undefined;
@@ -73,45 +144,14 @@ function getIntegerBits(type) {
     return (+type.match(bitsRegex)?.[0]) || undefined;
 }
 
-// eztodo deprecated and incorrect; remove
-function parseUint256String(str = '') {
-    const uint256StringRegex = /^\d{1,256}$/;
-    const stringRepresentsValidUint256 = uint256StringRegex.test(str);
-
-    if (!stringRepresentsValidUint256) {
-        return undefined;
-    }
-
-    return BigNumber.from(str);
-}
-
-// eztodo deprecated and incorrect; remove
-function parseUint256ArrayString(str = '', expectedLength) {
-    if (str === '[]' && expectedLength === undefined)
-        return [];
-
-    const arrayOfUint256Regex = /^\[(\d{1,256}, *)*(\d{1,256})]$/;
-    const stringRepresentsValidUint256Array = arrayOfUint256Regex.test(str);
-
-    if (!stringRepresentsValidUint256Array)
-        return undefined;
-
-    const bigNumberArray = str.match(/\d+/g).map(intString => BigNumber.from(intString));
-
-    if (Number.isInteger(expectedLength)) {
-        const actualLength = bigNumberArray.length;
-
-        if (actualLength !== expectedLength)
-            return undefined;
-    }
-
-    return bigNumberArray;
-}
-
-
-
-
-
+/**
+ * Given a string, returns a BigNumber representation of that string iff it represents a solidity unsigned integer
+ * and an expected size in bits is supplied
+ *
+ * @param {string} str - e.g. "12"
+ * @param {number} expectedSizeInBits - integer from 8 to 256, must be multiple of 8, e.g. 64 for uint64
+ * @returns {BigNumber|undefined}
+ */
 function parseUintString (str, expectedSizeInBits) {
     const uintStringRegex = /^\d+$/;
     const stringRepresentsValidUint = uintStringRegex.test(str);
@@ -137,10 +177,19 @@ function parseUintString (str, expectedSizeInBits) {
         intIsCorrectSize = intBigNumber.lte(maxValue);
     }
 
-
     return intIsCorrectSize ? intBigNumber : undefined;
 }
 
+/**
+ * Given a string, returns an array of BigNumbers iff the string represents an array of solidity unsigned integer
+ * and an expected size in bits is supplied. Returns undefined if string is valid but has the wrong number of elements
+ * in the case of fixed-size arrays
+ *
+ * @param {string} str - e.g. "[]"
+ * @param {number|undefined} expectedLength - optional size of array
+ * @param {number} expectedIntSize - integer from 8 to 256, must be multiple of 8, e.g. 64 for uint64
+ * @returns {BigNumber[]|undefined}
+ */
 function parseUintArrayString (str, expectedLength, expectedIntSize) {
     const uintArrayRegex = /^\[(\d+, *)*(\d+)]$/;
     const stringRepresentsUintArray = uintArrayRegex.test(str);
@@ -179,6 +228,14 @@ function parseUintArrayString (str, expectedLength, expectedIntSize) {
     return intBigNums;
 }
 
+/**
+ * Given a string, returns a BigNumber representation of that string iff it represents a solidity signed integer
+ * and an expected size in bits is supplied
+ *
+ * @param {string} str - e.g. "12"
+ * @param {number} expectedSizeInBits - integer from 8 to 256, must be multiple of 8, e.g. 64 for int64
+ * @returns {BigNumber|undefined}
+ */
 function parseSignedIntString (str, expectedSizeInBits) {
     const signedIntStringRegex = /^-?\d+$/;
     const stringRepresentsValidInt = signedIntStringRegex.test(str);
@@ -209,6 +266,16 @@ function parseSignedIntString (str, expectedSizeInBits) {
     return intIsCorrectSize ? intBigNumber : undefined;
 }
 
+/**
+ * Given a string, returns an array of BigNumbers iff the string represents an array of solidity signed integer
+ * and an expected size in bits is supplied. Returns undefined if string is valid but has the wrong number of elements
+ * in the case of fixed-size arrays
+ *
+ * @param {string} str - e.g. "[]"
+ * @param {number|undefined} expectedLength - optional size of array
+ * @param {number} expectedIntSize - integer from 8 to 256, must be multiple of 8, e.g. 64 for int64
+ * @returns {BigNumber[]|undefined}
+ */
 function parseSignedIntArrayString (str, expectedLength, expectedIntSize) {
     const signedIntArrayRegex = /^\[(-?\d+, *)*(-?\d+)]$/;
     const stringRepresentsIntArray = signedIntArrayRegex.test(str);
@@ -248,11 +315,12 @@ function parseSignedIntArrayString (str, expectedLength, expectedIntSize) {
     return intBigNums;
 }
 
-
-
-
-
-
+/**
+ * Given a string, returns a formatted address string iff the string is a valid address
+ *
+ * @param {string} str
+ * @returns {string|undefined}
+ */
 function parseAddressString(str) {
     try {
         return ethers.utils.getAddress(str);
@@ -261,6 +329,14 @@ function parseAddressString(str) {
     }
 }
 
+/**
+ * Given a string, returns an array of formatted address strings iff the string is a valid representation of an address
+ * array. Returns undefined if string is valid but has the wrong number of elements in the case of fixed-size arrays
+ *
+ * @param {string} str
+ * @param {number|undefined} expectedLength
+ * @returns {string[]|undefined}
+ */
 function parseAddressArrayString(str, expectedLength) {
     if (str === '[]' && expectedLength === undefined)
         return [];
@@ -290,6 +366,12 @@ function parseAddressArrayString(str, expectedLength) {
     return addressArray;
 }
 
+/**
+ * Given a string, returns a boolean iff the string is "true" or "false"
+ *
+ * @param {"true"|"false"} str
+ * @returns {boolean|undefined}
+ */
 function parseBooleanString(str) {
     const trueRegex  = /^true$/i;
     const falseRegex = /^false$/i;
@@ -303,6 +385,14 @@ function parseBooleanString(str) {
     return undefined;
 }
 
+/**
+ * Given a string, returns an array of boolean iff the string is a valid representation of a boolean array.
+ * Returns undefined if string is valid but has the wrong number of elements in the case of fixed-size arrays
+ *
+ * @param {string} str - string representation of an array of boolean, e.g. "[true, false, true]"
+ * @param {number|undefined} expectedLength
+ * @returns {boolean[]|undefined}
+ */
 function parseBooleanArrayString(str, expectedLength) {
     if (str === '[]' && expectedLength === undefined)
         return [];
@@ -327,6 +417,14 @@ function parseBooleanArrayString(str, expectedLength) {
     return boolArray;
 }
 
+/**
+ * Given a string, returns an array of byte strings iff the string is a valid representation of bytes.
+ * Returns undefined if string is valid but has the wrong number of elements in the case of fixed-size arrays
+ *
+ * @param {string} str - string representation of an array of bytes, e.g. "[a9, ff, 02]"
+ * @param {number|undefined} expectedLength
+ * @returns {string[]|undefined}
+ */
 function parseBytesArrayString(str, expectedLength) {
     if (str === '[]' && expectedLength === undefined)
         return [];
@@ -350,6 +448,14 @@ function parseBytesArrayString(str, expectedLength) {
     return bytesArray;
 }
 
+/**
+ * Given a string, returns an array of string iff it is a valid JSON representation of a string array.
+ * Returns undefined if string is valid but has the wrong number of elements in the case of fixed-size arrays
+ *
+ * @param str - JSON string representation of a string array, e.g. '["neato", "wow", "interesting \"quote\""]'
+ * @param expectedLength
+ * @returns {string[]|undefined}
+ */
 function parseStringArrayString(str, expectedLength) {
     let parsedArrayOfStrings;
 
@@ -405,8 +511,4 @@ export {
     parseStringArrayString,
     parseUintArrayString,
     parseUintString,
-
-    // eztodo yeet
-    parseUint256ArrayString,
-    parseUint256String,
 }
