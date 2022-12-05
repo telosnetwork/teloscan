@@ -8,7 +8,6 @@
     :rules="rules"
     :lazy-rules="false"
     :size="undefined"
-    type="number"
     @update:modelValue="handleChange"
 />
 </template>
@@ -64,7 +63,7 @@ export default {
             const errMessageTooSmall = `Minimum value for int${this.size} is -(2^${this.size}) + 1`;
 
             return [
-                val => /^-?\d+$/.test(val) || errMessageInvalidInput,
+                val => (/^-?\d+$/.test(val) || val === '')|| errMessageInvalidInput,
                 val => BigNumber.from(val || 0).lte(maximum) || errMessageTooLarge,
                 val => BigNumber.from(val || 0).gte(minimum) || errMessageTooSmall,
             ];
