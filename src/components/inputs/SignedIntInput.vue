@@ -1,13 +1,12 @@
 <template>
 <base-text-input
+    ref="input"
     v-bind="$attrs"
     :model-value="modelValue"
     :label="shapedLabel"
     :name="name"
-    :maxlength="+size"
-    :max="size"
-    :min="0"
     :rules="rules"
+    :lazy-rules="false"
     :size="undefined"
     type="number"
     @update:modelValue="handleChange"
@@ -28,6 +27,7 @@ export default {
     },
     emits: [
         'update:modelValue',
+        'valueParsed',
     ],
     props: {
         modelValue: {
@@ -60,8 +60,8 @@ export default {
             const minimum = maximum.mul(-1);
 
             const errMessageInvalidInput = 'Entry must be a valid signed integer';
-            const errMessageTooLarge = `Maximum value for int${this.size} is ${maximum.toString()}`;
-            const errMessageTooSmall = `Minimum value for int${this.size} is ${minimum.toString()}`;
+            const errMessageTooLarge = `Maximum value for int${this.size} is 2^${this.size} - 1`;
+            const errMessageTooSmall = `Minimum value for int${this.size} is -(2^${this.size}) + 1`;
 
             return [
                 val => /^-?\d+$/.test(val) || errMessageInvalidInput,
@@ -71,6 +71,14 @@ export default {
         },
         shapedLabel() {
             return `${this.label} (int${this.size})`
+        },
+    },
+    watch: {
+        async size(newValue, oldValue) {
+            if (newValue !== oldValue) {
+                await this.$refs.input.resetValidation();
+                await this.$refs.input.validate();
+            }
         },
     },
     methods: {

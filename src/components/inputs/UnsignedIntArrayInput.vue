@@ -101,9 +101,8 @@ export default {
         async size(newVal, oldVal) {
             if (newVal !== oldVal) {
                 // addresses size & error message out-of-sync issue
-                this.$refs.input.resetValidation();
-                await this.$nextTick();
-                this.$refs.input.validate();
+                await this.$refs.input.resetValidation();
+                await this.$refs.input.validate();
             }
         },
     },

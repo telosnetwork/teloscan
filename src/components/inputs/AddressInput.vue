@@ -23,6 +23,7 @@ export default {
     },
     emits: [
         'update:modelValue',
+        'valueParsed',
     ],
     props: {
         modelValue: {

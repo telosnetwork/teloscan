@@ -94,10 +94,10 @@ export default {
         },
     },
     watch: {
-        required(newValue, oldValue) {
+        async required(newValue, oldValue) {
             if (newValue !== oldValue) {
                 // prevent 'field is required' error from persisting if 'required' prop changes
-                this.$refs.input.resetValidation();
+                await this.$refs.input.resetValidation();
             }
         },
     },
@@ -107,11 +107,11 @@ export default {
                 this.$emit('update:modelValue', newValue);
             }
         },
-        validate() {
+        async validate() {
             this.$refs.input.validate();
         },
-        resetValidation() {
-            this.$refs.input.resetValidation();
+        async resetValidation() {
+            await this.$refs.input.resetValidation();
         },
     },
 }

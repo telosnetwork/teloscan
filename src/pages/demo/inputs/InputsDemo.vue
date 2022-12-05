@@ -29,6 +29,18 @@
                     <input v-model="allArraysFixedSize" type="checkbox" id="allArraysFixedSize">
                     <label for="allArraysFixedSize">&nbsp;All array inputs have fixed size?</label>
                     <br>
+
+                    <select v-model="selectedIntSizeOption" id="intSizeOptions">
+                        <option
+                            :value="option"
+                            :key="option"
+                            v-for="option in intSizeOptions"
+                        >
+                            {{ option }}
+                        </option>
+                    </select>
+                    <label for="allArraysFixedSize">&nbsp;Bits for <code>int</code>/<code>uint</code>-based inputs</label>
+                    <br>
                 </div>
             </div>
 
@@ -64,7 +76,7 @@
                         v-bind="universalToggles"
                         label="Unsigned Integer Input"
                         name="uint input"
-                        size="8"
+                        :size="selectedIntSizeOption"
                     />
                 </div>
 
@@ -74,7 +86,7 @@
                         v-bind="universalToggles"
                         label="Signed Integer Input"
                         name="int input"
-                        :size="8"
+                        :size="selectedIntSizeOption"
                     />
                 </div>
 
@@ -125,7 +137,7 @@
                         v-bind="arrayToggles"
                         label="Unsigned Int Array Input"
                         name="uint array input"
-                        uint-size="8"
+                        :uint-size="selectedIntSizeOption"
                     />
                 </div>
 
@@ -135,7 +147,7 @@
                         v-bind="arrayToggles"
                         label="Signed Int Array Input"
                         name="int array input"
-                        int-size="8"
+                        :int-size="selectedIntSizeOption"
                     />
                 </div>
 
@@ -209,6 +221,14 @@ export default {
         booleanInputValue: null,
         boolArrayInputValue: '',
         bytesArrayInputValue: '',
+        selectedIntSizeOption: 8,
+        intSizeOptions: (() => {
+            const arr = [];
+            for (let index = 1; index <= 32; index++) {
+                arr.push(8*index)
+            }
+            return arr;
+        })(),
     }),
     computed: {
         universalToggles() {

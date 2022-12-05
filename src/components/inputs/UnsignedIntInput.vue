@@ -4,8 +4,6 @@
     :model-value="modelValue"
     :label="shapedLabel"
     :name="name"
-    :maxlength="+size"
-    :max="size"
     :min="0"
     :rules="rules"
     :size="undefined"
@@ -27,6 +25,7 @@ export default {
     },
     emits: [
         'update:modelValue',
+        'valueParsed',
     ],
     props: {
         modelValue: {
