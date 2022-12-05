@@ -17,6 +17,8 @@
 <script>
 import { BigNumber } from 'ethers';
 
+import { parseSignedIntString } from 'components/ContractTab/function-interface-utils';
+
 import BaseTextInput from 'components/inputs/BaseTextInput';
 
 export default {
@@ -71,11 +73,18 @@ export default {
             return `${this.label} (int${this.size})`
         },
     },
-    // eztodo add handler to emit parsed values, see stringarrayinput
     methods: {
         handleChange(newValue) {
             if (newValue !== this.modelValue) {
                 this.$emit('update:modelValue', newValue);
+            }
+
+            const expectedSize = +this.size === -1 ? undefined : +this.size;
+            const newParsed = parseSignedIntString(newValue, expectedSize);
+
+            if (this.previousParsedValue !== newParsed) {
+                this.$emit('valueParsed', newParsed);
+                this.previousParsedValue = newParsed;
             }
         },
     },

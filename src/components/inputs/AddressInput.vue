@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import { parseAddressString } from 'components/ContractTab/function-interface-utils';
+
 import BaseTextInput from 'components/inputs/BaseTextInput';
 
 export default {
@@ -55,11 +57,17 @@ export default {
             return `${this.label} (address)`
         },
     },
-    // eztodo add handler to emit validated values, see stringarrayinput
     methods: {
         handleChange(newValue) {
             if (newValue !== this.modelValue) {
                 this.$emit('update:modelValue', newValue);
+
+                const newParsed = parseAddressString(newValue);
+
+                if (this.previousParsedValue !== newParsed) {
+                    this.$emit('valueParsed', newParsed);
+                    this.previousParsedValue = newParsed;
+                }
             }
         },
     },

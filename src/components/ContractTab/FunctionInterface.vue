@@ -204,9 +204,11 @@ export default {
 
             // i.e. input component emits @valueParsed rather than relying on @update:modelValue (i.e. v-model)
             const inputIsComplex = (type) => (
-                parameterTypeIsBytes(type)          ||
+                parameterIsIntegerType(type)        ||
+                parameterTypeIsAddress(type)        ||
                 parameterTypeIsAddressArray(type)   ||
                 parameterTypeIsBooleanArray(type)   ||
+                parameterTypeIsBytes(type)          ||
                 parameterTypeIsSignedIntArray(type) ||
                 parameterTypeIsStringArray(type)    ||
                 parameterTypeIsUnsignedIntArray(type)
