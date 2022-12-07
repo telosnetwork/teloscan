@@ -253,10 +253,14 @@ export default {
                     size = getIntegerBits(type)
                 }
 
-                if (/^uint[\d*]$/.test(type)) {
-                    extras['uint-size'] = type.match(/\d+/)[0];
-                } else if (/^int[\d*]$/.test(type)) {
-                    extras['int-size'] = type.match(/\d+/)[0];
+                const intSizeForArrayTypeRegex = /\d+(?=\[)/;
+                debugger;
+
+
+                if (parameterTypeIsUnsignedIntArray(type)) {
+                    extras['uint-size'] = type.match(intSizeForArrayTypeRegex)[0];
+                } else if (parameterTypeIsSignedIntArray(type)) {
+                    extras['int-size'] = type.match(intSizeForArrayTypeRegex)[0];
                 }
 
                 return {

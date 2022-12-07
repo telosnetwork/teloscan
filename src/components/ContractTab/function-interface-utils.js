@@ -15,7 +15,7 @@ function parameterTypeIsAddress(type) {
  * @returns {boolean}
  */
 function parameterTypeIsAddressArray(type) {
-    return /^address\[\d*]/.test(type);
+    return /^address\[\d*]$/.test(type);
 }
 
 /**
@@ -33,7 +33,7 @@ function parameterTypeIsBoolean(type) {
  * @returns {boolean}
  */
 function parameterTypeIsBooleanArray(type) {
-    return /^bool\[\d*]/.test(type);
+    return /^bool\[\d*]$/.test(type);
 }
 
 /**
@@ -51,7 +51,7 @@ function parameterTypeIsBytes(type) {
  * @returns {boolean}
  */
 function parameterTypeIsSignedInt(type) {
-    return /^int\d+/.test(type)
+    return /^int\d+$/.test(type)
 }
 
 /**
@@ -60,7 +60,7 @@ function parameterTypeIsSignedInt(type) {
  * @returns {boolean}
  */
 function parameterTypeIsSignedIntArray(type) {
-    return /^int\[\d*]/.test(type)
+    return /^int\d+\[\d*]/.test(type)
 }
 
 /**
@@ -78,7 +78,7 @@ function parameterTypeIsString(type) {
  * @returns {boolean}
  */
 function parameterTypeIsStringArray(type) {
-    return /^string\[\d*]/.test(type);
+    return /^string\[\d*]$/.test(type);
 }
 
 /**
@@ -87,7 +87,7 @@ function parameterTypeIsStringArray(type) {
  * @returns {boolean}
  */
 function parameterTypeIsUnsignedInt(type) {
-    return /^uint\d+/.test(type)
+    return /^uint\d+$/.test(type)
 }
 
 /**
@@ -96,7 +96,7 @@ function parameterTypeIsUnsignedInt(type) {
  * @returns {boolean}
  */
 function parameterTypeIsUnsignedIntArray(type) {
-    return /^uint\[\d*]/.test(type)
+    return /^uint\d+\[\d*]$/.test(type)
 }
 
 
