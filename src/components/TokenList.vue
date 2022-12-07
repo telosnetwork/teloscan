@@ -26,7 +26,9 @@ export default {
         this.loadTokens();
     },
     methods: {
-        promptAddToMetamask,
+        promptAddToMetamask(address, symbol, logoURI, type, decimals) {
+            promptAddToMetamask(this.$q, address, symbol, logoURI, type, decimals);
+        },
         async loadTokens() {
             const tokenList = await this.$contractManager.getTokenList();
             let tokens = tokenList.tokens
