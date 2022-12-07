@@ -60,8 +60,8 @@
         <component
             :is="component.is"
             v-bind="component.bindings"
-            @valueParsed="component.handleValueParsed($event, index)"
-            @update:modelValue="component.handleModelValueChange($event, index)"
+            @valueParsed="component.handleValueParsed(component.inputType, index, $event)"
+            @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
             class="q-pb-md"
         />
     </div>
@@ -184,6 +184,7 @@ export default {
         selectDecimals: decimalOptions[0],
         customDecimals: 0,
         value: '0',
+        inputModels: [],
         params: [],
         valueParam: {
             'name': 'value',
@@ -265,17 +266,30 @@ export default {
                     ...extras,
                     label,
                     size,
-                    modelValue: this.params[index] ?? '',
+                    modelValue: this.inputModels[index] ?? '',
                     name: '',
                 };
+            };
+
+            const handleModelValueChange = (type, index, value) => {
+                this.inputModels[index] = value;
+
+                if (!inputIsComplex(type)) {
+                    this.params[index] = value;
+                }
+            };
+            const handleValueParsed = (type, index, value) => {
+                if (inputIsComplex(type)) {
+                    this.params[index] = value;
+                }
             };
 
             return this.abi.inputs.map((input, index) => ({
                 bindings: getExtraBindingsForType(input, index),
                 is: getComponentForInputType(input.type),
                 inputType: input.type,
-                handleModelValueChange:  inputIsComplex(input.type) ? () => {} : (value, index) => this.params[index] = value,
-                handleValueParsed:      !inputIsComplex(input.type) ? () => {} : (value, index) => this.params[index] = value,
+                handleModelValueChange: (type, index, value) => handleModelValueChange(type, index, value),
+                handleValueParsed:      (type, index, value) => handleValueParsed(type, index, value),
             }));
         },
         enableRun() {
