@@ -60,9 +60,10 @@
         <component
             :is="component.is"
             v-bind="component.bindings"
+            required
             @valueParsed="component.handleValueParsed(component.inputType, index, $event)"
             @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
-            class="q-pb-md"
+            class="q-pb-lg"
         />
     </div>
 
@@ -225,11 +226,11 @@ export default {
                 } else if (parameterTypeIsAddressArray(type)) {
                     return asyncComponents.AddressArrayInput;
                 } else if (parameterTypeIsBoolean(type)) {
-                    return asyncComponents.BooleanInput;
+                    return asyncComponents.BooleanInput; // eztodo bool input styling is off
                 } else if (parameterTypeIsBooleanArray(type)) {
                     return asyncComponents.BooleanArrayInput;
                 } else if (parameterTypeIsBytes(type)) {
-                    return asyncComponents.BytesArrayInput;
+                    return asyncComponents.BytesArrayInput; // eztodo bytes with number should produce fixed size array
                 } else if (parameterTypeIsSignedInt(type)) {
                     return asyncComponents.SignedIntInput;
                 } else if (parameterTypeIsSignedIntArray(type)) {
@@ -262,11 +263,13 @@ export default {
                     extras['int-size'] = getIntSize();
                 }
 
+                const defaultModelValue = parameterTypeIsBoolean(type) ? null : '';
+
                 return {
                     ...extras,
                     label,
                     size,
-                    modelValue: this.inputModels[index] ?? '',
+                    modelValue: this.inputModels[index] ?? defaultModelValue,
                     name: '',
                 };
             };
@@ -301,7 +304,7 @@ export default {
             }
 
             for (let i = 0; i < this.abi.inputs.length; i++) {
-                if (!this.params[i]) {
+                if (['', null].includes(this.params[i])) {
                     return true;
                 }
             }
@@ -340,6 +343,7 @@ export default {
             return formatted;
         },
         formatValue(rawValue, type) {
+            // eztodo remove / refactor
             console.log(rawValue, type);
             return rawValue;
         },
