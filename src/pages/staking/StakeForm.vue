@@ -298,6 +298,7 @@ export default {
     methods: {
         promptAddToMetamask() {
             return promptAddToMetamask(
+                this.$q,
                 process.env.STAKED_TLOS_CONTRACT_ADDRESS,
                 'STLOS',
                 stlos,
