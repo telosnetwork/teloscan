@@ -35,7 +35,7 @@ export async function promptAddToMetamask(
     }).catch(({ message }) => {
         console.error(message);
         $q.notify({
-            message: `Failed to add token: asset of type ${type} not supported`,
+            message: `Failed to add ${symbol} to MetaMask: ${message}`,
             color: 'red',
         });
     });
