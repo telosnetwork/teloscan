@@ -30,16 +30,28 @@
                     <label for="allArraysFixedSize">&nbsp;All array inputs have fixed size?</label>
                     <br>
 
-                    <select v-model="selectedIntSizeOption" id="intSizeOptions">
+                    <select v-model="selectedSignedIntSizeOption" id="signedIntSizeOptions">
                         <option
                             :value="option"
                             :key="option"
-                            v-for="option in intSizeOptions"
+                            v-for="option in signedIntSizeOptions"
                         >
                             {{ option }}
                         </option>
                     </select>
-                    <label for="allArraysFixedSize">&nbsp;Bits for <code>int</code>/<code>uint</code>-based inputs</label>
+                    <label for="signedIntSizeOptions">&nbsp;Bits for <code>int</code>-based inputs</label>
+                    <br>
+
+                    <select v-model="selectedUnsignedIntSizeOption" id="unsignedIntSizeOptions">
+                        <option
+                            :value="option"
+                            :key="option"
+                            v-for="option in unsignedIntSizeOptions"
+                        >
+                            {{ option }}
+                        </option>
+                    </select>
+                    <label for="allArraysFixedSize">&nbsp;Bits for <code>uint</code>-based inputs</label>
                     <br>
                 </div>
             </div>
@@ -76,7 +88,7 @@
                         v-bind="universalToggles"
                         label="Unsigned Integer Input"
                         name="uint input"
-                        :size="selectedIntSizeOption"
+                        :size="selectedUnsignedIntSizeOption"
                     />
                 </div>
 
@@ -86,7 +98,7 @@
                         v-bind="universalToggles"
                         label="Signed Integer Input"
                         name="int input"
-                        :size="selectedIntSizeOption"
+                        :size="selectedSignedIntSizeOption"
                     />
                 </div>
 
@@ -137,7 +149,7 @@
                         v-bind="arrayToggles"
                         label="Unsigned Int Array Input"
                         name="uint array input"
-                        :uint-size="selectedIntSizeOption"
+                        :uint-size="selectedUnsignedIntSizeOption"
                     />
                 </div>
 
@@ -147,7 +159,7 @@
                         v-bind="arrayToggles"
                         label="Signed Int Array Input"
                         name="int array input"
-                        :int-size="selectedIntSizeOption"
+                        :int-size="selectedSignedIntSizeOption"
                     />
                 </div>
 
@@ -221,8 +233,16 @@ export default {
         booleanInputValue: null,
         boolArrayInputValue: '',
         bytesArrayInputValue: '',
-        selectedIntSizeOption: 8,
-        intSizeOptions: (() => { // eztodo handle signed 128 limit
+        selectedSignedIntSizeOption: 8,
+        selectedUnsignedIntSizeOption: 8,
+        signedIntSizeOptions: (() => {
+            const arr = [];
+            for (let index = 1; index <= 16; index++) {
+                arr.push(8*index)
+            }
+            return arr;
+        })(),
+        unsignedIntSizeOptions: (() => {
             const arr = [];
             for (let index = 1; index <= 32; index++) {
                 arr.push(8*index)
