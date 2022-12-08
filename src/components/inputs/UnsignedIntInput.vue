@@ -8,7 +8,11 @@
     :rules="rules"
     :size="undefined"
     @update:modelValue="handleChange"
-/>
+>
+    <template #append>
+        <slot name="append" />
+    </template>
+</base-text-input>
 </template>
 
 <script>

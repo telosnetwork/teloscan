@@ -39,9 +39,12 @@
         </q-card>
     </q-dialog>
     <div v-if="abi.stateMutability === 'payable'">
-        <q-input
+        <unsigned-int-input
             v-model="value"
-            label="Value (amount)"
+            label="Value"
+            name="value"
+            size="256"
+            class="q-pb-lg"
         >
             <template #append>
                 <q-icon
@@ -50,11 +53,8 @@
                     @click="showAmountDialog('value')"
                 />
             </template>
-        </q-input>
+        </unsigned-int-input>
     </div>
-
-
-
 
     <div v-for="(component, index) in inputComponents" :key="index">
         <component
@@ -66,9 +66,6 @@
             class="q-pb-lg"
         />
     </div>
-
-
-
 
     <q-btn
         v-if="enableRun"
@@ -270,7 +267,7 @@ export default {
                     label,
                     size,
                     modelValue: this.inputModels[index] ?? defaultModelValue,
-                    name: '',
+                    name: label.toLowerCase(),
                 };
             };
 
@@ -333,27 +330,13 @@ export default {
         clearAmount() {
             this.amountInput = 0;
         },
-        getFormattedParams() {
-            const formatted = [];
-            for (let i = 0; i < this.abi.inputs.length; i++) {
-                let param = this.abi.inputs[i];
-                formatted.push(this.formatValue(this.params[i], param.type));
-            }
-
-            return formatted;
-        },
-        formatValue(rawValue, type) {
-            // eztodo remove / refactor
-            console.log(rawValue, type);
-            return rawValue;
-        },
         async run() {
             this.loading = true;
 
             try {
                 const opts = {};
                 if (this.abi.stateMutability === 'payable') {
-                    opts.value = this.formatValue(this.value, 'uint256');
+                    opts.value = this.value;
                 }
 
                 if (this.abi.stateMutability === 'view') {
@@ -379,18 +362,8 @@ export default {
             return contractInstance[this.getFunctionAbi()];
         },
         runRead() {
-            let params;
-
-            try {
-                params = this.getFormattedParams();
-                this.errorMessage = null;
-            } catch (e) {
-                this.errorMessage = e;
-                return Promise.reject(e);
-            }
-
             return this.getEthersFunction()
-                .then(func => func(...params)
+                .then(func => func(...this.params)
                     .then(response => {
                         this.result = response;
                         this.errorMessage = null;
@@ -405,8 +378,8 @@ export default {
             const contractInstance = await this.contract.getContractInstance();
             const func = contractInstance.populateTransaction[this.getFunctionAbi()];
             const gasEstimater = contractInstance.estimateGas[this.getFunctionAbi()];
-            const gasLimit = await gasEstimater(...this.getFormattedParams(), Object.assign({from: this.address}, opts));
-            const unsignedTrx = await func(...this.getFormattedParams(), opts);
+            const gasLimit = await gasEstimater(...this.params, Object.assign({from: this.address}, opts));
+            const unsignedTrx = await func(...this.params, opts);
             const nonce = parseInt(await this.$evm.telos.getNonce(this.address), 16);
             const gasPrice = BigNumber.from(`0x${await this.$evm.telos.getGasPrice()}`);
             unsignedTrx.nonce = nonce;
@@ -465,16 +438,7 @@ export default {
         async runEVM(opts) {
             const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
 
-            let params;
-            try {
-                params = this.getFormattedParams();
-                this.errorMessage = null;
-            } catch (e) {
-                this.errorMessage = e;
-
-                throw e;
-            }
-            const result = await func(...params, opts);
+            const result = await func(...this.params, opts);
             this.hash = result.hash;
             this.endLoading();
         },

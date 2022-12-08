@@ -8,7 +8,11 @@
         autocomplete="new-password"
         color="secondary"
         @update:modelValue="handleChange"
-    />
+    >
+        <template #append>
+            <slot name="append" />
+        </template>
+    </q-input>
     <q-tooltip
         v-if="readonly"
         anchor="bottom middle"
