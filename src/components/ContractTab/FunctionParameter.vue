@@ -24,9 +24,12 @@ export default {
 }
 </script>
 
-<template lang="pug">
-  div
-    q-input( v-model="value" :label="label" )
-      template( v-slot:prepend )
-        q-icon( :name="typeIcon" )
+<template>
+<div>
+    <q-input v-model="value" :label="label">
+        <template v-slot:prepend>
+            <q-icon :name="typeIcon" />
+        </template>
+    </q-input>
+</div>
 </template>

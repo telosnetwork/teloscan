@@ -70,6 +70,7 @@
 
             <q-card-actions align="right" class="q-pb-md q-px-md">
                 <p
+                    v-if="showMetamaskPrompt"
                     class="c-stake-form__metamask-prompt u-flex--center-y"
                     tabindex="0"
                     aria-label="Launch MetaMask dialog to add sTLOS"
@@ -108,8 +109,11 @@ import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { debounce } from 'lodash';
 import MetaMaskLogo from 'src/assets/metamask-fox.svg'
+import { stlos } from 'src/lib/logos';
 
-import { formatUnstakePeriod, promptAddToMetamask } from 'pages/staking/staking-utils';
+
+import { formatUnstakePeriod } from 'pages/staking/staking-utils';
+import { promptAddToMetamask } from 'src/lib/token-utils';
 import { WEI_PRECISION } from 'src/lib/utils';
 
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
@@ -182,6 +186,7 @@ export default {
         usableWalletBalance() {
             if (this.walletBalanceBn.lte(reservedForGasBn))
                 return '0';
+
             return this.walletBalanceBn.sub(reservedForGasBn).toString();
         },
         topInputInfoText() {
@@ -249,6 +254,9 @@ export default {
         showClaimBanner() {
             return this.hasUnlockedTlos && !this.userDismissedBanner;
         },
+        showMetamaskPrompt() {
+            return window?.ethereum?.isMetaMask === true;
+        },
     },
     async created() {
         const debounceWaitMs = 250;
@@ -288,7 +296,16 @@ export default {
         );
     },
     methods: {
-        promptAddToMetamask,
+        promptAddToMetamask() {
+            return promptAddToMetamask(
+                this.$q,
+                process.env.STAKED_TLOS_CONTRACT_ADDRESS,
+                'STLOS',
+                stlos,
+                'ERC20',
+                WEI_PRECISION,
+            );
+        },
         handleInputTop(newWei = '0') {
             if (newWei === this.topInputAmount)
                 return;
