@@ -44,7 +44,7 @@
                 placeholder="0"
                 class="c-staking-input__input"
                 @keydown="handleKeydown"
-                @input="handleInput"
+                @input.stop="handleInput"
             >
             <div v-if="isLoading" class="c-staking-input__loading u-flex--left">
                 <i class="fa fa-spinner fa-spin" />
@@ -75,10 +75,10 @@ const dotRegex = /\./g;
 export default {
     name: 'StakingFormInput',
     props: {
-        value: {
+        modelValue: {
             type: String,
             required: true,
-            validator: str => BigNumber.from(str),
+            validator: str => typeof str === 'string' && /^\d{1,256}$/.test(str),
         },
         label: {
             type: String,
@@ -106,9 +106,9 @@ export default {
             validator: str => BigNumber.from(str),
         },
     },
-    emits: ['input'],
+    emits: ['update:modelValue'],
     watch: {
-        value(newVal) {
+        modelValue(newVal) {
             const newValWeiBn = BigNumber.from(newVal || zero);
             const currentValWeiBn = parseUnits(
                 this.$refs.input.value?.replaceAll(',', '') || zero,
@@ -127,7 +127,7 @@ export default {
     },
     methods: {
         handleInfoClick() {
-            this.$emit('input', this.maxValue);
+            this.$emit('update:modelValue', this.maxValue);
         },
         handleKeydown(event) {
             const { input } = this.$refs;
@@ -197,7 +197,10 @@ export default {
                 event.preventDefault();
         },
         handleInput() {
-            const emit = val => (val !== this.value) && this.$emit('input', val);
+            const emit = val => {
+                if (val !== this.modelValue)
+                    this.$emit('update:modelValue', val);
+            };
 
             const { input } = this.$refs;
 

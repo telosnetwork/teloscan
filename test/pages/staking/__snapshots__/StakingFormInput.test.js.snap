@@ -1,0 +1,329 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StakingFormInput.vue v-model implementation should correctly handle user input 1`] = `
+<div
+  class="c-staking-input container-fluid shadow-3"
+>
+  <div
+    class="row"
+  >
+    <div
+      class="col-6"
+    >
+      <h6
+        class="c-staking-input__label"
+      >
+        Label Text
+      </h6>
+    </div>
+    <div
+      class="col-6 u-flex--right"
+    >
+      <!--v-if-->
+    </div>
+  </div>
+  <div
+    class="row"
+  >
+    <div
+      class="col"
+    >
+      <input
+        class="c-staking-input__input"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        placeholder="0"
+        type="text"
+      />
+      <!--v-if-->
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StakingFormInput.vue v-model implementation should correctly handle user input 2`] = `
+<div
+  class="c-staking-input container-fluid shadow-3"
+>
+  <div
+    class="row"
+  >
+    <div
+      class="col-6"
+    >
+      <h6
+        class="c-staking-input__label"
+      >
+        Label Text
+      </h6>
+    </div>
+    <div
+      class="col-6 u-flex--right"
+    >
+      <!--v-if-->
+    </div>
+  </div>
+  <div
+    class="row"
+  >
+    <div
+      class="col"
+    >
+      <input
+        class="c-staking-input__input"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        placeholder="0"
+        type="text"
+      />
+      <!--v-if-->
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StakingFormInput.vue v-model implementation should correctly handle user input 3`] = `
+<div
+  class="c-staking-input container-fluid shadow-3"
+>
+  <div
+    class="row"
+  >
+    <div
+      class="col-6"
+    >
+      <h6
+        class="c-staking-input__label"
+      >
+        Label Text
+      </h6>
+    </div>
+    <div
+      class="col-6 u-flex--right"
+    >
+      <!--v-if-->
+    </div>
+  </div>
+  <div
+    class="row"
+  >
+    <div
+      class="col"
+    >
+      <input
+        class="c-staking-input__input"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        placeholder="0"
+        type="text"
+      />
+      <!--v-if-->
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StakingFormInput.vue v-model implementation should correctly handle user input 4`] = `
+<div
+  class="c-staking-input container-fluid shadow-3"
+>
+  <div
+    class="row"
+  >
+    <div
+      class="col-6"
+    >
+      <h6
+        class="c-staking-input__label"
+      >
+        Label Text
+      </h6>
+    </div>
+    <div
+      class="col-6 u-flex--right"
+    >
+      <!--v-if-->
+    </div>
+  </div>
+  <div
+    class="row"
+  >
+    <div
+      class="col"
+    >
+      <input
+        class="c-staking-input__input"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        placeholder="0"
+        type="text"
+      />
+      <!--v-if-->
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StakingFormInput.vue v-model implementation should correctly handle user input 5`] = `
+<div
+  class="c-staking-input container-fluid shadow-3"
+>
+  <div
+    class="row"
+  >
+    <div
+      class="col-6"
+    >
+      <h6
+        class="c-staking-input__label"
+      >
+        Label Text
+      </h6>
+    </div>
+    <div
+      class="col-6 u-flex--right"
+    >
+      <!--v-if-->
+    </div>
+  </div>
+  <div
+    class="row"
+  >
+    <div
+      class="col"
+    >
+      <input
+        class="c-staking-input__input"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        placeholder="0"
+        type="text"
+      />
+      <!--v-if-->
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StakingFormInput.vue v-model implementation should correctly handle user input 6`] = `
+<div
+  class="c-staking-input container-fluid shadow-3"
+>
+  <div
+    class="row"
+  >
+    <div
+      class="col-6"
+    >
+      <h6
+        class="c-staking-input__label"
+      >
+        Label Text
+      </h6>
+    </div>
+    <div
+      class="col-6 u-flex--right"
+    >
+      <!--v-if-->
+    </div>
+  </div>
+  <div
+    class="row"
+  >
+    <div
+      class="col"
+    >
+      <input
+        class="c-staking-input__input"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        placeholder="0"
+        type="text"
+      />
+      <!--v-if-->
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StakingFormInput.vue v-model implementation should correctly handle user input 7`] = `
+<div
+  class="c-staking-input container-fluid shadow-3"
+>
+  <div
+    class="row"
+  >
+    <div
+      class="col-6"
+    >
+      <h6
+        class="c-staking-input__label"
+      >
+        Label Text
+      </h6>
+    </div>
+    <div
+      class="col-6 u-flex--right"
+    >
+      <!--v-if-->
+    </div>
+  </div>
+  <div
+    class="row"
+  >
+    <div
+      class="col"
+    >
+      <input
+        class="c-staking-input__input"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        placeholder="0"
+        type="text"
+      />
+      <!--v-if-->
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StakingFormInput.vue v-model implementation should correctly handle user input 8`] = `
+<div
+  class="c-staking-input container-fluid shadow-3"
+>
+  <div
+    class="row"
+  >
+    <div
+      class="col-6"
+    >
+      <h6
+        class="c-staking-input__label"
+      >
+        Label Text
+      </h6>
+    </div>
+    <div
+      class="col-6 u-flex--right"
+    >
+      <!--v-if-->
+    </div>
+  </div>
+  <div
+    class="row"
+  >
+    <div
+      class="col"
+    >
+      <input
+        class="c-staking-input__input"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        placeholder="0"
+        type="text"
+      />
+      <!--v-if-->
+    </div>
+  </div>
+</div>
+`;

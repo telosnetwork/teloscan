@@ -16,9 +16,9 @@
                 </div>
                 <div class="col-12">
                     <staking-form-input
-                        :value="topInputAmount"
+                        :model-value="topInputAmount"
                         v-bind="inputs[0]"
-                        @input="handleInput($event, 0)"
+                        @update:modelValue="handleInput($event, 0)"
                     />
                 </div>
 
@@ -28,9 +28,9 @@
 
                 <div class="col-12 q-mb-md">
                     <staking-form-input
-                        :value="bottomInputAmount"
+                        :model-value="bottomInputAmount"
                         v-bind="inputs[1]"
-                        @input="handleInput($event, 1)"
+                        @update:modelValue="handleInput($event, 1)"
                     />
                 </div>
 
@@ -169,6 +169,7 @@ export default {
     },
     methods: {
         handleInput(event, index) {
+            // debugger;
             const eventName = 'input-'.concat(index === 0 ? 'top' : 'bottom');
 
             this.$emit(eventName, event);

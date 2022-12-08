@@ -79,7 +79,7 @@
         :label="runLabel"
         :disabled="missingInputs"
         class="run-button"
-        color="primary"
+        color="secondary"
         icon="send"
         @click="run"
     />
