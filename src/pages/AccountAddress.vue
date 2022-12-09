@@ -152,6 +152,9 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.shadow-2
+    box-shadow: none !important
+
 .dataCardsContainer .dataCardItem
   width: fit-content
   height: 5rem

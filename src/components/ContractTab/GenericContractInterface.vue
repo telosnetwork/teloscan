@@ -51,10 +51,7 @@
         </div>
     </div>
 
-    <div
-        v-if="selectedAbi === abiOptions.custom"
-        class="row q-mb-xl"
-    >
+    <div v-if="selectedAbi === abiOptions.custom" class="row q-mb-xl">
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
             <q-input
                 v-model="customAbiDefinition"
@@ -94,12 +91,9 @@
         </div>
     </div>
 
-    <div
-        v-if="showAbiFunctions"
-        class="row"
-    >
+    <div v-if="showAbiFunctions" class="row">
         <div class="col-12">
-            <q-btn-group>
+            <q-btn-group class="q-mb-lg">
                 <q-btn
                     no-caps
                     :outline="displayWriteFunctions === false"
@@ -116,44 +110,24 @@
                 </q-btn>
             </q-btn-group>
 
-            <q-list
-                v-if="displayWriteFunctions"
-                class="interface-list"
-            >
+            <q-list>
                 <q-expansion-item
-                    v-for="func in functions.write"
+                    v-for="func in (displayWriteFunctions ? functions.write : functions.read)"
                     :key="func.name"
                     :label="func.name"
-                    class="interface-item"
+                    class="shadow-2 q-mb-md"
                 >
-                    <FunctionInterface
-                        :abi="func"
-                        :contract="contract"
-                        :write="true"
-                        group="write"
-                        run-label="Write"
-                        class="interface-input"
-                    />
-                </q-expansion-item>
-            </q-list>
-            <q-list
-                v-else
-                class="interface-list"
-            >
-                <q-expansion-item
-                    v-for="func in functions.read"
-                    :key="func.name"
-                    :label="func.name"
-                    class="interface-item"
-                >
-                    <FunctionInterface
-                        :abi="func"
-                        :contract="contract"
-                        :write="false"
-                        group="read"
-                        run-label="Query"
-                        class="interface-input"
-                    />
+                    <q-card>
+                        <div class="q-pa-md">
+                            <function-interface
+                                :abi="func"
+                                :contract="contract"
+                                :write="true"
+                                :group="displayWriteFunctions ? 'write' : 'read'"
+                                :run-label="displayWriteFunctions ? 'Write' : 'Query'"
+                            />
+                        </div>
+                    </q-card>
                 </q-expansion-item>
             </q-list>
         </div>

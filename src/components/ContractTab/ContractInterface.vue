@@ -12,12 +12,10 @@ export default {
             required: true,
         },
     },
-    data() {
-        return {
-            functions: [],
-            contract: [],
-        };
-    },
+    data: () => ({
+        functions: [],
+        contract: [],
+    }),
     async mounted() {
         this.contract = await this.$contractManager.getContract(this.$route.params.address);
         let read = [];
@@ -41,37 +39,52 @@ export default {
 }
 </script>
 
-<template lang='pug'>
-div
-    q-list.interface-list(v-if='write')
-      q-expansion-item.interface-item( v-for="func in functions.write" :label="func.name" :key="func.name" )
-        FunctionInterface.interface-input( :abi="func" :contract="contract" group="write" runLabel='Write')
-    q-list.interface-list(v-else )
-      q-expansion-item.interface-item( v-for="func in functions.read" :label="func.name" :key="func.name" )
-        FunctionInterface.interface-input( :abi="func" :contract="contract" group="read" runLabel='Query' )
+<template>
+<div class="q-pa-md">
+    <q-list>
+        <q-expansion-item
+            v-for="func in (write ? functions.write : functions.read)"
+            :key="func.name"
+            :label="func.name"
+            class="shadow-2 q-mb-md"
+        >
+            <q-card>
+                <div class="q-pa-md">
+                    <function-interface
+                        :abi="func"
+                        :contract="contract"
+                        :group="write ? 'write' : 'read'"
+                        :run-label="write ? 'Write' : 'Query'"
+                    />
+                </div>
+            </q-card>
+
+        </q-expansion-item>
+    </q-list>
+</div>
 </template>
 
-<style lang='sass'>
-.interface-list
-  margin-bottom: 1.5rem
+<!--<style lang='sass'>-->
+<!--.interface-list-->
+<!--  margin-bottom: 1.5rem-->
 
-.interface-item.q-expansion-item
-  border: .125rem solid grey
-  border-radius: .25rem
-  margin-top: 1rem
-  font-size: .70rem
-  &.q-expansion-item--expanded .q-item
-    border-bottom: .125rem solid grey
-    margin-bottom: 1rem
+<!--.interface-item.q-expansion-item-->
+<!--  border: .125rem solid grey-->
+<!--  border-radius: .25rem-->
+<!--  margin-top: 1rem-->
+<!--  font-size: .70rem-->
+<!--  &.q-expansion-item&#45;&#45;expanded .q-item-->
+<!--    border-bottom: .125rem solid grey-->
+<!--    margin-bottom: 1rem-->
 
-.interface-input .q-input
-  border-width: .125rem
-  border-style: solid
-  border-color: gray
-  border-radius: .25rem
-  margin: 0 1rem 1rem 1rem
-  padding-bottom: 2rem
-  padding-right: 1rem
-  padding-left: 1rem
+<!--.interface-input .q-input-->
+<!--  border-width: .125rem-->
+<!--  border-style: solid-->
+<!--  border-color: gray-->
+<!--  border-radius: .25rem-->
+<!--  margin: 0 1rem 1rem 1rem-->
+<!--  padding-bottom: 2rem-->
+<!--  padding-right: 1rem-->
+<!--  padding-left: 1rem-->
 
-</style>
+<!--</style>-->

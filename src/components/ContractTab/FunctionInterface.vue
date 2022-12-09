@@ -38,13 +38,12 @@
             </q-card-actions>
         </q-card>
     </q-dialog>
-    <div v-if="abi.stateMutability === 'payable'">
+    <div v-if="abi.stateMutability === 'payable'" class="q-pb-md">
         <unsigned-int-input
             v-model="value"
             label="Value"
             name="value"
             size="256"
-            class="q-pb-lg"
         >
             <template #append>
                 <q-icon
@@ -65,7 +64,7 @@
             required
             @valueParsed="component.handleValueParsed(component.inputType, index, $event)"
             @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
-            class="q-pb-lg"
+            class="q-pb-md"
         />
     </template>
 
@@ -85,10 +84,7 @@
     <div v-if="result" class="output-container">
         Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
     </div>
-    <div
-        v-if="hash"
-        class="output-container"
-    >
+    <div v-if="hash" class="output-container">
         View Transaction:&nbsp;
         <transaction-field :transaction-hash="hash" />
     </div>
@@ -395,18 +391,5 @@ export default {
 </script>
 
 <style lang="scss">
-.amount-dialog.q-card {
-    padding: 1.5rem !important;
-}
 
-.output-container {
-    margin: 0 1rem 1rem 1rem;
-    font-weight: 500;
-    font-size: .75rem;
-}
-
-.run-button {
-    margin: 0 1rem 1rem 1rem;
-    border-radius: .25rem;
-}
 </style>
