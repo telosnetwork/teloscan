@@ -51,7 +51,7 @@
         </div>
     </div>
 
-    <div v-if="selectedAbi === abiOptions.custom" class="row q-mb-xl">
+    <div v-if="selectedAbi === abiOptions.custom" class="row q-mb-lg">
         <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
             <q-input
                 v-model="customAbiDefinition"

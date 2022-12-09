@@ -64,7 +64,7 @@
             required
             @valueParsed="component.handleValueParsed(component.inputType, index, $event)"
             @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
-            class="q-pb-md"
+            class="q-pb-lg"
         />
     </template>
 
