@@ -45,13 +45,13 @@
     "vue-router": "4",
     "vue3-click-away": "^1.2.4",
     "vuex": "4",
-    "web3": "^1.7.5"
+    "web3": "^1.8.1"
   },
   "devDependencies": {
     "@babel/core": "7.19.3",
     "@babel/eslint-parser": "^7.13.14",
     "@babel/preset-env": "7.19.3",
-    "@quasar/app-webpack": "3",
+    "@quasar/app-webpack": "3.6.2",
     "@types/jest": "29.1.1",
     "@types/lodash": "^4.14.182",
     "@vue/test-utils": "2.1.0",
