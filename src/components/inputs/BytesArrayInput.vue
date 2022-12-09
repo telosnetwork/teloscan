@@ -40,11 +40,12 @@ export default {
             type: String,
             required: true,
         },
-        // if size is undefined or -1, array size is unconstrained; else it is fixed-size (e.g. bytes[3])
+        // if size is undefined or -1, array size is unconstrained; else it is fixed-size value type (e.g. bytes3)
+        // see https://docs.soliditylang.org/en/latest/types.html#fixed-size-byte-arrays
         size: {
             type: [Number, String],
             default: -1,
-            validator: length => +length >= -1,
+            validator: length => (+length >= -1 && +length <= 32) || [undefined, null].includes(length),
         },
     },
     data: () => ({
@@ -74,8 +75,15 @@ export default {
             ];
         },
         shapedLabel() {
-            const size = (Number.isInteger(+this.size) && +this.size !== -1) ? `${+this.size}` : '';
-            return `${this.label} (bytes[${size}])`
+            let sizeLabel;
+
+            if ([undefined, null, -1, '-1'].includes(this.size)) {
+                sizeLabel = '[]';
+            } else {
+                sizeLabel = `${this.size}`;
+            }
+
+            return `${this.label} (bytes${sizeLabel})`
         },
     },
     watch: {

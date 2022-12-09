@@ -122,7 +122,7 @@ function parameterTypeIsUnsignedIntArray(type) {
  * @returns {boolean}
  */
 function parameterIsArrayType(type) {
-    return /\[\d*]$/.test(type);
+    return /\[\d*]$/.test(type) || parameterTypeIsBytes(type);
 }
 
 /**
@@ -197,6 +197,14 @@ function getComponentForInputType(type) {
  * @returns {number|undefined}
  */
 function getExpectedArrayLengthFromParameterType(type) {
+    if (parameterTypeIsBytes(type)) {
+        // defines the length of a bytes array by the first number after "bytes", e.g. 32 in bytes32
+        // therefore a type with an array of byte arrays like bytes32[8] is not supported.
+        // Only fixed-size byte value types and unbounded bytes arrays are supported
+        // see https://docs.soliditylang.org/en/latest/types.html#bytes-and-string-as-arrays
+        return (+type.match(/\d+/)?.[0]) || undefined;
+    }
+
     const expectedArrayLengthRegex = /\d+(?=]$)/;
     return (+type.match(expectedArrayLengthRegex)?.[0]) || undefined;
 }

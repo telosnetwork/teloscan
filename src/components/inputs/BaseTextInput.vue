@@ -5,7 +5,7 @@
         :model-value="modelValue"
         :reactive-rules="true"
         v-bind="binding"
-        autocomplete="new-password"
+        autocomplete="off"
         color="secondary"
         @update:modelValue="handleChange"
     >

@@ -62,6 +62,8 @@
                 name="custom-abi"
                 label="Paste ABI JSON here"
                 class="q-pb-lg"
+                autocomplete="off"
+                type="text"
             />
 
             <template v-if="!!customAbiDefinition">

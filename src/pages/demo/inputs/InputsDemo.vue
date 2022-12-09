@@ -119,6 +119,25 @@
                         name="bool input"
                     />
                 </div>
+
+                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
+                    <bytes-array-input
+                        v-model="bytesArrayInputValue"
+                        v-bind="universalToggles"
+                        label="Bytes Input"
+                        name="bytes array input"
+                        size="2"
+                    />
+                </div>
+
+                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
+                    <bytes-array-input
+                        v-model="unconstrainedBytesArrayInputValue"
+                        v-bind="universalToggles"
+                        label="Byte Array Input"
+                        name="unconstrained bytes array input"
+                    />
+                </div>
             </div>
 
             <div class="row">
@@ -169,15 +188,6 @@
                         v-bind="arrayToggles"
                         label="Boolean Array Input"
                         name="bool array input"
-                    />
-                </div>
-
-                <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <bytes-array-input
-                        v-model="bytesArrayInputValue"
-                        v-bind="arrayToggles"
-                        label="Bytes Array Input"
-                        name="bytes array input"
                     />
                 </div>
             </div>
@@ -233,6 +243,7 @@ export default {
         booleanInputValue: null,
         boolArrayInputValue: '',
         bytesArrayInputValue: '',
+        unconstrainedBytesArrayInputValue: '',
         selectedSignedIntSizeOption: 8,
         selectedUnsignedIntSizeOption: 8,
         signedIntSizeOptions: (() => {
