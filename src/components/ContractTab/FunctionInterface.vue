@@ -56,8 +56,10 @@
         </unsigned-int-input>
     </div>
 
-    <div v-for="(component, index) in inputComponents" :key="index">
+    <template v-for="(component, index) in inputComponents">
         <component
+            v-if="component.is"
+            :key="index"
             :is="component.is"
             v-bind="component.bindings"
             required
@@ -65,7 +67,7 @@
             @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
             class="q-pb-lg"
         />
-    </div>
+    </template>
 
     <q-btn
         v-if="enableRun"
@@ -94,27 +96,21 @@
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
 
 import {
-    parameterTypeIsAddress,
-    parameterTypeIsAddressArray,
-    parameterTypeIsBoolean,
-    parameterTypeIsBooleanArray,
-    parameterTypeIsString,
-    parameterTypeIsStringArray,
-    parameterTypeIsUnsignedIntArray,
-    parameterTypeIsUnsignedInt,
-    parameterTypeIsSignedIntArray,
-    parameterTypeIsSignedInt,
-    parameterTypeIsBytes,
+    asyncInputComponents,
+    getComponentForInputType,
     getExpectedArrayLengthFromParameterType,
+    getIntegerBits,
+    inputIsComplex,
     parameterIsArrayType,
     parameterIsIntegerType,
-    getIntegerBits,
+    parameterTypeIsBoolean,
+    parameterTypeIsSignedIntArray,
+    parameterTypeIsUnsignedIntArray,
 } from 'components/ContractTab/function-interface-utils';
 
 import TransactionField from 'components/TransactionField';
@@ -135,24 +131,12 @@ const decimalOptions = [{
     label: 'Custom',
     value: 'custom',
 }];
-const asyncComponents = {
-    AddressInput: defineAsyncComponent(() => import('components/inputs/AddressInput')),
-    AddressArrayInput: defineAsyncComponent(() => import('components/inputs/AddressArrayInput')),
-    BooleanArrayInput: defineAsyncComponent(() => import('components/inputs/BooleanArrayInput')),
-    BooleanInput: defineAsyncComponent(() => import('components/inputs/BooleanInput')),
-    BytesArrayInput: defineAsyncComponent(() => import('components/inputs/BytesArrayInput')),
-    SignedIntInput: defineAsyncComponent(() => import('components/inputs/SignedIntInput')),
-    StringArrayInput: defineAsyncComponent(() => import('components/inputs/StringArrayInput')),
-    StringInput: defineAsyncComponent(() => import('components/inputs/StringInput')),
-    UnsignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntArrayInput')),
-    UnsignedIntInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntInput')),
-    SignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/SignedIntArrayInput')),
-};
+
 
 export default {
     name: 'FunctionInterface',
     components: {
-        ...asyncComponents,
+        ...asyncInputComponents,
         TransactionField,
     },
     props: {
@@ -201,45 +185,6 @@ export default {
             if (!Array.isArray(this.abi?.inputs))
                 return [];
 
-            // i.e. input component emits @valueParsed rather than relying on @update:modelValue (i.e. v-model)
-            const inputIsComplex = (type) => (
-                parameterIsIntegerType(type)        ||
-                parameterTypeIsAddress(type)        ||
-                parameterTypeIsAddressArray(type)   ||
-                parameterTypeIsBooleanArray(type)   ||
-                parameterTypeIsBytes(type)          ||
-                parameterTypeIsSignedIntArray(type) ||
-                parameterTypeIsStringArray(type)    ||
-                parameterTypeIsUnsignedIntArray(type)
-            );
-
-            const getComponentForInputType = (type) => {
-                if (parameterTypeIsString(type)) {
-                    return asyncComponents.StringInput;
-                } else if (parameterTypeIsStringArray(type)) {
-                    return asyncComponents.StringArrayInput;
-                } else if (parameterTypeIsAddress(type)) {
-                    return asyncComponents.AddressInput;
-                } else if (parameterTypeIsAddressArray(type)) {
-                    return asyncComponents.AddressArrayInput;
-                } else if (parameterTypeIsBoolean(type)) {
-                    return asyncComponents.BooleanInput; // eztodo bool input styling is off
-                } else if (parameterTypeIsBooleanArray(type)) {
-                    return asyncComponents.BooleanArrayInput;
-                } else if (parameterTypeIsBytes(type)) {
-                    return asyncComponents.BytesArrayInput; // eztodo bytes with number should produce fixed size array
-                } else if (parameterTypeIsSignedInt(type)) {
-                    return asyncComponents.SignedIntInput;
-                } else if (parameterTypeIsSignedIntArray(type)) {
-                    return asyncComponents.SignedIntArrayInput;
-                } else if (parameterTypeIsUnsignedInt(type)) {
-                    return asyncComponents.UnsignedIntInput;
-                } else if (parameterTypeIsUnsignedIntArray(type)) {
-                    return asyncComponents.UnsignedIntArrayInput;
-                }
-
-                return {};
-            };
             const getExtraBindingsForType = ({ type, name }, index) => {
                 const label = `${name ? name : `Param ${index + 1}`}`;
                 const extras = {};

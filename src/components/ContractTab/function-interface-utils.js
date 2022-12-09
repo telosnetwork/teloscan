@@ -1,4 +1,19 @@
 import { BigNumber, ethers } from 'ethers';
+import { defineAsyncComponent } from 'vue';
+
+const asyncInputComponents = {
+    AddressInput: defineAsyncComponent(() => import('components/inputs/AddressInput')),
+    AddressArrayInput: defineAsyncComponent(() => import('components/inputs/AddressArrayInput')),
+    BooleanArrayInput: defineAsyncComponent(() => import('components/inputs/BooleanArrayInput')),
+    BooleanInput: defineAsyncComponent(() => import('components/inputs/BooleanInput')),
+    BytesArrayInput: defineAsyncComponent(() => import('components/inputs/BytesArrayInput')),
+    SignedIntInput: defineAsyncComponent(() => import('components/inputs/SignedIntInput')),
+    StringArrayInput: defineAsyncComponent(() => import('components/inputs/StringArrayInput')),
+    StringInput: defineAsyncComponent(() => import('components/inputs/StringInput')),
+    UnsignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntArrayInput')),
+    UnsignedIntInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntInput')),
+    SignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/SignedIntArrayInput')),
+}
 
 /**
  * Given a function interface type, returns true iff that type is "address"
@@ -117,6 +132,62 @@ function parameterIsArrayType(type) {
  */
 function parameterIsIntegerType(type) {
     return /int\d+$/.test(type);
+}
+
+/**
+ * Given a function interface input type (e.g. "uint256"), returns true iff the corresponding input component emits
+ * new values via the valueParsed event. In these cases, the update:modelValue event (i.e. v-model binding) does not
+ * reflect valid values entered by the user; rather, v-model only represents the user-entered string in the input.
+ * As such, if this method returns true, only the parsed values given by valueParsed should be considered valid data
+ * to pass to a smart contract method.
+ *
+ * @param type
+ * @returns {boolean}
+ */
+function inputIsComplex(type) {
+    return parameterIsIntegerType(type)     ||
+        parameterTypeIsAddress(type)        ||
+        parameterTypeIsAddressArray(type)   ||
+        parameterTypeIsBooleanArray(type)   ||
+        parameterTypeIsBytes(type)          ||
+        parameterTypeIsSignedIntArray(type) ||
+        parameterTypeIsStringArray(type)    ||
+        parameterTypeIsUnsignedIntArray(type);
+}
+
+/**
+ * Given a function interface input type (e.g. "uint256"), returns the corresponding async component for the input
+ *
+ * @param type
+ *
+ * @returns {object} asynchronous component definitions
+ */
+function getComponentForInputType(type) {
+    if (parameterTypeIsString(type)) {
+        return asyncInputComponents.StringInput;
+    } else if (parameterTypeIsStringArray(type)) {
+        return asyncInputComponents.StringArrayInput;
+    } else if (parameterTypeIsAddress(type)) {
+        return asyncInputComponents.AddressInput;
+    } else if (parameterTypeIsAddressArray(type)) {
+        return asyncInputComponents.AddressArrayInput;
+    } else if (parameterTypeIsBoolean(type)) {
+        return asyncInputComponents.BooleanInput; // eztodo bool input styling is off
+    } else if (parameterTypeIsBooleanArray(type)) {
+        return asyncInputComponents.BooleanArrayInput;
+    } else if (parameterTypeIsBytes(type)) {
+        return asyncInputComponents.BytesArrayInput; // eztodo bytes with number should produce fixed size array
+    } else if (parameterTypeIsSignedInt(type)) {
+        return asyncInputComponents.SignedIntInput;
+    } else if (parameterTypeIsSignedIntArray(type)) {
+        return asyncInputComponents.SignedIntArrayInput;
+    } else if (parameterTypeIsUnsignedInt(type)) {
+        return asyncInputComponents.UnsignedIntInput;
+    } else if (parameterTypeIsUnsignedIntArray(type)) {
+        return asyncInputComponents.UnsignedIntArrayInput;
+    }
+
+    return undefined;
 }
 
 
@@ -488,6 +559,9 @@ export {
     parameterIsIntegerType,
     getExpectedArrayLengthFromParameterType,
     getIntegerBits,
+    inputIsComplex,
+    asyncInputComponents,
+    getComponentForInputType,
 
     parameterTypeIsAddress,
     parameterTypeIsAddressArray,
