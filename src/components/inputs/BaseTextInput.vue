@@ -76,7 +76,7 @@ export default {
             );
         },
         binding() {
-            // 'required' case is handled in mergedRules; due to a bug, a defined for the required attribute value
+            // 'required' case is handled in mergedRules; due to a bug, any defined value for the required attribute
             // incorrectly causes the label to be always raised
             const required = undefined;
             const isRequired = ['required', true, 'true'].includes(this.required);
@@ -120,9 +120,3 @@ export default {
     },
 }
 </script>
-
-<style>
-.c-base-input {
-
-}
-</style>

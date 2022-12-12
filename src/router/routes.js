@@ -65,7 +65,6 @@ const routes = [
     {
         path: '/demo',
         name: 'demo',
-        // component: () => import('layouts/MainLayout.vue'),
         component: () => import('pages/demo/DemoIndexPage.vue'),
         children: [{
             path: 'inputs',

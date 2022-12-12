@@ -1,5 +1,4 @@
 <template>
-
 <div class="c-demos">
     <div class="row q-mb-sm">
         <div class="col u-flex--left text-white">

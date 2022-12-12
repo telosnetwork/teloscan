@@ -172,11 +172,11 @@ function getComponentForInputType(type) {
     } else if (parameterTypeIsAddressArray(type)) {
         return asyncInputComponents.AddressArrayInput;
     } else if (parameterTypeIsBoolean(type)) {
-        return asyncInputComponents.BooleanInput; // eztodo bool input styling is off
+        return asyncInputComponents.BooleanInput;
     } else if (parameterTypeIsBooleanArray(type)) {
         return asyncInputComponents.BooleanArrayInput;
     } else if (parameterTypeIsBytes(type)) {
-        return asyncInputComponents.BytesArrayInput; // eztodo bytes with number should produce fixed size array
+        return asyncInputComponents.BytesArrayInput;
     } else if (parameterTypeIsSignedInt(type)) {
         return asyncInputComponents.SignedIntInput;
     } else if (parameterTypeIsSignedIntArray(type)) {

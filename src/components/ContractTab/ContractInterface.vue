@@ -63,28 +63,3 @@ export default {
     </q-list>
 </div>
 </template>
-
-<!--<style lang='sass'>-->
-<!--.interface-list-->
-<!--  margin-bottom: 1.5rem-->
-
-<!--.interface-item.q-expansion-item-->
-<!--  border: .125rem solid grey-->
-<!--  border-radius: .25rem-->
-<!--  margin-top: 1rem-->
-<!--  font-size: .70rem-->
-<!--  &.q-expansion-item&#45;&#45;expanded .q-item-->
-<!--    border-bottom: .125rem solid grey-->
-<!--    margin-bottom: 1rem-->
-
-<!--.interface-input .q-input-->
-<!--  border-width: .125rem-->
-<!--  border-style: solid-->
-<!--  border-color: gray-->
-<!--  border-radius: .25rem-->
-<!--  margin: 0 1rem 1rem 1rem-->
-<!--  padding-bottom: 2rem-->
-<!--  padding-right: 1rem-->
-<!--  padding-left: 1rem-->
-
-<!--</style>-->
