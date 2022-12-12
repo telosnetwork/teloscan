@@ -44,6 +44,7 @@
             label="Value"
             name="value"
             size="256"
+            required="true"
         >
             <template #append>
                 <q-icon
@@ -61,7 +62,7 @@
             :key="index"
             :is="component.is"
             v-bind="component.bindings"
-            required
+            required="true"
             @valueParsed="component.handleValueParsed(component.inputType, index, $event)"
             @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
             class="q-pb-lg"
@@ -73,7 +74,7 @@
         :loading="loading"
         :label="runLabel"
         :disabled="missingInputs"
-        class="run-button"
+        class="run-button q-mb-md"
         color="secondary"
         icon="send"
         @click="run"
@@ -242,7 +243,7 @@ export default {
             }
 
             for (let i = 0; i < this.abi.inputs.length; i++) {
-                if (['', null].includes(this.params[i])) {
+                if (['', null, undefined].includes(this.params[i])) {
                     return true;
                 }
             }

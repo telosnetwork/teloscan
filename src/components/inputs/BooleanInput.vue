@@ -33,11 +33,11 @@ export default {
             required: true,
         },
         required: {
-            type: Boolean,
+            type: [Boolean, String],
             default: false,
         },
         disabled: {
-            type: Boolean,
+            type: [Boolean, String],
             default: false,
         },
         // added for compatibility with quasar input props
@@ -46,7 +46,7 @@ export default {
             default: false,
         },
         readonly: {
-            type: Boolean,
+            type: [Boolean, String],
             default: false,
         },
     },
