@@ -270,6 +270,10 @@ function parseUintString (str, expectedSizeInBits) {
  * @returns {BigNumber[]|undefined}
  */
 function parseUintArrayString (str, expectedLength, expectedIntSize) {
+    if (str === '[]' && expectedLength === undefined) {
+        return [];
+    }
+
     const uintArrayRegex = /^\[(\d+, *)*(\d+)]$/;
     const stringRepresentsUintArray = uintArrayRegex.test(str);
     const expectedSizeIsLegal = expectedIntSize === undefined || (
@@ -356,6 +360,10 @@ function parseSignedIntString (str, expectedSizeInBits) {
  * @returns {BigNumber[]|undefined}
  */
 function parseSignedIntArrayString (str, expectedLength, expectedIntSize) {
+    if (str === '[]' && expectedLength === undefined) {
+        return [];
+    }
+
     const signedIntArrayRegex = /^\[(-?\d+, *)*(-?\d+)]$/;
     const stringRepresentsIntArray = signedIntArrayRegex.test(str);
     const expectedSizeIsLegal = expectedIntSize === undefined || (
