@@ -2,40 +2,42 @@
 <div>
     <q-dialog v-model="enterAmount">
         <q-card class="amount-dialog">
-            <p>Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256</p>
-            <q-select
-                v-model="selectDecimals"
-                :options="decimalOptions"
-                @input="updateDecimals"
-            />
-            <q-input
-                v-if="selectDecimals.value === 'custom'"
-                v-model.number="customDecimals"
-                type="number"
-                label="Custom decimals"
-                @change="updateDecimals"
-            />
-            <q-input
-                v-model="amountInput"
-                label="Amount"
-                type="number"
-            />
-            <q-card-actions align="right">
-                <q-btn
-                    v-close-popup
-                    flat="flat"
-                    label="Ok"
-                    color="primary"
-                    @click="setAmount"
+            <div class="q-pa-md">
+                <p>Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256</p>
+                <q-select
+                    v-model="selectDecimals"
+                    :options="decimalOptions"
+                    @input="updateDecimals"
                 />
-                <q-btn
-                    v-close-popup
-                    flat="flat"
-                    label="Cancel"
-                    color="primary"
-                    @click="clearAmount"
+                <q-input
+                    v-if="selectDecimals.value === 'custom'"
+                    v-model.number="customDecimals"
+                    type="number"
+                    label="Custom decimals"
+                    @change="updateDecimals"
                 />
-            </q-card-actions>
+                <q-input
+                    v-model="amountInput"
+                    label="Amount"
+                    type="number"
+                />
+                <q-card-actions align="right">
+                    <q-btn
+                        v-close-popup
+                        flat="flat"
+                        label="Ok"
+                        color="primary"
+                        @click="setAmount"
+                    />
+                    <q-btn
+                        v-close-popup
+                        flat="flat"
+                        label="Cancel"
+                        color="primary"
+                        @click="clearAmount"
+                    />
+                </q-card-actions>
+            </div>
         </q-card>
     </q-dialog>
     <div v-if="abi.stateMutability === 'payable'" class="q-pb-md">

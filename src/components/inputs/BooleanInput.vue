@@ -8,7 +8,7 @@
     :name="name"
     :rules="rules"
     color="secondary"
-    class="q-mx-sm"
+    class="q-mx-sm q-mb-md"
     @update:modelValue="handleChange"
 />
 </template>
