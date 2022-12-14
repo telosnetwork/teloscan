@@ -5,7 +5,6 @@
         :model-value="modelValue"
         :reactive-rules="true"
         v-bind="binding"
-        autocomplete="off"
         color="secondary"
         @update:modelValue="handleChange"
     >
@@ -87,6 +86,7 @@ export default {
             delete filteredAttrs.size; // size=undefined causes DOM warnings
 
             return {
+                autocomplete: 'off',
                 ...this.quasarProps,
                 ...filteredAttrs,
                 required,

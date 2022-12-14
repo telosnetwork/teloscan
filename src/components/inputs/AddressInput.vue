@@ -6,6 +6,7 @@
     :name="name"
     :maxlength="42"
     :rules="rules"
+    autocomplete="new-password"
     placeholder="Address beginning with 0x"
     @update:modelValue="handleChange"
 />
