@@ -14,7 +14,7 @@ import GenericContractInterface from 'components/ContractTab/GenericContractInte
 
 const web3 = new Web3();
 export default {
-    name: 'Address',
+    name: 'AccountAddress',
     components: {
         AddressField,
         ConfirmationDialog,
@@ -36,7 +36,7 @@ export default {
             isVerified: null,
             contract: null,
             verificationDate: '',
-            tab: 'transactions',
+            tab: '#transactions',
             tokens: null,
             confirmationDialog: false,
         };
@@ -86,6 +86,9 @@ export default {
             this.telosAccount = account.account;
             this.isContract = account.code.length > 0;
 
+            if (this.isContract === false)
+                this.contract = null;
+
             const isVerifiedContract = this.isContract && this.isVerified;
             const knownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address.toLowerCase() === this.address.toLowerCase());
 
@@ -123,14 +126,14 @@ export default {
 </script>
 
 <template lang="pug">
-  .pageContainer.q-pt-xl
+.pageContainer.q-pt-xl
     div
-      .row(class="tableWrapper").justify-between
+      .row(class="tableWrapper").justify-between.q-mb-lg
         div(class="homeInfo")
           .text-primary.text-h4.q-pr-xs {{ title }}
           q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
-          ConfirmationDialog(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
-          CopyButton(:text="address" :accompanyingText="address" description="address")
+          ConfirmationDialog.text-secondary(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
+          CopyButton.text-secondary(:text="address" :accompanyingText="address" description="address")
           template(v-if='contract')
             .text-white Created at trx&nbsp
               TransactionField(:transaction-hash="contract.getCreationTrx()" )
@@ -146,15 +149,15 @@ export default {
             .dataCardTile Balance
             .dataCardData {{balance}}
       q-tabs.tabs-header( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar topRounded text-white tableWrapper" :class='{"q-dark": $q.dark.isActive}' )
-        q-route-tab(name="transactions" :to="{ hash: '' }" exact replace label="Transactions")
-        q-route-tab(name="erc20transfers" :to="{ hash: 'erc20' }" exact replace label="ERC20 Transfers")
-        q-route-tab(name="erc721transfers" :to="{ hash: 'erc721' }" exact replace label="ERC721 Transfers")
-        q-route-tab(name="tokens" :to="{ hash: 'tokens' }" exact replace label="Tokens")
-        q-route-tab(v-if="isContract" name="contract" :to="{ hash: 'contract' }" exact replace label="Contract")
+        q-route-tab(name="transactions" :to="{ hash: '#transactions' }" exact replace label="Transactions")
+        q-route-tab(name="erc20transfers" :to="{ hash: '#erc20' }" exact replace label="ERC20 Transfers")
+        q-route-tab(name="erc721transfers" :to="{ hash: '#erc721' }" exact replace label="ERC721 Transfers")
+        q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace label="Tokens")
+        q-route-tab(v-if="isContract" name="contract" :to="{ hash: '#contract' }" exact replace label="Contract")
       .q-mb-md.tableWrapper
-        q-tab-panels( v-model="tab" animated keep-alive class="shadow-2" )
+        q-tab-panels( v-model="tab" animated keep-alive class="shadow-2"  :key="address" )
           q-tab-panel( name="transactions" )
-            transaction-table( :key="address" :title="address" :filter="{address}" )
+            transaction-table( :title="address" :filter="{address}" )
           q-tab-panel( name="erc20transfers" )
             transfer-table( title="ERC-20 Transfers" token-type="erc20" :address="address" )
           q-tab-panel( name="erc721transfers" )
@@ -167,6 +170,13 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.dataCardsContainer .dataCardItem
+  width: fit-content
+  height: 5rem
+
+.homeInfo .text-secondary .q-icon
+  color: white !important
+
 .q-tab-panel
   padding: 0
 
@@ -180,9 +190,38 @@ export default {
   background: white
   color: black !important
   &.q-dark
-    background: var(--q-color-dark)
+    background: $dark
     color: white !important
 
 .text-primary
   display: inline-block
+
+@media only screen and (max-width: 1200px)
+    .pageContainer
+        div
+            .tableWrapper
+                &:first-child
+                    padding: 20px
+@media only screen and (max-width: 768px)
+    .dataCardsContainer
+        width: 100%
+        justify-content: center
+        .dataCardItem
+            width: 100%
+    .pageContainer
+        padding-top: 30px
+        background: linear-gradient(#252a5e 17.19%, #2d4684 45.83%, transparent 65.83%)
+    .tableWrapper
+        justify-content: center
+    .homeInfo
+        padding: 20px
+        text-align: center
+        margin-bottom: 30px
+        .c-copy-button
+            width: 100%
+        .text-h4
+            margin-bottom: 10px
+            word-break: break-word
+            line-height: 1.3em
+            font-size: 2.4em
 </style>

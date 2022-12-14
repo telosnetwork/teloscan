@@ -1,7 +1,7 @@
 module.exports = {
     root: true,
     parserOptions: {
-        parser: 'babel-eslint',
+        parser: '@babel/eslint-parser',
         ecmaVersion: 2018,
         sourceType: 'module',
     },
@@ -9,16 +9,18 @@ module.exports = {
         'browser': true,
         'amd': true,
         'node': true,
+        'vue/setup-compiler-macros': true,
+        'jest/globals': true,
     },
     extends: [
         'eslint:recommended',
-        'plugin:vue/recommended',
+        'plugin:vue/vue3-essential',
     ],
     plugins: [
         'vue',
+        'jest',
     ],
     globals: {
-        ga: true, // Google Analytics
         __statics: true,
         process: true,
     },
@@ -28,14 +30,15 @@ module.exports = {
 
         'comma-dangle': ['error', 'always-multiline'],
         'indent': ['error', 4],
-        'vue/html-indent': ['warn', 4, { baseIndent: 0, }],
-        'vue/max-attributes-per-line': [
-            'error',
-            {
-                singleline: { max: 3 },
-                multiline: { max: 1 }
-            }
-        ],
         'quotes': ['error', 'single'],
+        'vue/html-indent': ['warn', 4, { 'baseIndent': 0 }],
+        'vue/max-attributes-per-line': ['warn', {
+            'singleline': {
+                'max': 3,
+            },
+            'multiline': {
+                'max': 1,
+            },
+        }],
     },
 }

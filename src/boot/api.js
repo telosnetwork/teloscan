@@ -1,3 +1,4 @@
+import { boot } from 'quasar/wrappers';
 import { Api, JsonRpc } from 'eosjs';
 
 const signTransaction = async function(actions) {
@@ -48,7 +49,7 @@ const getAccount = async function (accountName) {
     return await rpc.get_account(accountName);
 }
 
-export default ({ store }) => {
+export default boot(async ({ store }) => {
     const rpc = new JsonRpc(
         `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}:${process.env.NETWORK_PORT}`,
     );
@@ -64,4 +65,6 @@ export default ({ store }) => {
         getAccount: getAccount.bind(store),
         getRpc: getRpc.bind(store),
     };
-};
+
+    store.dispatch('general/fetchBrowserEthereumSupport');
+});

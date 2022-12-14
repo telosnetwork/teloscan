@@ -29,9 +29,9 @@ export default {
 </script>
 
 <template lang="pug">
-  .pageContainer.q-pt-xl
+.pageContainer.q-pt-xl
     div
-      .row.justify-between
+      .row.justify-between.q-mb-lg
         div
           .text-primary.text-h4
             div Block
@@ -51,3 +51,19 @@ export default {
     .tableWrapper.shadow-2.content-container.q-mt-lg
       transaction-table( :title="block" :filter="{block}" )
 </template>
+<style scoped lang="sass">
+@media only screen and (max-width: 1200px)
+    .row.justify-between.q-mb-lg
+        padding: 5px 15px
+@media only screen and (max-width: 768px)
+    .pageContainer
+        background: linear-gradient(#252a5e 17.19%, #2d4684 65.83%, transparent 100%)
+    .row.justify-between.q-mb-lg
+        div
+            &:first-child
+                text-align: center
+                width: 100%
+    .dataCardsContainer
+        width: 100%
+        margin-top: 30px
+</style>

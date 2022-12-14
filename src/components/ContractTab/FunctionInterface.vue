@@ -52,18 +52,13 @@
             </template>
         </q-input>
     </div>
-    <div
-        v-for="(param, idx) in abi.inputs"
-        :key="idx"
-    >
+    <div v-for="(param, idx) in abi.inputs" :key="idx">
         <q-input
             v-model="params[idx]"
             :label="makeLabel(param, idx)"
+            :placeholder="getHintForInput(param.type)"
         >
-            <template
-                v-if="param.type === 'uint256'"
-                #append
-            >
+            <template v-if="parameterTypeIsUint256(param.type)" #append>
                 <q-icon
                     class="cursor-pointer"
                     name="pin"
@@ -71,6 +66,12 @@
                 />
             </template>
         </q-input>
+        <p v-if="!parameterTypeIsImplemented(param.type)" class="q-px-md">
+            ⚠️Warning: Implementation of input for type <code>{{ param.type }}</code> is under development; argument
+            will be passed as the exact string entered. This may lead to unexpected results if the method is not
+            expecting a string.
+        </p>
+
     </div>
     <q-btn
         v-if="enableRun"
@@ -78,18 +79,14 @@
         :label="runLabel"
         :disabled="missingInputs"
         class="run-button"
-        color="primary"
+        color="secondary"
         icon="send"
         @click="run"
     />
-
     <p class="text-red output-container">
         {{ errorMessage }}
     </p>
-    <div
-        v-if="result"
-        class="output-container"
-    >
+    <div v-if="result" class="output-container">
         Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
     </div>
     <div
@@ -106,6 +103,24 @@
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
+
+import {
+    getExpectedArrayLengthFromParameterType,
+    parameterTypeIsImplemented,
+    parameterTypeIsUint256,
+    parameterTypeIsAddress,
+    parameterTypeIsUint256Array,
+    parameterTypeIsAddressArray,
+    parameterTypeIsBoolean,
+    parameterTypeIsBooleanArray,
+    parseUint256String,
+    parseUint256ArrayString,
+    parseAddressString,
+    parseAddressArrayString,
+    parseBooleanString,
+    parseBooleanArrayString,
+    parameterTypeIsString,
+} from 'components/ContractTab/function-interface-utils';
 
 import TransactionField from 'components/TransactionField';
 
@@ -190,6 +205,8 @@ export default {
         },
     },
     methods: {
+        parameterTypeIsImplemented,
+        parameterTypeIsUint256,
         makeLabel(abiParam, position) {
             return `${abiParam.name ? abiParam.name : `Param ${position}`} (${abiParam.type})`
         },
@@ -222,56 +239,74 @@ export default {
 
             return formatted;
         },
-        formatValue(value, type) {
-            const uint256ArrayRegex = /^uint256\[\d+]$/g;
-            const typeIsUint256 = type === 'uint256';
-            const typeIsUint256Array = type.match(uint256ArrayRegex)?.length === 1;
+        getHintForInput(type) {
+            let example;
+
+            if (parameterTypeIsAddress(type)) {
+                example = '0x0000000000000000000000000000000000000000';
+            } else if (parameterTypeIsAddressArray(type)) {
+                example = '[0x0000000000000000000000000000000000000000, 0x1111111111111111111111111111111111111111]';
+            } else if (parameterTypeIsUint256(type)) {
+                example = '12345';
+            } else if (parameterTypeIsUint256Array(type)) {
+                example = '[1234, 5678]';
+            } else if (parameterTypeIsBoolean(type)) {
+                example = 'false';
+            } else if (parameterTypeIsBooleanArray(type)) {
+                example = '[false, true]';
+            } else if (parameterTypeIsString(type)) {
+                example = 'Example string';
+            }
+
+            if (example)
+                return `e.g. ${example}`;
+
+            return '';
+        },
+        formatValue(rawValue, type) {
+            const value = rawValue.trim();
+            const expectedArrayLength = getExpectedArrayLengthFromParameterType(type);
+
+            const typeIsUint256      = parameterTypeIsUint256(type);
+            const typeIsAddress      = parameterTypeIsAddress(type);
+            const typeIsUint256Array = parameterTypeIsUint256Array(type);
+            const typeIsAddressArray = parameterTypeIsAddressArray(type);
+            const typeIsBoolean      = parameterTypeIsBoolean(type);
+            const typeIsBooleanArray = parameterTypeIsBooleanArray(type);
+            const typeIsString       = parameterTypeIsString(type);
+
+            let parsedValue;
 
             if (typeIsUint256) {
-                return BigNumber.from(value);
+                parsedValue = parseUint256String(value);
             } else if (typeIsUint256Array) {
-                const uintArrayLengthRegex = /\d+(?=]$)/g;
-                const notDigitOrCommaRegex = /[^\d,]/g;
-
-                const paramsLength = +type.match(uintArrayLengthRegex)[0];
-                const expectedIntsWithTrailingCommas = (() => {
-                    const length = paramsLength - 1;
-                    return length < 0 ? 0 : length;
-                })();
-                // for easier reading, regex without template string escapes: /^\[(\d+, ?){x}\d+\]$/g
-                // where x = expectedIntsWithTrailingCommas
-                const arrayOfIntegersRegex = new RegExp(`^\\[(\\d+, ?){${expectedIntsWithTrailingCommas}}\\d+\\]$`, 'g');
-                const valueRepresentsAnArrayOfCorrectLength = arrayOfIntegersRegex.test(value ?? '');
-
-                if (!valueRepresentsAnArrayOfCorrectLength) {
-                    const exampleArray = Array(paramsLength).fill('')
-                        .map((_, index) => index)
-                        .toString()
-                        .replace(/,/g, ', ');
-
-                    const line1 = 'Invalid array format';
-                    const line2 = `Args array of type ${type} should be formatted like [${exampleArray}] (spaces optional)`;
-                    const line3 = `\tReceived: ${value}`;
-
-                    console.error(`${line1}\n${line2}\n${line3}`);
-                    return undefined;
-                }
-
-                return value
-                    .replace(notDigitOrCommaRegex, '')
-                    .split(',')
-                    .map(valString => BigNumber.from(valString))
-                    .slice(0, paramsLength);
+                parsedValue = parseUint256ArrayString(value, expectedArrayLength);
+            } else if (typeIsAddress) {
+                parsedValue = parseAddressString(value);
+            } else if (typeIsAddressArray) {
+                parsedValue = parseAddressArrayString(value, expectedArrayLength);
+            } else if (typeIsBoolean) {
+                parsedValue = parseBooleanString(value);
+            }  else if (typeIsBooleanArray) {
+                parsedValue = parseBooleanArrayString(value, expectedArrayLength);
+            } else if (typeIsString) {
+                return value;
             } else {
                 return value;
             }
+
+            if (parsedValue === undefined) {
+                throw `Invalid value for type ${type}`;
+            }
+
+            return parsedValue;
         },
         async run() {
             this.loading = true;
 
             try {
                 const opts = {};
-                if (this.abi.payable) {
+                if (this.abi.stateMutability === 'payable') {
                     opts.value = this.formatValue(this.value, 'uint256');
                 }
 
@@ -298,9 +333,22 @@ export default {
             return contractInstance[this.getFunctionAbi()];
         },
         runRead() {
+            let params;
+
+            try {
+                params = this.getFormattedParams();
+                this.errorMessage = null;
+            } catch (e) {
+                this.errorMessage = e;
+                return Promise.reject(e);
+            }
+
             return this.getEthersFunction()
-                .then(func => func(...this.getFormattedParams())
-                    .then(response => { this.result = response })
+                .then(func => func(...params)
+                    .then(response => {
+                        this.result = response;
+                        this.errorMessage = null;
+                    })
                     .catch((msg) => {
                         this.errorMessage = msg;
                     })
@@ -370,7 +418,17 @@ export default {
         },
         async runEVM(opts) {
             const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
-            const result = await func(...this.getFormattedParams(), opts);
+
+            let params;
+            try {
+                params = this.getFormattedParams();
+                this.errorMessage = null;
+            } catch (e) {
+                this.errorMessage = e;
+
+                throw e;
+            }
+            const result = await func(...params, opts);
             this.hash = result.hash;
             this.endLoading();
         },

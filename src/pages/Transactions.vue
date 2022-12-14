@@ -9,7 +9,7 @@ export default {
 </script>
 
 <template lang='pug'>
-  q-page.column.justify-center.items-center
+q-page.column.justify-center.items-center
     .row.q-pa-lg
       .text-h4 Explore Transactions
     .row

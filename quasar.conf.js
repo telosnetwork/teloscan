@@ -8,6 +8,9 @@
 /* eslint-env node */
 
 require('dotenv').config();
+const env = require('./env');
+const ESLintPlugin = require('eslint-webpack-plugin');
+const nodePolyfillWebpackPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = function(/* ctx */) {
     return {
@@ -20,7 +23,7 @@ module.exports = function(/* ctx */) {
         // app boot file (/src/boot)
         // --> boot files are part of "main.js"
         // https://quasar.dev/quasar-cli/boot-files
-        boot: ['ual', 'hyperion', 'api', 'telosApi', 'evm'],
+        boot: ['ual', 'hyperion', 'api', 'telosApi', 'evm', 'q-component-defaults'],
 
         // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
         css: ['fonts/silka/silka.css', 'app.sass'],
@@ -42,21 +45,11 @@ module.exports = function(/* ctx */) {
         // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
         build: {
             vueRouterMode: 'history', // available values: 'hash', 'history'
-            env: {
-                APP_NAME: process.env.APP_NAME,
-                NETWORK_CHAIN_ID: process.env.NETWORK_CHAIN_ID,
-                NETWORK_HOST: process.env.NETWORK_HOST,
-                NETWORK_PORT: parseInt(process.env.NETWORK_PORT),
-                NETWORK_PROTOCOL: process.env.NETWORK_PROTOCOL,
-                NETWORK_EXPLORER: process.env.NETWORK_EXPLORER,
-                HYPERION_ENDPOINT: process.env.HYPERION_ENDPOINT,
-                NETWORK_EVM_RPC: process.env.NETWORK_EVM_RPC,
-                NETWORK_EVM_CONTRACT: process.env.NETWORK_EVM_CONTRACT,
-                NETWORK_EVM_CHAIN_ID: process.env.NETWORK_EVM_CHAIN_ID,
-                NETWORK_EVM_ENDPOINT: process.env.NETWORK_EVM_ENDPOINT,
-                TELOS_API_ENDPOINT: process.env.TELOS_API_ENDPOINT,
-                TELOSCAN_API_ENDPOINT: process.env.TELOSCAN_API_ENDPOINT,
-                VERIFIED_CONTRACTS_BUCKET: process.env.VERIFIED_CONTRACTS_BUCKET,
+            env,
+            chainWebpack (chain) {
+                chain.plugin('eslint-webpack-plugin')
+                    .use(ESLintPlugin, [{ extensions: [ 'js', 'vue' ] }]);
+                chain.plugin('node-polyfill').use(nodePolyfillWebpackPlugin)
             },
 
             // transpile: false,
@@ -78,13 +71,6 @@ module.exports = function(/* ctx */) {
             // https://quasar.dev/quasar-cli/handling-webpack
             extendWebpack(cfg) {
                 cfg.module.rules.push({
-                    enforce: 'pre',
-                    test: /\.(js|vue)$/,
-                    loader: 'eslint-loader',
-                    exclude: /node_modules/,
-                });
-
-                cfg.module.rules.push({
                     test: /\.pug$/,
                     loader: 'pug-plain-loader',
                 });
@@ -95,13 +81,13 @@ module.exports = function(/* ctx */) {
         devServer: {
             https: false,
             port: 8080,
-            open: true, // opens browser window automatically
+            open: false, // opens browser window automatically
         },
 
         // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-framework
         framework: {
             iconSet: 'material-icons', // Quasar icon set
-            lang: 'en-us', // Quasar language pack
+            lang: 'en-US', // Quasar language pack
             config: {},
 
             // Possible values for "importStrategy":

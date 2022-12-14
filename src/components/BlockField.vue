@@ -11,5 +11,5 @@ export default {
 </script>
 
 <template lang="pug">
-  router-link(:to="`/block/${this.block}`") {{ block }}
+router-link(:to="`/block/${this.block}`" :key="$route.path") {{ block }}
 </template>

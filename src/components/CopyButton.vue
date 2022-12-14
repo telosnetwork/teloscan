@@ -4,7 +4,7 @@
     :aria-label="hint"
     aria-role="button"
     tabindex="0"
-    @click="handleClick"
+    @click.stop="handleClick"
     @keydown.space.enter="handleClick"
 >
     <q-tooltip
@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import { copyToClipboard } from 'quasar'
+
 const icons = {
     copy: 'far fa-copy',
     success: 'fas fa-check',
@@ -53,7 +55,7 @@ export default {
             return `c-copy-button ${extraClass}`;
         },
         iconClasses() {
-            return `${this.iconClass} q-pa-sm`;
+            return `${this.iconClass} q-pl-xs`;
         },
         defaultHint() {
             return `Copy ${this.description} to clipboard`;
@@ -64,14 +66,16 @@ export default {
     },
     methods: {
         handleClick() {
-            navigator.clipboard.writeText(this.text);
-            this.iconClass = icons.success;
-            this.hint = 'Copied';
-
-            setTimeout(() => {
-                this.iconClass = icons.copy;
-                this.hint = this.defaultHint;
-            }, 1500);
+            copyToClipboard(this.text).then(() => {
+                this.iconClass = icons.success;
+                this.hint = 'Copied';
+                setTimeout(() => {
+                    this.iconClass = icons.copy;
+                    this.hint = this.defaultHint;
+                }, 1500);
+            }).catch((err) => {
+                console.error(`Failed to copy to clipboard: ${err}`);
+            })
         },
     },
 }
@@ -81,6 +85,7 @@ export default {
 .c-copy-button {
     display: inline-flex;
     justify-content: center;
+    margin-top: -2px;
     align-items: center;
     cursor: pointer;
 

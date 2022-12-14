@@ -2,8 +2,13 @@
 import { mapActions } from 'vuex';
 import { ethers } from 'ethers';
 
+import CopyButton from 'components/CopyButton';
+
 export default {
     name: 'AddressField',
+    components: {
+        CopyButton,
+    },
     props: {
         address: {
             type: String,
@@ -13,9 +18,16 @@ export default {
             type: String,
             default: '',
         },
+        copy: {
+            type: Boolean,
+            default: false,
+        },
+        highlight: {
+            type: Boolean,
+            default: false,
+        },
         truncate: {
             type: Number,
-            required: false,
             default: 18,
         },
         isContractTrx: {
@@ -23,11 +35,9 @@ export default {
             default: false,
         },
     },
-    data() {
-        return {
-            contract: null,
-        }
-    },
+    data: () => ({
+        contract: null,
+    }),
     watch: {
         address () {
             this.loadContract();
@@ -38,18 +48,24 @@ export default {
     },
     methods: {
         ...mapActions('evm', ['getContract']),
-        goToAddress() {
-            this.$router.push(`/address/${this.address}`);
-        },
         getDisplay() {
+            if(!this.address){
+                return;
+            }
             if (this.name) {
-                return this.name;
+                return this.truncate > 0 && this.name.length > this.truncate ? `${this.name.slice(0, this.truncate)}...` : `${this.name}`;
             }
 
-            if (this.contract) {
-                return `${this.contract.getName()}`;
+            if (this.contract && this.contract.getName()) {
+                const name = this.contract.getName();
+                if(name[0] === '0' && name[1] === 'x'){
+                    return this.truncate > 0 ? `${this.address.slice(0, this.truncate)}...` : this.address;
+                }
+                return this.truncate > 0 && name.length > this.truncate ? `${name.slice(0, this.truncate)}...` : `${name}`;
             }
-
+            if (!this.address) {
+                return '';
+            }
             // This formats the address for us and handles zero padding we get from log events
             const address = ethers.utils.getAddress(this.address);
             return this.truncate > 0 ? `${address.slice(0, this.truncate)}...` : address;
@@ -74,14 +90,23 @@ export default {
 </script>
 
 <template lang="pug">
-  div.inline-div
-    q-icon( v-if="this.contract" class="far fa-file-alt q-pr-xs")
-      q-tooltip Contract
-    //- router-link(:to="`/address/${this.address}`") {{ getDisplay() }}
-    a(:href="`/address/${this.address}`") {{ getDisplay() }}
+div.c-address-field
+  q-icon( v-if="contract && !copy" class="far fa-file-alt" )
+    q-tooltip Contract
+  router-link( :to="`/address/${address}`" :class="highlight ? 'highlighted' : ''") {{ getDisplay() }}
+  copy-button(v-if="copy && address" :text="address" description="address" )
 </template>
 
-<style lang='sass' scoped>
-.inline-div
-  display: inline
+<style lang="scss" scoped>
+.c-address-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+a.highlighted {
+    color: #bb9200;
+}
+body.body--dark a.highlighted {
+    color: $yellow;
+}
 </style>

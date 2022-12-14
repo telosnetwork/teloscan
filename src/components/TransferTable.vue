@@ -2,10 +2,12 @@
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
-import {ethers, BigNumber} from 'ethers';
+import {ethers} from 'ethers';
+import { formatWei } from 'src/lib/utils';
 import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
 
 const TRANSFER_EVENT_SIGNATURE = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 // TODO: Add icon column and render it
 const columns = [
@@ -123,7 +125,8 @@ export default {
                         if (this.expectedTopicLength !== log.topics.length)
                             continue;
 
-                        if (log.topics[0].toLowerCase() !== TRANSFER_EVENT_SIGNATURE.toLocaleLowerCase())
+
+                        if (!TRANSFER_SIGNATURES.includes(log.topics[0].substr(0, 10).toLowerCase()))
                             continue;
 
                         const address = `0x${log.address.substring(log.address.length - 40)}`;
@@ -140,24 +143,13 @@ export default {
                         const token = contract.token;
                         let valueDisplay;
                         if (this.tokenType === 'erc20') {
-                            const valueBn = BigNumber.from(log.data);
                             if (token && typeof token.decimals === 'number') {
-                                let valueStr = ethers.utils.formatUnits(valueBn, token.decimals)
-                                let decimalIndex = valueStr.indexOf('.');
-                                if (decimalIndex >= 0) {
-                                    // TODO: what if the value is .0000000000234 then it becomes .000000??
-                                    valueStr = valueStr.substring(0, decimalIndex + 6);
-                                }
-
-                                if (valueStr.length > 50)
-                                    valueStr = `${valueStr.slice(0, 20)} ...`
-
-                                valueDisplay = valueStr + ' ' + token.symbol
+                                valueDisplay = formatWei(log.data, token.decimals)
                             } else {
                                 valueDisplay = 'Unknown precision';
                             }
                         } else {
-                            valueDisplay = `Id #${parseInt(log.topics[3], 16)}`
+                            valueDisplay = `Id #${parseInt(log.topics[3], 16)}`;
                         }
 
                         const transfer = {
@@ -182,12 +174,8 @@ export default {
                 ...newTransfers,
             );
 
-            this.setRows(page, rowsPerPage);
-            this.loading = false;
-        },
-        setRows() {
-            // TODO: do this differently?
             this.rows = this.transfers;
+            this.loading = false;
         },
         getIcon(row) {
             if (row.token && row.token.logoURI) {
@@ -215,15 +203,16 @@ export default {
 };
 </script>
 <template lang="pug">
-  q-table(
-    :data="rows"
+q-table(
+    :rows="rows"
+    :row-key='row => row.hash'
     :columns="columns"
-    :pagination.sync="pagination"
+    v-model:pagination="pagination"
     :loading="loading"
     @request="onRequest"
     :rows-per-page-options="[10, 20, 50]"
     flat
-  )
+)
     q-tr( slot="header" slot-scope="props", :props="props" )
       q-th(
         v-for="col in props.cols"
@@ -240,30 +229,32 @@ export default {
         template(
           v-if="col.name==='method'"
         )
-          q-icon(name="fas fa-info-circle")
+          q-icon(name="fas fa-info-circle").info-icon
             q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
 
-
-    q-tr( slot="body" slot-scope="props" :props="props" )
-      q-td( key="hash" )
-        transaction-field( :transaction-hash="props.row.hash" )
-      q-td( key="date" )
-        date-field( :epoch="props.row.epoch", :showAge="showAge" )
-      q-td( key="from" )
-        address-field( :address="props.row.from" )
-      q-td( key="to" )
-        address-field( :address="props.row.to" )
-      q-td( key="value" ) {{ props.row.valueDisplay }}
-      q-td( key="token" )
-        q-img.coin-icon( :src="getIcon(props.row)" )
-        address-field.token-name( :address="props.row.address" :name="props.row.name" )
+    template(v-slot:body="props")
+        q-tr( :props="props" )
+            q-td( key="hash" :props="props" )
+                transaction-field( :transaction-hash="props.row.hash" )
+            q-td( key="date" :props="props" )
+                date-field( :epoch="props.row.epoch", :showAge="showAge" )
+            q-td( key="from" :props="props" )
+                address-field( :address="props.row.from" )
+            q-td( key="to" :props="props" )
+                address-field( :address="props.row.to" )
+            q-td( key="value" :props="props" ) {{ props.row.valueDisplay }}
+            q-td( key="token" :props="props" )
+                q-img.coin-icon( :src="getIcon(props.row)" )
+                address-field.token-name( :address="props.row.address" :name="props.row.name" truncate="15" )
 </template>
 
-<style lang='sass'scoped>
+<style lang='sass' scoped>
 .coin-icon
   width: 20px
   margin-right: .25rem
+  vertical-align: middle
 
 .token-name
+  vertical-align: middle
   display: inline-block
 </style>

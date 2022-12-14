@@ -11,7 +11,7 @@
                 This contract source has not been verified.
             </p>
             <p>
-                Click <router-link :to="{ name: 'sourcify' }">
+                Click <router-link :to="{ name: 'sourcify' }" :key="$route.path">
                     here
                 </router-link>
                 to upload source files and verify this contract.
@@ -163,7 +163,7 @@
 import JsonViewer from 'vue-json-viewer';
 
 import Contract from 'src/lib/Contract';
-import erc721Abi from 'src/lib/erc721';
+import { erc721Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
 
 import { sortAbiFunctionsByName } from 'src/lib/utils';

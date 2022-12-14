@@ -17,7 +17,7 @@ export default {
         friendlyDate ()  {
             if (this.showAge) {
                 return moment.unix(this.epoch).fromNow()
-            } 
+            }
             return  `${ moment.unix(this.epoch).format('YYYY-MM-DD h:mm:ss')}`
         },
     },
@@ -25,5 +25,12 @@ export default {
 </script>
 
 <template lang="pug">
-  div {{ friendlyDate }}
+div.c-date-field {{ friendlyDate }}
 </template>
+
+<style lang="scss">
+.c-date-field {
+    cursor: pointer;
+    max-width: max-content;
+}
+</style>

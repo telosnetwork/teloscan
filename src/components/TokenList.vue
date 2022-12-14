@@ -1,6 +1,7 @@
 <script>
 import AddressField from 'components/AddressField';
-import {formatBN} from 'src/lib/utils';
+import { promptAddToMetamask } from 'src/lib/token-utils';
+import { formatWei } from 'src/lib/utils';
 
 export default {
     name: 'TokenList',
@@ -16,10 +17,18 @@ export default {
             tokens: null,
         }
     },
+    computed: {
+        showMetamaskPrompt() {
+            return window?.ethereum?.isMetaMask === true;
+        },
+    },
     mounted() {
         this.loadTokens();
     },
     methods: {
+        promptAddToMetamask(address, symbol, logoURI, type, decimals) {
+            promptAddToMetamask(this.$q, address, symbol, logoURI, type, decimals);
+        },
         async loadTokens() {
             const tokenList = await this.$contractManager.getTokenList();
             let tokens = tokenList.tokens
@@ -35,7 +44,8 @@ export default {
 
                 try {
                     const balance = await contractInstance.balanceOf(this.address);
-                    token.balance = `${formatBN(balance, token.decimals, 5)} ${token.symbol}`;
+                    token.balance = `${formatWei(balance, token.decimals, 4)}`;
+                    token.fullBalance = `${formatWei(balance, token.decimals)}`;
                 } catch (e) {
                     throw `Failed to fetch balance:\n${e}`
                 }
@@ -73,22 +83,86 @@ export default {
 }
 </script>
 
-<template lang="pug">
-  .q-pa-md.row.items-start.q-gutter-md
-     div(v-for="token in tokens" :key="token.address" )
-       .col
-         q-card()
-          q-card-section()
-            q-avatar()
-              img( :src="token.logoURI" )
-            .text-h6
-              div() {{ token.name }}
-            address-field( :address="token.address" )
-            div() Balance: {{ token.balance || '(error fetching balance)' }}
+<template>
+<div class="c-token-list">
+    <div
+        class="c-token-list__token-card"
+        v-for="{ name, logoURI, address, balance, symbol, fullBalance, type, decimals } in tokens"
+        :key="address"
+    >
+        <q-card>
+            <q-card-section class="u-flex--center-y">
+                <q-avatar class="q-mr-md">
+                    <img :src="logoURI" alt="Token Logo">
+                </q-avatar>
+                <div class="c-token-list__token-info-container">
+                    <div class="text-h6 c-token-list__token-name" :title="name">
+                        {{ name }}
+                    </div>
+                    <address-field :address="address" class="q-mb-sm"/>
+                    <div class="q-mb-sm">
+                        <span class="q-pr-xs">
+                            Balance:
+                        </span>
+                        <span v-if="balance === '0.0000'">
+                            {{ '< 0.0001 ' + symbol }}
+                        </span>
+                        <span v-else>
+                            {{ balance + ' ' + symbol || '(error fetching balance)' }}
+                        </span>
+                        <q-tooltip v-if="fullBalance > balance">
+                            {{ fullBalance + ' ' + symbol || 'error fetching balance' }}
+                        </q-tooltip>
+                    </div>
+                    <span
+                        v-if="showMetamaskPrompt"
+                        class="c-token-list__metamask-prompt"
+                        tabindex="0"
+                        :aria-label="`Launch MetaMask dialog to add ${symbol}`"
+                        @click="promptAddToMetamask(address, symbol, logoURI, type, decimals)"
+                    >
+                        Add {{ symbol }} to MetaMask
+                    </span>
+                </div>
+            </q-card-section>
+        </q-card>
+    </div>
+</div>
 </template>
 
-<style lang="sass" scoped>
-.token-card
-  width: 100%
-  max-width: 250px
+<style lang="scss">
+.c-token-list {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(1, 1fr);
+
+    padding: 24px;
+
+    @media screen and (min-width: $breakpoint-sm-min) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media screen and (min-width: $breakpoint-lg-min) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    &__token-card {
+        min-width: 0;
+    }
+
+    &__token-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__token-info-container {
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    &__metamask-prompt {
+        color: $secondary;
+        cursor: pointer ;
+    }
+}
 </style>

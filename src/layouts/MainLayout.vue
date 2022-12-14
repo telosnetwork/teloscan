@@ -1,116 +1,145 @@
 <template>
-<q-layout view="lhh Lpr lFf">
-    <q-header class="transparent">
-        <q-toolbar class="text-white toolbar transparent">
-            <div class="q-py-sm">
-                <router-link
-                    to="/"
-                    class="row items-center q-gutter-x-xs"
-                >
-                    <img
-                        alt="Telos EVM logo"
-                        src="~assets/evm_logo.png"
-                        width="45"
+<q-layout view="lhh Lpr lFf ">
+    <div class="pageContainer">
+        <q-header class="transparent pageContainer">
+            <q-toolbar class="text-white toolbar transparent">
+                <div class="q-py-sm">
+                    <router-link
+                        to="/"
+                        id="logo"
+                        class="row items-center q-gutter-x-xs"
                     >
-                    <div class="text-h5 text-white">
-                        Teloscan
-                    </div>
-                </router-link>
-            </div>
-            <q-space />
+                        <img
+                            alt="Telos EVM logo"
+                            src="~assets/evm_logo.png"
+                            width="45"
+                        >
+                        <div class="text-h5 text-white">
+                            Teloscan
+                        </div>
+                    </router-link>
+                </div>
+                <q-space />
 
-            <search
-                class="taskbarSearch desktop-only text-center "
-                :toolbar="true"
-            />
+                <search
+                    class="taskbarSearch desktop-only text-center "
+                    :toolbar="true"
+                />
 
-            <q-btn
-                flat
-                dark
-                standout
-                class="q-px-md"
-                :icon="$q.dark.isActive ? 'fas fa-sun' : 'fas fa-moon'"
-                @click="toggleDarkMode()"
-            />
+                <q-btn
+                    id="dark-mode-toggle"
+                    flat
+                    dark
+                    standout
+                    class="q-px-md"
+                    :icon="$q.dark.isActive ? 'fas fa-sun' : 'fas fa-moon'"
+                    @click="toggleDarkMode()"
+                />
 
-            <connect-button />
-            <q-btn
-                flat
-                round
-                dense
-                icon="menu"
-                @click="drawer = !drawer"
-            />
-        </q-toolbar>
-    </q-header>
+                <connect-button class="connect-button" />
 
-    <q-drawer
-        v-model="drawer"
-        side="right"
-        :width="200"
-        :breakpoint="500"
-        overlay
-        bordered
-    >
-        <q-list>
-            <q-item
-                v-close-popup
-                clickable
-                @click.native="routerTo('/endpoints')"
-            >
-                <q-item-section>
-                    <q-item-label>RPC Endpoints</q-item-label>
-                </q-item-section>
-            </q-item>
+                <q-btn-dropdown
+                    dropdown-icon="menu"
+                    class="q-ml-sm"
+                    dense
+                    round
+                    flat
+                >
+                    <q-list>
+                        <q-item
+                            v-close-popup
+                            clickable
+                            @click="routerTo('/staking')"
+                            class="separator"
+                        >
+                            <q-item-section>
+                                <q-item-label class="flex items-center"><img class="grayscale" :src="stlosLogo" width="14" /> <span class="q-pl-sm">Stake Telos</span> </q-item-label>
+                            </q-item-section>
+                        </q-item>
+                        <q-item
+                            v-close-popup
+                            clickable
+                            @click="routerTo('/endpoints')"
+                        >
+                            <q-item-section>
+                                <q-item-label class="flex items-center"><q-icon name="dns" /> <span class="q-pl-sm">RPC Endpoints</span></q-item-label>
+                            </q-item-section>
+                        </q-item>
 
-            <q-item
-                v-if="!mainnet"
-                v-close-popup
-                clickable
-                @click.native="goTo('https://teloscan.io/')"
-            >
-                <q-item-section>
-                    <q-item-label> Teloscan Mainnet </q-item-label>
-                </q-item-section>
-            </q-item>
+                        <q-item
+                            v-close-popup
+                            clickable
+                            @click="mainnet ? goTo('https://monitor.telos.net/') : goTo('https://monitor-test.telos.net/')"
+                            class="separator"
+                        >
+                            <q-item-section>
+                                <q-item-label class="flex items-center"><q-icon name="crisis_alert" />  <span class="q-pl-sm">Telos Monitor</span></q-item-label>
+                            </q-item-section>
+                        </q-item>
+                        <q-item
+                            v-if="!mainnet"
+                            v-close-popup
+                            clickable
+                            @click="goTo('https://teloscan.io/')"
+                        >
+                            <q-item-section>
+                                <q-item-label class="flex items-center"><q-icon name="swap_horiz" />  <span class="q-pl-sm">Teloscan Mainnet</span></q-item-label>
+                            </q-item-section>
+                        </q-item>
 
-            <q-item
-                v-if="mainnet"
-                v-close-popup
-                clickable
-                @click.native="goTo('https://testnet.teloscan.io/')"
-            >
-                <q-item-section>
-                    <q-item-label> Teloscan Testnet </q-item-label>
-                </q-item-section>
-            </q-item>
-        </q-list>
-    </q-drawer>
+                        <q-item
+                            v-if="mainnet"
+                            v-close-popup
+                            clickable
+                            @click="goTo('https://testnet.teloscan.io/')"
+                        >
+                            <q-item-section>
+                                <q-item-label class="flex items-center"><q-icon name="swap_horiz" />  <span class="q-pl-sm"> Teloscan Testnet</span> </q-item-label>
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
+                </q-btn-dropdown>
+            </q-toolbar>
 
+        </q-header>
+
+
+    </div>
     <div :class="`banner ${onHomePage ? 'home' : ''}`" />
 
-    <q-page-container class="flex flex-center ">
+    <q-page-container class="flex flex-center">
         <router-view />
     </q-page-container>
-
     <footer-main />
 </q-layout>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import { directive as ClickAway } from 'vue3-click-away';
+
 import Search from 'src/components/Search.vue';
 import FooterMain from 'src/components/Footer.vue';
-import ConnectButton from 'components/ConnectButton';
-import {mapGetters} from 'vuex';
+import ConnectButton from 'src/components/ConnectButton';
+import { stlos } from 'src/lib/logos.js';
 
 export default {
     name: 'MainLayout',
-    components: { Search, ConnectButton, FooterMain },
+    directives: {
+        ClickAway,
+    },
+    components: {
+        Search,
+        ConnectButton,
+        FooterMain,
+    },
     data() {
         return {
-            mainnet: process.env.NETWORK_EVM_CHAIN_ID === '40',
+            stlosLogo: stlos,
+            mainnet: '' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40',
             accountConnected: false,
             drawer: false,
+            clickawayDisabled: false,
         };
     },
     computed: {
@@ -159,25 +188,55 @@ export default {
                     });
             }
         },
+        toggleDrawer() {
+            if (!this.drawer) {
+                // handle race condition between vmodel and clickaway.
+                // without this, because clickaway is instantly triggered when clicking the menu icon,
+                // the drawer re-closes before it has had a chance to open
+                this.clickawayDisabled = true;
+                setTimeout(
+                    () => { this.clickawayDisabled = false; },
+                    400,
+                )
+            }
+            this.drawer = !this.drawer;
+        },
+        handleClickaway() {
+            if (this.drawer === true && !this.clickawayDisabled)
+                this.drawer = false;
+        },
     },
 };
 </script>
 
 <style lang="sass" scoped>
+.separator
+  border-bottom: 1px solid lightgrey
+
 .banner
   z-index: -1
-  height: 280px
+  height: 40vh
   position: absolute
   left: 0
   right: 0
   top: 0
-  background: linear-gradient(#252a5e 27.19%, #2d4684 65.83%)
+  background: linear-gradient(180deg, rgb(37,42,94) 0%, rgba(45,70,132) 60%, transparent 99%)
   &.home
-    height: 400px
+    height: 50vh
 
 .connection
   font-size: .5rem
   margin-right: 0.2rem
+
+.q-item
+    .q-icon
+        transition: 400ms color ease
+
+.q-item:hover
+    .grayscale
+        filter: grayscale(0)
+    .q-icon
+        color: $secondary
 
 .account
   width: 120px
@@ -185,4 +244,46 @@ export default {
   overflow: hidden
   text-overflow: ellipsis
 
+.q-header
+  position: relative
+
+body.body--light .q-drawer
+ color: black
+
+.connect-button
+    background: #282828
+    color: #ffffff
+    border-radius: 5px
+
+body.body--light .connect-button
+    background: #ffffff
+    color: black
+
+
+@media screen and (max-width: 768px)
+    .taskbarSearch
+        display: none
+    .q-drawer
+        margin-top: 50px
+@media only screen and (max-width: 550px)
+    .q-btn-dropdown.q-ml-sm
+        margin-left: 0
+        padding: 4px 0px 4px 8px
+
+    #dark-mode-toggle
+        padding-right: 5px
+        .q-icon
+            font-size: 1.3em
+    #logo
+        .text-h5
+            font-size: 1.3rem
+        img
+            width: 32px
+
+@media only screen and (max-width: 400px)
+    #logo
+        .text-h5
+            font-size: 1.1rem
+        img
+            width: 24px
 </style>
