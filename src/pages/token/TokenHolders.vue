@@ -3,43 +3,43 @@
     <div class="row">
         <div class="col-12">
             <q-table
-                :pagination.sync="pagination"
+                v-model:pagination="pagination"
                 :data="holders"
                 :columns="columns"
                 :loading="loading"
                 flat
             >
-                <q-tr slot="header">
-                    <q-th
-                        v-for="col in columns"
-                        :key="col.label"
-                        class="text-left"
-                    >
-                        {{ col.label }}
-                    </q-th>
-                </q-tr>
+                <template v-slot:header>
+                    <q-tr>
+                        <q-th
+                            v-for="col in columns"
+                            :key="col.label"
+                            class="text-left"
+                        >
+                            {{ col.label }}
+                        </q-th>
+                    </q-tr>
+                </template>
 
-                <q-tr
-                    slot="body"
-                    slot-scope="props"
-                    :props="props"
-                >
-                    <q-td key="rank">
-                        {{ props.row.rank }}
-                    </q-td>
-                    <q-td key="address">
-                        <router-link :to="`/address/${props.row.holder.address}`">
-                            <address-field
-                                :address="props.row.holder.address"
-                                :is-contract="props.row.holder.isContract"
-                                :truncate="-1"
-                            />
-                        </router-link>
-                    </q-td>
-                    <q-td key="balance">
-                        {{ props.row.balance }}
-                    </q-td>
-                </q-tr>
+                <template v-slot:body="props">
+                    <q-tr>
+                        <q-td key="rank">
+                            {{ props.row.rank }}
+                        </q-td>
+                        <q-td key="address">
+                            <router-link :to="`/address/${props.row.holder.address}`">
+                                <address-field
+                                    :address="props.row.holder.address"
+                                    :is-contract="props.row.holder.isContract"
+                                    :truncate="-1"
+                                />
+                            </router-link>
+                        </q-td>
+                        <q-td key="balance">
+                            {{ props.row.balance }}
+                        </q-td>
+                    </q-tr>
+                </template>
             </q-table>
         </div>
     </div>
@@ -51,7 +51,7 @@ import { keys } from 'lodash';
 
 import AddressField from 'components/AddressField';
 
-import { formatBN } from 'src/lib/utils';
+import { formatWei } from 'src/lib/utils';
 
 const columns = [{
     name: 'rank',
@@ -103,7 +103,7 @@ export default {
 
                 const shapedRows = rows.map(({ balance, address }, index) => ({
                     rank: index + 1,
-                    balance: formatBN(balance, tokenContractMeta.decimals, 6),
+                    balance: formatWei(balance, tokenContractMeta.decimals, 6),
                     holder: {
                         address,
                         isContract: contractAddresses.includes(address),

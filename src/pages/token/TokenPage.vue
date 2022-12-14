@@ -89,8 +89,8 @@ import { toChecksumAddress } from 'src/lib/utils';
 const genericLogo = require('assets/telos-logo--evm-generic.png');
 
 const tabs = {
-    holders: 'holders',
-    transfers: 'transfers',
+    holders: '#holders',
+    transfers: '#transfers',
 };
 
 export default {
@@ -169,7 +169,7 @@ export default {
     },
     methods: {
         handleTokenInfoLoaded(tokenContractMeta) {
-            this.$set(this, 'tokenInfo', { ...tokenContractMeta });
+            this.tokenInfo = { ...tokenContractMeta };
         },
     },
 }
@@ -187,7 +187,7 @@ export default {
         background: white;
 
         &.q-dark {
-            background: var(--q-color-dark);
+            background: $dark;
         }
     }
 }

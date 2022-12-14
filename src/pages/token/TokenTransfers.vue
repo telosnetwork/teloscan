@@ -3,60 +3,60 @@
     <div class="row">
         <div class="col-12">
             <q-table
-                :pagination.sync="pagination"
+                v-model:pagination="pagination"
                 :data="transfers"
                 :columns="columns"
                 :loading="loading"
                 flat
             >
-                <q-tr slot="header">
-                    <q-th
-                        v-for="col in columns"
-                        :key="col.label"
-                        class="text-left"
-                    >
-                        {{ col.label }}
-
-                        <q-icon
-                            v-if="col.name === 'timestamp'"
-                            name="fas fa-info-circle"
-                            @click="showAge = !showAge"
+                <template v-slot:header>
+                    <q-tr>
+                        <q-th
+                            v-for="col in columns"
+                            :key="col.label"
+                            class="text-left"
                         >
-                            <q-tooltip>Click to change format</q-tooltip>
-                        </q-icon>
-                    </q-th>
-                </q-tr>
+                            {{ col.label }}
 
-                <q-tr
-                    slot="body"
-                    slot-scope="props"
-                    :props="props"
-                >
-                    <q-td key="transaction">
-                        <transaction-field :transaction-hash="props.row.transaction" />
-                    </q-td>
-                    <q-td key="block">
-                        <block-field :block="props.row.block" />
-                    </q-td>
-                    <q-td key="date">
-                        <date-field :epoch="props.row.timestamp" :show-age="showAge" />
-                    </q-td>
-                    <q-td key="from">
-                        <address-field
-                            :address="props.row.from.address"
-                            :is-contract="props.row.from.isContract"
-                        />
-                    </q-td>
-                    <q-td key="to">
-                        <address-field
-                            :address="props.row.to.address"
-                            :is-contract="props.row.to.isContract"
-                        />
-                    </q-td>
-                    <q-td key="amount">
-                        {{ props.row.amount }}
-                    </q-td>
-                </q-tr>
+                            <q-icon
+                                v-if="col.name === 'timestamp'"
+                                name="fas fa-info-circle"
+                                @click="showAge = !showAge"
+                            >
+                                <q-tooltip>Click to change format</q-tooltip>
+                            </q-icon>
+                        </q-th>
+                    </q-tr>
+                </template>
+
+                <template v-slot:body="props">
+                    <q-tr>
+                        <q-td key="transaction">
+                            <transaction-field :transaction-hash="props.row.transaction" />
+                        </q-td>
+                        <q-td key="block">
+                            <block-field :block="props.row.block" />
+                        </q-td>
+                        <q-td key="date">
+                            <date-field :epoch="props.row.timestamp" :show-age="showAge" />
+                        </q-td>
+                        <q-td key="from">
+                            <address-field
+                                :address="props.row.from.address"
+                                :is-contract="props.row.from.isContract"
+                            />
+                        </q-td>
+                        <q-td key="to">
+                            <address-field
+                                :address="props.row.to.address"
+                                :is-contract="props.row.to.isContract"
+                            />
+                        </q-td>
+                        <q-td key="amount">
+                            {{ props.row.amount }}
+                        </q-td>
+                    </q-tr>
+                </template>
             </q-table>
         </div>
     </div>
@@ -71,7 +71,7 @@ import BlockField from 'components/BlockField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 
-import { formatBN } from 'src/lib/utils';
+import { formatWei } from 'src/lib/utils';
 
 const columns = [
     {
@@ -159,7 +159,7 @@ export default {
                         transaction,
                         block,
                         timestamp,
-                        amount: formatBN(amount, tokenContractMeta.decimals, 6),
+                        amount: formatWei(amount, tokenContractMeta.decimals, 6),
                         ...shapedToAndFrom,
                     };
                 }
