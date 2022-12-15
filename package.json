@@ -32,6 +32,7 @@
     "ethereumjs-util": "^7.1.4",
     "ethers": "^5.5.1",
     "fs": "^0.0.1-security",
+    "highcharts": "^10.3.2",
     "highlight.js": "10",
     "highlightjs-solidity": "^2.0.3",
     "moment": "^2.29.4",

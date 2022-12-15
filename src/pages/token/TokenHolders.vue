@@ -1,5 +1,32 @@
 <template>
-<div class="container">
+<div class="container c-token-holders">
+    <q-dialog v-model="showChart" class="c-token-holders__chart-modal">
+        <q-card class="c-token-holders__chart-container">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="text-h5 text-center">Top 50 Holders of SYMBL</h3>
+                </div>
+            </div>
+            <div class="row q-mb-lg">
+                <div class="col-12">
+                    <div id="token-holders-chart"></div>
+                </div>
+            </div>
+        </q-card>
+    </q-dialog>
+
+    <div class="row">
+        <div class="col">
+            <q-btn
+                :disable="!enableShowChartButton"
+                color="secondary"
+                no-caps
+                @click="() => setChartVisibility(true)"
+            >
+                Show Holders Graph
+            </q-btn>
+        </div>
+    </div>
     <div class="row">
         <div class="col-12">
             <q-table
@@ -48,6 +75,7 @@
 
 <script>
 import { keys } from 'lodash';
+import Highcharts from 'highcharts';
 
 import AddressField from 'components/AddressField';
 
@@ -69,6 +97,7 @@ const columns = [{
 
 export default {
     name: 'TokenHolders',
+    emits: ['token-info-loaded'],
     components: {
         AddressField,
     },
@@ -86,7 +115,62 @@ export default {
         },
         holders: [],
         loading: true,
+        tokenInfo: null,
+        showChart: false,
     }),
+    computed: {
+        enableShowChartButton() {
+            // if holders.length && tokenData
+            return true;
+        },
+        chartData() {
+            // if (!this.tokenInfo) {
+            //     return [];
+            // }
+
+            // eztodo this should be computed from this.holders
+            const holders = [{
+                alias: 'Holder 1',
+                address: '0x12345679',
+                balance: 50,
+            }, {
+                alias: 'Holder 2',
+                address: '0x912986242',
+                balance: 33.8,
+            }, {
+                alias: 'Holder 3',
+                address: '0x125125233',
+                balance: 0.5,
+            }];
+
+            const tokenInfo = {
+                totalHeld: 150,
+                totalHolders: 1000,
+            };
+
+
+            const topHoldersTotal = holders.reduce((acc, holder) => acc + holder.balance, 0);
+            const everyoneElseTotal = tokenInfo.totalHeld - topHoldersTotal;
+
+
+
+            const getHolderPercentage = held => +((held / tokenInfo.totalHeld * 100).toFixed(2));
+
+
+            const shapedHolders = holders
+                .slice(0, 100) // only show top 100 holders in chart
+                .map(holder => ({
+                    name: `${holder.address} (${holder.alias})`,
+                    y: getHolderPercentage(holder.balance),
+                }))
+                .concat({
+                    name: 'Other Accounts',
+                    y: getHolderPercentage(everyoneElseTotal),
+                });
+
+            return [...shapedHolders];
+        },
+    },
     created() {
         const emitTokenInfo = info => this.$emit('token-info-loaded', info)
 
@@ -122,8 +206,140 @@ export default {
                 this.loading = false
             });
     },
+    methods: {
+        setChartVisibility(visibility) {
+            if (visibility === true) {
+                this.showChart = true;
+
+                // timeout is a workaround; without it, text in the chart is the wrong size due to q-dialog
+                // transition styling
+                setTimeout(async () => {
+                    await this.$nextTick();
+                    Highcharts.chart('token-holders-chart', {
+                        credits: false,
+                        chart: {
+                            plotBorderWidth: null,
+                            plotShadow: false,
+                            type: 'pie',
+                        },
+                        title: {
+                            text: null,
+                        },
+                        tooltip: {
+                            pointFormat: '{series.name}: {point.percentage:.1f}%',
+                        },
+                        accessibility: {
+                            point: {
+                                valueSuffix: '%',
+                            },
+                        },
+                        plotOptions: {
+                            pie: {
+                                allowPointSelect: false,
+                                cursor: 'pointer',
+                                dataLabels: {
+                                    enabled: true,
+                                    format: '{point.name}: {point.percentage:.1f} %',
+                                },
+                            },
+                        },
+                        series: [{
+                            name: 'Holders',
+                            colorByPoint: true,
+                            data: [...this.chartData],
+                        }],
+                    });
+                }, 500);
+            }
+        },
+    },
 }
 </script>
 
 <style lang="scss">
+.c-token-holders {
+    &__chart-container {
+        width: 80vw;
+        height: max-content;
+        min-height: 50vh;
+        max-width: unset !important;
+        max-height: unset !important;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            width: 65vw;
+        }
+    }
+
+    &__chart-modal {
+        @at-root .body--dark & {
+            .highcharts-background {
+                fill: $dark;
+            }
+
+            .highcharts-title {
+                color: white !important;
+                fill: white !important;
+            }
+
+            .highcharts-text-outline {
+                fill: transparent;
+                stroke: transparent;
+            }
+
+            .highcharts-data-label text {
+                color: white !important;
+                fill: white !important;
+            }
+        }
+
+        // eztodo verify if these are necessary - from highcharts example
+        // highcharts overrides
+        //.highcharts-figure,
+        //.highcharts-data-table table {
+        //    min-width: 320px;
+        //    max-width: 800px;
+        //    margin: 1em auto;
+        //}
+        //
+        //.highcharts-data-table table {
+        //    font-family: Verdana, sans-serif;
+        //    border-collapse: collapse;
+        //    border: 1px solid #ebebeb;
+        //    margin: 10px auto;
+        //    text-align: center;
+        //    width: 100%;
+        //    max-width: 500px;
+        //}
+        //
+        //.highcharts-data-table caption {
+        //    padding: 1em 0;
+        //    font-size: 1.2em;
+        //    color: #555;
+        //}
+        //
+        //.highcharts-data-table th {
+        //    font-weight: 600;
+        //    padding: 0.5em;
+        //}
+        //
+        //.highcharts-data-table td,
+        //.highcharts-data-table th,
+        //.highcharts-data-table caption {
+        //    padding: 0.5em;
+        //}
+        //
+        //.highcharts-data-table thead tr,
+        //.highcharts-data-table tr:nth-child(even) {
+        //    background: #f8f8f8;
+        //}
+        //
+        //.highcharts-data-table tr:hover {
+        //    background: #f1f7ff;
+        //}
+        //
+        //input[type="number"] {
+        //    min-width: 50px;
+        //}
+    }
+}
 </style>

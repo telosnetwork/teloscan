@@ -103,6 +103,7 @@ const columns = [
 
 export default {
     name: 'TokenTransfers',
+    emits: ['token-info-loaded'],
     components: {
         AddressField,
         BlockField,

@@ -1,6 +1,6 @@
 <template>
 <div class="c-token-page pageContainer q-pt-xl">
-    <div class="row">
+    <div class="row q-mb-lg">
         <div class="col-12 q-mb-sm">
             <img
                 :src="headerTokenLogo"
