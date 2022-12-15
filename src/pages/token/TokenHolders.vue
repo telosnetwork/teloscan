@@ -2,16 +2,16 @@
 <div class="container c-token-holders">
     <q-dialog v-model="showChart" class="c-token-holders__chart-modal">
         <q-card class="c-token-holders__chart-container">
-            <div class="row">
-                <div class="col-12">
-                    <h3 class="text-h5 text-center">Top 50 Holders of SYMBL</h3>
-                </div>
-            </div>
-            <div class="row q-mb-lg">
-                <div class="col-12">
-                    <div id="token-holders-chart"></div>
-                </div>
-            </div>
+            <q-card-section class="row items-center q-pb-none">
+                <div class="text-h6">Top 50 Holders of SYMBL</div>
+                <q-space />
+                <q-btn icon="close" flat round dense v-close-popup />
+            </q-card-section>
+
+            <q-card-section>
+                <!-- Highcharts target -->
+                <div id="token-holders-chart"></div>
+            </q-card-section>
         </q-card>
     </q-dialog>
 
