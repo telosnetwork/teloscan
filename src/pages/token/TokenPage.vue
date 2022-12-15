@@ -146,8 +146,7 @@ export default {
                 if (oldHash === newHash && oldPath === newPath) return;
 
                 const tabNames = Object.values(this.tabs);
-                const hash = newHash?.replace('#', '') ?? '';
-                const shouldAddTransfersHash = !tabNames.includes(hash);
+                const shouldAddTransfersHash = !tabNames.includes(newHash);
 
                 const urlPath = newPath.replace('/token/', '');
                 const urlPathChecksum = toChecksumAddress(urlPath) ?? '';
