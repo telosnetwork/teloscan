@@ -4,7 +4,7 @@
         <div class="col-12">
             <q-table
                 v-model:pagination="pagination"
-                :data="transfers"
+                :rows="transfers"
                 :columns="columns"
                 :loading="loading"
                 flat
@@ -30,29 +30,29 @@
                 </template>
 
                 <template v-slot:body="props">
-                    <q-tr>
-                        <q-td key="transaction">
+                    <q-tr :props="props">
+                        <q-td key="transaction" :props="props">
                             <transaction-field :transaction-hash="props.row.transaction" />
                         </q-td>
-                        <q-td key="block">
+                        <q-td key="block" :props="props">
                             <block-field :block="props.row.block" />
                         </q-td>
-                        <q-td key="date">
-                            <date-field :epoch="props.row.timestamp" :show-age="showAge" />
+                        <q-td key="timestamp" :props="props">
+                            <date-field :epoch="+props.row.timestamp" :show-age="showAge" />
                         </q-td>
-                        <q-td key="from">
+                        <q-td key="from" :props="props">
                             <address-field
                                 :address="props.row.from.address"
                                 :is-contract="props.row.from.isContract"
                             />
                         </q-td>
-                        <q-td key="to">
+                        <q-td key="to" :props="props">
                             <address-field
                                 :address="props.row.to.address"
                                 :is-contract="props.row.to.isContract"
                             />
                         </q-td>
-                        <q-td key="amount">
+                        <q-td key="amount" :props="props">
                             {{ props.row.amount }}
                         </q-td>
                     </q-tr>
@@ -130,13 +130,11 @@ export default {
         const emitTokenInfo = info => this.$emit('token-info-loaded', info)
 
         const params = {
-            address: null,
-            contract: this.address,
             limit: 1000,
             offset: null,
         };
 
-        this.$teloscanApi.get('transfers', { params })
+        this.$teloscanApi.get(`token/${this.address}/transfers`, { params })
             .then(({ data }) => {
                 const rows = data?.results ?? [];
                 const tokenContractMeta = data?.contracts[this.address] ?? {};

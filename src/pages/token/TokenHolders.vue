@@ -37,7 +37,7 @@
         <div class="col-12">
             <q-table
                 v-model:pagination="pagination"
-                :data="holders"
+                :rows="holders"
                 :columns="columns"
                 :loading="loading"
                 flat
@@ -55,11 +55,11 @@
                 </template>
 
                 <template v-slot:body="props">
-                    <q-tr>
-                        <q-td key="rank">
+                    <q-tr :props="props">
+                        <q-td key="rank" :props="props">
                             {{ props.row.rank }}
                         </q-td>
-                        <q-td key="address">
+                        <q-td key="address" :props="props">
                             <router-link :to="`/address/${props.row.holder.address}`">
                                 <address-field
                                     :address="props.row.holder.address"
@@ -68,7 +68,7 @@
                                 />
                             </router-link>
                         </q-td>
-                        <q-td key="balance">
+                        <q-td key="balance" :props="props">
                             {{ props.row.balance }}
                         </q-td>
                     </q-tr>
@@ -185,9 +185,13 @@ export default {
             offset: null,
         };
 
-        this.$teloscanApi.get(`holders/${this.address}`, { params })
+        this.$teloscanApi.get(`token/${this.address}/holders`, { params })
             .then(({ data }) => {
                 const rows = data?.results ?? [];
+                // eztodo address this - first element is invalid,
+                // see http://api.testnet.teloscan.io:8800/v1/token/0xae85bf723a9e74d6c663dd226996ac1b8d075aa9/holders?limit=50&offset=0&includeAbi=true
+                rows.shift();
+
                 const tokenContractMeta = data?.contracts[this.address] ?? {};
                 const contractAddresses = keys(data?.contracts);
 
