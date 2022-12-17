@@ -126,47 +126,28 @@ export default {
     }),
     computed: {
         enableShowChartButton() {
-            // if holders.length && tokenData
-            return true;
+            return Boolean(this.holders?.length);
         },
         chartData() {
-            // if (!this.tokenInfo) {
-            //     return [];
-            // }
-
-            // eztodo this should be computed from this.holders
-            const holders = [{
-                alias: 'Holder 1',
-                address: '0x12345679',
-                balance: 50,
-            }, {
-                alias: 'Holder 2',
-                address: '0x912986242',
-                balance: 33.8,
-            }, {
-                alias: 'Holder 3',
-                address: '0x125125233',
-                balance: 0.5,
-            }];
+            if (!this.enableShowChartButton) {
+                return [];
+            }
 
             const tokenInfo = {
                 totalHeld: 150,
-                totalHolders: 1000,
+                totalHolders: 1000, // eztodo this
             };
 
-
-            const topHoldersTotal = holders.reduce((acc, holder) => acc + holder.balance, 0);
+            const topHoldersTotal = this.holders.reduce((acc, holder) => acc + holder.balance, 0);
             const everyoneElseTotal = tokenInfo.totalHeld - topHoldersTotal;
-
-
 
             const getHolderPercentage = held => +((held / tokenInfo.totalHeld * 100).toFixed(2));
 
 
-            const shapedHolders = holders
+            const shapedHolders = this.holders
                 .slice(0, 100) // only show top 100 holders in chart
                 .map(holder => ({
-                    name: `${holder.address} (${holder.alias})`,
+                    name: `${holder.holder.address}`,
                     y: getHolderPercentage(holder.balance),
                 }))
                 .concat({
