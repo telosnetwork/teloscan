@@ -35,6 +35,7 @@
     "highcharts": "^10.3.2",
     "highlight.js": "10",
     "highlightjs-solidity": "^2.0.3",
+    "js-big-decimal": "^1.3.13",
     "moment": "^2.29.4",
     "quasar": "2",
     "ual-anchor": "^1.0.0",

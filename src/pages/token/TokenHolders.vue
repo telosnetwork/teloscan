@@ -3,7 +3,7 @@
     <q-dialog v-model="showChart" class="c-token-holders__chart-modal">
         <q-card class="c-token-holders__chart-container">
             <q-card-section class="row items-center q-pb-none">
-                <div class="text-h6">Top 50 Holders of SYMBL</div>
+                <div class="text-h6">Top 50 Holders of {{ tokenInfo.symbol }}</div>
                 <q-space />
                 <q-btn
                     icon="close"
@@ -69,7 +69,7 @@
                             </router-link>
                         </q-td>
                         <q-td key="balance" :props="props">
-                            {{ props.row.balance }}
+                            {{ formatBalance(props.row.balance) }}
                         </q-td>
                     </q-tr>
                 </template>
@@ -82,6 +82,7 @@
 <script>
 import { keys } from 'lodash';
 import Highcharts from 'highcharts';
+import bigDecimal from 'js-big-decimal';
 
 import AddressField from 'components/AddressField';
 
@@ -126,33 +127,36 @@ export default {
     }),
     computed: {
         enableShowChartButton() {
-            return Boolean(this.holders?.length);
+            return Boolean(this.holders?.length) && this.tokenInfo !== null;
         },
         chartData() {
             if (!this.enableShowChartButton) {
                 return [];
             }
 
-            const tokenInfo = {
-                totalHeld: 150,
-                totalHolders: 1000, // eztodo this
+            const topHundredHolders = this.holders.slice(0, 100);
+
+            const topHoldersTotalBigDecimal = topHundredHolders.reduce(
+                (acc, holder) => bigDecimal.add(acc, holder.balance),
+                0,
+            );
+            const everyoneElseTotalBigDecimal = bigDecimal.subtract(this.tokenInfo.supply, topHoldersTotalBigDecimal);
+
+            const getHolderPercentage = (held) => {
+                const divided = bigDecimal.divide(held, this.tokenInfo.supply);
+                const percent = bigDecimal.multiply(100, divided);
+
+                return +percent;
             };
 
-            const topHoldersTotal = this.holders.reduce((acc, holder) => acc + holder.balance, 0);
-            const everyoneElseTotal = tokenInfo.totalHeld - topHoldersTotal;
-
-            const getHolderPercentage = held => +((held / tokenInfo.totalHeld * 100).toFixed(2));
-
-
-            const shapedHolders = this.holders
-                .slice(0, 100) // only show top 100 holders in chart
+            const shapedHolders = topHundredHolders
                 .map(holder => ({
                     name: `${holder.holder.address}`,
                     y: getHolderPercentage(holder.balance),
                 }))
                 .concat({
                     name: 'Other Accounts',
-                    y: getHolderPercentage(everyoneElseTotal),
+                    y: getHolderPercentage(everyoneElseTotalBigDecimal),
                 });
 
             return [...shapedHolders];
@@ -169,16 +173,13 @@ export default {
         this.$teloscanApi.get(`token/${this.address}/holders`, { params })
             .then(({ data }) => {
                 const rows = data?.results ?? [];
-                // eztodo address this - first element is invalid,
-                // see http://api.testnet.teloscan.io:8800/v1/token/0xae85bf723a9e74d6c663dd226996ac1b8d075aa9/holders?limit=50&offset=0&includeAbi=true
-                rows.shift();
 
                 const tokenContractMeta = data?.contracts[this.address] ?? {};
                 const contractAddresses = keys(data?.contracts);
 
                 const shapedRows = rows.map(({ balance, address }, index) => ({
                     rank: index + 1,
-                    balance: formatWei(balance, tokenContractMeta.decimals, 6),
+                    balance,
                     holder: {
                         address,
                         isContract: contractAddresses.includes(address),
@@ -186,11 +187,13 @@ export default {
                 }));
 
                 emitTokenInfo(tokenContractMeta);
+                this.tokenInfo = tokenContractMeta;
                 this.holders = [...shapedRows];
             })
             .catch((err) => {
                 emitTokenInfo({});
                 this.holders = [];
+                this.tokenInfo = null;
                 console.error(`Unable to fetch token holders for address ${this.address}:\n${err}`);
             })
             .finally(() => {
@@ -198,6 +201,9 @@ export default {
             });
     },
     methods: {
+        formatBalance(balance) {
+            return formatWei(balance, this.tokenInfo.decimals, 6)
+        },
         setChartVisibility(visibility) {
             if (visibility === true) {
                 this.showChart = true;
@@ -230,7 +236,7 @@ export default {
                                 cursor: 'pointer',
                                 dataLabels: {
                                     enabled: true,
-                                    format: '{point.name}: {point.percentage:.1f} %',
+                                    format: '{point.name}',
                                 },
                             },
                         },
