@@ -7,7 +7,7 @@ import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
 import { erc721Abi, erc1155Abi, erc721MetadataAbi, supportsInterfaceAbi } from './abi';
 import { toChecksumAddress } from './utils';
-import {ERC1155_TRANSFER_SIGNATURE} from './utils/abi/signature/transfer_signatures.js'
+import {ERC1155_TRANSFER_SIGNATURE} from './abi/signature/transfer_signatures.js'
 
 const contractsBucket = axios.create({
     baseURL: `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com`,

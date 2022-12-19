@@ -22,7 +22,9 @@ export function isValidAddressFormat(ethAddressString) {
     return pattern.test(ethAddressString);
 }
 
-export function getTopicHash = topic => `0x${topic.substring(topic.length - 40)}`;
+export function getTopicHash(topic)  {
+    return `0x${topic.substring(topic.length - 40)}`;
+}
 
 export function formatIsoDateTime(dateTimezone) {
     return moment(dateTimezone).utc().format('DD/MM/YYYY');
