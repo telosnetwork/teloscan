@@ -204,7 +204,6 @@ export default {
             let path = `/v2/evm/get_transactions?limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
-            // TODO: switch path according to ERC type (ERC20 & ERC721 have same sig)
             let signature = TRANSFER_EVENT_ERC20_SIGNATURE;
             if(this.tokenType === 'erc1155'){
                 signature = TRANSFER_EVENT_ERC1155_SIGNATURE;
