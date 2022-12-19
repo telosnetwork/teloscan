@@ -7,6 +7,7 @@ import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
 import { erc721Abi, erc1155Abi, erc721MetadataAbi, supportsInterfaceAbi } from './abi';
 import { toChecksumAddress } from './utils';
+import {ERC1155_TRANSFER_SIGNATURE} from './utils/abi/signature/transfer_signatures.js'
 
 const contractsBucket = axios.create({
     baseURL: `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com`,
@@ -72,7 +73,7 @@ export default class ContractManager {
     getTokenTypeFromLog(log){
         let sig = log.topics[0].substr(0, 10);
         let type = (log.topics.length === 4) ? 'erc721' : 'erc20';
-        return (sig === '0xc3d58168') ? 'erc1155' : type;
+        return (sig === ERC1155_TRANSFER_SIGNATURE) ? 'erc1155' : type;
     }
     async getEventIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
