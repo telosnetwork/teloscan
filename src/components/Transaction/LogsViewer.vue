@@ -40,7 +40,7 @@
 <script>
 import JsonViewer from 'vue-json-viewer'
 import FragmentList from 'components/Transaction/FragmentList'
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+import { TRANSFER_SIGNATURES, ERC1155_TRANSFER_SIGNATURE } from 'src/lib/abi/signature/transfer_signatures';
 import { BigNumber } from 'ethers';
 
 export default {
@@ -77,7 +77,7 @@ export default {
             const function_signature = log.topics[0].substr(0, 10);
             if(TRANSFER_SIGNATURES.includes(function_signature)) {
                 let type = (log.topics.length === 4) ? 'erc721': 'erc20';
-                type = (function_signature === '0xc3d58168') ? 'erc1155' : type;
+                type = (function_signature === ERC1155_TRANSFER_SIGNATURE) ? 'erc1155' : type;
                 contract = await this.getLogContract(log, type);
             } else {
                 contract = await this.getLogContract(log);

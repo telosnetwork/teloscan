@@ -4,6 +4,9 @@ import FragmentList from './FragmentList.vue'
 import { WEI_PRECISION, formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
 
+const TLOS_TRANSFER = 'TLOS Transfer';
+const CONTRACT_DEPLOYMENT = 'Contract Deployment';
+
 export default {
     name: 'InternalTxns',
     components: {
@@ -34,9 +37,16 @@ export default {
         for(let k = 0; k < this.itxs.length;k++){
             let itx = this.itxs[k];
             let contract = await this.getContract(itx.to);
-            let name = (itx.value)  ? 'TLOS transfer' : 'Unknown (' + '0x' + itx.input.slice(0, 8) +')';
-            name = (itx.type === 'create')  ? 'Contract deployment' : name;
+            let fnsig =  itx.input.slice(0, 8);
+            let name = 'Unknown';
             let inputs, outputs, args  = false;
+            if(itx.type === 'create'){
+                name = CONTRACT_DEPLOYMENT;
+            } else if (fnsig){
+                name = 'Unknown (' + '0x' + fnsig + ')';
+            } else if (itx.value){
+                name = TLOS_TRANSFER;
+            }
             if(itx.traceAddress.length < 2){
                 itx.index = i;
                 i++;
