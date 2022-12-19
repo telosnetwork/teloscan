@@ -3,7 +3,7 @@ import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import {ethers, BigNumber} from 'ethers';
-import { formatWei } from 'src/lib/utils';
+import { formatWei, getTopicHash } from 'src/lib/utils';
 import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
@@ -134,11 +134,11 @@ export default {
                         const address = `0x${log.address.substring(log.address.length - 40)}`;
                         let from, to;
                         if(this.tokenType === 'erc1155'){
-                            from = `0x${log.topics[2].substring(log.topics[2].length - 40)}`;
-                            to = `0x${log.topics[3].substring(log.topics[3].length - 40)}`;
+                            from = getTopicHash(log.topics[2]);
+                            to = getTopicHash(log.topics[3]);
                         } else {
-                            from = `0x${log.topics[1].substring(log.topics[1].length - 40)}`;
-                            to = `0x${log.topics[2].substring(log.topics[2].length - 40)}`;
+                            from = getTopicHash(log.topics[1]);
+                            to = getTopicHash(log.topics[2]);
                         }
                         if (to.toLowerCase() !== this.address.toLowerCase() && from.toLowerCase() !== this.address.toLowerCase())
                             continue;
