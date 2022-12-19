@@ -1,32 +1,56 @@
 <template>
-<div class="c-token-page pageContainer q-pt-xl">
-    <div class="row q-mb-lg">
-        <div class="col-12 q-mb-sm">
-            <img
-                :src="headerTokenLogo"
-                height="32"
-                width="32"
-                alt="Token icon"
-                class="c-token-page__logo"
-            >
-            <span class="text-primary text-h4 q-px-sm">Token</span>
-            <span class="text-grey">
-                {{ headerTokenText }}
-            </span>
+<div class="c-token-page pageContainer">
+    <div class="row q-mb-lg q-mx-md">
+        <div class="col-xs-12 col-md-6 q-mb-md">
+            <div class="row">
+                <div class="col-12 q-mb-sm">
+                    <img
+                        :src="headerTokenLogo"
+                        height="32"
+                        width="32"
+                        alt="Token icon"
+                        class="c-token-page__logo"
+                    >
+                    <span class="text-primary text-h4 q-px-sm">Token</span>
+                    <span class="text-grey">
+                        {{ headerTokenText }}
+                    </span>
+                </div>
+                <div class="col-12 text-white">
+                    <copy-button
+                        :text="address"
+                        :accompanying-text="address"
+                        description="address"
+                    />
+                    <p v-if="showTokenHeaderInfo">
+                        Created at trx <transaction-field :transaction-hash="tokenInfo.transaction" /><br>
+                        by address <address-field :address="tokenInfo.creator" />
+                    </p>
+                    <router-link :to="`/address/${address}`">
+                        Go to {{ showTokenHeaderInfo ? 'Contract' : 'Address' }} Info page
+                    </router-link>
+                </div>
+            </div>
         </div>
-        <div class="col-12 text-white">
-            <copy-button
-                :text="address"
-                :accompanying-text="address"
-                description="address"
-            />
-            <p v-if="showTokenHeaderInfo">
-                Created at trx <transaction-field :transaction-hash="tokenInfo.transaction" /><br>
-                by address <address-field :address="tokenInfo.creator" />
-            </p>
-            <router-link :to="`/address/${address}`">
-                Go to {{ showTokenHeaderInfo ? 'Contract' : 'Address' }} Info page
-            </router-link>
+        <div class="col-xs-12 col-md-6 c-token-page__stats-container">
+            <div class="c-token-page__stats">
+                <div class="c-token-page__stat-label">
+                    Supply
+                    <q-icon name="fas fa-info-circle" />
+                </div>
+                <div class="c-token-page__stat-value">
+                    {{ tokenInfo ? formatBalance(tokenInfo.supply) : '--' }}
+                    <span class="c-token-page__stat-unit">
+                        {{ tokenInfo?.symbol ?? '' }}
+                    </span>
+                </div>
+                <q-tooltip
+                    anchor="bottom middle"
+                    self="center middle"
+                >
+                    <span class="u-text--pre">{{ supplyTooltip }}</span>
+                </q-tooltip>
+            </div>
         </div>
     </div>
     <div v-if="selectedTab" class="c-token-page__body">
@@ -84,7 +108,7 @@ import TransactionField from 'src/components/TransactionField';
 import TokenHolders from 'pages/token/TokenHolders';
 import TokenTransfers from 'pages/token/TokenTransfers';
 
-import { toChecksumAddress } from 'src/lib/utils';
+import { formatWei, toChecksumAddress } from 'src/lib/utils';
 
 const genericLogo = require('assets/telos-logo--evm-generic.png');
 
@@ -108,6 +132,9 @@ export default {
         tokenInfo: null,
     }),
     computed: {
+        supplyTooltip() {
+            return `The total amount of ${this.tokenInfo?.symbol ?? 'the token'} held by accounts`;
+        },
         address() {
             return toChecksumAddress(this.$route.params?.address);
         },
@@ -167,6 +194,10 @@ export default {
         },
     },
     methods: {
+        formatBalance(balance) {
+            const formatted = +formatWei(balance, this.tokenInfo.decimals, 6);
+            return formatted.toLocaleString();
+        },
         handleTokenInfoLoaded(tokenContractMeta) {
             this.tokenInfo = { ...tokenContractMeta };
         },
@@ -187,6 +218,50 @@ export default {
 
         &.q-dark {
             background: $dark;
+        }
+    }
+
+    &__body {
+        max-width: 100vw;
+    }
+
+    &__stats-container {
+        display: flex;
+        align-content: center;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            justify-content: flex-end;
+        }
+    }
+
+    &__stats {
+        height: max-content;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+
+    &__stat-label {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    &__stat-value {
+        font-size: 18px;
+        color: $accent;
+    }
+
+    &__stat-unit {
+        display: inline-block;
+        font-size: 10px;
+        color: $secondary;
+        transform: translateX(-2px);
+        vertical-align: super;
+
+        &--personal {
+            @at-root .body--light & {
+                color: darken($secondary, 10%);
+            }
         }
     }
 }
