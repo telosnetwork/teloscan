@@ -103,7 +103,7 @@ export default class Contract {
         }
       }));
       parsedArray.forEach(parsed => {
-        if(parsed.name && parsed.eventFragment && parsed.eventFragment.inputs){
+        if(parsed.name && parsed.eventFragment?.inputs){
           parsed.inputs = parsed.eventFragment.inputs;
         }
       })
@@ -113,7 +113,7 @@ export default class Contract {
 
     return await Promise.all(logsArray.map(async log => {
       let parsedLog = await this.parseEvent(log);
-      if(parsedLog.name && parsedLog.eventFragment && parsedLog.eventFragment.inputs){
+      if(parsedLog.name && parsedLog.eventFragment?.inputs){
         parsedLog.inputs = parsedLog.eventFragment.inputs;
       }
       return parsedLog;
