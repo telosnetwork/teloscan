@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { parseUintString } from 'components/ContractTab/function-interface-utils';
+import { integerSizeValidator, parseUintString } from 'components/ContractTab/function-interface-utils';
 import { BigNumber } from 'ethers';
 
 import BaseTextInput from 'components/inputs/BaseTextInput';
@@ -48,12 +48,7 @@ export default {
         size: {
             type: [Number, String],
             required: true,
-            validator: size => {
-                return Number.isInteger(+size) &&
-                       +size % 8 === 0 &&
-                       +size <= 256 &&
-                       +size >= 0;
-            },
+            validator: size => integerSizeValidator(size, false),
         },
     },
     data: () => ({

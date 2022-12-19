@@ -135,6 +135,29 @@ function parameterIsIntegerType(type) {
 }
 
 /**
+ * Validate integer-size props for input components, e.g. 256 for uint256
+ *
+ * @param {unknown} prop - the prop to be validated
+ * @param {boolean} signed - whether the target integer is signed
+ *
+ * @return {boolean}
+ */
+function integerSizeValidator(prop, signed) {
+    if (![true, false].includes(signed)) {
+        throw 'Invalid parameter - "signed" must be boolean';
+    }
+
+    const propIsNumber = Number.isInteger(+prop);
+    const propIs8Multiple = +prop % 8 === 0;
+
+    const max = signed ? 128 : 256;
+    const propIsInRange = +prop >= 8 && +prop <= max;
+
+    return propIsNumber && propIs8Multiple && propIsInRange;
+}
+
+
+/**
  * Given a function interface input type (e.g. "uint256"), returns true iff the corresponding input component emits
  * new values via the valueParsed event. In these cases, the update:modelValue event (i.e. v-model binding) does not
  * reflect valid values entered by the user; rather, v-model only represents the user-entered string in the input.
@@ -578,6 +601,7 @@ export {
     inputIsComplex,
     asyncInputComponents,
     getComponentForInputType,
+    integerSizeValidator,
 
     parameterTypeIsAddress,
     parameterTypeIsAddressArray,

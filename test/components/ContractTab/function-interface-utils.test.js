@@ -2,6 +2,7 @@ import {
     getExpectedArrayLengthFromParameterType,
     getIntegerBits,
     inputIsComplex,
+    integerSizeValidator,
     parameterIsArrayType,
     parameterIsIntegerType,
     parameterTypeIsAddress,
@@ -144,6 +145,38 @@ describe('function-interface-utils', () => {
             expect(inputIsComplex('uint256'))    .toBe(true);
             expect(inputIsComplex('uint256[12]')).toBe(true);
             expect(inputIsComplex('uint256[]'))  .toBe(true);
+        });
+    });
+
+    describe('integerSizeValidator', () => {
+        describe('should correctly validate a size prop for', () => {
+            test('signed integers', () => {
+                expect(integerSizeValidator('8', true)).toBe(true);
+                expect(integerSizeValidator(8, true)).toBe(true);
+                expect(integerSizeValidator('128', true)).toBe(true);
+                expect(integerSizeValidator(128, true)).toBe(true);
+
+                expect(integerSizeValidator('-8', true)).toBe(false);
+                expect(integerSizeValidator(-8, true)).toBe(false);
+                expect(integerSizeValidator('256', true)).toBe(false);
+                expect(integerSizeValidator(256, true)).toBe(false);
+                expect(integerSizeValidator('abc', true)).toBe(false);
+            });
+
+            test('unsigned integers', () => {
+                expect(integerSizeValidator('8', false)).toBe(true);
+                expect(integerSizeValidator(8, false)).toBe(true);
+                expect(integerSizeValidator('128', false)).toBe(true);
+                expect(integerSizeValidator(128, false)).toBe(true);
+                expect(integerSizeValidator('256', false)).toBe(true);
+                expect(integerSizeValidator(256, false)).toBe(true);
+
+                expect(integerSizeValidator('800', false)).toBe(false);
+                expect(integerSizeValidator('-800', false)).toBe(false);
+                expect(integerSizeValidator('-8', false)).toBe(false);
+                expect(integerSizeValidator(-8, false)).toBe(false);
+                expect(integerSizeValidator('abc', false)).toBe(false);
+            });
         });
     });
 

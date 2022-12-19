@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { parseUintArrayString } from 'components/ContractTab/function-interface-utils';
+import { integerSizeValidator, parseUintArrayString } from 'components/ContractTab/function-interface-utils';
 
 import BaseTextInput from 'components/inputs/BaseTextInput';
 
@@ -46,12 +46,7 @@ export default {
         uintSize: {
             type: [Number, String],
             required: true,
-            validator: size => {
-                return Number.isInteger(+size) &&
-                    +size % 8 === 0 &&
-                    +size <= 256 &&
-                    +size >= 0;
-            },
+            validator: size => integerSizeValidator(size, false),
         },
         // expected size of the uint array
         // if size is undefined or -1, array size is unconstrained; else it is fixed-size (e.g. uint256[3])

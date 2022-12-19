@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { parseSignedIntArrayString } from 'components/ContractTab/function-interface-utils';
+import { integerSizeValidator, parseSignedIntArrayString } from 'components/ContractTab/function-interface-utils';
 
 import BaseTextInput from 'components/inputs/BaseTextInput';
 import { BigNumber } from 'ethers';
@@ -47,12 +47,7 @@ export default {
         intSize: {
             type: [Number, String],
             required: true,
-            validator: size => {
-                return Number.isInteger(+size) &&
-                    +size % 8 === 0 &&
-                    +size <= 128 &&
-                    +size >= 0;
-            },
+            validator: size => integerSizeValidator(size, true),
         },
         // expected size of the int array
         // if size is undefined or -1, array size is unconstrained; else it is fixed-size (e.g. int256[3])
