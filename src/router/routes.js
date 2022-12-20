@@ -56,7 +56,11 @@ const routes = [
     {
         path: '/token',
         component: () => import('layouts/MainLayout.vue'),
-        children: [{ path: ':address', component: () => import('pages/token/TokenPage.vue') }],
+        children: [{
+            name: 'token',
+            path: ':address',
+            component: () => import('pages/token/TokenPage.vue'),
+        }],
     },
     {
         path: '/staking',

@@ -170,7 +170,11 @@ export default {
                 const { hash: oldHash, path: oldPath } = oldRoute;
                 const { hash: newHash, path: newPath } = newRoute;
 
-                if (oldHash === newHash && oldPath === newPath) return;
+                if (newRoute.name !== 'token')
+                    return;
+
+                if (oldHash === newHash && oldPath === newPath)
+                    return;
 
                 const tabNames = Object.values(this.tabs);
                 const shouldAddTransfersHash = !tabNames.includes(newHash);
@@ -195,6 +199,9 @@ export default {
     },
     methods: {
         formatBalance(balance) {
+            if ([undefined, null].includes(balance) || !this.tokenInfo)
+                return '--';
+
             const formatted = +formatWei(balance, this.tokenInfo.decimals, 6);
             return formatted.toLocaleString();
         },
