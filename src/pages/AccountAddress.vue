@@ -12,11 +12,11 @@ import GenericContractInterface from 'components/ContractTab/GenericContractInte
 
 const web3 = new Web3();
 
-// eztodo update with erc1151 tab when pr is merged https://github.com/telosnetwork/teloscan/pull/241
 const tabs = {
     transactions: '#transactions',
     erc20Transfers: '#erc20',
     erc721Transfers: '#erc721',
+    erc1155Transfers: '#erc1155',
     tokens: '#tokens',
     contract: '#contract',
 };
