@@ -145,6 +145,12 @@ import StakingStats from 'pages/staking/StakingStats';
 
 const oneEth = ethers.utils.parseEther('1').toString();
 
+const tabs = {
+    stake: '#stake',
+    unstake: '#unstake',
+    withdraw: '#withdraw',
+}
+
 export default {
     name: 'StakingPage',
     components: {
@@ -190,6 +196,24 @@ export default {
                 if (address !== oldAddress) {
                     await this.fetchContractInstances();
                     await this.fetchBalances();
+                }
+            },
+        },
+        $route: {
+            immediate: true,
+            deep: true,
+            handler(newRoute, oldRoute = {}) {
+                if (newRoute !== oldRoute) {
+                    const { hash: newHash } = newRoute;
+
+                    if (newRoute.name !== 'staking')
+                        return;
+
+                    const tabHashes = Object.values(tabs);
+                    const newHashIsInvalid = !tabHashes.includes(newHash);
+
+                    if (newHashIsInvalid)
+                        this.$router.push({ hash: tabs.stake });
                 }
             },
         },
