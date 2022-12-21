@@ -64,12 +64,14 @@
                             </div>
                             <div v-else>
                                 <address-field
+                                    v-if="fragment.token.symbol"
                                     :address="fragment.token.address"
                                     :truncate="0"
                                     :name="fragment.token.symbol"
                                     class="word-break"
                                 />
-                                #{{ fragment.args[index] }}
+                                <span v-if="fragment.token.symbol"> #</span>
+                                <span> {{ fragment.args[index] }}</span>
                             </div>
                         </div>
                         <div v-else class="word-break">

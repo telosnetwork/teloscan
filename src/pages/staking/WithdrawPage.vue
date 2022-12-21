@@ -12,7 +12,7 @@
                     rowsPerPage: deposits.length,
                     rowsNumber: deposits.length
                 }"
-                no-data-label="No claimable positions"
+                no-data-label="No withdrawable positions"
                 flat
             >
                 <q-tr :props="props" :no-hover="false">
@@ -56,22 +56,22 @@
                 Unstaking: {{ unstakingBalance }}
             </div>
             <div class="escrow-stat">
-                Available to claim: {{ unlockedBalance }}
+                Available to withdraw: {{ unlockedBalance }}
             </div>
         </div>
-        <div class="col-xs-12 u-flex--center claim-button-container">
+        <div class="col-xs-12 u-flex--center withdraw-button-container">
             <q-btn
-                :disabled="claimDisabled"
+                :disabled="withdrawDisabled"
                 color="secondary"
                 text-color="black"
-                @click="claimUnlocked"
+                @click="withdrawUnlocked"
             >
-                Claim TLOS
+                Withdraw TLOS
             </q-btn>
         </div>
     </div>
     <div v-if="resultHash" class="transaction-notification col-sm-12 col-md-6 offset-md-3">
-        Claim successful! View Transaction:
+        Withdraw successful! View Transaction:
         <transaction-field :transaction-hash="resultHash" />
     </div>
 </div>
@@ -86,7 +86,7 @@ import { formatWei, WEI_PRECISION } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 
 export default {
-    name: 'ClaimForm',
+    name: 'WithdrawPage',
     components: {
         DateField,
         TransactionField,
@@ -121,7 +121,7 @@ export default {
             },
             {
                 name: 'time',
-                label: 'Available to Claim',
+                label: 'Available to Withdraw',
                 field: 'until',
                 sortable: true,
             },
@@ -130,7 +130,7 @@ export default {
     }),
     computed: {
         ...mapGetters('login', ['isLoggedIn']),
-        claimDisabled(){
+        withdrawDisabled(){
             return this.unlockedTlosBalance === '0' || this.isLoading || !this.isLoggedIn;
         },
         isLoading(){
@@ -145,14 +145,14 @@ export default {
         },
     },
     methods: {
-        claimUnlocked() {
+        withdrawUnlocked() {
             return this.escrowContractInstance.withdraw()
                 .then((result) => {
                     this.resultHash = result.hash;
                     this.$emit('balance-changed');
                 })
                 .catch(({ message }) => {
-                    console.error(`Failed to claim unlocked TLOS: ${message}`);
+                    console.error(`Failed to withdraw unlocked TLOS: ${message}`);
                     this.resultHash = null;
                 });
         },
@@ -170,7 +170,7 @@ export default {
 .deposits-container
     margin: auto
 
-.claim-button-container
+.withdraw-button-container
     margin-top: 1rem
 
 .transaction-notification

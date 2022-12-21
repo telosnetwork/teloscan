@@ -11,7 +11,7 @@ import ERCTransferList from 'components/Transaction/ERCTransferList';
 import ParameterList from 'components/Transaction/ParameterList';
 import JsonViewer from 'vue-json-viewer';
 import { BigNumber } from 'ethers';
-import { WEI_PRECISION, formatWei, parseErrorMessage} from 'src/lib/utils';
+import { WEI_PRECISION, formatWei, parseErrorMessage } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
@@ -38,6 +38,7 @@ export default {
             trx: null,
             erc20Transfers: [],
             erc721Transfers: [],
+            erc1155Transfers: [],
             params: [],
             tab: '#general',
             isContract: false,
@@ -85,6 +86,7 @@ export default {
             this.methodTrx = null;
             this.erc20Transfers = [];
             this.erc721Transfers = [];
+            this.erc1155Transfers = [];
             this.params = [];
         },
         async loadTransaction() {
@@ -106,24 +108,42 @@ export default {
             this.transfers = [];
             for (const log of this.trx.logs) {
                 // ERC20 & ERC721 transfers (ERC721 has 4 log topics for transfers, ERC20 has 3 log topics)
-                if (TRANSFER_SIGNATURES.includes(log.topics[0].substr(0, 10))) {
-                    let contract = await this.$contractManager.getContract(log.address, (log.topics.length === 4) ? 'erc721' : 'erc20');
+                let sig = log.topics[0].substr(0, 10);
+                if (TRANSFER_SIGNATURES.includes(sig)) {
+                    let type = this.$contractManager.getTokenTypeFromLog(log);
+                    let contract = await this.$contractManager.getContract(log.address, type);
                     if (typeof contract.token !== 'undefined' && contract.token !== null) {
                         let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name, 'decimals': contract.token.decimals}
-                        if (log.topics.length === 4) {
-                            if (contract.token.iERC721Metadata) {
+                        if (contract.token.type === 'erc721') {
+                            let tokenId = BigNumber.from(log.topics[3]).toString();
+                            if (contract.token.extensions?.metadata) {
                                 try {
-                                    token = await this.$contractManager.loadTokenMetadata(log.address, token, BigNumber.from(log.topics[3]).toString());
+                                    token = await this.$contractManager.loadTokenMetadata(log.address, contract.token, tokenId);
                                 } catch (e) {
-                                    console.error(`Could not retreive ERC721 Metadata for ${contract.address}: ${e.message}`);
+                                    console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
                                 }
                             }
                             this.erc721Transfers.push({
-                                'tokenId': BigNumber.from(log.topics[3]).toString(),
+                                'tokenId': tokenId,
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                                 'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
                                 'token': token,
-                            })
+                            });
+                        } else if (contract.token.type === 'erc1155') {
+                            let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
+                            if (contract.token.extensions?.metadata) {
+                                try {
+                                    token = await this.$contractManager.loadTokenMetadata(log.address, contract.token, tokenId);
+                                } catch (e) {
+                                    console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
+                                }
+                            }
+                            this.erc1155Transfers.push({
+                                'tokenId': tokenId,
+                                'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
+                                'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
+                                'token': token,
+                            });
                         } else {
                             this.erc20Transfers.push({
                                 'value': log.data,
@@ -131,7 +151,7 @@ export default {
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                                 'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
                                 'token': token,
-                            })
+                            });
                         }
                     }
                 }
@@ -337,6 +357,7 @@ export default {
             br
             ERCTransferList( v-if="erc20Transfers.length > 0" type="ERC20" :trxFrom="trx.from" :contract="contract" :transfers="erc20Transfers")
             ERCTransferList( v-if="erc721Transfers.length > 0" type="ERC721" :trxFrom="trx.from" :contract="contract" :transfers="erc721Transfers")
+            ERCTransferList( v-if="erc1155Transfers.length > 0" type="ERC1155" :trxFrom="trx.from" :contract="contract" :transfers="erc1155Transfers")
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
                 strong {{ `Gas Price Charged: ` }}
