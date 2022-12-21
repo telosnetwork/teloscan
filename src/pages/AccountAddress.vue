@@ -70,7 +70,7 @@ export default {
                 if (newRoute !== oldRoute) {
                     const { hash: newHash } = newRoute;
 
-                    if (newRoute.name !== 'address')
+                    if (newRoute.name !== 'address' || !newHash)
                         return;
 
                     const tabHashes = Object.values(tabs);

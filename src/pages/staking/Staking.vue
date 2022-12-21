@@ -206,7 +206,7 @@ export default {
                 if (newRoute !== oldRoute) {
                     const { hash: newHash } = newRoute;
 
-                    if (newRoute.name !== 'staking')
+                    if (newRoute.name !== 'staking' || !newHash)
                         return;
 
                     const tabHashes = Object.values(tabs);
