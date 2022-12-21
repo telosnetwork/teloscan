@@ -11,6 +11,16 @@ import CopyButton from 'components/CopyButton';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
 
 const web3 = new Web3();
+
+// eztodo update with erc1151 tab when pr is merged https://github.com/telosnetwork/teloscan/pull/241
+const tabs = {
+    transactions: '#transactions',
+    erc20Transfers: '#erc20',
+    erc721Transfers: '#erc721',
+    tokens: '#tokens',
+    contract: '#contract',
+};
+
 export default {
     name: 'AccountAddress',
     components: {
@@ -51,6 +61,26 @@ export default {
                 }
             },
             immediate: true,
+        },
+        $route: {
+            immediate: true,
+            deep: true,
+            handler(newRoute, oldRoute = {}) {
+                if (newRoute !== oldRoute) {
+                    const { hash: newHash } = newRoute;
+
+                    if (newRoute.name !== 'address')
+                        return;
+
+                    const tabHashes = Object.values(tabs);
+                    const newHashIsInvalid =
+                        !tabHashes.includes(newHash) ||
+                        (newHash === tabs.contract && !this.isContract);
+
+                    if (newHashIsInvalid)
+                        this.$router.push({ hash: tabs.transactions });
+                }
+            },
         },
     },
     mounted() {
