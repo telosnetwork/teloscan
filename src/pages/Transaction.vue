@@ -14,6 +14,13 @@ import { BigNumber } from 'ethers';
 import { WEI_PRECISION, formatWei, parseErrorMessage } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
+const tabs = {
+    general: '#general',
+    details: '#details',
+    eventLog: '#eventlog',
+    internal: '#internal',
+};
+
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
     name: 'TransactionPage',
@@ -65,6 +72,24 @@ export default {
                 this.loadTransaction();
             },
             immediate: true,
+        },
+        $route: {
+            immediate: true,
+            deep: true,
+            handler(newRoute, oldRoute = {}) {
+                if (newRoute !== oldRoute) {
+                    const { hash: newHash } = newRoute;
+
+                    if (newRoute.name !== 'transaction' || !newHash)
+                        return;
+
+                    const tabHashes = Object.values(tabs);
+                    const newHashIsInvalid = !tabHashes.includes(newHash);
+
+                    if (newHashIsInvalid)
+                        this.$router.push({ hash: tabs.general });
+                }
+            },
         },
     },
     async mounted() {
