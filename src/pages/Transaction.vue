@@ -87,7 +87,7 @@ export default {
                     const newHashIsInvalid = !tabHashes.includes(newHash);
 
                     if (newHashIsInvalid)
-                        this.$router.push({ hash: tabs.general });
+                        this.$router.replace({ hash: tabs.general });
                 }
             },
         },

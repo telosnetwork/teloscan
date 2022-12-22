@@ -79,7 +79,7 @@ export default {
                         (newHash === tabs.contract && !this.isContract);
 
                     if (newHashIsInvalid)
-                        this.$router.push({ hash: tabs.transactions });
+                        this.$router.replace({ hash: tabs.transactions });
                 }
             },
         },

@@ -213,7 +213,7 @@ export default {
                     const newHashIsInvalid = !tabHashes.includes(newHash);
 
                     if (newHashIsInvalid)
-                        this.$router.push({ hash: tabs.stake });
+                        this.$router.replace({ hash: tabs.stake });
                 }
             },
         },
