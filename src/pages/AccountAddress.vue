@@ -57,7 +57,7 @@ export default {
         },
     },
     created() {
-        this.$teloscanApi.get(`contract/${this.address}`)
+        this.$teloscanApi.get(`token/${this.address}`)
             .then(({ data }) => {
                 const checksumAddress = toChecksumAddress(this.address);
                 const { decimals, symbol } = data.contracts?.[checksumAddress] ?? {};
