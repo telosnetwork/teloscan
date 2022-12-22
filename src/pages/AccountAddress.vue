@@ -36,6 +36,7 @@ export default {
     },
     data() {
         return {
+            accountLoading: false,
             title: '',
             telosAccount: null,
             balance: null,
@@ -66,12 +67,17 @@ export default {
         $route: {
             immediate: true,
             deep: true,
-            handler(newRoute, oldRoute = {}) {
+            async handler(newRoute, oldRoute = {}) {
                 if (newRoute !== oldRoute) {
                     const { hash: newHash } = newRoute;
 
                     if (newRoute.name !== 'address' || !newHash)
                         return;
+
+                    if (this.accountLoading && newHash === tabs.contract) {
+                        // wait for account to load; this.isContract will not be set immediately on first load
+                        await new Promise(resolve => setTimeout(resolve, 750));
+                    }
 
                     const tabHashes = Object.values(tabs);
                     const newHashIsInvalid =
@@ -89,6 +95,8 @@ export default {
     },
     methods: {
         async loadAccount() {
+            this.accountLoading = true;
+
             const account = await this.$evm.telos.getEthAccount(this.address);
             if (account.code.length > 0){
                 this.isContract = true;
@@ -117,6 +125,8 @@ export default {
             } else {
                 this.title = 'Account';
             }
+
+            this.accountLoading = false;
         },
         getBalanceDisplay(balance) {
             let strBalance = web3.utils.fromWei(balance);
