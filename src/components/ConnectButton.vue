@@ -284,7 +284,6 @@ export default {
                             @click="injectedWeb3Login()"
                         >
                             <q-img
-                                class=""
                                 :src="metamaskLogo"
                                 height="64px"
                                 width="64px"
@@ -305,7 +304,6 @@ export default {
                             @click="ualLogin(wallet)"
                         >
                             <q-img
-                                class=""
                                 :src="getIconForWallet(wallet)"
                                 height="64px"
                                 width="64px"
