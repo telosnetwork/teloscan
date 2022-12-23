@@ -1,5 +1,7 @@
 <script>
 import MetamaskLogo from 'src/assets/metamask-fox.svg'
+import WombatLogo from 'src/assets/wombat-logo.png'
+
 import { mapGetters, mapMutations, mapState } from 'vuex';
 import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
@@ -227,6 +229,14 @@ export default {
                 return false;
             }
         },
+        getIconForWallet(wallet) {
+            if (wallet.constructor.name === 'Wombat') {
+                // Wombat UAL logo is 32x32px; substitute for higher res
+                return WombatLogo;
+            }
+
+            return wallet.getStyle().icon;
+        },
     },
 }
 </script>
@@ -246,12 +256,12 @@ export default {
         :label="getLoginDisplay()"
     >
         <q-list>
-            <q-item clickable="clickable" v-close-popup @click="goToAddress()">
+            <q-item clickable v-close-popup @click="goToAddress()">
                 <q-item-section>
                     <q-item-label>View address</q-item-label>
                 </q-item-section>
             </q-item>
-            <q-item clickable="clickable" v-close-popup @click="disconnect()">
+            <q-item clickable v-close-popup @click="disconnect()">
                 <q-item-section>
                     <q-item-label>Disconnect</q-item-label>
                 </q-item-section>
@@ -260,29 +270,49 @@ export default {
     </q-btn-dropdown>
 
     <q-dialog v-model="showLogin">
-        <q-card rounded="rounded">
+        <q-card rounded class="c-connect-button__modal-inner">
             <q-tabs v-model="tab">
                 <q-tab name="web3" label="EVM Wallets"></q-tab>
-                <q-tab name="native" label="Native Wallets"></q-tab>
+                <q-tab name="native" label="Advanced"></q-tab>
             </q-tabs>
             <q-separator/>
-            <q-tab-panels v-model="tab" animated="animated">
+            <q-tab-panels v-model="tab" animated>
                 <q-tab-panel name="web3">
-                    <q-card class="wallet-icon cursor-pointer" @click="injectedWeb3Login()">
-                        <q-img class="wallet-img" :src="metamaskLogo"></q-img>
-                        <p>{{ !browserSupportsEthereum ? 'Continue on ' : '' }}Metamask</p>
-                    </q-card>
+                    <div class="u-flex--center">
+                        <q-card
+                            class="cursor-pointer c-connect-button__image-container"
+                            @click="injectedWeb3Login()"
+                        >
+                            <q-img
+                                class=""
+                                :src="metamaskLogo"
+                                height="64px"
+                                width="64px"
+                            />
+                            {{ !browserSupportsEthereum ? 'Continue on ' : '' }}Metamask
+                        </q-card>
+                    </div>
+
                 </q-tab-panel>
                 <q-tab-panel name="native">
-                    <q-card
-                        class="wallet-icon cursor-pointer"
-                        v-for="wallet in $ual.authenticators"
-                        :key="wallet.getStyle().text"
-                        @click="ualLogin(wallet)"
-                    >
-                        <q-img class="wallet-img" :src="wallet.getStyle().icon"></q-img>
-                        <p>{{ wallet.getStyle().text }}</p>
-                    </q-card>
+                    <p>Native wallets for <span class="text-red">advanced users</span>, or to recover assets sent to a native-linked address</p>
+
+                    <div class="u-flex--center">
+                        <q-card
+                            class="cursor-pointer c-connect-button__image-container"
+                            v-for="wallet in $ual.authenticators"
+                            :key="wallet.getStyle().text"
+                            @click="ualLogin(wallet)"
+                        >
+                            <q-img
+                                class=""
+                                :src="getIconForWallet(wallet)"
+                                height="64px"
+                                width="64px"
+                            />
+                            {{ wallet.getStyle().text }}
+                        </q-card>
+                    </div>
                 </q-tab-panel>
             </q-tab-panels>
         </q-card>
@@ -290,30 +320,25 @@ export default {
 </div>
 </template>
 
-<style lang='sass'>
-    .wallet-icon
-        width: 42%
-        display: inline-block
-        margin: .5rem
-        padding: .5rem
-        text-align: center
-        p
-            margin: .25rem
+<style lang='scss'>
 
-    .wallet-img
-        width: 3.5rem
-        margin: .5rem .5rem 0 .5rem
+.c-connect-button {
+    &__modal-inner {
+        min-width: 300px;
+    }
 
-    .q-menu
-        margin-top: 10px !important
+    &__image-container {
+        height: 128px;
+        width: 128px;
+        padding: 12px;
+        margin: 8px;
 
-@media only screen and (max-width: 550px)
-    .wallet-icon
-        width: 92%
-    .connect-button
-        margin-left: 5px
-    .q-btn
-        font-size: 0.9em
-        padding: 4px 10px
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+}
+
 
 </style>
