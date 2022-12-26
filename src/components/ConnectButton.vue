@@ -230,6 +230,7 @@ export default {
             }
         },
         getIconForWallet(wallet) {
+            console.log(wallet.constructor.name)
             if (wallet.constructor.name === 'Wombat') {
                 // Wombat UAL logo is 32x32px; substitute for higher res
                 return WombatLogo;
