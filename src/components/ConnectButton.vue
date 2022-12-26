@@ -29,7 +29,7 @@ export default {
             'address',
             'nativeAccount',
         ]),
-        ...mapState('general', ['browserSupportsEthereum']),
+        ...mapState('general', ['browserSupportsMetaMask']),
     },
     async mounted() {
         const loginData = localStorage.getItem('loginData');
@@ -85,7 +85,7 @@ export default {
             this.$router.push(`/address/${this.address}`);
         },
         async injectedWeb3Login() {
-            if (!this.browserSupportsEthereum) {
+            if (!this.browserSupportsMetaMask) {
                 window.open('https://metamask.app.link/dapp/teloscan.io');
                 return;
             }
@@ -270,7 +270,7 @@ export default {
                 <q-tab-panel name="web3">
                     <q-card class="wallet-icon cursor-pointer" @click="injectedWeb3Login()">
                         <q-img class="wallet-img" :src="metamaskLogo"></q-img>
-                        <p>{{ !browserSupportsEthereum ? 'Continue on ' : '' }}Metamask</p>
+                        <p>{{ !browserSupportsMetaMask ? 'Continue on ' : '' }}Metamask</p>
                     </q-card>
                 </q-tab-panel>
                 <q-tab-panel name="native">

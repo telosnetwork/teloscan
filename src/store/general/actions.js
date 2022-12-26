@@ -1,7 +1,7 @@
 import detectEthereumProvider from '@metamask/detect-provider';
 
-export async function fetchBrowserEthereumSupport({ commit }) {
-    const provider = await detectEthereumProvider();
+export async function fetchBrowserMetaMaskSupport({ commit }) {
+    const provider = await detectEthereumProvider({ mustBeMetaMask: true });
 
-    commit('setBrowserSupportsEthereum', !!provider);
+    commit('setBrowserSupportsMetaMask', !!provider);
 }
