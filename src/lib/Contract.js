@@ -99,12 +99,11 @@ export default class Contract {
           parsedLog = this.formatLog(log, parsedLog);
           return parsedLog;
         } catch (e) {
-          let parsedLog = await this.parseEvent(log);
-          return  this.formatLog(log, parsedLog);
+          return await this.parseEvent(log);
         }
       }));
       parsedArray.forEach(parsed => {
-        if(parsed.name && parsed.eventFragment && parsed.eventFragment.inputs){
+        if(parsed.name && parsed.eventFragment?.inputs){
           parsed.inputs = parsed.eventFragment.inputs;
         }
       })
@@ -114,7 +113,10 @@ export default class Contract {
 
     return await Promise.all(logsArray.map(async log => {
       let parsedLog = await this.parseEvent(log);
-      parsedLog = this.formatLog(log, parsedLog);
+      if(parsedLog.name && parsedLog.eventFragment?.inputs){
+        parsedLog.inputs = parsedLog.eventFragment.inputs;
+      }
+      return parsedLog;
     }))
   }
 
