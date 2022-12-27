@@ -17,10 +17,13 @@ export function formatWei(bn, tokenDecimals, displayDecimals) {
     }
     return str;
 }
-
 export function isValidAddressFormat(ethAddressString) {
     const pattern = /^0x[a-fA-F0-9]{40}$/;
     return pattern.test(ethAddressString);
+}
+
+export function getTopicHash(topic)  {
+    return `0x${topic.substring(topic.length - 40)}`;
 }
 
 export function formatIsoDateTime(dateTimezone) {
@@ -53,7 +56,7 @@ export function parseErrorMessage(output) {
     if (!output)
         return;
 
-    let message;
+    let message = '';
     if (output.startsWith(REVERT_FUNCTION_SELECTOR))
         message = parseRevertReason(output);
 
