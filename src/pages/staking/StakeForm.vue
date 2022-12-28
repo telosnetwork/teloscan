@@ -381,9 +381,6 @@ export default {
         hideClaimBanner() {
             this.userDismissedBanner = true;
         },
-        test() {
-            this.bottomInputAmount = '40000000000000000';
-        },
     },
 }
 </script>
