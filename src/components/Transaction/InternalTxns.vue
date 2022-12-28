@@ -4,6 +4,9 @@ import FragmentList from './FragmentList.vue'
 import { WEI_PRECISION, formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
 
+const TLOS_TRANSFER = 'TLOS Transfer';
+const CONTRACT_DEPLOYMENT = 'Contract Deployment';
+
 export default {
     name: 'InternalTxns',
     components: {
@@ -34,9 +37,16 @@ export default {
         for(let k = 0; k < this.itxs.length;k++){
             let itx = this.itxs[k];
             let contract = await this.getContract(itx.to);
-            let fnsig = itx.input.slice(0, 8);
-            let name = fnsig ? false : 'TLOS transfer';
+            let fnsig =  itx.input.slice(0, 8);
+            let name = 'Unknown';
             let inputs, outputs, args  = false;
+            if(itx.type === 'create'){
+                name = CONTRACT_DEPLOYMENT;
+            } else if (fnsig){
+                name = 'Unknown (' + '0x' + fnsig + ')';
+            } else if (itx.value){
+                name = TLOS_TRANSFER;
+            }
             if(itx.traceAddress.length < 2){
                 itx.index = i;
                 i++;
@@ -60,13 +70,13 @@ export default {
                 parent: itx.traceAddress[0] || itx.index,
                 name: name,
                 from: itx.from,
-                sig: '0x' + fnsig,
+                sig: '0x' + itx.input.slice(0, 8),
                 inputs: inputs,
                 outputs: outputs,
                 depth: itx.depth,
                 to: itx.to,
                 contract: contract,
-                value: itx.value ? formatWei('0x' + itx.value, WEI_PRECISION): 0,
+                value: (itx.type !== 'create' && itx.value) ? formatWei('0x' + itx.value, WEI_PRECISION): 0,
             });
         }
         this.parsedItxs.sort((a,b) => {
