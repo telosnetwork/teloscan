@@ -114,7 +114,7 @@ import { stlos } from 'src/lib/logos';
 
 import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 import { promptAddToMetamask } from 'src/lib/token-utils';
-import { WEI_PRECISION } from 'src/lib/utils';
+import { getClientIsApple, WEI_PRECISION } from 'src/lib/utils';
 
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import TransactionField from 'components/TransactionField';
@@ -271,8 +271,19 @@ export default {
                         this.bottomInputAmount = '';
                         console.error(`Unable to convert TLOS to STLOS: ${err}`);
                     })
-                    .finally(() => {
-                        return this.bottomInputIsLoading = false;
+                    .finally(async () => {
+                        this.bottomInputIsLoading = false;
+
+                        if (getClientIsApple()) {
+                            // workaround; Apple devices will focus the last input which had its value
+                            // programmatically changed. Focus should not change. Downside is that cursor position
+                            // is lost, but generally cursor should be at the end anyway
+                            const old = this.topInputAmount;
+                            this.topInputAmount = '0';
+                            await this.$nextTick();
+
+                            this.topInputAmount = old;
+                        }
                     })
             },
             debounceWaitMs,
@@ -281,15 +292,26 @@ export default {
         this.debouncedBottomInputHandler = debounce(
             () => {
                 this.stlosContractInstance.previewRedeem(this.bottomInputAmount)
-                    .then(amountBigNum => {
+                    .then((amountBigNum) => {
                         this.topInputAmount = amountBigNum.toString();
                     })
                     .catch(err => {
                         this.topInputAmount = '';
                         console.error(`Unable to convert STLOS to TLOS: ${err}`);
                     })
-                    .finally(() => {
+                    .finally(async () => {
                         this.topInputIsLoading = false;
+
+                        if (getClientIsApple()) {
+                            // workaround; Apple devices will focus the last input which had its value
+                            // programmatically changed. Focus should not change. Downside is that cursor position
+                            // is lost, but generally cursor should be at the end anyway
+                            const old = this.bottomInputAmount;
+                            this.bottomInputAmount = '0';
+                            await this.$nextTick();
+
+                            this.bottomInputAmount = old;
+                        }
                     })
             },
             debounceWaitMs,
@@ -358,6 +380,9 @@ export default {
         },
         hideClaimBanner() {
             this.userDismissedBanner = true;
+        },
+        test() {
+            this.bottomInputAmount = '40000000000000000';
         },
     },
 }

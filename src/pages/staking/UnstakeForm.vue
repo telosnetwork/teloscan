@@ -67,6 +67,7 @@
 </template>
 
 <script>
+import { getClientIsApple } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { debounce } from 'lodash';
@@ -226,8 +227,19 @@ export default {
                         this.bottomInputAmount = '';
                         console.error(`Unable to convert TLOS to STLOS: ${err}`);
                     })
-                    .finally(() => {
-                        return this.bottomInputIsLoading = false;
+                    .finally(async () => {
+                        this.bottomInputIsLoading = false;
+
+                        if (getClientIsApple()) {
+                            // workaround; Apple devices will focus the last input which had its value
+                            // programmatically changed. Focus should not change. Downside is that cursor position
+                            // is lost, but generally cursor should be at the end anyway
+                            const old = this.topInputAmount;
+                            this.topInputAmount = '0';
+                            await this.$nextTick();
+
+                            this.topInputAmount = old;
+                        }
                     })
             },
             debounceWaitMs,
@@ -243,8 +255,19 @@ export default {
                         this.topInputAmount = '';
                         console.error(`Unable to convert STLOS to TLOS: ${err}`);
                     })
-                    .finally(() => {
+                    .finally(async () => {
                         this.topInputIsLoading = false;
+
+                        if (getClientIsApple()) {
+                            // workaround; Apple devices will focus the last input which had its value
+                            // programmatically changed. Focus should not change. Downside is that cursor position
+                            // is lost, but generally cursor should be at the end anyway
+                            const old = this.bottomInputAmount;
+                            this.bottomInputAmount = '0';
+                            await this.$nextTick();
+
+                            this.bottomInputAmount = old;
+                        }
                     })
             },
             debounceWaitMs,
