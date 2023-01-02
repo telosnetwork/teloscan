@@ -45,10 +45,10 @@ div(class="fit row wrap justify-start items-start content-start")
       div(class="col-4")
         q-icon(name="arrow_right" class="list-arrow")
         strong {{ `From : ` }}
-        <AddressField :highlight="trxFrom === transfer.from && transfers.length > 1" :address="transfer.from" :truncate="15" copy :name="transfer.from === contract.address && contract.name ?  contract.name : null" />
+        <AddressField :highlight="trxFrom === transfer.from && transfers.length > 1" :address="transfer.from" :truncate="15" copy :name="contract && transfer.from === contract.address && contract.name ?  contract.name : null" />
       div(class="col-3")
         strong {{ ` To : ` }}
-        <AddressField :highlight="trxFrom === transfer.to && transfers.length > 1" :address="transfer.to" :truncate="15" copy :name="transfer.to === contract.address && contract.name ?  contract.name : null" />
+        <AddressField :highlight="trxFrom === transfer.to && transfers.length > 1" :address="transfer.to" :truncate="15" copy :name="contract && transfer.to === contract.address && contract.name ?  contract.name : null" />
       div.flex(v-if="type === 'ERC721' || type==='ERC1155'" class="col-4")
         strong.col-2 {{ ` Token : ` }}
         router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs") {{ transfer.token.symbol }}
