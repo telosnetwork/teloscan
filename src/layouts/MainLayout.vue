@@ -9,11 +9,18 @@
                         id="logo"
                         class="row items-center q-gutter-x-xs"
                     >
-                        <img
-                            alt="Telos EVM logo"
-                            src="~assets/evm_logo.png"
-                            width="45"
-                        >
+                        <div class="logo-container">
+                            <img
+                                alt="Telos EVM logo"
+                                src="~assets/evm_logo.png"
+                                width="45"
+                                class="logo-image"
+                            >
+                            <span v-if="!mainnet" class="logo-label-testnet">
+                                Testnet
+                            </span>
+                        </div>
+
                         <div class="text-h5 text-white">
                             Teloscan
                         </div>
@@ -105,7 +112,13 @@
 
 
     </div>
-    <div :class="`banner ${onHomePage ? 'home' : ''}`" />
+    <div
+        :class="{
+            'banner': true,
+            'home': onHomePage,
+            'testnet': !mainnet
+        }"
+    />
 
     <q-page-container class="flex flex-center">
         <router-view />
@@ -223,6 +236,8 @@ export default {
   background: linear-gradient(180deg, rgb(37,42,94) 0%, rgba(45,70,132) 60%, transparent 99%)
   &.home
     height: 50vh
+  &.testnet
+    background: linear-gradient(180deg, rgb(35, 25, 94) 0%, rgb(68, 69, 136) 60%, transparent 99%)
 
 .connection
   font-size: .5rem
@@ -259,6 +274,26 @@ body.body--light .connect-button
     background: #ffffff
     color: black
 
+.logo-container
+    height: 45px
+    width: 45px
+    position: relative
+
+.logo-image, .logo-label-testnet
+    position: absolute
+    top: 0
+    right: 0
+    bottom: 0
+    left: 0
+    margin: auto
+
+.logo-label-testnet
+    height: min-content
+    color: white
+    text-align: center
+    font-size: 10px
+    border-radius: 4px
+    background-color: rgba($dark, 0.6)
 
 @media screen and (max-width: 768px)
     .taskbarSearch
