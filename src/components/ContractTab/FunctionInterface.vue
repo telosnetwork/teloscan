@@ -85,7 +85,9 @@
         {{ errorMessage }}
     </p>
     <div v-if="result" class="output-container">
-        Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}): {{ result }}
+        Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}):
+        <router-link v-if="abi?.outputs?.[0]?.type === 'address'" :to="`/address/${result}`" >{{ result }}</router-link>
+        <template v-else>{{ result }}</template>
     </div>
     <div v-if="hash" class="output-container">
         View Transaction:&nbsp;
