@@ -123,3 +123,24 @@ export function sortAbiFunctionsByName(fns) {
             return (upperA < upperB) ? -1 : (upperA > upperB) ? 1 : 0;
         });
 }
+
+export function getRouteWatcherForTabs(routeName, tabs, defaultTab) {
+    return {
+        immediate: true,
+        deep: true,
+        handler(newRoute, oldRoute = {}) {
+            if (newRoute !== oldRoute) {
+                const { hash: newHash } = newRoute;
+
+                if (newRoute.name !== routeName || !newHash)
+                    return;
+
+                const tabHashes = Object.values(tabs);
+                const newHashIsInvalid = !tabHashes.includes(newHash);
+
+                if (newHashIsInvalid)
+                    this.$router.replace({ hash: defaultTab });
+            }
+        },
+    }
+}

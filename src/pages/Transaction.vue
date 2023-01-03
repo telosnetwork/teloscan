@@ -11,7 +11,7 @@ import ERCTransferList from 'components/Transaction/ERCTransferList';
 import ParameterList from 'components/Transaction/ParameterList';
 import JsonViewer from 'vue-json-viewer';
 import { BigNumber } from 'ethers';
-import { WEI_PRECISION, formatWei, parseErrorMessage } from 'src/lib/utils';
+import { WEI_PRECISION, formatWei, parseErrorMessage, getRouteWatcherForTabs } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 const tabs = {
@@ -73,24 +73,7 @@ export default {
             },
             immediate: true,
         },
-        $route: {
-            immediate: true,
-            deep: true,
-            handler(newRoute, oldRoute = {}) {
-                if (newRoute !== oldRoute) {
-                    const { hash: newHash } = newRoute;
-
-                    if (newRoute.name !== 'transaction' || !newHash)
-                        return;
-
-                    const tabHashes = Object.values(tabs);
-                    const newHashIsInvalid = !tabHashes.includes(newHash);
-
-                    if (newHashIsInvalid)
-                        this.$router.replace({ hash: tabs.general });
-                }
-            },
-        },
+        $route: getRouteWatcherForTabs('transaction', tabs, tabs.general),
     },
     async mounted() {
         await this.loadTransaction();

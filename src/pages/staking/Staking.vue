@@ -138,7 +138,7 @@
 import { defineAsyncComponent } from 'vue'
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
-import { formatWei, WEI_PRECISION } from 'src/lib/utils';
+import { formatWei, getRouteWatcherForTabs, WEI_PRECISION } from 'src/lib/utils';
 
 import StakeForm from 'pages/staking/StakeForm';
 import StakingStats from 'pages/staking/StakingStats';
@@ -199,24 +199,7 @@ export default {
                 }
             },
         },
-        $route: {
-            immediate: true,
-            deep: true,
-            handler(newRoute, oldRoute = {}) {
-                if (newRoute !== oldRoute) {
-                    const { hash: newHash } = newRoute;
-
-                    if (newRoute.name !== 'staking' || !newHash)
-                        return;
-
-                    const tabHashes = Object.values(tabs);
-                    const newHashIsInvalid = !tabHashes.includes(newHash);
-
-                    if (newHashIsInvalid)
-                        this.$router.replace({ hash: tabs.stake });
-                }
-            },
-        },
+        $route: getRouteWatcherForTabs('staking', tabs, tabs.stake),
     },
     async created() {
         await this.fetchContracts();
