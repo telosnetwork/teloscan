@@ -129,12 +129,12 @@ export default {
         showAge: true,
     }),
     computed: {
-        ...mapGetters('login', ['isLoggedIn']),
+        ...mapGetters('login', ['isLoggedIn', 'isNative']),
         withdrawDisabled(){
-            return this.unlockedTlosBalance === '0' || this.isLoading || !this.isLoggedIn;
+            return this.unlockedTlosBalance === '0' || this.isLoading || !this.isLoggedIn || this.isNative;
         },
         isLoading(){
-            return this.isLoggedIn && this.unlockedTlosBalance === null;
+            return this.isLoggedIn && !this.isNative && this.unlockedTlosBalance === null;
         },
         unstakingBalance(){
             const total = BigNumber.from(this.totalUnstaked ?? '0').sub(this.unlockedTlosBalance ?? '0');
