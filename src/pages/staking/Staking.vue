@@ -22,14 +22,7 @@
     </div>
     <div class="row">
         <div class="col-12">
-            <div v-if="!isLoggedInEVM" class="bg-negative q-pa-md q-mb-xl text-white flex items-center rounded-borders">
-                <q-icon name="warning" size="32"/>
-                <span class="q-pl-sm">
-                    <span v-if="isLoggedIn">Please logout and log back in</span>
-                    <span v-else>Please login</span> using an <strong>EVM wallet</strong> such as Metamask to access staking
-                </span>
-            </div>
-            <div v-else>
+            <div>
                 <q-tabs
                     v-model="selectedTab"
                     dense
@@ -169,18 +162,9 @@ export default {
         escrowDeposits: [],
     }),
     computed: {
-        ...mapGetters('login', ['address', 'isLoggedIn']),
+        ...mapGetters('login', ['address', 'isLoggedIn', 'isNative']),
         showWithdrawNotification() {
             return BigNumber.from(this.unlockedTlosBalance ?? '0').gt('0');
-        },
-        isLoggedInEVM() {
-            if(!this.isLoggedIn) return false;
-            try {
-                if(this.$providerManager.getEthersProvider()) return true;
-            } catch (e) {
-                return false;
-            }
-            return false;
         },
     },
     watch: {
@@ -200,7 +184,7 @@ export default {
     },
     methods: {
         async fetchBalances() {
-            if (!this.isLoggedInEVM || !this.address) {
+            if (!this.address) {
                 this.tlosBalance = null;
                 this.stlosBalance = null;
                 this.unlockedTlosBalance = null;
@@ -310,7 +294,7 @@ export default {
                 await this.fetchContracts();
             }
 
-            const provider = this.isLoggedIn ?
+            const provider = this.isLoggedIn && !this.isNative ?
                 this.$providerManager.getEthersProvider().getSigner() :
                 this.$contractManager.getEthersProvider();
 

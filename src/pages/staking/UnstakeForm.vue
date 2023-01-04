@@ -147,7 +147,7 @@ export default {
         maxDeposits: null,
     }),
     computed: {
-        ...mapGetters('login', ['address', 'isLoggedIn']),
+        ...mapGetters('login', ['address', 'isLoggedIn', 'isNative']),
         unstakePeriodPretty() {
             return formatUnstakePeriod(this.unstakePeriodSeconds);
         },
@@ -180,7 +180,8 @@ export default {
             return `${balanceTlos} Available`;
         },
         topInputErrorText() {
-            return this.isLoggedIn ? '' : 'Wallet not connected';
+            if(this.isLoggedIn && !this.isNative) return;
+            return this.isNative ? 'Login using an EVM wallet' : 'Wallet not connected';
         },
         canDeposit() {
             return this.deposits.length < this.maxDeposits;

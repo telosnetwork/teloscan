@@ -173,7 +173,7 @@ export default {
         userDismissedBanner: false,
     }),
     computed: {
-        ...mapGetters('login', ['address', 'isLoggedIn']),
+        ...mapGetters('login', ['address', 'isLoggedIn', 'isNative']),
         unstakePeriodPretty() {
             return formatUnstakePeriod(this.unstakePeriodSeconds);
         },
@@ -209,8 +209,10 @@ export default {
             const walletBalanceBn = BigNumber.from(this.tlosBalance ?? '0');
 
             if (this.isLoggedIn) {
-                if (walletBalanceBn.lt(reservedForGasBn))
+                if (walletBalanceBn.lt(reservedForGasBn) && !this.isNative)
                     return 'Insufficient TLOS balance to stake';
+                else if(this.isNative)
+                    return 'Login using an EVM wallet'
                 else
                     return '';
             }
