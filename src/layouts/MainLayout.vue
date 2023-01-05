@@ -64,18 +64,7 @@
                             <q-item-section>
                                 <q-item-label class="flex items-center"><q-icon name="monitor_heart" /> <span class="q-pl-sm">Health status</span></q-item-label>
                             </q-item-section>
-                        </q-item>
-
-                        <q-item
-                            v-close-popup
-                            clickable
-                            @click="mainnet ? goTo('https://monitor.telos.net/') : goTo('https://monitor-test.telos.net/')"
-                            class="separator"
-                        >
-                            <q-item-section>
-                                <q-item-label class="flex items-center"><q-icon name="crisis_alert" />  <span class="q-pl-sm">Telos Monitor</span></q-item-label>
-                            </q-item-section>
-                        </q-item>
+                        </q-item> 
                         <q-item
                             v-if="!mainnet"
                             v-close-popup
