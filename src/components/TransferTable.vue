@@ -2,12 +2,14 @@
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
-import {ethers} from 'ethers';
-import { formatWei } from 'src/lib/utils';
+import {ethers, BigNumber} from 'ethers';
+import { formatWei, getTopicHash } from 'src/lib/utils';
 import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
-
-const TRANSFER_EVENT_SIGNATURE = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+
+const TRANSFER_EVENT_ERC20_SIGNATURE = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
+const TRANSFER_EVENT_ERC1155_SIGNATURE = '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62';
+const TOKEN_ID_TRUNCATE_LENGTH = 66;
 
 // TODO: Add icon column and render it
 const columns = [
@@ -95,6 +97,9 @@ export default {
         case 'erc721':
             this.expectedTopicLength = 4;
             break;
+        case 'erc1155':
+            this.expectedTopicLength = 4;
+            break;
         default:
             throw new Error(`Unsupported token type: ${this.tokenType}`);
         }
@@ -125,13 +130,18 @@ export default {
                         if (this.expectedTopicLength !== log.topics.length)
                             continue;
 
-
                         if (!TRANSFER_SIGNATURES.includes(log.topics[0].substr(0, 10).toLowerCase()))
                             continue;
 
                         const address = `0x${log.address.substring(log.address.length - 40)}`;
-                        const from = `0x${log.topics[1].substring(log.topics[1].length - 40)}`;
-                        const to = `0x${log.topics[2].substring(log.topics[2].length - 40)}`;
+                        let from, to;
+                        if(this.tokenType === 'erc1155'){
+                            from = getTopicHash(log.topics[2]);
+                            to = getTopicHash(log.topics[3]);
+                        } else {
+                            from = getTopicHash(log.topics[1]);
+                            to = getTopicHash(log.topics[2]);
+                        }
                         if (to.toLowerCase() !== this.address.toLowerCase() && from.toLowerCase() !== this.address.toLowerCase())
                             continue;
 
@@ -149,7 +159,11 @@ export default {
                                 valueDisplay = 'Unknown precision';
                             }
                         } else {
-                            valueDisplay = `Id #${parseInt(log.topics[3], 16)}`;
+                            let tokenId = (this.tokenType === 'erc1155') ? BigNumber.from(log.data.substr(0, TOKEN_ID_TRUNCATE_LENGTH)).toString() : BigNumber.from(log.topics[3]).toString();
+                            if(tokenId.length > 15){
+                                tokenId = tokenId.substr(0, 15) + '...'
+                            }
+                            valueDisplay = `Id #${ tokenId }`;
                         }
 
                         const transfer = {
@@ -180,7 +194,7 @@ export default {
         getIcon(row) {
             if (row.token && row.token.logoURI) {
                 if (row.token.logoURI.startsWith('ipfs://')) {
-                    return `https://ipfs.io/ipfs/${row.token.logoURI.replace(/ipfs:\/\//, '')}`
+                    return row.token.logoURI.replace(/ipfs:\/\//, 'https://ipfs.io/ipfs/')
                 }
                 return row.token.logoURI;
             } else {
@@ -190,10 +204,13 @@ export default {
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
             let path = `/v2/evm/get_transactions?limit=${
-                rowsPerPage === 0 ? 500 : rowsPerPage
+                rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
-
-            path += `&log_topics=${TRANSFER_EVENT_SIGNATURE},${this.address}`
+            let signature = TRANSFER_EVENT_ERC20_SIGNATURE;
+            if(this.tokenType === 'erc1155'){
+                signature = TRANSFER_EVENT_ERC1155_SIGNATURE;
+            }
+            path += `&log_topics=${signature},${this.address}`
             path += `&skip=${(page - 1) * rowsPerPage}`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
 
@@ -244,8 +261,8 @@ q-table(
                 address-field( :address="props.row.to" )
             q-td( key="value" :props="props" ) {{ props.row.valueDisplay }}
             q-td( key="token" :props="props" )
-                q-img.coin-icon( :src="getIcon(props.row)" )
-                address-field.token-name( :address="props.row.address" :name="props.row.name" truncate="15" )
+                q-img.coin-icon(v-if="tokenType==='erc20'" :src="getIcon(props.row)" )
+                address-field.token-name( :address="props.row.address" :name="props.row.name" :truncate="15" )
 </template>
 
 <style lang='sass' scoped>

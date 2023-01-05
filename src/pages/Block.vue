@@ -52,6 +52,9 @@ export default {
       transaction-table( :title="block" :filter="{block}" )
 </template>
 <style scoped lang="sass">
+.shadow-2
+    box-shadow: none !important
+
 @media only screen and (max-width: 1200px)
     .row.justify-between.q-mb-lg
         padding: 5px 15px
