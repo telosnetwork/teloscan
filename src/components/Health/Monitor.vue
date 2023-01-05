@@ -53,7 +53,6 @@ export default {
             try {
                 const results = await axios.get(API_ENDPOINT_TASKS);
                 this.tasks = results.data;
-                console.log(this.tasks)
             } catch (e) {
                 console.error(e)
             }
