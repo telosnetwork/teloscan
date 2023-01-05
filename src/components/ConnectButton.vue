@@ -31,7 +31,7 @@ export default {
             'address',
             'nativeAccount',
         ]),
-        ...mapState('general', ['browserSupportsEthereum']),
+        ...mapState('general', ['browserSupportsMetaMask']),
     },
     async mounted() {
         const loginData = localStorage.getItem('loginData');
@@ -87,7 +87,7 @@ export default {
             this.$router.push(`/address/${this.address}`);
         },
         async injectedWeb3Login() {
-            if (!this.browserSupportsEthereum) {
+            if (!this.browserSupportsMetaMask) {
                 window.open('https://metamask.app.link/dapp/teloscan.io');
                 return;
             }
@@ -278,20 +278,10 @@ export default {
             <q-separator/>
             <q-tab-panels v-model="tab" animated>
                 <q-tab-panel name="web3">
-                    <div class="u-flex--center">
-                        <q-card
-                            class="cursor-pointer c-connect-button__image-container"
-                            @click="injectedWeb3Login()"
-                        >
-                            <q-img
-                                :src="metamaskLogo"
-                                height="64px"
-                                width="64px"
-                            />
-                            {{ !browserSupportsEthereum ? 'Continue on ' : '' }}Metamask
-                        </q-card>
-                    </div>
-
+                    <q-card class="wallet-icon cursor-pointer" @click="injectedWeb3Login()">
+                        <q-img class="wallet-img" :src="metamaskLogo"></q-img>
+                        <p>{{ !browserSupportsMetaMask ? 'Continue on ' : '' }}Metamask</p>
+                    </q-card>
                 </q-tab-panel>
                 <q-tab-panel name="native">
                     <p>Native wallets for <span class="text-red">advanced users</span>, or to recover assets sent to a native-linked address</p>
