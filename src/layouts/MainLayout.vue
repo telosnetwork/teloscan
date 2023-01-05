@@ -59,10 +59,10 @@
                         <q-item
                             v-close-popup
                             clickable
-                            @click="routerTo('/endpoints')"
+                            @click="routerTo('/health')"
                         >
                             <q-item-section>
-                                <q-item-label class="flex items-center"><q-icon name="dns" /> <span class="q-pl-sm">RPC Endpoints</span></q-item-label>
+                                <q-item-label class="flex items-center"><q-icon name="heart" /> <span class="q-pl-sm">Health status</span></q-item-label>
                             </q-item-section>
                         </q-item>
 
