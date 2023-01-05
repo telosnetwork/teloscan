@@ -73,9 +73,9 @@ const routes = [
         }],
     },
     {
-        path: '/endpoints',
+        path: '/health',
         component: () => import('layouts/MainLayout.vue'),
-        children: [{ path: '', component: () => import('pages/Endpoints.vue') }],
+        children: [{ path: '', component: () => import('pages/Health.vue') }],
     },
     {
         name: 'sourcify',
