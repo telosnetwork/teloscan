@@ -7,6 +7,7 @@ import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
 import { erc721Abi, erc1155Abi, erc721MetadataAbi, supportsInterfaceAbi } from './abi';
 import { toChecksumAddress } from './utils';
+import {ERC1155_TRANSFER_SIGNATURE} from './abi/signature/transfer_signatures.js'
 
 const contractsBucket = axios.create({
     baseURL: `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com`,
@@ -58,14 +59,21 @@ export default class ContractManager {
     }
     async loadTokenMetadata(address, token, tokenId){
         if(token.type === 'erc1155'){
-            console.error('Loading ERC1155 Metadata not implemented yet')
-            return;
+            const contract = await this.getContractFromAbi(address, erc1155Abi);
+            token.metadata = await contract.uri(tokenId);
+        } else {
+            const contract = await this.getContractFromAbi(address, erc721MetadataAbi);
+            token.metadata = await contract.tokenURI(tokenId);
         }
-        const contract = await this.getContractFromAbi(address, erc721MetadataAbi);
-        token.metadata = await contract.tokenURI(tokenId);
         token.metadata = token.metadata.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/');
 
         return token;
+    }
+
+    getTokenTypeFromLog(log){
+        let sig = log.topics[0].substr(0, 10);
+        let type = (log.topics.length === 4) ? 'erc721' : 'erc20';
+        return (sig === ERC1155_TRANSFER_SIGNATURE) ? 'erc1155' : type;
     }
     async getEventIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
@@ -206,7 +214,10 @@ export default class ContractManager {
     }
 
     async isTokenType(address, type){
-        if(type === 'erc721'){
+        if(typeof type === 'undefined'){
+            return false;
+        }
+        else if(type === 'erc721'){
             if(!await this.supportsInterface(address, '0x80ac58cd')){
                 return false;
             }
@@ -239,24 +250,24 @@ export default class ContractManager {
         const contract = new ethers.Contract(address, this.getTokenABI(type), this.getEthersProvider());
         try {
             let tokenData = {};
-            tokenData.name = await contract.name();
-            if (!tokenData.name)
-                return;
-
-            tokenData.symbol = await contract.symbol();
-
-            if (!tokenData.symbol)
-                return;
-
-            tokenData.type = type;
-
             if (type === 'erc20') {
+                tokenData.symbol = await contract.symbol();
+                tokenData.name = await contract.name();
                 tokenData.decimals = await contract.decimals();
             } else if(type === 'erc721'){
-                tokenData.iERC721Metadata = await this.supportsInterface(address, '0x5b5e139f')
+                tokenData.symbol = await contract.symbol();
+                tokenData.name = await contract.name();
+                tokenData.extensions = {
+                    metadata: await this.supportsInterface(address, '0x5b5e139f'),
+                }
             } else if(type === 'erc1155'){
-                // ERC1155 extensions
+                tokenData.name = contract.name || contract.address;
+                tokenData.extensions = {
+                    metadata: await this.supportsInterface(address, '0x0e89341c'),
+                }
             }
+
+            tokenData.type = type;
             return tokenData;
         } catch (e) {
             return;

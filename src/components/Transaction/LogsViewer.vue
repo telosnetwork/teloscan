@@ -40,7 +40,7 @@
 <script>
 import JsonViewer from 'vue-json-viewer'
 import FragmentList from 'components/Transaction/FragmentList'
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+import { TRANSFER_SIGNATURES, ERC1155_TRANSFER_SIGNATURE } from 'src/lib/abi/signature/transfer_signatures';
 import { BigNumber } from 'ethers';
 
 export default {
@@ -76,7 +76,9 @@ export default {
             const log = this.logs[i];
             const function_signature = log.topics[0].substr(0, 10);
             if(TRANSFER_SIGNATURES.includes(function_signature)) {
-                contract = await this.getLogContract(log, (log.topics.length === 4) ? 'erc721': 'erc20');
+                let type = (log.topics.length === 4) ? 'erc721': 'erc20';
+                type = (function_signature === ERC1155_TRANSFER_SIGNATURE) ? 'erc1155' : type;
+                contract = await this.getLogContract(log, type);
             } else {
                 contract = await this.getLogContract(log);
             }
@@ -85,11 +87,12 @@ export default {
                 let parsedLog = await contract.parseLogs([log]);
                 if(parsedLog[0]){
                     parsedLog[0].contract = contract;
+                    parsedLog[0].sig = function_signature;
                     this.parsedLogs.push(parsedLog[0]);
                 } else {
                     let nLog = Object.assign({}, log);
                     nLog.contract = contract;
-                    nLog.sig = nLog.topics[0].substr(0, 10);
+                    nLog.sig = function_signature;
                     this.parsedLogs.push(nLog);
                 }
                 this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());

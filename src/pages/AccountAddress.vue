@@ -1,4 +1,5 @@
 <script>
+import { toChecksumAddress } from 'src/lib/utils';
 import Web3 from 'web3';
 import TransactionTable from 'components/TransactionTable';
 import TransferTable from 'components/TransferTable';
@@ -29,6 +30,7 @@ export default {
             title: '',
             telosAccount: null,
             balance: null,
+            nonce: null,
             isContract: false,
             isVerified: null,
             contract: null,
@@ -40,13 +42,17 @@ export default {
     },
     computed: {
         address() {
-            return this.$route.params?.address?.toLowerCase() ?? '';
+            return this.$route.params?.address ?? '';
         },
     },
     watch: {
-        'address': {
+        address: {
             handler(newValue, oldValue) {
                 if (newValue !== oldValue) {
+                    const newAsChecksum = toChecksumAddress(newValue);
+                    if (newAsChecksum !== newValue) {
+                        this.$router.replace({ params: { address: newAsChecksum}});
+                    }
                     this.loadAccount();
                 }
             },
@@ -69,8 +75,10 @@ export default {
             this.telosAccount = account.account;
             this.isContract = account.code.length > 0;
 
-            if (this.isContract === false)
+            if (this.isContract === false){
                 this.contract = null;
+                this.nonce = account.nonce;
+            }
 
             const isVerifiedContract = this.isContract && this.isVerified;
             const knownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address.toLowerCase() === this.address.toLowerCase());
@@ -122,6 +130,9 @@ export default {
               TransactionField(:transaction-hash="contract.getCreationTrx()" )
             .text-white by address&nbsp
               AddressField(:address="contract.getCreator()")
+          small(v-else)
+            .text-white Number used once (nonce):
+              span.q-pl-xs {{ nonce }}
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount")
             .dataCardTile Native account
@@ -134,6 +145,7 @@ export default {
         q-route-tab(name="transactions" :to="{ hash: '#transactions' }" exact replace label="Transactions")
         q-route-tab(name="erc20transfers" :to="{ hash: '#erc20' }" exact replace label="ERC20 Transfers")
         q-route-tab(name="erc721transfers" :to="{ hash: '#erc721' }" exact replace label="ERC721 Transfers")
+        q-route-tab(name="erc1155transfers" :to="{ hash: '#erc1155' }" exact replace label="ERC1155 Transfers")
         q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace label="Tokens")
         q-route-tab(v-if="isContract" name="contract" :to="{ hash: '#contract' }" exact replace label="Contract")
       .q-mb-md.tableWrapper
@@ -141,9 +153,11 @@ export default {
           q-tab-panel( name="transactions" )
             transaction-table( :title="address" :filter="{address}" )
           q-tab-panel( name="erc20transfers" )
-            transfer-table( title="ERC-20 Transfers" token-type="erc20" :address="address" )
+            transfer-table( title="ERC-20 Transfers" token-type="erc20" :initialPageSize="10" :address="address" )
+          q-tab-panel( name="erc1155transfers" )
+            transfer-table( title="ERC-1155 Transfers" token-type="erc1155" :initialPageSize="10" :address="address" )
           q-tab-panel( name="erc721transfers" )
-            transfer-table( title="ERC-721 Transfers" token-type="erc721" :address="address" )
+            transfer-table( title="ERC-721 Transfers" token-type="erc721" :initialPageSize="10" :address="address" )
           q-tab-panel( name="tokens" )
             token-list( :address="address" )
           q-tab-panel( v-if="isContract" name="contract" )
@@ -152,6 +166,9 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.shadow-2
+    box-shadow: none !important
+
 .dataCardsContainer .dataCardItem
   width: fit-content
   height: 5rem
