@@ -10,7 +10,7 @@
             </h6>
         </div>
         <div class="col-6 u-flex--right">
-            <p v-if="errorText" class="text-red">
+            <p v-if="errorText" class="text-negative">
                 {{ errorText }}
             </p>
 
