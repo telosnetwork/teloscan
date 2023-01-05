@@ -124,6 +124,27 @@ export function sortAbiFunctionsByName(fns) {
         });
 }
 
+export function getRouteWatcherForTabs(routeName, tabs, defaultTab) {
+    return {
+        immediate: true,
+        deep: true,
+        handler(newRoute, oldRoute = {}) {
+            if (newRoute !== oldRoute) {
+                const { hash: newHash } = newRoute;
+
+                if (newRoute.name !== routeName || !newHash)
+                    return;
+
+                const tabHashes = Object.values(tabs);
+                const newHashIsInvalid = !tabHashes.includes(newHash);
+
+                if (newHashIsInvalid)
+                    this.$router.replace({ hash: defaultTab });
+            }
+        },
+    }
+}
+
 /**
  * Determine whether the user's device is an Apple touch device
  *

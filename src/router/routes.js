@@ -24,7 +24,11 @@ const routes = [
     {
         path: '/tx/:hash',
         component: () => import('layouts/MainLayout.vue'),
-        children: [{ path: '', component: () => import('pages/Transaction.vue') }],
+        children: [{
+            path: '',
+            name: 'transaction',
+            component: () => import('pages/Transaction.vue'),
+        }],
     },
     {
         path: '/block/:block',

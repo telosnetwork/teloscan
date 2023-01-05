@@ -138,12 +138,18 @@
 import { defineAsyncComponent } from 'vue'
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
-import { formatWei, WEI_PRECISION } from 'src/lib/utils';
+import { formatWei, getRouteWatcherForTabs, WEI_PRECISION } from 'src/lib/utils';
 
 import StakeForm from 'pages/staking/StakeForm';
 import StakingStats from 'pages/staking/StakingStats';
 
 const oneEth = ethers.utils.parseEther('1').toString();
+
+const tabs = {
+    stake: '#stake',
+    unstake: '#unstake',
+    withdraw: '#withdraw',
+}
 
 export default {
     name: 'StakingPage',
@@ -193,6 +199,7 @@ export default {
                 }
             },
         },
+        $route: getRouteWatcherForTabs('staking', tabs, tabs.stake),
     },
     async created() {
         await this.fetchContracts();

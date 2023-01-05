@@ -11,8 +11,15 @@ import ERCTransferList from 'components/Transaction/ERCTransferList';
 import ParameterList from 'components/Transaction/ParameterList';
 import JsonViewer from 'vue-json-viewer';
 import { BigNumber } from 'ethers';
-import { WEI_PRECISION, formatWei, parseErrorMessage } from 'src/lib/utils';
+import { WEI_PRECISION, formatWei, parseErrorMessage, getRouteWatcherForTabs } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+
+const tabs = {
+    general: '#general',
+    details: '#details',
+    eventLog: '#eventlog',
+    internal: '#internal',
+};
 
 // TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
 export default {
@@ -66,6 +73,7 @@ export default {
             },
             immediate: true,
         },
+        $route: getRouteWatcherForTabs('transaction', tabs, tabs.general),
     },
     async mounted() {
         await this.loadTransaction();
