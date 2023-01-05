@@ -12,16 +12,6 @@ import CopyButton from 'components/CopyButton';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
 
 const web3 = new Web3();
-
-const tabs = {
-    transactions: '#transactions',
-    erc20Transfers: '#erc20',
-    erc721Transfers: '#erc721',
-    erc1155Transfers: '#erc1155',
-    tokens: '#tokens',
-    contract: '#contract',
-};
-
 export default {
     name: 'AccountAddress',
     components: {
@@ -37,7 +27,6 @@ export default {
     },
     data() {
         return {
-            accountLoading: false,
             title: '',
             telosAccount: null,
             balance: null,
@@ -69,39 +58,12 @@ export default {
             },
             immediate: true,
         },
-        $route: {
-            immediate: true,
-            deep: true,
-            async handler(newRoute, oldRoute = {}) {
-                if (newRoute !== oldRoute) {
-                    const { hash: newHash } = newRoute;
-
-                    if (newRoute.name !== 'address' || !newHash)
-                        return;
-
-                    if (this.accountLoading && newHash === tabs.contract) {
-                        // wait for account to load; this.isContract will not be set immediately on first load
-                        await new Promise(resolve => setTimeout(resolve, 750));
-                    }
-
-                    const tabHashes = Object.values(tabs);
-                    const newHashIsInvalid =
-                        !tabHashes.includes(newHash) ||
-                        (newHash === tabs.contract && !this.isContract);
-
-                    if (newHashIsInvalid)
-                        this.$router.replace({ hash: tabs.transactions });
-                }
-            },
-        },
     },
     mounted() {
         this.loadAccount();
     },
     methods: {
         async loadAccount() {
-            this.accountLoading = true;
-
             const account = await this.$evm.telos.getEthAccount(this.address);
             if (account.code.length > 0){
                 this.isContract = true;
@@ -130,8 +92,6 @@ export default {
             } else {
                 this.title = 'Account';
             }
-
-            this.accountLoading = false;
         },
         getBalanceDisplay(balance) {
             let strBalance = web3.utils.fromWei(balance);
@@ -162,7 +122,7 @@ export default {
       .row(class="tableWrapper").justify-between.q-mb-lg
         div(class="homeInfo")
           .text-primary.text-h4.q-pr-xs {{ title }}
-          q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-green' : 'text-red'" size='1.25rem' @click='confirmationDialog = true')
+          q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-positive' : 'text-negative'" size='1.25rem' @click='confirmationDialog = true')
           ConfirmationDialog.text-secondary(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
           CopyButton.text-secondary(:text="address" :accompanyingText="address" description="address")
           span(v-if='contract')
