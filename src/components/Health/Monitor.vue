@@ -109,7 +109,7 @@ export default {
         template(v-slot:body="props")
             q-tr( :props="props")
                 q-td( key="status" :props="props" )
-                    q-icon(v-if="props.row.message !== ''" name="warning" color="red")
+                    q-icon(v-if="props.row.message !== ''" name="warning" color="negative")
                 q-td( key="checked_at" :props="props" ) {{ props.row.checked_at }}
                 q-td( key="task" :props="props" ) {{ props.row.task.name }}
                 q-td( key="message" :props="props" ) {{ props.row.message }}
