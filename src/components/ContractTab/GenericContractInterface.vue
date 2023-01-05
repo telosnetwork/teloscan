@@ -5,7 +5,7 @@
             <p>
                 <q-icon
                     name="warning"
-                    class="text-red"
+                    class="text-negative"
                     size="1.25rem"
                 />
                 This contract source has not been verified.
@@ -76,14 +76,14 @@
                     />
                     <p
                         v-if="!showAbiFunctions"
-                        class="text-red"
+                        class="text-negative"
                     >
                         Provided ABI is either invalid or contains no function definitions
                     </p>
                 </template>
                 <p
                     v-else
-                    class="text-red"
+                    class="text-negative"
                 >
                     Provided JSON is invalid
                 </p>

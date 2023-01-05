@@ -23,7 +23,7 @@ export default {
         return {
             showDialog: false,
             icon: 'warning',
-            color: 'text-red',
+            color: 'text-negative',
             dialogMessage: VERIFY_PROMPT,
         }
     },
@@ -34,11 +34,11 @@ export default {
         status(val){
             if (val) {
                 this.icon = 'verified';
-                this.color = 'text-green';
+                this.color = 'text-positive';
                 this.dialogMessage = VIEW_SOURCE_PROMPT;
             }else{
                 this.icon = 'warning',
-                this.color = 'text-red',
+                this.color = 'text-negative',
                 this.dialogMessage = VERIFY_PROMPT;
             }
         },

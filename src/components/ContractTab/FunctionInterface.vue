@@ -81,7 +81,7 @@
         icon="send"
         @click="run"
     />
-    <p class="text-red output-container">
+    <p class="text-negative output-container">
         {{ errorMessage }}
     </p>
     <div v-if="result" class="output-container">

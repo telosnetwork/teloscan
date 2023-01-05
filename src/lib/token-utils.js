@@ -36,7 +36,7 @@ export async function promptAddToMetamask(
         console.error(message);
         $q.notify({
             message: `Failed to add ${symbol} to MetaMask: ${message}`,
-            color: 'red',
+            color: 'negative',
         });
     });
 }
