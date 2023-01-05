@@ -1,4 +1,5 @@
 <script>
+import { toChecksumAddress } from 'src/lib/utils';
 import Web3 from 'web3';
 import TransactionTable from 'components/TransactionTable';
 import TransferTable from 'components/TransferTable';
@@ -52,13 +53,17 @@ export default {
     },
     computed: {
         address() {
-            return this.$route.params?.address?.toLowerCase() ?? '';
+            return this.$route.params?.address ?? '';
         },
     },
     watch: {
-        'address': {
+        address: {
             handler(newValue, oldValue) {
                 if (newValue !== oldValue) {
+                    const newAsChecksum = toChecksumAddress(newValue);
+                    if (newAsChecksum !== newValue) {
+                        this.$router.replace({ params: { address: newAsChecksum}});
+                    }
                     this.loadAccount();
                 }
             },
@@ -201,6 +206,9 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.shadow-2
+    box-shadow: none !important
+
 .dataCardsContainer .dataCardItem
   width: fit-content
   height: 5rem

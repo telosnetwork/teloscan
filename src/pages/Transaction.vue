@@ -409,6 +409,9 @@ export default {
 </template>
 
 <style lang="sass" scoped>
+.shadow-2
+    box-shadow: none !important
+
 span
     word-break: break-word
 

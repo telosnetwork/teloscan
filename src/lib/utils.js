@@ -144,3 +144,21 @@ export function getRouteWatcherForTabs(routeName, tabs, defaultTab) {
         },
     }
 }
+
+/**
+ * Determine whether the user's device is an Apple touch device
+ *
+ * @return {boolean}
+ */
+export function getClientIsApple() {
+    return [
+        'iPad Simulator',
+        'iPhone Simulator',
+        'iPod Simulator',
+        'iPad',
+        'iPhone',
+        'iPod',
+    ].includes(navigator.platform)
+        // iPad on iOS 13 detection
+        || (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+}
