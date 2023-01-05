@@ -62,7 +62,7 @@
                             @click="routerTo('/health')"
                         >
                             <q-item-section>
-                                <q-item-label class="flex items-center"><q-icon name="heart" /> <span class="q-pl-sm">Health status</span></q-item-label>
+                                <q-item-label class="flex items-center"><q-icon name="monitor_heart" /> <span class="q-pl-sm">Health status</span></q-item-label>
                             </q-item-section>
                         </q-item>
 
