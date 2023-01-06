@@ -35,7 +35,7 @@ export default {
                 return moment.unix(this.epoch).fromNow();
 
             const offset = getFormattedUtcOffset(new Date(this.epoch));
-            return  `${ moment.unix(this.epoch).format('MMM D, YYYY HH:mm:ss')} (UTC ${offset})`;
+            return `${moment.unix(this.epoch).format('MMM D, YYYY HH:mm:ss')} (UTC ${offset})`;
         },
     },
     created() {
