@@ -254,7 +254,7 @@ q-table(
             q-td( key="hash" :props="props" )
                 transaction-field( :transaction-hash="props.row.hash" )
             q-td( key="date" :props="props" )
-                date-field( :epoch="props.row.epoch", :showAge="showAge" )
+                date-field( :epoch="props.row.epoch" )
             q-td( key="from" :props="props" )
                 address-field( :address="props.row.from" )
             q-td( key="to" :props="props" )

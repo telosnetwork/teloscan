@@ -303,9 +303,7 @@ export default {
                 div(class="col-3"  )
                   strong {{ `Date: ` }}
                 div.u-flex--left
-                  q-icon(class="far fa-clock q-mr-xs")
-                  date-field( :epoch="trx.epoch" :show-age="showAge" )
-                  q-tooltip Click to change date format
+                  date-field( :epoch="trx.epoch" )
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")

@@ -45,7 +45,7 @@
                             {{ formatAmount(props.row.amount) }}
                         </q-td>
                         <q-td key="until" align="right">
-                            <date-field :epoch="(props.row.until).toNumber()" :show-age="showAge" />
+                            <date-field :epoch="(props.row.until).toNumber()" />
                         </q-td>
                     </q-tr>
                 </template>

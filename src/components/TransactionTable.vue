@@ -83,7 +83,7 @@ export default {
                 rowsPerPage: 10,
                 rowsNumber: 0,
             },
-            showAge: true,
+            showDateAge: true,
         };
     },
     mounted() {
@@ -165,6 +165,9 @@ export default {
 
             return path;
         },
+        toggleDateFormat() {
+            this.showDateAge = !this.showDateAge;
+        },
     },
 };
 </script>
@@ -180,19 +183,24 @@ q-table(
     :rows-per-page-options="[10, 20, 50]"
     flat
 )
-    q-tr( slot="header" slot-scope="props" :props="props" )
-        q-th(
-            v-for="col in props.cols"
-            :key="col.name"
-            :props="props"
-            @click="col.name==='date' ? showAge=!showAge : null"
-        )
-        template( v-if="col.name==='date'" )
-            q-tooltip(anchor="bottom middle" self="bottom middle") Click to change format
-        | {{ col.label }}
-        template( v-if="col.name === 'method'" )
-        q-icon(name="fas fa-info-circle", style="margin-top: -5px; margin-left: 3px;").info-icon
-            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
+    template( v-slot:header="props" )
+        q-tr( :props="props" )
+            q-th(
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+            )
+                | {{ col.label }}
+                template( v-if="col.name === 'date'" )
+                    q-icon(
+                        name="fas fa-info-circle",
+                        style="margin-top: -5px; margin-left: 3px;"
+                        @click="toggleDateFormat"
+                    ).info-icon
+                        q-tooltip(anchor="bottom middle" self="bottom middle" :offset="[0, 36]") Click to change format
+                template( v-if="col.name === 'method'" )
+                    q-icon(name="fas fa-info-circle", style="margin-top: -5px; margin-left: 3px;").info-icon
+                    q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
 
     template(v-slot:body="props")
         q-tr( :props="props")
@@ -201,7 +209,7 @@ q-table(
             q-td( key="block" :props="props")
                 block-field( :block="props.row.block" )
             q-td( key="date" :props="props")
-                date-field( :epoch="props.row.epoch", :showAge="showAge" )
+                date-field( :epoch="props.row.epoch" :force-show-age="showDateAge" )
             q-td( key="method" :props="props")
                 method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"  )
             q-td( key="from" :props="props")
