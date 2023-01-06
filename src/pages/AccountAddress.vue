@@ -10,7 +10,9 @@ import TransactionField from 'components/TransactionField';
 import AddressField from 'components/AddressField';
 import CopyButton from 'components/CopyButton';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
+
 const web3 = new Web3();
+
 const tabs = {
     transactions: '#transactions',
     erc20Transfers: '#erc20',
@@ -19,6 +21,7 @@ const tabs = {
     tokens: '#tokens',
     contract: '#contract',
 };
+
 export default {
     name: 'AccountAddress',
     components: {
@@ -72,16 +75,20 @@ export default {
             async handler(newRoute, oldRoute = {}) {
                 if (newRoute !== oldRoute) {
                     const { hash: newHash } = newRoute;
+
                     if (newRoute.name !== 'address' || !newHash)
                         return;
+
                     if (this.accountLoading && newHash === tabs.contract) {
                         // wait for account to load; this.isContract will not be set immediately on first load
                         await new Promise(resolve => setTimeout(resolve, 750));
                     }
+
                     const tabHashes = Object.values(tabs);
                     const newHashIsInvalid =
                         !tabHashes.includes(newHash) ||
                         (newHash === tabs.contract && !this.isContract);
+
                     if (newHashIsInvalid)
                         this.$router.replace({ hash: tabs.transactions });
                 }
@@ -94,21 +101,26 @@ export default {
     methods: {
         async loadAccount() {
             this.accountLoading = true;
+
             const account = await this.$evm.telos.getEthAccount(this.address);
             if (account.code.length > 0){
                 this.isContract = true;
                 this.contract = await this.$contractManager.getContract(this.address)
                 this.isVerified = this.contract.verified;
             }
+
             this.balance = this.getBalanceDisplay(account.balance);
             this.telosAccount = account.account;
             this.isContract = account.code.length > 0;
+
             if (this.isContract === false){
                 this.contract = null;
                 this.nonce = account.nonce;
             }
+
             const isVerifiedContract = this.isContract && this.isVerified;
             const knownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address.toLowerCase() === this.address.toLowerCase());
+
             if (knownToken?.name) {
                 this.title = knownToken.name;
             } else if (isVerifiedContract) {
@@ -118,6 +130,7 @@ export default {
             } else {
                 this.title = 'Account';
             }
+
             this.accountLoading = false;
         },
         getBalanceDisplay(balance) {
@@ -133,6 +146,7 @@ export default {
         },
         getAddressNativeExplorerURL() {
             if (!this.telosAccount) return '';
+
             return `${process.env.NETWORK_EXPLORER}/account/${this.telosAccount}`;
         },
         disableConfirmation(){
@@ -141,6 +155,7 @@ export default {
     },
 };
 </script>
+
 <template lang="pug">
 .pageContainer.q-pt-xl
     div
@@ -189,28 +204,37 @@ export default {
             ContractTab(v-if='isVerified' :contract="contract")
             GenericContractInterface(v-else)
 </template>
+
 <style scoped lang="sass">
 .shadow-2
     box-shadow: none !important
+
 .dataCardsContainer .dataCardItem
     width: fit-content
     height: 5rem
+
 .homeInfo .text-secondary .q-icon
     color: white !important
+
 .q-tab-panel
     padding: 0
+
 .q-icon
     padding-bottom: .75rem
+
 .cursor
     cursor: pointer
+
 .tabs-header
     background: white
     color: black !important
     &.q-dark
         background: $dark
         color: white !important
+
 .text-primary
     display: inline-block
+
 @media only screen and (max-width: 1200px)
     .pageContainer
         div
