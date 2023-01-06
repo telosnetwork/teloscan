@@ -210,30 +210,30 @@ export default {
     box-shadow: none !important
 
 .dataCardsContainer .dataCardItem
-    width: fit-content
-    height: 5rem
+  width: fit-content
+  height: 5rem
 
 .homeInfo .text-secondary .q-icon
-    color: white !important
+  color: white !important
 
 .q-tab-panel
-    padding: 0
+  padding: 0
 
 .q-icon
-    padding-bottom: .75rem
+  padding-bottom: .75rem
 
 .cursor
-    cursor: pointer
+  cursor: pointer
 
 .tabs-header
-    background: white
-    color: black !important
-    &.q-dark
-        background: $dark
-        color: white !important
+  background: white
+  color: black !important
+  &.q-dark
+    background: $dark
+    color: white !important
 
 .text-primary
-    display: inline-block
+  display: inline-block
 
 @media only screen and (max-width: 1200px)
     .pageContainer
