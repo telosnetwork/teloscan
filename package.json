@@ -41,11 +41,12 @@
     "ual-wombat": "^0.3.3",
     "universal-authenticator-library": "^0.3.0",
     "vue": "3",
+    "vue-i18n": "^9.0.0",
     "vue-json-viewer": "3",
     "vue-router": "4",
     "vue3-click-away": "^1.2.4",
     "vuex": "4",
-    "web3": "^1.8.1"
+    "web3": "^1.8.1"    
   },
   "devDependencies": {
     "@babel/core": "7.19.3",

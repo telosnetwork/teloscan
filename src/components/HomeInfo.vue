@@ -46,7 +46,7 @@ export default {
             img(:src="exchangeImage" width="40")
         .col-8.q-pl-sm
             .col-12
-              .column.text-subtitle2 TLOS Price
+              .column.text-subtitle2 {{ $t('components.tlos_price') }}
             .col-12
               .column.text-h6.text-weight-bold
                 | $ {{ tlosPrice }}
@@ -69,7 +69,7 @@ export default {
         .col-8.q-pl-sm
             .col-12
               .column.text-subtitle2
-                | Latest Block
+                | {{ $t('components.latest_block') }}
             .col-12
               .column.text-h6.text-weight-bold
                 | {{ latestBlock }}

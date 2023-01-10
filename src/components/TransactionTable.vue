@@ -10,37 +10,37 @@ import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 const columns = [
     {
         name: 'hash',
-        label: 'TX Hash',
+        label: this.$('components.tx_hash'),
         align: 'left',
     },
     {
         name: 'block',
-        label: 'Block',
+        label: this.$('components.block'),
         align: 'left',
     },
     {
         name: 'date',
-        label: 'Date',
+        label: this.$('components.date'),
         align: 'left',
     },
     {
         name: 'method',
-        label: 'Method',
+        label: this.$('components.method'),
         align: 'left',
     },
     {
         name: 'from',
-        label: 'From',
+        label: this.$('components.from'),
         align: 'left',
     },
     {
         name: 'to',
-        label: 'To / Interacted with',
+        label: this.$('components.to_interacted_with'),
         align: 'left',
     },
     {
         name: 'value',
-        label: 'Value / Transfer',
+        label: this.$('components.value_transfer'),
         align: 'left',
     },
 ];

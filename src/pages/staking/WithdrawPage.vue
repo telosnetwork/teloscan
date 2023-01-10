@@ -30,7 +30,8 @@
                                 @click="showAge=!showAge"
                             >
                                 <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
-                                    Click to change time format
+                                    <!-- Click to change time format -->
+                                    {{ $t('pages.staking.click_to_change_time_format') }}
                                 </q-tooltip>
                             </q-icon>
                         </template>
@@ -53,10 +54,12 @@
         </div>
         <div v-show="isLoggedIn" class="escrow-stat-container">
             <div class="escrow-stat">
-                Unstaking: {{ unstakingBalance }}
+                <!-- Unstaking: {{ unstakingBalance }} -->
+                {{ $t('pages.staking.unstaking') }}: {{ unstakingBalance }}
             </div>
             <div class="escrow-stat">
-                Available to withdraw: {{ unlockedBalance }}
+                <!-- Available to withdraw: {{ unlockedBalance }} -->
+                {{ $t('pages.staking.available_to_withdraw') }}: {{ unlockedBalance }}
             </div>
         </div>
         <div class="col-xs-12 u-flex--center withdraw-button-container">
@@ -66,12 +69,14 @@
                 text-color="black"
                 @click="withdrawUnlocked"
             >
-                Withdraw TLOS
+                <!-- Withdraw TLOS -->
+                {{ $t('pages.staking.withdraw_tlos') }}
             </q-btn>
         </div>
     </div>
     <div v-if="resultHash" class="transaction-notification col-sm-12 col-md-6 offset-md-3">
-        Withdraw successful! View Transaction:
+        <!-- Withdraw successful! View Transaction: -->
+        {{ $t('pages.staking.withdraw_successful') }}:
         <transaction-field :transaction-hash="resultHash" />
     </div>
 </div>

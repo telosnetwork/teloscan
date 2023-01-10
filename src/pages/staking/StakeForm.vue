@@ -13,13 +13,15 @@
                 <q-btn
                     flat
                     color="black"
-                    label="Dismiss"
+                    hardcoded_label="Dismiss"
+                    label="$t('pages.staking.dismiss')"
                     @click="hideClaimBanner"
                 />
                 <q-btn
                     flat
                     color="black"
-                    label="Claim TLOS"
+                    hardcoded_label="Claim TLOS"
+                    label="$t('pages.staking.claim_tlos')"
                     @click="$router.push({ hash: '#claim' })"
                 />
             </template>
@@ -57,15 +59,20 @@
         <q-card>
             <q-card-section>
                 <p>
-                    Continuing will stake TLOS in exchange for sTLOS.
-                    sTLOS can be redeemed for TLOS at any time using the Unstake tab.
+                    <!-- Continuing will stake TLOS in exchange for sTLOS.
+                    TLOS can be redeemed for TLOS at any time using the Unstake tab. -->
+                    {{ $t('pages.staking.stake_tlos_confirm') }}
                 </p>
                 <p>
-                    After TLOS has been unstaked, it will be locked for a period of
+                    <!-- After TLOS has been unstaked, it will be locked for a period of     -->
+                    <!-- <span class="text-primary">{{ unstakePeriodPretty }}</span>,        -->
+                    <!-- after which it can be withdrawn to your account from the Claim tab. -->
+                    {{ $t('pages.staking.stake_tlos_confirm_2a' ) }}
                     <span class="text-primary">{{ unstakePeriodPretty }}</span>,
-                    after which it can be withdrawn to your account from the Claim tab.
+                    {{ $t('pages.staking.stake_tlos_confirm_2b' ) }}
                 </p>
-                Would you like to proceed?
+                <!-- Would you like to proceed? -->
+                <p>{{ $t('pages.staking.stake_tlos_confirm_3' ) }}</p>
             </q-card-section>
 
             <q-card-actions align="right" class="q-pb-md q-px-md">
@@ -73,7 +80,9 @@
                     v-if="showMetamaskPrompt"
                     class="c-stake-form__metamask-prompt u-flex--center-y"
                     tabindex="0"
-                    aria-label="Launch MetaMask dialog to add sTLOS"
+                    hardcoded-aria-label="Launch MetaMask dialog to add sTLOS"
+                    aria-label="$t('pages.staking.add_stlos_to_metamask')"
+
                     @click="promptAddToMetamask"
                 >
                     Add sTLOS to MetaMask
@@ -82,13 +91,15 @@
                         class="q-ml-xs"
                         height="24"
                         width="24"
-                        alt="MetaMask Fox Logo"
+                        hardcoded-alt="MetaMask Fox Logo"
+                        alt="$t('pages.staking.metamask_fox_logo')"
                     >
                 </p>
                 <q-btn
                     v-close-popup
                     flat
-                    label="Cancel"
+                    hardcoded_label="Cancel"
+                    label="$t('pages.staking.cancel')"
                     color="negative"
                 />
                 <q-btn
@@ -155,17 +166,21 @@ export default {
         MetaMaskLogo,
         displayConfirmModal: false,
         resultHash: null,
-        header: 'Stake TLOS',
-        subheader: 'Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, ' +
+        harcoded_header: 'Stake TLOS',
+        header: this.$t('pages.staking.stake_tlos'),
+        harcoded_subheader: 'Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, ' +
             'further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change ' +
             'over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be ' +
             'auto-compounded. No further action is required.',
-        topInputLabel: 'Stake TLOS',
+        subheader: this.$t('pages.staking.stake_tlos_subheader'),
+        harcoded_topInputLabel: 'Stake TLOS',
+        topInputLabel: this.$t('pages.staking.stake_tlos'),
         topInputAmount: '0',
         topInputIsLoading: false,
         bottomInputMaxValue: null,
         bottomInputIsLoading: false,
-        bottomInputLabel: 'Receive sTLOS',
+        harcoded_bottomInputLabel: 'Receive sTLOS',
+        bottomInputLabel: this.$t('pages.staking.receive_stlos'),
         bottomInputAmount: '0',
         ctaIsLoading: false,
         debouncedTopInputHandler: null,
@@ -175,7 +190,7 @@ export default {
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn', 'isNative']),
         unstakePeriodPretty() {
-            return formatUnstakePeriod(this.unstakePeriodSeconds);
+            return formatUnstakePeriod(this.unstakePeriodSeconds, this.$t);
         },
         topInputMaxValue() {
             return this.isLoggedIn ? this.usableWalletBalance : null;
@@ -203,28 +218,33 @@ export default {
 
             const balanceTlos = ethers.utils.commify(balanceEth);
 
-            return `${balanceTlos} Available`;
+            // return `${balanceTlos} Available`;
+            return this.$t('pages.staking.available', {balanceTlos});
         },
         topInputErrorText() {
             const walletBalanceBn = BigNumber.from(this.tlosBalance ?? '0');
 
             if (this.isLoggedIn) {
                 if (walletBalanceBn.lt(reservedForGasBn) && !this.isNative)
-                    return 'Insufficient TLOS balance to stake';
+                    // return 'Insufficient TLOS balance to stake';
+                    return this.$t('pages.staking.insufficient_tlos_balance');
                 else if(this.isNative)
-                    return 'Login using an EVM wallet'
+                    // return 'Login using an EVM wallet'
+                    return this.$t('pages.staking.login_using_an_evm_wallet');
                 else
                     return '';
             }
 
-            return 'Wallet not connected';
+            // return 'Wallet not connected';
+            return this.$t('pages.staking.wallet_not_connected');
         },
         topInputTooltip() {
             const prettyBalance = ethers.utils.formatEther(this.usableWalletBalance).toString();
-            return 'Click to input full wallet balance\n\n' +
-                   'Balance displayed is reduced by 1 TLOS to keep your account actionable.\n' +
-                   'Precise balance (less approximate gas fees):\n' +
-                   `${prettyBalance} TLOS`;
+            // return 'Click to input full wallet balance\n\n' +
+            //        'Balance displayed is reduced by 1 TLOS to keep your account actionable.\n' +
+            //        'Precise balance (less approximate gas fees):\n' +
+            //        `{prettyBalance} TLOS`;
+            return this.$t('pages.staking.click_to_input_full_wallet_balance', {prettyBalance});
         },
         ctaIsDisabled() {
             const inputsInvalid = (
@@ -242,16 +262,20 @@ export default {
         },
         ctaText() {
             if (this.ctaIsLoading)
-                return 'Loading...';
+                // return 'Loading...';
+                return this.$t('pages.staking.loading');
 
             if (this.isLoggedIn) {
                 if (this.walletBalanceBn.lt(reservedForGasBn))
-                    return 'Get more TLOS';
+                    // return 'Get more TLOS';
+                    return this.$t('pages.staking.get_more_tlos');
                 else
-                    return 'Stake TLOS';
+                    // return 'Stake TLOS';
+                    return this.$t('pages.staking.stake_tlos');
             }
 
-            return 'Connect Wallet';
+            // return 'Connect Wallet';
+            return this.$t('pages.staking.connect_wallet');
         },
         showClaimBanner() {
             return this.hasUnlockedTlos && !this.userDismissedBanner;

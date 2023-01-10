@@ -3,7 +3,7 @@
     <div v-if="logs.length === 0" class="row">
         <div class="col-12 u-flex--center">
             <q-icon class="fa fa-info-circle q-mr-md" size="md" />
-            <h5>No logs found</h5>
+            <h5>{{ $t('components.transaction.no_logs_found') }}</h5>
         </div>
     </div>
     <div v-else class="row">
@@ -14,10 +14,12 @@
                 color="secondary"
                 size="lg"
             />
-            Human-readable
+            {{ $t('components.transaction.human_readable') }}
             <small v-if="!allVerified">
                 <q-icon name="info" class="q-mb-xs q-ml-xs" size="14px"/>
-                <q-tooltip>Verify the related contract for each log to see its human readable version</q-tooltip>
+                <q-tooltip>
+                    {{ $t('components.transaction.verify_related_contract') }}
+                </q-tooltip>
             </small>
         </div>
         <div class="col-12">

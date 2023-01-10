@@ -15,31 +15,31 @@ const TOKEN_ID_TRUNCATE_LENGTH = 66;
 const columns = [
     {
         name: 'hash',
-        label: 'TX Hash',
+        label: this.$('components.tx_hash'),
         align: 'left',
     },
     {
         name: 'date',
-        label: 'Date',
+        label: this.$('components.date'),
         align: 'left',
     },
     {
         name: 'from',
-        label: 'From',
+        label: this.$('components.from'),
         align: 'left',
     },
     {
         name: 'to',
-        label: 'To',
+        label: this.$('components.to'),
         align: 'left',
     },
     {
         name: 'value',
-        label: 'Value',
+        label: this.$('components.value'),
         align: 'left',
     },{
         name: 'token',
-        label: 'Token',
+        label: this.$('components.token'),
         align: 'left',
     },
 ];
@@ -156,7 +156,7 @@ export default {
                             if (token && typeof token.decimals === 'number') {
                                 valueDisplay = formatWei(log.data, token.decimals)
                             } else {
-                                valueDisplay = 'Unknown precision';
+                                valueDisplay = this.$t('components.unknown_precision');
                             }
                         } else {
                             let tokenId = (this.tokenType === 'erc1155') ? BigNumber.from(log.data.substr(0, TOKEN_ID_TRUNCATE_LENGTH)).toString() : BigNumber.from(log.topics[3]).toString();
@@ -241,13 +241,13 @@ q-table(
           v-if="col.name==='date'"
           class=""
         )
-          q-tooltip(anchor="bottom middle" self="bottom middle") Click to change format
+          q-tooltip(anchor="bottom middle" self="bottom middle") {{ $t('components.click_to_change_format') }}
         | {{ col.label }}
         template(
           v-if="col.name==='method'"
         )
           q-icon(name="fas fa-info-circle").info-icon
-            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
+            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") {{ $t('components.func_exed_based_on_dec_data') }}
 
     template(v-slot:body="props")
         q-tr( :props="props" )

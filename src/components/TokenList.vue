@@ -102,7 +102,7 @@ export default {
                     <address-field :address="address" class="q-mb-sm"/>
                     <div class="q-mb-sm">
                         <span class="q-pr-xs">
-                            Balance:
+                            {{ $t('components.balance') }}
                         </span>
                         <span v-if="balance === '0.0000'">
                             {{ '< 0.0001 ' + symbol }}
@@ -121,7 +121,7 @@ export default {
                         :aria-label="`Launch MetaMask dialog to add ${symbol}`"
                         @click="promptAddToMetamask(address, symbol, logoURI, type, decimals)"
                     >
-                        Add {{ symbol }} to MetaMask
+                        {{ $t('components.add_to_metamask', { symbol }) }}
                     </span>
                 </div>
             </q-card-section>

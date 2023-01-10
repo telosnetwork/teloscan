@@ -3,10 +3,12 @@
     <div class="row q-mx-md">
         <div class="c-staking-page__header col-xs-12 col-md-6">
             <h1 class="c-staking-page__title">
-                Telos EVM Staking
+                <!-- Telos EVM Staking -->
+                {{ $t('pages.staking.telos_evm_staking') }}
             </h1>
             <span class="text-white">
-                Stake TLOS for sTLOS to earn interest from the staking rewards pool
+                <!-- Stake TLOS for sTLOS to earn interest from the staking rewards pool -->
+                {{ $t('pages.staking.stake_tlos_earn_interest') }}
             </span>
         </div>
         <div class="col-xs-12 col-md-6">
@@ -36,21 +38,24 @@
                         :to="{ hash: '#stake'}"
                         exact
                         push
-                        label="Stake"
+                        hardcoded_label="Stake"
+                        label="$t('pages.staking.stake')"
                     />
                     <q-route-tab
                         name="unstake"
                         :to="{ hash: '#unstake'}"
                         exact
                         push
-                        label="Unstake"
+                        hardcoded_label="Unstake"
+                        label="$t('pages.staking.unstake')"
                     />
                     <q-route-tab
                         name="withdraw"
                         :to="{ hash: '#withdraw'}"
                         exact
                         push
-                        label="Withdraw"
+                        hardcoded_label="Withdraw"
+                        label="$t('pages.staking.withdraw')"
                         :alert="showWithdrawNotification ? 'green' : false"
                     />
                 </q-tabs>

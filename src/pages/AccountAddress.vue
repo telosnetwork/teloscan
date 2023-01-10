@@ -15,9 +15,9 @@ const web3 = new Web3();
 
 const tabs = {
     transactions: '#transactions',
-    erc20Transfers: '#erc20',
-    erc721Transfers: '#erc721',
-    erc1155Transfers: '#erc1155',
+    erc20_transfers: '#erc20',
+    erc721_transfers: '#erc721',
+    erc1155_transfers: '#erc1155',
     tokens: '#tokens',
     contract: '#contract',
 };
@@ -126,9 +126,9 @@ export default {
             } else if (isVerifiedContract) {
                 this.title = this.contract.getName();
             } else if (this.isContract) {
-                this.title = 'Contract';
+                this.title = /*'Contract'*/ this.$t('pages.contract');
             } else {
-                this.title = 'Account';
+                this.title = /*'Account'*/ this.$t('pages.account');
             }
 
             this.accountLoading = false;
@@ -182,21 +182,21 @@ export default {
             .dataCardTile Balance
             .dataCardData {{balance}}
       q-tabs.tabs-header( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar topRounded text-white tableWrapper" :class='{"q-dark": $q.dark.isActive}' )
-        q-route-tab(name="transactions" :to="{ hash: '#transactions' }" exact replace label="Transactions")
-        q-route-tab(name="erc20transfers" :to="{ hash: '#erc20' }" exact replace label="ERC20 Transfers")
-        q-route-tab(name="erc721transfers" :to="{ hash: '#erc721' }" exact replace label="ERC721 Transfers")
-        q-route-tab(name="erc1155transfers" :to="{ hash: '#erc1155' }" exact replace label="ERC1155 Transfers")
-        q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace label="Tokens")
-        q-route-tab(v-if="isContract" name="contract" :to="{ hash: '#contract' }" exact replace label="Contract")
+        q-route-tab(name="transactions" :to="{ hash: '#transactions' }" exact replace label="$t('pages.transactions')")
+        q-route-tab(name="erc20_transfers" :to="{ hash: '#erc20' }" exact replace label="$t('pages.erc20_transfers')")
+        q-route-tab(name="erc721_transfers" :to="{ hash: '#erc721' }" exact replace label="$t('pages.erc721_transfers')")
+        q-route-tab(name="erc1155_transfers" :to="{ hash: '#erc1155' }" exact replace label="$t('pages.erc1155_transfers')")
+        q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace label="$t('pages.tokens')")
+        q-route-tab(v-if="isContract" name="contract" :to="{ hash: '#contract' }" exact replace label="$t('pages.contract')")
       .q-mb-md.tableWrapper
         q-tab-panels( v-model="tab" animated keep-alive class="shadow-2"  :key="address" )
           q-tab-panel( name="transactions" )
             transaction-table( :title="address" :filter="{address}" )
-          q-tab-panel( name="erc20transfers" )
+          q-tab-panel( name="erc20_transfers" )
             transfer-table( title="ERC-20 Transfers" token-type="erc20" :initialPageSize="10" :address="address" )
-          q-tab-panel( name="erc1155transfers" )
+          q-tab-panel( name="erc1155_transfers" )
             transfer-table( title="ERC-1155 Transfers" token-type="erc1155" :initialPageSize="10" :address="address" )
-          q-tab-panel( name="erc721transfers" )
+          q-tab-panel( name="erc721_transfers" )
             transfer-table( title="ERC-721 Transfers" token-type="erc721" :initialPageSize="10" :address="address" )
           q-tab-panel( name="tokens" )
             token-list( :address="address" )

@@ -118,16 +118,12 @@ export default {
                 label: 'APY',
                 value: this.stlosApy ?? '--',
                 unit: '%',
-                tooltip: 'APY: Annual Percentage Yield\n\nThe annual rate of return after taking compound interest into account.\n\n' +
-                    'Interest is compounded approximately every 30 minutes. The percentage rate is not fixed, meaning that ' +
-                    'it will change over time with the total amount of TLOS staked across Telos EVM and Native. ' +
-                    'Rewards are disbursed from a community rewards pool into the sTLOS contract.',
+                tooltip: this.$t('staking.stats.tooltip_1'),
             }, {
                 label: 'TVL',
                 value: this.formatWeiForStats(this.stlosTvl, true).replace(/\B(?=(\d{3})+(?!\d))/g, ' '),
                 unit: 'TLOS',
-                tooltip: 'TVL: Total Value Locked\n\nThe current value, in TLOS, of all assets held in the sTLOS ' +
-                    '(Staked TLOS) smart contract, i.e. the sum of all TLOS staked on the Telos EVM at this moment.',
+                tooltip: this.$t('staking.stats.tooltip_2'),
             }];
         },
         personalStats() {
@@ -138,25 +134,17 @@ export default {
                         stlos: this.formatWeiForStats(this.stlosBalance),
                         tlos: this.formatWeiForStats(this.stlosValue),
                     },
-                    tooltip: 'Staked\n\n' +
-                        'The total staked amount associated with the logged-in account, i.e. ' +
-                        'your sTLOS token balance, along with its value in TLOS',
+                    tooltip: this.$t('staking.stats.tooltip_3'),
                 },
                 unstaked: {
                     label: 'Unstaked',
                     value: this.formatWeiForStats(this.totalUnstakedTlosBalance),
-                    tooltip: 'Unstaked\n\n' + // switch unstake to unstakesecondspretty
-                        'The total value of TLOS which you have unstaked, both locked and unlocked.\n\n' +
-                        'When you unstake\u2014i.e. redeem\u2014some value of sTLOS, the equivalent amount of ' +
-                        `TLOS is sent into escrow ("locked") for ${this.unlockPeriodPretty}; during this time, ` +
-                        'you cannot interact with this TLOS.\n\n' +
-                        'After the unlock period has elapsed, you can claim your unlocked TLOS from the Claim tab ' +
-                        'on this page, at which point it will be added to your account TLOS balance.',
+                    tooltip: this.$t('staking.stats.tooltip_4', { unlockPeriod: this.unlockPeriodPretty }),
                 },
             };
         },
         unlockPeriodPretty() {
-            return formatUnstakePeriod(this.unstakePeriodSeconds);
+            return formatUnstakePeriod(this.unstakePeriodSeconds, this.$t);
         },
     },
     async created() {

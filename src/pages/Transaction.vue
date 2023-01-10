@@ -43,9 +43,9 @@ export default {
             trxNotFound: false,
             errorMessage: null,
             trx: null,
-            erc20Transfers: [],
-            erc721Transfers: [],
-            erc1155Transfers: [],
+            erc20_transfers: [],
+            erc721_transfers: [],
+            erc1155_transfers: [],
             params: [],
             tab: '#general',
             isContract: false,
@@ -92,9 +92,9 @@ export default {
             this.contract = null;
             this.parsedTransaction = null;
             this.methodTrx = null;
-            this.erc20Transfers = [];
-            this.erc721Transfers = [];
-            this.erc1155Transfers = [];
+            this.erc20_transfers = [];
+            this.erc721_transfers = [];
+            this.erc1155_transfers = [];
             this.params = [];
         },
         async loadTransaction() {
@@ -131,7 +131,7 @@ export default {
                                     console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
                                 }
                             }
-                            this.erc721Transfers.push({
+                            this.erc721_transfers.push({
                                 'tokenId': tokenId,
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                                 'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
@@ -146,7 +146,7 @@ export default {
                                     console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
                                 }
                             }
-                            this.erc1155Transfers.push({
+                            this.erc1155_transfers.push({
                                 'tokenId': tokenId,
                                 'amount': BigNumber.from(log.data).toString(),
                                 'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
@@ -154,7 +154,7 @@ export default {
                                 'token': token,
                             });
                         } else {
-                            this.erc20Transfers.push({
+                            this.erc20_transfers.push({
                                 'value': log.data,
                                 'wei': BigNumber.from(log.data).toString(),
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
@@ -241,7 +241,7 @@ export default {
         | Not found: {{ hash }}
   .row.tableWrapper
     .col-12.q-py-lg
-      .content-container( v-if="trx"  :key="erc20Transfers.length + isContract" )
+      .content-container( v-if="trx"  :key="erc20_transfers.length + isContract" )
         q-tabs.text-white.topRounded(
           v-model="tab"
           dense
@@ -328,7 +328,7 @@ export default {
               div(class="col-3")
                 strong {{ `From: ` }}
               div(class="col-9 word-break")
-                address-field(:address="trx.from" :truncate="0" :highlight="erc20Transfers.length + erc721Transfers.length > 1" copy)
+                address-field(:address="trx.from" :truncate="0" :highlight="erc20_transfers.length + erc721_transfers.length > 1" copy)
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
@@ -364,9 +364,9 @@ export default {
                     span {{ formatWei(trx.value, 18) }} TLOS
                     q-tooltip Click to show in wei
             br
-            ERCTransferList( v-if="erc20Transfers.length > 0" type="ERC20" :trxFrom="trx.from" :contract="contract" :transfers="erc20Transfers")
-            ERCTransferList( v-if="erc721Transfers.length > 0" type="ERC721" :trxFrom="trx.from" :contract="contract" :transfers="erc721Transfers")
-            ERCTransferList( v-if="erc1155Transfers.length > 0" type="ERC1155" :trxFrom="trx.from" :contract="contract" :transfers="erc1155Transfers")
+            ERCTransferList( v-if="erc20_transfers.length > 0" type="ERC20" :trxFrom="trx.from" :contract="contract" :transfers="erc20_transfers")
+            ERCTransferList( v-if="erc721_transfers.length > 0" type="ERC721" :trxFrom="trx.from" :contract="contract" :transfers="erc721_transfers")
+            ERCTransferList( v-if="erc1155_transfers.length > 0" type="ERC1155" :trxFrom="trx.from" :contract="contract" :transfers="erc1155_transfers")
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
                 strong {{ `Gas Price Charged: ` }}

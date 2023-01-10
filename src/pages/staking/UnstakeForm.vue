@@ -32,16 +32,24 @@
         <q-card>
             <q-card-section>
                 <p>
-                    Continuing will redeem sTLOS in exchange for TLOS.
-                    Unstaked TLOS will remain locked for a period of
+                    <!-- Continuing will redeem sTLOS in exchange for TLOS. -->
+                    <!-- Unstaked TLOS will remain locked for a period of -->
+                    <!-- <span class="text-primary">{{ unstakePeriodPretty }}</span>, -->
+                    <!-- after which it can be withdrawn to your account from the Claim tab. -->
+                    {{ $t('pages.staking.confirm_unstake_1a') }}
                     <span class="text-primary">{{ unstakePeriodPretty }}</span>,
-                    after which it can be withdrawn to your account from the Claim tab.
+                    {{ $t('pages.staking.confirm_unstake_1b') }}
+                    
                 </p>
                 <p v-if="remainingDeposits < 10">
-                    Heads up, you may unstake <span class="text-primary">{{ remainingDeposits }}</span> more times before
-                    you reach the maximum concurrent unstake actions. When you reach the maximum, you will need to claim
-                    unlocked TLOS to continue unstaking. If you don't have any claimable TLOS at that time, you must
-                    wait until the lock duration has elapsed before you can claim unlocked TLOS and unstake more sTLOS.
+                    <!-- Heads up, you may unstake <span class="text-primary">{{ remainingDeposits }}</span> more times before -->
+                    <!-- you reach the maximum concurrent unstake actions. When you reach the maximum, you will need to claim -->
+                    <!-- unlocked TLOS to continue unstaking. If you don't have any claimable TLOS at that time, you must -->
+                    <!-- wait until the lock duration has elapsed before you can claim unlocked TLOS and unstake more sTLOS. -->
+                    {{ $t('pages.staking.confirm_unstake_2a') }}
+                    <span class="text-primary">{{ remainingDeposits }}</span>
+                    {{ $t('pages.staking.confirm_unstake_2b') }}
+
                 </p>
                 Would you like to proceed?
             </q-card-section>
@@ -119,27 +127,33 @@ export default {
     data: () => ({
         displayConfirmModal: false,
         resultHash: null,
-        header: 'Unstake sTLOS',
-        subheader: 'Unstake sTLOS in exchange for TLOS',
-        topInputLabel: 'Unstake sTLOS',
+        hardcoded_header: 'Unstake sTLOS',
+        header: this.$t('pages.staking.unstake_stlos'),
+        hardcoded_subheader: 'Unstake sTLOS in exchange for TLOS',
+        subheader: this.$t('pages.staking.unstake_stlos_for_tlos'),
+        hardcoded_topInputLabel: 'Unstake sTLOS',
+        topInputLabel: this.$t('pages.staking.unstake_stlos'),
         topInputAmount: '0',
         topInputIsLoading: false,
         bottomInputMaxValue: null,
         bottomInputIsLoading: false,
-        bottomInputLabel: 'Receive TLOS',
+        hardcoded_bottomInputLabel: 'Receive TLOS',
+        bottomInputLabel: this.$t('pages.staking.receive_tlos'),
         bottomInputAmount: '0',
         ctaIsLoading: false,
         debouncedTopInputHandler: null,
         debouncedBottomInputHandler: null,
         columns: [{
             name: 'amount',
-            label: 'Amount',
+            hardcoded_label: 'Amount',
+            label: this.$t('pages.staking.amount'),
             align: 'left',
             field: 'amount',
             format: val => ethers.utils.formatEther(val.toString()),
         }, {
             name: 'time',
-            label: 'Time Remaining',
+            hardcoded_label: 'Time Remaining',
+            label: this.$t('pages.staking.time_remaining'),
             align: 'left',
             field: 'until',
             format: val => val.toString(),
@@ -150,16 +164,17 @@ export default {
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn', 'isNative']),
         unstakePeriodPretty() {
-            return formatUnstakePeriod(this.unstakePeriodSeconds);
+            return formatUnstakePeriod(this.unstakePeriodSeconds, this.$t);
         },
         topInputMaxValue() {
             return this.isLoggedIn ? this.stakedBalance : null;
         },
         topInputTooltip() {
             const prettyBalance = ethers.utils.formatEther(this.stakedBalance).toString();
-            return 'Click to input full staked balance\n\n' +
-                'Precise balance (less approximate gas fees):\n' +
-                `${prettyBalance} sTLOS`;
+            // return 'Click to input full staked balance\n\n' +
+            //     'Precise balance (less approximate gas fees):\n' +
+            //     `${prettyBalance} sTLOS`;
+            return this.$t('pages.staking.full_staked_balance_tooltip',{prettyBalance});
         },
         stakedBalance() {
             return BigNumber.from(this.stlosBalance ?? '0').toString();
@@ -182,7 +197,8 @@ export default {
         },
         topInputErrorText() {
             if(this.isLoggedIn && !this.isNative) return;
-            return this.isNative ? 'Login using an EVM wallet' : 'Wallet not connected';
+            // return this.isNative ? 'Login using an EVM wallet' : 'Wallet not connected';
+            return this.isNative ? this.$t('pages.staking.login_using_evm_wallet') : this.$t('pages.staking.wallet_not_connected');
         },
         canDeposit() {
             return this.deposits.length < this.maxDeposits;
@@ -202,7 +218,8 @@ export default {
             if (this.ctaIsLoading)
                 return 'Loading...';
 
-            return this.isLoggedIn ? 'Unstake sTLOS' : 'Connect Wallet';
+            // return this.isLoggedIn ? 'Unstake sTLOS' : 'Connect Wallet';
+            return this.isLoggedIn ? this.$t('pages.staking.unstake_stlos') : this.$t('pages.staking.connect_wallet');
         },
         remainingDeposits() {
             return (this.maxDeposits ?? 0) - this.deposits.length;
@@ -278,8 +295,9 @@ export default {
         notifyMaxDeposits(){
             this.$q.notify({
                 position: 'top',
-                message: 'You have reached the maximum number of pending unstake transactions, please claim available' +
-                    ' TLOS or wait for pending unstaked TLOS to become claimable before making another deposit.',
+                // message: 'You have reached the maximum number of pending unstake transactions, please claim available' +
+                //     ' TLOS or wait for pending unstaked TLOS to become claimable before making another deposit.',
+                message: this.$t('pages.staking.max_unstake_transactions_reached'),
                 timeout: 6000,
             });
         },
