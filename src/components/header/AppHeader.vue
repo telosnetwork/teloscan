@@ -1,5 +1,5 @@
 <template>
-<header class="c-header shadow-2">
+<header v-clickaway="handleClickaway" class="c-header shadow-2">
     <div class="c-header__logo-container u-flex--left">
         <img
             alt="Telos EVM logo"
@@ -79,11 +79,38 @@
                             size="sm"
                         />
                     </div>
+                    <ul v-if="advancedMenuExpanded" class="c-header__advanced-menu-desktop">
+                        <!--    eztodo add clickaway -->
+                        <li class="c-header__menu-li">
+                            <q-icon
+                                name="http"
+                                class="c-header__menu-item-icon"
+                                size="sm"
+                            />
+                            RPC Endpoints
+                        </li>
+                        <li class="c-header__menu-li">
+                            <q-icon
+                                name="monitor_heart"
+                                class="c-header__menu-item-icon"
+                                size="sm"
+                            />
+                            Telos Monitor
+                        </li>
+                        <li class="c-header__menu-li">
+                            <q-icon
+                                name="sync_alt"
+                                class="c-header__menu-item-icon"
+                                size="sm"
+                            />
+                            Teloscan {{ isTestnet ? 'Mainnet' : 'Testnet' }}
+                        </li>
+                    </ul>
                 </div>
             </li>
 
             <template v-if="advancedMenuExpanded">
-                <li class="c-header__menu-li q-pl-lg">
+                <li class="c-header__menu-li c-header__menu-li--advanced-menu q-ml-lg">
                     <q-icon
                         name="http"
                         class="c-header__menu-item-icon"
@@ -91,7 +118,7 @@
                     />
                     RPC Endpoints
                 </li>
-                <li class="c-header__menu-li q-pl-lg">
+                <li class="c-header__menu-li c-header__menu-li--advanced-menu q-ml-lg">
                     <q-icon
                         name="monitor_heart"
                         class="c-header__menu-item-icon"
@@ -99,7 +126,7 @@
                     />
                     Telos Monitor
                 </li>
-                <li class="c-header__menu-li q-pl-lg">
+                <li class="c-header__menu-li c-header__menu-li--advanced-menu q-ml-lg">
                     <q-icon
                         name="sync_alt"
                         class="c-header__menu-item-icon"
@@ -126,12 +153,18 @@
 
 <script>
 import { stlos as stlosLogo } from 'src/lib/logos.js';
+import { directive as clickaway } from 'vue3-click-away';
 
 import LoginStatus from 'components/header/LoginStatus.vue';
 
 export default {
     name: 'AppHeader',
-    components: { LoginStatus },
+    components: {
+        LoginStatus,
+    },
+    directives: {
+        clickaway,
+    },
     data: () => ({
         stlosLogo,
         mobileMenuIsOpen: false,
@@ -140,7 +173,13 @@ export default {
         advancedMenuExpanded: false,
         isTestnet: false,
     }),
-
+    // eztodo add resize listener to close adv. menu
+    methods: {
+        handleClickaway() {
+            this.mobileMenuIsOpen = false;
+            this.advancedMenuExpanded = false;
+        },
+    },
 }
 </script>
 
@@ -153,6 +192,8 @@ export default {
     left: 0;
     height: 48px;
     padding: 0 0 0 16px;
+    z-index: 999;
+    color: black;
 
     display: flex;
     flex-wrap: nowrap;
@@ -258,6 +299,12 @@ export default {
                 display: none;
             }
         }
+
+        &--advanced-menu {
+            @media screen and (min-width: $breakpoint-lg-min) {
+                display: none;
+            }
+        }
     }
 
     &__menu-separator {
@@ -276,6 +323,7 @@ export default {
 
     &__advanced-container {
         width: 100%;
+        position: relative;
     }
 
     &__advanced-container-header {
@@ -283,6 +331,21 @@ export default {
         justify-content: space-between;
         align-items: center;
         cursor: pointer;
+    }
+
+    &__advanced-menu-desktop {
+        display: none;
+
+        @media screen and (min-width: $breakpoint-lg-min) {
+            display: block;
+            position: absolute;
+            top: 36px;
+            left: -48px;
+            background-color: white;
+            padding: 0 16px;
+            width: max-content;
+            border-radius: 0 0 4px 4px;
+        }
     }
 }
 </style>
