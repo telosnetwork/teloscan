@@ -22,6 +22,10 @@
                 size="24px"
             />
         </div>
+
+        <div class="c-header__login-status-desktop">
+            <login-status :is-logged-in="loggedIn" />
+        </div>
     </div>
 
     <div
@@ -154,18 +158,29 @@ export default {
     flex-wrap: nowrap;
     justify-content: space-between;
 
+    @media screen and (min-width: $breakpoint-lg-min) {
+        height: 64px;
+        padding: 0 24px;
+    }
+
     &__logo-container {
         width: 48px;
         height: 48px;
         //display: flex;
         //justify-content: center;
         //align-items: center;
+        @media screen and (min-width: $breakpoint-lg-min) {
+            height: 64px;
+        }
     }
 
     &__right-container {
         display: flex;
         flex-wrap: nowrap;
         height: 48px;
+        @media screen and (min-width: $breakpoint-lg-min) {
+            height: 64px;
+        }
     }
 
     &__search-container {
@@ -174,6 +189,18 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+        @media screen and (min-width: $breakpoint-lg-min) {
+            height: 64px;
+        }
+    }
+
+    &__login-status-desktop {
+        display: none;
+
+        @media screen and (min-width: $breakpoint-lg-min) {
+            display: flex;
+            align-items: center;
+        }
     }
 
     &__menu-icon-container {
@@ -183,6 +210,10 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+
+        @media screen and (min-width: $breakpoint-lg-min) {
+            display: none;
+        }
     }
 
     &__menu-container {
@@ -196,6 +227,10 @@ export default {
 
         display: none;
 
+        @media screen and (min-width: $breakpoint-lg-min) {
+            display: block;
+        }
+
         &--expanded-mobile {
             display: block;
         }
@@ -204,6 +239,12 @@ export default {
     &__menu-ul {
         padding: 0;
         margin: 0;
+
+        @media screen and (min-width: $breakpoint-lg-min) {
+            display: flex;
+            flex-direction: row-reverse;
+            gap: 16px;
+        }
     }
 
     &__menu-li {
@@ -213,12 +254,16 @@ export default {
         align-items: center;
 
         &--login-status {
-            // display none on desktop
+            @media screen and (min-width: $breakpoint-lg-min) {
+                display: none;
+            }
         }
     }
 
     &__menu-separator {
-        // display none on desktop
+        @media screen and (min-width: $breakpoint-lg-min) {
+            display: none;
+        }
     }
 
     &__menu-item-icon {
@@ -236,6 +281,7 @@ export default {
     &__advanced-container-header {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         cursor: pointer;
     }
 }

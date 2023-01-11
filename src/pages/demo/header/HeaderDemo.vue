@@ -53,7 +53,7 @@ export default {
     }
 
     &__container-desktop {
-        display: none;
+        //display: none;
         width: 1920px;
         height: 1080px;
     }
