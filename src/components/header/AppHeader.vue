@@ -9,7 +9,7 @@
     </div>
 
     <div class="c-header__right-container">
-        <div class="c-header__search-container u-flex--center">
+        <div class="c-header__search-container">
             <q-icon
                 name="search"
                 size="24px"
@@ -173,6 +173,9 @@ export default {
     &__search-container {
         width: 48px;
         height: 48px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
     }
 
     &__menu-icon-container {
@@ -180,7 +183,7 @@ export default {
         height: 48px;
         cursor: pointer;
         display: flex;
-        justify-content: center;
+        justify-content: flex-end;
         align-items: center;
     }
 
