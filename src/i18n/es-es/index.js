@@ -1,4 +1,7 @@
 export default {
+    locale: {
+        current_language_name: 'Español',
+    },
     pages: {
         staking: {
             note_unstaking_period: 'Tenga en cuenta que hay un período de recuperación de {period}',

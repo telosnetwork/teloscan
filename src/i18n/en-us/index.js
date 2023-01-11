@@ -1,4 +1,7 @@
 export default {
+    locale: {
+        current_language_name: 'English',
+    },
     pages: {
         staking: {
             note_unstaking_period: 'Please note that there is an unstaking period of {period}',
@@ -176,7 +179,6 @@ export default {
         input: 'Input',
         output: 'Output',
         value: 'Value',
-
     },
     components: {
         verify_prompt: 'This contract has not been verified.  Would you like to upload the contract(s) and metadata to verify source now?',
@@ -315,7 +317,6 @@ export default {
             provided_json_invalid: 'Provided JSON is invalid',
             read_functions: 'Read functions',
             write_functions: 'Write functions',
-            unverified_contract: 'Unverified contract',
         },
     },
     layouts: {

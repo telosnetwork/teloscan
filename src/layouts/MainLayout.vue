@@ -93,6 +93,17 @@
                                 <q-item-label class="flex items-center"><q-icon name="swap_horiz" />  <span class="q-pl-sm">{{  $t('layouts.teloscan_testnet') }}</span> </q-item-label>
                             </q-item-section>
                         </q-item>
+
+                        <q-item dense>
+                            <q-item-section dense>
+                                <q-select v-model="selectedLanguage"
+                                          :options="languageOptions"
+                                          option-value="code"
+                                          option-label="name"
+                                          ref="select"
+                                          dense></q-select>
+                            </q-item-section>
+                        </q-item>
                     </q-list>
                 </q-btn-dropdown>
             </q-toolbar>
@@ -124,6 +135,7 @@ import Search from 'src/components/Search.vue';
 import FooterMain from 'src/components/Footer.vue';
 import ConnectButton from 'src/components/ConnectButton';
 import { stlos } from 'src/lib/logos.js';
+import messages from 'src/i18n';
 
 export default {
     name: 'MainLayout',
@@ -142,6 +154,18 @@ export default {
             accountConnected: false,
             drawer: false,
             clickawayDisabled: false,
+            selectedLanguage: { code: this.$i18n.locale, name: this.$t('locale.current_language_name')},
+            // languageOptions: [
+            //     { code: 'en-us', name: 'English'},
+            //     { code: 'es-es', name: 'Español'},
+            //     ...
+            // ],
+            languageOptions: Object.keys(messages).map((key) => {
+                return {
+                    code: key,
+                    name: messages[key].locale.current_language_name,
+                };
+            }),
         };
     },
     computed: {
@@ -161,7 +185,17 @@ export default {
     created() {
         this.$q.dark.set(localStorage.getItem('darkModeEnabled') !== 'false');
     },
+    watch: {
+        'selectedLanguage.code'() {
+            this.changeLanguage();
+        },
+    },
     methods: {
+        changeLanguage() {
+            console.log('changeLanguage()', this.selectedLanguage.code);
+            console.log('typeof $setLocale.setLocale', typeof this.$setLocale);
+            this.$setLocale(this.selectedLanguage.code);
+        },
         getLoginDisplay() {
             if (this.isLoggedIn)
                 return this.isNative ? this.nativeAccount : this.address;
