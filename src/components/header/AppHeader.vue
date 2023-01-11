@@ -1,6 +1,6 @@
 <template>
 <header class="c-header shadow-2">
-    <div class="c-header__logo-container u-flex--center">
+    <div class="c-header__logo-container u-flex--left">
         <img
             alt="Telos EVM logo"
             src="~assets/evm_logo.png"
@@ -33,23 +33,8 @@
         }"
     >
         <ul class="c-header__menu-ul">
-            <li v-if="loggedIn" class="c-header__menu-li">
-                <q-icon
-                    name="account_circle"
-                    class="c-header__menu-item-icon"
-                    size="sm"
-                />
-                0x...3c3c
-                <q-icon
-                    name="preview"
-                    size="sm"
-                    class="q-px-sm"
-                />
-                <q-icon
-                    name="content_copy"
-                    size="sm"
-                    class="q-px-sm"
-                />
+            <li v-if="loggedIn" class="c-header__menu-li c-header__menu-li--login-status">
+                <login-status :is-logged-in="loggedIn" />
             </li>
 
             <li class="c-header__menu-li">
@@ -139,8 +124,12 @@
 
 <script>
 import { stlos as stlosLogo } from 'src/lib/logos.js';
+
+import LoginStatus from 'components/header/LoginStatus.vue';
+
 export default {
     name: 'AppHeader',
+    components: { LoginStatus },
     data: () => ({
         stlosLogo,
         mobileMenuIsOpen: false,
@@ -228,8 +217,8 @@ export default {
         display: flex;
         align-items: center;
 
-        &__submenu {
-
+        &--login-status {
+            // display none on desktop
         }
     }
 
