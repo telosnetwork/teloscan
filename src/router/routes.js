@@ -74,6 +74,10 @@ const routes = [
             path: 'inputs',
             name: 'inputs-demo',
             component: () => import('pages/demo/inputs/InputsDemo.vue'),
+        }, {
+            path: 'header',
+            name: 'header-demo',
+            component: () => import('pages/demo/header/HeaderDemo.vue'),
         }],
     },
     {
