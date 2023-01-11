@@ -13,7 +13,6 @@
             <q-icon
                 name="search"
                 size="24px"
-                class="c-header__menu-icon"
             />
         </div>
 
@@ -21,7 +20,6 @@
             <q-icon
                 :name="mobileMenuIsOpen ? 'menu_open' : 'menu'"
                 size="24px"
-                class="c-header__menu-icon"
             />
         </div>
     </div>
@@ -150,7 +148,7 @@ export default {
     right: 0;
     left: 0;
     height: 48px;
-    padding: 0 16px;
+    padding: 0 0 0 16px;
 
     display: flex;
     flex-wrap: nowrap;
@@ -174,7 +172,7 @@ export default {
         width: 48px;
         height: 48px;
         display: flex;
-        justify-content: flex-end;
+        justify-content: center;
         align-items: center;
     }
 
@@ -183,15 +181,9 @@ export default {
         height: 48px;
         cursor: pointer;
         display: flex;
-        justify-content: flex-end;
+        justify-content: center;
         align-items: center;
     }
-
-    &__menu-icon {
-        //height: 24px;
-        //width: 24px;
-    }
-
 
     &__menu-container {
         background-color: white;
