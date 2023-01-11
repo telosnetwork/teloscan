@@ -118,12 +118,12 @@ export default {
                 label: 'APY',
                 value: this.stlosApy ?? '--',
                 unit: '%',
-                tooltip: this.$t('staking.stats.tooltip_1'),
+                tooltip: this.$t('pages.staking.tooltip_1'),
             }, {
                 label: 'TVL',
                 value: this.formatWeiForStats(this.stlosTvl, true).replace(/\B(?=(\d{3})+(?!\d))/g, ' '),
                 unit: 'TLOS',
-                tooltip: this.$t('staking.stats.tooltip_2'),
+                tooltip: this.$t('pages.staking.tooltip_2'),
             }];
         },
         personalStats() {
@@ -134,12 +134,12 @@ export default {
                         stlos: this.formatWeiForStats(this.stlosBalance),
                         tlos: this.formatWeiForStats(this.stlosValue),
                     },
-                    tooltip: this.$t('staking.stats.tooltip_3'),
+                    tooltip: this.$t('pages.staking.tooltip_3'),
                 },
                 unstaked: {
                     label: 'Unstaked',
                     value: this.formatWeiForStats(this.totalUnstakedTlosBalance),
-                    tooltip: this.$t('staking.stats.tooltip_4', { unlockPeriod: this.unlockPeriodPretty }),
+                    tooltip: this.$t('pages.staking.tooltip_4', { unlockPeriod: this.unlockPeriodPretty }),
                 },
             };
         },

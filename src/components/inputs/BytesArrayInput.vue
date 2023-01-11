@@ -66,8 +66,8 @@ export default {
                 return Array.isArray(parseBytesArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage = `There should be ${+this.size} bytes in the array`;
-            const invalidArrayStringMessage = 'Entered value does not represent an array of bytes';
+            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_bytes_array_length', { size: +this.size });
+            const invalidArrayStringMessage = this.$t('components.inputs.invalid_bytes_array_string');
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,

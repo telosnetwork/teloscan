@@ -42,9 +42,9 @@ export default {
     },
     computed: {
         rules() {
-            const errMessageInvalidLength = 'An address must be exactly 40 characters, not including "0x"';
-            const errMessageStartsWith0x = 'An address must begin with 0x';
-            const errMessageInvalidInput = 'Entry contains invalid characters';
+            const errMessageInvalidLength = this.$t('components.inputs.invalid_address_length');
+            const errMessageStartsWith0x = this.$t('components.inputs.invalid_address_start');
+            const errMessageInvalidInput = this.$t('components.inputs.invalid_address_characters');
 
             const startsWith0xRegex = /(^0x)|(^$)/;
             const addressRegex = /(^0x[0-9a-fA-F]{40}$)|(^$)/;

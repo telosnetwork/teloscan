@@ -11,39 +11,6 @@ const TRANSFER_EVENT_ERC20_SIGNATURE = '0xddf252ad1be2c89b69c2b068fc378daa952ba7
 const TRANSFER_EVENT_ERC1155_SIGNATURE = '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62';
 const TOKEN_ID_TRUNCATE_LENGTH = 66;
 
-// TODO: Add icon column and render it
-const columns = [
-    {
-        name: 'hash',
-        label: this.$('components.tx_hash'),
-        align: 'left',
-    },
-    {
-        name: 'date',
-        label: this.$('components.date'),
-        align: 'left',
-    },
-    {
-        name: 'from',
-        label: this.$('components.from'),
-        align: 'left',
-    },
-    {
-        name: 'to',
-        label: this.$('components.to'),
-        align: 'left',
-    },
-    {
-        name: 'value',
-        label: this.$('components.value'),
-        align: 'left',
-    },{
-        name: 'token',
-        label: this.$('components.token'),
-        align: 'left',
-    },
-];
-
 export default {
     name: 'TransferTable',
     components: {
@@ -70,6 +37,40 @@ export default {
         },
     },
     data() {
+        // TODO: Add icon column and render it
+        const columns = [
+            {
+                name: 'hash',
+                label: this.$t('components.tx_hash'),
+                align: 'left',
+            },
+            {
+                name: 'date',
+                label: this.$t('components.date'),
+                align: 'left',
+            },
+            {
+                name: 'from',
+                label: this.$t('components.from'),
+                align: 'left',
+            },
+            {
+                name: 'to',
+                label: this.$t('components.to'),
+                align: 'left',
+            },
+            {
+                name: 'value',
+                label: this.$t('components.value'),
+                align: 'left',
+            },{
+                name: 'token',
+                label: this.$t('components.token'),
+                align: 'left',
+            },
+        ];
+
+
         return {
             rows: [],
             columns,

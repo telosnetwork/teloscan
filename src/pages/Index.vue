@@ -16,7 +16,7 @@ export default {
 q-page.pageContainer
     .row.justify-center.q-py-lg
       .text-h4.text-primary.title.q-mt-xl.bold
-        | {{ $t('telos_evm_explorer') }}
+        | {{ $t('pages.telos_evm_explorer') }}
     .row.q-pt-xl.q-pb-md.tableWrapper
       .col-12
         HomeInfo

@@ -128,7 +128,6 @@ export default {
                 } catch (e) {
                     this.$q.notify({
                         position: 'top',
-                        harcoded_message: `Search for EVM address linked to ${accountName} native account failed.  You can create one at wallet.telos.net`,
                         message: this.$t('components.search_evm_address_failed', {accountName}),
                         timeout: 6000,
                     });
@@ -246,8 +245,7 @@ export default {
     <q-btn
         v-if="!isLoggedIn"
         id="c-connect-button__login-button"
-        hardcoded_label="Connect Wallet"
-        label="$t('components.connect_wallet')"
+        :label="$t('components.connect_wallet')"
         @click="connect"
     />
 
@@ -274,8 +272,8 @@ export default {
     <q-dialog v-model="showLogin">
         <q-card rounded class="c-connect-button__modal-inner">
             <q-tabs v-model="tab">
-                <q-tab name="web3" label="$t('components.evm_wallets')"></q-tab>
-                <q-tab name="native" label="$t('components.advanced')"></q-tab>
+                <q-tab name="web3" :label="$t('components.evm_wallets')"></q-tab>
+                <q-tab name="native" :label="$t('components.advanced')"></q-tab>
             </q-tabs>
             <q-separator/>
             <q-tab-panels v-model="tab" animated>

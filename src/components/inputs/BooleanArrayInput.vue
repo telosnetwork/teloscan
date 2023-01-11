@@ -64,8 +64,8 @@ export default {
                 return Array.isArray(parseBooleanArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage = `There should be ${+this.size} booleans in the array`;
-            const invalidArrayStringMessage = 'Entered value does not represent an array of bool';
+            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_booleans_array_length', { size: +this.size });
+            const invalidArrayStringMessage = this.$t('components.inputs.invalid_booleans_array_string');
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,

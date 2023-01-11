@@ -11,19 +11,19 @@
     <q-btn-group>
         <q-btn
             :outline="codeSeleted"
-            label="Code"
+            :label="$t('components.contract_tab.code')"
             push
             @click="source = true"
         />
         <q-btn
             :outline="readSelected"
-            label="Read"
+            :label="$t('components.contract_tab.read')"
             push
             @click="source = false; write = false"
         />
         <q-btn
             :outline="writeSelected"
-            label="Write"
+            :label="$t('components.contract_tab.write')"
             push
             @click="source = false; write = true"
         />

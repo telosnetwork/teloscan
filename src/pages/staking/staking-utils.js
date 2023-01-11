@@ -16,15 +16,12 @@ export function formatUnstakePeriod(seconds, $t) {
 
     if (seconds < HOUR_SECONDS) {
         quantity = seconds / 60;
-        // unit = 'minutes';
         unit = $t('pages.staking.minutes');
     } else if (seconds < DAY_SECONDS) {
         quantity = seconds / HOUR_SECONDS;
-        // unit = 'hours';
         unit = $t('pages.staking.hours');
     } else {
         quantity = seconds / DAY_SECONDS;
-        // unit = 'days';
         unit = $t('pages.staking.days');
     }
 

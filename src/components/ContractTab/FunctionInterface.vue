@@ -13,26 +13,26 @@
                     v-if="selectDecimals.value === 'custom'"
                     v-model.number="customDecimals"
                     type="number"
-                    label="Custom decimals"
+                    :label="$t('components.contract_tab.custom_decimals')"
                     @change="updateDecimals"
                 />
                 <q-input
                     v-model="amountInput"
-                    label="Amount"
+                    :label="$t('components.contract_tab.amount')"
                     type="number"
                 />
                 <q-card-actions align="right">
                     <q-btn
                         v-close-popup
                         flat="flat"
-                        label="Ok"
+                        :label="$t('components.contract_tab.ok')"
                         color="primary"
                         @click="setAmount"
                     />
                     <q-btn
                         v-close-popup
                         flat="flat"
-                        label="Cancel"
+                        :label="$t('components.contract_tab.cancel')"
                         color="primary"
                         @click="clearAmount"
                     />
@@ -43,7 +43,7 @@
     <div v-if="abi.stateMutability === 'payable'" class="q-pb-md">
         <unsigned-int-input
             v-model="value"
-            label="Value"
+            :label="$t('components.contract_tab.value')"
             name="value"
             size="256"
             required="true"
@@ -116,23 +116,6 @@ import {
 
 import TransactionField from 'components/TransactionField';
 
-const decimalOptions = [{
-    label: '18 - TLOS/ETH/etc..',
-    value: 18,
-}, {
-    label: '9 - Gwei',
-    value: 9,
-}, {
-    label: '8 - BTC',
-    value: 8,
-}, {
-    label: '0 - Wei',
-    value: 0,
-}, {
-    label: 'Custom',
-    value: 'custom',
-}];
-
 
 export default {
     name: 'FunctionInterface',
@@ -154,27 +137,46 @@ export default {
             default: null,
         },
     },
-    data : () => ({
-        loading: false,
-        errorMessage: '',
-        decimalOptions,
-        result: null,
-        hash: null,
-        enterAmount: false,
-        amountInput: 0,
-        amountParam: null,
-        amountDecimals: 0,
-        selectDecimals: decimalOptions[0],
-        customDecimals: 0,
-        value: '0',
-        inputModels: [],
-        params: [],
-        valueParam: {
-            'name': 'value',
-            'type': 'amount',
-            'internalType': 'amount',
-        },
-    }),
+    data : () => {
+        const decimalOptions = [{
+            label: '18 - TLOS/ETH/etc..',
+            value: 18,
+        }, {
+            label: '9 - Gwei',
+            value: 9,
+        }, {
+            label: '8 - BTC',
+            value: 8,
+        }, {
+            label: '0 - Wei',
+            value: 0,
+        }, {
+            label: this.$t('components.contract_tab.custom'),
+            value: 'custom',
+        }];
+
+        return {
+            loading: false,
+            errorMessage: '',
+            decimalOptions,
+            result: null,
+            hash: null,
+            enterAmount: false,
+            amountInput: 0,
+            amountParam: null,
+            amountDecimals: 0,
+            selectDecimals: decimalOptions[0],
+            customDecimals: 0,
+            value: '0',
+            inputModels: [],
+            params: [],
+            valueParam: {
+                'name': 'value',
+                'type': 'amount',
+                'internalType': 'amount',
+            },
+        }
+    },
     computed: {
         ...mapGetters('login', [
             'address',

@@ -16,7 +16,7 @@ export default {
         text-color="blue"
         unelevated
         to="/"
-        label="$t('pages.go_homr')"
+        :label="$t('pages.go_home')"
         no-caps
       )
 </template>

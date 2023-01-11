@@ -13,15 +13,13 @@
                 <q-btn
                     flat
                     color="black"
-                    hardcoded_label="Dismiss"
-                    label="$t('pages.staking.dismiss')"
+                    :label="$t('pages.staking.dismiss')"
                     @click="hideClaimBanner"
                 />
                 <q-btn
                     flat
                     color="black"
-                    hardcoded_label="Claim TLOS"
-                    label="$t('pages.staking.claim_tlos')"
+                    :label="$t('pages.staking.claim_tlos')"
                     @click="$router.push({ hash: '#claim' })"
                 />
             </template>
@@ -59,19 +57,13 @@
         <q-card>
             <q-card-section>
                 <p>
-                    <!-- Continuing will stake TLOS in exchange for sTLOS.
-                    TLOS can be redeemed for TLOS at any time using the Unstake tab. -->
                     {{ $t('pages.staking.stake_tlos_confirm') }}
                 </p>
                 <p>
-                    <!-- After TLOS has been unstaked, it will be locked for a period of     -->
-                    <!-- <span class="text-primary">{{ unstakePeriodPretty }}</span>,        -->
-                    <!-- after which it can be withdrawn to your account from the Claim tab. -->
                     {{ $t('pages.staking.stake_tlos_confirm_2a' ) }}
                     <span class="text-primary">{{ unstakePeriodPretty }}</span>,
                     {{ $t('pages.staking.stake_tlos_confirm_2b' ) }}
                 </p>
-                <!-- Would you like to proceed? -->
                 <p>{{ $t('pages.staking.stake_tlos_confirm_3' ) }}</p>
             </q-card-section>
 
@@ -80,26 +72,23 @@
                     v-if="showMetamaskPrompt"
                     class="c-stake-form__metamask-prompt u-flex--center-y"
                     tabindex="0"
-                    hardcoded-aria-label="Launch MetaMask dialog to add sTLOS"
-                    aria-label="$t('pages.staking.add_stlos_to_metamask')"
+                    aria-:label="$t('pages.staking.add_stlos_to_metamask')"
 
                     @click="promptAddToMetamask"
                 >
-                    Add sTLOS to MetaMask
+                    {{ $t('pages.staking.add_stlos_to_metamask') }}
                     <img
                         :src="MetaMaskLogo"
                         class="q-ml-xs"
                         height="24"
                         width="24"
-                        hardcoded-alt="MetaMask Fox Logo"
-                        alt="$t('pages.staking.metamask_fox_logo')"
+                        :alt="$t('pages.staking.metamask_fox_logo')"
                     >
                 </p>
                 <q-btn
                     v-close-popup
                     flat
-                    hardcoded_label="Cancel"
-                    label="$t('pages.staking.cancel')"
+                    :label="$t('pages.staking.cancel')"
                     color="negative"
                 />
                 <q-btn
@@ -218,7 +207,6 @@ export default {
 
             const balanceTlos = ethers.utils.commify(balanceEth);
 
-            // return `${balanceTlos} Available`;
             return this.$t('pages.staking.available', {balanceTlos});
         },
         topInputErrorText() {
@@ -226,10 +214,8 @@ export default {
 
             if (this.isLoggedIn) {
                 if (walletBalanceBn.lt(reservedForGasBn) && !this.isNative)
-                    // return 'Insufficient TLOS balance to stake';
                     return this.$t('pages.staking.insufficient_tlos_balance');
                 else if(this.isNative)
-                    // return 'Login using an EVM wallet'
                     return this.$t('pages.staking.login_using_an_evm_wallet');
                 else
                     return '';
@@ -240,10 +226,6 @@ export default {
         },
         topInputTooltip() {
             const prettyBalance = ethers.utils.formatEther(this.usableWalletBalance).toString();
-            // return 'Click to input full wallet balance\n\n' +
-            //        'Balance displayed is reduced by 1 TLOS to keep your account actionable.\n' +
-            //        'Precise balance (less approximate gas fees):\n' +
-            //        `{prettyBalance} TLOS`;
             return this.$t('pages.staking.click_to_input_full_wallet_balance', {prettyBalance});
         },
         ctaIsDisabled() {
@@ -262,19 +244,15 @@ export default {
         },
         ctaText() {
             if (this.ctaIsLoading)
-                // return 'Loading...';
                 return this.$t('pages.staking.loading');
 
             if (this.isLoggedIn) {
                 if (this.walletBalanceBn.lt(reservedForGasBn))
-                    // return 'Get more TLOS';
                     return this.$t('pages.staking.get_more_tlos');
                 else
-                    // return 'Stake TLOS';
                     return this.$t('pages.staking.stake_tlos');
             }
 
-            // return 'Connect Wallet';
             return this.$t('pages.staking.connect_wallet');
         },
         showClaimBanner() {

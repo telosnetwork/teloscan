@@ -126,9 +126,9 @@ export default {
             } else if (isVerifiedContract) {
                 this.title = this.contract.getName();
             } else if (this.isContract) {
-                this.title = /*'Contract'*/ this.$t('pages.contract');
+                this.title = this.$t('pages.contract');
             } else {
-                this.title = /*'Account'*/ this.$t('pages.account');
+                this.title = this.$t('pages.account');
             }
 
             this.accountLoading = false;
@@ -166,28 +166,28 @@ export default {
           ConfirmationDialog.text-secondary(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
           CopyButton.text-secondary(:text="address" :accompanyingText="address" description="address")
           span(v-if='contract')
-            .text-white Created at trx&nbsp
+            .text-white {{ $t('pages.created_at_trx' )}} &nbsp
               TransactionField(:transaction-hash="contract.getCreationTrx()" )
-            .text-white by address&nbsp
+            .text-white {{ $t('pages.by_address') }} &nbsp
               AddressField(:address="contract.getCreator()")
           small(v-else)
-            .text-white Number used once (nonce):
+            .text-white {{ $t('pages.number_used_once') }}: &nbsp
               span.q-pl-xs {{ nonce }}
         .dataCardsContainer()
           .dataCardItem(v-if="!!telosAccount")
-            .dataCardTile Native account
+            .dataCardTile {{ $t('pages.native_account') }}
             .dataCardData
               a(:href="getAddressNativeExplorerURL()" target="_blank") {{ telosAccount }}
           .dataCardItem(v-if="!!balance" class="balance ")
-            .dataCardTile Balance
+            .dataCardTile {{ $t('pages.balance') }}
             .dataCardData {{balance}}
       q-tabs.tabs-header( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar topRounded text-white tableWrapper" :class='{"q-dark": $q.dark.isActive}' )
-        q-route-tab(name="transactions" :to="{ hash: '#transactions' }" exact replace label="$t('pages.transactions')")
-        q-route-tab(name="erc20_transfers" :to="{ hash: '#erc20' }" exact replace label="$t('pages.erc20_transfers')")
-        q-route-tab(name="erc721_transfers" :to="{ hash: '#erc721' }" exact replace label="$t('pages.erc721_transfers')")
-        q-route-tab(name="erc1155_transfers" :to="{ hash: '#erc1155' }" exact replace label="$t('pages.erc1155_transfers')")
-        q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace label="$t('pages.tokens')")
-        q-route-tab(v-if="isContract" name="contract" :to="{ hash: '#contract' }" exact replace label="$t('pages.contract')")
+        q-route-tab(name="transactions" :to="{ hash: '#transactions' }" exact replace :label="$t('pages.transactions')")
+        q-route-tab(name="erc20_transfers" :to="{ hash: '#erc20' }" exact replace :label="$t('pages.erc20_transfers')")
+        q-route-tab(name="erc721_transfers" :to="{ hash: '#erc721' }" exact replace :label="$t('pages.erc721_transfers')")
+        q-route-tab(name="erc1155_transfers" :to="{ hash: '#erc1155' }" exact replace :label="$t('pages.erc1155_transfers')")
+        q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace :label="$t('pages.tokens')")
+        q-route-tab(v-if="isContract" name="contract" :to="{ hash: '#contract' }" exact replace :label="$t('pages.contract')")
       .q-mb-md.tableWrapper
         q-tab-panels( v-model="tab" animated keep-alive class="shadow-2"  :key="address" )
           q-tab-panel( name="transactions" )

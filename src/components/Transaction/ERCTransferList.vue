@@ -50,7 +50,7 @@ div(class="fit row wrap justify-start items-start content-start")
         strong {{ $t('components.transaction.form_to') }}
         <AddressField :highlight="trxFrom === transfer.to && transfers.length > 1" :address="transfer.to" :truncate="15" copy :name="contract && transfer.to === contract.address && contract.name ?  contract.name : null" />
       div.flex(v-if="type === 'ERC721' || type==='ERC1155'" class="col-4")
-        strong.col-2 {{$t('components.transaction.form_token') }}
+        strong.col-2 {{ $t('components.transaction.form_token') }}
         router-link(:to="'/address/' + transfer.token.address" class="q-ml-xs") {{ transfer.token.symbol }}
         div.col
           span(v-if="transfer.tokenId.length > 15")
@@ -72,7 +72,7 @@ div(class="fit row wrap justify-start items-start content-start")
                 q-icon(name="image" size="14px" class="q-pb-sm q-ml-xs")
               q-tooltip {{ $t('components.transaction.consult_media') }}
       div(v-else class="col-5")
-        strong {{$t('components.transaction.form_token') }}
+        strong {{ $t('components.transaction.form_token') }}
         span.clickable(@click="transfer.showWei = !transfer.showWei")
             span(v-if="transfer.showWei") {{ BigNumber.from(transfer.value) }}
                 q-tooltip {{ $t('components.transaction.show_total') }} 

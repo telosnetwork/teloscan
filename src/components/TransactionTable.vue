@@ -7,44 +7,6 @@ import MethodField from 'components/MethodField';
 import { formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
-const columns = [
-    {
-        name: 'hash',
-        label: this.$('components.tx_hash'),
-        align: 'left',
-    },
-    {
-        name: 'block',
-        label: this.$('components.block'),
-        align: 'left',
-    },
-    {
-        name: 'date',
-        label: this.$('components.date'),
-        align: 'left',
-    },
-    {
-        name: 'method',
-        label: this.$('components.method'),
-        align: 'left',
-    },
-    {
-        name: 'from',
-        label: this.$('components.from'),
-        align: 'left',
-    },
-    {
-        name: 'to',
-        label: this.$('components.to_interacted_with'),
-        align: 'left',
-    },
-    {
-        name: 'value',
-        label: this.$('components.value_transfer'),
-        align: 'left',
-    },
-];
-
 export default {
     name: 'TransactionTable',
     components: {
@@ -69,6 +31,44 @@ export default {
         },
     },
     data() {
+        const columns = [
+            {
+                name: 'hash',
+                label: this.$t('components.tx_hash'),
+                align: 'left',
+            },
+            {
+                name: 'block',
+                label: this.$t('components.block'),
+                align: 'left',
+            },
+            {
+                name: 'date',
+                label: this.$t('components.date'),
+                align: 'left',
+            },
+            {
+                name: 'method',
+                label: this.$t('components.method'),
+                align: 'left',
+            },
+            {
+                name: 'from',
+                label: this.$t('components.from'),
+                align: 'left',
+            },
+            {
+                name: 'to',
+                label: this.$t('components.to_interacted_with'),
+                align: 'left',
+            },
+            {
+                name: 'value',
+                label: this.$t('components.value_transfer'),
+                align: 'left',
+            },
+        ];
+
         return {
             rows: [],
             columns,

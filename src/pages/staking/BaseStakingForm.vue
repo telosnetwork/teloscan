@@ -36,7 +36,6 @@
 
                 <div class="col-xs-12 col-sm-8 u-flex--center-y">
                     <p class="c-base-staking-form__footer-p">
-                        <!-- Please note that there is an unstaking period of {{ unstakePeriodPretty }} -->
                         {{ $t('pages.staking.note_unstaking_period', { period: unstakePeriodPretty }) }}
                     </p>
                 </div>

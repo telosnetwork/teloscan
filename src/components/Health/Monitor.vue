@@ -4,28 +4,6 @@ const API_URL = ('' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40') ? 'https:/
 const API_ENDPOINT_TASKS = API_URL + '/tasks';
 const API_ENDPOINT_STATUSES = API_URL + '/task_status';
 
-const columns = [
-    {
-        name: 'status',
-        label: 'Status',
-        align: 'left',
-    },
-    {
-        name: 'checked_at',
-        label: 'Checked at',
-        align: 'left',
-    },
-    {
-        name: 'task',
-        label: 'Task',
-        align: 'left',
-    },
-    {
-        name: 'message',
-        label: 'Message',
-        align: 'left',
-    },
-]
 export default {
     name: 'MonitorComponent',
     async mounted() {
@@ -35,6 +13,29 @@ export default {
         });
     },
     data() {
+        const columns = [
+            {
+                name: 'status',
+                label: this.$t('components.health.status'),
+                align: 'left',
+            },
+            {
+                name: 'checked_at',
+                label: this.$t('components.health.checked_at'),
+                align: 'left',
+            },
+            {
+                name: 'task',
+                label: this.$t('components.health.task'),
+                align: 'left',
+            },
+            {
+                name: 'message',
+                label: this.$t('components.health.message'),
+                align: 'left',
+            },
+        ]
+
         return {
             rows: [],
             tasks: [],
