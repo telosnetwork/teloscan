@@ -1,39 +1,33 @@
 <script>
-const searchHints = ['Transaction', 'Address', 'Block'];
+import { directive as clickaway } from 'vue3-click-away';
 
 export default {
-    name: 'SearchBar',
-    props: {
-        toolbar: {
-            type: Boolean,
-            default: false,
-        },
+    name: 'HeaderSearch',
+    directives: {
+        clickaway,
     },
     data() {
         return {
+            inputHiddenMobile: true,
             searchTerm: null,
-            searchHint: searchHints[0],
             searchHintIndex: 0,
             TIME_DELAY: 6000,
         };
     },
-    mounted() {
-        setInterval(() => {
-            this.searchHintIndex =
-        this.searchHintIndex == searchHints.length - 1
-            ? 0
-            : ++this.searchHintIndex;
-            this.searchHint = searchHints[this.searchHintIndex];
-        }, 2000);
-    },
     methods: {
+        async iconClicked() {
+            this.inputHiddenMobile = false;
+
+            await this.$nextTick();
+            this.$refs.input.focus();
+        },
         async search() {
             if (!this.searchTerm)
                 return;
 
             this.searchTerm = this.searchTerm.trim().replace(/\s/, '');
             if (this.searchTerm.startsWith('0x')) {
-                if (this.searchTerm.length == 42) {
+                if (this.searchTerm.length === 42) {
                     this.$router.push(`/address/${this.searchTerm}`);
                     return;
                 } else {
@@ -74,33 +68,55 @@ export default {
 };
 </script>
 
-<template lang='pug'>
-div
-  q-input.q-ml-md(
-    v-if="this.toolbar"
-    dark
-    dense
-    standout
-    input-class="text-right"
-    :placeholder="searchHint"
-    v-model="searchTerm"
-    @keydown.enter="search"
-  )
-    template( v-slot:append )
-      q-icon( v-if="searchTerm == null" name="search" )
-      q-icon.cursor-pointer( v-else name="clear" @click="searchTerm = null" )
-  q-input(
-    v-if="!this.toolbar"
-    borderless
-    :placeholder="searchHint"
-    v-model="searchTerm"
-    @keydown.enter="search"
-  )
-    template( v-slot:append )
-      q-icon.cursor-pointer(
-        v-if="searchTerm !== null"
-        name="close"
-        @click="searchTerm = null"
-      )
-      q-icon( name="search" @click="search" )
+<template>
+<div class="c-search" v-clickaway="() => inputHiddenMobile = true">
+    <q-icon
+        v-show="$q.screen.lt.lg && inputHiddenMobile"
+        name="search"
+        size="24px"
+        @click="iconClicked"
+    />
+    <q-input
+        ref="input"
+        v-show="!$q.screen.lt.lg || !inputHiddenMobile"
+        v-model="searchTerm"
+        class="c-search__input"
+        dense
+        standout="bg-grey-3"
+        hide-bottom-space
+        placeholder="Address, Tx, Block"
+        @keydown.enter="search"
+    >
+        <template v-slot:append>
+            <q-icon
+                v-if="!searchTerm"
+                name="search"
+                size="24px"
+                @click="() => $refs.input.focus()"
+            />
+            <q-icon
+                v-else
+                name="clear"
+                size="24px"
+                @click="searchTerm = null"
+            />
+        </template>
+    </q-input>
+</div>
 </template>
+
+<style lang="scss">
+.c-search {
+    @media screen and (min-width: $breakpoint-lg-min) {
+        width: 500px;
+    }
+
+    // quasar overrides
+    .q-field--standout.q-field--highlighted {
+        .q-field__native,
+        .q-field__append {
+            color: $dark;
+        }
+    }
+}
+</style>

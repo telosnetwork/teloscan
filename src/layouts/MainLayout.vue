@@ -109,38 +109,6 @@ export default {
 .q-header
   position: relative
 
-body.body--light .q-drawer
- color: black
-
-.connect-button
-    background: #282828
-    color: #ffffff
-    border-radius: 5px
-
-body.body--light .connect-button
-    background: #ffffff
-    color: black
-
-
-@media screen and (max-width: 768px)
-    .taskbarSearch
-        display: none
-    .q-drawer
-        margin-top: 50px
-@media only screen and (max-width: 550px)
-    .q-btn-dropdown.q-ml-sm
-        margin-left: 0
-        padding: 4px 0px 4px 8px
-
-    #dark-mode-toggle
-        padding-right: 5px
-        .q-icon
-            font-size: 1.3em
-    #logo
-        .text-h5
-            font-size: 1.3rem
-        img
-            width: 32px
 
 @media only screen and (max-width: 400px)
     #logo

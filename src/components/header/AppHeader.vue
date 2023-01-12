@@ -11,10 +11,7 @@
 
     <div class="c-header__right-container">
         <div class="c-header__search-container">
-            <q-icon
-                name="search"
-                size="24px"
-            />
+            <header-search />
         </div>
 
         <div class="c-header__menu-icon-container" @click="mobileMenuIsOpen = !mobileMenuIsOpen">
@@ -142,6 +139,7 @@
 </template>
 
 <script>
+import HeaderSearch from 'components/header/HeaderSearch.vue';
 import { stlos as stlosLogo } from 'src/lib/logos.js';
 import { directive as clickaway } from 'vue3-click-away';
 
@@ -150,6 +148,7 @@ import LoginStatus from 'components/header/LoginStatus.vue';
 export default {
     name: 'AppHeader',
     components: {
+        HeaderSearch,
         LoginStatus,
     },
     directives: {
@@ -199,7 +198,7 @@ export default {
     height: 48px;
     padding: 0 0 0 16px;
     z-index: 999;
-    color: black;
+    color: $dark;
 
     display: flex;
     flex-wrap: nowrap;
@@ -242,12 +241,14 @@ export default {
     }
 
     &__search-container {
-        width: 48px;
+        //width: 48px;
         height: 48px;
         display: flex;
         justify-content: center;
         align-items: center;
+
         @media screen and (min-width: $breakpoint-lg-min) {
+            margin-right: 16px;
             height: 64px;
         }
     }
@@ -282,11 +283,14 @@ export default {
         left: 0;
         padding: 0 16px;
         width: 100%;
+        box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
+
 
         display: none;
 
         @media screen and (min-width: $breakpoint-lg-min) {
             display: block;
+            top: 64px;
         }
 
         &--expanded-mobile {
@@ -307,11 +311,24 @@ export default {
 
     &__menu-li {
         list-style: none;
-        margin: 12px 0;
+        padding: 12px 0;
         display: flex;
         align-items: center;
         cursor: pointer;
         user-select: none;
+        border-radius: 4px;
+
+        &:hover,
+        &:focus,
+        &:active {
+            @media screen and (min-width: $breakpoint-lg-min) {
+                background-color: $grey-3;
+            }
+        }
+
+        @media screen and (min-width: $breakpoint-lg-min) {
+            padding: 12px 16px;
+        }
 
         &--login-status {
             @media screen and (min-width: $breakpoint-lg-min) {
@@ -358,14 +375,15 @@ export default {
         display: none;
 
         @media screen and (min-width: $breakpoint-lg-min) {
+            padding: 0;
             display: block;
             position: absolute;
             top: 36px;
             left: -48px;
             background-color: white;
-            padding: 0 16px;
             width: max-content;
             border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
         }
     }
 }
