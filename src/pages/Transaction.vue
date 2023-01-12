@@ -129,6 +129,13 @@ export default {
                                     token = await this.$contractManager.loadTokenMetadata(log.address, contract.token, tokenId);
                                 } catch (e) {
                                     console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
+                                    // notify the user
+                                    this.$q.notify({
+                                        message: this.$t('pages.couldnt_retreive_metadata_for_address', { address: contract.address, message: e.message }),
+                                        color: 'negative',
+                                        position: 'top',
+                                        timeout: 5000,
+                                    });
                                 }
                             }
                             this.erc721_transfers.push({
@@ -144,6 +151,13 @@ export default {
                                     token = await this.$contractManager.loadTokenMetadata(log.address, contract.token, tokenId);
                                 } catch (e) {
                                     console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
+                                    // notify the user
+                                    this.$q.notify({
+                                        message: this.$t('pages.couldnt_retreive_metadata_for_address', { address: contract.address, message: e.message }),
+                                        color: 'negative',
+                                        position: 'top',
+                                        timeout: 5000,
+                                    });
                                 }
                             }
                             this.erc1155_transfers.push({
@@ -236,9 +250,9 @@ export default {
   .row
     .col-12.q-px-md
       .text-h4.text-primary.q-mb-lg.title.q-pt-xl
-        | Transaction Details
+        | {{ $t('pages.transaction_details') }}
       .text-h6.q-mb-lg.text-white( v-if="trxNotFound" )
-        | Not found: {{ hash }}
+        | {{ $t('pages.transaction_not_found', { hash }) }}
   .row.tableWrapper
     .col-12.q-py-lg
       .content-container( v-if="trx"  :key="erc20_transfers.length + isContract" )
@@ -255,28 +269,28 @@ export default {
             :to="{ hash: '#general' }"
             exact
             replace
-            label="General"
+            :label="$t('pages.general')"
           )
           q-route-tab(
             name="details"
             :to="{ hash: '#details' }"
             exact
             replace
-            label="Details"
+            :label="$t('pages.details')"
           )
           q-route-tab(
             name="logs"
             :to="{ hash: '#eventlog' }"
             exact
             replace
-            label="Logs"
+            :label="$t('pages.logs')"
           )
           q-route-tab.topRightRounded(
             name="internal"
             :to="{ hash: '#internal' }"
             exact
             replace
-            label="Internal Txns"
+            :label="$t('pages.internal_txns')"
           )
         q-tab-panels.column.shadow-2(
           v-model="tab"
@@ -288,119 +302,120 @@ export default {
             br
             div(class="fit row wrap justify-start items-start content-start")
                 div(class="col-3")
-                  strong.wrapStrong Transaction Hash:&nbsp;
+                  strong.wrapStrong {{ $t('pages.transaction_hash') }}:&nbsp;
                 div(class="col-9")
                   span {{ hash }}
                   copy-button(:text="hash")
             br
             div(class="fit row wrap justify-start items-start content-start")
                 div(class="col-3")
-                  strong {{ `Block Number: ` }}
+                
+                  strong {{ $t('pages.block_number') }}:&nbsp;
                 div(class="col-9")
                   block-field( :block="trx.block" )
             br
             div( @click="showAge = !showAge" class="fit row wrap justify-start items-start content-start date")
                 div(class="col-3"  )
-                  strong {{ `Date: ` }}
+                  strong {{ $t('pages.date') }}:&nbsp;
                 div.u-flex--left
                   q-icon(class="far fa-clock q-mr-xs")
                   date-field( :epoch="trx.epoch" :show-age="showAge" )
-                  q-tooltip Click to change date format
+                  q-tooltip {{ $t('pages.click_to_change_date_format') }}
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
-                strong {{ `Status: ` }}
+                strong {{ $t('pages.status') }}:&nbsp;
               div(class="col-9" style="padding: 5px 0px;")
                 span(v-if="trx.status == 1", class="positive")
                   q-icon(name='check')
-                  span {{ "Success" }}
+                  span {{ $t('pages.success') }}
                 span(v-else, class="negative")
                   q-icon(name='warning')
-                  span {{ "Failure" }}
+                  span {{ $t('pages.failure') }}
             br
             div( v-if="errorMessage", class="fit row wrap justify-start items-start content-start" )
               div(class="col-3")
-                strong {{ `Error message: ` }}
+                strong {{ $t('pages.error_message') }}:&nbsp;
               div(class="col-9")
                 span.text-negative {{ errorMessage }}
             br( v-if="errorMessage" )
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
-                strong {{ `From: ` }}
+                strong {{ $t('pages.from') }}:&nbsp;
               div(class="col-9 word-break")
                 address-field(:address="trx.from" :truncate="0" :highlight="erc20_transfers.length + erc721_transfers.length > 1" copy)
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
-                strong {{ `To: ` }}
+                strong {{ $t('pages.to') }}:&nbsp;
               div(class="col-9 word-break")
                 address-field( :address="trx.to" :is-contract-trx="!!contract"  :truncate="0" copy)
             br
             div( v-if="isContract", class="fit row wrap justify-start items-start content-start" )
               div(class="col-3")
-                strong {{ `Contract function: ` }}
+                strong {{ $t('pages.contract_function') }}:&nbsp;
               div(class="col-9")
                 MethodField( :contract="contract" :trx="methodTrx" shortenSignature )
             br(v-if="isContract")
             div( v-if="isContract && params.length > 0" class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
-                strong {{ `Function parameters: ` }}
+                strong {{ $t('pages.function_parameters') }}:&nbsp;
               div(class="col" id="function-parameters")
                 ParameterList(:params="params" :contract="contract" :trxFrom="trx.from")
             br( v-if="isContract && params.length > 0" )
             div( v-if="trx.createdaddr", class="fit row wrap justify-start items-start content-start" )
               div(class="col-3")
-                strong {{ `Deployed contract: ` }}
+                strong {{ $t('pages.deployed_contract') }}:&nbsp;
               div(class="col-9 word-break")
                 AddressField( :address="trx.createdaddr" )
             br( v-if="trx.createdaddr" )
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
-                strong {{ `Value: ` }}
+                strong {{ $t('pages.value') }}:&nbsp;
               div(class="col-9 clickable" @click="showWei = !showWei")
                 div(v-if="showWei")
                     span {{ trx.value }}
                 span(v-else)
-                    span {{ formatWei(trx.value, 18) }} TLOS
-                    q-tooltip Click to show in wei
+                    span {{ $t('pages.balance_tlos', { amount: formatWei(trx.value, 18) }) }}
+                    q-tooltip {{ $t('pages.click_to_show_in_wei') }}
             br
             ERCTransferList( v-if="erc20_transfers.length > 0" type="ERC20" :trxFrom="trx.from" :contract="contract" :transfers="erc20_transfers")
             ERCTransferList( v-if="erc721_transfers.length > 0" type="ERC721" :trxFrom="trx.from" :contract="contract" :transfers="erc721_transfers")
             ERCTransferList( v-if="erc1155_transfers.length > 0" type="ERC1155" :trxFrom="trx.from" :contract="contract" :transfers="erc1155_transfers")
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
-                strong {{ `Gas Price Charged: ` }}
-              span {{ getGasChargedGWEI() }} GWEI
+                strong {{ $t('pages.gas_price_charged') }}:&nbsp;
+              span {{ $t('pages.balance_gwei', { amount: getGasChargedGWEI() }) }}
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
-                strong {{ `Gas Fee: ` }}
-              span {{ getGasFee() }} TLOS
+                strong {{ $t('pages.gas_fee') }}:&nbsp;
+              span {{ $t('pages.balance_tlos', { amount: getGasFee() }) }}
                 small.q-pl-sm (~ ${{ (getGasFee() * tlosPrice).toFixed(5) }})
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
-                strong {{ `Gas Used: ` }}
+                strong {{ $t('pages.gas_used') }}:&nbsp;
               div(class="col-9") {{ trx.gasused }}
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
-                strong {{ `Gas Limit: ` }}
+                strong {{ $t('pages.gas_limit') }}:&nbsp;
               div(class="col-9") {{ trx.gas_limit }}
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
-                strong {{ `Nonce: ` }}
+                strong {{ $t('pages.nonce') }}:&nbsp;
               div(class="col-9") {{ trx.nonce }}
           q-tab-panel( name="details" )
             div
               div(class="col-3")
-                strong {{ `Input: ` }}
+                strong {{ $t('pages.input') }}:&nbsp;
               div(class="col-9") {{ trx.input_data }}
             br
             div
               div(class="col-3")
-                strong {{ `Output: ` }}
+                strong {{ $t('pages.output') }}:&nbsp;
               div(class="col-9") {{ trx.output }}
           q-tab-panel( name="logs" )
             .jsonViewer

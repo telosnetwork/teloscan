@@ -7,7 +7,7 @@
     :maxlength="42"
     :rules="rules"
     autocomplete="new-password"
-    placeholder="Address beginning with 0x"
+    :placeholder="$t('components.inputs.address_placeholder')"
     @update:modelValue="handleChange"
 />
 </template>
@@ -56,7 +56,7 @@ export default {
             ];
         },
         shapedLabel() {
-            return `${this.label} (address)`
+            return this.$t('components.inputs.address_label', { label: this.label });
         },
     },
     methods: {

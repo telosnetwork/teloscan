@@ -3,7 +3,7 @@
     <CopyButton
         v-if="abi"
         :text="abi"
-        accompanying-text="Copy contract ABI JSON to clipboard"
+        :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
         class="q-mb-md"
     />
     <br>

@@ -8,7 +8,7 @@
             dense
             class="bg-green text-black"
         >
-            You have unlocked TLOS!
+            {{ $t('pages.staking.you_have_unlocked_tlos') }}
             <template #action>
                 <q-btn
                     flat
@@ -50,7 +50,7 @@
         />
     </div>
     <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
-        Stake successful! View Transaction:
+        {{ $t('pages.staking.stake_tlos_success') }}
         <transaction-field :transaction-hash="resultHash" />
     </div>
     <q-dialog v-model="displayConfirmModal">
@@ -274,6 +274,10 @@ export default {
                     .catch((err) => {
                         this.bottomInputAmount = '';
                         console.error(`Unable to convert TLOS to STLOS: ${err}`);
+                        this.$q.notify({
+                            type: 'negative',
+                            message: this.$t('pages.staking.redeem_failed', {message: err}),
+                        });
                     })
                     .finally(async () => {
                         this.bottomInputIsLoading = false;
@@ -302,6 +306,10 @@ export default {
                     .catch(err => {
                         this.topInputAmount = '';
                         console.error(`Unable to convert STLOS to TLOS: ${err}`);
+                        this.$q.notify({
+                            type: 'negative',
+                            message: this.$t('pages.staking.redeem_failed', {message: err}),
+                        });
                     })
                     .finally(async () => {
                         this.topInputIsLoading = false;
@@ -376,6 +384,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to deposit TLOS: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('pages.staking.deposit_failed', {message}),
+                    });
                     this.resultHash = null;
                 })
                 .finally(() => {

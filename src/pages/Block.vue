@@ -47,7 +47,6 @@ export default {
           .dataCardItem
             .dataCardTile
               date-field( :epoch="blockData.timestamp" )
-          //div() {{ blockData }}
     .tableWrapper.shadow-2.content-container.q-mt-lg
       transaction-table( :title="block" :filter="{block}" )
 </template>

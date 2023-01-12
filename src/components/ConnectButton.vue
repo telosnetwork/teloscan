@@ -7,8 +7,6 @@ import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
 
-const providersError = 'More than one provider is active, disable additional providers.';
-const unsupportedError ='current EVM wallet provider is not supported.';
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
 const PROVIDER_WEB3_INJECTED = 'injectedWeb3'
@@ -179,7 +177,11 @@ export default {
                 window.ethereum :
                 null
             if (!provider) {
-                console.error(providersError, 'or', unsupportedError);
+                this.$q.notify({
+                    position: 'top',
+                    message: this.$t('components.no_provider_found'),
+                    timeout: 6000,
+                });                
             }
             return provider;
         },

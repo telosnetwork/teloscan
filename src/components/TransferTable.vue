@@ -102,7 +102,7 @@ export default {
             this.expectedTopicLength = 4;
             break;
         default:
-            throw new Error(`Unsupported token type: ${this.tokenType}`);
+            throw new Error(this.$t('components.unsupported_token_type', {tokenType: this.tokenType}));
         }
 
         this.onRequest({
@@ -164,7 +164,7 @@ export default {
                             if(tokenId.length > 15){
                                 tokenId = tokenId.substr(0, 15) + '...'
                             }
-                            valueDisplay = `Id #${ tokenId }`;
+                            valueDisplay = this.$t('components.token_id', {tokenId});
                         }
 
                         const transfer = {
@@ -180,6 +180,11 @@ export default {
                     console.error(
                         `Failed to parse data for transaction, error was: ${e.message}`,
                     );
+                    // notify the user
+                    this.$q.notify({
+                        message: this.$t('components.failed_to_parse_transaction', {message: e.message}),
+                        type: 'negative',
+                    });
                 }
             }
 

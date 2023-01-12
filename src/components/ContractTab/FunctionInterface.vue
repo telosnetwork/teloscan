@@ -3,7 +3,7 @@
     <q-dialog v-model="enterAmount">
         <q-card class="amount-dialog">
             <div class="q-pa-md">
-                <p>Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256</p>
+                <p>{{ $t('components.contract_tab.enter_amount') }}</p>
                 <q-select
                     v-model="selectDecimals"
                     :options="decimalOptions"
@@ -85,12 +85,12 @@
         {{ errorMessage }}
     </p>
     <div v-if="result" class="output-container">
-        Result ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}):
+        {{ $t('components.contract_tab.result') }} ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}):
         <router-link v-if="abi?.outputs?.[0]?.type === 'address'" :to="`/address/${result}`" >{{ result }}</router-link>
         <template v-else>{{ result }}</template>
     </div>
     <div v-if="hash" class="output-container">
-        View Transaction:&nbsp;
+        {{ $t('components.contract_tab.view_transaction') }}
         <transaction-field :transaction-hash="hash" />
     </div>
 </div>

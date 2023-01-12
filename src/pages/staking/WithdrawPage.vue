@@ -153,6 +153,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to withdraw unlocked TLOS: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('pages.staking.withdraw_failed', { message }),
+                    });
                     this.resultHash = null;
                 });
         },

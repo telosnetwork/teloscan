@@ -149,7 +149,7 @@ export default {
 
 <template lang='pug'>
 .pageContainer.row.q-pt-xl.tableWrapper
-  .text-h4.text-primary.q-mb-lg Verify Contract
+  .text-h4.text-primary.q-mb-lg {{ $t('pages.verify_contract') }}
   .col-12.q-py-lg
     .content-container
           q-form(

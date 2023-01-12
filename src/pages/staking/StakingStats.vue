@@ -156,6 +156,10 @@ export default {
                 this.stlosTvl = (await this.stlosContractInstance.totalAssets()).toString();
             } catch ({ message: tvlError }) {
                 console.error(`Failed to fetch sTLOS TVL: ${tvlError}`);
+                this.$q.notify({
+                    type: 'negative',
+                    message: this.$t('page.staking.fetch_stlos_tvl_error', { message: tvlError }),
+                });
                 this.stlosTvl = null;
                 this.stlosApy = null;
 
@@ -169,6 +173,10 @@ export default {
                 this.stlosApy = await fetchStlosApy(this.$telosApi);
             } catch ({ message: apyError }) {
                 console.error(`Failed to fetch sTLOS APY: ${apyError}`);
+                this.$q.notify({
+                    type: 'negative',
+                    message: this.$t('page.staking.fetch_stlos_apy_error', { message: apyError }),
+                });
                 this.stlosApy = null;
             }
         },

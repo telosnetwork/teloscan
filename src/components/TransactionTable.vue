@@ -143,6 +143,13 @@ export default {
                     console.error(
                         `Failed to parse data for transaction, error was: ${e.message}`,
                     );
+                    // notifiy user
+                    this.$q.notify({
+                        message: this.$t('components.failed_to_parse_transaction', {message: e.message}),
+                        color: 'negative',
+                        position: 'top',
+                        timeout: 5000,
+                    });
                 }
             }
             this.rows = this.transactions;
@@ -188,11 +195,11 @@ q-table(
             @click="col.name==='date' ? showAge=!showAge : null"
         )
         template( v-if="col.name==='date'" )
-            q-tooltip(anchor="bottom middle" self="bottom middle") Click to change format
+            q-tooltip(anchor="bottom middle" self="bottom middle") <!-- Click to change format --> {{ $t('components.click_to_change_format') }}
         | {{ col.label }}
         template( v-if="col.name === 'method'" )
         q-icon(name="fas fa-info-circle", style="margin-top: -5px; margin-left: 3px;").info-icon
-            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
+            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") {{ $t('components.executed_based_on_decoded_data') }}
 
     template(v-slot:body="props")
         q-tr( :props="props")

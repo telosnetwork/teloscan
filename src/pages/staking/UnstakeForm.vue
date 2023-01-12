@@ -25,7 +25,7 @@
         />
     </div>
     <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
-        Unstake successful! View Transaction:
+        {{ $t('pages.staking.unstake_stlos_success') }}
         <transaction-field :transaction-hash="resultHash" />
     </div>
     <q-dialog v-model="displayConfirmModal">
@@ -43,19 +43,19 @@
                     {{ $t('pages.staking.confirm_unstake_2b') }}
 
                 </p>
-                Would you like to proceed?
+                {{ $t('pages.staking.confirm_unstake_3') }}
             </q-card-section>
 
             <q-card-actions align="right" class="q-pb-md q-px-md">
                 <q-btn
                     v-close-popup
                     flat
-                    label="Cancel"
+                    :label="$t('pages.staking.cancel')"
                     color="negative"
                 />
                 <q-btn
                     v-close-popup
-                    label="Unstake sTLOS"
+                    :label="$t('pages.staking.unstake_stlos')"
                     color="secondary"
                     text-color="black"
                     @click="initiateUnstake"
@@ -176,7 +176,7 @@ export default {
 
             const balanceTlos = ethers.utils.commify(balanceEth);
 
-            return `${balanceTlos} Available`;
+            return this.$t('pages.staking.available', {balanceTlos});
         },
         topInputErrorText() {
             if(this.isLoggedIn && !this.isNative) return;
@@ -210,6 +210,11 @@ export default {
             this.maxDeposits = (await this.escrowContractInstance.maxDeposits()).toNumber();
         } catch (error) {
             console.error(`Failed to fetch max deposits from escrow contract: ${error}`);
+            this.$q.notify({
+                position: 'top',
+                message: this.$t('pages.staking.fetch_max_deposits_error', { message: error }),
+            });
+
             this.maxDeposits = null;
         }
 
@@ -224,6 +229,10 @@ export default {
                     .catch((err) => {
                         this.bottomInputAmount = '';
                         console.error(`Unable to convert TLOS to STLOS: ${err}`);
+                        this.$q.notify({
+                            position: 'top',
+                            message: this.$t('pages.staking.convert_tlos_to_stlos_error', { message: err }),
+                        });
                     })
                     .finally(async () => {
                         this.bottomInputIsLoading = false;
@@ -252,6 +261,10 @@ export default {
                     .catch(err => {
                         this.topInputAmount = '';
                         console.error(`Unable to convert STLOS to TLOS: ${err}`);
+                        this.$q.notify({
+                            position: 'top',
+                            message: this.$t('pages.staking.convert_stlos_to_tlos_error', { message: err }),
+                        });
                     })
                     .finally(async () => {
                         this.topInputIsLoading = false;
@@ -320,6 +333,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to unstake sTLOS: ${message}`);
+                    this.$q.notify({
+                        position: 'top',
+                        message: this.$t('pages.staking.unstake_stlos_error', { message }),
+                    });
                     this.resultHash = null;
                 })
                 .finally(() => {

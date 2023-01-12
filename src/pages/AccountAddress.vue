@@ -142,12 +142,13 @@ export default {
                     decimalIndex + 5,
                 )}`;
             }
-            return `${strBalance} TLOS`;
+            // return `${strBalance} TLOS`;
+            return this.$('pages.tlos_balance', { balance: strBalance });
         },
         getAddressNativeExplorerURL() {
             if (!this.telosAccount) return '';
 
-            return `${process.env.NETWORK_EXPLORER}/account/${this.telosAccount}`;
+            return this.$('pages.account_url', { domain: process.env.NETWORK_EXPLORER, account: this.telosAccount });
         },
         disableConfirmation(){
             this.confirmationDialog = false;
