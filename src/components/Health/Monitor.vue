@@ -104,7 +104,7 @@ export default {
                 @click="col.name==='checked_at' ? showAge=!showAge : null"
             )
             template( v-if="col.name==='checked_at'" )
-                q-tooltip(anchor="bottom middle" self="bottom middle") {{ $t('components.health.click_to_change_format') }
+                q-tooltip(anchor="bottom middle" self="bottom middle") {{ $t('components.health.click_to_change_format') }}
             | {{ col.label }}
 
         template(v-slot:body="props")
