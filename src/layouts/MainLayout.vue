@@ -3,7 +3,7 @@
 <q-layout view="lhh Lpr lFf ">
     <div :class="`banner ${onHomePage ? 'home' : ''}`" />
 
-    <q-page-container class="flex flex-center q-mt-lg">
+    <q-page-container class="flex flex-center page-container">
         <router-view />
     </q-page-container>
     <footer-main />
@@ -12,7 +12,6 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { directive as ClickAway } from 'vue3-click-away';
 
 import AppHeader from 'components/header/AppHeader.vue';
 import FooterMain from 'components/Footer.vue';
@@ -21,9 +20,6 @@ import { stlos } from 'src/lib/logos.js';
 
 export default {
     name: 'MainLayout',
-    directives: {
-        ClickAway,
-    },
     components: {
         AppHeader,
         FooterMain,
@@ -34,7 +30,6 @@ export default {
             mainnet: '' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40',
             accountConnected: false,
             drawer: false,
-            clickawayDisabled: false,
         };
     },
     computed: {
@@ -55,23 +50,6 @@ export default {
         this.$q.dark.set(localStorage.getItem('darkModeEnabled') !== 'false');
     },
     methods: {
-        getLoginDisplay() {
-            if (this.isLoggedIn)
-                return this.isNative ? this.nativeAccount : this.address;
-        },
-
-        toggleDarkMode() {
-            this.$q.dark.toggle();
-            localStorage.setItem('darkModeEnabled', this.$q.dark.isActive);
-        },
-        goTo(url) {
-            window.open(url, '_blank');
-            this.drawer = false;
-        },
-        routerTo(path) {
-            this.$router.push(path);
-            this.drawer = false;
-        },
         removeOldAngularCache() {
             // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own, this should remove it
             if(window.navigator && navigator.serviceWorker) {
@@ -83,28 +61,17 @@ export default {
                     });
             }
         },
-        toggleDrawer() {
-            if (!this.drawer) {
-                // handle race condition between vmodel and clickaway.
-                // without this, because clickaway is instantly triggered when clicking the menu icon,
-                // the drawer re-closes before it has had a chance to open
-                this.clickawayDisabled = true;
-                setTimeout(
-                    () => { this.clickawayDisabled = false; },
-                    400,
-                )
-            }
-            this.drawer = !this.drawer;
-        },
-        handleClickaway() {
-            if (this.drawer === true && !this.clickawayDisabled)
-                this.drawer = false;
-        },
     },
 };
 </script>
 
 <style lang="sass" scoped>
+.page-container
+    margin-top: 48px
+    @media screen and (min-width: $breakpoint-lg-min)
+        margin-top: 96px
+
+
 .separator
   border-bottom: 1px solid lightgrey
 

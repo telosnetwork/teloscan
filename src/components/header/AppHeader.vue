@@ -1,12 +1,13 @@
 <template>
 <header v-clickaway="handleClickaway" class="c-header shadow-2">
-    <div class="c-header__logo-container u-flex--left">
+    <router-link to="/" class="c-header__logo-container u-flex--left">
         <img
             alt="Telos EVM logo"
             src="~assets/evm_logo.png"
             width="32"
         >
-    </div>
+        <span class="c-header--logo-text">Teloscan</span>
+    </router-link>
 
     <div class="c-header__right-container">
         <div class="c-header__search-container">
@@ -50,7 +51,7 @@
 
             <q-separator class="c-header__menu-separator"/>
 
-            <li class="c-header__menu-li">
+            <li class="c-header__menu-li cursor-pointer" @click="goTo({ name: 'staking' })">
                 <img
                     alt="STLOS logo"
                     :src="stlosLogo"
@@ -80,24 +81,18 @@
                         />
                     </div>
                     <ul v-if="advancedMenuExpanded" class="c-header__advanced-menu-desktop">
-                        <!--    eztodo add clickaway -->
-                        <li class="c-header__menu-li">
-                            <q-icon
-                                name="http"
-                                class="c-header__menu-item-icon"
-                                size="sm"
-                            />
-                            RPC Endpoints
-                        </li>
-                        <li class="c-header__menu-li">
+                        <li class="c-header__menu-li" @click="goTo('/health')">
                             <q-icon
                                 name="monitor_heart"
                                 class="c-header__menu-item-icon"
                                 size="sm"
                             />
-                            Telos Monitor
+                            Health Status
                         </li>
-                        <li class="c-header__menu-li">
+                        <li
+                            class="c-header__menu-li"
+                            @click="goTo(isTestnet ? 'https://teloscan.io' : 'https://testnet.teloscan.io')"
+                        >
                             <q-icon
                                 name="sync_alt"
                                 class="c-header__menu-item-icon"
@@ -110,23 +105,18 @@
             </li>
 
             <template v-if="advancedMenuExpanded">
-                <li class="c-header__menu-li c-header__menu-li--advanced-menu q-ml-lg">
-                    <q-icon
-                        name="http"
-                        class="c-header__menu-item-icon"
-                        size="sm"
-                    />
-                    RPC Endpoints
-                </li>
-                <li class="c-header__menu-li c-header__menu-li--advanced-menu q-ml-lg">
+                <li class="c-header__menu-li c-header__menu-li--advanced-menu-mobile" @click="goTo('/health')">
                     <q-icon
                         name="monitor_heart"
                         class="c-header__menu-item-icon"
                         size="sm"
                     />
-                    Telos Monitor
+                    Health Status
                 </li>
-                <li class="c-header__menu-li c-header__menu-li--advanced-menu q-ml-lg">
+                <li
+                    class="c-header__menu-li c-header__menu-li--advanced-menu-mobile"
+                    @click="goTo(isTestnet ? 'https://teloscan.io' : 'https://testnet.teloscan.io')"
+                >
                     <q-icon
                         name="sync_alt"
                         class="c-header__menu-item-icon"
@@ -138,13 +128,13 @@
 
             <q-separator class="c-header__menu-separator"/>
 
-            <li class="c-header__menu-li">
+            <li class="c-header__menu-li" @click="toggleDarkMode">
                 <q-icon
-                    :name="isDarkMode ? 'light_mode' : 'dark_mode'"
+                    :name="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
                     class="c-header__menu-item-icon"
                     size="sm"
                 />
-                {{ isDarkMode ? 'Light' : 'Dark'}} Mode
+                {{ $q.dark.isActive ? 'Light' : 'Dark'}} Mode
             </li>
         </ul>
     </div>
@@ -175,9 +165,25 @@ export default {
     }),
     // eztodo add resize listener to close adv. menu
     methods: {
+        goTo(to) {
+            this.mobileMenuIsOpen = false;
+            this.advancedMenuExpanded = false;
+
+            const httpsRegex = /^https/;
+            if (typeof to === 'string' && httpsRegex.test(to)) {
+                window.location.href = to;
+                return;
+            }
+
+            this.$router.push(to);
+        },
         handleClickaway() {
             this.mobileMenuIsOpen = false;
             this.advancedMenuExpanded = false;
+        },
+        toggleDarkMode() {
+            this.$q.dark.toggle();
+            localStorage.setItem('darkModeEnabled', this.$q.dark.isActive);
         },
     },
 }
@@ -212,6 +218,17 @@ export default {
         //align-items: center;
         @media screen and (min-width: $breakpoint-lg-min) {
             height: 64px;
+            gap: 12px;
+            color: black;
+            font-size: 18px;
+        }
+    }
+
+    &--logo-text {
+        display: none;
+
+        @media screen and (min-width: $breakpoint-lg-min) {
+            display: block
         }
     }
 
@@ -293,6 +310,8 @@ export default {
         margin: 12px 0;
         display: flex;
         align-items: center;
+        cursor: pointer;
+        user-select: none;
 
         &--login-status {
             @media screen and (min-width: $breakpoint-lg-min) {
@@ -300,7 +319,9 @@ export default {
             }
         }
 
-        &--advanced-menu {
+        &--advanced-menu-mobile {
+            margin-left: 24px;
+
             @media screen and (min-width: $breakpoint-lg-min) {
                 display: none;
             }

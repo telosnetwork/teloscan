@@ -35,6 +35,10 @@ export default {
     //         'isLoggedIn',
     //     ]),
     // },
+    // getLoginDisplay() {
+    //     if (this.isLoggedIn)
+    //        return this.isNative ? this.nativeAccount : this.address;
+    // },
 }
 </script>
 
