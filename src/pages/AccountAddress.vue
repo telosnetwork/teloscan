@@ -142,7 +142,6 @@ export default {
                     decimalIndex + 5,
                 )}`;
             }
-            // return `${strBalance} TLOS`;
             return this.$t('pages.tlos_balance', { balance: strBalance });
         },
         getAddressNativeExplorerURL() {

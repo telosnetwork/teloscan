@@ -214,7 +214,6 @@ export default {
                     return '';
             }
 
-            // return 'Wallet not connected';
             return this.$t('pages.staking.wallet_not_connected');
         },
         topInputTooltip() {

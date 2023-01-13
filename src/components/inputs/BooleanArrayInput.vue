@@ -74,7 +74,6 @@ export default {
         },
         shapedLabel() {
             const size = (Number.isInteger(+this.size) && +this.size !== -1) ? `${+this.size}` : '';
-            // return `${this.label} (bool[${size}])`
             return this.$t('components.inputs.boolean_array_label', { label: this.label, size });
         },
     },
