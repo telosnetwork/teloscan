@@ -156,12 +156,10 @@ export default {
     data: () => ({
         stlosLogo,
         mobileMenuIsOpen: false,
-        loggedIn: true,
-        isDarkMode: false,
+        loggedIn: true, //eztodo use getter
         advancedMenuExpanded: false,
-        isTestnet: false,
+        isTestnet: false, //eztodo make computed
     }),
-    // eztodo add resize listener to close adv. menu
     methods: {
         goTo(to) {
             this.mobileMenuIsOpen = false;
@@ -189,6 +187,8 @@ export default {
 
 <style lang="scss">
 .c-header {
+    $this: &;
+
     --background-color: white;
     --text-color: #{$dark};
     --highlight-color: #{$grey-3};
@@ -333,6 +333,10 @@ export default {
             @media screen and (min-width: $breakpoint-lg-min) {
                 background-color: var(--highlight-color);
             }
+
+            #{$this}__menu-item-icon {
+                filter: grayscale(0);
+            }
         }
 
         @media screen and (min-width: $breakpoint-lg-min) {
@@ -364,10 +368,10 @@ export default {
 
     &__menu-item-icon {
         margin-right: 8px;
+        transition: 0.2s ease all;
 
         &--stlos {
             filter: grayscale(1);
-            // eztodo remove filter on hover, color icons on hover
         }
     }
 
