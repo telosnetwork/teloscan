@@ -13,17 +13,19 @@ const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
 const PROVIDER_WEB3_INJECTED = 'injectedWeb3'
 
-export const triggerLogin = () => document.querySelector('#c-connect-button__login-button')?.click();
-
 export default {
-    name: 'ConnectButton',
-    data() {
-        return {
-            tab: 'web3',
-            showLogin: false,
-            metamaskLogo: MetamaskLogo,
-        }
+    name: 'LoginModal',
+    props: {
+        show: {
+            type: Boolean,
+            default: false,
+        },
     },
+    emits: ['hide'],
+    data: () => ({
+        metamaskLogo: MetamaskLogo,
+        tab: 'web3',
+    }),
     computed: {
         ...mapGetters('login', [
             'isLoggedIn',
@@ -65,27 +67,6 @@ export default {
         getLoginDisplay() {
             return this.isNative ? this.nativeAccount : `0x...${this.address.slice(this.address.length - 4)}`;
         },
-        connect() {
-            this.showLogin = true;
-        },
-        disconnect() {
-            if (this.isNative) {
-                const loginData = localStorage.getItem('loginData');
-                if (!loginData)
-                    return;
-
-                const loginObj = JSON.parse(loginData);
-                const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
-                wallet.logout();
-            }
-
-            this.setLogin({});
-            localStorage.removeItem('loginData');
-            this.$providerManager.setProvider(null);
-        },
-        goToAddress() {
-            this.$router.push(`/address/${this.address}`);
-        },
         async injectedWeb3Login() {
             if (!this.browserSupportsMetaMask) {
                 window.open('https://metamask.app.link/dapp/teloscan.io');
@@ -114,7 +95,7 @@ export default {
                     })
                 })
             }
-            this.showLogin = false;
+            this.$emit('hide');
         },
         async ualLogin(wallet, account) {
             await wallet.init();
@@ -141,7 +122,7 @@ export default {
                 this.$providerManager.setProvider(account);
                 localStorage.setItem('loginData', JSON.stringify({type: LOGIN_NATIVE, provider: wallet.getName()}));
             }
-            this.showLogin = false;
+            this.$emit('hide');
         },
         async getInjectedAddress() {
             const provider = this.getInjectedProvider();
@@ -241,36 +222,9 @@ export default {
 }
 </script>
 <template>
-<div class="c-connect-button">
-    <q-btn
-        v-if="!isLoggedIn"
-        id="c-connect-button__login-button"
-        label="Connect Wallet"
-        @click="connect"
-    />
-
-    <q-btn-dropdown
-        flat
-        round
-        v-else
-        :label="getLoginDisplay()"
-    >
-        <q-list>
-            <q-item clickable v-close-popup @click="goToAddress()">
-                <q-item-section>
-                    <q-item-label>View address</q-item-label>
-                </q-item-section>
-            </q-item>
-            <q-item clickable v-close-popup @click="disconnect()">
-                <q-item-section>
-                    <q-item-label>Disconnect</q-item-label>
-                </q-item-section>
-            </q-item>
-        </q-list>
-    </q-btn-dropdown>
-
-    <q-dialog v-model="showLogin">
-        <q-card rounded class="c-connect-button__modal-inner">
+<div class="c-login-modal">
+    <q-dialog :model-value="show">
+        <q-card rounded class="c-login-modal__modal-inner">
             <q-tabs v-model="tab">
                 <q-tab name="web3" label="EVM Wallets"></q-tab>
                 <q-tab name="native" label="Advanced"></q-tab>
@@ -288,7 +242,7 @@ export default {
 
                     <div class="u-flex--center">
                         <q-card
-                            class="cursor-pointer c-connect-button__image-container"
+                            class="cursor-pointer c-login-modal__image-container"
                             v-for="wallet in $ual.authenticators"
                             :key="wallet.getStyle().text"
                             @click="ualLogin(wallet)"
@@ -310,7 +264,7 @@ export default {
 
 <style lang='scss'>
 
-.c-connect-button {
+.c-login-modal {
     &__modal-inner {
         min-width: 300px;
     }

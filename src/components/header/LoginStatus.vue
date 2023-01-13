@@ -30,10 +30,18 @@ export default {
             default: false,
         },
     },
+    methods: {
+        goToAddress() {
+            this.$router.push(`/address/${this.address}`);
+        },
+    },
     // computed: {
     //     ...mapGetters('login', [
-    //         'isLoggedIn',
-    //     ]),
+    //             'isLoggedIn',
+    //             'isNative',
+    //             'address',
+    //             'nativeAccount',
+    //         ]),
     // },
     // getLoginDisplay() {
     //     if (this.isLoggedIn)

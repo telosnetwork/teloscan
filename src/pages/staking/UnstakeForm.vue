@@ -64,6 +64,7 @@
         </q-card>
     </q-dialog>
 </div>
+<login-modal :show="displayLoginModal" @hide="displayLoginModal = false" />
 </template>
 
 <script>
@@ -77,12 +78,13 @@ import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import TransactionField from 'components/TransactionField';
 
-import { triggerLogin } from 'components/ConnectButton';
+import LoginModal from 'components/LoginModal.vue';
 
 export default {
     name: 'UnstakeForm',
     components: {
         BaseStakingForm,
+        LoginModal,
         TransactionField,
     },
     props: {
@@ -118,6 +120,7 @@ export default {
     emits: ['balance-changed'],
     data: () => ({
         displayConfirmModal: false,
+        displayLoginModal: false,
         resultHash: null,
         header: 'Unstake sTLOS',
         subheader: 'Unstake sTLOS in exchange for TLOS',
@@ -303,7 +306,7 @@ export default {
         },
         handleCtaClick() {
             if (!this.isLoggedIn){
-                triggerLogin();
+                this.displayLoginModal = true;
                 return;
             }
 

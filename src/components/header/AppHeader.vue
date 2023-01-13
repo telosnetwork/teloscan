@@ -21,8 +21,8 @@
             />
         </div>
 
-        <div class="c-header__login-status-desktop">
-            <login-status :is-logged-in="loggedIn" />
+        <div v-if="isLoggedIn" class="c-header__login-status-desktop">
+            <login-status :is-logged-in="isLoggedIn" />
         </div>
     </div>
 
@@ -33,17 +33,17 @@
         }"
     >
         <ul class="c-header__menu-ul">
-            <li v-if="loggedIn" class="c-header__menu-li c-header__menu-li--login-status">
-                <login-status :is-logged-in="loggedIn" />
+            <li v-if="isLoggedIn" class="c-header__menu-li c-header__menu-li--login-status">
+                <login-status :is-logged-in="isLoggedIn" />
             </li>
 
-            <li class="c-header__menu-li">
+            <li class="c-header__menu-li" @click="handleLoginLogout">
                 <q-icon
-                    :name="loggedIn ? 'logout' : 'login'"
+                    :name="isLoggedIn ? 'logout' : 'login'"
                     class="c-header__menu-item-icon"
                     size="sm"
                 />
-                Sign {{ loggedIn ? 'Out' : 'In'}}
+                Sign {{ isLoggedIn ? 'Out' : 'In'}}
             </li>
 
             <q-separator class="c-header__menu-separator"/>
@@ -135,18 +135,22 @@
         </ul>
     </div>
 </header>
+<login-modal :show="showLoginModal" @hide="showLoginModal = false" />
 </template>
 
 <script>
-import HeaderSearch from 'components/header/HeaderSearch.vue';
+import { mapGetters, mapMutations } from 'vuex';
 import { stlos as stlosLogo } from 'src/lib/logos.js';
 import { directive as clickaway } from 'vue3-click-away';
 
+import LoginModal from 'components/LoginModal.vue';
+import HeaderSearch from 'components/header/HeaderSearch.vue';
 import LoginStatus from 'components/header/LoginStatus.vue';
 
 export default {
     name: 'AppHeader',
     components: {
+        LoginModal,
         HeaderSearch,
         LoginStatus,
     },
@@ -156,11 +160,20 @@ export default {
     data: () => ({
         stlosLogo,
         mobileMenuIsOpen: false,
-        loggedIn: true, //eztodo use getter
+        showLoginModal: false,
         advancedMenuExpanded: false,
-        isTestnet: false, //eztodo make computed
+        isTestnet: process.env.NETWORK_EVM_CHAIN_ID !== '40',
     }),
+    computed: {
+        ...mapGetters('login', [
+            'isLoggedIn',
+            'isNative',
+        ]),
+    },
     methods: {
+        ...mapMutations('login', [
+            'setLogin',
+        ]),
         goTo(to) {
             this.mobileMenuIsOpen = false;
             this.advancedMenuExpanded = false;
@@ -180,6 +193,28 @@ export default {
         toggleDarkMode() {
             this.$q.dark.toggle();
             localStorage.setItem('darkModeEnabled', this.$q.dark.isActive);
+        },
+        handleLoginLogout() {
+            if (this.isLoggedIn) {
+                this.logout();
+            } else {
+                this.showLoginModal = true;
+            }
+        },
+        logout() {
+            if (this.isNative) {
+                const loginData = localStorage.getItem('loginData');
+                if (!loginData)
+                    return;
+
+                const loginObj = JSON.parse(loginData);
+                const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
+                wallet.logout();
+            }
+
+            this.setLogin({});
+            localStorage.removeItem('loginData');
+            this.$providerManager.setProvider(null);
         },
     },
 }
@@ -244,8 +279,10 @@ export default {
         display: flex;
         flex-wrap: nowrap;
         height: 48px;
+
         @media screen and (min-width: $breakpoint-lg-min) {
             height: 64px;
+            gap: 16px;
         }
     }
 
@@ -257,7 +294,6 @@ export default {
         align-items: center;
 
         @media screen and (min-width: $breakpoint-lg-min) {
-            margin-right: 16px;
             height: 64px;
         }
     }
