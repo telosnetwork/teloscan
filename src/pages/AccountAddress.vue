@@ -143,12 +143,12 @@ export default {
                 )}`;
             }
             // return `${strBalance} TLOS`;
-            return this.$('pages.tlos_balance', { balance: strBalance });
+            return this.$t('pages.tlos_balance', { balance: strBalance });
         },
         getAddressNativeExplorerURL() {
             if (!this.telosAccount) return '';
 
-            return this.$('pages.account_url', { domain: process.env.NETWORK_EXPLORER, account: this.telosAccount });
+            return this.$t('pages.account_url', { domain: process.env.NETWORK_EXPLORER, account: this.telosAccount });
         },
         disableConfirmation(){
             this.confirmationDialog = false;

@@ -142,7 +142,6 @@ export default {
         number_used_once: 'Number used once (nonce)',
         native_account: 'Native Account',
         balance: 'Balance',
-        verify_prompt: 'This contract has not been verified.  Would you like to upload the contract(s) and metadata to verify source now?',
         view_source_prompt: 'This contract has been verified. You can view the source code & metadata in the \'contract\' tab',
         account_url: '{ domain }/account/{ account }',
         tlos_balance: '{ balance } TLOS',
@@ -156,8 +155,10 @@ export default {
         transaction_hash: 'Transaction Hash',
         click_to_change_date_format: 'Click to change date format',
         click_to_show_in_weis: 'Click to show in weis',
+        tokens: 'Tokens',
     },
     components: {
+        verify_prompt: 'This contract has not been verified.  Would you like to upload the contract(s) and metadata to verify source now?',
         verify_contract: 'Verify Contract',
         search_evm_address_failed: 'Search for EVM address linked to { accountName } native account failed. You can create one at wallet.telos.net',
         connect_wallet: 'Connect Wallet',

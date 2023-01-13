@@ -119,27 +119,27 @@ export default {
     data: () => ({
         displayConfirmModal: false,
         resultHash: null,
-        header: this.$t('pages.staking.unstake_stlos'),
-        subheader: this.$t('pages.staking.unstake_stlos_for_tlos'),
-        topInputLabel: this.$t('pages.staking.unstake_stlos'),
+        header: '',
+        subheader: '',
+        topInputLabel: '',
         topInputAmount: '0',
         topInputIsLoading: false,
         bottomInputMaxValue: null,
         bottomInputIsLoading: false,
-        bottomInputLabel: this.$t('pages.staking.receive_tlos'),
+        bottomInputLabel: '',
         bottomInputAmount: '0',
         ctaIsLoading: false,
         debouncedTopInputHandler: null,
         debouncedBottomInputHandler: null,
         columns: [{
             name: 'amount',
-            label: this.$t('pages.staking.amount'),
+            label: '',
             align: 'left',
             field: 'amount',
             format: val => ethers.utils.formatEther(val.toString()),
         }, {
             name: 'time',
-            label: this.$t('pages.staking.time_remaining'),
+            label: '',
             align: 'left',
             field: 'until',
             format: val => val.toString(),
@@ -206,6 +206,14 @@ export default {
         },
     },
     async created() {
+        // initialization of the translated texts
+        this.header = this.$t('pages.staking.unstake_stlos');
+        this.subheader = this.$t('pages.staking.unstake_stlos_for_tlos');
+        this.topInputLabel = this.$t('pages.staking.unstake_stlos');
+        this.bottomInputLabel = this.$t('pages.staking.receive_tlos');
+        this.columns[0].label = this.$t('pages.staking.amount');
+        this.columns[1].label = this.$t('pages.staking.time_remaining');
+        
         try {
             this.maxDeposits = (await this.escrowContractInstance.maxDeposits()).toNumber();
         } catch (error) {

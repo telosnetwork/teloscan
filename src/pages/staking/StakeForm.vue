@@ -155,21 +155,14 @@ export default {
         MetaMaskLogo,
         displayConfirmModal: false,
         resultHash: null,
-        harcoded_header: 'Stake TLOS',
-        header: this.$t('pages.staking.stake_tlos'),
-        harcoded_subheader: 'Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, ' +
-            'further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change ' +
-            'over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be ' +
-            'auto-compounded. No further action is required.',
-        subheader: this.$t('pages.staking.stake_tlos_subheader'),
-        harcoded_topInputLabel: 'Stake TLOS',
-        topInputLabel: this.$t('pages.staking.stake_tlos'),
+        header: '',
+        subheader: '',
+        topInputLabel: '',
         topInputAmount: '0',
         topInputIsLoading: false,
         bottomInputMaxValue: null,
         bottomInputIsLoading: false,
-        harcoded_bottomInputLabel: 'Receive sTLOS',
-        bottomInputLabel: this.$t('pages.staking.receive_stlos'),
+        bottomInputLabel: '',
         bottomInputAmount: '0',
         ctaIsLoading: false,
         debouncedTopInputHandler: null,
@@ -263,6 +256,12 @@ export default {
         },
     },
     async created() {
+        // Initialization of the text translations
+        this.header = this.$t('pages.staking.stake_tlos');
+        this.subheader = this.$t('pages.staking.stake_tlos_subheader');
+        this.topInputLabel = this.$t('pages.staking.stake_tlos');
+        this.bottomInputLabel = this.$t('pages.staking.receive_stlos');
+
         const debounceWaitMs = 250;
 
         this.debouncedTopInputHandler = debounce(
