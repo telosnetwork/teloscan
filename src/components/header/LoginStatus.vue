@@ -7,6 +7,7 @@
     />
     {{ prettyIdentity }}
     <!--eztodo add tooltips for icons-->
+    <!--eztodo close menu (emit event?) on navigate to address page-->
     <q-icon
         name="preview"
         size="sm"
@@ -28,12 +29,6 @@ import { mapGetters } from 'vuex';
 
 export default {
     name: 'LoginStatus',
-    props: {
-        isLoggedIn: {
-            type: Boolean,
-            default: false,
-        },
-    },
     computed: {
         ...mapGetters('login', [
             'isLoggedIn',

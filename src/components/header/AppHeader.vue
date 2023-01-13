@@ -22,7 +22,7 @@
         </div>
 
         <div v-if="isLoggedIn" class="c-header__login-status-desktop">
-            <login-status :is-logged-in="isLoggedIn" />
+            <login-status />
         </div>
     </div>
 
