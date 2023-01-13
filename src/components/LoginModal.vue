@@ -223,7 +223,7 @@ export default {
 </script>
 <template>
 <div class="c-login-modal">
-    <q-dialog :model-value="show">
+    <q-dialog :model-value="show" @hide="() => $emit('hide')">
         <q-card rounded class="c-login-modal__modal-inner">
             <q-tabs v-model="tab">
                 <q-tab name="web3" label="EVM Wallets"></q-tab>
