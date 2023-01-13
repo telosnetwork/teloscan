@@ -5,22 +5,26 @@
         class="c-login-status__account-icon"
         size="sm"
     />
-    0x...3c3c
+    {{ prettyIdentity }}
+    <!--eztodo add tooltips for icons-->
     <q-icon
         name="preview"
         size="sm"
-        class="q-px-sm"
+        class="q-px-sm cursor-pointer"
+        @click="goToAddress"
     />
     <q-icon
         name="content_copy"
         size="sm"
-        class="q-px-sm"
+        class="q-px-sm cursor-pointer"
+        @click="copy"
     />
 </div>
 </template>
 
 <script>
-// import { mapGetters } from 'vuex';
+import { copyToClipboard } from 'quasar';
+import { mapGetters } from 'vuex';
 
 export default {
     name: 'LoginStatus',
@@ -30,23 +34,31 @@ export default {
             default: false,
         },
     },
+    computed: {
+        ...mapGetters('login', [
+            'isLoggedIn',
+            'isNative',
+            'address',
+            'nativeAccount',
+        ]),
+        prettyIdentity() {
+            if (!this.isLoggedIn)
+                return '';
+
+            if (this.isNative)
+                return this.nativeAccount;
+
+            return `0x...${this.address.slice(38, 42)}`;
+        },
+    },
     methods: {
         goToAddress() {
             this.$router.push(`/address/${this.address}`);
         },
+        copy() {
+            copyToClipboard(this.address);
+        },
     },
-    // computed: {
-    //     ...mapGetters('login', [
-    //             'isLoggedIn',
-    //             'isNative',
-    //             'address',
-    //             'nativeAccount',
-    //         ]),
-    // },
-    // getLoginDisplay() {
-    //     if (this.isLoggedIn)
-    //        return this.isNative ? this.nativeAccount : this.address;
-    // },
 }
 </script>
 
