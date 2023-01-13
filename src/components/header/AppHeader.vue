@@ -56,7 +56,6 @@
                     width="24"
                 >
                 Liquid Staking
-            <!--    eztodo switch to stlos icon-->
             </li>
 
             <q-separator class="c-header__menu-separator"/>
@@ -190,7 +189,11 @@ export default {
 
 <style lang="scss">
 .c-header {
-    background-color: white;
+    --background-color: white;
+    --text-color: #{$dark};
+    --highlight-color: #{$grey-3};
+
+    background-color: var(--background-color);
     position: fixed;
     top: 0;
     right: 0;
@@ -198,7 +201,7 @@ export default {
     height: 48px;
     padding: 0 0 0 16px;
     z-index: 999;
-    color: $dark;
+    color: var(--text-color);
 
     display: flex;
     flex-wrap: nowrap;
@@ -207,6 +210,12 @@ export default {
     @media screen and (min-width: $breakpoint-lg-min) {
         height: 64px;
         padding: 0 24px;
+    }
+
+    @at-root .body--dark & {
+        --background-color: #{$dark};
+        --text-color: white;
+        --highlight-color: #{$grey-9};
     }
 
     &__logo-container {
@@ -218,7 +227,7 @@ export default {
         @media screen and (min-width: $breakpoint-lg-min) {
             height: 64px;
             gap: 12px;
-            color: black;
+            color: var(--text-color);
             font-size: 18px;
         }
     }
@@ -276,7 +285,7 @@ export default {
     }
 
     &__menu-container {
-        background-color: white;
+        background-color: var(--background-color);
         position: absolute;
         top: 48px;
         right: 0;
@@ -322,7 +331,7 @@ export default {
         &:focus,
         &:active {
             @media screen and (min-width: $breakpoint-lg-min) {
-                background-color: $grey-3;
+                background-color: var(--highlight-color);
             }
         }
 
@@ -331,6 +340,8 @@ export default {
         }
 
         &--login-status {
+            cursor: default;
+
             @media screen and (min-width: $breakpoint-lg-min) {
                 display: none;
             }
@@ -356,6 +367,7 @@ export default {
 
         &--stlos {
             filter: grayscale(1);
+            // eztodo remove filter on hover, color icons on hover
         }
     }
 
@@ -380,7 +392,7 @@ export default {
             position: absolute;
             top: 36px;
             left: -48px;
-            background-color: white;
+            background-color: var(--background-color);
             width: max-content;
             border-radius: 0 0 4px 4px;
             box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);

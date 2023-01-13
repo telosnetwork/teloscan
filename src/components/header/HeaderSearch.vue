@@ -74,6 +74,7 @@ export default {
         v-show="$q.screen.lt.lg && inputHiddenMobile"
         name="search"
         size="24px"
+        class="cursor-pointer"
         @click="iconClicked"
     />
     <q-input
@@ -82,7 +83,9 @@ export default {
         v-model="searchTerm"
         class="c-search__input"
         dense
-        standout="bg-grey-3"
+        :standout="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-3'"
+        :bg-color="$q.dark.isActive ? 'grey-9' : 'grey-3'"
+        color="black"
         hide-bottom-space
         placeholder="Address, Tx, Block"
         @keydown.enter="search"
@@ -107,15 +110,22 @@ export default {
 
 <style lang="scss">
 .c-search {
+    --color: #{$dark};
+
     @media screen and (min-width: $breakpoint-lg-min) {
         width: 500px;
     }
 
+    @at-root .body--dark & {
+        --color: white;
+    }
+
     // quasar overrides
+    .q-field--standout,
     .q-field--standout.q-field--highlighted {
         .q-field__native,
         .q-field__append {
-            color: $dark;
+            color: var(--color);
         }
     }
 }
