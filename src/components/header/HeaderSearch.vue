@@ -75,6 +75,11 @@ export default {
         name="search"
         size="24px"
         class="cursor-pointer"
+        tabindex="0"
+        role="switch"
+        :aria-checked="!inputHiddenMobile"
+        aria-label="reveal search input"
+        @keydown.enter="iconClicked"
         @click="iconClicked"
     />
     <q-input

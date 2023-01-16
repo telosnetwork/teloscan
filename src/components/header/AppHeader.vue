@@ -33,12 +33,19 @@
             'c-header__menu-container--hidden-desktop': menuHiddenDesktop,
         }"
     >
-        <ul class="c-header__menu-ul">
+        <ul class="c-header__menu-ul" role="menu">
             <li v-if="isLoggedIn" class="c-header__menu-li c-header__menu-li--login-status">
                 <login-status :is-logged-in="isLoggedIn" @navigated="mobileMenuIsOpen = false" />
             </li>
 
-            <li class="c-header__menu-li" @click="handleLoginLogout">
+            <li
+                class="c-header__menu-li"
+                tabindex="0"
+                role="menuitem"
+                :aria-label="isLoggedIn ? 'logout' : 'login'"
+                @keydown.enter="handleLoginLogout"
+                @click="handleLoginLogout"
+            >
                 <q-icon
                     :name="isLoggedIn ? 'logout' : 'login'"
                     class="c-header__menu-item-icon"
@@ -49,7 +56,14 @@
 
             <q-separator class="c-header__menu-separator"/>
 
-            <li class="c-header__menu-li cursor-pointer" @click="goTo({ name: 'staking' })">
+            <li
+                class="c-header__menu-li cursor-pointer"
+                tabindex="0"
+                role="link"
+                aria-label="Go to Staking"
+                @keydown.enter="goTo({ name: 'staking' })"
+                @click="goTo({ name: 'staking' })"
+            >
                 <img
                     alt="STLOS logo"
                     :src="stlosLogo"
@@ -68,7 +82,15 @@
                     size="sm"
                 />
                 <div class="c-header__advanced-container">
-                    <div class="c-header__advanced-container-header" @click="advancedMenuExpanded = !advancedMenuExpanded">
+                    <div
+                        class="c-header__advanced-container-header"
+                        tabindex="0"
+                        aria-label="expand advanced menu"
+                        role="menuitem"
+                        aria-haspopup="menu"
+                        @keydown.enter="advancedMenuExpanded = !advancedMenuExpanded"
+                        @click="advancedMenuExpanded = !advancedMenuExpanded"
+                    >
                         Advanced
 
                         <q-icon
@@ -78,7 +100,14 @@
                         />
                     </div>
                     <ul v-if="advancedMenuExpanded" class="c-header__advanced-menu-desktop">
-                        <li class="c-header__menu-li" @click="goTo('/health')">
+                        <li
+                            class="c-header__menu-li"
+                            tabindex="0"
+                            aria-label="go to Heath Monitor page"
+                            role="link"
+                            @keydown.enter="goTo('/health')"
+                            @click="goTo('/health')"
+                        >
                             <q-icon
                                 name="monitor_heart"
                                 class="c-header__menu-item-icon"
@@ -88,6 +117,10 @@
                         </li>
                         <li
                             class="c-header__menu-li"
+                            tabindex="0"
+                            :aria-label="`go to ${isTestnet ? 'main net' : 'test net'}`"
+                            role="link"
+                            @keydown.enter="goTo(isTestnet ? 'https://teloscan.io' : 'https://testnet.teloscan.io')"
                             @click="goTo(isTestnet ? 'https://teloscan.io' : 'https://testnet.teloscan.io')"
                         >
                             <q-icon
@@ -102,7 +135,14 @@
             </li>
 
             <template v-if="advancedMenuExpanded">
-                <li class="c-header__menu-li c-header__menu-li--advanced-menu-mobile" @click="goTo('/health')">
+                <li
+                    class="c-header__menu-li c-header__menu-li--advanced-menu-mobile"
+                    tabindex="0"
+                    aria-label="go to Heath Monitor page"
+                    role="link"
+                    @keydown.enter="goTo('/health')"
+                    @click="goTo('/health')"
+                >
                     <q-icon
                         name="monitor_heart"
                         class="c-header__menu-item-icon"
@@ -112,6 +152,10 @@
                 </li>
                 <li
                     class="c-header__menu-li c-header__menu-li--advanced-menu-mobile"
+                    tabindex="0"
+                    :aria-label="`go to ${isTestnet ? 'main net' : 'test net'}`"
+                    role="link"
+                    @keydown.enter="goTo(isTestnet ? 'https://teloscan.io' : 'https://testnet.teloscan.io')"
                     @click="goTo(isTestnet ? 'https://teloscan.io' : 'https://testnet.teloscan.io')"
                 >
                     <q-icon
@@ -125,7 +169,15 @@
 
             <q-separator class="c-header__menu-separator"/>
 
-            <li class="c-header__menu-li" @click="toggleDarkMode">
+            <li
+                class="c-header__menu-li"
+                tabindex="0"
+                aria-label="enable dark theme"
+                role="switch"
+                :aria-checked="$q.dark.isActive"
+                @keydown.enter="toggleDarkMode"
+                @click="toggleDarkMode"
+            >
                 <q-icon
                     :name="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
                     class="c-header__menu-item-icon"
