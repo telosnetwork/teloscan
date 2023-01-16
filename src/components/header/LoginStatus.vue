@@ -6,20 +6,29 @@
         size="sm"
     />
     {{ prettyIdentity }}
-    <!--eztodo add tooltips for icons-->
-    <!--eztodo close menu (emit event?) on navigate to address page-->
-    <q-icon
-        name="preview"
-        size="sm"
-        class="q-px-sm cursor-pointer"
-        @click="goToAddress"
-    />
-    <q-icon
-        name="content_copy"
-        size="sm"
-        class="q-px-sm cursor-pointer"
-        @click="copy"
-    />
+    <div class="u-flex--center">
+        <q-icon
+            name="preview"
+            size="sm"
+            class="q-px-sm cursor-pointer"
+            @click="goToAddress"
+        />
+        <q-tooltip>
+            Go to Address Details
+        </q-tooltip>
+    </div>
+
+    <div class="u-flex--center">
+        <q-icon
+            name="content_copy"
+            size="sm"
+            class="q-px-sm cursor-pointer"
+            @click="copy"
+        />
+        <q-tooltip>
+            Copy Address
+        </q-tooltip>
+    </div>
 </div>
 </template>
 
@@ -29,6 +38,7 @@ import { mapGetters } from 'vuex';
 
 export default {
     name: 'LoginStatus',
+    emits: ['navigated'],
     computed: {
         ...mapGetters('login', [
             'isLoggedIn',
@@ -48,10 +58,17 @@ export default {
     },
     methods: {
         goToAddress() {
+            this.$emit('navigated');
             this.$router.push(`/address/${this.address}`);
         },
         copy() {
             copyToClipboard(this.address);
+
+            this.$q.notify({
+                position: 'bottom',
+                message: 'Address copied',
+                color: 'green',
+            });
         },
     },
 }

@@ -232,8 +232,13 @@ export default {
             <q-separator/>
             <q-tab-panels v-model="tab" animated>
                 <q-tab-panel name="web3">
-                    <q-card class="wallet-icon cursor-pointer" @click="injectedWeb3Login()">
-                        <q-img class="wallet-img" :src="metamaskLogo"></q-img>
+                    <q-card class="c-login-modal__image-container" @click="injectedWeb3Login()">
+                        <q-img
+                            :src="metamaskLogo"
+                            class="wallet-img"
+                            height="64px"
+                            width="64px"
+                        />
                         <p>{{ !browserSupportsMetaMask ? 'Continue on ' : '' }}Metamask</p>
                     </q-card>
                 </q-tab-panel>
@@ -242,7 +247,7 @@ export default {
 
                     <div class="u-flex--center">
                         <q-card
-                            class="cursor-pointer c-login-modal__image-container"
+                            class="c-login-modal__image-container"
                             v-for="wallet in $ual.authenticators"
                             :key="wallet.getStyle().text"
                             @click="ualLogin(wallet)"
@@ -279,6 +284,8 @@ export default {
         align-items: center;
         justify-content: center;
         flex-direction: column;
+
+        cursor: pointer;
     }
 }
 

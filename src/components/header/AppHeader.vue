@@ -22,7 +22,7 @@
         </div>
 
         <div v-if="isLoggedIn" class="c-header__login-status-desktop">
-            <login-status />
+            <login-status @navigated="mobileMenuIsOpen = false" />
         </div>
     </div>
 
@@ -34,7 +34,7 @@
     >
         <ul class="c-header__menu-ul">
             <li v-if="isLoggedIn" class="c-header__menu-li c-header__menu-li--login-status">
-                <login-status :is-logged-in="isLoggedIn" />
+                <login-status :is-logged-in="isLoggedIn" @navigated="mobileMenuIsOpen = false" />
             </li>
 
             <li class="c-header__menu-li" @click="handleLoginLogout">
@@ -256,9 +256,7 @@ export default {
     &__logo-container {
         width: 48px;
         height: 48px;
-        //display: flex;
-        //justify-content: center;
-        //align-items: center;
+
         @media screen and (min-width: $breakpoint-lg-min) {
             height: 64px;
             gap: 12px;
@@ -287,7 +285,6 @@ export default {
     }
 
     &__search-container {
-        //width: 48px;
         height: 48px;
         display: flex;
         justify-content: center;
