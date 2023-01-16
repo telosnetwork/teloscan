@@ -30,6 +30,7 @@
         :class="{
             'c-header__menu-container': true,
             'c-header__menu-container--expanded-mobile': mobileMenuIsOpen,
+            'c-header__menu-container--hidden-desktop': menuHiddenDesktop,
         }"
     >
         <ul class="c-header__menu-ul">
@@ -136,6 +137,7 @@
     </div>
 </header>
 <login-modal :show="showLoginModal" @hide="showLoginModal = false" />
+<q-scroll-observer @scroll="scrollHandler" />
 </template>
 
 <script>
@@ -162,6 +164,7 @@ export default {
         mobileMenuIsOpen: false,
         showLoginModal: false,
         advancedMenuExpanded: false,
+        menuHiddenDesktop: false,
         isTestnet: process.env.NETWORK_EVM_CHAIN_ID !== '40',
     }),
     computed: {
@@ -174,6 +177,9 @@ export default {
         ...mapMutations('login', [
             'setLogin',
         ]),
+        scrollHandler(info) {
+            this.menuHiddenDesktop = info.direction === 'down';
+        },
         goTo(to) {
             this.mobileMenuIsOpen = false;
             this.advancedMenuExpanded = false;
@@ -327,12 +333,24 @@ export default {
         width: 100%;
         box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
 
-
         display: none;
 
         @media screen and (min-width: $breakpoint-lg-min) {
             display: block;
             top: 64px;
+            transform: translateY(0);
+            transition:
+                0.3s ease transform,
+                0.3s ease box-shadow,
+                0.1s ease opacity;
+            z-index: -1;
+            opacity: 1;
+
+            &--hidden-desktop {
+                opacity: 0;
+                transform: translateY(-128px);
+                box-shadow: none;
+            }
         }
 
         &--expanded-mobile {
