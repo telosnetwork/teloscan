@@ -151,7 +151,7 @@ export default {
             label: '0 - Wei',
             value: 0,
         }, {
-            label: this.$t('components.contract_tab.custom'),
+            label: '',
             value: 'custom',
         }];
 
@@ -176,6 +176,10 @@ export default {
                 'internalType': 'amount',
             },
         }
+    },
+    async created() {
+        // initialization of the translated texts
+        this.decimalOptions[4].label = this.$t('components.contract_tab.custom');
     },
     computed: {
         ...mapGetters('login', [

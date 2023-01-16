@@ -41,31 +41,31 @@ export default {
         const columns = [
             {
                 name: 'hash',
-                label: this.$t('components.tx_hash'),
+                label: '',
                 align: 'left',
             },
             {
                 name: 'date',
-                label: this.$t('components.date'),
+                label: '',
                 align: 'left',
             },
             {
                 name: 'from',
-                label: this.$t('components.from'),
+                label: '',
                 align: 'left',
             },
             {
                 name: 'to',
-                label: this.$t('components.to'),
+                label: '',
                 align: 'left',
             },
             {
                 name: 'value',
-                label: this.$t('components.value'),
+                label: '',
                 align: 'left',
             },{
                 name: 'token',
-                label: this.$t('components.token'),
+                label: '',
                 align: 'left',
             },
         ];
@@ -89,6 +89,15 @@ export default {
             showAge: true,
             tokenList: {},
         };
+    },
+    async created() {
+        // initialization of the translated texts
+        this.columns[0].label = this.$t('components.tx_hash');
+        this.columns[1].label = this.$t('components.date');
+        this.columns[2].label = this.$t('components.from');
+        this.columns[3].label = this.$t('components.to');
+        this.columns[4].label = this.$t('components.value');
+        this.columns[5].label = this.$t('components.token');
     },
     mounted() {
         switch (this.tokenType) {

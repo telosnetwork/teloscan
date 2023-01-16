@@ -22,8 +22,12 @@ export default {
             showDialog: false,
             icon: 'warning',
             color: 'text-negative',
-            dialogMessage: this.$t('components.verify_prompt'),
+            dialogMessage: '',
         }
+    },
+    async created() {
+        // initialization of the translated texts
+        this.dialogMessage = this.$t('components.verify_prompt');
     },
     watch: {
         flag(val){

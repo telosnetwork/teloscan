@@ -34,37 +34,37 @@ export default {
         const columns = [
             {
                 name: 'hash',
-                label: this.$t('components.tx_hash'),
+                label: '',
                 align: 'left',
             },
             {
                 name: 'block',
-                label: this.$t('components.block'),
+                label: '',
                 align: 'left',
             },
             {
                 name: 'date',
-                label: this.$t('components.date'),
+                label: '',
                 align: 'left',
             },
             {
                 name: 'method',
-                label: this.$t('components.method'),
+                label: '',
                 align: 'left',
             },
             {
                 name: 'from',
-                label: this.$t('components.from'),
+                label: '',
                 align: 'left',
             },
             {
                 name: 'to',
-                label: this.$t('components.to_interacted_with'),
+                label: '',
                 align: 'left',
             },
             {
                 name: 'value',
-                label: this.$t('components.value_transfer'),
+                label: '',
                 align: 'left',
             },
         ];
@@ -85,6 +85,16 @@ export default {
             },
             showAge: true,
         };
+    },
+    async created() {
+        // initialization of the translated texts
+        this.columns[0].label = this.$t('components.tx_hash');
+        this.columns[1].label = this.$t('components.block');
+        this.columns[2].label = this.$t('components.date');
+        this.columns[3].label = this.$t('components.method');
+        this.columns[4].label = this.$t('components.from');
+        this.columns[5].label = this.$t('components.to_interacted_with');
+        this.columns[6].label = this.$t('components.value_transfer');
     },
     mounted() {
         this.onRequest({

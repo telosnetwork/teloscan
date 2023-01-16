@@ -49,10 +49,15 @@ export default {
         },
     },
     data: () => ({
-        placeholder: this.$t('components.inputs.str_input_placeholder'),
-        hint: this.$t('components.inputs.str_input_hint'),
+        placeholder: '',
+        hint: '',
         previousParsedValue: undefined,
     }),
+    async created() {
+        // initialization of the translated texts
+        this.placeholder = this.$t('components.inputs.str_input_placeholder');
+        this.hint = this.$t('components.inputs.str_input_hint');
+    },
     computed: {
         rules() {
             const validateParsedArray = (value) => Array.isArray(parseStringArrayString(value)) || value === '';

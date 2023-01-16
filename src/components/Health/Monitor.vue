@@ -16,22 +16,22 @@ export default {
         const columns = [
             {
                 name: 'status',
-                label: this.$t('components.health.status'),
+                label: '',
                 align: 'left',
             },
             {
                 name: 'checked_at',
-                label: this.$t('components.health.checked_at'),
+                label: '',
                 align: 'left',
             },
             {
                 name: 'task',
-                label: this.$t('components.health.task'),
+                label: '',
                 align: 'left',
             },
             {
                 name: 'message',
-                label: this.$t('components.health.message'),
+                label: '',
                 align: 'left',
             },
         ]
@@ -49,6 +49,13 @@ export default {
             },
             loading: true,
         }
+    },
+    async created() {
+        // initialization of the translated texts
+        this.columns[0].label = this.$t('components.health.status');
+        this.columns[1].label = this.$t('components.health.checked_at');
+        this.columns[2].label = this.$t('components.health.task');
+        this.columns[3].label = this.$t('components.health.message');
     },
     methods: {
         async getTasks(){
