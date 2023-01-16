@@ -275,7 +275,7 @@ export default {
         display: none;
 
         @media screen and (min-width: $breakpoint-lg-min) {
-            display: block
+            display: block;
         }
     }
 
@@ -331,7 +331,10 @@ export default {
         left: 0;
         padding: 0 16px;
         width: 100%;
-        box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
+        box-shadow:
+            0 4px 5px rgba(0, 0, 0, 0.2),
+            0 2px 2px rgba(0, 0, 0, 0.14),
+            0 3px 1px -2px rgba(0, 0, 0, 0.12);
 
         display: none;
 
