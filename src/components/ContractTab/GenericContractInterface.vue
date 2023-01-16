@@ -52,17 +52,33 @@
     </div>
 
     <div v-if="selectedAbi === abiOptions.custom" class="row q-mb-lg">
-        <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
-            <q-input
-                v-model="customAbiDefinition"
-                clearable
-                name="custom-abi"
-                label="Paste ABI JSON here"
-                class="q-pb-lg"
-                autocomplete="off"
-                type="text"
-            />
-
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12 col-sm-8 col-lg-9">
+                    <q-input
+                        v-model="customAbiDefinition"
+                        clearable
+                        name="custom-abi"
+                        label="Paste ABI JSON here"
+                        class="q-pb-lg"
+                        autocomplete="off"
+                        type="text"
+                    />
+                </div>
+                <div class="col-12 col-sm-4 col-lg-3">
+                    <q-file
+                        outlined
+                        name="custom-abi-file"
+                        v-model="file_model"
+                        label="upload ABI JSON file"
+                        @input="uploadFile"
+                        class="abi-json-uploader q-ml-md text-center"
+                        accept=".json"
+                    />
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12">
             <template v-if="!!customAbiDefinition">
                 <template v-if="customAbiIsValidJSON">
                     <p class="q-mb-sm">
@@ -135,6 +151,13 @@
 </div>
 </template>
 
+
+<style>
+.abi-json-uploader .q-field__label {
+    text-align: center;
+    width: 100%;
+}
+</style>
 <script>
 import JsonViewer from 'vue-json-viewer';
 
@@ -153,6 +176,7 @@ export default {
         JsonViewer,
     },
     data: () => ({
+        file_model: null,
         address: null,
         contract: null,
         functions: null,
@@ -181,16 +205,21 @@ export default {
         },
     },
     watch: {
-        selectedAbi(oldValue, newValue) {
+        selectedAbi(newValue, oldValue) {
             if (oldValue !== newValue) {
                 this.formatAbiFunctionLists();
                 this.displayWriteFunctions = false;
             }
         },
-        customAbiDefinition(oldValue, newValue) {
+        customAbiDefinition(newValue, oldValue) {
+            console.log('Watching customAbiDefinition:', [newValue, oldValue]);
             if (oldValue !== newValue && this.customAbiIsValidJSON) {
                 this.formatAbiFunctionLists();
                 this.displayWriteFunctions = false;
+            }
+            // if we detect any change in the custom abi definition, we should reset the file_model
+            if (oldValue && oldValue !== newValue) {
+                this.file_model = null;
             }
         },
     },
@@ -198,6 +227,19 @@ export default {
         this.address = this.$route.params.address;
     },
     methods: {
+        async uploadFile(e) {
+            let file = e.target.files[0];
+            let fileReader = new FileReader();
+            fileReader.onload = (event) => {
+                let json = event.target.result;
+                try {
+                    this.customAbiDefinition = json;
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+            fileReader.readAsText(file);
+        },
         async formatAbiFunctionLists() {
             this.functions = {
                 read: [],
@@ -223,6 +265,15 @@ export default {
             } else {
                 return;
             }
+
+            if (!Array.isArray(abi)) {
+                if (abi.abi && Array.isArray(abi.abi)) {
+                    abi = abi.abi;
+                }
+            }
+
+            // abi.map function is used here: https://github.com/ethers-io/ethers.js/blob/master/packages/abi/lib.esm/interface.js#L57
+            console.assert(typeof abi.map === 'function', 'ERROR: abi is not an array');
 
             this.contract = new Contract({
                 name: 'Unverified contract',
