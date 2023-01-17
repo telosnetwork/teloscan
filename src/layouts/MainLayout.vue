@@ -109,7 +109,6 @@ export default {
 .q-header
   position: relative
 
-
 @media only screen and (max-width: 400px)
     #logo
         .text-h5

@@ -1,11 +1,17 @@
 <template>
 <header v-clickaway="handleClickaway" class="c-header shadow-2">
     <router-link to="/" class="c-header__logo-container u-flex--left">
-        <img
-            alt="Telos EVM logo"
-            src="~assets/evm_logo.png"
-            width="32"
-        >
+        <div class="c-header__logo-image-container">
+            <img
+                alt="Telos EVM logo"
+                src="~assets/evm_logo.png"
+                width="32"
+            >
+            <div v-if="isTestnet" class="c-header__testnet-indicator">
+                Testnet
+            </div>
+        </div>
+
         <span class="c-header--logo-text">Teloscan</span>
     </router-link>
 
@@ -321,6 +327,24 @@ export default {
             color: var(--text-color);
             font-size: 18px;
         }
+    }
+
+    &__logo-image-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &__testnet-indicator {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        font-size: 10px;
+        height: min-content;
+        background: rgba($dark, 0.4);
+        color: white;
     }
 
     &--logo-text {
