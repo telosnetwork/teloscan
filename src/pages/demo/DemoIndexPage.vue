@@ -18,9 +18,6 @@
                 Pages
                 <ul class="c-demos__ul">
                     <li>
-                        <router-link :to="{ name: 'header-demo' }">Header</router-link>
-                    </li>
-                    <li>
                         <router-link :to="{ name: 'inputs-demo' }">Inputs</router-link>
                     </li>
                 </ul>
