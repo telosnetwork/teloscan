@@ -12,7 +12,7 @@ export default {
         .text-primary.text-h6 {{ $t('pages.rpc_endpoints') }}
     Endpoints()
     .homeInfo.q-mb-lg
-        .text-primary.text-h6 {{ $t('pages.monitor') }} 
+        .text-primary.text-h6 {{ $t('pages.monitor') }}
     Monitor()
 </template>
 
