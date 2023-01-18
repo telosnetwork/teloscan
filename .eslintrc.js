@@ -53,10 +53,12 @@ module.exports = {
         'array-bracket-spacing': ['error', 'never'],
         'space-in-parens': ['error', 'never'],
         'computed-property-spacing': ['error', 'never'],
-        'comma-spacing': ['error', { 'before': false, 'after': true }],
+        'comma-spacing': ['error', { 'before': false,
+            'after': true }],
         'no-trailing-spaces': 'error',
         'eqeqeq': 'error',
         'semi': ['error', 'always'],
         'arrow-parens': [2, 'as-needed', { 'requireForBlockBody': true }],
+        'object-property-newline': ['error', { 'allowAllPropertiesOnSameLine': true }],
     },
 };

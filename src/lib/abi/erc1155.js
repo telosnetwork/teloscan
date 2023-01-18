@@ -111,7 +111,11 @@ export const erc1155Abi = [{
         'internalType': 'bool',
         'name': 'approved',
         'type': 'bool',
-    }], 'name': 'setApprovalForAll', 'outputs': [], 'stateMutability': 'nonpayable', 'type': 'function',
+    }],
+    'name': 'setApprovalForAll',
+    'outputs': [],
+    'stateMutability': 'nonpayable',
+    'type': 'function',
 }, {
     'inputs': [{ 'internalType': 'bytes4', 'name': 'interfaceId', 'type': 'bytes4' }],
     'name': 'supportsInterface',

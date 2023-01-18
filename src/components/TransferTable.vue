@@ -184,7 +184,11 @@ export default {
                         const transfer = {
                             hash: transaction.hash,
                             epoch: transaction.epoch,
-                            valueDisplay, address, from, to, ...contract,
+                            valueDisplay,
+                            address,
+                            from,
+                            to,
+                            ...contract,
                         };
 
                         newTransfers.push(transfer);
