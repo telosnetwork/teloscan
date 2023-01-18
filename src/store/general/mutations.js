@@ -13,3 +13,7 @@ export const setIsLoading = (state, isLoading) => {
 export const setBrowserSupportsMetaMask = (state, browserSupportsMetaMask) => {
     state.browserSupportsMetaMask = browserSupportsMetaMask;
 };
+
+export const setBraveBrowser = (state, isBraveBrowser) => {
+    state.isBraveBrowser = isBraveBrowser;
+}

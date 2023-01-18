@@ -1,6 +1,7 @@
 <script>
 import MetamaskLogo from 'src/assets/metamask-fox.svg'
 import WombatLogo from 'src/assets/wombat-logo.png'
+import BraveBrowserLogo from 'src/assets/brave_lion.svg'
 
 import { mapGetters, mapMutations, mapState } from 'vuex';
 import { ethers } from 'ethers';
@@ -20,6 +21,7 @@ export default {
             tab: 'web3',
             showLogin: false,
             metamaskLogo: MetamaskLogo,
+            braveBrowserLogo: BraveBrowserLogo,
         }
     },
     computed: {
@@ -29,7 +31,7 @@ export default {
             'address',
             'nativeAccount',
         ]),
-        ...mapState('general', ['browserSupportsMetaMask']),
+        ...mapState('general', ['browserSupportsMetaMask', 'isBraveBrowser']),
     },
     async mounted() {
         const loginData = localStorage.getItem('loginData');
@@ -39,6 +41,7 @@ export default {
         const loginObj = JSON.parse(loginData);
         if (loginObj.type === LOGIN_EVM) {
             const provider = this.getInjectedProvider();
+            debugger;
             let checkProvider = new ethers.providers.Web3Provider(provider)
             const {chainId} = await checkProvider.getNetwork();
             if(loginObj.chain == chainId){
@@ -85,6 +88,7 @@ export default {
             this.$router.push(`/address/${this.address}`);
         },
         async injectedWeb3Login() {
+            debugger;
             if (!this.browserSupportsMetaMask) {
                 window.open('https://metamask.app.link/dapp/teloscan.io');
                 return;
@@ -95,6 +99,7 @@ export default {
                 this.setLogin({
                     address,
                 })
+                debugger;
                 let provider = this.getInjectedProvider();
                 let checkProvider = new ethers.providers.Web3Provider(provider)
                 this.$providerManager.setProvider(provider);
@@ -181,7 +186,7 @@ export default {
                     position: 'top',
                     message: this.$t('components.no_provider_found'),
                     timeout: 6000,
-                });                
+                });
             }
             return provider;
         },
@@ -283,6 +288,10 @@ export default {
                     <q-card class="wallet-icon cursor-pointer" @click="injectedWeb3Login()">
                         <q-img class="wallet-img" :src="metamaskLogo"></q-img>
                         <p>{{ !browserSupportsMetaMask ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
+                    </q-card>
+                    <q-card v-if="isBraveBrowser" class="wallet-icon cursor-pointer" @click="injectedWeb3Login()">
+                        <q-img class="wallet-img" :src="braveBrowserLogo"></q-img>
+                        <p> Brave Wallet </p>
                     </q-card>
                 </q-tab-panel>
                 <q-tab-panel name="native">

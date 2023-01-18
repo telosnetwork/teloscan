@@ -3,4 +3,5 @@ export default () => ({
     successMsg: null,
     isLoading: null,
     browserSupportsMetaMask: null,
+    isBraveBrowser: null,
 });

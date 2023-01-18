@@ -23,6 +23,7 @@ export default class ContractManager {
         this.eventInterfaces = events_overrides;
         this.evmEndpoint = evmEndpoint;
         this.web3 = new Web3(process.env.NETWORK_EVM_RPC);
+        debugger;
         this.ethersProvider = new ethers.providers.JsonRpcProvider(process.env.NETWORK_EVM_RPC);
     }
 
