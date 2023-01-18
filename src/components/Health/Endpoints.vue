@@ -90,9 +90,9 @@ export default {
         q-item-label.q-mt-sm {{ endpoint.http }}
       q-item-section.full-width
         q-item-label(v-if="endpoint.latency" side top)
-          span Latency: {{ endpoint.latency }}ms
+          span  {{ $t('components.health.latency') }}: {{ endpoint.latency }}ms
           q-icon(name="wifi" :color="getLatencyColor(endpoint.latency)")
-        q-item-label(v-if="endpoint.block" side top ) Block height:&nbsp
+        q-item-label(v-if="endpoint.block" side top ) {{ $t('components.health.block_height') }}:&nbsp
           span(:class="getBlockClass(blockHeight, endpoint.block)") {{ endpoint.block }}
         q-item-label(v-if="endpoint.error" side top).text-red Error: {{ endpoint.error }}
 </template>

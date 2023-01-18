@@ -7,8 +7,6 @@ import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
 
-const providersError = 'More than one provider is active, disable additional providers.';
-const unsupportedError ='current EVM wallet provider is not supported.';
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
 const PROVIDER_WEB3_INJECTED = 'injectedWeb3'
@@ -109,7 +107,7 @@ export default {
                 } catch (e) {
                     this.$q.notify({
                         position: 'top',
-                        message: `Search for EVM address linked to ${accountName} native account failed.  You can create one at wallet.telos.net`,
+                        message: this.$t('components.search_evm_address_failed', {accountName}),
                         timeout: 6000,
                     });
                     wallet.logout();
@@ -160,7 +158,11 @@ export default {
                 window.ethereum :
                 null
             if (!provider) {
-                console.error(providersError, 'or', unsupportedError);
+                this.$q.notify({
+                    position: 'top',
+                    message: this.$t('components.no_provider_found'),
+                    timeout: 6000,
+                });
             }
             return provider;
         },
@@ -226,8 +228,8 @@ export default {
     <q-dialog :model-value="show" @hide="() => $emit('hide')">
         <q-card rounded class="c-login-modal__modal-inner">
             <q-tabs v-model="tab">
-                <q-tab name="web3" label="EVM Wallets"></q-tab>
-                <q-tab name="native" label="Advanced"></q-tab>
+                <q-tab name="web3" :label="$t('components.evm_wallets')"></q-tab>
+                <q-tab name="native" :label="$t('components.advanced')"></q-tab>
             </q-tabs>
             <q-separator/>
             <q-tab-panels v-model="tab" animated>
@@ -239,12 +241,17 @@ export default {
                             height="64px"
                             width="64px"
                         />
-                        <p>{{ !browserSupportsMetaMask ? 'Continue on ' : '' }}Metamask</p>
+                        <p>{{ !browserSupportsMetaMask ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
                     </q-card>
                 </q-tab-panel>
                 <q-tab-panel name="native">
-                    <p>Native wallets for <span class="text-red">advanced users</span>, or to recover assets sent to a native-linked address</p>
-
+                    <p>
+                        {{ $t('components.text1_native_wallets') }}
+                        <span class="text-red">
+                            {{ $t('components.text2_advanced_users') }}
+                        </span>
+                        {{ $t('components.text3_or_to_recover_assets') }}
+                    </p>
                     <div class="u-flex--center">
                         <q-card
                             class="c-login-modal__image-container"

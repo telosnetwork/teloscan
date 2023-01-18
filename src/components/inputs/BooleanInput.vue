@@ -60,7 +60,7 @@ export default {
         rules() {
             if (['required', true, 'true'].includes(this.required)) {
                 return [
-                    val => [true, false].includes(val) || 'This field is required',
+                    val => [true, false].includes(val) || this.$t('components.inputs.required'),
                 ]
             }
 

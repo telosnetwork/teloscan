@@ -3,10 +3,10 @@
     <div class="row q-mx-md">
         <div class="c-staking-page__header col-xs-12 col-md-6">
             <h1 class="c-staking-page__title">
-                Telos EVM Staking
+                {{ $t('pages.staking.telos_evm_staking') }}
             </h1>
             <span class="text-white">
-                Stake TLOS for sTLOS to earn interest from the staking rewards pool
+                {{ $t('pages.staking.stake_tlos_earn_interest') }}
             </span>
         </div>
         <div class="col-xs-12 col-md-6">
@@ -36,21 +36,21 @@
                         :to="{ hash: '#stake'}"
                         exact
                         push
-                        label="Stake"
+                        :label="$t('pages.staking.stake')"
                     />
                     <q-route-tab
                         name="unstake"
                         :to="{ hash: '#unstake'}"
                         exact
                         push
-                        label="Unstake"
+                        :label="$t('pages.staking.unstake')"
                     />
                     <q-route-tab
                         name="withdraw"
                         :to="{ hash: '#withdraw'}"
                         exact
                         push
-                        label="Withdraw"
+                        :label="$t('pages.staking.withdraw')"
                         :alert="showWithdrawNotification ? 'green' : false"
                     />
                 </q-tabs>
@@ -209,6 +209,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch account: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_balance_error', { message }),
+                    });
                     this.tlosBalance = null;
                 });
 
@@ -219,6 +223,11 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch account STLOS balance: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_stlos_balance_error', { message }),
+                    });
+
                     this.stlosBalance = null;
                 });
 
@@ -228,6 +237,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch account STLOS balance value: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_stlos_value_error', { message }),
+                    });
                     this.stlosValue = null;
                 });
 
@@ -237,6 +250,11 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch total unstaked TLOS balance: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_unstaked_balance_error', { message }),
+                    });
+
                     this.totalUnstakedTlosBalance = null;
                 });
 
@@ -246,6 +264,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch withdrawable STLOS balance: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_unlocked_balance_error', { message }),
+                    });
                     this.unlockedTlosBalance = null;
                 });
 
@@ -255,6 +277,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch escrow deposits: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_escrow_deposits_error', { message }),
+                    });
                 });
 
             const conversionRatePromise = this.stlosContractInstance.previewDeposit(oneEth)
@@ -263,6 +289,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch TLOS->sTLOS conversion rate: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_conversion_rate_error', { message }),
+                    });
                 });
 
             return Promise.all([
@@ -282,6 +312,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to get STLOS contract: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_stlos_contract_error', { message }),
+                    });
                     this.stlosContract = null;
                 });
 
@@ -291,6 +325,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to get STLOS contract: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_escrow_contract_error', { message }),
+                    });
                     this.escrowContract = null;
                 });
 
@@ -314,6 +352,10 @@ export default {
                 this.unstakePeriodSeconds = (await this.escrowContractInstance.lockDuration()).toNumber();
             } catch({ message }) {
                 console.error(`Failed to retrieve unstaking period: ${message}`)
+                this.$q.notify({
+                    type: 'negative',
+                    message: this.$t('page.staking.fetch_unstake_period_error', { message }),
+                });
             }
         },
         async handleBalanceChanged() {
@@ -326,6 +368,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch account: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_account_error', { message }),
+                    });
                     this.tlosBalance = null;
                 });
         },
