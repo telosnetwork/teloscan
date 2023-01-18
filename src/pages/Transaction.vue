@@ -309,7 +309,7 @@ export default {
             br
             div(class="fit row wrap justify-start items-start content-start")
                 div(class="col-3")
-                
+
                   strong {{ $t('pages.block_number') }}:&nbsp;
                 div(class="col-9")
                   block-field( :block="trx.block" )
@@ -318,9 +318,7 @@ export default {
                 div(class="col-3"  )
                   strong {{ $t('pages.date') }}:&nbsp;
                 div.u-flex--left
-                  q-icon(class="far fa-clock q-mr-xs")
-                  date-field( :epoch="trx.epoch" :show-age="showAge" )
-                  q-tooltip {{ $t('pages.click_to_change_date_format') }}
+                  date-field( :epoch="trx.epoch" )
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
