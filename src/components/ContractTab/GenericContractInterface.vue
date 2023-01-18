@@ -158,7 +158,6 @@ export default {
                     class="text-negative"
                     size="1.25rem"
                 />
-                
                 {{ $t('components.contract_tab.unverified_contract_source') }}
             </p>
             <p>
