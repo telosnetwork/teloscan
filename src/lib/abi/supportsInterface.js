@@ -6,4 +6,4 @@ export const supportsInterfaceAbi = [{
     'payable': false,
     'stateMutability': 'view',
     'type': 'function',
-}]
+}];

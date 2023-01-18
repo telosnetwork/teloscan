@@ -12,7 +12,7 @@ const notIntegerOrDotRegex = /[^\d.]/g;
 const notIntegerDotOrCommaRegex = /[^\d,.]/g;
 const leadingZeroesRegex = /^0+(?!$|\.)/g;
 const decimalRegex = /\.\d+$/g;
-const dotZeroRegex = /\.0$/g
+const dotZeroRegex = /\.0$/g;
 const commaRegex = /,/g;
 const dotRegex = /\./g;
 
@@ -124,7 +124,7 @@ export default {
                 const caretIsPastDecimal = caretPosition > integer.length + 1;
                 const fractionalUnderMaxLength = fractional.length < WEI_PRECISION;
 
-                return keypressIsDigit && caretIsPastDecimal && !fractionalUnderMaxLength
+                return keypressIsDigit && caretIsPastDecimal && !fractionalUnderMaxLength;
             })();
             const tryingToAddSecondDot = pressedKey === dot && value.includes(dot);
             const tryingToAddLeadingZeroes =
@@ -212,7 +212,7 @@ export default {
             this.$refs.input.value = val;
         },
         setInputCaretPosition(val) {
-            ['Start', 'End'].forEach(property => this.$refs.input[`selection${property}`] = val)
+            ['Start', 'End'].forEach(property => this.$refs.input[`selection${property}`] = val);
         },
         triggerWiggle() {
             this.$el.classList.add('c-staking-input--wiggle');
@@ -221,7 +221,7 @@ export default {
             this.$el.classList.remove('c-staking-input--wiggle');
         },
     },
-}
+};
 </script>
 
 <template>

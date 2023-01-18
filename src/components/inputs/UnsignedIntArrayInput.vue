@@ -76,7 +76,7 @@ export default {
         },
         shapedLabel() {
             const size = (Number.isInteger(+this.size) && +this.size !== -1) ? `${+this.size}` : '';
-            return `${this.label} (uint${this.uintSize}[${size}])`
+            return `${this.label} (uint${this.uintSize}[${size}])`;
         },
     },
     watch: {
@@ -102,7 +102,7 @@ export default {
             }
         },
     },
-}
+};
 </script>
 
 <template>

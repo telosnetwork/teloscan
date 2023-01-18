@@ -25,7 +25,7 @@ export default {
     async mounted() {
         let sources;
         try{
-            const checkSumAddress = toChecksumAddress(this.$route.params.address)
+            const checkSumAddress = toChecksumAddress(this.$route.params.address);
             sources =
         (await axios.get(
             `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com/${checkSumAddress}/source.json`)
@@ -59,7 +59,7 @@ export default {
             return ext === 'json';
         },
     },
-}
+};
 </script>
 
 <template lang='pug'>

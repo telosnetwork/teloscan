@@ -51,14 +51,14 @@ export default {
         signedIntSizeOptions: (() => {
             const arr = [];
             for (let index = 1; index <= 16; index++) {
-                arr.push(8*index)
+                arr.push(8*index);
             }
             return arr;
         })(),
         unsignedIntSizeOptions: (() => {
             const arr = [];
             for (let index = 1; index <= 32; index++) {
-                arr.push(8*index)
+                arr.push(8*index);
             }
             return arr;
         })(),
@@ -75,10 +75,10 @@ export default {
             return {
                 ...this.universalToggles,
                 size: this.allArraysFixedSize ? 3 : -1,
-            }
+            };
         },
     },
-}
+};
 </script>
 
 <template>

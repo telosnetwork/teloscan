@@ -15,7 +15,7 @@ export default {
     data() {
         return {
             tokens: null,
-        }
+        };
     },
     computed: {
         showMetamaskPrompt() {
@@ -31,11 +31,11 @@ export default {
         },
         async loadTokens() {
             const tokenList = await this.$contractManager.getTokenList();
-            let tokens = tokenList.tokens
+            let tokens = tokenList.tokens;
             tokens = this.sortTokens(tokens);
             await Promise.all(tokens.map(async token => {
                 if (token.logoURI && token.logoURI.startsWith('ipfs://'))
-                    token.logoURI = `https://ipfs.io/ipfs/${token.logoURI.replace(/ipfs:\/\//, '')}`
+                    token.logoURI = `https://ipfs.io/ipfs/${token.logoURI.replace(/ipfs:\/\//, '')}`;
                 else if (!token.logoURI)
                     // eslint-disable-next-line max-len
                     token.logoURI = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT28t_CidqCQ0st_OhY3MxnPKMFjclG9ppwWA&usqp=CAU';
@@ -48,7 +48,7 @@ export default {
                     token.balance = `${formatWei(balance, token.decimals, 4)}`;
                     token.fullBalance = `${formatWei(balance, token.decimals)}`;
                 } catch (e) {
-                    throw `Failed to fetch balance:\n${e}`
+                    throw `Failed to fetch balance:\n${e}`;
                 }
             }));
             this.tokens = tokens;
@@ -78,10 +78,10 @@ export default {
                 }
 
                 return a.symbol > b.symbol ? 1 : -1;
-            })
+            });
         },
     },
-}
+};
 </script>
 
 <template>

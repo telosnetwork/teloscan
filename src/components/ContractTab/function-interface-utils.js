@@ -13,7 +13,7 @@ const asyncInputComponents = {
     UnsignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntArrayInput')),
     UnsignedIntInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntInput')),
     SignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/SignedIntArrayInput')),
-}
+};
 
 /**
  * Given a function interface type, returns true iff that type is "address"
@@ -57,7 +57,7 @@ function parameterTypeIsBooleanArray(type) {
  * @returns {boolean}
  */
 function parameterTypeIsBytes(type) {
-    return /^bytes/.test(type)
+    return /^bytes/.test(type);
 }
 
 /**
@@ -66,7 +66,7 @@ function parameterTypeIsBytes(type) {
  * @returns {boolean}
  */
 function parameterTypeIsSignedInt(type) {
-    return /^int\d+$/.test(type)
+    return /^int\d+$/.test(type);
 }
 
 /**
@@ -75,7 +75,7 @@ function parameterTypeIsSignedInt(type) {
  * @returns {boolean}
  */
 function parameterTypeIsSignedIntArray(type) {
-    return /^int\d+\[\d*]/.test(type)
+    return /^int\d+\[\d*]/.test(type);
 }
 
 /**
@@ -102,7 +102,7 @@ function parameterTypeIsStringArray(type) {
  * @returns {boolean}
  */
 function parameterTypeIsUnsignedInt(type) {
-    return /^uint\d+$/.test(type)
+    return /^uint\d+$/.test(type);
 }
 
 /**
@@ -111,7 +111,7 @@ function parameterTypeIsUnsignedInt(type) {
  * @returns {boolean}
  */
 function parameterTypeIsUnsignedIntArray(type) {
-    return /^uint\d+\[\d*]$/.test(type)
+    return /^uint\d+\[\d*]$/.test(type);
 }
 
 
@@ -319,7 +319,7 @@ function parseUintArrayString (str, expectedLength, expectedIntSize) {
     let intBigNums;
 
     try {
-        intBigNums = intStrings.map(int => BigNumber.from(int))
+        intBigNums = intStrings.map(int => BigNumber.from(int));
     } catch {
         return undefined;
     }
@@ -409,7 +409,7 @@ function parseSignedIntArrayString (str, expectedLength, expectedIntSize) {
     let intBigNums;
 
     try {
-        intBigNums = intStrings.map(int => BigNumber.from(int))
+        intBigNums = intStrings.map(int => BigNumber.from(int));
     } catch {
         return undefined;
     }
@@ -625,4 +625,4 @@ export {
     parseStringArrayString,
     parseUintArrayString,
     parseUintString,
-}
+};

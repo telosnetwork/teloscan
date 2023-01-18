@@ -16,7 +16,7 @@ export default {
             default: false,
         },
     },
-}
+};
 </script>
 
 <template lang="pug">

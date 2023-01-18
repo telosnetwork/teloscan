@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils';
 import {
     oneEthInWei,
     oneHundredFiftyEthInWei,
@@ -36,7 +36,7 @@ const mountInput = props => mount(
 
 describe('StakingFormInput.vue', () => {
     it('should have the correct name', () => {
-        expect(StakingFormInput.name).toBe('StakingFormInput')
+        expect(StakingFormInput.name).toBe('StakingFormInput');
     });
 
     describe('v-model implementation', () => {
@@ -51,7 +51,7 @@ describe('StakingFormInput.vue', () => {
             input.element.value = newInputValue;
             await input.trigger('keydown', { key });
             await input.trigger('input');
-        }
+        };
 
         // check the emits, then simulates the flow of data back down to the component from parent via v-model
         // binding and ensures the component handles that update properly

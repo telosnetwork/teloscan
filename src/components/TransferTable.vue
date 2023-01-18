@@ -167,7 +167,7 @@ export default {
                         let valueDisplay;
                         if (this.tokenType === 'erc20') {
                             if (token && typeof token.decimals === 'number') {
-                                valueDisplay = formatWei(log.data, token.decimals)
+                                valueDisplay = formatWei(log.data, token.decimals);
                             } else {
                                 valueDisplay = this.$t('components.unknown_precision');
                             }
@@ -176,7 +176,7 @@ export default {
                                 BigNumber.from(log.data.substr(0, TOKEN_ID_TRUNCATE_LENGTH)).toString() :
                                 BigNumber.from(log.topics[3]).toString();
                             if(tokenId.length > 15){
-                                tokenId = tokenId.substr(0, 15) + '...'
+                                tokenId = tokenId.substr(0, 15) + '...';
                             }
                             valueDisplay = this.$t('components.token_id', { tokenId });
                         }
@@ -214,7 +214,7 @@ export default {
         getIcon(row) {
             if (row.token && row.token.logoURI) {
                 if (row.token.logoURI.startsWith('ipfs://')) {
-                    return row.token.logoURI.replace(/ipfs:\/\//, 'https://ipfs.io/ipfs/')
+                    return row.token.logoURI.replace(/ipfs:\/\//, 'https://ipfs.io/ipfs/');
                 }
                 return row.token.logoURI;
             } else {
@@ -230,7 +230,7 @@ export default {
             if(this.tokenType === 'erc1155'){
                 signature = TRANSFER_EVENT_ERC1155_SIGNATURE;
             }
-            path += `&log_topics=${signature},${this.address}`
+            path += `&log_topics=${signature},${this.address}`;
             path += `&skip=${(page - 1) * rowsPerPage}`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
 

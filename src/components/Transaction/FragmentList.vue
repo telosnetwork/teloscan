@@ -1,5 +1,5 @@
 <script>
-import FragmentListElement from 'components/Transaction/FragmentListElement'
+import FragmentListElement from 'components/Transaction/FragmentListElement';
 export default {
     name: 'FragmentList',
     components: {
@@ -15,7 +15,7 @@ export default {
             required: true,
         },
     },
-}
+};
 </script>
 <template>
 <div class="q-pa-md" :key="parsedFragments.length == fragments.length">

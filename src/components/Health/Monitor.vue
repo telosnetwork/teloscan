@@ -2,7 +2,7 @@
 import axios from 'axios';
 const API_URL = ('' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40') ?
     'https://api.monitor.telos.net' :
-    'https://api.monitor-test.telos.net'
+    'https://api.monitor-test.telos.net';
 const API_ENDPOINT_TASKS = API_URL + '/tasks';
 const API_ENDPOINT_STATUSES = API_URL + '/task_status';
 
@@ -36,7 +36,7 @@ export default {
                 label: '',
                 align: 'left',
             },
-        ]
+        ];
 
         return {
             rows: [],
@@ -50,7 +50,7 @@ export default {
                 rowsNumber: 10000,
             },
             loading: true,
-        }
+        };
     },
     async created() {
         // initialization of the translated texts
@@ -65,7 +65,7 @@ export default {
                 const results = await axios.get(API_ENDPOINT_TASKS);
                 this.tasks = results.data;
             } catch (e) {
-                console.error(e)
+                console.error(e);
             }
         },
         async onRequest(props) {
@@ -91,7 +91,7 @@ export default {
                 );
                 this.loading = false;
             } catch (e) {
-                console.error(e)
+                console.error(e);
             }
         },
     },

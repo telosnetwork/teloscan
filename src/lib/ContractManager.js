@@ -7,7 +7,7 @@ import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
 import { erc721Abi, erc1155Abi, erc721MetadataAbi, supportsInterfaceAbi } from './abi';
 import { toChecksumAddress } from './utils';
-import { ERC1155_TRANSFER_SIGNATURE } from './abi/signature/transfer_signatures.js'
+import { ERC1155_TRANSFER_SIGNATURE } from './abi/signature/transfer_signatures.js';
 
 const contractsBucket = axios.create({
     baseURL: `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com`,
@@ -43,7 +43,7 @@ export default class ContractManager {
             return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
 
         try {
-            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`)
+            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`);
             if (abiResponse) {
                 if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
                     console.error(`Unable to find function signature for sig: ${prefix}`);
@@ -81,7 +81,7 @@ export default class ContractManager {
             return new ethers.utils.Interface([this.eventInterfaces[prefix]]);
 
         try {
-            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`)
+            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`);
             if (abiResponse) {
                 if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
                     console.error(`Unable to find event signature for event: ${data}`);
@@ -100,8 +100,8 @@ export default class ContractManager {
     async getContractCreation(address) {
         if (!address) return;
         try {
-            const v2ContractResponse = await this.evmEndpoint.get(`/v2/evm/get_contract?contract=${address}`)
-            return v2ContractResponse.data
+            const v2ContractResponse = await this.evmEndpoint.get(`/v2/evm/get_contract?contract=${address}`);
+            return v2ContractResponse.data;
         } catch (e) {
             console.error(e.message);
         }
@@ -264,12 +264,12 @@ export default class ContractManager {
                 tokenData.name = await contract.name();
                 tokenData.extensions = {
                     metadata: await this.supportsInterface(address, '0x5b5e139f'),
-                }
+                };
             } else if(type === 'erc1155'){
                 tokenData.name = contract.name || contract.address;
                 tokenData.extensions = {
                     metadata: await this.supportsInterface(address, '0x0e89341c'),
-                }
+                };
             }
 
             tokenData.type = type;

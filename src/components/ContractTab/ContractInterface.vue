@@ -29,14 +29,14 @@ export default {
             } else {
                 write.push(a);
             }
-        })
+        });
 
         this.functions = {
             read: sortAbiFunctionsByName(read),
             write: sortAbiFunctionsByName(write),
-        }
+        };
     },
-}
+};
 </script>
 
 <template>

@@ -38,7 +38,7 @@ export default {
             return this.source === false && this.write === true;
         },
     },
-}
+};
 </script>
 
 <template>

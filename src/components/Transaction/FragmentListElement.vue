@@ -1,5 +1,5 @@
 <script>
-import JsonViewer from 'vue-json-viewer'
+import JsonViewer from 'vue-json-viewer';
 import AddressField from 'components/AddressField';
 import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
@@ -25,7 +25,7 @@ export default {
             showWei: false,
             expanded: false,
             expanded_parameters: [],
-        }
+        };
     },
     created(){
         if(!this.fragment) return;
@@ -68,7 +68,7 @@ export default {
             return this.expanded ? 'arrow_drop_down' : 'arrow_right';
         },
     },
-}
+};
 </script>
 
 <template>

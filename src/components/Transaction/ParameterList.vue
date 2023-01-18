@@ -15,11 +15,11 @@ export default {
     data(){
         let expanded = [];
         for(var i = 0; i < this.params.length;i++){
-            expanded.push({ 'expanded' : false })
+            expanded.push({ 'expanded' : false });
         }
         return {
             expanded: expanded,
-        }
+        };
     },
     props: {
         params: {
@@ -35,7 +35,7 @@ export default {
             required: true,
         },
     },
-}
+};
 </script>
 <!--eslint-disable max-len-->
 <template lang="pug">

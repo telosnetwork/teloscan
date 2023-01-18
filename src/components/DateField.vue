@@ -46,7 +46,7 @@ export default {
             this.showAge = !this.showAge;
         },
     },
-}
+};
 </script>
 
 <template>

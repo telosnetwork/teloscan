@@ -88,7 +88,7 @@ export default {
         },
         shapedLabel() {
             const size = (Number.isInteger(+this.size) && +this.size !== -1) ? `${+this.size}` : '';
-            return `${this.label} (int${this.intSize}[${size}])`
+            return `${this.label} (int${this.intSize}[${size}])`;
         },
     },
     watch: {
@@ -114,7 +114,7 @@ export default {
             }
         },
     },
-}
+};
 </script>
 
 <template>

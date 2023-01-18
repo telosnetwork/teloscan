@@ -1,5 +1,5 @@
 <script>
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { formatWei, getRouteWatcherForTabs, WEI_PRECISION } from 'src/lib/utils';
@@ -13,7 +13,7 @@ const tabs = {
     stake: '#stake',
     unstake: '#unstake',
     withdraw: '#withdraw',
-}
+};
 
 export default {
     name: 'StakingPage',
@@ -222,7 +222,7 @@ export default {
             try {
                 this.unstakePeriodSeconds = (await this.escrowContractInstance.lockDuration()).toNumber();
             } catch({ message }) {
-                console.error(`Failed to retrieve unstaking period: ${message}`)
+                console.error(`Failed to retrieve unstaking period: ${message}`);
                 this.$q.notify({
                     type: 'negative',
                     message: this.$t('page.staking.fetch_unstake_period_error', { message }),
@@ -247,7 +247,7 @@ export default {
                 });
         },
     },
-}
+};
 </script>
 
 <template>

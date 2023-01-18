@@ -87,12 +87,12 @@ export default {
         },
         formatAmount(val) {
             if (val === null)
-                return '0.0'
+                return '0.0';
 
             return formatWei(val, WEI_PRECISION, 2);
         },
     },
-}
+};
 </script>
 
 <template>

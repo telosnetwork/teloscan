@@ -50,6 +50,23 @@ export default {
                     });
             }
         },
+        toggleDrawer() {
+            if (!this.drawer) {
+                // handle race condition between vmodel and clickaway.
+                // without this, because clickaway is instantly triggered when clicking the menu icon,
+                // the drawer re-closes before it has had a chance to open
+                this.clickawayDisabled = true;
+                setTimeout(
+                    () => { this.clickawayDisabled = false; },
+                    400,
+                );
+            }
+            this.drawer = !this.drawer;
+        },
+        handleClickaway() {
+            if (this.drawer === true && !this.clickawayDisabled)
+                this.drawer = false;
+        },
     },
 };
 </script>

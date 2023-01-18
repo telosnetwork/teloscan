@@ -32,9 +32,9 @@ export default {
     data() {
         return {
             BigNumber: BigNumber,
-        }
+        };
     },
-}
+};
 </script>
 <!-- eslint-disable max-len -->
 <template lang="pug">

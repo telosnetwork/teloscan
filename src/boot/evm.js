@@ -20,7 +20,7 @@ const evm = new TelosEvmApi({
 //    the provider. so, this is a workaround until some better solution is needed and/or available
 const providerContainer = {
     provider: null,
-}
+};
 
 class ProviderManager {
     setProvider(provider) {
