@@ -72,7 +72,8 @@ export default {
                 return Array.isArray(parseStringArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_strings_array_length', { size: +this.size });
+            const incorrectArrayLengthMessage =
+                this.$t('components.inputs.incorrect_strings_array_length', { size: +this.size });
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_strings_array_string');
 
             return [

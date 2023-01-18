@@ -101,7 +101,8 @@ export function parsePanicReason(revertOutput) {
         reason = 'If you call .pop() on an empty array.';
         break;
     case '32':
-        reason = 'If you access an array, bytesN or an array slice at an out-of-bounds or negative index (i.e. x[i] where i >= x.length or i < 0).';
+        reason = 'If you access an array, bytesN or an array slice at an out-of-bounds or negative index ' +
+            '(i.e. x[i] where i >= x.length or i < 0).';
         break;
     case '41':
         reason = 'If you allocate too much memory or create an array that is too large.';

@@ -64,7 +64,8 @@ export default {
                 return Array.isArray(parseBooleanArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_booleans_array_length', { size: +this.size });
+            const incorrectArrayLengthMessage =
+                this.$t('components.inputs.incorrect_booleans_array_length', { size: +this.size });
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_booleans_array_string');
 
             return [

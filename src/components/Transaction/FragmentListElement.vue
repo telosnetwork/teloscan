@@ -12,7 +12,11 @@
         </span>
         <small v-if="fragment.contract">
             <address-field
-                :address="(fragment.contract.address[0] === '0' && fragment.contract.address[1] === 'x') ? fragment.contract.address : '0x' + fragment.contract.address"
+                :address="
+                    (fragment.contract.address[0] === '0' && fragment.contract.address[1] === 'x') ?
+                        fragment.contract.address :
+                        '0x' + fragment.contract.address
+                "
                 :truncate="15"
                 class="word-break"
                 :name="fragment.contract.name"
@@ -47,7 +51,11 @@
                     />
                     <div v-else-if="param.type === 'uint256' || param.type === 'uint128'"  class="word-break">
                         <div v-if="fragment.isTransfer && fragment.token">
-                            <div @click="showWei = !showWei" class="clickable" v-if="!fragment.token.type || fragment.token.type === 'erc20'">
+                            <div
+                                @click="showWei = !showWei"
+                                class="clickable"
+                                v-if="!fragment.token.type || fragment.token.type === 'erc20'"
+                            >
                                 <span v-if="!showWei">
                                     <span> {{ formatWei(fragment.args[index], fragment.token.decimals) }}</span>
                                     <q-tooltip>Show wei</q-tooltip>
@@ -80,15 +88,37 @@
                     </div>
                     <div v-else-if="param.type === 'tuple'" v-on:click.stop="toggle(index, 'expanded')">
                         <div>[ </div>
-                        <div v-for="(i) in fragment.args[index].length - 1" :class="(expanded_parameters[index]['expanded']) ? 'q-pl-xl word-break' : 'q-pl-xl word-break hidden'" :key="param.type + i">
+                        <div
+                            v-for="(i) in fragment.args[index].length - 1"
+                            :class="
+                                (expanded_parameters[index]['expanded']) ?
+                                    'q-pl-xl word-break' :
+                                    'q-pl-xl word-break hidden'
+                            "
+                            :key="param.type + i"
+                        >
                             {{ i }},
                         </div>
-                        <div v-if="!expanded_parameters[index]['expanded']" class="q-px-sm ellipsis-label q-mb-xs">...</div>
+                        <div
+                            v-if="!expanded_parameters[index]['expanded']"
+                            class="q-px-sm ellipsis-label q-mb-xs"
+                        >...</div>
                         <div>]</div>
                     </div>
-                    <div v-else-if="param.arrayChildren && fragment.args[index]" v-on:click.stop="toggle(index, 'expanded')">
+                    <div
+                        v-else-if="param.arrayChildren && fragment.args[index]"
+                        v-on:click.stop="toggle(index, 'expanded')"
+                    >
                         <div>[ </div>
-                        <div v-for="i in fragment.args[index].length - 1" :class="(expanded_parameters[index]['expanded']) ? 'q-pl-xl word-break' : 'q-pl-xl word-break hidden'" :key="param.type + i">
+                        <div
+                            v-for="i in fragment.args[index].length - 1"
+                            :class="
+                                (expanded_parameters[index]['expanded']) ?
+                                    'q-pl-xl word-break' :
+                                    'q-pl-xl word-break hidden'
+                            "
+                            :key="param.type + i"
+                        >
                             <div v-if="param.arrayChildren.type === 'address'">
                                 <address-field
                                     :address="fragment.args[index][i]"
@@ -99,7 +129,10 @@
                             </div>
                             <span v-else class="word-break">{{ fragment.args[index][i] }},</span>
                         </div>
-                        <div v-if="!expanded_parameters[index]['expanded']" class="q-px-sm ellipsis-label q-mb-xs">...</div>
+                        <div
+                            v-if="!expanded_parameters[index]['expanded']"
+                            class="q-px-sm ellipsis-label q-mb-xs"
+                        >...</div>
                         <div>]</div>
                     </div>
                     <div v-else class="word-break">
@@ -187,7 +220,11 @@ export default {
             return (this.isExpandable) ? fragmentClass + ' clickable' : fragmentClass;
         },
         isExpandable(){
-            return (this.fragment.inputs && this.fragment.inputs.length > 0 || this.fragment.value || !this.fragment.name);
+            return (
+                this.fragment.inputs && this.fragment.inputs.length > 0 ||
+                this.fragment.value ||
+                !this.fragment.name
+            );
         },
         arrowIcon() {
             if(!this.isExpandable) return '';

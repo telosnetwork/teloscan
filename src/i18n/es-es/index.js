@@ -1,3 +1,4 @@
+/* eslint-disable max-len*/
 export default {
     pages: {
         staking: {
@@ -99,7 +100,7 @@ export default {
             convert_tlos_to_stlos_error: 'No se puede convertir TLOS a sTLOS { message }',
             convert_stlos_to_tlos_error: 'No se puede convertir sTLOS a TLOS { message }',
             unstake_stlos_error: 'Error al desbloquear sTLOS { message }',
-            withdraw_failed: 'Error al retirar TLOS desbloqueado: { message }',  
+            withdraw_failed: 'Error al retirar TLOS desbloqueado: { message }',
         },
         explore_transactions: 'Explorar transacciones',
         recent_transactions: 'Transacciones recientes',
@@ -239,7 +240,7 @@ export default {
             no_internal_trxs_found: 'No se encontraron transacciones internas',
             human_readable: 'Lectura humana',
             no_logs_found: 'No se encontraron registros',
-            verify_related_contract: 'Verifique el contrato relacionado para cada registro para ver su versión legible por humanos',      
+            verify_related_contract: 'Verifique el contrato relacionado para cada registro para ver su versión legible por humanos',
             failed_to_retrieve_contract: 'No se pudo recuperar el contrato con la dirección { address }',
         },
         inputs: {
@@ -274,7 +275,7 @@ export default {
             str_input_hint: 'Las comillas dobles en las cadenas deben escaparse (\\")',
             address_placeholder: 'Dirección que comienza con 0x',
             address_label: '{ label } (address)',
-            boolean_array_label: '{ label } (bool[{ size }])',            
+            boolean_array_label: '{ label } (bool[{ size }])',
         },
         health: {
             status: 'Estado',
@@ -312,7 +313,7 @@ export default {
             provided_json_invalid: 'JSON proporcionado no válido',
             read_functions: 'Funciones de lectura',
             write_functions: 'Funciones de escritura',
-            unverified_contract: 'Contrato no verificado',            
+            unverified_contract: 'Contrato no verificado',
         },
     },
     layouts: {

@@ -35,7 +35,7 @@
                     {{ $t('pages.staking.confirm_unstake_1a') }}
                     <span class="text-primary">{{ unstakePeriodPretty }}</span>,
                     {{ $t('pages.staking.confirm_unstake_1b') }}
-                    
+
                 </p>
                 <p v-if="remainingDeposits < 10">
                     {{ $t('pages.staking.confirm_unstake_2a') }}
@@ -180,7 +180,9 @@ export default {
         },
         topInputErrorText() {
             if(this.isLoggedIn && !this.isNative) return;
-            return this.isNative ? this.$t('pages.staking.login_using_evm_wallet') : this.$t('pages.staking.wallet_not_connected');
+            return this.isNative ?
+                this.$t('pages.staking.login_using_evm_wallet') :
+                this.$t('pages.staking.wallet_not_connected');
         },
         canDeposit() {
             return this.deposits.length < this.maxDeposits;
@@ -188,7 +190,8 @@ export default {
         ctaIsDisabled() {
             const inputsInvalid = (
                 this.isLoggedIn &&
-                [this.topInputAmount, this.bottomInputAmount].some(amount => ['0', '', null, undefined].includes(amount))
+                [this.topInputAmount, this.bottomInputAmount]
+                    .some(amount => ['0', '', null, undefined].includes(amount))
             );
 
             return inputsInvalid ||
@@ -213,7 +216,7 @@ export default {
         this.bottomInputLabel = this.$t('pages.staking.receive_tlos');
         this.columns[0].label = this.$t('pages.staking.amount');
         this.columns[1].label = this.$t('pages.staking.time_remaining');
-        
+
         try {
             this.maxDeposits = (await this.escrowContractInstance.maxDeposits()).toNumber();
         } catch (error) {

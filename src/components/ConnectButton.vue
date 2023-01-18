@@ -99,7 +99,10 @@ export default {
                 let checkProvider = new ethers.providers.Web3Provider(provider)
                 this.$providerManager.setProvider(provider);
                 const {chainId} = await checkProvider.getNetwork();
-                localStorage.setItem('loginData', JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED, chain: chainId }));
+                localStorage.setItem(
+                    'loginData',
+                    JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED, chain: chainId }),
+                );
                 provider.on('chainChanged', (newNetwork) => {
                     if(newNetwork != chainId){
                         this.setLogin({});
@@ -181,7 +184,7 @@ export default {
                     position: 'top',
                     message: this.$t('components.no_provider_found'),
                     timeout: 6000,
-                });                
+                });
             }
             return provider;
         },

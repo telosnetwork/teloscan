@@ -26,8 +26,10 @@ export default {
         let sources;
         try{
             const checkSumAddress = toChecksumAddress(this.$route.params.address)
-            sources = 
-        (await axios.get(`https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com/${checkSumAddress}/source.json`)).data.files;
+            sources =
+        (await axios.get(
+            `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com/${checkSumAddress}/source.json`)
+        ).data.files;
         }catch(e){
             console.log(e);
         }
@@ -37,7 +39,7 @@ export default {
         sortFiles(files){
             for (let file of files){
                 if (this.isContract(file.name)){
-                    file.content = 
+                    file.content =
             hljs.highlight(file.content, { language: 'solidity' }).value;
                     this.contracts.unshift(file);
                 }else{
@@ -64,7 +66,7 @@ export default {
 .contract-source
   div( v-for='(item, key, index) in json' :key='key')
     p.file-label {{ item.name }}
-    JsonViewer.source-container( 
+    JsonViewer.source-container(
       :value='item.content'
       copyable
       expanded

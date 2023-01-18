@@ -85,7 +85,7 @@
         {{ errorMessage }}
     </p>
     <div v-if="result" class="output-container">
-        {{ $t('components.contract_tab.result') }} ({{ abi.outputs && abi.outputs.length > 0 ? abi.outputs[0].type : '' }}):
+        {{ $t('components.contract_tab.result') }} ({{ abi?.outputs.length > 0 ? abi.outputs[0].type : '' }}):
         <router-link v-if="abi?.outputs?.[0]?.type === 'address'" :to="`/address/${result}`" >{{ result }}</router-link>
         <template v-else>{{ result }}</template>
     </div>
@@ -268,7 +268,9 @@ export default {
             this.enterAmount = true;
         },
         updateDecimals() {
-            this.amountDecimals = this.selectDecimals.value === 'custom' ? this.customDecimals : this.selectDecimals.value;
+            this.amountDecimals = this.selectDecimals.value === 'custom' ?
+                this.customDecimals :
+                this.selectDecimals.value;
         },
         setAmount() {
             const integerAmount = ethers.utils.parseUnits(this.amountInput + '', this.amountDecimals).toString();
@@ -375,7 +377,8 @@ export default {
             );
 
             // This doesn't produce the right hash... but would be nice to use ethers here instead of ethereumjs/tx
-            //  maybe just need to have signed transaction with an empty signature?  What is etherumjs/tx doing differently?
+            //  maybe just need to have signed transaction with an empty signature?
+            //  What is etherumjs/tx doing differently?
             //this.hash = ethers.utils.keccak256(raw);
 
             const trxBuffer = Buffer.from(raw.replace(/^0x/, ''), 'hex');

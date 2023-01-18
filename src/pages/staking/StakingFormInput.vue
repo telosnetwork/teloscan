@@ -148,8 +148,9 @@ export default {
             const nextCharacterIsDot       =   dotRegex.test(value[caretPosition]);
             const previousCharacterIsDot   =   dotRegex.test(value[caretPosition - 1]);
 
-            const deletingDot   = (deletingForward && nextCharacterIsDot)   || (deletingBackward && previousCharacterIsDot);
-            const deletingComma = (deletingForward && nextCharacterIsComma) || (deletingBackward && previousCharacterIsComma);
+            const deletingDot = (deletingForward && nextCharacterIsDot) || (deletingBackward && previousCharacterIsDot);
+            const deletingComma = (deletingForward && nextCharacterIsComma) ||
+                (deletingBackward && previousCharacterIsComma);
 
             if (deletingDot) {
                 this.setInputValue(value.replace(dotRegex, ''));

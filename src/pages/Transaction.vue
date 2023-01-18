@@ -21,7 +21,8 @@ const tabs = {
     internal: '#internal',
 };
 
-// TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
+// TODO: The get_transactions API doesn't format the internal transactions properly,
+//  need to fix that before we try to decode them
 export default {
     name: 'TransactionPage',
     components: {
@@ -115,23 +116,36 @@ export default {
         {
             this.transfers = [];
             for (const log of this.trx.logs) {
-                // ERC20, ERC721 & ERC1155 transfers (ERC721 & ERC20 have same first topic but ERC20 has 4 topics for transfers, ERC20 has 3 log topics, ERC1155 has a different first topic)
+                // ERC20, ERC721 & ERC1155 transfers (ERC721 & ERC20 have same first topic but ERC20 has 4 topics for
+                // transfers, ERC20 has 3 log topics, ERC1155 has a different first topic)
                 let sig = log.topics[0].substr(0, 10);
                 if (TRANSFER_SIGNATURES.includes(sig)) {
                     let type = this.$contractManager.getTokenTypeFromLog(log);
                     let contract = await this.$contractManager.getContract(log.address, type);
                     if (typeof contract.token !== 'undefined' && contract.token !== null) {
-                        let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name, 'decimals': contract.token.decimals}
+                        let token = {
+                            'symbol': contract.token.symbol,
+                            'address': log.address,
+                            name: contract.token.name,
+                            'decimals': contract.token.decimals,
+                        };
                         if (contract.token.type === 'erc721') {
                             let tokenId = BigNumber.from(log.topics[3]).toString();
                             if (contract.token.extensions?.metadata) {
                                 try {
-                                    token = await this.$contractManager.loadTokenMetadata(log.address, contract.token, tokenId);
+                                    token = await this.$contractManager.loadTokenMetadata(
+                                        log.address,
+                                        contract.token,
+                                        tokenId,
+                                    );
                                 } catch (e) {
                                     console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
                                     // notify the user
                                     this.$q.notify({
-                                        message: this.$t('pages.couldnt_retreive_metadata_for_address', { address: contract.address, message: e.message }),
+                                        message: this.$t(
+                                            'pages.couldnt_retreive_metadata_for_address',
+                                            { address: contract.address, message: e.message },
+                                        ),
                                         color: 'negative',
                                         position: 'top',
                                         timeout: 5000,
@@ -148,12 +162,19 @@ export default {
                             let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
                             if (contract.token.extensions?.metadata) {
                                 try {
-                                    token = await this.$contractManager.loadTokenMetadata(log.address, contract.token, tokenId);
+                                    token = await this.$contractManager.loadTokenMetadata(
+                                        log.address,
+                                        contract.token,
+                                        tokenId,
+                                    );
                                 } catch (e) {
                                     console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
                                     // notify the user
                                     this.$q.notify({
-                                        message: this.$t('pages.couldnt_retreive_metadata_for_address', { address: contract.address, message: e.message }),
+                                        message: this.$t(
+                                            'pages.couldnt_retreive_metadata_for_address',
+                                            { address: contract.address, message: e.message },
+                                        ),
                                         color: 'negative',
                                         position: 'top',
                                         timeout: 5000,
@@ -208,12 +229,22 @@ export default {
             if (!this.parsedTransaction) return [];
             let args = [];
             this.parsedTransaction.functionFragment.inputs.forEach((input, i) => {
-                args.push({name: input.name, type: input.type, arrayChildren: (input.arrayChildren !== null) ? input.arrayChildren.type : false, value:  this.parsedTransaction.args[i]})
+                args.push({
+                    name: input.name,
+                    type: input.type,
+                    arrayChildren: (input.arrayChildren !== null) ? input.arrayChildren.type : false,
+                    value:  this.parsedTransaction.args[i],
+                })
             })
             return args;
         },
         getGasFee() {
-            return formatWei(BigNumber.from(this.trx.charged_gas_price).mul(this.trx.gasused).toLocaleString('fullwide', {useGrouping:false}), WEI_PRECISION, 5);
+            return formatWei(
+                BigNumber.from(this.trx.charged_gas_price)
+                    .mul(this.trx.gasused).toLocaleString('fullwide', { useGrouping:false }),
+                WEI_PRECISION,
+                5,
+            );
         },
         getGasChargedGWEI() {
             return formatWei(this.trx.charged_gas_price, 9, 2);
@@ -309,7 +340,7 @@ export default {
             br
             div(class="fit row wrap justify-start items-start content-start")
                 div(class="col-3")
-                
+
                   strong {{ $t('pages.block_number') }}:&nbsp;
                 div(class="col-9")
                   block-field( :block="trx.block" )
@@ -343,7 +374,11 @@ export default {
               div(class="col-3")
                 strong {{ $t('pages.from') }}:&nbsp;
               div(class="col-9 word-break")
-                address-field(:address="trx.from" :truncate="0" :highlight="erc20_transfers.length + erc721_transfers.length > 1" copy)
+                address-field(
+                    :address="trx.from"
+                    :truncate="0"
+                    :highlight="erc20_transfers.length + erc721_transfers.length > 1" copy
+                )
             br
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
@@ -379,9 +414,24 @@ export default {
                     span {{ $t('pages.balance_tlos', { amount: formatWei(trx.value, 18) }) }}
                     q-tooltip {{ $t('pages.click_to_show_in_wei') }}
             br
-            ERCTransferList( v-if="erc20_transfers.length > 0" type="ERC20" :trxFrom="trx.from" :contract="contract" :transfers="erc20_transfers")
-            ERCTransferList( v-if="erc721_transfers.length > 0" type="ERC721" :trxFrom="trx.from" :contract="contract" :transfers="erc721_transfers")
-            ERCTransferList( v-if="erc1155_transfers.length > 0" type="ERC1155" :trxFrom="trx.from" :contract="contract" :transfers="erc1155_transfers")
+            ERCTransferList(
+                v-if="erc20_transfers.length > 0"
+                type="ERC20" :trxFrom="trx.from"
+                :contract="contract"
+                :transfers="erc20_transfers"
+            )
+            ERCTransferList(
+                v-if="erc721_transfers.length > 0"
+                type="ERC721" :trxFrom="trx.from"
+                :contract="contract"
+                :transfers="erc721_transfers"
+            )
+            ERCTransferList(
+                v-if="erc1155_transfers.length > 0"
+                type="ERC1155" :trxFrom="trx.from"
+                :contract="contract"
+                :transfers="erc1155_transfers"
+            )
             div(class="fit row wrap justify-start items-start content-start")
               div(class="col-3")
                 strong {{ $t('pages.gas_price_charged') }}:&nbsp;

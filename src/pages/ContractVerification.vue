@@ -32,6 +32,16 @@ export default {
             contractInput: '',
             fileType: true,
             TIME_DELAY: 6000,
+            sourcePathRules: [
+                val => ((val.length === 0) ||
+                (val.length && val.charAt(val.length - 1) === '/') ) ||
+                this.$t('pages.invalid_path_format'),
+            ],
+            constructorArgsRules: [
+                val => ((val.length === 0) ||
+                (val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',') ) ||
+                this.$t('pages.no_trailing_commas'),
+            ],
         };
     },
     computed: {
@@ -178,7 +188,7 @@ export default {
                   :label="$t('pages.contract_file_directory_path')"
                   :placeholder="$t('pages.eg_contracts')"
                   debounce="750"
-                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) === '/') ) || $t('pages.invalid_path_format')]"
+                  :rules="sourcePathRules"
                 )
                 .radio-container
                   q-radio(
@@ -208,7 +218,7 @@ export default {
                   :label="$t('pages.constructor_arguments')"
                   :placeholder="$t('pages.comma_seperated_values')"
                   debounce="750"
-                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',') ) || $t('pages.no_trailing_commas')]"
+                  :rules="constructorArgsRules"
                 )
                 .radio-container
                   q-radio(
@@ -270,7 +280,7 @@ span
 .q-uploader
   margin-top: 1rem
   max-width: unset !important
-  width:100%
+  width: 100%
 
 .q-form
   width: 60rem
@@ -309,7 +319,7 @@ span
   display: inline-flex
   flex-direction: column
   width: 48%
-  height:10rem
+  height: 10rem
   margin: auto
 
 .inputs-container-row
