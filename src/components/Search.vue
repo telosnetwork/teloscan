@@ -1,5 +1,5 @@
 <script>
-const searchHints = ['Transaction', 'Address', 'Block'];
+
 
 export default {
     name: 'SearchBar',
@@ -12,18 +12,23 @@ export default {
     data() {
         return {
             searchTerm: null,
-            searchHint: searchHints[0],
+            searchHint: '',
             searchHintIndex: 0,
             TIME_DELAY: 6000,
         };
     },
+    computed: {
+        searchHints() {
+            return this.$t('components.search_hints').split(',');
+        },
+    },
     mounted() {
         setInterval(() => {
             this.searchHintIndex =
-        this.searchHintIndex == searchHints.length - 1
+        this.searchHintIndex == this.searchHints.length - 1
             ? 0
             : ++this.searchHintIndex;
-            this.searchHint = searchHints[this.searchHintIndex];
+            this.searchHint = this.searchHints[this.searchHintIndex];
         }, 2000);
     },
     methods: {
@@ -54,7 +59,7 @@ export default {
 
                     this.$q.notify({
                         position: 'top',
-                        message: `Search for EVM address linked to ${this.searchTerm} native account failed.`,
+                        message: this.$t('components.search_evm_failed', { search_term: this.searchTerm }),
                         timeout: this.TIME_DELAY,
                     });
                     return;
@@ -66,7 +71,7 @@ export default {
 
             this.$q.notify({
                 position: 'top',
-                message: 'Search failed, please enter a valid search term.',
+                message: this.$t('components.search_failed'),
                 timeout: this.TIME_DELAY,
             });
         },

@@ -8,18 +8,18 @@
             dense
             class="bg-green text-black"
         >
-            You have unlocked TLOS!
+            {{ $t('pages.staking.you_have_unlocked_tlos') }}
             <template #action>
                 <q-btn
                     flat
                     color="black"
-                    label="Dismiss"
+                    :label="$t('pages.staking.dismiss')"
                     @click="hideClaimBanner"
                 />
                 <q-btn
                     flat
                     color="black"
-                    label="Claim TLOS"
+                    :label="$t('pages.staking.claim_tlos')"
                     @click="$router.push({ hash: '#claim' })"
                 />
             </template>
@@ -50,22 +50,21 @@
         />
     </div>
     <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
-        Stake successful! View Transaction:
+        {{ $t('pages.staking.stake_tlos_success') }}
         <transaction-field :transaction-hash="resultHash" />
     </div>
     <q-dialog v-model="displayConfirmModal">
         <q-card>
             <q-card-section>
                 <p>
-                    Continuing will stake TLOS in exchange for sTLOS.
-                    sTLOS can be redeemed for TLOS at any time using the Unstake tab.
+                    {{ $t('pages.staking.stake_tlos_confirm') }}
                 </p>
                 <p>
-                    After TLOS has been unstaked, it will be locked for a period of
+                    {{ $t('pages.staking.stake_tlos_confirm_2a' ) }}
                     <span class="text-primary">{{ unstakePeriodPretty }}</span>,
-                    after which it can be withdrawn to your account from the Claim tab.
+                    {{ $t('pages.staking.stake_tlos_confirm_2b' ) }}
                 </p>
-                Would you like to proceed?
+                <p>{{ $t('pages.staking.stake_tlos_confirm_3' ) }}</p>
             </q-card-section>
 
             <q-card-actions align="right" class="q-pb-md q-px-md">
@@ -73,22 +72,23 @@
                     v-if="showMetamaskPrompt"
                     class="c-stake-form__metamask-prompt u-flex--center-y"
                     tabindex="0"
-                    aria-label="Launch MetaMask dialog to add sTLOS"
+                    aria-:label="$t('pages.staking.add_stlos_to_metamask')"
+
                     @click="promptAddToMetamask"
                 >
-                    Add sTLOS to MetaMask
+                    {{ $t('pages.staking.add_stlos_to_metamask') }}
                     <img
                         :src="MetaMaskLogo"
                         class="q-ml-xs"
                         height="24"
                         width="24"
-                        alt="MetaMask Fox Logo"
+                        :alt="$t('pages.staking.metamask_fox_logo')"
                     >
                 </p>
                 <q-btn
                     v-close-popup
                     flat
-                    label="Cancel"
+                    :label="$t('pages.staking.cancel')"
                     color="negative"
                 />
                 <q-btn
@@ -155,17 +155,14 @@ export default {
         MetaMaskLogo,
         displayConfirmModal: false,
         resultHash: null,
-        header: 'Stake TLOS',
-        subheader: 'Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, ' +
-            'further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change ' +
-            'over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be ' +
-            'auto-compounded. No further action is required.',
-        topInputLabel: 'Stake TLOS',
+        header: '',
+        subheader: '',
+        topInputLabel: '',
         topInputAmount: '0',
         topInputIsLoading: false,
         bottomInputMaxValue: null,
         bottomInputIsLoading: false,
-        bottomInputLabel: 'Receive sTLOS',
+        bottomInputLabel: '',
         bottomInputAmount: '0',
         ctaIsLoading: false,
         debouncedTopInputHandler: null,
@@ -173,9 +170,9 @@ export default {
         userDismissedBanner: false,
     }),
     computed: {
-        ...mapGetters('login', ['address', 'isLoggedIn']),
+        ...mapGetters('login', ['address', 'isLoggedIn', 'isNative']),
         unstakePeriodPretty() {
-            return formatUnstakePeriod(this.unstakePeriodSeconds);
+            return formatUnstakePeriod(this.unstakePeriodSeconds, this.$t);
         },
         topInputMaxValue() {
             return this.isLoggedIn ? this.usableWalletBalance : null;
@@ -203,26 +200,25 @@ export default {
 
             const balanceTlos = ethers.utils.commify(balanceEth);
 
-            return `${balanceTlos} Available`;
+            return this.$t('pages.staking.available', {balanceTlos});
         },
         topInputErrorText() {
             const walletBalanceBn = BigNumber.from(this.tlosBalance ?? '0');
 
             if (this.isLoggedIn) {
-                if (walletBalanceBn.lt(reservedForGasBn))
-                    return 'Insufficient TLOS balance to stake';
+                if (walletBalanceBn.lt(reservedForGasBn) && !this.isNative)
+                    return this.$t('pages.staking.insufficient_tlos_balance');
+                else if(this.isNative)
+                    return this.$t('pages.staking.login_using_an_evm_wallet');
                 else
                     return '';
             }
 
-            return 'Wallet not connected';
+            return this.$t('pages.staking.wallet_not_connected');
         },
         topInputTooltip() {
             const prettyBalance = ethers.utils.formatEther(this.usableWalletBalance).toString();
-            return 'Click to input full wallet balance\n\n' +
-                   'Balance displayed is reduced by 1 TLOS to keep your account actionable.\n' +
-                   'Precise balance (less approximate gas fees):\n' +
-                   `${prettyBalance} TLOS`;
+            return this.$t('pages.staking.click_to_input_full_wallet_balance', {prettyBalance});
         },
         ctaIsDisabled() {
             const inputsInvalid = (
@@ -240,16 +236,16 @@ export default {
         },
         ctaText() {
             if (this.ctaIsLoading)
-                return 'Loading...';
+                return this.$t('pages.staking.loading');
 
             if (this.isLoggedIn) {
                 if (this.walletBalanceBn.lt(reservedForGasBn))
-                    return 'Get more TLOS';
+                    return this.$t('pages.staking.get_more_tlos');
                 else
-                    return 'Stake TLOS';
+                    return this.$t('pages.staking.stake_tlos');
             }
 
-            return 'Connect Wallet';
+            return this.$t('pages.staking.connect_wallet');
         },
         showClaimBanner() {
             return this.hasUnlockedTlos && !this.userDismissedBanner;
@@ -259,6 +255,12 @@ export default {
         },
     },
     async created() {
+        // Initialization of the text translations
+        this.header = this.$t('pages.staking.stake_tlos');
+        this.subheader = this.$t('pages.staking.stake_tlos_subheader');
+        this.topInputLabel = this.$t('pages.staking.stake_tlos');
+        this.bottomInputLabel = this.$t('pages.staking.receive_stlos');
+
         const debounceWaitMs = 250;
 
         this.debouncedTopInputHandler = debounce(
@@ -270,6 +272,10 @@ export default {
                     .catch((err) => {
                         this.bottomInputAmount = '';
                         console.error(`Unable to convert TLOS to STLOS: ${err}`);
+                        this.$q.notify({
+                            type: 'negative',
+                            message: this.$t('pages.staking.redeem_failed', {message: err}),
+                        });
                     })
                     .finally(async () => {
                         this.bottomInputIsLoading = false;
@@ -298,6 +304,10 @@ export default {
                     .catch(err => {
                         this.topInputAmount = '';
                         console.error(`Unable to convert STLOS to TLOS: ${err}`);
+                        this.$q.notify({
+                            type: 'negative',
+                            message: this.$t('pages.staking.redeem_failed', {message: err}),
+                        });
                     })
                     .finally(async () => {
                         this.topInputIsLoading = false;
@@ -372,6 +382,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to deposit TLOS: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('pages.staking.deposit_failed', {message}),
+                    });
                     this.resultHash = null;
                 })
                 .finally(() => {

@@ -85,10 +85,11 @@ export default {
                 return parsedArrayLength === expectedLength;
             };
 
-            const incorrectArrayLengthMessage = `There should be ${+this.size} signed integers in the array`;
-            const invalidArrayStringMessage = 'Entered value does not represent an array of signed integers';
-            const errMessageTooLarge = `Maximum value for int${this.intSize} is ${maximum.toString()}`;
-            const errMessageTooSmall = `Minimum value for int${this.intSize} is ${minimum.toString()}`;
+            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_sigint_array_length', { size: +this.size });
+            const invalidArrayStringMessage = this.$t('components.inputs.invalid_sigint_array_string');
+
+            const errMessageTooLarge = this.$t('components.inputs.too_large', { size: this.intSize, max: maximum.toString() });
+            const errMessageTooSmall = this.$t('components.inputs.too_small', { size: this.intSize, min: minimum.toString() });
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,

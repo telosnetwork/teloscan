@@ -107,6 +107,6 @@ a.highlighted {
     color: #bb9200;
 }
 body.body--dark a.highlighted {
-    color: $yellow;
+    color: $warning;
 }
 </style>

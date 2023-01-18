@@ -3,7 +3,7 @@
     <CopyButton
         v-if="abi"
         :text="abi"
-        accompanying-text="Copy contract ABI JSON to clipboard"
+        :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
         class="q-mb-md"
     />
     <br>
@@ -11,19 +11,19 @@
     <q-btn-group>
         <q-btn
             :outline="codeSeleted"
-            label="Code"
+            :label="$t('components.contract_tab.code')"
             push
             @click="source = true"
         />
         <q-btn
             :outline="readSelected"
-            label="Read"
+            :label="$t('components.contract_tab.read')"
             push
             @click="source = false; write = false"
         />
         <q-btn
             :outline="writeSelected"
-            label="Write"
+            :label="$t('components.contract_tab.write')"
             push
             @click="source = false; write = true"
         />

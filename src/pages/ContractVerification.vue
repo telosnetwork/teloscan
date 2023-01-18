@@ -39,8 +39,8 @@ export default {
             return !this.inputMethod || (this.inputMethod && this.fileType);
         },
         uploaderLabel() {
-            const solFile = 'Select .sol contract file for upload';
-            const jsonFile = 'Select standard JSON input object file for upload';
+            const solFile = this.$t('pages.select_sol_file');
+            const jsonFile = this.$t('pages.select_json_file');
             return  this.fileType ? solFile : jsonFile;
         },
     },
@@ -85,7 +85,7 @@ export default {
         async submitFormHandler() {
             if (this.$refs.uploader){
                 if (this.$refs.uploader.files.length === 0){
-                    this.onNotify({type: 'info', message: 'you must select a file for upload or toggle input to paste contract contents'});
+                    this.onNotify({type: 'info', message: this.$t('pages.paste_contract_contents')});
                     return;
                 }
                 await this.$refs.uploader.upload();
@@ -149,7 +149,7 @@ export default {
 
 <template lang='pug'>
 .pageContainer.row.q-pt-xl.tableWrapper
-  .text-h4.text-primary.q-mb-lg Verify Contract
+  .text-h4.text-primary.q-mb-lg {{ $t('pages.verify_contract') }}
   .col-12.q-py-lg
     .content-container
           q-form(
@@ -161,35 +161,35 @@ export default {
                 q-input(
                   v-model="contractAddress"
                   name='contractAddress'
-                  label="Contract Address *"
-                  placeholder="Please enter contract address '0x0123...'"
+                  :label="t$('pages.contract_address')+' *'"
+                  :placeholder="$t('pages.enter_contract_address')"
                   debounce="500"
-                  :rules="[val => isValidAddressFormat(val) || 'invalid address format' ]"
+                  :rules="[val => isValidAddressFormat(val) || $t('pages.invalid_address_format')]"
                 )
                 q-select(
                   v-model="compilerVersion"
                   :options="compilerOptions"
-                  label="Compiler Version *"
-                  :rules="[val => val.length || 'select compiler version']"
+                  :label="$t('pages.compiler_version')+' *'"
+                  :rules="[val => val.length || $t('pages.select_compiler_version')]"
                 )
                 q-input(
                   :disable='!pathInput'
                   v-model="sourcePath"
-                  label="Contract File(s) Directory Path (leave blank if none)"
-                  placeholder="e.g., 'contracts/'"
+                  :label="$t('pages.contract_file_directory_path')"
+                  :placeholder="$t('pages.eg_contracts')"
                   debounce="750"
-                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) === '/') ) || 'path must end with a forward slash /']"
+                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) === '/') ) || $t('pages.invalid_path_format')]"
                 )
                 .radio-container
                   q-radio(
                     v-model="inputMethod"
-                    label="upload file"
+                    :label="$t('pages.upload_file')"
                     :val='true'
                     color='primary'
                   )
                   q-radio(
                     v-model="inputMethod"
-                    label="text input"
+                    :label="$t('pages.text_input')"
                     :val='false'
                     color='primary'
                   )
@@ -197,7 +197,7 @@ export default {
                 q-input.q-field--with-bottom(
                   v-model="runs"
                   type="number"
-                  label="Runs value for optimization"
+                  :label="$t('pages.runs_value_for_optimization')"
                   :class="!optimizer ? 'disabled-input' : ''"
                 )
                   q-toggle( v-model="optimizer" label="Optimization" )
@@ -205,10 +205,10 @@ export default {
                 q-input(
                   style="padding-bottom:1rem"
                   v-model="constructorArgs"
-                  label="Constructor Arguments"
-                  placeholder="comma seperated values e.g., Bob,123,0x12345...'"
+                  :label="$t('pages.constructor_arguments')"
+                  :placeholder="$t('pages.comma_seperated_values')"
                   debounce="750"
-                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',') ) || 'no trailing commas']"
+                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',') ) || $t('pages.no_trailing_commas')]"
                 )
                 .radio-container
                   q-radio(
@@ -234,8 +234,8 @@ export default {
                 square
                 outlined
                 v-model='contractInput'
-                placeholder='copy & paste contract code here...'
-                :rules="[val => val.length || 'enter or paste contract text']"
+                placeholder="$t('pages.paste_contract_code_here')"
+                :rules="[val => val.length || $t('pages.enter_contract_text')]"
               )
               q-uploader(
                 v-else
@@ -255,8 +255,8 @@ export default {
               )
 
               .button-container
-                q-btn(label="Verify Contract" type="submit" color='primary')
-                q-btn(label="Reset" type="reset" color='primary' )
+                q-btn(:label="$t('pages.verify_contract')" type="submit" color='primary')
+                q-btn(:label="$t('pages.reset')" type="reset" color='primary' )
 </template>
 
 <style scoped lang="sass">

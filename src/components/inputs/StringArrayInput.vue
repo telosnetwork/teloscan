@@ -49,10 +49,15 @@ export default {
         },
     },
     data: () => ({
-        placeholder: '["some value", ... , "final value"]',
-        hint: 'Double quotes in strings must be escaped (\\")',
+        placeholder: '',
+        hint: '',
         previousParsedValue: undefined,
     }),
+    async created() {
+        // initialization of the translated texts
+        this.placeholder = this.$t('components.inputs.str_input_placeholder');
+        this.hint = this.$t('components.inputs.str_input_hint');
+    },
     computed: {
         rules() {
             const validateParsedArray = (value) => Array.isArray(parseStringArrayString(value)) || value === '';
@@ -67,8 +72,8 @@ export default {
                 return Array.isArray(parseStringArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage = `There should be ${+this.size} strings in the array`;
-            const invalidArrayStringMessage = 'Entered value does not represent an array of strings';
+            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_strings_array_length', { size: +this.size });
+            const invalidArrayStringMessage = this.$t('components.inputs.invalid_strings_array_string');
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,
