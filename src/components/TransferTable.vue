@@ -63,7 +63,7 @@ export default {
                 name: 'value',
                 label: '',
                 align: 'left',
-            },{
+            }, {
                 name: 'token',
                 label: '',
                 align: 'left',

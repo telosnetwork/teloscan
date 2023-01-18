@@ -62,7 +62,7 @@ export default {
                     nLog.sig = function_signature;
                     this.parsedLogs.push(nLog);
                 }
-                this.parsedLogs.sort((a,b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());
+                this.parsedLogs.sort((a, b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());
             }
 
         }
