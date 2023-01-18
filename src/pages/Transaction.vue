@@ -309,7 +309,6 @@ export default {
             br
             div(class="fit row wrap justify-start items-start content-start")
                 div(class="col-3")
-
                   strong {{ $t('pages.block_number') }}:&nbsp;
                 div(class="col-9")
                   block-field( :block="trx.block" )
