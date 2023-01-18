@@ -41,7 +41,8 @@ export default {
             const provider = this.getInjectedProvider();
             let checkProvider = new ethers.providers.Web3Provider(provider)
             const { chainId } = await checkProvider.getNetwork();
-            if(loginObj.chain == chainId){
+
+            if(loginObj.chain === chainId){
                 switch (loginObj.provider) {
                 case PROVIDER_WEB3_INJECTED:
                     this.injectedWeb3Login();
@@ -52,7 +53,7 @@ export default {
                 }
             }
         } else if (loginObj.type === LOGIN_NATIVE) {
-            const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
+            const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
             this.ualLogin(wallet);
         }
     },
@@ -73,7 +74,7 @@ export default {
                     return;
 
                 const loginObj = JSON.parse(loginData);
-                const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
+                const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
                 wallet.logout();
             }
 
@@ -104,7 +105,7 @@ export default {
                     JSON.stringify({ type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED, chain: chainId }),
                 );
                 provider.on('chainChanged', (newNetwork) => {
-                    if(newNetwork != chainId){
+                    if(newNetwork !== chainId){
                         this.setLogin({});
                         this.$providerManager.setProvider(null);
                     }

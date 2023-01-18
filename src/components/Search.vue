@@ -25,7 +25,7 @@ export default {
     mounted() {
         setInterval(() => {
             this.searchHintIndex =
-        this.searchHintIndex == this.searchHints.length - 1
+        this.searchHintIndex === this.searchHints.length - 1
             ? 0
             : ++this.searchHintIndex;
             this.searchHint = this.searchHints[this.searchHintIndex];
@@ -38,7 +38,7 @@ export default {
 
             this.searchTerm = this.searchTerm.trim().replace(/\s/, '');
             if (this.searchTerm.startsWith('0x')) {
-                if (this.searchTerm.length == 42) {
+                if (this.searchTerm.length === 42) {
                     this.$router.push(`/address/${this.searchTerm}`);
                     return;
                 } else {
