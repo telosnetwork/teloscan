@@ -63,8 +63,13 @@ export default {
                 if(parsedTransaction){
                     args = parsedTransaction.args;
                     name = parsedTransaction.signature;
-                    outputs = parsedTransaction.functionFragment ? parsedTransaction.functionFragment.outputs : parsedTransaction.outputs;
-                    inputs = parsedTransaction.functionFragment ? parsedTransaction.functionFragment.inputs : parsedTransaction.inputs;
+                    outputs = parsedTransaction.functionFragment ?
+                        parsedTransaction.functionFragment.outputs :
+                        parsedTransaction.outputs;
+
+                    inputs = parsedTransaction.functionFragment ?
+                        parsedTransaction.functionFragment.inputs :
+                        parsedTransaction.inputs;
                 }
             }
             this.parsedItxs.push({

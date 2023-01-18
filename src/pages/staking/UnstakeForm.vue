@@ -183,7 +183,9 @@ export default {
         },
         topInputErrorText() {
             if(this.isLoggedIn && !this.isNative) return;
-            return this.isNative ? this.$t('pages.staking.login_using_evm_wallet') : this.$t('pages.staking.wallet_not_connected');
+            return this.isNative ?
+                this.$t('pages.staking.login_using_evm_wallet') :
+                this.$t('pages.staking.wallet_not_connected');
         },
         canDeposit() {
             return this.deposits.length < this.maxDeposits;
@@ -191,7 +193,8 @@ export default {
         ctaIsDisabled() {
             const inputsInvalid = (
                 this.isLoggedIn &&
-                [this.topInputAmount, this.bottomInputAmount].some(amount => ['0', '', null, undefined].includes(amount))
+                [this.topInputAmount, this.bottomInputAmount]
+                    .some(amount => ['0', '', null, undefined].includes(amount))
             );
 
             return inputsInvalid ||

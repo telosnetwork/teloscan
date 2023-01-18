@@ -65,7 +65,8 @@ export default {
                 return Array.isArray(parseAddressArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_address_array_length', { size: +this.size });
+            const incorrectArrayLengthMessage =
+                this.$t('components.inputs.incorrect_address_array_length', { size: +this.size });
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_address_array_string');
 
             return [

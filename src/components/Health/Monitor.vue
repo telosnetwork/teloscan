@@ -1,6 +1,8 @@
 <script>
 import axios from 'axios';
-const API_URL = ('' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40') ? 'https://api.monitor.telos.net' : 'https://api.monitor-test.telos.net'
+const API_URL = ('' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40') ?
+    'https://api.monitor.telos.net' :
+    'https://api.monitor-test.telos.net'
 const API_ENDPOINT_TASKS = API_URL + '/tasks';
 const API_ENDPOINT_STATUSES = API_URL + '/task_status';
 
@@ -70,7 +72,11 @@ export default {
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             this.loading = true;
             try {
-                const results = await axios.get(API_ENDPOINT_STATUSES + '?order=id.desc&select=task(name),message,checked_at,id&limit=' + rowsPerPage + '&offset=' + rowsPerPage * (page - 1));
+                let url = API_ENDPOINT_STATUSES;
+                url += '?order=id.desc&select=task(name),message,checked_at,id&limit=';
+                url += rowsPerPage + '&offset=' + rowsPerPage * (page - 1);
+                const results = await axios.get(url);
+
                 this.rows = results.data;
 
                 this.pagination.page = page;
@@ -111,7 +117,10 @@ export default {
                 @click="col.name==='checked_at' ? showAge=!showAge : null"
             )
             template( v-if="col.name==='checked_at'" )
-                q-tooltip(anchor="bottom middle" self="bottom middle") {{ $t('components.health.click_to_change_format') }}
+                q-tooltip(
+                    anchor="bottom middle"
+                    self="bottom middle"
+                ) {{ $t('components.health.click_to_change_format') }}
             | {{ col.label }}
 
         template(v-slot:body="props")

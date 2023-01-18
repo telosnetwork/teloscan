@@ -119,7 +119,8 @@ export default {
             }
 
             const isVerifiedContract = this.isContract && this.isVerified;
-            const knownToken = this.$contractManager.tokenList.tokens.find(({ address }) => address.toLowerCase() === this.address.toLowerCase());
+            const knownToken = this.$contractManager.tokenList.tokens
+                .find(({ address }) => address.toLowerCase() === this.address.toLowerCase());
 
             if (knownToken?.name) {
                 this.title = knownToken.name;
@@ -162,8 +163,18 @@ export default {
       .row(class="tableWrapper").justify-between.q-mb-lg
         div(class="homeInfo")
           .text-primary.text-h4.q-pr-xs {{ title }}
-          q-icon.cursor(v-if='isContract && isVerified !== null' :name="isVerified ? 'verified' : 'warning'" :class="isVerified ? 'text-positive' : 'text-negative'" size='1.25rem' @click='confirmationDialog = true')
-          ConfirmationDialog.text-secondary(:flag='confirmationDialog' :address='address' :status="isVerified" @dialog='disableConfirmation')
+          q-icon.cursor(
+              v-if='isContract && isVerified !== null'
+              :name="isVerified ? 'verified' : 'warning'"
+              :class="isVerified ? 'text-positive' : 'text-negative'"
+              size='1.25rem' @click='confirmationDialog = true'
+          )
+          ConfirmationDialog.text-secondary(
+              :flag='confirmationDialog'
+              :address='address'
+              :status="isVerified"
+              @dialog='disableConfirmation'
+          )
           CopyButton.text-secondary(:text="address" :accompanyingText="address" description="address")
           span(v-if='contract')
             .text-white {{ $t('pages.created_at_trx' )}} &nbsp
@@ -181,13 +192,58 @@ export default {
           .dataCardItem(v-if="!!balance" class="balance ")
             .dataCardTile {{ $t('pages.balance') }}
             .dataCardData {{balance}}
-      q-tabs.tabs-header( v-model="tab" dense active-color="secondary"  align="justify" narrow-indicator class="tabsBar topRounded text-white tableWrapper" :class='{"q-dark": $q.dark.isActive}' )
-        q-route-tab(name="transactions" :to="{ hash: '#transactions' }" exact replace :label="$t('pages.transactions')")
-        q-route-tab(name="erc20_transfers" :to="{ hash: '#erc20' }" exact replace :label="$t('pages.erc20_transfers')")
-        q-route-tab(name="erc721_transfers" :to="{ hash: '#erc721' }" exact replace :label="$t('pages.erc721_transfers')")
-        q-route-tab(name="erc1155_transfers" :to="{ hash: '#erc1155' }" exact replace :label="$t('pages.erc1155_transfers')")
-        q-route-tab(name="tokens" :to="{ hash: '#tokens' }" exact replace :label="$t('pages.tokens')")
-        q-route-tab(v-if="isContract" name="contract" :to="{ hash: '#contract' }" exact replace :label="$t('pages.contract')")
+      q-tabs.tabs-header(
+          v-model="tab"
+          dense
+          active-color="secondary"
+          align="justify"
+          narrow-indicator
+          class="tabsBar topRounded text-white tableWrapper"
+          :class='{"q-dark": $q.dark.isActive}'
+      )
+        q-route-tab(
+            name="transactions"
+            :to="{ hash: '#transactions' }"
+            exact
+            replace
+            :label="$t('pages.transactions')"
+        )
+        q-route-tab(
+            name="erc20_transfers"
+            :to="{ hash: '#erc20' }"
+            exact
+            replace
+            :label="$t('pages.erc20_transfers')"
+        )
+        q-route-tab(
+            name="erc721_transfers"
+            :to="{ hash: '#erc721' }"
+            exact
+            replace
+            :label="$t('pages.erc721_transfers')"
+        )
+        q-route-tab(
+            name="erc1155_transfers"
+            :to="{ hash: '#erc1155' }"
+            exact
+            replace
+            :label="$t('pages.erc1155_transfers')"
+        )
+        q-route-tab(
+            name="tokens"
+            :to="{ hash: '#tokens' }"
+            exact
+            replace
+            :label="$t('pages.tokens')"
+        )
+        q-route-tab(
+            v-if="isContract"
+            name="contract"
+            :to="{ hash: '#contract' }"
+            exact
+            replace
+            :label="$t('pages.contract')"
+        )
       .q-mb-md.tableWrapper
         q-tab-panels( v-model="tab" animated keep-alive class="shadow-2"  :key="address" )
           q-tab-panel( name="transactions" )

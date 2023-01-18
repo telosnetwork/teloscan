@@ -108,15 +108,20 @@ export default class ContractManager {
     }
 
     // suspectedToken is so we don't try to check for ERC20 info via eth_call unless we think this is a token...
-    // this is coming from the token transfer, transactions table & transaction (general + logs tabs) pages where we're looking for a contract based on a token transfer event
+    // this is coming from the token transfer, transactions table & transaction (general + logs tabs) pages where we're
+    // looking for a contract based on a token transfer event
     // handles erc721 & erc20 (w/ stubs for erc1155)
     async getContract(address, suspectedToken) {
         if (!address) return;
         const addressLower = address.toLowerCase();
 
-        // Get from already queried contracts, add token data if needed & not present (ie: queried beforehand w/o suspectedToken or a wrong suspectedToken)
+        // Get from already queried contracts, add token data if needed & not present
+        // (ie: queried beforehand w/o suspectedToken or a wrong suspectedToken)
         if (this.contracts[addressLower]) {
-            if (!suspectedToken || this.contracts[addressLower].token && this.contracts[addressLower].token.type === suspectedToken) {
+            if (
+                !suspectedToken ||
+                this.contracts[addressLower].token && this.contracts[addressLower].token.type === suspectedToken
+            ) {
                 return this.contracts[addressLower];
             }
         }

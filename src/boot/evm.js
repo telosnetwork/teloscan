@@ -16,8 +16,8 @@ const evm = new TelosEvmApi({
 });
 
 // This is kinda bad, but if you try to store a web3 provider in the store, it has a call stack size exception,
-//    and if you freeze the provider before putting in the store so the call stack error goes away, you break the provider
-//    so, this is a workaround until some better solution is needed and/or available
+//    and if you freeze the provider before putting in the store so the call stack error goes away, you break
+//    the provider. so, this is a workaround until some better solution is needed and/or available
 const providerContainer = {
     provider: null,
 }
@@ -28,7 +28,9 @@ class ProviderManager {
     }
 
     getEthersProvider() {
-        return new ethers.providers.Web3Provider(providerContainer.provider, parseInt(process.env.NETWORK_EVM_CHAIN_ID, 10));
+        return new ethers.providers.Web3Provider(
+            providerContainer.provider, parseInt(process.env.NETWORK_EVM_CHAIN_ID, 10),
+        );
     }
 
     getProvider() {

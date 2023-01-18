@@ -143,10 +143,17 @@ export default {
                     }
                     // Get ERC20 transfer from main function call
                     let signature = transaction.input_data.substring(0, 10);
-                    if (signature && TRANSFER_SIGNATURES.includes(signature) && transaction.parsedTransaction.args['amount']) {
+                    if (
+                        signature &&
+                        TRANSFER_SIGNATURES.includes(signature) &&
+                        transaction.parsedTransaction.args['amount']
+                    ) {
                         let token = await this.$contractManager.getTokenData(transaction.to, 'erc20');
                         if(transaction.contract && token && token.decimals){
-                            transaction.transfer = {'value': `${formatWei(transaction.parsedTransaction.args['amount'], token.decimals)}`, 'symbol': token.symbol};
+                            transaction.transfer = {
+                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], token.decimals)}`,
+                                'symbol': token.symbol,
+                            };
                         }
                     }
                 } catch (e) {
@@ -214,10 +221,18 @@ q-table(
                         style="margin-top: -5px; margin-left: 3px;"
                         @click="toggleDateFormat"
                     ).info-icon
-                        q-tooltip(anchor="bottom middle" self="bottom middle" :offset="[0, 36]") {{ $t('components.click_to_change_format') }}
+                        q-tooltip(
+                            anchor="bottom middle"
+                            self="bottom middle"
+                            :offset="[0, 36]"
+                            ) {{ $t('components.click_to_change_format') }}
                 template( v-if="col.name === 'method'" )
                     q-icon(name="fas fa-info-circle", style="margin-top: -5px; margin-left: 3px;").info-icon
-                    q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") {{ $t('components.executed_based_on_decoded_data') }}
+                    q-tooltip(
+                        anchor="bottom middle"
+                        self="top middle"
+                        max-width="10rem"
+                        ) {{ $t('components.executed_based_on_decoded_data') }}
 
     template(v-slot:body="props")
         q-tr( :props="props")
@@ -232,7 +247,12 @@ q-table(
             q-td( key="from" :props="props")
                 address-field(v-if="props.row.from" :address="props.row.from" )
             q-td( key="to" :props="props")
-                address-field(v-if="props.row.to" :key="props.row.to + ((props.row.contract) ? '1' : '0')" :address="props.row.to" :isContractTrx="(props.row.contract) ? true : false" )
+                address-field(
+                    v-if="props.row.to"
+                    :key="props.row.to + ((props.row.contract) ? '1' : '0')"
+                    :address="props.row.to"
+                    :isContractTrx="(props.row.contract) ? true : false"
+                )
             q-td( key="value" :props="props")
                 span(v-if="props.row.value > 0 ||  !props.row.transfer ") {{ props.row.value }} TLOS
                 div(v-else)

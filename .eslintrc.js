@@ -44,5 +44,6 @@ module.exports = {
             'singleline': 'ignore',
             'multiline': 'below',
         }],
+        'max-len': ['error', { 'code': 120 }],
     },
 }

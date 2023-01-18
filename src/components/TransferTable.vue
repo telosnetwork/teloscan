@@ -152,7 +152,10 @@ export default {
                             from = getTopicHash(log.topics[1]);
                             to = getTopicHash(log.topics[2]);
                         }
-                        if (to.toLowerCase() !== this.address.toLowerCase() && from.toLowerCase() !== this.address.toLowerCase())
+                        if (
+                            to.toLowerCase() !== this.address.toLowerCase() &&
+                            from.toLowerCase() !== this.address.toLowerCase()
+                        )
                             continue;
 
                         const contract = await this.$contractManager.getContract(
@@ -169,7 +172,9 @@ export default {
                                 valueDisplay = this.$t('components.unknown_precision');
                             }
                         } else {
-                            let tokenId = (this.tokenType === 'erc1155') ? BigNumber.from(log.data.substr(0, TOKEN_ID_TRUNCATE_LENGTH)).toString() : BigNumber.from(log.topics[3]).toString();
+                            let tokenId = (this.tokenType === 'erc1155') ?
+                                BigNumber.from(log.data.substr(0, TOKEN_ID_TRUNCATE_LENGTH)).toString() :
+                                BigNumber.from(log.topics[3]).toString();
                             if(tokenId.length > 15){
                                 tokenId = tokenId.substr(0, 15) + '...'
                             }
@@ -262,7 +267,11 @@ q-table(
           v-if="col.name==='method'"
         )
           q-icon(name="fas fa-info-circle").info-icon
-            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") {{ $t('components.func_exed_based_on_dec_data') }}
+            q-tooltip(
+                anchor="bottom middle"
+                self="top middle"
+                max-width="10rem"
+            ) {{ $t('components.func_exed_based_on_dec_data') }}
 
     template(v-slot:body="props")
         q-tr( :props="props" )

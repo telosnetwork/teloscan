@@ -37,6 +37,7 @@ export default {
                 if (token.logoURI && token.logoURI.startsWith('ipfs://'))
                     token.logoURI = `https://ipfs.io/ipfs/${token.logoURI.replace(/ipfs:\/\//, '')}`
                 else if (!token.logoURI)
+                    // eslint-disable-next-line max-len
                     token.logoURI = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT28t_CidqCQ0st_OhY3MxnPKMFjclG9ppwWA&usqp=CAU';
 
                 const contract = await this.$contractManager.getContract(token.address);

@@ -53,7 +53,9 @@ export default {
                 return;
             }
             if (this.name) {
-                return this.truncate > 0 && this.name.length > this.truncate ? `${this.name.slice(0, this.truncate)}...` : `${this.name}`;
+                return this.truncate > 0 && this.name.length > this.truncate ?
+                    `${this.name.slice(0, this.truncate)}...` :
+                    `${this.name}`;
             }
 
             if (this.contract && this.contract.getName()) {
@@ -61,7 +63,9 @@ export default {
                 if(name[0] === '0' && name[1] === 'x'){
                     return this.truncate > 0 ? `${this.address.slice(0, this.truncate)}...` : this.address;
                 }
-                return this.truncate > 0 && name.length > this.truncate ? `${name.slice(0, this.truncate)}...` : `${name}`;
+                return this.truncate > 0 && name.length > this.truncate ?
+                    `${name.slice(0, this.truncate)}...` :
+                    `${name}`;
             }
             if (!this.address) {
                 return '';

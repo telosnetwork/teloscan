@@ -53,8 +53,8 @@ describe('StakingFormInput.vue', () => {
             await input.trigger('input');
         }
 
-        // check the emits, then simulates the flow of data back down to the component from parent via v-model binding and ensures
-        // the component handles that update properly
+        // check the emits, then simulates the flow of data back down to the component from parent via v-model
+        // binding and ensures the component handles that update properly
         const checkInputExpectations = async (wrapper, expectedEmitCount, expectedLastEmitValue, expectedFormatted) => {
             const getEmittedVModel = () => wrapper.emitted()?.['update:modelValue'];
 
@@ -63,7 +63,8 @@ describe('StakingFormInput.vue', () => {
 
             await wrapper.setProps({ modelValue: expectedLastEmitValue });
 
-            // input component should not emit after parent updates the modelValue, i.e. should not enter feedback loop of emit and update
+            // input component should not emit after parent updates the modelValue,
+            // i.e. should not enter feedback loop of emit and update
             expect(getInputValue(wrapper)).toBe(expectedFormatted);
             expect(getEmittedVModel()?.length).toBe(expectedEmitCount);
 

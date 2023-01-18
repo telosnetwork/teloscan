@@ -36,6 +36,7 @@ export default {
     },
 }
 </script>
+<!-- eslint-disable max-len -->
 <template lang="pug">
 div(class="fit row wrap justify-start items-start content-start")
   div(class="col-3")
@@ -75,7 +76,7 @@ div(class="fit row wrap justify-start items-start content-start")
         strong {{ $t('components.transaction.form_token') }}
         span.clickable(@click="transfer.showWei = !transfer.showWei")
             span(v-if="transfer.showWei") {{ BigNumber.from(transfer.value) }}
-                q-tooltip {{ $t('components.transaction.show_total') }} 
+                q-tooltip {{ $t('components.transaction.show_total') }}
             span(v-else) {{ formatWei(transfer.value, transfer.token.decimals) }}
                 q-tooltip {{ $t('components.transaction.show_wei') }}
         router-link(:to="`/address/${transfer.token.address}`" class="q-ml-xs")
@@ -85,6 +86,7 @@ div(class="fit row wrap justify-start items-start content-start")
             q-tooltip(v-if="transfer.token.symbol.length > 10") {{ transfer.token.symbol }}
 br
 </template>
+<!--eslint-enable-->
 <style scoped lang="sass">
 @media (max-width: $breakpoint-sm-max)
     #erc-transfers

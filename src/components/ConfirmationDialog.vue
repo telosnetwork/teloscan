@@ -64,5 +64,12 @@ q-dialog( v-model="showDialog" persistent)
           span.q-ml-sm {{ dialogMessage }}
         q-card-actions(align="right")
         q-btn(flat :label="$t('components.dismiss')" color="primary" v-close-popup)
-          q-btn(v-if="!status" flat :label="$t('components.verify_contract')" color="primary" v-close-popup @click="navigate")
+          q-btn(
+              v-if="!status"
+              flat
+              :label="$t('components.verify_contract')"
+              color="primary"
+              v-close-popup
+              @click="navigate"
+          )
 </template>
