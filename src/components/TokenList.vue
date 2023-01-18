@@ -102,26 +102,26 @@ export default {
                     <address-field :address="address" class="q-mb-sm"/>
                     <div class="q-mb-sm">
                         <span class="q-pr-xs">
-                            Balance:
+                            {{ $t('components.balance') }}
                         </span>
                         <span v-if="balance === '0.0000'">
                             {{ '< 0.0001 ' + symbol }}
                         </span>
                         <span v-else>
-                            {{ balance + ' ' + symbol || '(error fetching balance)' }}
+                            {{ balance + ' ' + symbol || $t('components.error_fetching_balance') }}
                         </span>
                         <q-tooltip v-if="fullBalance > balance">
-                            {{ fullBalance + ' ' + symbol || 'error fetching balance' }}
+                            {{ fullBalance + ' ' + symbol || $t('components.error_fetching_balance') }}
                         </q-tooltip>
                     </div>
                     <span
                         v-if="showMetamaskPrompt"
                         class="c-token-list__metamask-prompt"
                         tabindex="0"
-                        :aria-label="`Launch MetaMask dialog to add ${symbol}`"
+                        :aria-label="$t('components.launch_metamask_dialog_to_add', { symbol })"
                         @click="promptAddToMetamask(address, symbol, logoURI, type, decimals)"
                     >
-                        Add {{ symbol }} to MetaMask
+                        {{ $t('components.add_to_metamask', { symbol }) }}
                     </span>
                 </div>
             </q-card-section>

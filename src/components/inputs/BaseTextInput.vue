@@ -17,7 +17,7 @@
         anchor="bottom middle"
         self="center right"
     >
-        <span class="u-text--pre">This field is readonly</span>
+        <span class="u-text--pre">{{  $t('components.inputs.readonly') }}</span>
     </q-tooltip>
 </div>
 </template>

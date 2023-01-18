@@ -65,8 +65,8 @@ export default {
                 return Array.isArray(parseAddressArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage = `There should be ${+this.size} addresses in the array`;
-            const invalidArrayStringMessage = 'Entered value does not represent an array of addresses';
+            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_address_array_length', { size: +this.size });
+            const invalidArrayStringMessage = this.$t('components.inputs.invalid_address_array_string');
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,

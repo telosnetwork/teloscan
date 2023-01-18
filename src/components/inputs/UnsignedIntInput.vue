@@ -58,9 +58,9 @@ export default {
         rules() {
             const maximum = +this.size === 0 ? '0' : BigNumber.from(2).pow(+this.size).sub(1);
 
-            const errMessageInvalidInput = 'Entry must be a valid unsigned integer';
-            const errMessageTooLarge = `Maximum value for uint${this.size} is 2^${this.size} - 1`;
-            const errMessageNoNegative = `Value for uint${this.size} must not be negative`;
+            const errMessageInvalidInput = this.$t('components.inputs.invalid_unsigint');
+            const errMessageTooLarge = this.$t('components.inputs.too_large_unsigint', { size: this.size });
+            const errMessageNoNegative = this.$t('components.inputs.no_negative_unsigint', { size: this.size });
 
             return [
                 val => val[0] !== '-' || errMessageNoNegative,

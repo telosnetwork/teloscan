@@ -7,44 +7,6 @@ import MethodField from 'components/MethodField';
 import { formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
-const columns = [
-    {
-        name: 'hash',
-        label: 'TX Hash',
-        align: 'left',
-    },
-    {
-        name: 'block',
-        label: 'Block',
-        align: 'left',
-    },
-    {
-        name: 'date',
-        label: 'Date',
-        align: 'left',
-    },
-    {
-        name: 'method',
-        label: 'Method',
-        align: 'left',
-    },
-    {
-        name: 'from',
-        label: 'From',
-        align: 'left',
-    },
-    {
-        name: 'to',
-        label: 'To / Interacted with',
-        align: 'left',
-    },
-    {
-        name: 'value',
-        label: 'Value / Transfer',
-        align: 'left',
-    },
-];
-
 export default {
     name: 'TransactionTable',
     components: {
@@ -69,6 +31,44 @@ export default {
         },
     },
     data() {
+        const columns = [
+            {
+                name: 'hash',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'block',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'date',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'method',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'from',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'to',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'value',
+                label: '',
+                align: 'left',
+            },
+        ];
+
         return {
             rows: [],
             columns,
@@ -85,6 +85,16 @@ export default {
             },
             showAge: true,
         };
+    },
+    async created() {
+        // initialization of the translated texts
+        this.columns[0].label = this.$t('components.tx_hash');
+        this.columns[1].label = this.$t('components.block');
+        this.columns[2].label = this.$t('components.date');
+        this.columns[3].label = this.$t('components.method');
+        this.columns[4].label = this.$t('components.from');
+        this.columns[5].label = this.$t('components.to_interacted_with');
+        this.columns[6].label = this.$t('components.value_transfer');
     },
     mounted() {
         this.onRequest({
@@ -143,6 +153,13 @@ export default {
                     console.error(
                         `Failed to parse data for transaction, error was: ${e.message}`,
                     );
+                    // notifiy user
+                    this.$q.notify({
+                        message: this.$t('components.failed_to_parse_transaction', {message: e.message}),
+                        color: 'negative',
+                        position: 'top',
+                        timeout: 5000,
+                    });
                 }
             }
             this.rows = this.transactions;
@@ -188,11 +205,11 @@ q-table(
             @click="col.name==='date' ? showAge=!showAge : null"
         )
         template( v-if="col.name==='date'" )
-            q-tooltip(anchor="bottom middle" self="bottom middle") Click to change format
+            q-tooltip(anchor="bottom middle" self="bottom middle") <!-- Click to change format --> {{ $t('components.click_to_change_format') }}
         | {{ col.label }}
         template( v-if="col.name === 'method'" )
         q-icon(name="fas fa-info-circle", style="margin-top: -5px; margin-left: 3px;").info-icon
-            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
+            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") {{ $t('components.executed_based_on_decoded_data') }}
 
     template(v-slot:body="props")
         q-tr( :props="props")
