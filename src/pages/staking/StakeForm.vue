@@ -1,109 +1,3 @@
-<template>
-<div class="c-stake-form row">
-    <div class="col-xs-12 col-md-6 offset-md-3">
-        <q-banner
-            v-if="showClaimBanner"
-            rounded
-            inline-actions
-            dense
-            class="bg-green text-black"
-        >
-            {{ $t('pages.staking.you_have_unlocked_tlos') }}
-            <template #action>
-                <q-btn
-                    flat
-                    color="black"
-                    :label="$t('pages.staking.dismiss')"
-                    @click="hideClaimBanner"
-                />
-                <q-btn
-                    flat
-                    color="black"
-                    :label="$t('pages.staking.claim_tlos')"
-                    @click="$router.push({ hash: '#claim' })"
-                />
-            </template>
-        </q-banner>
-    </div>
-    <div class="col-12 q-mb-lg">
-        <base-staking-form
-            :header="header"
-            :subheader="subheader"
-            :top-input-label="topInputLabel"
-            :top-input-info-text="topInputInfoText"
-            :top-input-amount="topInputAmount"
-            :top-input-max-value="topInputMaxValue"
-            :top-input-error-text="topInputErrorText"
-            :top-input-is-loading="topInputIsLoading"
-            :top-input-tooltip="topInputTooltip"
-            :bottom-input-label="bottomInputLabel"
-            :bottom-input-amount="bottomInputAmount"
-            :bottom-input-max-value="bottomInputMaxValue"
-            :bottom-input-is-loading="bottomInputIsLoading"
-            :cta-text="ctaText"
-            :cta-disabled="ctaIsDisabled"
-            :unstake-period-seconds="unstakePeriodSeconds"
-            :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
-            @input-top="handleInputTop"
-            @input-bottom="handleInputBottom"
-            @cta-clicked="handleCtaClick"
-        />
-    </div>
-    <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
-        {{ $t('pages.staking.stake_tlos_success') }}
-        <transaction-field :transaction-hash="resultHash" />
-    </div>
-    <q-dialog v-model="displayConfirmModal">
-        <q-card>
-            <q-card-section>
-                <p>
-                    {{ $t('pages.staking.stake_tlos_confirm') }}
-                </p>
-                <p>
-                    {{ $t('pages.staking.stake_tlos_confirm_2a' ) }}
-                    <span class="text-primary">{{ unstakePeriodPretty }}</span>,
-                    {{ $t('pages.staking.stake_tlos_confirm_2b' ) }}
-                </p>
-                <p>{{ $t('pages.staking.stake_tlos_confirm_3' ) }}</p>
-            </q-card-section>
-
-            <q-card-actions align="right" class="q-pb-md q-px-md">
-                <p
-                    v-if="showMetamaskPrompt"
-                    class="c-stake-form__metamask-prompt u-flex--center-y"
-                    tabindex="0"
-                    aria-:label="$t('pages.staking.add_stlos_to_metamask')"
-
-                    @click="promptAddToMetamask"
-                >
-                    {{ $t('pages.staking.add_stlos_to_metamask') }}
-                    <img
-                        :src="MetaMaskLogo"
-                        class="q-ml-xs"
-                        height="24"
-                        width="24"
-                        :alt="$t('pages.staking.metamask_fox_logo')"
-                    >
-                </p>
-                <q-btn
-                    v-close-popup
-                    flat
-                    :label="$t('pages.staking.cancel')"
-                    color="negative"
-                />
-                <q-btn
-                    v-close-popup
-                    label="Stake TLOS"
-                    color="secondary"
-                    text-color="black"
-                    @click="initiateDeposit"
-                />
-            </q-card-actions>
-        </q-card>
-    </q-dialog>
-</div>
-</template>
-
 <script>
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
@@ -398,6 +292,112 @@ export default {
     },
 }
 </script>
+
+<template>
+<div class="c-stake-form row">
+    <div class="col-xs-12 col-md-6 offset-md-3">
+        <q-banner
+            v-if="showClaimBanner"
+            rounded
+            inline-actions
+            dense
+            class="bg-green text-black"
+        >
+            {{ $t('pages.staking.you_have_unlocked_tlos') }}
+            <template #action>
+                <q-btn
+                    flat
+                    color="black"
+                    :label="$t('pages.staking.dismiss')"
+                    @click="hideClaimBanner"
+                />
+                <q-btn
+                    flat
+                    color="black"
+                    :label="$t('pages.staking.claim_tlos')"
+                    @click="$router.push({ hash: '#claim' })"
+                />
+            </template>
+        </q-banner>
+    </div>
+    <div class="col-12 q-mb-lg">
+        <base-staking-form
+            :header="header"
+            :subheader="subheader"
+            :top-input-label="topInputLabel"
+            :top-input-info-text="topInputInfoText"
+            :top-input-amount="topInputAmount"
+            :top-input-max-value="topInputMaxValue"
+            :top-input-error-text="topInputErrorText"
+            :top-input-is-loading="topInputIsLoading"
+            :top-input-tooltip="topInputTooltip"
+            :bottom-input-label="bottomInputLabel"
+            :bottom-input-amount="bottomInputAmount"
+            :bottom-input-max-value="bottomInputMaxValue"
+            :bottom-input-is-loading="bottomInputIsLoading"
+            :cta-text="ctaText"
+            :cta-disabled="ctaIsDisabled"
+            :unstake-period-seconds="unstakePeriodSeconds"
+            :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
+            @input-top="handleInputTop"
+            @input-bottom="handleInputBottom"
+            @cta-clicked="handleCtaClick"
+        />
+    </div>
+    <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
+        {{ $t('pages.staking.stake_tlos_success') }}
+        <transaction-field :transaction-hash="resultHash" />
+    </div>
+    <q-dialog v-model="displayConfirmModal">
+        <q-card>
+            <q-card-section>
+                <p>
+                    {{ $t('pages.staking.stake_tlos_confirm') }}
+                </p>
+                <p>
+                    {{ $t('pages.staking.stake_tlos_confirm_2a' ) }}
+                    <span class="text-primary">{{ unstakePeriodPretty }}</span>,
+                    {{ $t('pages.staking.stake_tlos_confirm_2b' ) }}
+                </p>
+                <p>{{ $t('pages.staking.stake_tlos_confirm_3' ) }}</p>
+            </q-card-section>
+
+            <q-card-actions align="right" class="q-pb-md q-px-md">
+                <p
+                    v-if="showMetamaskPrompt"
+                    class="c-stake-form__metamask-prompt u-flex--center-y"
+                    tabindex="0"
+                    aria-:label="$t('pages.staking.add_stlos_to_metamask')"
+
+                    @click="promptAddToMetamask"
+                >
+                    {{ $t('pages.staking.add_stlos_to_metamask') }}
+                    <img
+                        :src="MetaMaskLogo"
+                        class="q-ml-xs"
+                        height="24"
+                        width="24"
+                        :alt="$t('pages.staking.metamask_fox_logo')"
+                    >
+                </p>
+                <q-btn
+                    v-close-popup
+                    flat
+                    :label="$t('pages.staking.cancel')"
+                    color="negative"
+                />
+                <q-btn
+                    v-close-popup
+                    label="Stake TLOS"
+                    color="secondary"
+                    text-color="black"
+                    @click="initiateDeposit"
+                />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
+</div>
+</template>
 
 <style lang="scss">
 .c-stake-form {

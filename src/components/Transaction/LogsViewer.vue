@@ -1,44 +1,3 @@
-<template>
-<div>
-    <div v-if="logs.length === 0" class="row">
-        <div class="col-12 u-flex--center">
-            <q-icon class="fa fa-info-circle q-mr-md" size="md" />
-            <h5>{{ $t('components.transaction.no_logs_found') }}</h5>
-        </div>
-    </div>
-    <div v-else class="row">
-        <div class="col-12 u-flex--center-y">
-            <q-toggle
-                v-model="human_readable"
-                icon="visibility"
-                color="secondary"
-                size="lg"
-            />
-            {{ $t('components.transaction.human_readable') }}
-            <small v-if="!allVerified">
-                <q-icon name="info" class="q-mb-xs q-ml-xs" size="14px"/>
-                <q-tooltip>
-                    {{ $t('components.transaction.verify_related_contract') }}
-                </q-tooltip>
-            </small>
-        </div>
-        <div class="col-12">
-            <FragmentList
-                v-if="human_readable"
-                :fragments="logs"
-                :parsedFragments="parsedLogs"
-            />
-            <json-viewer
-                v-else
-                :value="logs"
-                theme="custom-theme"
-                class="q-mb-md"
-            />
-        </div>
-    </div>
-</div>
-</template>
-
 <script>
 import JsonViewer from 'vue-json-viewer'
 import FragmentList from 'components/Transaction/FragmentList'
@@ -117,3 +76,44 @@ export default {
     }),
 }
 </script>
+
+<template>
+<div>
+    <div v-if="logs.length === 0" class="row">
+        <div class="col-12 u-flex--center">
+            <q-icon class="fa fa-info-circle q-mr-md" size="md" />
+            <h5>{{ $t('components.transaction.no_logs_found') }}</h5>
+        </div>
+    </div>
+    <div v-else class="row">
+        <div class="col-12 u-flex--center-y">
+            <q-toggle
+                v-model="human_readable"
+                icon="visibility"
+                color="secondary"
+                size="lg"
+            />
+            {{ $t('components.transaction.human_readable') }}
+            <small v-if="!allVerified">
+                <q-icon name="info" class="q-mb-xs q-ml-xs" size="14px"/>
+                <q-tooltip>
+                    {{ $t('components.transaction.verify_related_contract') }}
+                </q-tooltip>
+            </small>
+        </div>
+        <div class="col-12">
+            <FragmentList
+                v-if="human_readable"
+                :fragments="logs"
+                :parsedFragments="parsedLogs"
+            />
+            <json-viewer
+                v-else
+                :value="logs"
+                theme="custom-theme"
+                class="q-mb-md"
+            />
+        </div>
+    </div>
+</div>
+</template>

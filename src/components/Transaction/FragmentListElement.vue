@@ -1,3 +1,76 @@
+<script>
+import JsonViewer from 'vue-json-viewer'
+import AddressField from 'components/AddressField';
+import { formatWei } from 'src/lib/utils';
+import { BigNumber } from 'ethers';
+
+export default {
+    name: 'FragmentListElement',
+    components: {
+        AddressField,
+        JsonViewer,
+    },
+    props: {
+        fragment: {
+            type: Object,
+            required: false,
+        },
+        rawFragment: {
+            type: Object,
+            required: true,
+        },
+    },
+    data(){
+        return {
+            showWei: false,
+            expanded: false,
+            expanded_parameters: [],
+        }
+    },
+    created(){
+        if(!this.fragment) return;
+        let inputs = this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
+        if(inputs){
+            for(let i=0; i < inputs.length;i++){
+                this.expanded_parameters.push({});
+            }
+        }
+    },
+    methods: {
+        toggle(param, index) {
+            this.expanded_parameters[param][index] = !this.expanded_parameters[param][index];
+        },
+        formatWei(number, decimals){
+            return formatWei(BigNumber.from(number), decimals);
+        },
+    },
+    computed: {
+        depthStyle(){
+            if(typeof this.fragment.depth === 'undefined') return;
+            return {marginLeft: ((this.fragment.depth * 20)  + 20) + 'px'};
+        },
+        inputs(){
+            return this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
+        },
+        fragmentClass(){
+            let fragmentClass = 'c-fragment-list-element__head justify-between items-center';
+            return (this.isExpandable) ? fragmentClass + ' clickable' : fragmentClass;
+        },
+        isExpandable(){
+            return (
+                this.fragment.inputs && this.fragment.inputs.length > 0 ||
+                this.fragment.value ||
+                !this.fragment.name
+            );
+        },
+        arrowIcon() {
+            if(!this.isExpandable) return '';
+            return this.expanded ? 'arrow_drop_down' : 'arrow_right';
+        },
+    },
+}
+</script>
+
 <template>
 <div class="c-fragment-list-element" :style="depthStyle" v-if="fragment"  >
     <div :class="fragmentClass" @click="expanded = !expanded">
@@ -160,79 +233,6 @@
     </div>
 </div>
 </template>
-
-<script>
-import JsonViewer from 'vue-json-viewer'
-import AddressField from 'components/AddressField';
-import { formatWei } from 'src/lib/utils';
-import { BigNumber } from 'ethers';
-
-export default {
-    name: 'FragmentListElement',
-    components: {
-        AddressField,
-        JsonViewer,
-    },
-    props: {
-        fragment: {
-            type: Object,
-            required: false,
-        },
-        rawFragment: {
-            type: Object,
-            required: true,
-        },
-    },
-    data(){
-        return {
-            showWei: false,
-            expanded: false,
-            expanded_parameters: [],
-        }
-    },
-    created(){
-        if(!this.fragment) return;
-        let inputs = this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
-        if(inputs){
-            for(let i=0; i < inputs.length;i++){
-                this.expanded_parameters.push({});
-            }
-        }
-    },
-    methods: {
-        toggle(param, index) {
-            this.expanded_parameters[param][index] = !this.expanded_parameters[param][index];
-        },
-        formatWei(number, decimals){
-            return formatWei(BigNumber.from(number), decimals);
-        },
-    },
-    computed: {
-        depthStyle(){
-            if(typeof this.fragment.depth === 'undefined') return;
-            return {marginLeft: ((this.fragment.depth * 20)  + 20) + 'px'};
-        },
-        inputs(){
-            return this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
-        },
-        fragmentClass(){
-            let fragmentClass = 'c-fragment-list-element__head justify-between items-center';
-            return (this.isExpandable) ? fragmentClass + ' clickable' : fragmentClass;
-        },
-        isExpandable(){
-            return (
-                this.fragment.inputs && this.fragment.inputs.length > 0 ||
-                this.fragment.value ||
-                !this.fragment.name
-            );
-        },
-        arrowIcon() {
-            if(!this.isExpandable) return '';
-            return this.expanded ? 'arrow_drop_down' : 'arrow_right';
-        },
-    },
-}
-</script>
 
 <style lang="scss" scoped>
 .c-fragment-list-element {

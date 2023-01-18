@@ -1,27 +1,3 @@
-<template>
-<div class="c-base-input q-mx-sm">
-    <q-input
-        ref="input"
-        :model-value="modelValue"
-        :reactive-rules="true"
-        v-bind="binding"
-        color="secondary"
-        @update:modelValue="handleChange"
-    >
-        <template #append>
-            <slot name="append" />
-        </template>
-    </q-input>
-    <q-tooltip
-        v-if="readonly"
-        anchor="bottom middle"
-        self="center right"
-    >
-        <span class="u-text--pre">{{  $t('components.inputs.readonly') }}</span>
-    </q-tooltip>
-</div>
-</template>
-
 <script>
 
 import { quasarInputProps } from 'components/inputs/input-helpers';
@@ -120,3 +96,27 @@ export default {
     },
 }
 </script>
+
+<template>
+<div class="c-base-input q-mx-sm">
+    <q-input
+        ref="input"
+        :model-value="modelValue"
+        :reactive-rules="true"
+        v-bind="binding"
+        color="secondary"
+        @update:modelValue="handleChange"
+    >
+        <template #append>
+            <slot name="append" />
+        </template>
+    </q-input>
+    <q-tooltip
+        v-if="readonly"
+        anchor="bottom middle"
+        self="center right"
+    >
+        <span class="u-text--pre">{{  $t('components.inputs.readonly') }}</span>
+    </q-tooltip>
+</div>
+</template>

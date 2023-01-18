@@ -1,26 +1,3 @@
-<template>
-<div
-    :class="containerClasses"
-    :aria-label="hint"
-    aria-role="button"
-    tabindex="0"
-    @click.stop="handleClick"
-    @keydown.space.enter="handleClick"
->
-    <q-tooltip
-        :offset="[0,0]"
-        anchor="center end"
-        self="center left"
-    >
-        {{ hint }}
-    </q-tooltip>
-
-    {{ accompanyingText }}
-
-    <q-icon :class="iconClasses" />
-</div>
-</template>
-
 <script>
 import { copyToClipboard } from 'quasar'
 
@@ -84,6 +61,29 @@ export default {
     },
 }
 </script>
+
+<template>
+<div
+    :class="containerClasses"
+    :aria-label="hint"
+    aria-role="button"
+    tabindex="0"
+    @click.stop="handleClick"
+    @keydown.space.enter="handleClick"
+>
+    <q-tooltip
+        :offset="[0,0]"
+        anchor="center end"
+        self="center left"
+    >
+        {{ hint }}
+    </q-tooltip>
+
+    {{ accompanyingText }}
+
+    <q-icon :class="iconClasses" />
+</div>
+</template>
 
 <style lang="scss">
 .c-copy-button {

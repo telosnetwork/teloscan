@@ -1,17 +1,3 @@
-<template>
-<base-text-input
-    v-bind="$attrs"
-    :model-value="modelValue"
-    :label="shapedLabel"
-    :name="name"
-    :maxlength="42"
-    :rules="rules"
-    autocomplete="new-password"
-    :placeholder="$t('components.inputs.address_placeholder')"
-    @update:modelValue="handleChange"
-/>
-</template>
-
 <script>
 import { parseAddressString } from 'components/ContractTab/function-interface-utils';
 
@@ -75,6 +61,20 @@ export default {
     },
 }
 </script>
+
+<template>
+<base-text-input
+    v-bind="$attrs"
+    :model-value="modelValue"
+    :label="shapedLabel"
+    :name="name"
+    :maxlength="42"
+    :rules="rules"
+    autocomplete="new-password"
+    :placeholder="$t('components.inputs.address_placeholder')"
+    @update:modelValue="handleChange"
+/>
+</template>
 
 <style>
 

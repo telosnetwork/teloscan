@@ -1,101 +1,3 @@
-<template>
-<div>
-    <q-dialog v-model="enterAmount">
-        <q-card class="amount-dialog">
-            <div class="q-pa-md">
-                <p>{{ $t('components.contract_tab.enter_amount') }}</p>
-                <q-select
-                    v-model="selectDecimals"
-                    :options="decimalOptions"
-                    @input="updateDecimals"
-                />
-                <q-input
-                    v-if="selectDecimals.value === 'custom'"
-                    v-model.number="customDecimals"
-                    type="number"
-                    :label="$t('components.contract_tab.custom_decimals')"
-                    @change="updateDecimals"
-                />
-                <q-input
-                    v-model="amountInput"
-                    :label="$t('components.contract_tab.amount')"
-                    type="number"
-                />
-                <q-card-actions align="right">
-                    <q-btn
-                        v-close-popup
-                        flat="flat"
-                        :label="$t('components.contract_tab.ok')"
-                        color="primary"
-                        @click="setAmount"
-                    />
-                    <q-btn
-                        v-close-popup
-                        flat="flat"
-                        :label="$t('components.contract_tab.cancel')"
-                        color="primary"
-                        @click="clearAmount"
-                    />
-                </q-card-actions>
-            </div>
-        </q-card>
-    </q-dialog>
-    <div v-if="abi.stateMutability === 'payable'" class="q-pb-md">
-        <unsigned-int-input
-            v-model="value"
-            :label="$t('components.contract_tab.value')"
-            name="value"
-            size="256"
-            required="true"
-        >
-            <template #append>
-                <q-icon
-                    class="cursor-pointer"
-                    name="pin"
-                    @click="showAmountDialog('value')"
-                />
-            </template>
-        </unsigned-int-input>
-    </div>
-
-    <template v-for="(component, index) in inputComponents">
-        <component
-            v-if="component.is"
-            :key="index"
-            :is="component.is"
-            v-bind="component.bindings"
-            required="true"
-            @valueParsed="component.handleValueParsed(component.inputType, index, $event)"
-            @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
-            class="q-pb-lg"
-        />
-    </template>
-
-    <q-btn
-        v-if="enableRun"
-        :loading="loading"
-        :label="runLabel"
-        :disabled="missingInputs"
-        class="run-button q-mb-md"
-        color="secondary"
-        icon="send"
-        @click="run"
-    />
-    <p class="text-negative output-container">
-        {{ errorMessage }}
-    </p>
-    <div v-if="result" class="output-container">
-        {{ $t('components.contract_tab.result') }} ({{ abi?.outputs.length > 0 ? abi.outputs[0].type : '' }}):
-        <router-link v-if="abi?.outputs?.[0]?.type === 'address'" :to="`/address/${result}`" >{{ result }}</router-link>
-        <template v-else>{{ result }}</template>
-    </div>
-    <div v-if="hash" class="output-container">
-        {{ $t('components.contract_tab.view_transaction') }}
-        <transaction-field :transaction-hash="hash" />
-    </div>
-</div>
-</template>
-
 <script>
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
@@ -403,6 +305,104 @@ export default {
     },
 }
 </script>
+
+<template>
+<div>
+    <q-dialog v-model="enterAmount">
+        <q-card class="amount-dialog">
+            <div class="q-pa-md">
+                <p>{{ $t('components.contract_tab.enter_amount') }}</p>
+                <q-select
+                    v-model="selectDecimals"
+                    :options="decimalOptions"
+                    @input="updateDecimals"
+                />
+                <q-input
+                    v-if="selectDecimals.value === 'custom'"
+                    v-model.number="customDecimals"
+                    type="number"
+                    :label="$t('components.contract_tab.custom_decimals')"
+                    @change="updateDecimals"
+                />
+                <q-input
+                    v-model="amountInput"
+                    :label="$t('components.contract_tab.amount')"
+                    type="number"
+                />
+                <q-card-actions align="right">
+                    <q-btn
+                        v-close-popup
+                        flat="flat"
+                        :label="$t('components.contract_tab.ok')"
+                        color="primary"
+                        @click="setAmount"
+                    />
+                    <q-btn
+                        v-close-popup
+                        flat="flat"
+                        :label="$t('components.contract_tab.cancel')"
+                        color="primary"
+                        @click="clearAmount"
+                    />
+                </q-card-actions>
+            </div>
+        </q-card>
+    </q-dialog>
+    <div v-if="abi.stateMutability === 'payable'" class="q-pb-md">
+        <unsigned-int-input
+            v-model="value"
+            :label="$t('components.contract_tab.value')"
+            name="value"
+            size="256"
+            required="true"
+        >
+            <template #append>
+                <q-icon
+                    class="cursor-pointer"
+                    name="pin"
+                    @click="showAmountDialog('value')"
+                />
+            </template>
+        </unsigned-int-input>
+    </div>
+
+    <template v-for="(component, index) in inputComponents">
+        <component
+            v-if="component.is"
+            :key="index"
+            :is="component.is"
+            v-bind="component.bindings"
+            required="true"
+            @valueParsed="component.handleValueParsed(component.inputType, index, $event)"
+            @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
+            class="q-pb-lg"
+        />
+    </template>
+
+    <q-btn
+        v-if="enableRun"
+        :loading="loading"
+        :label="runLabel"
+        :disabled="missingInputs"
+        class="run-button q-mb-md"
+        color="secondary"
+        icon="send"
+        @click="run"
+    />
+    <p class="text-negative output-container">
+        {{ errorMessage }}
+    </p>
+    <div v-if="result" class="output-container">
+        {{ $t('components.contract_tab.result') }} ({{ abi?.outputs.length > 0 ? abi.outputs[0].type : '' }}):
+        <router-link v-if="abi?.outputs?.[0]?.type === 'address'" :to="`/address/${result}`" >{{ result }}</router-link>
+        <template v-else>{{ result }}</template>
+    </div>
+    <div v-if="hash" class="output-container">
+        {{ $t('components.contract_tab.view_transaction') }}
+        <transaction-field :transaction-hash="hash" />
+    </div>
+</div>
+</template>
 
 <style lang="scss">
 

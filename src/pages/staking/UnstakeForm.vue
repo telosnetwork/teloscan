@@ -1,71 +1,3 @@
-<template>
-<div class="row">
-    <div class="col-12 q-mb-lg">
-        <base-staking-form
-            :header="header"
-            :subheader="subheader"
-            :top-input-label="topInputLabel"
-            :top-input-info-text="topInputInfoText"
-            :top-input-amount="topInputAmount"
-            :top-input-max-value="topInputMaxValue"
-            :top-input-error-text="topInputErrorText"
-            :top-input-is-loading="topInputIsLoading"
-            :top-input-tooltip="topInputTooltip"
-            :bottom-input-label="bottomInputLabel"
-            :bottom-input-amount="bottomInputAmount"
-            :bottom-input-max-value="bottomInputMaxValue"
-            :bottom-input-is-loading="bottomInputIsLoading"
-            :cta-text="ctaText"
-            :cta-disabled="ctaIsDisabled"
-            :unstake-period-seconds="unstakePeriodSeconds"
-            :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
-            @input-top="handleInputTop"
-            @input-bottom="handleInputBottom"
-            @cta-clicked="handleCtaClick"
-        />
-    </div>
-    <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
-        {{ $t('pages.staking.unstake_stlos_success') }}
-        <transaction-field :transaction-hash="resultHash" />
-    </div>
-    <q-dialog v-model="displayConfirmModal">
-        <q-card>
-            <q-card-section>
-                <p>
-                    {{ $t('pages.staking.confirm_unstake_1a') }}
-                    <span class="text-primary">{{ unstakePeriodPretty }}</span>,
-                    {{ $t('pages.staking.confirm_unstake_1b') }}
-
-                </p>
-                <p v-if="remainingDeposits < 10">
-                    {{ $t('pages.staking.confirm_unstake_2a') }}
-                    <span class="text-primary">{{ remainingDeposits }}</span>
-                    {{ $t('pages.staking.confirm_unstake_2b') }}
-
-                </p>
-                {{ $t('pages.staking.confirm_unstake_3') }}
-            </q-card-section>
-
-            <q-card-actions align="right" class="q-pb-md q-px-md">
-                <q-btn
-                    v-close-popup
-                    flat
-                    :label="$t('pages.staking.cancel')"
-                    color="negative"
-                />
-                <q-btn
-                    v-close-popup
-                    :label="$t('pages.staking.unstake_stlos')"
-                    color="secondary"
-                    text-color="black"
-                    @click="initiateUnstake"
-                />
-            </q-card-actions>
-        </q-card>
-    </q-dialog>
-</div>
-</template>
-
 <script>
 import { getClientIsApple } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
@@ -357,5 +289,73 @@ export default {
     },
 }
 </script>
+
+<template>
+<div class="row">
+    <div class="col-12 q-mb-lg">
+        <base-staking-form
+            :header="header"
+            :subheader="subheader"
+            :top-input-label="topInputLabel"
+            :top-input-info-text="topInputInfoText"
+            :top-input-amount="topInputAmount"
+            :top-input-max-value="topInputMaxValue"
+            :top-input-error-text="topInputErrorText"
+            :top-input-is-loading="topInputIsLoading"
+            :top-input-tooltip="topInputTooltip"
+            :bottom-input-label="bottomInputLabel"
+            :bottom-input-amount="bottomInputAmount"
+            :bottom-input-max-value="bottomInputMaxValue"
+            :bottom-input-is-loading="bottomInputIsLoading"
+            :cta-text="ctaText"
+            :cta-disabled="ctaIsDisabled"
+            :unstake-period-seconds="unstakePeriodSeconds"
+            :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
+            @input-top="handleInputTop"
+            @input-bottom="handleInputBottom"
+            @cta-clicked="handleCtaClick"
+        />
+    </div>
+    <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
+        {{ $t('pages.staking.unstake_stlos_success') }}
+        <transaction-field :transaction-hash="resultHash" />
+    </div>
+    <q-dialog v-model="displayConfirmModal">
+        <q-card>
+            <q-card-section>
+                <p>
+                    {{ $t('pages.staking.confirm_unstake_1a') }}
+                    <span class="text-primary">{{ unstakePeriodPretty }}</span>,
+                    {{ $t('pages.staking.confirm_unstake_1b') }}
+
+                </p>
+                <p v-if="remainingDeposits < 10">
+                    {{ $t('pages.staking.confirm_unstake_2a') }}
+                    <span class="text-primary">{{ remainingDeposits }}</span>
+                    {{ $t('pages.staking.confirm_unstake_2b') }}
+
+                </p>
+                {{ $t('pages.staking.confirm_unstake_3') }}
+            </q-card-section>
+
+            <q-card-actions align="right" class="q-pb-md q-px-md">
+                <q-btn
+                    v-close-popup
+                    flat
+                    :label="$t('pages.staking.cancel')"
+                    color="negative"
+                />
+                <q-btn
+                    v-close-popup
+                    :label="$t('pages.staking.unstake_stlos')"
+                    color="secondary"
+                    text-color="black"
+                    @click="initiateUnstake"
+                />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
+</div>
+</template>
 
 <style lang="sass"></style>

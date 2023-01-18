@@ -1,3 +1,15 @@
+<script>
+export default {
+    name: 'DemoIndex',
+    methods: {
+        toggleDarkMode() {
+            this.$q.dark.toggle();
+            localStorage.setItem('darkModeEnabled', this.$q.dark.isActive);
+        },
+    },
+}
+</script>
+
 <template>
 <div class="c-demos">
     <div class="row q-mb-sm">
@@ -31,18 +43,6 @@
     </div>
 </div>
 </template>
-
-<script>
-export default {
-    name: 'DemoIndex',
-    methods: {
-        toggleDarkMode() {
-            this.$q.dark.toggle();
-            localStorage.setItem('darkModeEnabled', this.$q.dark.isActive);
-        },
-    },
-}
-</script>
 
 <style lang="scss">
 .c-demos {

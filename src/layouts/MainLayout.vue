@@ -1,3 +1,99 @@
+<script>
+import { mapGetters } from 'vuex';
+import { directive as ClickAway } from 'vue3-click-away';
+
+import Search from 'src/components/Search.vue';
+import FooterMain from 'src/components/Footer.vue';
+import ConnectButton from 'src/components/ConnectButton';
+import { stlos } from 'src/lib/logos.js';
+
+export default {
+    name: 'MainLayout',
+    directives: {
+        ClickAway,
+    },
+    components: {
+        Search,
+        ConnectButton,
+        FooterMain,
+    },
+    data() {
+        return {
+            stlosLogo: stlos,
+            mainnet: '' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40',
+            accountConnected: false,
+            drawer: false,
+            clickawayDisabled: false,
+        };
+    },
+    computed: {
+        ...mapGetters('login', [
+            'isLoggedIn',
+            'isNative',
+            'address',
+            'nativeAccount',
+        ]),
+        onHomePage() {
+            return this.$route.name === 'home';
+        },
+    },
+    async mounted(){
+        this.removeOldAngularCache();
+    },
+    created() {
+        this.$q.dark.set(localStorage.getItem('darkModeEnabled') !== 'false');
+    },
+    methods: {
+        getLoginDisplay() {
+            if (this.isLoggedIn)
+                return this.isNative ? this.nativeAccount : this.address;
+        },
+
+        toggleDarkMode() {
+            this.$q.dark.toggle();
+            localStorage.setItem('darkModeEnabled', this.$q.dark.isActive);
+        },
+        goTo(url) {
+            window.open(url, '_blank');
+            this.drawer = false;
+        },
+        routerTo(path) {
+            this.$router.push(path);
+            this.drawer = false;
+        },
+        removeOldAngularCache() {
+            // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own,
+            // this should remove it
+            if(window.navigator && navigator.serviceWorker) {
+                navigator.serviceWorker.getRegistrations()
+                    .then(function(registrations) {
+                        for(let registration of registrations) {
+                            registration.unregister();
+                        }
+                    });
+            }
+        },
+        toggleDrawer() {
+            if (!this.drawer) {
+                // handle race condition between vmodel and clickaway.
+                // without this, because clickaway is instantly triggered when clicking the menu icon,
+                // the drawer re-closes before it has had a chance to open
+                this.clickawayDisabled = true;
+                setTimeout(
+                    () => { this.clickawayDisabled = false; },
+                    400,
+                )
+            }
+            this.drawer = !this.drawer;
+        },
+        handleClickaway() {
+            if (this.drawer === true && !this.clickawayDisabled)
+                this.drawer = false;
+        },
+    },
+};
+</script>
+
 <template>
 <q-layout view="lhh Lpr lFf ">
     <div class="pageContainer">
@@ -127,102 +223,6 @@
     <footer-main />
 </q-layout>
 </template>
-
-<script>
-import { mapGetters } from 'vuex';
-import { directive as ClickAway } from 'vue3-click-away';
-
-import Search from 'src/components/Search.vue';
-import FooterMain from 'src/components/Footer.vue';
-import ConnectButton from 'src/components/ConnectButton';
-import { stlos } from 'src/lib/logos.js';
-
-export default {
-    name: 'MainLayout',
-    directives: {
-        ClickAway,
-    },
-    components: {
-        Search,
-        ConnectButton,
-        FooterMain,
-    },
-    data() {
-        return {
-            stlosLogo: stlos,
-            mainnet: '' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40',
-            accountConnected: false,
-            drawer: false,
-            clickawayDisabled: false,
-        };
-    },
-    computed: {
-        ...mapGetters('login', [
-            'isLoggedIn',
-            'isNative',
-            'address',
-            'nativeAccount',
-        ]),
-        onHomePage() {
-            return this.$route.name === 'home';
-        },
-    },
-    async mounted(){
-        this.removeOldAngularCache();
-    },
-    created() {
-        this.$q.dark.set(localStorage.getItem('darkModeEnabled') !== 'false');
-    },
-    methods: {
-        getLoginDisplay() {
-            if (this.isLoggedIn)
-                return this.isNative ? this.nativeAccount : this.address;
-        },
-
-        toggleDarkMode() {
-            this.$q.dark.toggle();
-            localStorage.setItem('darkModeEnabled', this.$q.dark.isActive);
-        },
-        goTo(url) {
-            window.open(url, '_blank');
-            this.drawer = false;
-        },
-        routerTo(path) {
-            this.$router.push(path);
-            this.drawer = false;
-        },
-        removeOldAngularCache() {
-            // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own,
-            // this should remove it
-            if(window.navigator && navigator.serviceWorker) {
-                navigator.serviceWorker.getRegistrations()
-                    .then(function(registrations) {
-                        for(let registration of registrations) {
-                            registration.unregister();
-                        }
-                    });
-            }
-        },
-        toggleDrawer() {
-            if (!this.drawer) {
-                // handle race condition between vmodel and clickaway.
-                // without this, because clickaway is instantly triggered when clicking the menu icon,
-                // the drawer re-closes before it has had a chance to open
-                this.clickawayDisabled = true;
-                setTimeout(
-                    () => { this.clickawayDisabled = false; },
-                    400,
-                )
-            }
-            this.drawer = !this.drawer;
-        },
-        handleClickaway() {
-            if (this.drawer === true && !this.clickawayDisabled)
-                this.drawer = false;
-        },
-    },
-};
-</script>
 
 <style lang="sass" scoped>
 .separator

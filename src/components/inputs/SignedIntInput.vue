@@ -1,17 +1,3 @@
-<template>
-<base-text-input
-    ref="input"
-    v-bind="$attrs"
-    :model-value="modelValue"
-    :label="shapedLabel"
-    :name="name"
-    :rules="rules"
-    :lazy-rules="false"
-    :size="undefined"
-    @update:modelValue="handleChange"
-/>
-</template>
-
 <script>
 import { BigNumber } from 'ethers';
 
@@ -93,6 +79,20 @@ export default {
     },
 }
 </script>
+
+<template>
+<base-text-input
+    ref="input"
+    v-bind="$attrs"
+    :model-value="modelValue"
+    :label="shapedLabel"
+    :name="name"
+    :rules="rules"
+    :lazy-rules="false"
+    :size="undefined"
+    @update:modelValue="handleChange"
+/>
+</template>
 
 <style>
 
