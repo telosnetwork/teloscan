@@ -50,7 +50,7 @@ export default {
     },
     methods: {
         async navigate(){
-            await this.$router.push({name:'sourcify'});
+            await this.$router.push({ name:'sourcify' });
         },
     },
 }

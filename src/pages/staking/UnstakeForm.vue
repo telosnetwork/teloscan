@@ -91,7 +91,7 @@ export default {
         },
         topInputTooltip() {
             const prettyBalance = ethers.utils.formatEther(this.stakedBalance).toString();
-            return this.$t('pages.staking.full_staked_balance_tooltip',{prettyBalance});
+            return this.$t('pages.staking.full_staked_balance_tooltip',{ prettyBalance });
         },
         stakedBalance() {
             return BigNumber.from(this.stlosBalance ?? '0').toString();
@@ -110,7 +110,7 @@ export default {
 
             const balanceTlos = ethers.utils.commify(balanceEth);
 
-            return this.$t('pages.staking.available', {balanceTlos});
+            return this.$t('pages.staking.available', { balanceTlos });
         },
         topInputErrorText() {
             if(this.isLoggedIn && !this.isNative) return;

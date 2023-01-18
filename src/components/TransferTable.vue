@@ -2,7 +2,7 @@
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
-import {ethers, BigNumber} from 'ethers';
+import { ethers, BigNumber } from 'ethers';
 import { formatWei, getTopicHash } from 'src/lib/utils';
 import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
@@ -111,7 +111,7 @@ export default {
             this.expectedTopicLength = 4;
             break;
         default:
-            throw new Error(this.$t('components.unsupported_token_type', {tokenType: this.tokenType}));
+            throw new Error(this.$t('components.unsupported_token_type', { tokenType: this.tokenType }));
         }
 
         this.onRequest({
@@ -178,7 +178,7 @@ export default {
                             if(tokenId.length > 15){
                                 tokenId = tokenId.substr(0, 15) + '...'
                             }
-                            valueDisplay = this.$t('components.token_id', {tokenId});
+                            valueDisplay = this.$t('components.token_id', { tokenId });
                         }
 
                         const transfer = {
@@ -196,7 +196,7 @@ export default {
                     );
                     // notify the user
                     this.$q.notify({
-                        message: this.$t('components.failed_to_parse_transaction', {message: e.message}),
+                        message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
                         type: 'negative',
                     });
                 }

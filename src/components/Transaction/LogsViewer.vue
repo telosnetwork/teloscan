@@ -18,7 +18,7 @@ export default {
                 console.error(`Failed to retrieve contract with address ${log.address}`);
                 // notify the user
                 this.$q.notify({
-                    message: this.$t('components.transaction.failed_to_retrieve_contract', {address: log.address}),
+                    message: this.$t('components.transaction.failed_to_retrieve_contract', { address: log.address }),
                     type: 'negative',
                     position: 'top',
                 });

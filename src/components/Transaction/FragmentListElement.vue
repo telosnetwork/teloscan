@@ -47,7 +47,7 @@ export default {
     computed: {
         depthStyle(){
             if(typeof this.fragment.depth === 'undefined') return;
-            return {marginLeft: ((this.fragment.depth * 20)  + 20) + 'px'};
+            return { marginLeft: ((this.fragment.depth * 20)  + 20) + 'px' };
         },
         inputs(){
             return this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;

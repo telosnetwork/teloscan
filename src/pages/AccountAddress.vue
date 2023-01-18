@@ -62,7 +62,7 @@ export default {
                 if (newValue !== oldValue) {
                     const newAsChecksum = toChecksumAddress(newValue);
                     if (newAsChecksum !== newValue) {
-                        this.$router.replace({ params: { address: newAsChecksum}});
+                        this.$router.replace({ params: { address: newAsChecksum } });
                     }
                     this.loadAccount();
                 }

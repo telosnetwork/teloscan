@@ -5,7 +5,7 @@ import { formatWei } from 'src/lib/utils';
 
 export default {
     name: 'TokenList',
-    components: {AddressField},
+    components: { AddressField },
     props: {
         address: {
             type: String,
