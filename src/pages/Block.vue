@@ -39,15 +39,14 @@ export default {
             div {{block}}
         .dataCardsContainer(v-if="blockData")
           .dataCardItem
-            .dataCardTile Gas used
+            .dataCardTile {{ $t('pages.gas_used') }}
             .dataCardData {{ parseInt(blockData.gasUsed, 16) }}
           .dataCardItem
-            .dataCardTile Transactions
+            .dataCardTile {{ $t('pages.transactions') }}
             .dataCardData {{ blockData.transactions.length || 0 }}
           .dataCardItem
             .dataCardTile
               date-field( :epoch="blockData.timestamp" )
-          //div() {{ blockData }}
     .tableWrapper.shadow-2.content-container.q-mt-lg
       transaction-table( :title="block" :filter="{block}" )
 </template>

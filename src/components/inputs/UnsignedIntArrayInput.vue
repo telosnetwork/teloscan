@@ -79,9 +79,9 @@ export default {
                 return parsedArrayLength === expectedLength;
             };
 
-            const incorrectArrayLengthMessage = `There should be ${+this.size} unsigned integers in the array`;
-            const invalidArrayStringMessage = 'Entered value does not represent an array of unsigned integers';
-
+            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_unsigint_array_length', { size: +this.size });
+            const invalidArrayStringMessage = this.$t('components.inputs.invalid_unsigint_array_string');
+            
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,
                 val => validateArrayLength(val) || incorrectArrayLengthMessage,
