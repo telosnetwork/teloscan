@@ -53,10 +53,10 @@ export default {
             const maximum = +this.intSize === 0 ? '0' : BigNumber.from(2).pow(+this.intSize).sub(1);
             const minimum = maximum.mul(-1);
 
-            const getIntsFromString = (str) => str.match(/-?\d+/g) ?? [];
-            const validateMaximum = (val) => getIntsFromString(val).every(int => BigNumber.from(int).lte(maximum));
-            const validateMinimum = (val) => getIntsFromString(val).every(int => BigNumber.from(int).gte(minimum));
-            const validateParsedArray = (value) => /^\[(-?\d+, *)*(-?\d+)]$/.test(value) || value === '';
+            const getIntsFromString = str => str.match(/-?\d+/g) ?? [];
+            const validateMaximum = val => getIntsFromString(val).every(int => BigNumber.from(int).lte(maximum));
+            const validateMinimum = val => getIntsFromString(val).every(int => BigNumber.from(int).gte(minimum));
+            const validateParsedArray = value => /^\[(-?\d+, *)*(-?\d+)]$/.test(value) || value === '';
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
 

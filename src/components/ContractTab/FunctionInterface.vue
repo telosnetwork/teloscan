@@ -220,7 +220,7 @@ export default {
         runRead() {
             return this.getEthersFunction()
                 .then(func => func(...this.params)
-                    .then(response => {
+                    .then((response) => {
                         this.result = response;
                         this.errorMessage = null;
                     })

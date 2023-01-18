@@ -49,7 +49,7 @@ export default {
             return +this.size === -1 ? undefined : +this.size;
         },
         rules() {
-            const validateParsedArray = (value) =>
+            const validateParsedArray = value =>
                 Array.isArray(parseUintArrayString(value, undefined, +this.uintSize)) || value === '';
 
             const validateArrayLength = (value) => {

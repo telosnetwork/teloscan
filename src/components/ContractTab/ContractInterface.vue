@@ -20,7 +20,7 @@ export default {
         this.contract = await this.$contractManager.getContract(this.$route.params.address);
         let read = [];
         let write = [];
-        this.contract.abi.forEach(a => {
+        this.contract.abi.forEach((a) => {
             if (a.type !== 'function')
                 return;
 

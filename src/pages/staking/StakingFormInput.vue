@@ -142,7 +142,7 @@ export default {
                 event.preventDefault();
         },
         handleInput() {
-            const emit = val => {
+            const emit = (val) => {
                 if (val !== this.modelValue)
                     this.$emit('update:modelValue', val);
             };

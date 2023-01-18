@@ -197,7 +197,7 @@ export default {
                     .then((amountBigNum) => {
                         this.topInputAmount = amountBigNum.toString();
                     })
-                    .catch(err => {
+                    .catch((err) => {
                         this.topInputAmount = '';
                         console.error(`Unable to convert STLOS to TLOS: ${err}`);
                         this.$q.notify({

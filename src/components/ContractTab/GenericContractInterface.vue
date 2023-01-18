@@ -91,7 +91,7 @@ export default {
                         color: 'negative',
                     });
                 }
-            }
+            };
             fileReader.readAsText(file);
         },
         async formatAbiFunctionLists() {
@@ -120,7 +120,7 @@ export default {
                     abi = abi.abi;
                 }
             }
-            // abi.map function is used here: 
+            // abi.map function is used here:
             // https://github.com/ethers-io/ethers.js/blob/master/packages/abi/lib.esm/interface.js#L57
             console.assert(typeof abi.map === 'function', 'ERROR: abi is not an array');
             this.contract = new Contract({
@@ -131,7 +131,8 @@ export default {
             });
             let read = [];
             let write = [];
-            (this.contract?.abi ?? []).forEach(a => {
+
+            (this.contract?.abi ?? []).forEach((a) => {
                 if (a.type !== 'function') return;
                 if (a.stateMutability === 'view') {
                     read.push(a);

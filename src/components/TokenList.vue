@@ -33,7 +33,7 @@ export default {
             const tokenList = await this.$contractManager.getTokenList();
             let tokens = tokenList.tokens;
             tokens = this.sortTokens(tokens);
-            await Promise.all(tokens.map(async token => {
+            await Promise.all(tokens.map(async (token) => {
                 if (token.logoURI && token.logoURI.startsWith('ipfs://'))
                     token.logoURI = `https://ipfs.io/ipfs/${token.logoURI.replace(/ipfs:\/\//, '')}`;
                 else if (!token.logoURI)
