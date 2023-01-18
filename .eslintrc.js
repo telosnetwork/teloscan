@@ -40,5 +40,9 @@ module.exports = {
                 'max': 1,
             },
         }],
+        'vue/first-attribute-linebreak': ['error', {
+            'singleline': 'ignore',
+            'multiline': 'below',
+        }],
     },
 }
