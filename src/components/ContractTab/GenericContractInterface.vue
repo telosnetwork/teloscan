@@ -97,7 +97,7 @@ export default {
             let read = [];
             let write = [];
 
-            (this.contract?.abi ?? []).forEach(a => {
+            (this.contract?.abi ?? []).forEach((a) => {
                 if (a.type !== 'function') return;
 
                 if (a.stateMutability === 'view') {

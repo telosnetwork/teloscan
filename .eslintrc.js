@@ -57,5 +57,6 @@ module.exports = {
         'no-trailing-spaces': 'error',
         'eqeqeq': 'error',
         'semi': ['error', 'always'],
+        'arrow-parens': [2, 'as-needed', { 'requireForBlockBody': true }],
     },
 };

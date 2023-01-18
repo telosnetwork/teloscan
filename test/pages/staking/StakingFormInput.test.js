@@ -40,7 +40,7 @@ describe('StakingFormInput.vue', () => {
     });
 
     describe('v-model implementation', () => {
-        const getInputValue = (wrapper) => wrapper.find('input').element.value;
+        const getInputValue = wrapper => wrapper.find('input').element.value;
 
         const simulateUserInput = async (wrapper, key, newInputValue) => {
             const input = wrapper.find('input');
