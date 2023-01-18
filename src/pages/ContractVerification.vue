@@ -34,12 +34,12 @@ export default {
             TIME_DELAY: 6000,
             sourcePathRules: [
                 val => ((val.length === 0) ||
-                (val.length && val.charAt(val.length - 1) === '/') ) ||
+                (val.length && val.charAt(val.length - 1) === '/')) ||
                 this.$t('pages.invalid_path_format'),
             ],
             constructorArgsRules: [
                 val => ((val.length === 0) ||
-                (val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',') ) ||
+                (val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',')) ||
                 this.$t('pages.no_trailing_commas'),
             ],
         };
