@@ -80,7 +80,6 @@ export default {
             withdraw_tlos: 'Withdraw TLOS',
             withdraw_successful: 'Withdraw successful! View Transaction:',
             no_withdrawable_positions: 'No withdrawable positions',
-<<<<<<< HEAD
             you_have_unlocked_tlos: 'You have unlocked TLOS!',
             stake_tlos_success: 'Stake successful! View Transaction:',
             unstake_stlos_success: 'Unstake successful! View Transaction:',
@@ -104,8 +103,6 @@ export default {
             convert_stlos_to_tlos_error: 'Unable to convert STLOS to TLOS { message }',
             unstake_stlos_error: 'Failed to unstake sTLOS { message }',
             withdraw_failed: 'Failed to withdraw unlocked TLOS: { message }',
-=======
->>>>>>> dce03b1b99c6dc9147125d8cc204de2275cb53ce
         },
         explore_transactions: 'Explore Transactions',
         recent_transactions: 'Recent transactions',
