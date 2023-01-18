@@ -200,7 +200,8 @@ export default class ContractManager {
     async getEmptyContract(address, creationInfo) {
         const contract = new Contract({
             name: `0x${address.slice(0, 16)}...`,
-            address, creationInfo,
+            address,
+            creationInfo,
             abi: undefined,
             manager: this,
         });
@@ -312,7 +313,8 @@ export default class ContractManager {
         if (token) {
             return new Contract({
                 name: `${token.name} (${token.symbol})`,
-                address, creationInfo,
+                address,
+                creationInfo,
                 abi: this.getTokenABI(token.type),
                 manager: this,
                 token: Object.assign({
