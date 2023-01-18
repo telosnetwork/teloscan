@@ -45,5 +45,6 @@ module.exports = {
             'multiline': 'below',
         }],
         'max-len': ['error', { 'code': 120 }],
+        'eol-last': ['error', 'always'],
     },
 }
