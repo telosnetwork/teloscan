@@ -60,7 +60,7 @@ export default {
     {{ friendlyDate }}
     <template v-if="forceShowAge === null">
         <q-icon class="fas fa-info-circle q-mr-xs" />
-        <q-tooltip>Click to change date format</q-tooltip>
+        <q-tooltip>{{ $t('components.click_to_change_format') }}</q-tooltip>
     </template>
 </div>
 </template>
