@@ -38,7 +38,7 @@ const MAINNET = {
     NETWORK_EVM_CHAIN_ID: 40,
     HYPERION_ENDPOINT: 'https://mainnet.telos.net',
     NETWORK_EXPLORER: 'https://explorer.telos.net',
-    TELOS_API_ENDPOINT: 'https://api.telos.net/v1',//'http://localhost:9999/v1', //for local instance of api
+    TELOS_API_ENDPOINT: 'https://api.telos.net/v1', //'http://localhost:9999/v1', //for local instance of api
     VERIFIED_CONTRACTS_BUCKET: 'verified-evm-contracts',
     STAKED_TLOS_CONTRACT_ADDRESS: '0xB4B01216a5Bc8F1C8A33CD990A1239030E60C905',
     TELOS_ESCROW_CONTRACT_ADDRESS: '0x95F5713A1422Aa3FBD3DCB8D553945C128ee3855',

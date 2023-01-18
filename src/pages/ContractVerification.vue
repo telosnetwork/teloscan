@@ -87,7 +87,7 @@ export default {
         navToAddress(){
             setTimeout(() => {
                 this.$router.push({ name: 'address', params: { address: this.contractAddress } })
-            },this.TIME_DELAY);
+            }, this.TIME_DELAY);
         },
         getUrl() {
             return `${process.env.TELOS_API_ENDPOINT}/contracts/verify`;

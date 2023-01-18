@@ -89,7 +89,7 @@ export default {
         },
         topInputTooltip() {
             const prettyBalance = ethers.utils.formatEther(this.stakedBalance).toString();
-            return this.$t('pages.staking.full_staked_balance_tooltip',{ prettyBalance });
+            return this.$t('pages.staking.full_staked_balance_tooltip', { prettyBalance });
         },
         stakedBalance() {
             return BigNumber.from(this.stlosBalance ?? '0').toString();
