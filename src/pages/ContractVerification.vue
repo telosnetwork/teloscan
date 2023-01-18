@@ -75,7 +75,7 @@ export default {
         },
         onNotify(notification){
             if (typeof notification !== 'object' || !Object.prototype.hasOwnProperty.call(notification, 'message')){
-                notification = { message: JSON.stringify(notification), type: 'negative'};
+                notification = { message: JSON.stringify(notification), type: 'negative' };
             }
             this.$q.notify({
                 type: notification.type,
@@ -86,7 +86,7 @@ export default {
         },
         navToAddress(){
             setTimeout(() => {
-                this.$router.push({ name: 'address', params: { address: this.contractAddress}})
+                this.$router.push({ name: 'address', params: { address: this.contractAddress } })
             },this.TIME_DELAY);
         },
         getUrl() {
@@ -95,7 +95,7 @@ export default {
         async submitFormHandler() {
             if (this.$refs.uploader){
                 if (this.$refs.uploader.files.length === 0){
-                    this.onNotify({type: 'info', message: this.$t('pages.paste_contract_contents')});
+                    this.onNotify({ type: 'info', message: this.$t('pages.paste_contract_contents') });
                     return;
                 }
                 await this.$refs.uploader.upload();
@@ -114,7 +114,7 @@ export default {
                     this.navToAddress();
                 }
             }catch(e){
-                this.onNotify({ message: e, type: 'negative'});
+                this.onNotify({ message: e, type: 'negative' });
             }
         },
 
@@ -134,7 +134,7 @@ export default {
                 { name: 'compilerVersion', value: this.compilerVersion },
                 { name: 'optimizer', value: this.optimizer },
                 { name: 'runs', value: this.runs },
-                { name: 'constructorArgs', value: this.constructorArgs},
+                { name: 'constructorArgs', value: this.constructorArgs },
                 { name: 'targetEvm', value: this.targetEvm },
                 { name: 'fileType', value: this.fileType },
             ]

@@ -94,7 +94,7 @@ export default {
 
             const balanceTlos = ethers.utils.commify(balanceEth);
 
-            return this.$t('pages.staking.available', {balanceTlos});
+            return this.$t('pages.staking.available', { balanceTlos });
         },
         topInputErrorText() {
             const walletBalanceBn = BigNumber.from(this.tlosBalance ?? '0');
@@ -112,7 +112,7 @@ export default {
         },
         topInputTooltip() {
             const prettyBalance = ethers.utils.formatEther(this.usableWalletBalance).toString();
-            return this.$t('pages.staking.click_to_input_full_wallet_balance', {prettyBalance});
+            return this.$t('pages.staking.click_to_input_full_wallet_balance', { prettyBalance });
         },
         ctaIsDisabled() {
             const inputsInvalid = (
@@ -168,7 +168,7 @@ export default {
                         console.error(`Unable to convert TLOS to STLOS: ${err}`);
                         this.$q.notify({
                             type: 'negative',
-                            message: this.$t('pages.staking.redeem_failed', {message: err}),
+                            message: this.$t('pages.staking.redeem_failed', { message: err }),
                         });
                     })
                     .finally(async () => {
@@ -200,7 +200,7 @@ export default {
                         console.error(`Unable to convert STLOS to TLOS: ${err}`);
                         this.$q.notify({
                             type: 'negative',
-                            message: this.$t('pages.staking.redeem_failed', {message: err}),
+                            message: this.$t('pages.staking.redeem_failed', { message: err }),
                         });
                     })
                     .finally(async () => {
@@ -278,7 +278,7 @@ export default {
                     console.error(`Failed to deposit TLOS: ${message}`);
                     this.$q.notify({
                         type: 'negative',
-                        message: this.$t('pages.staking.deposit_failed', {message}),
+                        message: this.$t('pages.staking.deposit_failed', { message }),
                     });
                     this.resultHash = null;
                 })

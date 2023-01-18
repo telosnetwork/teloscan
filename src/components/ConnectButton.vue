@@ -40,7 +40,7 @@ export default {
         if (loginObj.type === LOGIN_EVM) {
             const provider = this.getInjectedProvider();
             let checkProvider = new ethers.providers.Web3Provider(provider)
-            const {chainId} = await checkProvider.getNetwork();
+            const { chainId } = await checkProvider.getNetwork();
             if(loginObj.chain == chainId){
                 switch (loginObj.provider) {
                 case PROVIDER_WEB3_INJECTED:
@@ -98,10 +98,10 @@ export default {
                 let provider = this.getInjectedProvider();
                 let checkProvider = new ethers.providers.Web3Provider(provider)
                 this.$providerManager.setProvider(provider);
-                const {chainId} = await checkProvider.getNetwork();
+                const { chainId } = await checkProvider.getNetwork();
                 localStorage.setItem(
                     'loginData',
-                    JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED, chain: chainId }),
+                    JSON.stringify({ type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED, chain: chainId }),
                 );
                 provider.on('chainChanged', (newNetwork) => {
                     if(newNetwork != chainId){
@@ -129,7 +129,7 @@ export default {
                 } catch (e) {
                     this.$q.notify({
                         position: 'top',
-                        message: this.$t('components.search_evm_address_failed', {accountName}),
+                        message: this.$t('components.search_evm_address_failed', { accountName }),
                         timeout: 6000,
                     });
                     wallet.logout();
@@ -140,7 +140,7 @@ export default {
                     nativeAccount: accountName,
                 })
                 this.$providerManager.setProvider(account);
-                localStorage.setItem('loginData', JSON.stringify({type: LOGIN_NATIVE, provider: wallet.getName()}));
+                localStorage.setItem('loginData', JSON.stringify({ type: LOGIN_NATIVE, provider: wallet.getName() }));
             }
             this.showLogin = false;
         },
@@ -168,7 +168,7 @@ export default {
             }
         },
         async ensureCorrectChain(checkProvider) {
-            const {chainId} = await checkProvider.getNetwork();
+            const { chainId } = await checkProvider.getNetwork();
             if (chainId !== process.env.NETWORK_EVM_CHAIN_ID) {
                 await this.switchChainInjected();
                 const provider = this.getInjectedProvider();
@@ -198,7 +198,7 @@ export default {
                 try {
                     await provider.request({
                         method: 'wallet_switchEthereumChain',
-                        params: [{chainId: chainIdParam}],
+                        params: [{ chainId: chainIdParam }],
                     });
                     return true;
                 } catch (e) {

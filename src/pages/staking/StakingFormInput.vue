@@ -3,7 +3,7 @@ import { BigNumber, ethers } from 'ethers';
 
 import { WEI_PRECISION } from 'src/lib/utils';
 
-const { commify, parseUnits, formatEther} = ethers.utils;
+const { commify, parseUnits, formatEther } = ethers.utils;
 
 const dot = '.';
 const zeroDot = '0.';

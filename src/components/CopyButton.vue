@@ -35,7 +35,7 @@ export default {
             return `${this.iconClass} q-pl-xs`;
         },
         defaultHint() {
-            return this.$t('components.copy_to_clipboard', {text: this.description});
+            return this.$t('components.copy_to_clipboard', { text: this.description });
         },
     },
     created() {

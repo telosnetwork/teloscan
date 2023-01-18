@@ -124,7 +124,7 @@ export default {
             for (const transaction of this.transactions) {
                 try {
                     transaction.transfer = false;
-                    transaction.value = formatWei(transaction.value.toLocaleString(0, {useGrouping: false}), 18);
+                    transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
                     if (transaction.input_data === '0x') continue;
                     if(!transaction.to) continue;
 
@@ -162,7 +162,7 @@ export default {
                     );
                     // notifiy user
                     this.$q.notify({
-                        message: this.$t('components.failed_to_parse_transaction', {message: e.message}),
+                        message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
                         color: 'negative',
                         position: 'top',
                         timeout: 5000,
