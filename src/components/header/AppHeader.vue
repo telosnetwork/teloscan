@@ -12,7 +12,7 @@
             </div>
         </div>
 
-        <span class="c-header--logo-text">Teloscan</span>
+        <span class="c-header__logo-text">Teloscan</span>
     </router-link>
 
     <div class="c-header__right-container">
@@ -101,7 +101,7 @@
 
                         <q-icon
                             :name="advancedMenuExpanded ? 'expand_less' : 'expand_more'"
-                            class="c-header__menu-item-icon"
+                            class="c-header__menu-item-icon c-header__menu-item-icon--chevron"
                             size="sm"
                         />
                     </div>
@@ -347,7 +347,7 @@ export default {
         color: white;
     }
 
-    &--logo-text {
+    &__logo-text {
         display: none;
 
         @media screen and (min-width: $breakpoint-lg-min) {
@@ -464,8 +464,9 @@ export default {
                 background-color: var(--highlight-color);
             }
 
-            #{$this}__menu-item-icon {
+            & > #{$this}__menu-item-icon:not(#{$this}__menu-item-icon--chevron) {
                 filter: grayscale(0);
+                color: $secondary;
             }
         }
 
