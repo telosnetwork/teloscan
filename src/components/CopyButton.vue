@@ -58,7 +58,7 @@ export default {
             return `${this.iconClass} q-pl-xs`;
         },
         defaultHint() {
-            return `Copy ${this.description} to clipboard`;
+            return this.$t('components.copy_to_clipboard', {text: this.description});
         },
     },
     created() {
@@ -68,13 +68,17 @@ export default {
         handleClick() {
             copyToClipboard(this.text).then(() => {
                 this.iconClass = icons.success;
-                this.hint = 'Copied';
+                this.hint = this.$t('components.copied');
                 setTimeout(() => {
                     this.iconClass = icons.copy;
                     this.hint = this.defaultHint;
                 }, 1500);
             }).catch((err) => {
                 console.error(`Failed to copy to clipboard: ${err}`);
+                this.$q.notify({
+                    type: 'negative',
+                    message: this.$t('components.copy_to_clipboard_failed'),
+                });
             })
         },
     },

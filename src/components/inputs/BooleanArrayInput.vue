@@ -64,8 +64,8 @@ export default {
                 return Array.isArray(parseBooleanArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage = `There should be ${+this.size} booleans in the array`;
-            const invalidArrayStringMessage = 'Entered value does not represent an array of bool';
+            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_booleans_array_length', { size: +this.size });
+            const invalidArrayStringMessage = this.$t('components.inputs.invalid_booleans_array_string');
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,
@@ -74,7 +74,7 @@ export default {
         },
         shapedLabel() {
             const size = (Number.isInteger(+this.size) && +this.size !== -1) ? `${+this.size}` : '';
-            return `${this.label} (bool[${size}])`
+            return this.$t('components.inputs.boolean_array_label', { label: this.label, size });
         },
     },
     watch: {

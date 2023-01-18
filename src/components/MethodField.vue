@@ -58,7 +58,7 @@ div
       | {{ trx.parsedTransaction.name }}
   span(v-else :class="shortenSignature && 'clickable'")
     span(v-if="!expand" v-on:click="shortenSignature && toggle()" clickable) {{trx.input_data.length > 10 && shortenSignature ? `${trx.input_data.slice(0,10)}` : trx.input_data}}
-    q-tooltip( v-if="shortenSignature && !expand") Click to expand the function signature
+    q-tooltip( v-if="shortenSignature && !expand") {{ $t('components.click_to_expand') }}
     span( v-if="shortenSignature && expand" anchor="center middle" class="word-break" self="center middle" v-on:click="toggle()")
       | {{ trx.input_data }}
 </template>
