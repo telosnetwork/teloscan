@@ -125,7 +125,7 @@ export default {
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
             let result = await this.$evmEndpoint.get(this.getPath(props));
-            if (this.total == null)
+            if (this.total === null)
                 this.pagination.rowsNumber = result.data.total.value;
 
             this.pagination.page = page;

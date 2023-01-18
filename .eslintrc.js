@@ -55,5 +55,6 @@ module.exports = {
         'computed-property-spacing': ['error', 'never'],
         'comma-spacing': ['error', { 'before': false, 'after': true }],
         'no-trailing-spaces': 'error',
+        'eqeqeq': 'error',
     },
 }

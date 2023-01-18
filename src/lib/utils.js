@@ -35,7 +35,7 @@ export function toChecksumAddress(address) {
         return address
 
     address = address.toLowerCase().replace('0x', '')
-    if (address.length != 40)
+    if (address.length !== 40)
         address = address.padStart(40, '0');
 
     let hash = createKeccakHash('keccak256').update(address).digest('hex')
