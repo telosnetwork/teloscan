@@ -51,5 +51,6 @@ module.exports = {
         'eol-last': ['error', 'always'],
         'object-curly-spacing': ['error', 'always'],
         'array-bracket-spacing': ['error', 'never'],
+        'space-in-parens': ['error', 'never'],
     },
 }
