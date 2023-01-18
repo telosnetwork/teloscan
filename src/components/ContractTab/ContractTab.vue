@@ -1,42 +1,3 @@
-<template>
-<div class="contract-tab">
-    <CopyButton
-        v-if="abi"
-        :text="abi"
-        :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
-        class="q-mb-md"
-    />
-    <br>
-
-    <q-btn-group>
-        <q-btn
-            :outline="codeSeleted"
-            :label="$t('components.contract_tab.code')"
-            push
-            @click="source = true"
-        />
-        <q-btn
-            :outline="readSelected"
-            :label="$t('components.contract_tab.read')"
-            push
-            @click="source = false; write = false"
-        />
-        <q-btn
-            :outline="writeSelected"
-            :label="$t('components.contract_tab.write')"
-            push
-            @click="source = false; write = true"
-        />
-    </q-btn-group>
-
-    <ContractSource v-if="source" />
-    <ContractInterface
-        v-else
-        :write="write"
-    />
-</div>
-</template>
-
 <script>
 import ContractSource from 'components/ContractTab/ContractSource';
 import ContractInterface from 'components/ContractTab/ContractInterface';
@@ -79,6 +40,45 @@ export default {
     },
 }
 </script>
+
+<template>
+<div class="contract-tab">
+    <CopyButton
+        v-if="abi"
+        :text="abi"
+        :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
+        class="q-mb-md"
+    />
+    <br>
+
+    <q-btn-group>
+        <q-btn
+            :outline="codeSeleted"
+            :label="$t('components.contract_tab.code')"
+            push
+            @click="source = true"
+        />
+        <q-btn
+            :outline="readSelected"
+            :label="$t('components.contract_tab.read')"
+            push
+            @click="source = false; write = false"
+        />
+        <q-btn
+            :outline="writeSelected"
+            :label="$t('components.contract_tab.write')"
+            push
+            @click="source = false; write = true"
+        />
+    </q-btn-group>
+
+    <ContractSource v-if="source" />
+    <ContractInterface
+        v-else
+        :write="write"
+    />
+</div>
+</template>
 
 <style lang='sass'>
 .contract-tab

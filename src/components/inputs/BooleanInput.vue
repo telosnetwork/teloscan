@@ -1,18 +1,3 @@
-<template>
-<q-select
-    ref="input"
-    v-bind="binding"
-    :model-value="modelValue"
-    :options="options"
-    :clearable="true"
-    :name="name"
-    :rules="rules"
-    color="secondary"
-    class="q-mx-sm q-mb-md"
-    @update:modelValue="handleChange"
-/>
-</template>
-
 <script>
 export default {
     name: 'BooleanInput',
@@ -114,6 +99,21 @@ export default {
     },
 }
 </script>
+
+<template>
+<q-select
+    ref="input"
+    v-bind="binding"
+    :model-value="modelValue"
+    :options="options"
+    :clearable="true"
+    :name="name"
+    :rules="rules"
+    color="secondary"
+    class="q-mx-sm q-mb-md"
+    @update:modelValue="handleChange"
+/>
+</template>
 
 <style>
 

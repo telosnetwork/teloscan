@@ -1,3 +1,153 @@
+<script>
+import JsonViewer from 'vue-json-viewer';
+import Contract from 'src/lib/Contract';
+import { erc721Abi } from 'src/lib/abi';
+import erc20Abi from 'erc-20-abi';
+import { sortAbiFunctionsByName } from 'src/lib/utils';
+import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
+export default {
+    name: 'GenericContractInterface',
+    components: {
+        FunctionInterface,
+        JsonViewer,
+    },
+    data: () => ({
+        file_model: null,
+        address: null,
+        contract: null,
+        functions: null,
+        displayWriteFunctions: false,
+        customAbiDefinition: '',
+        selectedAbi: null,
+        abiOptions: {
+            erc20: 'erc20',
+            erc721: 'erc721',
+            custom: 'custom',
+        },
+    }),
+    computed: {
+        showAbiFunctions() {
+            return Object.values(this.abiOptions).includes(this.selectedAbi) &&
+                ['read', 'write']
+                    .some(access => (this.functions?.[access] ?? [])
+                        .some(member => member.type === 'function'))
+        },
+        customAbiIsValidJSON() {
+            try {
+                return !!JSON.parse(this.customAbiDefinition);
+            } catch {
+                return false;
+            }
+        },
+    },
+    watch: {
+        selectedAbi(newValue, oldValue) {
+            if (oldValue !== newValue) {
+                this.formatAbiFunctionLists();
+                this.displayWriteFunctions = false;
+            }
+        },
+        customAbiDefinition(newValue, oldValue) {
+            console.log('Watching customAbiDefinition:', [newValue, oldValue]);
+            if (oldValue !== newValue && this.customAbiIsValidJSON) {
+                this.formatAbiFunctionLists();
+                this.displayWriteFunctions = false;
+            }
+            // if we detect any change in the custom abi definition, we should reset the file_model
+            if (oldValue && oldValue !== newValue) {
+                this.file_model = null;
+            }
+            // if newValue is empty, we should reset
+            if (!newValue) {
+                this.reset();
+            }
+        },
+    },
+    created() {
+        this.address = this.$route.params.address;
+    },
+    methods: {
+        reset() {
+            this.functions = {
+                read: [],
+                write: [],
+            };
+            this.file_model = null;
+            this.customAbiDefinition = '';
+        },
+        async uploadFile(e) {
+            let file = e.target.files[0];
+            let fileReader = new FileReader();
+            fileReader.onload = (event) => {
+                let json = event.target.result;
+                try {
+                    JSON.parse(json); // this will throw an error if the json is invalid
+                    this.customAbiDefinition = json;
+                } catch (error) {
+                    console.error(error);
+                    this.reset();
+                    this.$q.notify({
+                        message: 'Invalid JSON file',
+                        color: 'negative',
+                    });
+                }
+            }
+            fileReader.readAsText(file);
+        },
+        async formatAbiFunctionLists() {
+            this.functions = {
+                read: [],
+                write: [],
+            };
+            const { custom, erc20, erc721 } = this.abiOptions;
+            let abi;
+            const customAbiSelected = this.selectedAbi === custom;
+            const selectedAbiIsCustomAndValid =
+                !!this.customAbiDefinition &&
+                this.customAbiIsValidJSON &&
+                customAbiSelected;
+            if (selectedAbiIsCustomAndValid) {
+                abi = JSON.parse(this.customAbiDefinition);
+            } else if (this.selectedAbi === erc20) {
+                abi = erc20Abi;
+            } else if (this.selectedAbi === erc721) {
+                abi = erc721Abi;
+            } else {
+                return;
+            }
+            if (!Array.isArray(abi)) {
+                if (abi.abi && Array.isArray(abi.abi)) {
+                    abi = abi.abi;
+                }
+            }
+            // abi.map function is used here: 
+            // https://github.com/ethers-io/ethers.js/blob/master/packages/abi/lib.esm/interface.js#L57
+            console.assert(typeof abi.map === 'function', 'ERROR: abi is not an array');
+            this.contract = new Contract({
+                name: this.$t('components.contract_tab.unverified_contract'),
+                address: this.address,
+                abi,
+                manager: this.$contractManager,
+            });
+            let read = [];
+            let write = [];
+            (this.contract?.abi ?? []).forEach(a => {
+                if (a.type !== 'function') return;
+                if (a.stateMutability === 'view') {
+                    read.push(a);
+                } else {
+                    write.push(a);
+                }
+            });
+            this.functions = {
+                read: sortAbiFunctionsByName(read),
+                write: sortAbiFunctionsByName(write),
+            };
+        },
+    },
+}
+</script>
+
 <template>
 <div class="q-pa-md">
     <div class="row q-pb-md">
@@ -151,174 +301,9 @@
 </div>
 </template>
 
-
 <style>
 .abi-json-uploader .q-field__label {
     text-align: center;
     width: 100%;
 }
 </style>
-<script>
-import JsonViewer from 'vue-json-viewer';
-
-import Contract from 'src/lib/Contract';
-import { erc721Abi } from 'src/lib/abi';
-import erc20Abi from 'erc-20-abi';
-
-import { sortAbiFunctionsByName } from 'src/lib/utils';
-
-import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
-
-export default {
-    name: 'GenericContractInterface',
-    components: {
-        FunctionInterface,
-        JsonViewer,
-    },
-    data: () => ({
-        file_model: null,
-        address: null,
-        contract: null,
-        functions: null,
-        displayWriteFunctions: false,
-        customAbiDefinition: '',
-        selectedAbi: null,
-        abiOptions: {
-            erc20: 'erc20',
-            erc721: 'erc721',
-            custom: 'custom',
-        },
-    }),
-    computed: {
-        showAbiFunctions() {
-            return Object.values(this.abiOptions).includes(this.selectedAbi) &&
-                ['read', 'write']
-                    .some(access => (this.functions?.[access] ?? [])
-                        .some(member => member.type === 'function'))
-        },
-        customAbiIsValidJSON() {
-            try {
-                return !!JSON.parse(this.customAbiDefinition);
-            } catch {
-                return false;
-            }
-        },
-    },
-    watch: {
-        selectedAbi(newValue, oldValue) {
-            if (oldValue !== newValue) {
-                this.formatAbiFunctionLists();
-                this.displayWriteFunctions = false;
-            }
-        },
-        customAbiDefinition(newValue, oldValue) {
-            console.log('Watching customAbiDefinition:', [newValue, oldValue]);
-            if (oldValue !== newValue && this.customAbiIsValidJSON) {
-                this.formatAbiFunctionLists();
-                this.displayWriteFunctions = false;
-            }
-            // if we detect any change in the custom abi definition, we should reset the file_model
-            if (oldValue && oldValue !== newValue) {
-                this.file_model = null;
-            }
-
-            // if newValue is empty, we should reset
-            if (!newValue) {
-                this.reset();
-            }
-        },
-    },
-    created() {
-        this.address = this.$route.params.address;
-    },
-    methods: {
-        reset() {
-            this.functions = {
-                read: [],
-                write: [],
-            };
-            this.file_model = null;
-            this.customAbiDefinition = '';
-        },
-        async uploadFile(e) {
-            let file = e.target.files[0];
-            let fileReader = new FileReader();
-            fileReader.onload = (event) => {
-                let json = event.target.result;
-                try {
-                    JSON.parse(json); // this will throw an error if the json is invalid
-                    this.customAbiDefinition = json;
-                } catch (error) {
-                    console.error(error);
-                    this.reset();
-                    this.$q.notify({
-                        message: 'Invalid JSON file',
-                        color: 'negative',
-                    });
-                }
-            }
-            fileReader.readAsText(file);
-        },
-        async formatAbiFunctionLists() {
-            this.functions = {
-                read: [],
-                write: [],
-            };
-
-            const { custom, erc20, erc721 } = this.abiOptions;
-
-            let abi;
-            const customAbiSelected = this.selectedAbi === custom;
-
-            const selectedAbiIsCustomAndValid =
-                !!this.customAbiDefinition &&
-                this.customAbiIsValidJSON &&
-                customAbiSelected;
-
-            if (selectedAbiIsCustomAndValid) {
-                abi = JSON.parse(this.customAbiDefinition);
-            } else if (this.selectedAbi === erc20) {
-                abi = erc20Abi;
-            } else if (this.selectedAbi === erc721) {
-                abi = erc721Abi;
-            } else {
-                return;
-            }
-
-            if (!Array.isArray(abi)) {
-                if (abi.abi && Array.isArray(abi.abi)) {
-                    abi = abi.abi;
-                }
-            }
-
-            // abi.map function is used here: https://github.com/ethers-io/ethers.js/blob/master/packages/abi/lib.esm/interface.js#L57
-            console.assert(typeof abi.map === 'function', 'ERROR: abi is not an array');
-
-            this.contract = new Contract({
-                name: this.$t('components.contract_tab.unverified_contract'),
-                address: this.address,
-                abi,
-                manager: this.$contractManager,
-            });
-
-            let read = [];
-            let write = [];
-
-            (this.contract?.abi ?? []).forEach(a => {
-                if (a.type !== 'function') return;
-
-                if (a.stateMutability === 'view') {
-                    read.push(a);
-                } else {
-                    write.push(a);
-                }
-            });
-
-            this.functions = {
-                read: sortAbiFunctionsByName(read),
-                write: sortAbiFunctionsByName(write),
-            };
-        },
-    },
-}
-</script>

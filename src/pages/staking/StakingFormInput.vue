@@ -1,59 +1,3 @@
-<template>
-<div
-    class="c-staking-input container-fluid shadow-3"
-    @animationend="handleWiggleEnd"
->
-    <div class="row">
-        <div class="col-6">
-            <h6 class="c-staking-input__label">
-                {{ label }}
-            </h6>
-        </div>
-        <div class="col-6 u-flex--right">
-            <p v-if="errorText" class="text-negative">
-                {{ errorText }}
-            </p>
-
-            <div
-                v-else-if="infoText"
-                class="c-staking-input__info-container"
-                @click="handleInfoClick"
-            >
-                <q-tooltip
-                    :offset="[0, 88]"
-                    anchor="top middle"
-                    self="top middle"
-                >
-                    <span class="c-staking-input__tooltip-text">{{ tooltip }}</span>
-                </q-tooltip>
-
-                {{ infoText }}
-                <q-icon name="fas fa-info-circle q-pl-xs info-icon" />
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <input
-                v-show="!isLoading"
-                ref="input"
-                :disabled="isLoading"
-                type="text"
-                pattern="[0-9.]*"
-                inputmode="decimal"
-                placeholder="0"
-                class="c-staking-input__input"
-                @keydown="handleKeydown"
-                @input.stop="handleInput"
-            >
-            <div v-if="isLoading" class="c-staking-input__loading u-flex--left">
-                <i class="fa fa-spinner fa-spin" />
-            </div>
-        </div>
-    </div>
-</div>
-</template>
-
 <script>
 import { BigNumber, ethers } from 'ethers';
 
@@ -279,6 +223,62 @@ export default {
     },
 }
 </script>
+
+<template>
+<div
+    class="c-staking-input container-fluid shadow-3"
+    @animationend="handleWiggleEnd"
+>
+    <div class="row">
+        <div class="col-6">
+            <h6 class="c-staking-input__label">
+                {{ label }}
+            </h6>
+        </div>
+        <div class="col-6 u-flex--right">
+            <p v-if="errorText" class="text-negative">
+                {{ errorText }}
+            </p>
+
+            <div
+                v-else-if="infoText"
+                class="c-staking-input__info-container"
+                @click="handleInfoClick"
+            >
+                <q-tooltip
+                    :offset="[0, 88]"
+                    anchor="top middle"
+                    self="top middle"
+                >
+                    <span class="c-staking-input__tooltip-text">{{ tooltip }}</span>
+                </q-tooltip>
+
+                {{ infoText }}
+                <q-icon name="fas fa-info-circle q-pl-xs info-icon" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <input
+                v-show="!isLoading"
+                ref="input"
+                :disabled="isLoading"
+                type="text"
+                pattern="[0-9.]*"
+                inputmode="decimal"
+                placeholder="0"
+                class="c-staking-input__input"
+                @keydown="handleKeydown"
+                @input.stop="handleInput"
+            >
+            <div v-if="isLoading" class="c-staking-input__loading u-flex--left">
+                <i class="fa fa-spinner fa-spin" />
+            </div>
+        </div>
+    </div>
+</div>
+</template>
 
 <style lang="scss">
 .c-staking-input {

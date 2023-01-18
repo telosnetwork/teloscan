@@ -1,3 +1,86 @@
+<script>
+import AddressInput from 'components/inputs/AddressInput';
+import AddressArrayInput from 'components/inputs/AddressArrayInput';
+import BaseTextInput from 'components/inputs/BaseTextInput';
+import BooleanArrayInput from 'components/inputs/BooleanArrayInput';
+import BooleanInput from 'components/inputs/BooleanInput';
+import BytesArrayInput from 'components/inputs/BytesArrayInput';
+import SignedIntInput from 'components/inputs/SignedIntInput';
+import StringArrayInput from 'components/inputs/StringArrayInput';
+import StringInput from 'components/inputs/StringInput';
+import UnsignedIntArrayInput from 'components/inputs/UnsignedIntArrayInput';
+import UnsignedIntInput from 'components/inputs/UnsignedIntInput';
+import SignedIntArrayInput from 'components/inputs/SignedIntArrayInput';
+
+export default {
+    name: 'InputDemo',
+    components: {
+        AddressArrayInput,
+        AddressInput,
+        BaseTextInput,
+        BooleanArrayInput,
+        BooleanInput,
+        BytesArrayInput,
+        SignedIntArrayInput,
+        SignedIntInput,
+        StringArrayInput,
+        StringInput,
+        UnsignedIntArrayInput,
+        UnsignedIntInput,
+    },
+    data: () => ({
+        allRequired: false,
+        allDisabled: false,
+        allReadonly: false,
+        allArraysFixedSize: undefined,
+        baseTextInputValue: '',
+        stringInputValue: '',
+        uintInputValue: '',
+        intInputValue: '',
+        addressInputValue: '',
+        stringArrayInputValue: '',
+        addressArrayInputValue: '',
+        uintArrayInputValue: '',
+        signedIntArrayInputValue: '',
+        booleanInputValue: null,
+        boolArrayInputValue: '',
+        bytesArrayInputValue: '',
+        unconstrainedBytesArrayInputValue: '',
+        selectedSignedIntSizeOption: 8,
+        selectedUnsignedIntSizeOption: 8,
+        signedIntSizeOptions: (() => {
+            const arr = [];
+            for (let index = 1; index <= 16; index++) {
+                arr.push(8*index)
+            }
+            return arr;
+        })(),
+        unsignedIntSizeOptions: (() => {
+            const arr = [];
+            for (let index = 1; index <= 32; index++) {
+                arr.push(8*index)
+            }
+            return arr;
+        })(),
+    }),
+    computed: {
+        universalToggles() {
+            return {
+                required: this.allRequired,
+                disabled: this.allDisabled,
+                readonly: this.allReadonly,
+            };
+        },
+        arrayToggles() {
+            return {
+                ...this.universalToggles,
+                size: this.allArraysFixedSize ? 3 : -1,
+            }
+        },
+    },
+}
+</script>
+
 <template>
 <div class="row">
     <div class="col-12 text-white">
@@ -195,89 +278,6 @@
     </q-card>
 </div>
 </template>
-
-<script>
-import AddressInput from 'components/inputs/AddressInput';
-import AddressArrayInput from 'components/inputs/AddressArrayInput';
-import BaseTextInput from 'components/inputs/BaseTextInput';
-import BooleanArrayInput from 'components/inputs/BooleanArrayInput';
-import BooleanInput from 'components/inputs/BooleanInput';
-import BytesArrayInput from 'components/inputs/BytesArrayInput';
-import SignedIntInput from 'components/inputs/SignedIntInput';
-import StringArrayInput from 'components/inputs/StringArrayInput';
-import StringInput from 'components/inputs/StringInput';
-import UnsignedIntArrayInput from 'components/inputs/UnsignedIntArrayInput';
-import UnsignedIntInput from 'components/inputs/UnsignedIntInput';
-import SignedIntArrayInput from 'components/inputs/SignedIntArrayInput';
-
-export default {
-    name: 'InputDemo',
-    components: {
-        AddressArrayInput,
-        AddressInput,
-        BaseTextInput,
-        BooleanArrayInput,
-        BooleanInput,
-        BytesArrayInput,
-        SignedIntArrayInput,
-        SignedIntInput,
-        StringArrayInput,
-        StringInput,
-        UnsignedIntArrayInput,
-        UnsignedIntInput,
-    },
-    data: () => ({
-        allRequired: false,
-        allDisabled: false,
-        allReadonly: false,
-        allArraysFixedSize: undefined,
-        baseTextInputValue: '',
-        stringInputValue: '',
-        uintInputValue: '',
-        intInputValue: '',
-        addressInputValue: '',
-        stringArrayInputValue: '',
-        addressArrayInputValue: '',
-        uintArrayInputValue: '',
-        signedIntArrayInputValue: '',
-        booleanInputValue: null,
-        boolArrayInputValue: '',
-        bytesArrayInputValue: '',
-        unconstrainedBytesArrayInputValue: '',
-        selectedSignedIntSizeOption: 8,
-        selectedUnsignedIntSizeOption: 8,
-        signedIntSizeOptions: (() => {
-            const arr = [];
-            for (let index = 1; index <= 16; index++) {
-                arr.push(8*index)
-            }
-            return arr;
-        })(),
-        unsignedIntSizeOptions: (() => {
-            const arr = [];
-            for (let index = 1; index <= 32; index++) {
-                arr.push(8*index)
-            }
-            return arr;
-        })(),
-    }),
-    computed: {
-        universalToggles() {
-            return {
-                required: this.allRequired,
-                disabled: this.allDisabled,
-                readonly: this.allReadonly,
-            };
-        },
-        arrayToggles() {
-            return {
-                ...this.universalToggles,
-                size: this.allArraysFixedSize ? 3 : -1,
-            }
-        },
-    },
-}
-</script>
 
 <style scoped>
 

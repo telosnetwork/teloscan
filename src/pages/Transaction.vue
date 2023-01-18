@@ -252,30 +252,6 @@ export default {
     },
 };
 </script>
-<style scoped lang="sass">
-    @media screen and (max-width: 650px)
-        #function-parameters
-            width: 100%
-            flex: auto
-            margin-top: 20px
-
-        #transaction-page
-            .col-3
-                width: 100%
-            .col-9
-                width: 100%
-
-    @media only screen and (max-width: 900px)
-        #function-parameters
-            .row
-                .col-4
-                    width: 100%
-                    padding-left: 15px
-                .col-8
-                    padding-bottom: 10px
-                    padding-left: 30px
-                    width: 100%
-</style>
 <template lang='pug'>
 .pageContainer
   .row
@@ -471,6 +447,30 @@ export default {
           q-tab-panel( name="internal" )
             InternalTxns( :itxs="trx.itxs" :contract="contract" )
 </template>
+<style scoped lang="sass">
+    @media screen and (max-width: 650px)
+        #function-parameters
+            width: 100%
+            flex: auto
+            margin-top: 20px
+
+        #transaction-page
+            .col-3
+                width: 100%
+            .col-9
+                width: 100%
+
+    @media only screen and (max-width: 900px)
+        #function-parameters
+            .row
+                .col-4
+                    width: 100%
+                    padding-left: 15px
+                .col-8
+                    padding-bottom: 10px
+                    padding-left: 30px
+                    width: 100%
+</style>
 
 <style lang="sass" scoped>
 .shadow-2

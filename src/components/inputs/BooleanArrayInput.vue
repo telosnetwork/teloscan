@@ -1,17 +1,3 @@
-<template>
-<base-text-input
-    ref="input"
-    v-bind="$attrs"
-    :model-value="modelValue"
-    :label="shapedLabel"
-    :name="name"
-    :placeholder="placeholder"
-    :rules="rules"
-    :lazy-rules="false"
-    @update:modelValue="handleChange"
-/>
-</template>
-
 <script>
 import { parseBooleanArrayString } from 'components/ContractTab/function-interface-utils';
 
@@ -104,6 +90,20 @@ export default {
     },
 }
 </script>
+
+<template>
+<base-text-input
+    ref="input"
+    v-bind="$attrs"
+    :model-value="modelValue"
+    :label="shapedLabel"
+    :name="name"
+    :placeholder="placeholder"
+    :rules="rules"
+    :lazy-rules="false"
+    @update:modelValue="handleChange"
+/>
+</template>
 
 <style>
 

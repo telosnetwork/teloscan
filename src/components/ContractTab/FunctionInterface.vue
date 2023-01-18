@@ -365,18 +365,20 @@ export default {
             </template>
         </unsigned-int-input>
     </div>
+
     <template v-for="(component, index) in inputComponents">
         <component
-            :is="component.is"
             v-if="component.is"
             :key="index"
+            :is="component.is"
             v-bind="component.bindings"
             required="true"
-            class="q-pb-lg"
             @valueParsed="component.handleValueParsed(component.inputType, index, $event)"
             @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
+            class="q-pb-lg"
         />
     </template>
+
     <q-btn
         v-if="enableRun"
         :loading="loading"
