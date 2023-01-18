@@ -23,7 +23,7 @@ export default {
             icon: 'warning',
             color: 'text-negative',
             dialogMessage: '',
-        }
+        };
     },
     async created() {
         // initialization of the translated texts
@@ -53,7 +53,7 @@ export default {
             await this.$router.push({ name:'sourcify' });
         },
     },
-}
+};
 </script>
 
 <template lang="pug">

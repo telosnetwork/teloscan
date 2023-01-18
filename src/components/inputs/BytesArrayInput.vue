@@ -69,7 +69,7 @@ export default {
                 sizeLabel = `${this.size}`;
             }
 
-            return `${this.label} (bytes${sizeLabel})`
+            return `${this.label} (bytes${sizeLabel})`;
         },
     },
     watch: {
@@ -96,7 +96,7 @@ export default {
             }
         },
     },
-}
+};
 </script>
 
 <template>

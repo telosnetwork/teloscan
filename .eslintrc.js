@@ -56,5 +56,6 @@ module.exports = {
         'comma-spacing': ['error', { 'before': false, 'after': true }],
         'no-trailing-spaces': 'error',
         'eqeqeq': 'error',
+        'semi': ['error', 'always'],
     },
-}
+};

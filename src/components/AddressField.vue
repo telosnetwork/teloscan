@@ -90,7 +90,7 @@ export default {
         },
 
     },
-}
+};
 </script>
 
 <template lang="pug">

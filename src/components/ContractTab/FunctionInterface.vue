@@ -77,7 +77,7 @@ export default {
                 'type': 'amount',
                 'internalType': 'amount',
             },
-        }
+        };
     },
     async created() {
         // initialization of the translated texts
@@ -101,9 +101,9 @@ export default {
                 // represents integer bits (e.g. uint256) for int types, or array length for array types
                 let size = undefined;
                 if (parameterIsArrayType(type)) {
-                    size = getExpectedArrayLengthFromParameterType(type)
+                    size = getExpectedArrayLengthFromParameterType(type);
                 } else if (parameterIsIntegerType(type)) {
-                    size = getIntegerBits(type)
+                    size = getIntegerBits(type);
                 }
 
                 const getIntSize = () => type.match(/\d+(?=\[)/)[0];
@@ -147,7 +147,7 @@ export default {
             }));
         },
         enableRun() {
-            return this.isLoggedIn || this.abi.stateMutability === 'view'
+            return this.isLoggedIn || this.abi.stateMutability === 'view';
         },
         missingInputs() {
             if (this.abi.inputs.length !== this.params.length) {
@@ -303,7 +303,7 @@ export default {
             this.loading = false;
         },
     },
-}
+};
 </script>
 
 <template>

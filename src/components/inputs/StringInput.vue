@@ -25,7 +25,7 @@ export default {
     },
     computed: {
         shapedLabel() {
-            return `${this.label} (string)`
+            return `${this.label} (string)`;
         },
     },
     methods: {
@@ -35,7 +35,7 @@ export default {
             }
         },
     },
-}
+};
 </script>
 
 <template>

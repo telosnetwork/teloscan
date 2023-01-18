@@ -63,7 +63,7 @@ export default {
     watch: {
         '$route.params': {
             handler(newValue) {
-                const { hash } = newValue
+                const { hash } = newValue;
                 if (this.hash === hash) {
                     return;
                 }
@@ -234,8 +234,8 @@ export default {
                     type: input.type,
                     arrayChildren: (input.arrayChildren !== null) ? input.arrayChildren.type : false,
                     value:  this.parsedTransaction.args[i],
-                })
-            })
+                });
+            });
             return args;
         },
         getGasFee() {

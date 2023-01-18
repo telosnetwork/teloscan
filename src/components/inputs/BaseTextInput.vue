@@ -31,7 +31,7 @@ export default {
             let requiredRule = [];
 
             if (['required', true, 'true'].includes(this.required)) {
-                requiredRule.push(val => (val?.length ?? 0) > 0 || 'This field is required')
+                requiredRule.push(val => (val?.length ?? 0) > 0 || 'This field is required');
             }
 
             return [
@@ -94,7 +94,7 @@ export default {
             await this.$refs.input.resetValidation();
         },
     },
-}
+};
 </script>
 
 <template>

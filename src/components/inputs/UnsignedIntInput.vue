@@ -52,7 +52,7 @@ export default {
             ];
         },
         shapedLabel() {
-            return `${this.label} (uint${this.size})`
+            return `${this.label} (uint${this.size})`;
         },
     },
     watch: {
@@ -78,7 +78,7 @@ export default {
             }
         },
     },
-}
+};
 </script>
 
 <template>

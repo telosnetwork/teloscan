@@ -1,8 +1,8 @@
 import { BigNumber, ethers } from 'ethers';
 import moment from 'moment';
-const createKeccakHash = require('keccak')
-const REVERT_FUNCTION_SELECTOR = '0x08c379a0'
-const REVERT_PANIC_SELECTOR = '0x4e487b71'
+const createKeccakHash = require('keccak');
+const REVERT_FUNCTION_SELECTOR = '0x08c379a0';
+const REVERT_PANIC_SELECTOR = '0x4e487b71';
 
 export const WEI_PRECISION = 18;
 
@@ -32,24 +32,24 @@ export function formatIsoDateTime(dateTimezone) {
 
 export function toChecksumAddress(address) {
     if (!address)
-        return address
+        return address;
 
-    address = address.toLowerCase().replace('0x', '')
+    address = address.toLowerCase().replace('0x', '');
     if (address.length !== 40)
         address = address.padStart(40, '0');
 
-    let hash = createKeccakHash('keccak256').update(address).digest('hex')
-    let ret = '0x'
+    let hash = createKeccakHash('keccak256').update(address).digest('hex');
+    let ret = '0x';
 
     for (var i = 0; i < address.length; i++) {
         if (parseInt(hash[i], 16) >= 8) {
-            ret += address[i].toUpperCase()
+            ret += address[i].toUpperCase();
         } else {
-            ret += address[i]
+            ret += address[i];
         }
     }
 
-    return ret
+    return ret;
 }
 
 export function parseErrorMessage(output) {
@@ -81,7 +81,7 @@ export function parseRevertReason(revertOutput) {
 }
 
 export function parsePanicReason(revertOutput) {
-    let trimmedOutput = revertOutput.slice(-2)
+    let trimmedOutput = revertOutput.slice(-2);
     let reason;
 
     switch (trimmedOutput) {
@@ -143,7 +143,7 @@ export function getRouteWatcherForTabs(routeName, tabs, defaultTab) {
                     this.$router.replace({ hash: defaultTab });
             }
         },
-    }
+    };
 }
 
 /**
@@ -161,5 +161,5 @@ export function getClientIsApple() {
         'iPod',
     ].includes(navigator.platform)
         // iPad on iOS 13 detection
-        || (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+        || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
 }

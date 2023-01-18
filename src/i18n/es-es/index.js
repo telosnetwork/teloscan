@@ -322,4 +322,4 @@ export default {
         teloscan_mainnet: 'Teloscan Mainnet',
         teloscan_testnet: 'Teloscan Testnet',
     },
-}
+};

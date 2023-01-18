@@ -2,7 +2,7 @@
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { debounce } from 'lodash';
-import MetaMaskLogo from 'src/assets/metamask-fox.svg'
+import MetaMaskLogo from 'src/assets/metamask-fox.svg';
 import { stlos } from 'src/lib/logos';
 
 
@@ -184,7 +184,7 @@ export default {
 
                             this.topInputAmount = old;
                         }
-                    })
+                    });
             },
             debounceWaitMs,
         );
@@ -216,7 +216,7 @@ export default {
 
                             this.bottomInputAmount = old;
                         }
-                    })
+                    });
             },
             debounceWaitMs,
         );
@@ -290,7 +290,7 @@ export default {
             this.userDismissedBanner = true;
         },
     },
-}
+};
 </script>
 
 <template>

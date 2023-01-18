@@ -86,7 +86,7 @@ export default {
         },
         navToAddress(){
             setTimeout(() => {
-                this.$router.push({ name: 'address', params: { address: this.contractAddress } })
+                this.$router.push({ name: 'address', params: { address: this.contractAddress } });
             }, this.TIME_DELAY);
         },
         getUrl() {
@@ -122,9 +122,9 @@ export default {
             let formFields = this.getFormFields();
             const formData = new FormData();
             for (let i in formFields){
-                formData.append(formFields[i].name, formFields[i].value)
+                formData.append(formFields[i].name, formFields[i].value);
             }
-            return formData
+            return formData;
         },
 
         getFormFields(){
@@ -137,7 +137,7 @@ export default {
                 { name: 'constructorArgs', value: this.constructorArgs },
                 { name: 'targetEvm', value: this.targetEvm },
                 { name: 'fileType', value: this.fileType },
-            ]
+            ];
         },
 
         resetForm(){
@@ -150,11 +150,11 @@ export default {
             this.runs = 200;
             this.fileType = true;
             if (this.$refs.uploader){
-                this.$refs.uploader.files = []
+                this.$refs.uploader.files = [];
             }
         },
     },
-}
+};
 </script>
 
 <template lang='pug'>

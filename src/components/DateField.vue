@@ -16,12 +16,12 @@ export default {
     computed: {
         friendlyDate ()  {
             if (this.showAge) {
-                return moment.unix(this.epoch).fromNow()
+                return moment.unix(this.epoch).fromNow();
             }
-            return  `${ moment.unix(this.epoch).format('YYYY-MM-DD h:mm:ss')}`
+            return  `${ moment.unix(this.epoch).format('YYYY-MM-DD h:mm:ss')}`;
         },
     },
-}
+};
 </script>
 
 <template lang="pug">

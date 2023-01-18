@@ -82,7 +82,7 @@ export default {
                 setTimeout(
                     () => { this.clickawayDisabled = false; },
                     400,
-                )
+                );
             }
             this.drawer = !this.drawer;
         },

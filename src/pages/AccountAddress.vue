@@ -105,7 +105,7 @@ export default {
             const account = await this.$evm.telos.getEthAccount(this.address);
             if (account.code.length > 0){
                 this.isContract = true;
-                this.contract = await this.$contractManager.getContract(this.address)
+                this.contract = await this.$contractManager.getContract(this.address);
                 this.isVerified = this.contract.verified;
             }
 

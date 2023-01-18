@@ -106,7 +106,7 @@ export default {
             return wei === null ? '--' : format(wei);
         },
     },
-}
+};
 </script>
 
 <template>

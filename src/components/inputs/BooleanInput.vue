@@ -46,7 +46,7 @@ export default {
             if (['required', true, 'true'].includes(this.required)) {
                 return [
                     val => [true, false].includes(val) || this.$t('components.inputs.required'),
-                ]
+                ];
             }
 
             return [];
@@ -87,7 +87,7 @@ export default {
             }
 
             if (newValue !== this.modelValue) {
-                this.$emit('update:modelValue', newBool)
+                this.$emit('update:modelValue', newBool);
             }
         },
         async validate() {
@@ -97,7 +97,7 @@ export default {
             await this.$refs.input.resetValidation();
         },
     },
-}
+};
 </script>
 
 <template>

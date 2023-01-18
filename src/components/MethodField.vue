@@ -28,7 +28,7 @@ export default {
             transferAmount: null,
             transferTo: null,
             expand: false,
-        }
+        };
     },
     mounted() {
         this.setValues();
@@ -47,7 +47,7 @@ export default {
             }
         },
     },
-}
+};
 </script>
 <!-- eslint-disable max-len -->
 <template lang="pug">

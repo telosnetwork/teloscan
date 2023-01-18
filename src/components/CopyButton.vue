@@ -1,5 +1,5 @@
 <script>
-import { copyToClipboard } from 'quasar'
+import { copyToClipboard } from 'quasar';
 
 const icons = {
     copy: 'far fa-copy',
@@ -56,10 +56,10 @@ export default {
                     type: 'negative',
                     message: this.$t('components.copy_to_clipboard_failed'),
                 });
-            })
+            });
         },
     },
-}
+};
 </script>
 
 <template>

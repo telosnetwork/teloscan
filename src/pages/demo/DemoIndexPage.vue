@@ -7,7 +7,7 @@ export default {
             localStorage.setItem('darkModeEnabled', this.$q.dark.isActive);
         },
     },
-}
+};
 </script>
 
 <template>

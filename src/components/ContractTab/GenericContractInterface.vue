@@ -33,7 +33,7 @@ export default {
             return Object.values(this.abiOptions).includes(this.selectedAbi) &&
                 ['read', 'write']
                     .some(access => (this.functions?.[access] ?? [])
-                        .some(member => member.type === 'function'))
+                        .some(member => member.type === 'function'));
         },
         customAbiIsValidJSON() {
             try {
@@ -113,7 +113,7 @@ export default {
             };
         },
     },
-}
+};
 </script>
 
 <template>

@@ -34,7 +34,7 @@ const signTransaction = async function(actions) {
 
 const getRpc = function () {
     return this.$type === 'ual' ? this.$ualUser.rpc : this.$defaultApi.rpc;
-}
+};
 
 const getTableRows = async function(options) {
     const rpc = this.$api.getRpc();
@@ -47,7 +47,7 @@ const getTableRows = async function(options) {
 const getAccount = async function (accountName) {
     const rpc = this.$api.getRpc();
     return await rpc.get_account(accountName);
-}
+};
 
 export default boot(async ({ store }) => {
     const rpc = new JsonRpc(

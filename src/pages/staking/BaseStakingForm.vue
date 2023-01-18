@@ -119,7 +119,7 @@ export default {
             this.$emit('cta-clicked');
         },
     },
-}
+};
 </script>
 
 <template>

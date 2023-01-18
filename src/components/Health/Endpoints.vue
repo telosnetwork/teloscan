@@ -44,7 +44,7 @@ export default {
             await this.loadEndpoints();
             this.endpoints.forEach((endpoint, idx) => {
                 this.doCheck(endpoint, idx);
-            })
+            });
         },
         async loadEndpoints() {
             const results = await axios.get(ENDPOINT_LIST);

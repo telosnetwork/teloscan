@@ -190,7 +190,7 @@ export default {
 
                             this.topInputAmount = old;
                         }
-                    })
+                    });
             },
             debounceWaitMs,
         );
@@ -222,7 +222,7 @@ export default {
 
                             this.bottomInputAmount = old;
                         }
-                    })
+                    });
             },
             debounceWaitMs,
         );
@@ -287,7 +287,7 @@ export default {
                 });
         },
     },
-}
+};
 </script>
 
 <template>

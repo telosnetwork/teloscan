@@ -1,6 +1,6 @@
 <script>
-import MetamaskLogo from 'src/assets/metamask-fox.svg'
-import WombatLogo from 'src/assets/wombat-logo.png'
+import MetamaskLogo from 'src/assets/metamask-fox.svg';
+import WombatLogo from 'src/assets/wombat-logo.png';
 
 import { mapGetters, mapMutations, mapState } from 'vuex';
 import { ethers } from 'ethers';
@@ -9,7 +9,7 @@ import { tlos } from 'src/lib/logos';
 
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
-const PROVIDER_WEB3_INJECTED = 'injectedWeb3'
+const PROVIDER_WEB3_INJECTED = 'injectedWeb3';
 
 export const triggerLogin = () => document.querySelector('#c-connect-button__login-button')?.click();
 
@@ -20,7 +20,7 @@ export default {
             tab: 'web3',
             showLogin: false,
             metamaskLogo: MetamaskLogo,
-        }
+        };
     },
     computed: {
         ...mapGetters('login', [
@@ -39,7 +39,7 @@ export default {
         const loginObj = JSON.parse(loginData);
         if (loginObj.type === LOGIN_EVM) {
             const provider = this.getInjectedProvider();
-            let checkProvider = new ethers.providers.Web3Provider(provider)
+            let checkProvider = new ethers.providers.Web3Provider(provider);
             const { chainId } = await checkProvider.getNetwork();
 
             if(loginObj.chain === chainId){
@@ -95,9 +95,9 @@ export default {
             if (address) {
                 this.setLogin({
                     address,
-                })
+                });
                 let provider = this.getInjectedProvider();
-                let checkProvider = new ethers.providers.Web3Provider(provider)
+                let checkProvider = new ethers.providers.Web3Provider(provider);
                 this.$providerManager.setProvider(provider);
                 const { chainId } = await checkProvider.getNetwork();
                 localStorage.setItem(
@@ -113,8 +113,8 @@ export default {
                 provider.on('accountsChanged', (accounts) => {
                     this.setLogin({
                         address: accounts[0],
-                    })
-                })
+                    });
+                });
             }
             this.showLogin = false;
         },
@@ -139,7 +139,7 @@ export default {
                 this.setLogin({
                     address: evmAccount.address,
                     nativeAccount: accountName,
-                })
+                });
                 this.$providerManager.setProvider(account);
                 localStorage.setItem('loginData', JSON.stringify({ type: LOGIN_NATIVE, provider: wallet.getName() }));
             }
@@ -179,7 +179,7 @@ export default {
         getInjectedProvider() {
             const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
                 window.ethereum :
-                null
+                null;
             if (!provider) {
                 this.$q.notify({
                     position: 'top',
@@ -244,7 +244,7 @@ export default {
             return wallet.getStyle().icon;
         },
     },
-}
+};
 </script>
 <template>
 <div class="c-connect-button">
