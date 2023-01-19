@@ -45,7 +45,9 @@ export default {
             }
         },
         showDialog(val){
-            if (!val) this.$emit('dialog', val);
+            if (!val) {
+                this.$emit('dialog', val);
+            }
         },
     },
     methods: {

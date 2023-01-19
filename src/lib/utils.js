@@ -31,12 +31,14 @@ export function formatIsoDateTime(dateTimezone) {
 }
 
 export function toChecksumAddress(address) {
-    if (!address)
+    if (!address) {
         return address;
+    }
 
     address = address.toLowerCase().replace('0x', '');
-    if (address.length !== 40)
+    if (address.length !== 40) {
         address = address.padStart(40, '0');
+    }
 
     let hash = createKeccakHash('keccak256').update(address).digest('hex');
     let ret = '0x';
@@ -53,15 +55,18 @@ export function toChecksumAddress(address) {
 }
 
 export function parseErrorMessage(output) {
-    if (!output)
+    if (!output) {
         return;
+    }
 
     let message = '';
-    if (output.startsWith(REVERT_FUNCTION_SELECTOR))
+    if (output.startsWith(REVERT_FUNCTION_SELECTOR)) {
         message = parseRevertReason(output);
+    }
 
-    if (output.startsWith(REVERT_PANIC_SELECTOR))
+    if (output.startsWith(REVERT_PANIC_SELECTOR)) {
         message = parsePanicReason(output);
+    }
 
 
     return message.replace(/[^a-zA-Z0-9 /./'/"/,/@/+/-/_/(/)/[]/g, '');
@@ -133,14 +138,16 @@ export function getRouteWatcherForTabs(routeName, tabs, defaultTab) {
             if (newRoute !== oldRoute) {
                 const { hash: newHash } = newRoute;
 
-                if (newRoute.name !== routeName || !newHash)
+                if (newRoute.name !== routeName || !newHash) {
                     return;
+                }
 
                 const tabHashes = Object.values(tabs);
                 const newHashIsInvalid = !tabHashes.includes(newHash);
 
-                if (newHashIsInvalid)
+                if (newHashIsInvalid) {
                     this.$router.replace({ hash: defaultTab });
+                }
             }
         },
     };

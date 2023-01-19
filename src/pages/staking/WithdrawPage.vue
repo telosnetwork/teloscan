@@ -86,8 +86,9 @@ export default {
                 });
         },
         formatAmount(val) {
-            if (val === null)
+            if (val === null) {
                 return '0.0';
+            }
 
             return formatWei(val, WEI_PRECISION, 2);
         },

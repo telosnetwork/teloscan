@@ -28,7 +28,9 @@ export default {
         };
     },
     created(){
-        if(!this.fragment) return;
+        if(!this.fragment) {
+            return;
+        }
         let inputs = this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
         if(inputs){
             for(let i=0; i < inputs.length;i++){
@@ -46,7 +48,9 @@ export default {
     },
     computed: {
         depthStyle(){
-            if(typeof this.fragment.depth === 'undefined') return;
+            if(typeof this.fragment.depth === 'undefined') {
+                return;
+            }
             return { marginLeft: ((this.fragment.depth * 20)  + 20) + 'px' };
         },
         inputs(){
@@ -64,7 +68,9 @@ export default {
             );
         },
         arrowIcon() {
-            if(!this.isExpandable) return '';
+            if(!this.isExpandable) {
+                return '';
+            }
             return this.expanded ? 'arrow_drop_down' : 'arrow_right';
         },
     },

@@ -18,25 +18,30 @@ export default {
     },
     methods: {
         getLatencyColor(latency) {
-            if (latency < 375)
+            if (latency < 375) {
                 return 'green';
+            }
 
-            if (latency < 650)
+            if (latency < 650) {
                 return 'yellow';
+            }
 
             return 'red';
         },
         getBlockClass(currentHeight, block) {
-            if (currentHeight === 0)
+            if (currentHeight === 0) {
                 return 'text-green';
+            }
 
             const diff = (currentHeight - block);
 
-            if (diff > 50)
+            if (diff > 50) {
                 return 'text-red';
+            }
 
-            if (diff > 20)
+            if (diff > 20) {
                 return 'text-yellow';
+            }
 
             return 'text-green';
         },
@@ -65,8 +70,9 @@ export default {
                 });
 
                 const block = parseInt(result.data.result, 16);
-                if (this.blockHeight < block)
+                if (this.blockHeight < block) {
                     this.blockHeight = block;
+                }
 
                 this.endpoints[idx].latency = result.timings.elapsedTime;
                 this.endpoints[idx].block = block;

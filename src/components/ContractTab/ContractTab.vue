@@ -24,7 +24,9 @@ export default {
         abi() {
             const { abi } = this.contract;
 
-            if (!Array.isArray(abi)) return '';
+            if (!Array.isArray(abi)) {
+                return '';
+            }
 
             return JSON.stringify(this.contract.abi);
         },

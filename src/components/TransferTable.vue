@@ -125,8 +125,9 @@ export default {
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
             let result = await this.$evmEndpoint.get(this.getPath(props));
-            if (this.total === null)
+            if (this.total === null) {
                 this.pagination.rowsNumber = result.data.total.value;
+            }
 
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
@@ -137,11 +138,13 @@ export default {
             for (const transaction of result.data.transactions) {
                 try {
                     for (const log of transaction.logs) {
-                        if (this.expectedTopicLength !== log.topics.length)
+                        if (this.expectedTopicLength !== log.topics.length) {
                             continue;
+                        }
 
-                        if (!TRANSFER_SIGNATURES.includes(log.topics[0].substr(0, 10).toLowerCase()))
+                        if (!TRANSFER_SIGNATURES.includes(log.topics[0].substr(0, 10).toLowerCase())) {
                             continue;
+                        }
 
                         const address = `0x${log.address.substring(log.address.length - 40)}`;
                         let from, to;
@@ -155,8 +158,9 @@ export default {
                         if (
                             to.toLowerCase() !== this.address.toLowerCase() &&
                             from.toLowerCase() !== this.address.toLowerCase()
-                        )
+                        ) {
                             continue;
+                        }
 
                         const contract = await this.$contractManager.getContract(
                             ethers.utils.getAddress(address),

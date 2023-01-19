@@ -97,8 +97,9 @@ export default {
             return BigNumber.from(this.stlosBalance ?? '0').toString();
         },
         topInputInfoText() {
-            if (!this.isLoggedIn)
+            if (!this.isLoggedIn) {
                 return '';
+            }
 
             let balanceEth = ethers.utils.formatEther(this.stakedBalance);
 
@@ -113,7 +114,9 @@ export default {
             return this.$t('pages.staking.available', { balanceTlos });
         },
         topInputErrorText() {
-            if(this.isLoggedIn && !this.isNative) return;
+            if(this.isLoggedIn && !this.isNative) {
+                return;
+            }
             return this.isNative ?
                 this.$t('pages.staking.login_using_evm_wallet') :
                 this.$t('pages.staking.wallet_not_connected');
@@ -134,8 +137,9 @@ export default {
                 this.ctaIsLoading;
         },
         ctaText() {
-            if (this.ctaIsLoading)
-                return this.$t('pages.staking.loading'); // 'Loading...'
+            if (this.ctaIsLoading) {
+                return this.$t('pages.staking.loading');
+            } // 'Loading...'
             return this.isLoggedIn ? this.$t('pages.staking.unstake_stlos') : this.$t('pages.staking.connect_wallet');
         },
         remainingDeposits() {
@@ -238,8 +242,9 @@ export default {
             });
         },
         handleInputTop(newWei = '0') {
-            if (newWei === this.topInputAmount)
+            if (newWei === this.topInputAmount) {
                 return;
+            }
 
             this.bottomInputIsLoading = true;
             this.topInputAmount = newWei;
@@ -247,8 +252,9 @@ export default {
             this.debouncedTopInputHandler();
         },
         handleInputBottom(newWei = '0') {
-            if (newWei === this.bottomInputAmount)
+            if (newWei === this.bottomInputAmount) {
                 return;
+            }
 
             this.topInputIsLoading = true;
             this.bottomInputAmount = newWei;
