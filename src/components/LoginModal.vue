@@ -50,6 +50,11 @@ export default {
                     break;
                 default:
                     console.error(`Unknown web3 login type: ${loginObj.provider}`);
+                    this.$q.notify({
+                        position: 'top',
+                        message: this.$t('components.unknown_web3_login_type', {provider: loginObj.provider}),
+                        timeout: 6000,
+                    });
                     break;
                 }
             }
