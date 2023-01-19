@@ -90,9 +90,9 @@ export default {
 <template>
 <div class="c-token-list">
     <div
-        class="c-token-list__token-card"
         v-for="{ name, logoURI, address, balance, symbol, fullBalance, type, decimals } in tokens"
         :key="address"
+        class="c-token-list__token-card"
     >
         <q-card>
             <q-card-section class="u-flex--center-y">

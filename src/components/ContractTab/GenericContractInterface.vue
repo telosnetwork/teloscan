@@ -165,7 +165,7 @@ export default {
                 {{ $t('components.contract_tab.unverified_contract_source') }}
             </p>
             <p>
-                <router-link :to="{ name: 'sourcify' }" :key="$route.path">
+                <router-link :key="$route.path" :to="{ name: 'sourcify' }">
                     {{ $t('components.contract_tab.click_here') }}
                 </router-link>
                 {{ $t('components.contract_tab.upload_source_files') }}

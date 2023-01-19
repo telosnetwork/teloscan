@@ -286,9 +286,9 @@ export default {
                     </p>
                     <div class="u-flex--center">
                         <q-card
-                            class="c-login-modal__image-container"
                             v-for="wallet in $ual.authenticators"
                             :key="wallet.getStyle().text"
+                            class="cursor-pointer c-connect-button__image-container"
                             @click="ualLogin(wallet)"
                         >
                             <q-img
