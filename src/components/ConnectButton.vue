@@ -101,7 +101,6 @@ export default {
         },
 
         async selectMetaMask(){
-            debugger;
             if (this.isBraveBrowser && window.ethereum.isBraveWallet){
                 this.$q.notify({
                     position: 'top',
