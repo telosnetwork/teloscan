@@ -47,6 +47,7 @@ module.exports = {
         'vue/component-tags-order': ['error', {
             'order': ['script', 'template', 'style'],
         }],
+        'vue/multi-word-component-names': 'error',
         'max-len': ['error', { 'code': 120 }],
         'eol-last': ['error', 'always'],
         'object-curly-spacing': ['error', 'always'],
