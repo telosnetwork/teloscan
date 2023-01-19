@@ -56,7 +56,9 @@ export default {
     },
     async mounted() {
         this.compilerOptions = await getCompilerOptions();
-        if (this.$route.params.address) this.contractAddress = this.$route.params.address;
+        if (this.$route.params.address) {
+            this.contractAddress = this.$route.params.address;
+        }
     },
     methods: {
         isValidAddressFormat,

@@ -138,13 +138,15 @@ export default {
                 tryingToAddSecondDot ||
                 tryingToAddLeadingZeroes;
 
-            if (invalidKeystroke)
+            if (invalidKeystroke) {
                 event.preventDefault();
+            }
         },
         handleInput() {
             const emit = (val) => {
-                if (val !== this.modelValue)
+                if (val !== this.modelValue) {
                     this.$emit('update:modelValue', val);
+                }
             };
 
             const { input } = this.$refs;
@@ -156,8 +158,9 @@ export default {
             );
 
             if (['', null, undefined, zero, zeroDot, dot].includes(input.value)) {
-                if (input.value === dot)
+                if (input.value === dot) {
                     this.setInputValue(zeroDot);
+                }
 
                 emit(zero);
                 return;
@@ -176,8 +179,9 @@ export default {
             }
 
             // don't format or emit if the user is about to type a decimal
-            if (input.value[input.value.length - 1] === dot && caretPosition === input.value.length)
+            if (input.value[input.value.length - 1] === dot && caretPosition === input.value.length) {
                 return;
+            }
 
             let workingValue = input.value.replace(notIntegerOrDotRegex, '') ?? '';
             let workingValueAsWeiBn = parseUnits(workingValue, 'ether');

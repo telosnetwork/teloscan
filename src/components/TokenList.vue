@@ -34,11 +34,12 @@ export default {
             let tokens = tokenList.tokens;
             tokens = this.sortTokens(tokens);
             await Promise.all(tokens.map(async (token) => {
-                if (token.logoURI && token.logoURI.startsWith('ipfs://'))
+                if (token.logoURI && token.logoURI.startsWith('ipfs://')) {
                     token.logoURI = `https://ipfs.io/ipfs/${token.logoURI.replace(/ipfs:\/\//, '')}`;
-                else if (!token.logoURI)
+                } else if (!token.logoURI) {
                     // eslint-disable-next-line max-len
                     token.logoURI = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT28t_CidqCQ0st_OhY3MxnPKMFjclG9ppwWA&usqp=CAU';
+                }
 
                 const contract = await this.$contractManager.getContract(token.address);
                 const contractInstance = contract.getContractInstance();
@@ -55,11 +56,13 @@ export default {
         },
         sortTokens(tokens) {
             return tokens.sort((a, b) => {
-                if (a.symbol === 'WTLOS')
+                if (a.symbol === 'WTLOS') {
                     return -1;
+                }
 
-                if (b.symbol === 'WTLOS')
+                if (b.symbol === 'WTLOS') {
                     return 1;
+                }
 
                 if (a.tags.includes('stablecoin') && !b.tags.includes('stablecoin')) {
                     return -1;

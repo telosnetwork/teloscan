@@ -75,14 +75,16 @@ export default {
             return BigNumber.from(this.tlosBalance ?? '0');
         },
         usableWalletBalance() {
-            if (this.walletBalanceBn.lte(reservedForGasBn))
+            if (this.walletBalanceBn.lte(reservedForGasBn)) {
                 return '0';
+            }
 
             return this.walletBalanceBn.sub(reservedForGasBn).toString();
         },
         topInputInfoText() {
-            if (!this.isLoggedIn)
+            if (!this.isLoggedIn) {
                 return '';
+            }
 
             let balanceEth = ethers.utils.formatEther(this.usableWalletBalance);
 
@@ -100,12 +102,13 @@ export default {
             const walletBalanceBn = BigNumber.from(this.tlosBalance ?? '0');
 
             if (this.isLoggedIn) {
-                if (walletBalanceBn.lt(reservedForGasBn) && !this.isNative)
+                if (walletBalanceBn.lt(reservedForGasBn) && !this.isNative) {
                     return this.$t('pages.staking.insufficient_tlos_balance');
-                else if(this.isNative)
+                } else if(this.isNative) {
                     return this.$t('pages.staking.login_using_an_evm_wallet');
-                else
+                } else {
                     return '';
+                }
             }
 
             return this.$t('pages.staking.wallet_not_connected');
@@ -129,14 +132,16 @@ export default {
                 this.ctaIsLoading;
         },
         ctaText() {
-            if (this.ctaIsLoading)
+            if (this.ctaIsLoading) {
                 return this.$t('pages.staking.loading');
+            }
 
             if (this.isLoggedIn) {
-                if (this.walletBalanceBn.lt(reservedForGasBn))
+                if (this.walletBalanceBn.lt(reservedForGasBn)) {
                     return this.$t('pages.staking.get_more_tlos');
-                else
+                } else {
                     return this.$t('pages.staking.stake_tlos');
+                }
             }
 
             return this.$t('pages.staking.connect_wallet');
@@ -233,8 +238,9 @@ export default {
             );
         },
         handleInputTop(newWei = '0') {
-            if (newWei === this.topInputAmount)
+            if (newWei === this.topInputAmount) {
                 return;
+            }
 
             this.bottomInputIsLoading = true;
             this.topInputAmount = newWei;
@@ -242,8 +248,9 @@ export default {
             this.debouncedTopInputHandler();
         },
         handleInputBottom(newWei = '0') {
-            if (newWei === this.bottomInputAmount)
+            if (newWei === this.bottomInputAmount) {
                 return;
+            }
 
             this.topInputIsLoading = true;
             this.bottomInputAmount = newWei;

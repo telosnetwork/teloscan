@@ -38,8 +38,9 @@ export default {
             this.expand = !this.expand;
         },
         async setValues() {
-            if (!this.trx.parsedTransaction)
+            if (!this.trx.parsedTransaction) {
                 return;
+            }
 
             if (TRANSFER_SIGNATURES.includes(this.trx.parsedTransaction.sighash) && this?.contract?.token?.decimals) {
                 const wei = formatWei(this.trx.parsedTransaction.args[1], this.contract.token.decimals);

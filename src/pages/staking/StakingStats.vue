@@ -86,8 +86,9 @@ export default {
                 return;
             }
 
-            if (this.stlosTvl === null)
+            if (this.stlosTvl === null) {
                 return;
+            }
 
             try {
                 this.stlosApy = await fetchStlosApy(this.$telosApi);

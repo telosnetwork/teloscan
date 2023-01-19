@@ -21,8 +21,9 @@ export default {
         let read = [];
         let write = [];
         this.contract.abi.forEach((a) => {
-            if (a.type !== 'function')
+            if (a.type !== 'function') {
                 return;
+            }
 
             if (a.stateMutability === 'view') {
                 read.push(a);

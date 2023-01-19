@@ -76,8 +76,9 @@ export default {
                 if (newRoute !== oldRoute) {
                     const { hash: newHash } = newRoute;
 
-                    if (newRoute.name !== 'address' || !newHash)
+                    if (newRoute.name !== 'address' || !newHash) {
                         return;
+                    }
 
                     if (this.accountLoading && newHash === tabs.contract) {
                         // wait for account to load; this.isContract will not be set immediately on first load
@@ -89,8 +90,9 @@ export default {
                         !tabHashes.includes(newHash) ||
                         (newHash === tabs.contract && !this.isContract);
 
-                    if (newHashIsInvalid)
+                    if (newHashIsInvalid) {
                         this.$router.replace({ hash: tabs.transactions });
+                    }
                 }
             },
         },
@@ -146,7 +148,9 @@ export default {
             return this.$t('pages.tlos_balance', { balance: strBalance });
         },
         getAddressNativeExplorerURL() {
-            if (!this.telosAccount) return '';
+            if (!this.telosAccount) {
+                return '';
+            }
 
             return this.$t('pages.account_url', { domain: process.env.NETWORK_EXPLORER, account: this.telosAccount });
         },

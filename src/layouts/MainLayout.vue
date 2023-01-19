@@ -45,8 +45,9 @@ export default {
     },
     methods: {
         getLoginDisplay() {
-            if (this.isLoggedIn)
+            if (this.isLoggedIn) {
                 return this.isNative ? this.nativeAccount : this.address;
+            }
         },
 
         toggleDarkMode() {
@@ -80,15 +81,18 @@ export default {
                 // the drawer re-closes before it has had a chance to open
                 this.clickawayDisabled = true;
                 setTimeout(
-                    () => { this.clickawayDisabled = false; },
+                    () => {
+                        this.clickawayDisabled = false;
+                    },
                     400,
                 );
             }
             this.drawer = !this.drawer;
         },
         handleClickaway() {
-            if (this.drawer === true && !this.clickawayDisabled)
+            if (this.drawer === true && !this.clickawayDisabled) {
                 this.drawer = false;
+            }
         },
     },
 };

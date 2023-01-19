@@ -112,8 +112,7 @@ export default {
             await this.loadTransfers();
             this.setErrorMessage();
         },
-        async loadTransfers()
-        {
+        async loadTransfers() {
             this.transfers = [];
             for (const log of this.trx.logs) {
                 // ERC20, ERC721 & ERC1155 transfers (ERC721 & ERC20 have same first topic but ERC20 has 4 topics for
@@ -202,10 +201,14 @@ export default {
             }
         },
         async loadContract() {
-            if (this.trx.input_data === '0x') return;
+            if (this.trx.input_data === '0x') {
+                return;
+            }
 
             const contract = await this.$contractManager.getContract(this.trx.to);
-            if (!contract) return;
+            if (!contract) {
+                return;
+            }
 
             this.contract = contract;
             this.parsedTransaction = await this.contract.parseTransaction(this.trx.input_data);
@@ -217,16 +220,21 @@ export default {
             this.isContract = true;
         },
         setErrorMessage() {
-            if (this.trx.status !== 0)
+            if (this.trx.status !== 0) {
                 return;
+            }
 
             this.errorMessage = parseErrorMessage(this.trx.output);
         },
         getFunctionName() {
-            if (this.parsedTransaction) return this.parsedTransaction.name;
+            if (this.parsedTransaction) {
+                return this.parsedTransaction.name;
+            }
         },
         getFunctionParams() {
-            if (!this.parsedTransaction) return [];
+            if (!this.parsedTransaction) {
+                return [];
+            }
             let args = [];
             this.parsedTransaction.functionFragment.inputs.forEach((input, i) => {
                 args.push({

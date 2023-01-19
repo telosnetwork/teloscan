@@ -33,8 +33,9 @@ export default {
     },
     methods: {
         async search() {
-            if (!this.searchTerm)
+            if (!this.searchTerm) {
                 return;
+            }
 
             this.searchTerm = this.searchTerm.trim().replace(/\s/, '');
             if (this.searchTerm.startsWith('0x')) {

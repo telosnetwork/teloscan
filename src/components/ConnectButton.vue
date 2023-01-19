@@ -33,8 +33,9 @@ export default {
     },
     async mounted() {
         const loginData = localStorage.getItem('loginData');
-        if (!loginData)
+        if (!loginData) {
             return;
+        }
 
         const loginObj = JSON.parse(loginData);
         if (loginObj.type === LOGIN_EVM) {
@@ -70,8 +71,9 @@ export default {
         disconnect() {
             if (this.isNative) {
                 const loginData = localStorage.getItem('loginData');
-                if (!loginData)
+                if (!loginData) {
                     return;
+                }
 
                 const loginObj = JSON.parse(loginData);
                 const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);

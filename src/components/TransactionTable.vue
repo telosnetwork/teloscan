@@ -108,8 +108,9 @@ export default {
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             let result = await this.$evmEndpoint.get(this.getPath(props));
 
-            if (this.total === null)
+            if (this.total === null) {
                 this.pagination.rowsNumber = result.data.total.value;
+            }
 
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
@@ -125,14 +126,20 @@ export default {
                 try {
                     transaction.transfer = false;
                     transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
-                    if (transaction.input_data === '0x') continue;
-                    if(!transaction.to) continue;
+                    if (transaction.input_data === '0x') {
+                        continue;
+                    }
+                    if(!transaction.to) {
+                        continue;
+                    }
 
                     const contract = await this.$contractManager.getContract(
                         transaction.to,
                     );
 
-                    if (!contract) continue;
+                    if (!contract) {
+                        continue;
+                    }
 
                     const parsedTransaction = await contract.parseTransaction(
                         transaction.input_data,
@@ -178,11 +185,17 @@ export default {
                 rowsPerPage === 0 ? 500 : rowsPerPage
             }`;
             const filter = Object.assign({}, this.filter ? this.filter : {});
-            if (filter.address) path += `&address=${filter.address}`;
+            if (filter.address) {
+                path += `&address=${filter.address}`;
+            }
 
-            if (filter.block) path += `&block=${filter.block}`;
+            if (filter.block) {
+                path += `&block=${filter.block}`;
+            }
 
-            if (filter.hash) path += `&hash=${filter.hash}`;
+            if (filter.hash) {
+                path += `&hash=${filter.hash}`;
+            }
 
             path += `&skip=${(page - 1) * rowsPerPage}`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;

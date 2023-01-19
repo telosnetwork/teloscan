@@ -91,8 +91,9 @@ export default {
             'nativeAccount',
         ]),
         inputComponents() {
-            if (!Array.isArray(this.abi?.inputs))
+            if (!Array.isArray(this.abi?.inputs)) {
                 return [];
+            }
 
             const getExtraBindingsForType = ({ type, name }, index) => {
                 const label = `${name ? name : `Param ${index + 1}`}`;
@@ -176,10 +177,11 @@ export default {
         },
         setAmount() {
             const integerAmount = ethers.utils.parseUnits(this.amountInput + '', this.amountDecimals).toString();
-            if (this.amountParam === 'value')
+            if (this.amountParam === 'value') {
                 this.value = integerAmount;
-            else
+            } else {
                 this.params[this.amountParam] = integerAmount;
+            }
 
             this.clearAmount();
         },

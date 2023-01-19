@@ -39,8 +39,9 @@ export default class ContractManager {
     }
     async getFunctionIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
-        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, prefix))
+        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, prefix)) {
             return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
+        }
 
         try {
             const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`);
@@ -77,8 +78,9 @@ export default class ContractManager {
     }
     async getEventIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
-        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, prefix))
+        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, prefix)) {
             return new ethers.utils.Interface([this.eventInterfaces[prefix]]);
+        }
 
         try {
             const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`);
@@ -98,7 +100,9 @@ export default class ContractManager {
     }
 
     async getContractCreation(address) {
-        if (!address) return;
+        if (!address) {
+            return;
+        }
         try {
             const v2ContractResponse = await this.evmEndpoint.get(`/v2/evm/get_contract?contract=${address}`);
             return v2ContractResponse.data;
@@ -112,7 +116,9 @@ export default class ContractManager {
     // looking for a contract based on a token transfer event
     // handles erc721 & erc20 (w/ stubs for erc1155)
     async getContract(address, suspectedToken) {
-        if (!address) return;
+        if (!address) {
+            return;
+        }
         const addressLower = address.toLowerCase();
 
         // Get from already queried contracts, add token data if needed & not present
@@ -222,8 +228,7 @@ export default class ContractManager {
     async isTokenType(address, type){
         if(typeof type === 'undefined'){
             return false;
-        }
-        else if(type === 'erc721'){
+        } else if(type === 'erc721'){
             if(!await this.supportsInterface(address, '0x80ac58cd')){
                 return false;
             }
@@ -296,8 +301,9 @@ export default class ContractManager {
     }
 
     async getToken(address, suspectedType) {
-        if (!this.tokenList)
+        if (!this.tokenList) {
             await this.loadTokenList();
+        }
 
         let i = this.tokenList.tokens.length;
         while (i--) {
