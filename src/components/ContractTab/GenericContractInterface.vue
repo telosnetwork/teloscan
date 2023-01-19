@@ -231,8 +231,9 @@ export default {
             let file = e.target.files[0];
             let fileReader = new FileReader();
             fileReader.onload = (event) => {
+                let json = event.target.result;
                 try {
-                    let json = event.target.result;
+                    JSON.parse(json); // this will throw an error if the json is invalid
                     this.customAbiDefinition = json;
                 } catch (error) {
                     console.error(error);
