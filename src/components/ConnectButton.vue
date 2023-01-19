@@ -298,12 +298,16 @@ export default {
             <q-separator/>
             <q-tab-panels v-model="tab" animated>
                 <q-tab-panel name="web3">
-                    <q-card class="wallet-icon cursor-pointer" @click="injectedWeb3Login()">
-                        <q-img class="wallet-img" :src="metamaskLogo"></q-img>
+                    <q-card class="cursor-pointer c-connect-button__image-container" @click="injectedWeb3Login()">
+                        <q-img :src="metamaskLogo"
+                               height="64px"
+                               width="64px"></q-img>
                         <p>{{ !browserSupportsMetaMask ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
                     </q-card>
-                    <q-card v-if="isBraveBrowser" class="wallet-icon cursor-pointer" @click="injectedWeb3Login(true)">
-                        <q-img class="wallet-img" :src="braveBrowserLogo"></q-img>
+                    <q-card v-if="isBraveBrowser" class="cursor-pointer c-connect-button__image-container" @click="injectedWeb3Login(true)">
+                        <q-img :src="braveBrowserLogo"
+                               height="64px"
+                               width="64px"></q-img>
                         <p> Brave Wallet </p>
                     </q-card>
                 </q-tab-panel>
