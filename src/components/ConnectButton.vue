@@ -41,7 +41,6 @@ export default {
         const loginObj = JSON.parse(loginData);
         if (loginObj.type === LOGIN_EVM) {
             const provider = this.getInjectedProvider();
-            debugger;
             let checkProvider = new ethers.providers.Web3Provider(provider)
             const {chainId} = await checkProvider.getNetwork();
             if(loginObj.chain == chainId){
@@ -88,7 +87,6 @@ export default {
             this.$router.push(`/address/${this.address}`);
         },
         async injectedWeb3Login(braveBrowser = false) {
-            debugger;
             if (braveBrowser && !window.ethereum.isBraveWallet){
                 this.$q.notify({
                     position: 'top',
@@ -107,7 +105,6 @@ export default {
                 this.setLogin({
                     address,
                 })
-                debugger;
                 let provider = this.getInjectedProvider();
                 let checkProvider = new ethers.providers.Web3Provider(provider)
                 this.$providerManager.setProvider(provider);
