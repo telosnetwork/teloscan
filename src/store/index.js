@@ -1,8 +1,8 @@
 import { createStore } from 'vuex';
 
-import login from './login';
-import general from './general';
-import evm from './evm';
+import login from 'src/store/login';
+import general from 'src/store/general';
+import evm from 'src/store/evm';
 import { store } from 'quasar/wrappers';
 
 /*
