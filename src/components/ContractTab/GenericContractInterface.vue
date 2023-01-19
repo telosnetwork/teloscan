@@ -8,14 +8,14 @@
                     class="text-negative"
                     size="1.25rem"
                 />
-                This contract source has not been verified.
+                
+                {{ $t('components.contract_tab.unverified_contract_source') }}
             </p>
             <p>
-                Click <router-link :to="{ name: 'sourcify' }" :key="$route.path">
-                    here
+                <router-link :to="{ name: 'sourcify' }" :key="$route.path">
+                    {{ $t('components.contract_tab.click_here') }}
                 </router-link>
-                to upload source files and verify this contract.
-                Alternatively, you can interact with the contract using an arbitrary ABI:
+                {{ $t('components.contract_tab.upload_source_files') }}
             </p>
         </div>
     </div>
@@ -29,7 +29,7 @@
                     :outline="selectedAbi === abiOptions.erc20"
                     @click="selectedAbi = abiOptions.erc20"
                 >
-                    Use ERC20 ABI
+                    {{ $t('components.contract_tab.use_erc20_abi') }}
                 </q-btn>
                 <q-btn
                     push
@@ -37,7 +37,7 @@
                     :outline="selectedAbi === abiOptions.erc721"
                     @click="selectedAbi = abiOptions.erc721"
                 >
-                    Use ERC721 ABI
+                    {{ $t('components.contract_tab.use_erc721_abi') }}
                 </q-btn>
                 <q-btn
                     push
@@ -45,7 +45,7 @@
                     :outline="selectedAbi === abiOptions.custom"
                     @click="selectedAbi = abiOptions.custom"
                 >
-                    ABI from JSON
+                    {{ $t('components.contract_tab.abi_from_json') }}
                 </q-btn>
             </q-btn-group>
         </div>
@@ -82,7 +82,7 @@
             <template v-if="!!customAbiDefinition">
                 <template v-if="customAbiIsValidJSON">
                     <p class="q-mb-sm">
-                        ABI JSON Preview
+                        {{ $t('components.contract_tab.abi_json_preview') }}
                     </p>
                     <JsonViewer
                         :value="JSON.parse(customAbiDefinition)"
@@ -94,14 +94,14 @@
                         v-if="!showAbiFunctions"
                         class="text-negative"
                     >
-                        Provided ABI is either invalid or contains no function definitions
+                        {{ $t('components.contract_tab.provided_abi_invalid') }}
                     </p>
                 </template>
                 <p
                     v-else
                     class="text-negative"
                 >
-                    Provided JSON is invalid
+                    {{ $t('components.contract_tab.provided_json_invalid') }}
                 </p>
             </template>
         </div>
@@ -115,14 +115,14 @@
                     :outline="displayWriteFunctions === false"
                     @click="displayWriteFunctions = false"
                 >
-                    Read functions
+                    {{ $t('components.contract_tab.read_functions') }}
                 </q-btn>
                 <q-btn
                     no-caps
                     :outline="displayWriteFunctions === true"
                     @click="displayWriteFunctions = true"
                 >
-                    Write functions
+                    {{ $t('components.contract_tab.write_functions') }}
                 </q-btn>
             </q-btn-group>
 
@@ -280,7 +280,7 @@ export default {
             console.assert(typeof abi.map === 'function', 'ERROR: abi is not an array');
 
             this.contract = new Contract({
-                name: 'Unverified contract',
+                name: this.$t('components.contract_tab.unverified_contract'),
                 address: this.address,
                 abi,
                 manager: this.$contractManager,

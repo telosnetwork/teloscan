@@ -7,7 +7,7 @@
                 {{ fragment.name }}
             </strong>
             <strong v-else>
-                Unknown ({{ fragment.sig }})
+                {{ $t('components.transaction.unknown') }} ({{ fragment.sig }})
             </strong>
         </span>
         <small v-if="fragment.contract">
@@ -110,7 +110,7 @@
             <div v-if="fragment.value">
                 <div class="fit row justify-start items-start content-start">
                     <div class="col-4">
-                        value (uint256):
+                        {{ $t('components.transaction.value_uint256') }}
                     </div>
                     <div class="col-8">
                         {{ fragment.value }} TLOS

@@ -60,7 +60,7 @@
                             class="separator"
                         >
                             <q-item-section>
-                                <q-item-label class="flex items-center"><img class="grayscale" :src="stlosLogo" width="14" /> <span class="q-pl-sm">Stake Telos</span> </q-item-label>
+                                <q-item-label class="flex items-center"><img class="grayscale" :src="stlosLogo" width="14" /> <span class="q-pl-sm">{{  $t('layouts.stake_telos') }}</span> </q-item-label>
                             </q-item-section>
                         </q-item>
                         <q-item
@@ -69,7 +69,7 @@
                             @click="routerTo('/health')"
                         >
                             <q-item-section>
-                                <q-item-label class="flex items-center"><q-icon name="monitor_heart" /> <span class="q-pl-sm">Health status</span></q-item-label>
+                                <q-item-label class="flex items-center"><q-icon name="monitor_heart" /> <span class="q-pl-sm">{{  $t('layouts.health_status') }}</span> </q-item-label>
                             </q-item-section>
                         </q-item> 
                         <q-item
@@ -79,7 +79,7 @@
                             @click="goTo('https://teloscan.io/')"
                         >
                             <q-item-section>
-                                <q-item-label class="flex items-center"><q-icon name="swap_horiz" />  <span class="q-pl-sm">Teloscan Mainnet</span></q-item-label>
+                                <q-item-label class="flex items-center"><q-icon name="swap_horiz" />  <span class="q-pl-sm">{{  $t('layouts.teloscan_mainnet') }}</span> </q-item-label>
                             </q-item-section>
                         </q-item>
 
@@ -90,7 +90,7 @@
                             @click="goTo('https://testnet.teloscan.io/')"
                         >
                             <q-item-section>
-                                <q-item-label class="flex items-center"><q-icon name="swap_horiz" />  <span class="q-pl-sm"> Teloscan Testnet</span> </q-item-label>
+                                <q-item-label class="flex items-center"><q-icon name="swap_horiz" />  <span class="q-pl-sm">{{  $t('layouts.teloscan_testnet') }}</span> </q-item-label>
                             </q-item-section>
                         </q-item>
                     </q-list>

@@ -11,39 +11,6 @@ const TRANSFER_EVENT_ERC20_SIGNATURE = '0xddf252ad1be2c89b69c2b068fc378daa952ba7
 const TRANSFER_EVENT_ERC1155_SIGNATURE = '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62';
 const TOKEN_ID_TRUNCATE_LENGTH = 66;
 
-// TODO: Add icon column and render it
-const columns = [
-    {
-        name: 'hash',
-        label: 'TX Hash',
-        align: 'left',
-    },
-    {
-        name: 'date',
-        label: 'Date',
-        align: 'left',
-    },
-    {
-        name: 'from',
-        label: 'From',
-        align: 'left',
-    },
-    {
-        name: 'to',
-        label: 'To',
-        align: 'left',
-    },
-    {
-        name: 'value',
-        label: 'Value',
-        align: 'left',
-    },{
-        name: 'token',
-        label: 'Token',
-        align: 'left',
-    },
-];
-
 export default {
     name: 'TransferTable',
     components: {
@@ -70,6 +37,40 @@ export default {
         },
     },
     data() {
+        // TODO: Add icon column and render it
+        const columns = [
+            {
+                name: 'hash',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'date',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'from',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'to',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'value',
+                label: '',
+                align: 'left',
+            },{
+                name: 'token',
+                label: '',
+                align: 'left',
+            },
+        ];
+
+
         return {
             rows: [],
             columns,
@@ -89,6 +90,15 @@ export default {
             tokenList: {},
         };
     },
+    async created() {
+        // initialization of the translated texts
+        this.columns[0].label = this.$t('components.tx_hash');
+        this.columns[1].label = this.$t('components.date');
+        this.columns[2].label = this.$t('components.from');
+        this.columns[3].label = this.$t('components.to');
+        this.columns[4].label = this.$t('components.value');
+        this.columns[5].label = this.$t('components.token');
+    },
     mounted() {
         switch (this.tokenType) {
         case 'erc20':
@@ -101,7 +111,7 @@ export default {
             this.expectedTopicLength = 4;
             break;
         default:
-            throw new Error(`Unsupported token type: ${this.tokenType}`);
+            throw new Error(this.$t('components.unsupported_token_type', {tokenType: this.tokenType}));
         }
 
         this.onRequest({
@@ -156,14 +166,14 @@ export default {
                             if (token && typeof token.decimals === 'number') {
                                 valueDisplay = formatWei(log.data, token.decimals)
                             } else {
-                                valueDisplay = 'Unknown precision';
+                                valueDisplay = this.$t('components.unknown_precision');
                             }
                         } else {
                             let tokenId = (this.tokenType === 'erc1155') ? BigNumber.from(log.data.substr(0, TOKEN_ID_TRUNCATE_LENGTH)).toString() : BigNumber.from(log.topics[3]).toString();
                             if(tokenId.length > 15){
                                 tokenId = tokenId.substr(0, 15) + '...'
                             }
-                            valueDisplay = `Id #${ tokenId }`;
+                            valueDisplay = this.$t('components.token_id', {tokenId});
                         }
 
                         const transfer = {
@@ -179,6 +189,11 @@ export default {
                     console.error(
                         `Failed to parse data for transaction, error was: ${e.message}`,
                     );
+                    // notify the user
+                    this.$q.notify({
+                        message: this.$t('components.failed_to_parse_transaction', {message: e.message}),
+                        type: 'negative',
+                    });
                 }
             }
 
@@ -241,20 +256,20 @@ q-table(
           v-if="col.name==='date'"
           class=""
         )
-          q-tooltip(anchor="bottom middle" self="bottom middle") Click to change format
+          q-tooltip(anchor="bottom middle" self="bottom middle") {{ $t('components.click_to_change_format') }}
         | {{ col.label }}
         template(
           v-if="col.name==='method'"
         )
           q-icon(name="fas fa-info-circle").info-icon
-            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") Function executed based on decoded input data. For unidentified function, method ID is displayed instead.
+            q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") {{ $t('components.func_exed_based_on_dec_data') }}
 
     template(v-slot:body="props")
         q-tr( :props="props" )
             q-td( key="hash" :props="props" )
                 transaction-field( :transaction-hash="props.row.hash" )
             q-td( key="date" :props="props" )
-                date-field( :epoch="props.row.epoch", :showAge="showAge" )
+                date-field( :epoch="props.row.epoch" )
             q-td( key="from" :props="props" )
                 address-field( :address="props.row.from" )
             q-td( key="to" :props="props" )
