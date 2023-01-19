@@ -96,15 +96,12 @@ export default {
                 });
                 return;
             }
+
             await this.injectedWeb3Login();
         },
-        async injectedWeb3Login() {
 
-            if (!this.browserSupportsMetaMask && !this.isBraveBrowser){
-                window.open('https://metamask.app.link/dapp/teloscan.io');
-                return;
-            }
-
+        async selectMetaMask(){
+            debugger;
             if (this.isBraveBrowser && window.ethereum.isBraveWallet){
                 this.$q.notify({
                     position: 'top',
@@ -114,6 +111,15 @@ export default {
                 return;
             }
 
+            if (!this.browserSupportsMetaMask){
+                window.open('https://metamask.app.link/dapp/teloscan.io');
+                return;
+            }
+
+            await this.injectedWeb3Login();
+        },
+
+        async injectedWeb3Login() {
             const address = await this.getInjectedAddress();
             if (address) {
                 this.setLogin({
@@ -304,7 +310,7 @@ export default {
             <q-separator/>
             <q-tab-panels v-model="tab" animated>
                 <q-tab-panel name="web3">
-                    <q-card class="cursor-pointer c-connect-button__image-container" @click="injectedWeb3Login()">
+                    <q-card class="cursor-pointer c-connect-button__image-container" @click="selectMetaMask()">
                         <q-img :src="metamaskLogo"
                                height="64px"
                                width="64px"></q-img>
