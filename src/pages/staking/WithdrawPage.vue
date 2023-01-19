@@ -115,19 +115,23 @@ export default {
         columns: [
             {
                 name: 'amount',
-                label: 'Amount',
+                label: '',
                 field: 'amount',
                 sortable: true,
             },
             {
                 name: 'time',
-                label: 'Available to Withdraw',
+                label: '',
                 field: 'until',
                 sortable: true,
             },
         ],
         showAge: true,
     }),
+    created() {
+        this.columns[0].label = this.$t('pages.staking.amount');
+        this.columns[1].label = this.$t('pages.staking.available_to_withdraw');
+    },
     computed: {
         ...mapGetters('login', ['isLoggedIn', 'isNative']),
         withdrawDisabled(){

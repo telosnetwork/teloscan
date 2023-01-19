@@ -14,7 +14,7 @@
             @click="goToAddress"
         />
         <q-tooltip>
-            Go to Address Details
+            {{ $t('compontns.header.goto_address_details') }}
         </q-tooltip>
     </div>
 
@@ -26,7 +26,7 @@
             @click="copy"
         />
         <q-tooltip>
-            Copy Address
+            {{ $t('components.header.copy_address') }}
         </q-tooltip>
     </div>
 </div>
@@ -66,7 +66,7 @@ export default {
 
             this.$q.notify({
                 position: 'bottom',
-                message: 'Address copied',
+                message: this.$t('components.header.address_copied'),
                 color: 'green',
             });
         },
