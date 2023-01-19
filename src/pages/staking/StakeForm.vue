@@ -102,6 +102,7 @@
         </q-card>
     </q-dialog>
 </div>
+<login-modal :show="displayLoginModal" @hide="displayLoginModal = false" />
 </template>
 
 <script>
@@ -118,7 +119,7 @@ import { getClientIsApple, WEI_PRECISION } from 'src/lib/utils';
 
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import TransactionField from 'components/TransactionField';
-import { triggerLogin } from 'components/ConnectButton';
+import LoginModal from 'components/LoginModal.vue';
 
 const reservedForGasBn = BigNumber.from('10').pow(WEI_PRECISION);
 
@@ -126,6 +127,7 @@ export default {
     name: 'StakeForm',
     components: {
         BaseStakingForm,
+        LoginModal,
         TransactionField,
     },
     props: {
@@ -154,6 +156,7 @@ export default {
     data: () => ({
         MetaMaskLogo,
         displayConfirmModal: false,
+        displayLoginModal: false,
         resultHash: null,
         header: '',
         subheader: '',
@@ -357,8 +360,8 @@ export default {
             this.debouncedBottomInputHandler();
         },
         handleCtaClick() {
-            if (!this.isLoggedIn){
-                triggerLogin();
+            if (!this.isLoggedIn) {
+                this.displayLoginModal = true;
                 return;
             }
 
