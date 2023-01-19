@@ -87,8 +87,16 @@ export default {
         goToAddress() {
             this.$router.push(`/address/${this.address}`);
         },
-        async injectedWeb3Login() {
+        async injectedWeb3Login(braveBrowser = false) {
             debugger;
+            if (braveBrowser && !window.ethereum.isBraveWallet){
+                this.$q.notify({
+                    position: 'top',
+                    message: this.$t('components.disable_wallet_extensions'),
+                    timeout: 6000,
+                });
+                return;
+            }
             if (!this.browserSupportsMetaMask || !this.isBraveBrowser) {
                 window.open('https://metamask.app.link/dapp/teloscan.io');
                 return;
@@ -178,6 +186,7 @@ export default {
             }
         },
         getInjectedProvider() {
+            // window.ethereum.isMetaMask includes Brave Wallet
             const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
                 window.ethereum :
                 null
@@ -289,7 +298,7 @@ export default {
                         <q-img class="wallet-img" :src="metamaskLogo"></q-img>
                         <p>{{ !browserSupportsMetaMask ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
                     </q-card>
-                    <q-card v-if="isBraveBrowser" class="wallet-icon cursor-pointer" @click="injectedWeb3Login()">
+                    <q-card v-if="isBraveBrowser" class="wallet-icon cursor-pointer" @click="injectedWeb3Login(true)">
                         <q-img class="wallet-img" :src="braveBrowserLogo"></q-img>
                         <p> Brave Wallet </p>
                     </q-card>
