@@ -35,7 +35,7 @@
                     {{ $t('pages.staking.confirm_unstake_1a') }}
                     <span class="text-primary">{{ unstakePeriodPretty }}</span>,
                     {{ $t('pages.staking.confirm_unstake_1b') }}
-                    
+
                 </p>
                 <p v-if="remainingDeposits < 10">
                     {{ $t('pages.staking.confirm_unstake_2a') }}
@@ -43,14 +43,14 @@
                     {{ $t('pages.staking.confirm_unstake_2b') }}
 
                 </p>
-                {{ $t('pages.staking.confirm_unstake_3') }}
+                {{ $t('pages.staking.stake_tlos_confirm_3') }}
             </q-card-section>
 
             <q-card-actions align="right" class="q-pb-md q-px-md">
                 <q-btn
                     v-close-popup
                     flat
-                    :label="$t('pages.staking.cancel')"
+                    :label="$t('global.cancel')"
                     color="negative"
                 />
                 <q-btn
@@ -216,7 +216,7 @@ export default {
         this.bottomInputLabel = this.$t('pages.staking.receive_tlos');
         this.columns[0].label = this.$t('pages.staking.amount');
         this.columns[1].label = this.$t('pages.staking.time_remaining');
-        
+
         try {
             this.maxDeposits = (await this.escrowContractInstance.maxDeposits()).toNumber();
         } catch (error) {

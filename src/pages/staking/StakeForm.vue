@@ -13,7 +13,7 @@
                 <q-btn
                     flat
                     color="black"
-                    :label="$t('pages.staking.dismiss')"
+                    :label="$t('global.dismiss')"
                     @click="hideClaimBanner"
                 />
                 <q-btn
@@ -88,7 +88,7 @@
                 <q-btn
                     v-close-popup
                     flat
-                    :label="$t('pages.staking.cancel')"
+                    :label="$t('global.cancel')"
                     color="negative"
                 />
                 <q-btn
