@@ -231,11 +231,15 @@ export default {
             let file = e.target.files[0];
             let fileReader = new FileReader();
             fileReader.onload = (event) => {
-                let json = event.target.result;
                 try {
+                    let json = event.target.result;
                     this.customAbiDefinition = json;
                 } catch (error) {
-                    console.log(error);
+                    console.error(error);
+                    this.$q.notify({
+                        message: 'Invalid JSON file',
+                        color: 'negative',
+                    });
                 }
             }
             fileReader.readAsText(file);
