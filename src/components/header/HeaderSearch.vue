@@ -48,7 +48,7 @@ export default {
 
                     this.$q.notify({
                         position: 'top',
-                        message: `Search for EVM address linked to ${this.searchTerm} native account failed.`,
+                        message: this.$('components.header.address_not_found', { account: this.searchTerm }),
                         timeout: this.TIME_DELAY,
                     });
                     return;
@@ -60,7 +60,7 @@ export default {
 
             this.$q.notify({
                 position: 'top',
-                message: 'Search failed, please enter a valid search term.',
+                message: this.$('components.header.search_failed'),
                 timeout: this.TIME_DELAY,
             });
         },
@@ -92,7 +92,7 @@ export default {
         :bg-color="$q.dark.isActive ? 'grey-9' : 'grey-3'"
         color="black"
         hide-bottom-space
-        placeholder="Address, Tx, Block"
+        :placeholder="$t('components.header.search_placeholder')"
         @keydown.enter="search"
     >
         <template v-slot:append>

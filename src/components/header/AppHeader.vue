@@ -57,7 +57,7 @@
                     class="c-header__menu-item-icon"
                     size="sm"
                 />
-                Sign {{ isLoggedIn ? 'Out' : 'In'}}
+                {{ isLoggedIn ? $t('components.header.sign_out') : $t('components.header.sign_in') }}
             </li>
 
             <q-separator class="c-header__menu-separator"/>
@@ -66,7 +66,7 @@
                 class="c-header__menu-li cursor-pointer"
                 tabindex="0"
                 role="link"
-                aria-label="Go to Staking"
+                :arial-label="$t('components.header.goto_staking')"
                 @keydown.enter="goTo({ name: 'staking' })"
                 @click="goTo({ name: 'staking' })"
             >
@@ -76,7 +76,7 @@
                     class="c-header__menu-item-icon c-header__menu-item-icon--stlos"
                     width="24"
                 >
-                Liquid Staking
+                {{ $t('components.header.liq_staking') }}
             </li>
 
             <q-separator class="c-header__menu-separator"/>
@@ -97,7 +97,7 @@
                         @keydown.enter="advancedMenuExpanded = !advancedMenuExpanded"
                         @click="advancedMenuExpanded = !advancedMenuExpanded"
                     >
-                        Advanced
+                        {{ $t('components.header.advanced') }}
 
                         <q-icon
                             :name="advancedMenuExpanded ? 'expand_less' : 'expand_more'"
@@ -109,7 +109,7 @@
                         <li
                             class="c-header__menu-li"
                             tabindex="0"
-                            aria-label="go to Heath Monitor page"
+                            :aria-label="`${$t('components.header.goto_health_monitor')}`"
                             role="link"
                             @keydown.enter="goTo('/health')"
                             @click="goTo('/health')"
@@ -119,13 +119,14 @@
                                 class="c-header__menu-item-icon"
                                 size="sm"
                             />
-                            Health Status
+                            {{ $t('components.header.health_monitor') }}
+
                         </li>
                         <li
                             class="c-header__menu-li"
                             tabindex="0"
-                            :aria-label="`go to ${isTestnet ? 'main net' : 'test net'}`"
                             role="link"
+                            :aria-label="isTestnet ? $t('components.header.goto_mainnet') : $t('components.header.goto_testnet')"
                             @keydown.enter="goTo(isTestnet ? 'https://teloscan.io' : 'https://testnet.teloscan.io')"
                             @click="goTo(isTestnet ? 'https://teloscan.io' : 'https://testnet.teloscan.io')"
                         >
@@ -144,7 +145,7 @@
                 <li
                     class="c-header__menu-li c-header__menu-li--advanced-menu-mobile"
                     tabindex="0"
-                    aria-label="go to Heath Monitor page"
+                    :aria-label="$t('components.header.goto_health_monitor')"
                     role="link"
                     @keydown.enter="goTo('/health')"
                     @click="goTo('/health')"
@@ -154,7 +155,7 @@
                         class="c-header__menu-item-icon"
                         size="sm"
                     />
-                    Health Status
+                    {{ $t('components.header.health_status') }}
                 </li>
                 <li
                     class="c-header__menu-li c-header__menu-li--advanced-menu-mobile"
@@ -189,7 +190,7 @@
                     class="c-header__menu-item-icon"
                     size="sm"
                 />
-                {{ $q.dark.isActive ? 'Light' : 'Dark'}} Mode
+                {{ $q.dark.isActive ? $t('components.header.light_mode') : $t('components.header.dark_mode') }}
             </li>
         </ul>
     </div>
