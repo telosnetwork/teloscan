@@ -78,5 +78,8 @@ module.exports = {
             'svg': 'always',
         }],
         'vue/multi-word-component-names': 'error',
+        'vue/no-static-inline-styles': ['error', {
+            'allowBinding': false,
+        }],
     },
 };
