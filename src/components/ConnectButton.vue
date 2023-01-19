@@ -89,7 +89,7 @@ export default {
         },
         async injectedWeb3Login() {
             debugger;
-            if (!this.browserSupportsMetaMask) {
+            if (!this.browserSupportsMetaMask || !this.isBraveBrowser) {
                 window.open('https://metamask.app.link/dapp/teloscan.io');
                 return;
             }
