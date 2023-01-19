@@ -258,18 +258,18 @@ export default {
     />
 
     <q-btn-dropdown
+        v-else
         flat
         round
-        v-else
         :label="getLoginDisplay()"
     >
         <q-list>
-            <q-item clickable v-close-popup @click="goToAddress()">
+            <q-item v-close-popup clickable @click="goToAddress()">
                 <q-item-section>
                     <q-item-label>{{ $t('components.view_address') }}</q-item-label>
                 </q-item-section>
             </q-item>
-            <q-item clickable v-close-popup @click="disconnect()">
+            <q-item v-close-popup clickable @click="disconnect()">
                 <q-item-section>
                     <q-item-label>{{ $t('components.disconnect') }}</q-item-label>
                 </q-item-section>
@@ -301,9 +301,9 @@ export default {
                     </p>
                     <div class="u-flex--center">
                         <q-card
-                            class="cursor-pointer c-connect-button__image-container"
                             v-for="wallet in $ual.authenticators"
                             :key="wallet.getStyle().text"
+                            class="cursor-pointer c-connect-button__image-container"
                             @click="ualLogin(wallet)"
                         >
                             <q-img

@@ -105,8 +105,8 @@ export default {
             <q-toolbar class="text-white toolbar transparent">
                 <div class="q-py-sm">
                     <router-link
-                        to="/"
                         id="logo"
+                        to="/"
                         class="row items-center q-gutter-x-xs"
                     >
                         <div class="logo-container">
@@ -156,8 +156,8 @@ export default {
                         <q-item
                             v-close-popup
                             clickable
-                            @click="routerTo('/staking')"
                             class="separator"
+                            @click="routerTo('/staking')"
                         >
                             <q-item-section>
                                 <q-item-label class="flex items-center">

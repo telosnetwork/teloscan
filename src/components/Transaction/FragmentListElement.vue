@@ -78,7 +78,7 @@ export default {
 </script>
 
 <template>
-<div class="c-fragment-list-element" :style="depthStyle" v-if="fragment"  >
+<div v-if="fragment" class="c-fragment-list-element" :style="depthStyle"  >
     <div :class="fragmentClass" @click="expanded = !expanded">
         <span class="row items-center">
             <q-icon :name="arrowIcon" size="sm" />
@@ -103,7 +103,7 @@ export default {
             />
         </small>
     </div>
-    <div class="q-pl-md" v-if="expanded">
+    <div v-if="expanded" class="q-pl-md">
         <div v-if="fragment?.name" :key="fragment.name">
             <div
                 v-for="(param, index) in inputs"
@@ -131,9 +131,9 @@ export default {
                     <div v-else-if="param.type === 'uint256' || param.type === 'uint128'"  class="word-break">
                         <div v-if="fragment.isTransfer && fragment.token">
                             <div
-                                @click="showWei = !showWei"
-                                class="clickable"
                                 v-if="!fragment.token.type || fragment.token.type === 'erc20'"
+                                class="clickable"
+                                @click="showWei = !showWei"
                             >
                                 <span v-if="!showWei">
                                     <span> {{ formatWei(fragment.args[index], fragment.token.decimals) }}</span>
@@ -169,12 +169,12 @@ export default {
                         <div>[ </div>
                         <div
                             v-for="(i) in fragment.args[index].length - 1"
+                            :key="param.type + i"
                             :class="
                                 (expanded_parameters[index]['expanded']) ?
                                     'q-pl-xl word-break' :
                                     'q-pl-xl word-break hidden'
                             "
-                            :key="param.type + i"
                         >
                             {{ i }},
                         </div>
@@ -191,12 +191,12 @@ export default {
                         <div>[ </div>
                         <div
                             v-for="i in fragment.args[index].length - 1"
+                            :key="param.type + i"
                             :class="
                                 (expanded_parameters[index]['expanded']) ?
                                     'q-pl-xl word-break' :
                                     'q-pl-xl word-break hidden'
                             "
-                            :key="param.type + i"
                         >
                             <div v-if="param.arrayChildren.type === 'address'">
                                 <address-field

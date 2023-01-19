@@ -97,27 +97,27 @@ export default {
         <div class="q-pa-md">
             <div class="row">
                 <div class="col-6">
-                    <input v-model="allRequired" type="checkbox" id="allRequired">
+                    <input id="allRequired" v-model="allRequired" type="checkbox">
                     <label for="allRequired">&nbsp;All inputs required?</label>
                     <br>
 
-                    <input v-model="allDisabled" type="checkbox" id="allDisabled">
+                    <input id="allDisabled" v-model="allDisabled" type="checkbox">
                     <label for="allDisabled">&nbsp;All inputs disabled?</label>
                     <br>
 
-                    <input v-model="allReadonly" type="checkbox" id="allReadonly">
+                    <input id="allReadonly" v-model="allReadonly" type="checkbox">
                     <label for="allReadonly">&nbsp;All inputs readonly?</label>
                     <br>
 
-                    <input v-model="allArraysFixedSize" type="checkbox" id="allArraysFixedSize">
+                    <input id="allArraysFixedSize" v-model="allArraysFixedSize" type="checkbox">
                     <label for="allArraysFixedSize">&nbsp;All array inputs have fixed size?</label>
                     <br>
 
-                    <select v-model="selectedSignedIntSizeOption" id="signedIntSizeOptions">
+                    <select id="signedIntSizeOptions" v-model="selectedSignedIntSizeOption">
                         <option
-                            :value="option"
-                            :key="option"
                             v-for="option in signedIntSizeOptions"
+                            :key="option"
+                            :value="option"
                         >
                             {{ option }}
                         </option>
@@ -125,11 +125,11 @@ export default {
                     <label for="signedIntSizeOptions">&nbsp;Bits for <code>int</code>-based inputs</label>
                     <br>
 
-                    <select v-model="selectedUnsignedIntSizeOption" id="unsignedIntSizeOptions">
+                    <select id="unsignedIntSizeOptions" v-model="selectedUnsignedIntSizeOption">
                         <option
-                            :value="option"
-                            :key="option"
                             v-for="option in unsignedIntSizeOptions"
+                            :key="option"
+                            :value="option"
                         >
                             {{ option }}
                         </option>
