@@ -280,14 +280,14 @@ export default {
     <q-dialog v-model="showLogin">
         <q-card rounded class="c-connect-button__modal-inner">
             <q-tabs v-model="tab">
-                <q-tab name="web3" :label="$t('components.evm_wallets')"></q-tab>
-                <q-tab name="native" :label="$t('components.advanced')"></q-tab>
+                <q-tab name="web3" :label="$t('components.evm_wallets')" />
+                <q-tab name="native" :label="$t('components.advanced')" />
             </q-tabs>
             <q-separator/>
             <q-tab-panels v-model="tab" animated>
                 <q-tab-panel name="web3">
                     <q-card class="wallet-icon cursor-pointer" @click="injectedWeb3Login()">
-                        <q-img class="wallet-img" :src="metamaskLogo"></q-img>
+                        <q-img class="wallet-img" :src="metamaskLogo" />
                         <p>{{ !browserSupportsMetaMask ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
                     </q-card>
                 </q-tab-panel>

@@ -161,7 +161,7 @@ export default {
                         >
                             <q-item-section>
                                 <q-item-label class="flex items-center">
-                                    <img class="grayscale" :src="stlosLogo" width="14" />
+                                    <img class="grayscale" :src="stlosLogo" width="14">
                                     <span class="q-pl-sm">{{  $t('layouts.stake_telos') }}</span>
                                 </q-item-label>
                             </q-item-section>
@@ -219,7 +219,7 @@ export default {
             'home': onHomePage,
             'testnet': !mainnet
         }"
-    />
+    ></div>
 
     <q-page-container class="flex flex-center">
         <router-view />

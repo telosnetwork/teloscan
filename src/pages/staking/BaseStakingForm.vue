@@ -147,7 +147,7 @@ export default {
                 </div>
 
                 <div class="col-12 u-flex--center">
-                    <div class="c-base-staking-form__decorative-chevron" />
+                    <div class="c-base-staking-form__decorative-chevron"></div>
                 </div>
 
                 <div class="col-12 q-mb-md">
