@@ -68,5 +68,6 @@ module.exports = {
             'patterns': ['.*'], // disallow relative imports
         }],
         'no-return-assign': ['error', 'always'],
+        'no-param-reassign': 'error',
     },
 };
