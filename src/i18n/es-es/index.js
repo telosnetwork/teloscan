@@ -182,7 +182,7 @@ export default {
         connect_wallet: 'Conectar billetera',
         view_address: 'Ver dirección',
         disconnect: 'Desconectar',
-        disable_wallet_extensions: 'Desactivar la extensión MetaMask para utilizar el monedero Brave',
+        disable_wallet_extensions: 'Desactiva los monederos de extensión o establece Brave Wallet como predeterminado en la configuración del monedero del navegador para utilizar Brave Wallet.',
         evm_wallets: 'Billeteras EVM',
         advanced: 'Avanzado',
         continue_on_metamask: 'Continuar en Metamask',

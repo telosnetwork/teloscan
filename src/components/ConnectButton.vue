@@ -87,6 +87,9 @@ export default {
             this.$router.push(`/address/${this.address}`);
         },
         async injectedWeb3Login(braveBrowser = false) {
+            debugger;
+            console.log(braveBrowser);
+            console.log(window.ethereum.isBraveWallet);
             if (braveBrowser && !window.ethereum.isBraveWallet){
                 this.$q.notify({
                     position: 'top',
@@ -106,6 +109,7 @@ export default {
                     address,
                 })
                 let provider = this.getInjectedProvider();
+                debugger;
                 let checkProvider = new ethers.providers.Web3Provider(provider)
                 this.$providerManager.setProvider(provider);
                 const {chainId} = await checkProvider.getNetwork();
@@ -152,6 +156,7 @@ export default {
             this.showLogin = false;
         },
         async getInjectedAddress() {
+            debugger;
             const provider = this.getInjectedProvider();
             let checkProvider = new ethers.providers.Web3Provider(provider);
 
@@ -164,8 +169,10 @@ export default {
                 checkProvider = await this.ensureCorrectChain(checkProvider);
                 return accounts[0];
             } else {
+                debugger;
+                console.dir(provider);
                 const accessGranted = await provider.request({ method: 'eth_requestAccounts' });
-
+                debugger;
                 if (accessGranted.length < 1) {
                     return false;
                 }

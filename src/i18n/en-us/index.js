@@ -185,7 +185,7 @@ export default {
         connect_wallet: 'Connect Wallet',
         view_address: 'View Address',
         disconnect: 'Disconnect',
-        disable_wallet_extenstions: 'Disable MetaMask extension to use Brave wallet',
+        disable_wallet_extensions: 'Disable extension wallets or set Brave Wallet as default in browser wallet settings to use Brave Wallet',
         evm_wallets: 'EVM Wallets',
         advanced: 'Advanced',
         continue_on_metamask: 'Continue on Metamask',
