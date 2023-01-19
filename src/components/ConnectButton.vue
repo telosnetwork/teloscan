@@ -86,11 +86,9 @@ export default {
         goToAddress() {
             this.$router.push(`/address/${this.address}`);
         },
-        async injectedWeb3Login(braveBrowser = false) {
-            debugger;
-            console.log(braveBrowser);
-            console.log(window.ethereum.isBraveWallet);
-            if (braveBrowser && !window.ethereum.isBraveWallet){
+        async selectBraveWallet(){
+            // Brave Wallet is not set as default and/or has other extensions enabled
+            if (!window.ethereum.isBraveWallet){
                 this.$q.notify({
                     position: 'top',
                     message: this.$t('components.disable_wallet_extensions'),
@@ -98,8 +96,21 @@ export default {
                 });
                 return;
             }
-            if (!this.browserSupportsMetaMask || !this.isBraveBrowser) {
+            await this.injectedWeb3Login();
+        },
+        async injectedWeb3Login() {
+
+            if (!this.browserSupportsMetaMask && !this.isBraveBrowser){
                 window.open('https://metamask.app.link/dapp/teloscan.io');
+                return;
+            }
+
+            if (this.isBraveBrowser && window.ethereum.isBraveWallet){
+                this.$q.notify({
+                    position: 'top',
+                    message: this.$t('components.enable_wallet_extensions'),
+                    timeout: 6000,
+                });
                 return;
             }
 
@@ -109,7 +120,6 @@ export default {
                     address,
                 })
                 let provider = this.getInjectedProvider();
-                debugger;
                 let checkProvider = new ethers.providers.Web3Provider(provider)
                 this.$providerManager.setProvider(provider);
                 const {chainId} = await checkProvider.getNetwork();
@@ -156,7 +166,6 @@ export default {
             this.showLogin = false;
         },
         async getInjectedAddress() {
-            debugger;
             const provider = this.getInjectedProvider();
             let checkProvider = new ethers.providers.Web3Provider(provider);
 
@@ -169,10 +178,7 @@ export default {
                 checkProvider = await this.ensureCorrectChain(checkProvider);
                 return accounts[0];
             } else {
-                debugger;
-                console.dir(provider);
                 const accessGranted = await provider.request({ method: 'eth_requestAccounts' });
-                debugger;
                 if (accessGranted.length < 1) {
                     return false;
                 }
@@ -304,7 +310,7 @@ export default {
                                width="64px"></q-img>
                         <p>{{ !browserSupportsMetaMask ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
                     </q-card>
-                    <q-card v-if="isBraveBrowser" class="cursor-pointer c-connect-button__image-container" @click="injectedWeb3Login(true)">
+                    <q-card v-if="isBraveBrowser" class="cursor-pointer c-connect-button__image-container" @click="selectBraveWallet()">
                         <q-img :src="braveBrowserLogo"
                                height="64px"
                                width="64px"></q-img>
