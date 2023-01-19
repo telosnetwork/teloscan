@@ -221,12 +221,25 @@ export default {
             if (oldValue && oldValue !== newValue) {
                 this.file_model = null;
             }
+
+            // if newValue is empty, we should reset
+            if (!newValue) {
+                this.reset();
+            }
         },
     },
     created() {
         this.address = this.$route.params.address;
     },
     methods: {
+        reset() {
+            this.functions = {
+                read: [],
+                write: [],
+            };
+            this.file_model = null;
+            this.customAbiDefinition = '';
+        },
         async uploadFile(e) {
             let file = e.target.files[0];
             let fileReader = new FileReader();
@@ -237,6 +250,7 @@ export default {
                     this.customAbiDefinition = json;
                 } catch (error) {
                     console.error(error);
+                    this.reset();
                     this.$q.notify({
                         message: 'Invalid JSON file',
                         color: 'negative',
