@@ -93,7 +93,7 @@ export default {
     @update:modelValue="handleChange"
 >
     <template #append>
-        <slot name="append" />
+        <slot name="append"></slot>
     </template>
 </base-text-input>
 </template>

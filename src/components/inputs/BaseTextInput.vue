@@ -108,7 +108,7 @@ export default {
         @update:modelValue="handleChange"
     >
         <template #append>
-            <slot name="append" />
+            <slot name="append"></slot>
         </template>
     </q-input>
     <q-tooltip

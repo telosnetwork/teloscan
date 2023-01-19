@@ -260,8 +260,8 @@ export default {
     <q-dialog :model-value="show" @hide="() => $emit('hide')">
         <q-card rounded class="c-login-modal__modal-inner">
             <q-tabs v-model="tab">
-                <q-tab name="web3" :label="$t('components.evm_wallets')"></q-tab>
-                <q-tab name="native" :label="$t('components.advanced')"></q-tab>
+                <q-tab name="web3" :label="$t('components.evm_wallets')" />
+                <q-tab name="native" :label="$t('components.advanced')" />
             </q-tabs>
             <q-separator/>
             <q-tab-panels v-model="tab" animated>

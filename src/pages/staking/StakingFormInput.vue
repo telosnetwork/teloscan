@@ -279,7 +279,7 @@ export default {
                 @input.stop="handleInput"
             >
             <div v-if="isLoading" class="c-staking-input__loading u-flex--left">
-                <i class="fa fa-spinner fa-spin" />
+                <i class="fa fa-spinner fa-spin"></i>
             </div>
         </div>
     </div>
