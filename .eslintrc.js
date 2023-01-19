@@ -59,11 +59,13 @@ module.exports = {
         'eqeqeq': 'error',
         'semi': ['error', 'always'],
         'arrow-parens': [2, 'as-needed', { 'requireForBlockBody': true }],
+        'arrow-body-style': ['error', 'as-needed'],
         'object-property-newline': ['error', { 'allowAllPropertiesOnSameLine': true }],
         'curly': 'error',
         'brace-style': ['error', '1tbs', { 'allowSingleLine': false }],
         'no-restricted-imports': ['error', {
             'patterns': ['.*'], // disallow relative imports
         }],
+        'no-return-assign': ['error', 'always'],
     },
 };

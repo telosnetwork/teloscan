@@ -87,9 +87,7 @@ export default {
                 value: (itx.type !== 'create' && itx.value) ? formatWei('0x' + itx.value, WEI_PRECISION): 0,
             });
         }
-        this.parsedItxs.sort((a, b) => {
-            return BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber();
-        });
+        this.parsedItxs.sort((a, b) => BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber());
 
     },
     data () {

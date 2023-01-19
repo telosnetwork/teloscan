@@ -216,7 +216,9 @@ export default {
             this.$refs.input.value = val;
         },
         setInputCaretPosition(val) {
-            ['Start', 'End'].forEach(property => this.$refs.input[`selection${property}`] = val);
+            ['Start', 'End'].forEach((property) => {
+                this.$refs.input[`selection${property}`] = val;
+            });
         },
         triggerWiggle() {
             this.$el.classList.add('c-staking-input--wiggle');
