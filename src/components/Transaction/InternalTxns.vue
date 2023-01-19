@@ -1,6 +1,6 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
-import FragmentList from './FragmentList.vue';
+import FragmentList from 'components/Transaction/FragmentList.vue';
 import { WEI_PRECISION, formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
 

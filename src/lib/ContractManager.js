@@ -1,13 +1,13 @@
 import Contract from 'src/lib/Contract';
 import { ethers } from 'ethers';
-import functions_overrides from './abi/signature/functions_signatures_overrides.json';
-import events_overrides from './abi/signature/events_signatures_overrides.json';
+import functions_overrides from 'src/lib/abi/signature/functions_signatures_overrides.json';
+import events_overrides from 'src/lib/abi/signature/events_signatures_overrides.json';
 import Web3 from 'web3';
 import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
-import { erc721Abi, erc1155Abi, erc721MetadataAbi, supportsInterfaceAbi } from './abi';
-import { toChecksumAddress } from './utils';
-import { ERC1155_TRANSFER_SIGNATURE } from './abi/signature/transfer_signatures.js';
+import { erc721Abi, erc1155Abi, erc721MetadataAbi, supportsInterfaceAbi } from 'src/lib/abi';
+import { toChecksumAddress } from 'src/lib/utils';
+import { ERC1155_TRANSFER_SIGNATURE } from 'src/lib/abi/signature/transfer_signatures.js';
 
 const contractsBucket = axios.create({
     baseURL: `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com`,
