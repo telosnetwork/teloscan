@@ -35,19 +35,19 @@ export function toChecksumAddress(address) {
         return address;
     }
 
-    address = address.toLowerCase().replace('0x', '');
-    if (address.length !== 40) {
-        address = address.padStart(40, '0');
+    let addy = address.toLowerCase().replace('0x', '');
+    if (addy.length !== 40) {
+        addy = addy.padStart(40, '0');
     }
 
-    let hash = createKeccakHash('keccak256').update(address).digest('hex');
+    let hash = createKeccakHash('keccak256').update(addy).digest('hex');
     let ret = '0x';
 
-    for (var i = 0; i < address.length; i++) {
+    for (let i = 0; i < addy.length; i++) {
         if (parseInt(hash[i], 16) >= 8) {
-            ret += address[i].toUpperCase();
+            ret += addy[i].toUpperCase();
         } else {
-            ret += address[i];
+            ret += addy[i];
         }
     }
 

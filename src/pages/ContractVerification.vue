@@ -76,13 +76,15 @@ export default {
             }
         },
         onNotify(notification){
+            let noti = { ...notification };
+
             if (typeof notification !== 'object' || !Object.prototype.hasOwnProperty.call(notification, 'message')){
-                notification = { message: JSON.stringify(notification), type: 'negative' };
+                noti = { message: JSON.stringify(notification), type: 'negative' };
             }
             this.$q.notify({
-                type: notification.type,
+                type: noti.type,
                 position: 'top',
-                message: notification.message,
+                message: noti.message,
                 timeout: this.TIME_DELAY,
             });
         },
