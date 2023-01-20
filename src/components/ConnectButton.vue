@@ -343,7 +343,7 @@ export default {
                         <q-img :src="metamaskLogo"
                                height="64px"
                                width="64px"></q-img>
-                        <p>{{ !browserSupportsMetaMask ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
+                        <p>{{ isMobile ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
                     </q-card>
                     <q-card v-if="isBraveBrowser" class="cursor-pointer c-connect-button__image-container" @click="connectBraveWallet()">
                         <q-img :src="braveBrowserLogo"
