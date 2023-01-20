@@ -22,8 +22,9 @@ export default {
             this.$refs.input.focus();
         },
         async search() {
-            if (!this.searchTerm)
+            if (!this.searchTerm) {
                 return;
+            }
 
             this.searchTerm = this.searchTerm.trim().replace(/\s/, '');
             if (this.searchTerm.startsWith('0x')) {
@@ -69,7 +70,7 @@ export default {
 </script>
 
 <template>
-<div class="c-search" v-clickaway="() => inputHiddenMobile = true">
+<div v-clickaway="() => inputHiddenMobile = true" class="c-search">
     <q-icon
         v-show="$q.screen.lt.lg && inputHiddenMobile"
         name="search"
@@ -83,8 +84,8 @@ export default {
         @click="iconClicked"
     />
     <q-input
-        ref="input"
         v-show="!$q.screen.lt.lg || !inputHiddenMobile"
+        ref="input"
         v-model="searchTerm"
         class="c-search__input"
         dense

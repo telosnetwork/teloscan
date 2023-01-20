@@ -1,15 +1,3 @@
-<template>
-<app-header />
-<q-layout view="lhh Lpr lFf ">
-    <div :class="`banner ${onHomePage ? 'home' : ''}`" />
-
-    <q-page-container class="flex flex-center page-container">
-        <router-view />
-    </q-page-container>
-    <footer-main />
-</q-layout>
-</template>
-
 <script>
 import { mapGetters } from 'vuex';
 
@@ -51,7 +39,8 @@ export default {
     },
     methods: {
         removeOldAngularCache() {
-            // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own, this should remove it
+            // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on
+            // its own, this should remove it
             if(window.navigator && navigator.serviceWorker) {
                 navigator.serviceWorker.getRegistrations()
                     .then(function(registrations) {
@@ -64,6 +53,18 @@ export default {
     },
 };
 </script>
+
+<template>
+<AppHeader />
+<q-layout view="lhh Lpr lFf ">
+    <div :class="`banner ${onHomePage ? 'home' : ''}`" ></div>
+
+    <q-page-container class="flex flex-center page-container">
+        <router-view />
+    </q-page-container>
+    <FooterMain />
+</q-layout>
+</template>
 
 <style lang="sass" scoped>
 .page-container
