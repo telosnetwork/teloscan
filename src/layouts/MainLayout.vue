@@ -55,14 +55,14 @@ export default {
 </script>
 
 <template>
-<app-header />
+<AppHeader />
 <q-layout view="lhh Lpr lFf ">
     <div :class="`banner ${onHomePage ? 'home' : ''}`" ></div>
 
     <q-page-container class="flex flex-center page-container">
         <router-view />
     </q-page-container>
-    <footer-main />
+    <FooterMain />
 </q-layout>
 </template>
 

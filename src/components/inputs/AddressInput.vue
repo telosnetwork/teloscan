@@ -63,7 +63,7 @@ export default {
 </script>
 
 <template>
-<base-text-input
+<BaseTextInput
     v-bind="$attrs"
     :model-value="modelValue"
     :label="shapedLabel"

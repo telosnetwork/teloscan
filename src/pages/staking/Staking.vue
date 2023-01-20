@@ -262,7 +262,7 @@ export default {
             </span>
         </div>
         <div class="col-xs-12 col-md-6">
-            <staking-stats
+            <StakingStats
                 v-if="stlosContractInstance"
                 :stlos-contract-instance="stlosContractInstance"
                 :stlos-balance="stlosBalance"
@@ -318,7 +318,7 @@ export default {
                                 <q-spinner />
                             </div>
                             <div v-else class="col-12">
-                                <stake-form
+                                <StakeForm
                                     :stlos-contract-instance="stlosContractInstance"
                                     :tlos-balance="tlosBalance"
                                     :has-unlocked-tlos="showWithdrawNotification"
@@ -339,7 +339,7 @@ export default {
                                 <q-spinner />
                             </div>
                             <div v-else class="col-12">
-                                <unstake-form
+                                <UnstakeForm
                                     :stlos-contract-instance="stlosContractInstance"
                                     :escrow-contract-instance="escrowContractInstance"
                                     :stlos-balance="stlosBalance"
@@ -362,7 +362,7 @@ export default {
                                 <q-spinner />
                             </div>
                             <div v-else class="col-12">
-                                <withdraw-page
+                                <WithdrawPage
                                     :escrow-contract-instance="escrowContractInstance"
                                     :unlocked-tlos-balance="unlockedTlosBalance"
                                     :total-unstaked="totalUnstakedTlosBalance"

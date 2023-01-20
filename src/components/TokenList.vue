@@ -103,7 +103,7 @@ export default {
                     <div class="text-h6 c-token-list__token-name" :title="name">
                         {{ name }}
                     </div>
-                    <address-field :address="address" class="q-mb-sm"/>
+                    <AddressField :address="address" class="q-mb-sm"/>
                     <div class="q-mb-sm">
                         <span class="q-pr-xs">
                             {{ $t('components.balance') }}

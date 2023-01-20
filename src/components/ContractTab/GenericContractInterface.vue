@@ -288,7 +288,7 @@ export default {
                 >
                     <q-card>
                         <div class="q-pa-md">
-                            <function-interface
+                            <FunctionInterface
                                 :abi="func"
                                 :contract="contract"
                                 :write="true"

@@ -51,7 +51,7 @@ export default {
         >
             <q-card>
                 <div class="q-pa-md">
-                    <function-interface
+                    <FunctionInterface
                         :abi="func"
                         :contract="contract"
                         :group="write ? 'write' : 'read'"

@@ -301,7 +301,7 @@ export default {
 <template>
 <div class="row">
     <div class="col-12 q-mb-lg">
-        <base-staking-form
+        <BaseStakingForm
             :header="header"
             :subheader="subheader"
             :top-input-label="topInputLabel"
@@ -326,7 +326,7 @@ export default {
     </div>
     <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
         {{ $t('pages.staking.unstake_stlos_success') }}
-        <transaction-field :transaction-hash="resultHash" />
+        <TransactionField :transaction-hash="resultHash" />
     </div>
     <q-dialog v-model="displayConfirmModal">
         <q-card>

@@ -144,7 +144,7 @@ export default {
                     <p>Vanilla inputs</p>
                 </div>
                 <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <base-text-input
+                    <BaseTextInput
                         v-model="baseTextInputValue"
                         v-bind="universalToggles"
                         label="Base Text Input"
@@ -157,7 +157,7 @@ export default {
                     <p>Contract interface inputs</p>
                 </div>
                 <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <string-input
+                    <StringInput
                         v-model="stringInputValue"
                         v-bind="universalToggles"
                         label="String Input"
@@ -166,7 +166,7 @@ export default {
                 </div>
 
                 <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <unsigned-int-input
+                    <UnsignedIntInput
                         v-model="uintInputValue"
                         v-bind="universalToggles"
                         label="Unsigned Integer Input"
@@ -176,7 +176,7 @@ export default {
                 </div>
 
                 <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <signed-int-input
+                    <SignedIntInput
                         v-model="intInputValue"
                         v-bind="universalToggles"
                         label="Signed Integer Input"
@@ -186,7 +186,7 @@ export default {
                 </div>
 
                 <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <address-input
+                    <AddressInput
                         v-model="addressInputValue"
                         v-bind="universalToggles"
                         label="Address Input"
@@ -195,7 +195,7 @@ export default {
                 </div>
 
                 <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <boolean-input
+                    <BooleanInput
                         v-model="booleanInputValue"
                         v-bind="universalToggles"
                         label="Boolean Input"
@@ -204,7 +204,7 @@ export default {
                 </div>
 
                 <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <bytes-array-input
+                    <BytesArrayInput
                         v-model="bytesArrayInputValue"
                         v-bind="universalToggles"
                         label="Bytes Input"
@@ -214,7 +214,7 @@ export default {
                 </div>
 
                 <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <bytes-array-input
+                    <BytesArrayInput
                         v-model="unconstrainedBytesArrayInputValue"
                         v-bind="universalToggles"
                         label="Byte Array Input"
@@ -228,7 +228,7 @@ export default {
                     <p>Contract interface inputs (Arrays)</p>
                 </div>
                 <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <string-array-input
+                    <StringArrayInput
                         v-model="stringArrayInputValue"
                         v-bind="arrayToggles"
                         label="String Array Input"
@@ -237,7 +237,7 @@ export default {
                 </div>
 
                 <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <address-array-input
+                    <AddressArrayInput
                         v-model="addressArrayInputValue"
                         v-bind="arrayToggles"
                         label="Address Array Input"
@@ -246,7 +246,7 @@ export default {
                 </div>
 
                 <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <unsigned-int-array-input
+                    <UnsignedIntArrayInput
                         v-model="uintArrayInputValue"
                         v-bind="arrayToggles"
                         label="Unsigned Int Array Input"
@@ -256,7 +256,7 @@ export default {
                 </div>
 
                 <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <signed-int-array-input
+                    <SignedIntArrayInput
                         v-model="signedIntArrayInputValue"
                         v-bind="arrayToggles"
                         label="Signed Int Array Input"
@@ -266,7 +266,7 @@ export default {
                 </div>
 
                 <div class="col-xs-12 col-md-6 col-lg-3 col-xl-2">
-                    <boolean-array-input
+                    <BooleanArrayInput
                         v-model="boolArrayInputValue"
                         v-bind="arrayToggles"
                         label="Boolean Array Input"

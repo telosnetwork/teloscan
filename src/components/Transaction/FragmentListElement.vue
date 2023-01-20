@@ -90,7 +90,7 @@ export default {
             </strong>
         </span>
         <small v-if="fragment.contract">
-            <address-field
+            <AddressField
                 :address="
                     (fragment.contract.address[0] === '0' && fragment.contract.address[1] === 'x') ?
                         fragment.contract.address :
@@ -121,7 +121,7 @@ export default {
                 </div>
 
                 <div class="col-8">
-                    <address-field
+                    <AddressField
                         v-if="param.type === 'address'"
                         :address="fragment.args[index]"
                         :truncate="0"
@@ -138,7 +138,7 @@ export default {
                                 <span v-if="!showWei">
                                     <span> {{ formatWei(fragment.args[index], fragment.token.decimals) }}</span>
                                     <q-tooltip>Show wei</q-tooltip>
-                                    <address-field
+                                    <AddressField
                                         :address="fragment.token.address"
                                         :truncate="0"
                                         :name="fragment.token.symbol"
@@ -150,7 +150,7 @@ export default {
                                 </span>
                             </div>
                             <div v-else>
-                                <address-field
+                                <AddressField
                                     v-if="fragment.token.symbol"
                                     :address="fragment.token.address"
                                     :truncate="0"
@@ -199,7 +199,7 @@ export default {
                             "
                         >
                             <div v-if="param.arrayChildren.type === 'address'">
-                                <address-field
+                                <AddressField
                                     :address="fragment.args[index][i]"
                                     :truncate="0"
                                     class="word-break"
@@ -230,7 +230,7 @@ export default {
                 </div>
             </div>
         </div>
-        <json-viewer
+        <JsonViewer
             v-else
             :value="rawFragment"
             theme="custom-theme"

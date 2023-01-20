@@ -52,6 +52,7 @@ module.exports = {
         'no-return-assign': ['error', 'always'],
         'no-param-reassign': 'error',
 
+
         'vue/html-indent': ['warn', 4, { 'baseIndent': 0 }],
         'vue/max-attributes-per-line': ['warn', {
             'singleline': {
@@ -96,5 +97,8 @@ module.exports = {
             ],
             'alphabetical': false,
         }],
+        'vue/component-options-name-casing': ['error', 'PascalCase'],
+        'vue/component-definition-name-casing': ['error', 'PascalCase'],
+        'vue/component-name-in-template-casing': ['error', 'PascalCase'],
     },
 };
