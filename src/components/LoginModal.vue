@@ -44,7 +44,6 @@ export default {
             const provider = this.getInjectedProvider();
             let checkProvider = new ethers.providers.Web3Provider(provider);
             const { chainId } = await checkProvider.getNetwork();
-
             if(loginObj.chain === chainId){
                 switch (loginObj.provider) {
                 case PROVIDER_WEB3_INJECTED:
@@ -109,10 +108,11 @@ export default {
                 let checkProvider = new ethers.providers.Web3Provider(provider);
                 this.$providerManager.setProvider(provider);
                 const { chainId } = await checkProvider.getNetwork();
-                localStorage.setItem(
-                    'loginData',
-                    JSON.stringify({ type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED, chain: chainId }),
-                );
+                localStorage.setItem('loginData', JSON.stringify({
+                    type: LOGIN_EVM,
+                    provider: PROVIDER_WEB3_INJECTED,
+                    chain: chainId,
+                }));
                 provider.on('chainChanged', (newNetwork) => {
                     if(newNetwork !== chainId){
                         this.setLogin({});
@@ -288,7 +288,7 @@ export default {
                         <q-card
                             v-for="wallet in $ual.authenticators"
                             :key="wallet.getStyle().text"
-                            class="cursor-pointer c-connect-button__image-container"
+                            class="c-login-modal__image-container"
                             @click="ualLogin(wallet)"
                         >
                             <q-img

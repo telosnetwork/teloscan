@@ -1,4 +1,5 @@
-/* eslint-disable max-len*/
+/* eslint-disable max-len */
+
 export default {
     locale: {
         current_language_name: 'Español',
@@ -11,6 +12,7 @@ export default {
             metamask_fox_logo: 'Logotipo de la zorra de MetaMask',
             stake_tlos_confirm: 'continuar significa bloquer TLOS a cambio de sTLOS. ' +
             'sTLOS se puede canjear por TLOS en cualquier momento usando la pestaña Desbloquear.',
+            cancel: 'Cancelar',
             stake_tlos_confirm_2a: 'Después de que se reclamen los TLOS, éstos estarán bloqueados durante un período de', /* unstakePeriodPretty...*/
             stake_tlos_confirm_2b: /*...unstakePeriodPretty */ 'después de lo cual se puede retirar a su cuenta desde la pestaña Reclamar.',
             stake_tlos_confirm_3: '¿Le gustaría proceder?',

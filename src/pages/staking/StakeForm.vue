@@ -374,8 +374,7 @@ export default {
                     v-if="showMetamaskPrompt"
                     class="c-stake-form__metamask-prompt u-flex--center-y"
                     tabindex="0"
-                    aria-:label="$t('pages.staking.add_stlos_to_metamask')"
-
+                    :aria-label="$t('pages.staking.add_stlos_to_metamask')"
                     @click="promptAddToMetamask"
                 >
                     {{ $t('pages.staking.add_stlos_to_metamask') }}
@@ -395,7 +394,7 @@ export default {
                 />
                 <q-btn
                     v-close-popup
-                    label="Stake TLOS"
+                    :label="$t('pages.staking.stake_tlos')"
                     color="secondary"
                     text-color="black"
                     @click="initiateDeposit"

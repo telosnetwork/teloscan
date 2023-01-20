@@ -178,7 +178,7 @@ export function getClientIsApple() {
  * @return {string}
  */
 export function getFormattedUtcOffset(date) {
-    const pad = value => value < 10 ? '0' + value : value
+    const pad = value => value < 10 ? '0' + value : value;
     const sign = (date.getTimezoneOffset() > 0) ? '-' : '+';
     const offset = Math.abs(date.getTimezoneOffset());
     const hours = pad(Math.floor(offset / 60));

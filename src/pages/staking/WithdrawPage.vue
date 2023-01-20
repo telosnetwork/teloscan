@@ -143,7 +143,7 @@ export default {
                             {{ formatAmount(props.row.amount) }}
                         </q-td>
                         <q-td key="until" align="right">
-                            <DateField :epoch="(props.row.until).toNumber()" :show-age="showAge" />
+                            <DateField :epoch="(props.row.until).toNumber()" />
                         </q-td>
                     </q-tr>
                 </template>

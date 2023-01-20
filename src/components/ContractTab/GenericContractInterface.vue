@@ -1,10 +1,22 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
+<<<<<<< HEAD
 import Contract from 'src/lib/Contract';
 import { erc721Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
 import { sortAbiFunctionsByName } from 'src/lib/utils';
 import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
+=======
+
+import Contract from 'src/lib/Contract';
+import { erc721Abi } from 'src/lib/abi';
+import erc20Abi from 'erc-20-abi';
+
+import { sortAbiFunctionsByName } from 'src/lib/utils';
+
+import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
+
+>>>>>>> feat: eslint fixes
 export default {
     name: 'GenericContractInterface',
     components: {
@@ -57,6 +69,10 @@ export default {
             if (oldValue && oldValue !== newValue) {
                 this.file_model = null;
             }
+<<<<<<< HEAD
+=======
+
+>>>>>>> feat: eslint fixes
             // if newValue is empty, we should reset
             if (!newValue) {
                 this.reset();
@@ -99,13 +115,26 @@ export default {
                 read: [],
                 write: [],
             };
+<<<<<<< HEAD
             const { custom, erc20, erc721 } = this.abiOptions;
             let abi;
             const customAbiSelected = this.selectedAbi === custom;
+=======
+
+            const { custom, erc20, erc721 } = this.abiOptions;
+
+            let abi;
+            const customAbiSelected = this.selectedAbi === custom;
+
+>>>>>>> feat: eslint fixes
             const selectedAbiIsCustomAndValid =
                 !!this.customAbiDefinition &&
                 this.customAbiIsValidJSON &&
                 customAbiSelected;
+<<<<<<< HEAD
+=======
+
+>>>>>>> feat: eslint fixes
             if (selectedAbiIsCustomAndValid) {
                 abi = JSON.parse(this.customAbiDefinition);
             } else if (this.selectedAbi === erc20) {
@@ -115,20 +144,36 @@ export default {
             } else {
                 return;
             }
+<<<<<<< HEAD
+=======
+
+>>>>>>> feat: eslint fixes
             if (!Array.isArray(abi)) {
                 if (abi.abi && Array.isArray(abi.abi)) {
                     abi = abi.abi;
                 }
             }
+<<<<<<< HEAD
             // abi.map function is used here:
             // https://github.com/ethers-io/ethers.js/blob/master/packages/abi/lib.esm/interface.js#L57
             console.assert(typeof abi.map === 'function', 'ERROR: abi is not an array');
+=======
+
+            // abi.map function is used here:
+            // https://github.com/ethers-io/ethers.js/blob/master/packages/abi/lib.esm/interface.js#L57
+            console.assert(typeof abi.map === 'function', 'ERROR: abi is not an array');
+
+>>>>>>> feat: eslint fixes
             this.contract = new Contract({
                 name: this.$t('components.contract_tab.unverified_contract'),
                 address: this.address,
                 abi,
                 manager: this.$contractManager,
             });
+<<<<<<< HEAD
+=======
+
+>>>>>>> feat: eslint fixes
             let read = [];
             let write = [];
 
@@ -143,6 +188,10 @@ export default {
                     write.push(a);
                 }
             });
+<<<<<<< HEAD
+=======
+
+>>>>>>> feat: eslint fixes
             this.functions = {
                 read: sortAbiFunctionsByName(read),
                 write: sortAbiFunctionsByName(write),
@@ -152,6 +201,10 @@ export default {
 };
 </script>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> feat: eslint fixes
 <template>
 <div class="q-pa-md">
     <div class="row q-pb-md">
@@ -162,6 +215,10 @@ export default {
                     class="text-negative"
                     size="1.25rem"
                 />
+<<<<<<< HEAD
+=======
+
+>>>>>>> feat: eslint fixes
                 {{ $t('components.contract_tab.unverified_contract_source') }}
             </p>
             <p>
@@ -220,6 +277,7 @@ export default {
                 </div>
                 <div class="col-12 col-sm-4 col-lg-3">
                     <q-file
+<<<<<<< HEAD
                         outlined
                         name="custom-abi-file"
                         v-model="file_model"
@@ -227,6 +285,15 @@ export default {
                         @input="uploadFile"
                         class="abi-json-uploader q-ml-md text-center"
                         accept=".json"
+=======
+                        v-model="file_model"
+                        outlined
+                        name="custom-abi-file"
+                        label="upload ABI JSON file"
+                        class="abi-json-uploader q-ml-md text-center"
+                        accept=".json"
+                        @input="uploadFile"
+>>>>>>> feat: eslint fixes
                     />
                 </div>
             </div>
@@ -303,7 +370,10 @@ export default {
     </div>
 </div>
 </template>
+<<<<<<< HEAD
 
+=======
+>>>>>>> feat: eslint fixes
 <style>
 .abi-json-uploader .q-field__label {
     text-align: center;
