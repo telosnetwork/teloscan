@@ -139,7 +139,7 @@ export default {
                             {{ formatAmount(props.row.amount) }}
                         </q-td>
                         <q-td key="until" align="right">
-                            <date-field :epoch="(props.row.until).toNumber()" :show-age="showAge" />
+                            <DateField :epoch="(props.row.until).toNumber()" :show-age="showAge" />
                         </q-td>
                     </q-tr>
                 </template>
@@ -166,7 +166,7 @@ export default {
     </div>
     <div v-if="resultHash" class="transaction-notification col-sm-12 col-md-6 offset-md-3">
         {{ $t('pages.staking.withdraw_successful') }}:
-        <transaction-field :transaction-hash="resultHash" />
+        <TransactionField :transaction-hash="resultHash" />
     </div>
 </div>
 </template>

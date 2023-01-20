@@ -93,7 +93,7 @@ export default {
 </script>
 
 <template>
-<base-text-input
+<BaseTextInput
     ref="input"
     v-bind="$attrs"
     :model-value="modelValue"

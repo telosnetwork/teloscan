@@ -139,7 +139,7 @@ export default {
                     <q-badge outline color="secondary" :label="`1 TLOS = ${valueOfOneStlosInTlos} sTLOS`" />
                 </div>
                 <div class="col-12">
-                    <staking-form-input
+                    <StakingFormInput
                         :model-value="topInputAmount"
                         v-bind="inputs[0]"
                         @update:modelValue="handleInput($event, 0)"
@@ -151,7 +151,7 @@ export default {
                 </div>
 
                 <div class="col-12 q-mb-md">
-                    <staking-form-input
+                    <StakingFormInput
                         :model-value="bottomInputAmount"
                         v-bind="inputs[1]"
                         @update:modelValue="handleInput($event, 1)"

@@ -82,7 +82,7 @@ export default {
 </script>
 
 <template>
-<base-text-input
+<BaseTextInput
     ref="input"
     v-bind="$attrs"
     :model-value="modelValue"
@@ -95,7 +95,7 @@ export default {
     <template #append>
         <slot name="append"></slot>
     </template>
-</base-text-input>
+</BaseTextInput>
 </template>
 
 <style>

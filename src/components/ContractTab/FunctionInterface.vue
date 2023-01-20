@@ -401,7 +401,7 @@ export default {
     </div>
     <div v-if="hash" class="output-container">
         {{ $t('components.contract_tab.view_transaction') }}
-        <transaction-field :transaction-hash="hash" />
+        <TransactionField :transaction-hash="hash" />
     </div>
 </div>
 </template>

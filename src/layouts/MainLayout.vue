@@ -128,7 +128,7 @@ export default {
                 </div>
                 <q-space />
 
-                <search
+                <Search
                     class="taskbarSearch desktop-only text-center "
                     :toolbar="true"
                 />
@@ -143,7 +143,7 @@ export default {
                     @click="toggleDarkMode()"
                 />
 
-                <connect-button class="connect-button" />
+                <ConnectButton class="connect-button" />
 
                 <q-btn-dropdown
                     dropdown-icon="menu"
@@ -224,7 +224,7 @@ export default {
     <q-page-container class="flex flex-center">
         <router-view />
     </q-page-container>
-    <footer-main />
+    <FooterMain />
 </q-layout>
 </template>
 

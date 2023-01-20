@@ -107,7 +107,7 @@ export default {
                 :fragments="logs"
                 :parsedFragments="parsedLogs"
             />
-            <json-viewer
+            <JsonViewer
                 v-else
                 :value="logs"
                 theme="custom-theme"
