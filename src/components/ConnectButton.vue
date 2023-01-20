@@ -120,8 +120,7 @@ export default {
         },
 
         async connectMetaMask(){
-            debugger;
-            if (this.isBraveBrowser && window.ethereum.isBraveWallet){
+            if (this.isBraveBrowser && window.ethereum.isBraveWallet && !this.isMobile){
                 this.$q.notify({
                     position: 'top',
                     message: this.$t('components.enable_wallet_extensions'),
