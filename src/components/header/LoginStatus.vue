@@ -14,7 +14,7 @@
             @click="goToAddress"
         />
         <q-tooltip>
-            {{ $t('compontns.header.goto_address_details') }}
+            {{ $t('components.header.goto_address_details') }}
         </q-tooltip>
     </div>
 
