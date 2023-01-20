@@ -20,7 +20,6 @@ export default {
             code: this.$i18n.locale,
             name: this.$t('locale.current_language_name'),
         };
-        // debugger;
 
         // languageOptions: [
         //     { code: 'en-us', name: 'English'},
