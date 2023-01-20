@@ -1,8 +1,115 @@
+<template>
+<div class="c-stake-form row">
+    <div class="col-xs-12 col-md-6 offset-md-3">
+        <q-banner
+            v-if="showClaimBanner"
+            rounded
+            inline-actions
+            dense
+            class="bg-green text-black"
+        >
+            {{ $t('pages.staking.you_have_unlocked_tlos') }}
+            <template #action>
+                <q-btn
+                    flat
+                    color="black"
+                    :label="$t('pages.staking.dismiss')"
+                    @click="hideClaimBanner"
+                />
+                <q-btn
+                    flat
+                    color="black"
+                    :label="$t('pages.staking.claim_tlos')"
+                    @click="$router.push({ hash: '#claim' })"
+                />
+            </template>
+        </q-banner>
+    </div>
+    <div class="col-12 q-mb-lg">
+        <base-staking-form
+            :header="header"
+            :subheader="subheader"
+            :top-input-label="topInputLabel"
+            :top-input-info-text="topInputInfoText"
+            :top-input-amount="topInputAmount"
+            :top-input-max-value="topInputMaxValue"
+            :top-input-error-text="topInputErrorText"
+            :top-input-is-loading="topInputIsLoading"
+            :top-input-tooltip="topInputTooltip"
+            :bottom-input-label="bottomInputLabel"
+            :bottom-input-amount="bottomInputAmount"
+            :bottom-input-max-value="bottomInputMaxValue"
+            :bottom-input-is-loading="bottomInputIsLoading"
+            :cta-text="ctaText"
+            :cta-disabled="ctaIsDisabled"
+            :unstake-period-seconds="unstakePeriodSeconds"
+            :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
+            @input-top="handleInputTop"
+            @input-bottom="handleInputBottom"
+            @cta-clicked="handleCtaClick"
+        />
+    </div>
+    <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
+        {{ $t('pages.staking.stake_tlos_success') }}
+        <transaction-field :transaction-hash="resultHash" />
+    </div>
+    <q-dialog v-model="displayConfirmModal">
+        <q-card>
+            <q-card-section>
+                <p>
+                    {{ $t('pages.staking.stake_tlos_confirm') }}
+                </p>
+                <p>
+                    {{ $t('pages.staking.stake_tlos_confirm_2a' ) }}
+                    <span class="text-primary">{{ unstakePeriodPretty }}</span>,
+                    {{ $t('pages.staking.stake_tlos_confirm_2b' ) }}
+                </p>
+                <p>{{ $t('pages.staking.stake_tlos_confirm_3' ) }}</p>
+            </q-card-section>
+
+            <q-card-actions align="right" class="q-pb-md q-px-md">
+                <p
+                    v-if="showMetamaskPrompt"
+                    class="c-stake-form__metamask-prompt u-flex--center-y"
+                    tabindex="0"
+                    :aria-label="$t('pages.staking.add_stlos_to_metamask')"
+
+                    @click="promptAddToMetamask"
+                >
+                    {{ $t('pages.staking.add_stlos_to_metamask') }}
+                    <img
+                        :src="MetaMaskLogo"
+                        class="q-ml-xs"
+                        height="24"
+                        width="24"
+                        :alt="$t('pages.staking.metamask_fox_logo')"
+                    >
+                </p>
+                <q-btn
+                    v-close-popup
+                    flat
+                    :label="$t('pages.staking.cancel')"
+                    color="negative"
+                />
+                <q-btn
+                    v-close-popup
+                    :label="$t('pages.staking.stake_tlos')"
+                    color="secondary"
+                    text-color="black"
+                    @click="initiateDeposit"
+                />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
+</div>
+<login-modal :show="displayLoginModal" @hide="displayLoginModal = false" />
+</template>
+
 <script>
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { debounce } from 'lodash';
-import MetaMaskLogo from 'src/assets/metamask-fox.svg';
+import MetaMaskLogo from 'src/assets/metamask-fox.svg'
 import { stlos } from 'src/lib/logos';
 
 
@@ -12,7 +119,7 @@ import { getClientIsApple, WEI_PRECISION } from 'src/lib/utils';
 
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import TransactionField from 'components/TransactionField';
-import { triggerLogin } from 'components/ConnectButton';
+import LoginModal from 'components/LoginModal.vue';
 
 const reservedForGasBn = BigNumber.from('10').pow(WEI_PRECISION);
 
@@ -20,6 +127,7 @@ export default {
     name: 'StakeForm',
     components: {
         BaseStakingForm,
+        LoginModal,
         TransactionField,
     },
     props: {
@@ -48,6 +156,7 @@ export default {
     data: () => ({
         MetaMaskLogo,
         displayConfirmModal: false,
+        displayLoginModal: false,
         resultHash: null,
         header: '',
         subheader: '',
@@ -75,16 +184,14 @@ export default {
             return BigNumber.from(this.tlosBalance ?? '0');
         },
         usableWalletBalance() {
-            if (this.walletBalanceBn.lte(reservedForGasBn)) {
+            if (this.walletBalanceBn.lte(reservedForGasBn))
                 return '0';
-            }
 
             return this.walletBalanceBn.sub(reservedForGasBn).toString();
         },
         topInputInfoText() {
-            if (!this.isLoggedIn) {
+            if (!this.isLoggedIn)
                 return '';
-            }
 
             let balanceEth = ethers.utils.formatEther(this.usableWalletBalance);
 
@@ -96,32 +203,33 @@ export default {
 
             const balanceTlos = ethers.utils.commify(balanceEth);
 
-            return this.$t('pages.staking.available', { balanceTlos });
+            return this.$t('pages.staking.available', {balanceTlos});
         },
         topInputErrorText() {
             const walletBalanceBn = BigNumber.from(this.tlosBalance ?? '0');
 
             if (this.isLoggedIn) {
-                if (walletBalanceBn.lt(reservedForGasBn) && !this.isNative) {
+                if (walletBalanceBn.lt(reservedForGasBn) && !this.isNative)
                     return this.$t('pages.staking.insufficient_tlos_balance');
-                } else if(this.isNative) {
+                else if(this.isNative)
                     return this.$t('pages.staking.login_using_an_evm_wallet');
-                } else {
+                else
                     return '';
-                }
             }
 
             return this.$t('pages.staking.wallet_not_connected');
         },
         topInputTooltip() {
             const prettyBalance = ethers.utils.formatEther(this.usableWalletBalance).toString();
-            return this.$t('pages.staking.click_to_input_full_wallet_balance', { prettyBalance });
+            return this.$t('pages.staking.click_to_input_full_wallet_balance', {prettyBalance});
         },
         ctaIsDisabled() {
             const inputsInvalid = (
                 this.isLoggedIn &&
                 this.walletBalanceBn.gt(reservedForGasBn) &&
-                [this.topInputAmount, this.bottomInputAmount].some(amount => BigNumber.from(amount ?? '0').eq('0'))
+                [this.topInputAmount, this.bottomInputAmount].some((amount) => {
+                    return BigNumber.from(amount ?? '0').eq('0');
+                })
             );
 
             return inputsInvalid ||
@@ -130,16 +238,14 @@ export default {
                 this.ctaIsLoading;
         },
         ctaText() {
-            if (this.ctaIsLoading) {
+            if (this.ctaIsLoading)
                 return this.$t('pages.staking.loading');
-            }
 
             if (this.isLoggedIn) {
-                if (this.walletBalanceBn.lt(reservedForGasBn)) {
+                if (this.walletBalanceBn.lt(reservedForGasBn))
                     return this.$t('pages.staking.get_more_tlos');
-                } else {
+                else
                     return this.$t('pages.staking.stake_tlos');
-                }
             }
 
             return this.$t('pages.staking.connect_wallet');
@@ -171,7 +277,7 @@ export default {
                         console.error(`Unable to convert TLOS to STLOS: ${err}`);
                         this.$q.notify({
                             type: 'negative',
-                            message: this.$t('pages.staking.redeem_failed', { message: err }),
+                            message: this.$t('pages.staking.redeem_failed', {message: err}),
                         });
                     })
                     .finally(async () => {
@@ -187,7 +293,7 @@ export default {
 
                             this.topInputAmount = old;
                         }
-                    });
+                    })
             },
             debounceWaitMs,
         );
@@ -198,12 +304,12 @@ export default {
                     .then((amountBigNum) => {
                         this.topInputAmount = amountBigNum.toString();
                     })
-                    .catch((err) => {
+                    .catch(err => {
                         this.topInputAmount = '';
                         console.error(`Unable to convert STLOS to TLOS: ${err}`);
                         this.$q.notify({
                             type: 'negative',
-                            message: this.$t('pages.staking.redeem_failed', { message: err }),
+                            message: this.$t('pages.staking.redeem_failed', {message: err}),
                         });
                     })
                     .finally(async () => {
@@ -219,7 +325,7 @@ export default {
 
                             this.bottomInputAmount = old;
                         }
-                    });
+                    })
             },
             debounceWaitMs,
         );
@@ -236,9 +342,8 @@ export default {
             );
         },
         handleInputTop(newWei = '0') {
-            if (newWei === this.topInputAmount) {
+            if (newWei === this.topInputAmount)
                 return;
-            }
 
             this.bottomInputIsLoading = true;
             this.topInputAmount = newWei;
@@ -246,9 +351,8 @@ export default {
             this.debouncedTopInputHandler();
         },
         handleInputBottom(newWei = '0') {
-            if (newWei === this.bottomInputAmount) {
+            if (newWei === this.bottomInputAmount)
                 return;
-            }
 
             this.topInputIsLoading = true;
             this.bottomInputAmount = newWei;
@@ -256,8 +360,8 @@ export default {
             this.debouncedBottomInputHandler();
         },
         handleCtaClick() {
-            if (!this.isLoggedIn){
-                triggerLogin();
+            if (!this.isLoggedIn) {
+                this.displayLoginModal = true;
                 return;
             }
 
@@ -283,7 +387,7 @@ export default {
                     console.error(`Failed to deposit TLOS: ${message}`);
                     this.$q.notify({
                         type: 'negative',
-                        message: this.$t('pages.staking.deposit_failed', { message }),
+                        message: this.$t('pages.staking.deposit_failed', {message}),
                     });
                     this.resultHash = null;
                 })
@@ -295,114 +399,8 @@ export default {
             this.userDismissedBanner = true;
         },
     },
-};
+}
 </script>
-
-<template>
-<div class="c-stake-form row">
-    <div class="col-xs-12 col-md-6 offset-md-3">
-        <q-banner
-            v-if="showClaimBanner"
-            rounded
-            inline-actions
-            dense
-            class="bg-green text-black"
-        >
-            {{ $t('pages.staking.you_have_unlocked_tlos') }}
-            <template #action>
-                <q-btn
-                    flat
-                    color="black"
-                    :label="$t('pages.staking.dismiss')"
-                    @click="hideClaimBanner"
-                />
-                <q-btn
-                    flat
-                    color="black"
-                    :label="$t('pages.staking.claim_tlos')"
-                    @click="$router.push({ hash: '#claim' })"
-                />
-            </template>
-        </q-banner>
-    </div>
-    <div class="col-12 q-mb-lg">
-        <BaseStakingForm
-            :header="header"
-            :subheader="subheader"
-            :top-input-label="topInputLabel"
-            :top-input-info-text="topInputInfoText"
-            :top-input-amount="topInputAmount"
-            :top-input-max-value="topInputMaxValue"
-            :top-input-error-text="topInputErrorText"
-            :top-input-is-loading="topInputIsLoading"
-            :top-input-tooltip="topInputTooltip"
-            :bottom-input-label="bottomInputLabel"
-            :bottom-input-amount="bottomInputAmount"
-            :bottom-input-max-value="bottomInputMaxValue"
-            :bottom-input-is-loading="bottomInputIsLoading"
-            :cta-text="ctaText"
-            :cta-disabled="ctaIsDisabled"
-            :unstake-period-seconds="unstakePeriodSeconds"
-            :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
-            @input-top="handleInputTop"
-            @input-bottom="handleInputBottom"
-            @cta-clicked="handleCtaClick"
-        />
-    </div>
-    <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
-        {{ $t('pages.staking.stake_tlos_success') }}
-        <TransactionField :transaction-hash="resultHash" />
-    </div>
-    <q-dialog v-model="displayConfirmModal">
-        <q-card>
-            <q-card-section>
-                <p>
-                    {{ $t('pages.staking.stake_tlos_confirm') }}
-                </p>
-                <p>
-                    {{ $t('pages.staking.stake_tlos_confirm_2a' ) }}
-                    <span class="text-primary">{{ unstakePeriodPretty }}</span>,
-                    {{ $t('pages.staking.stake_tlos_confirm_2b' ) }}
-                </p>
-                <p>{{ $t('pages.staking.stake_tlos_confirm_3' ) }}</p>
-            </q-card-section>
-
-            <q-card-actions align="right" class="q-pb-md q-px-md">
-                <p
-                    v-if="showMetamaskPrompt"
-                    class="c-stake-form__metamask-prompt u-flex--center-y"
-                    tabindex="0"
-                    aria-:label="$t('pages.staking.add_stlos_to_metamask')"
-
-                    @click="promptAddToMetamask"
-                >
-                    {{ $t('pages.staking.add_stlos_to_metamask') }}
-                    <img
-                        :src="MetaMaskLogo"
-                        class="q-ml-xs"
-                        height="24"
-                        width="24"
-                        :alt="$t('pages.staking.metamask_fox_logo')"
-                    >
-                </p>
-                <q-btn
-                    v-close-popup
-                    flat
-                    :label="$t('pages.staking.cancel')"
-                    color="negative"
-                />
-                <q-btn
-                    v-close-popup
-                    label="Stake TLOS"
-                    color="secondary"
-                    text-color="black"
-                    @click="initiateDeposit"
-                />
-            </q-card-actions>
-        </q-card>
-    </q-dialog>
-</div>
-</template>
 
 <style lang="scss">
 .c-stake-form {

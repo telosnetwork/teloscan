@@ -170,3 +170,18 @@ export function getClientIsApple() {
         // iPad on iOS 13 detection
         || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
 }
+
+/**
+ * Given a Date object, return the pretty-printed timezone offset, e.g. "+05:00"
+ *
+ * @param {Date} date
+ * @return {string}
+ */
+export function getFormattedUtcOffset(date) {
+    const pad = value => value < 10 ? '0' + value : value
+    const sign = (date.getTimezoneOffset() > 0) ? '-' : '+';
+    const offset = Math.abs(date.getTimezoneOffset());
+    const hours = pad(Math.floor(offset / 60));
+    const minutes = pad(offset % 60);
+    return sign + hours + ':' + minutes;
+}

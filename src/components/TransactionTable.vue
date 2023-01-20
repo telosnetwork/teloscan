@@ -83,7 +83,7 @@ export default {
                 rowsPerPage: 10,
                 rowsNumber: 0,
             },
-            showAge: true,
+            showDateAge: true,
         };
     },
     async created() {
@@ -108,9 +108,8 @@ export default {
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             let result = await this.$evmEndpoint.get(this.getPath(props));
 
-            if (this.total === null) {
+            if (this.total == null)
                 this.pagination.rowsNumber = result.data.total.value;
-            }
 
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
@@ -125,21 +124,15 @@ export default {
             for (const transaction of this.transactions) {
                 try {
                     transaction.transfer = false;
-                    transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
-                    if (transaction.input_data === '0x') {
-                        continue;
-                    }
-                    if(!transaction.to) {
-                        continue;
-                    }
+                    transaction.value = formatWei(transaction.value.toLocaleString(0, {useGrouping: false}), 18);
+                    if (transaction.input_data === '0x') continue;
+                    if(!transaction.to) continue;
 
                     const contract = await this.$contractManager.getContract(
                         transaction.to,
                     );
 
-                    if (!contract) {
-                        continue;
-                    }
+                    if (!contract) continue;
 
                     const parsedTransaction = await contract.parseTransaction(
                         transaction.input_data,
@@ -150,17 +143,10 @@ export default {
                     }
                     // Get ERC20 transfer from main function call
                     let signature = transaction.input_data.substring(0, 10);
-                    if (
-                        signature &&
-                        TRANSFER_SIGNATURES.includes(signature) &&
-                        transaction.parsedTransaction.args['amount']
-                    ) {
+                    if (signature && TRANSFER_SIGNATURES.includes(signature) && transaction.parsedTransaction.args['amount']) {
                         let token = await this.$contractManager.getTokenData(transaction.to, 'erc20');
                         if(transaction.contract && token && token.decimals){
-                            transaction.transfer = {
-                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], token.decimals)}`,
-                                'symbol': token.symbol,
-                            };
+                            transaction.transfer = {'value': `${formatWei(transaction.parsedTransaction.args['amount'], token.decimals)}`, 'symbol': token.symbol};
                         }
                     }
                 } catch (e) {
@@ -169,7 +155,7 @@ export default {
                     );
                     // notifiy user
                     this.$q.notify({
-                        message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
+                        message: this.$t('components.failed_to_parse_transaction', {message: e.message}),
                         color: 'negative',
                         position: 'top',
                         timeout: 5000,
@@ -185,22 +171,19 @@ export default {
                 rowsPerPage === 0 ? 500 : rowsPerPage
             }`;
             const filter = Object.assign({}, this.filter ? this.filter : {});
-            if (filter.address) {
-                path += `&address=${filter.address}`;
-            }
+            if (filter.address) path += `&address=${filter.address}`;
 
-            if (filter.block) {
-                path += `&block=${filter.block}`;
-            }
+            if (filter.block) path += `&block=${filter.block}`;
 
-            if (filter.hash) {
-                path += `&hash=${filter.hash}`;
-            }
+            if (filter.hash) path += `&hash=${filter.hash}`;
 
             path += `&skip=${(page - 1) * rowsPerPage}`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
 
             return path;
+        },
+        toggleDateFormat() {
+            this.showDateAge = !this.showDateAge;
         },
     },
 };
@@ -217,26 +200,24 @@ q-table(
     :rows-per-page-options="[10, 20, 50]"
     flat
 )
-    q-tr( slot="header" slot-scope="props" :props="props" )
-        q-th(
-            v-for="col in props.cols"
-            :key="col.name"
-            :props="props"
-            @click="col.name==='date' ? showAge=!showAge : null"
-        )
-        template( v-if="col.name==='date'" )
-            q-tooltip(
-                anchor="bottom middle"
-                self="bottom middle"
-            ) <!-- Click to change format --> {{ $t('components.click_to_change_format') }}
-        | {{ col.label }}
-        template( v-if="col.name === 'method'" )
-        q-icon(name="fas fa-info-circle", style="margin-top: -5px; margin-left: 3px;").info-icon
-            q-tooltip(
-                anchor="bottom middle"
-                self="top middle"
-                max-width="10rem"
-            ) {{ $t('components.executed_based_on_decoded_data') }}
+    template( v-slot:header="props" )
+        q-tr( :props="props" )
+            q-th(
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+            )
+                | {{ col.label }}
+                template( v-if="col.name === 'date'" )
+                    q-icon(
+                        name="fas fa-info-circle",
+                        style="margin-top: -5px; margin-left: 3px;"
+                        @click="toggleDateFormat"
+                    ).info-icon
+                        q-tooltip(anchor="bottom middle" self="bottom middle" :offset="[0, 36]") {{ $t('components.click_to_change_format') }}
+                template( v-if="col.name === 'method'" )
+                    q-icon(name="fas fa-info-circle", style="margin-top: -5px; margin-left: 3px;").info-icon
+                    q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") {{ $t('components.executed_based_on_decoded_data') }}
 
     template(v-slot:body="props")
         q-tr( :props="props")
@@ -245,18 +226,13 @@ q-table(
             q-td( key="block" :props="props")
                 block-field( :block="props.row.block" )
             q-td( key="date" :props="props")
-                date-field( :epoch="props.row.epoch", :showAge="showAge" )
+                date-field( :epoch="props.row.epoch" :force-show-age="showDateAge" )
             q-td( key="method" :props="props")
                 method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"  )
             q-td( key="from" :props="props")
                 address-field(v-if="props.row.from" :address="props.row.from" )
             q-td( key="to" :props="props")
-                address-field(
-                    v-if="props.row.to"
-                    :key="props.row.to + ((props.row.contract) ? '1' : '0')"
-                    :address="props.row.to"
-                    :isContractTrx="(props.row.contract) ? true : false"
-                )
+                address-field(v-if="props.row.to" :key="props.row.to + ((props.row.contract) ? '1' : '0')" :address="props.row.to" :isContractTrx="(props.row.contract) ? true : false" )
             q-td( key="value" :props="props")
                 span(v-if="props.row.value > 0 ||  !props.row.transfer ") {{ props.row.value }} TLOS
                 div(v-else)

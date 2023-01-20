@@ -1,97 +1,3 @@
-<script>
-import DateField from 'components/DateField';
-import TransactionField from 'components/TransactionField';
-import { BigNumber } from 'ethers';
-
-import { formatWei, WEI_PRECISION } from 'src/lib/utils';
-import { mapGetters } from 'vuex';
-
-export default {
-    name: 'WithdrawPage',
-    components: {
-        DateField,
-        TransactionField,
-    },
-    props: {
-        escrowContractInstance: {
-            type: Object,
-            required: true,
-        },
-        unlockedTlosBalance: {
-            type: String,
-            default: null,
-        },
-        totalUnstaked: {
-            type: String,
-            default: null,
-        },
-        deposits: {
-            type: Array,
-            required: true,
-        },
-    },
-    emits: ['balance-changed'],
-    data: () => ({
-        resultHash: null,
-        columns: [
-            {
-                name: 'amount',
-                label: 'Amount',
-                field: 'amount',
-                sortable: true,
-            },
-            {
-                name: 'time',
-                label: 'Available to Withdraw',
-                field: 'until',
-                sortable: true,
-            },
-        ],
-        showAge: true,
-    }),
-    computed: {
-        ...mapGetters('login', ['isLoggedIn', 'isNative']),
-        withdrawDisabled(){
-            return this.unlockedTlosBalance === '0' || this.isLoading || !this.isLoggedIn || this.isNative;
-        },
-        isLoading(){
-            return this.isLoggedIn && !this.isNative && this.unlockedTlosBalance === null;
-        },
-        unstakingBalance(){
-            const total = BigNumber.from(this.totalUnstaked ?? '0').sub(this.unlockedTlosBalance ?? '0');
-            return this.formatAmount(total);
-        },
-        unlockedBalance(){
-            return this.formatAmount(this.unlockedTlosBalance);
-        },
-    },
-    methods: {
-        withdrawUnlocked() {
-            return this.escrowContractInstance.withdraw()
-                .then((result) => {
-                    this.resultHash = result.hash;
-                    this.$emit('balance-changed');
-                })
-                .catch(({ message }) => {
-                    console.error(`Failed to withdraw unlocked TLOS: ${message}`);
-                    this.$q.notify({
-                        type: 'negative',
-                        message: this.$t('pages.staking.withdraw_failed', { message }),
-                    });
-                    this.resultHash = null;
-                });
-        },
-        formatAmount(val) {
-            if (val === null) {
-                return '0.0';
-            }
-
-            return formatWei(val, WEI_PRECISION, 2);
-        },
-    },
-};
-</script>
-
 <template>
 <div>
     <div class="deposits-container">
@@ -139,7 +45,7 @@ export default {
                             {{ formatAmount(props.row.amount) }}
                         </q-td>
                         <q-td key="until" align="right">
-                            <DateField :epoch="(props.row.until).toNumber()" :show-age="showAge" />
+                            <date-field :epoch="(props.row.until).toNumber()" />
                         </q-td>
                     </q-tr>
                 </template>
@@ -166,10 +72,107 @@ export default {
     </div>
     <div v-if="resultHash" class="transaction-notification col-sm-12 col-md-6 offset-md-3">
         {{ $t('pages.staking.withdraw_successful') }}:
-        <TransactionField :transaction-hash="resultHash" />
+        <transaction-field :transaction-hash="resultHash" />
     </div>
 </div>
 </template>
+
+<script>
+import DateField from 'components/DateField';
+import TransactionField from 'components/TransactionField';
+import { BigNumber } from 'ethers';
+
+import { formatWei, WEI_PRECISION } from 'src/lib/utils';
+import { mapGetters } from 'vuex';
+
+export default {
+    name: 'WithdrawPage',
+    components: {
+        DateField,
+        TransactionField,
+    },
+    props: {
+        escrowContractInstance: {
+            type: Object,
+            required: true,
+        },
+        unlockedTlosBalance: {
+            type: String,
+            default: null,
+        },
+        totalUnstaked: {
+            type: String,
+            default: null,
+        },
+        deposits: {
+            type: Array,
+            required: true,
+        },
+    },
+    emits: ['balance-changed'],
+    data: () => ({
+        resultHash: null,
+        columns: [
+            {
+                name: 'amount',
+                label: '',
+                field: 'amount',
+                sortable: true,
+            },
+            {
+                name: 'time',
+                label: '',
+                field: 'until',
+                sortable: true,
+            },
+        ],
+        showAge: true,
+    }),
+    created() {
+        this.columns[0].label = this.$t('pages.staking.amount');
+        this.columns[1].label = this.$t('pages.staking.available_to_withdraw');
+    },
+    computed: {
+        ...mapGetters('login', ['isLoggedIn', 'isNative']),
+        withdrawDisabled(){
+            return this.unlockedTlosBalance === '0' || this.isLoading || !this.isLoggedIn || this.isNative;
+        },
+        isLoading(){
+            return this.isLoggedIn && !this.isNative && this.unlockedTlosBalance === null;
+        },
+        unstakingBalance(){
+            const total = BigNumber.from(this.totalUnstaked ?? '0').sub(this.unlockedTlosBalance ?? '0');
+            return this.formatAmount(total);
+        },
+        unlockedBalance(){
+            return this.formatAmount(this.unlockedTlosBalance);
+        },
+    },
+    methods: {
+        withdrawUnlocked() {
+            return this.escrowContractInstance.withdraw()
+                .then((result) => {
+                    this.resultHash = result.hash;
+                    this.$emit('balance-changed');
+                })
+                .catch(({ message }) => {
+                    console.error(`Failed to withdraw unlocked TLOS: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('pages.staking.withdraw_failed', { message }),
+                    });
+                    this.resultHash = null;
+                });
+        },
+        formatAmount(val) {
+            if (val === null)
+                return '0.0'
+
+            return formatWei(val, WEI_PRECISION, 2);
+        },
+    },
+}
+</script>
 
 <style lang="sass" scoped>
 .deposits-container

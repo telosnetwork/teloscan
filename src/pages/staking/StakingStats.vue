@@ -49,7 +49,7 @@ export default {
         personalStats() {
             return {
                 staked: {
-                    label: 'Staked',
+                    label: this.$t('pages.staking.staked'),
                     value: {
                         stlos: this.formatWeiForStats(this.stlosBalance),
                         tlos: this.formatWeiForStats(this.stlosValue),
@@ -57,7 +57,7 @@ export default {
                     tooltip: this.$t('pages.staking.tooltip_3'),
                 },
                 unstaked: {
-                    label: 'Unstaked',
+                    label: this.$t('pages.staking.unstaked'),
                     value: this.formatWeiForStats(this.totalUnstakedTlosBalance),
                     tooltip: this.$t('pages.staking.tooltip_4', { unlockPeriod: this.unlockPeriodPretty }),
                 },
