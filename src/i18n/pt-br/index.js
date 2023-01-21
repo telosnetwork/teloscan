@@ -142,7 +142,7 @@ export default {
         tokens: 'Tokens',
         created_at_trx: 'Criada na TRX',
         by_address: 'Por endereço',
-        number_used_once: 'Número usado uma vez',
+        number_used_once: 'Número usado uma vez (nonce)',
         native_account: 'Conta nativa',
         balance: 'Saldo',
         view_source_prompt: 'Este contrato foi verificado. Você pode ver o código-fonte e os metadados na guia \'contrato\'',
