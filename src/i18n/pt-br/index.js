@@ -53,7 +53,7 @@ export default {
             'TLOS permanece como garantia ("bloqueado") por {unlockPeriod}; durante este tempo, ' +
             'não é possível interagir com esta quantidade de TLOS.\n\n' +
             'Depois de decorrido o período de desbloqueio, você pode reivindicar seu TLOS disponível na aba Resgatar ' +
-            'nesta página, assim será adicionado ao saldo TLOS da sua conta.',
+            'nesta página. O valor resgatado será adicionado ao saldo TLOS da sua conta.',
             confirm_unstake_1a: 'Continuar resgatará sTLOS em troca de TLOS. ' +
             'O TLOS não aplicado permanecerá bloqueado por um período de', /* unstakePeriodPretty...*/
             confirm_unstake_1b: /*...unstakePeriodPretty */ 'após o qual pode ser transferido para sua conta na aba Resgatar',
