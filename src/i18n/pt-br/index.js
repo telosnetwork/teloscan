@@ -286,7 +286,7 @@ export default {
             checked_at: 'Verificado em',
             task: 'Tarefa',
             message: 'Mensagem',
-            block_height: 'Altura do bloqueio',
+            block_height: 'Altura do bloco',
             latency: 'Latência',
             click_to_change_format: 'Clique para alterar o formato',
         },
