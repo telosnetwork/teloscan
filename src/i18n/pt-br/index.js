@@ -192,7 +192,7 @@ export default {
         continue_on_metamask: 'Continuar no Metamask',
         text1_native_wallets: 'Carteiras nativas para',
         text2_advanced_users: 'usuários avançados',
-        text3_or_to_recover_assets: 'ou para recuperar ativos enviados a um endereço vinculado nativo',
+        text3_or_to_recover_assets: 'ou para recuperar ativos enviados a um endereço nativo vinculado',
         copy_to_clipboard: 'Copiar { text } para a Área de Transferência',
         latest_block: 'Último bloqueio',
         tlos_price: 'Preço da TLOS',
