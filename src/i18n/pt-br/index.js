@@ -276,7 +276,7 @@ export default {
             invalid_signed_integer: 'Inteiro com sinal inválido',
             invalid_unsigint: 'A entrada deve ser um inteiro não sem sinal válido',
             str_input_placeholder: '["algum valor", ... , "valor final"]',
-            str_input_hint: 'Aspas duplas em strings (sequência de textos) devem ser evitadas(\\")',
+            str_input_hint: 'Aspas duplas em strings (sequência de caracteres) devem ser evitadas(\\")',
             address_placeholder: 'Endereço que começa com 0x',
             address_label: '{ label } (endereço)',
             boolean_array_label: '{ label } (bool[{ size }])',
