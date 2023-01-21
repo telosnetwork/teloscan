@@ -215,7 +215,7 @@ export default {
         balance: 'Saldo',
         error_fetching_balance: 'erro ao recuperar o saldo',
         launch_metamask_dialog_to_add: 'Iniciar interação com o MetaMask para adicionar { symbol }',
-        search_hints: 'Transação,Endereço,Bloqueio',
+        search_hints: 'Transação, Endereço, Bloco',
         no_provider_found: 'Mais de um provedor está ativo, desative provedores adicionais ou o provedor de carteira EVM atual não é suportado.',
         copied: 'Copiado',
         copy_to_clipboard_failed: 'Falha ao copiar para a área de transferência',
