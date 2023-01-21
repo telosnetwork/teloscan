@@ -1,9 +1,9 @@
 <script>
-import Endpoints from '../components/Health/Endpoints.vue';
-import Monitor from '../components/Health/Monitor.vue';
+import Endpoints from 'components/Health/Endpoints.vue';
+import Monitor from 'components/Health/Monitor.vue';
 export default {
     name: 'HealthPage',
-    components: {Endpoints, Monitor},
+    components: { Endpoints, Monitor },
 };
 </script>
 <template lang="pug">
@@ -12,7 +12,7 @@ export default {
         .text-primary.text-h6 {{ $t('pages.rpc_endpoints') }}
     Endpoints()
     .homeInfo.q-mb-lg
-        .text-primary.text-h6 {{ $t('pages.monitor') }} 
+        .text-primary.text-h6 {{ $t('pages.monitor') }}
     Monitor()
 </template>
 

@@ -1,9 +1,9 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import { ethers } from 'ethers';
-import exchangeImage from '../assets/exchange.png';
-import gasImage from '../assets/gas.png';
-import blockImage from '../assets/block.png';
+import exchangeImage from 'assets/exchange.png';
+import gasImage from 'assets/gas.png';
+import blockImage from 'assets/block.png';
 
 export default {
     name: 'HomeInfo',

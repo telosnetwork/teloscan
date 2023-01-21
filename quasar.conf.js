@@ -14,8 +14,15 @@ const nodePolyfillWebpackPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = function(/* ctx */) {
     return {
-    // https://quasar.dev/quasar-cli/supporting-ts
-        supportTS: false,
+        // https://quasar.dev/quasar-cli/supporting-ts
+        supportTS: {
+            tsCheckerConfig: {
+                eslint: {
+                    enabled: true,
+                    files: './src/**/*.{ts,tsx,js,jsx,vue}',
+                },
+            },
+        },
 
         // https://quasar.dev/quasar-cli/prefetch-feature
         // preFetch: true,
@@ -48,8 +55,8 @@ module.exports = function(/* ctx */) {
             env,
             chainWebpack (chain) {
                 chain.plugin('eslint-webpack-plugin')
-                    .use(ESLintPlugin, [{ extensions: [ 'js', 'vue' ] }]);
-                chain.plugin('node-polyfill').use(nodePolyfillWebpackPlugin)
+                    .use(ESLintPlugin, [{ extensions: ['js', 'vue'] }]);
+                chain.plugin('node-polyfill').use(nodePolyfillWebpackPlugin);
             },
 
             // transpile: false,

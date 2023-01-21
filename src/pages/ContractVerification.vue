@@ -32,6 +32,16 @@ export default {
             contractInput: '',
             fileType: true,
             TIME_DELAY: 6000,
+            sourcePathRules: [
+                val => ((val.length === 0) ||
+                (val.length && val.charAt(val.length - 1) === '/')) ||
+                this.$t('pages.invalid_path_format'),
+            ],
+            constructorArgsRules: [
+                val => ((val.length === 0) ||
+                (val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',')) ||
+                this.$t('pages.no_trailing_commas'),
+            ],
         };
     },
     computed: {
@@ -46,7 +56,9 @@ export default {
     },
     async mounted() {
         this.compilerOptions = await getCompilerOptions();
-        if (this.$route.params.address) this.contractAddress = this.$route.params.address;
+        if (this.$route.params.address) {
+            this.contractAddress = this.$route.params.address;
+        }
     },
     methods: {
         isValidAddressFormat,
@@ -64,20 +76,22 @@ export default {
             }
         },
         onNotify(notification){
+            let noti = { ...notification };
+
             if (typeof notification !== 'object' || !Object.prototype.hasOwnProperty.call(notification, 'message')){
-                notification = { message: JSON.stringify(notification), type: 'negative'};
+                noti = { message: JSON.stringify(notification), type: 'negative' };
             }
             this.$q.notify({
-                type: notification.type,
+                type: noti.type,
                 position: 'top',
-                message: notification.message,
+                message: noti.message,
                 timeout: this.TIME_DELAY,
             });
         },
         navToAddress(){
             setTimeout(() => {
-                this.$router.push({ name: 'address', params: { address: this.contractAddress}})
-            },this.TIME_DELAY);
+                this.$router.push({ name: 'address', params: { address: this.contractAddress } });
+            }, this.TIME_DELAY);
         },
         getUrl() {
             return `${process.env.TELOS_API_ENDPOINT}/contracts/verify`;
@@ -85,7 +99,7 @@ export default {
         async submitFormHandler() {
             if (this.$refs.uploader){
                 if (this.$refs.uploader.files.length === 0){
-                    this.onNotify({type: 'info', message: this.$t('pages.paste_contract_contents')});
+                    this.onNotify({ type: 'info', message: this.$t('pages.paste_contract_contents') });
                     return;
                 }
                 await this.$refs.uploader.upload();
@@ -104,7 +118,7 @@ export default {
                     this.navToAddress();
                 }
             }catch(e){
-                this.onNotify({ message: e, type: 'negative'});
+                this.onNotify({ message: e, type: 'negative' });
             }
         },
 
@@ -112,9 +126,9 @@ export default {
             let formFields = this.getFormFields();
             const formData = new FormData();
             for (let i in formFields){
-                formData.append(formFields[i].name, formFields[i].value)
+                formData.append(formFields[i].name, formFields[i].value);
             }
-            return formData
+            return formData;
         },
 
         getFormFields(){
@@ -124,10 +138,10 @@ export default {
                 { name: 'compilerVersion', value: this.compilerVersion },
                 { name: 'optimizer', value: this.optimizer },
                 { name: 'runs', value: this.runs },
-                { name: 'constructorArgs', value: this.constructorArgs},
+                { name: 'constructorArgs', value: this.constructorArgs },
                 { name: 'targetEvm', value: this.targetEvm },
                 { name: 'fileType', value: this.fileType },
-            ]
+            ];
         },
 
         resetForm(){
@@ -140,11 +154,11 @@ export default {
             this.runs = 200;
             this.fileType = true;
             if (this.$refs.uploader){
-                this.$refs.uploader.files = []
+                this.$refs.uploader.files = [];
             }
         },
     },
-}
+};
 </script>
 
 <template lang='pug'>
@@ -178,7 +192,7 @@ export default {
                   :label="$t('pages.contract_file_directory_path')"
                   :placeholder="$t('pages.eg_contracts')"
                   debounce="750"
-                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) === '/') ) || $t('pages.invalid_path_format')]"
+                  :rules="sourcePathRules"
                 )
                 .radio-container
                   q-radio(
@@ -208,7 +222,7 @@ export default {
                   :label="$t('pages.constructor_arguments')"
                   :placeholder="$t('pages.comma_seperated_values')"
                   debounce="750"
-                  :rules="[val => ((val.length === 0) ||(val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',') ) || $t('pages.no_trailing_commas')]"
+                  :rules="constructorArgsRules"
                 )
                 .radio-container
                   q-radio(
@@ -270,7 +284,7 @@ span
 .q-uploader
   margin-top: 1rem
   max-width: unset !important
-  width:100%
+  width: 100%
 
 .q-form
   width: 60rem
@@ -309,7 +323,7 @@ span
   display: inline-flex
   flex-direction: column
   width: 48%
-  height:10rem
+  height: 10rem
   margin: auto
 
 .inputs-container-row

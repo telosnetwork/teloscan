@@ -129,12 +129,12 @@ describe('StakeForm.vue', () => {
             expect(stlosContractInstanceMock[mockedContractMethod]).toHaveBeenCalledTimes(2);
             expect(stlosContractInstanceMock[mockedContractMethod]).toHaveBeenLastCalledWith('0');
             expect(wrapper.element).toMatchSnapshot();
-        }
+        };
 
         ['top', 'bottom'].forEach((topOrBottom) => {
             test(`for the ${topOrBottom} input`, async() => {
                 await runInputExpects(topOrBottom);
-            })
+            });
         });
     });
 

@@ -28,7 +28,7 @@ export default {
             transferAmount: null,
             transferTo: null,
             expand: false,
-        }
+        };
     },
     mounted() {
         this.setValues();
@@ -38,17 +38,19 @@ export default {
             this.expand = !this.expand;
         },
         async setValues() {
-            if (!this.trx.parsedTransaction)
+            if (!this.trx.parsedTransaction) {
                 return;
+            }
 
             if (TRANSFER_SIGNATURES.includes(this.trx.parsedTransaction.sighash) && this?.contract?.token?.decimals) {
-                this.transferAmount = `${formatWei(this.trx.parsedTransaction.args[1], this.contract.token.decimals)} ${this.contract.token.symbol}`;
+                const wei = formatWei(this.trx.parsedTransaction.args[1], this.contract.token.decimals);
+                this.transferAmount = `${wei} ${this.contract.token.symbol}`;
             }
         },
     },
-}
+};
 </script>
-
+<!-- eslint-disable max-len -->
 <template lang="pug">
 div
   span(v-if="trx.parsedTransaction" )
@@ -62,3 +64,4 @@ div
     span( v-if="shortenSignature && expand" anchor="center middle" class="word-break" self="center middle" v-on:click="toggle()")
       | {{ trx.input_data }}
 </template>
+<!--eslint-enable-->

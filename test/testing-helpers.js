@@ -9,7 +9,7 @@ export const oneThousandFiveHundredEthInWei = `15${'0'.repeat(20)}`;
 export const flushTimersAndPromises = async () => {
     jest.runAllTimers();
     await flushPromises();
-}
+};
 
 /**
  * Creates a stub component with an unnamed slot and arbitrary named slots

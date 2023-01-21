@@ -1,19 +1,3 @@
-<template>
-<base-text-input
-    ref="input"
-    v-bind="$attrs"
-    :model-value="modelValue"
-    :label="shapedLabel"
-    :name="name"
-    :placeholder="placeholder"
-    :hint="hint"
-    :rules="rules"
-    :lazy-rules="false"
-    :size="undefined"
-    @update:modelValue="handleChange"
-/>
-</template>
-
 <script>
 import { parseStringArrayString } from 'components/ContractTab/function-interface-utils';
 
@@ -60,19 +44,21 @@ export default {
     },
     computed: {
         rules() {
-            const validateParsedArray = (value) => Array.isArray(parseStringArrayString(value)) || value === '';
+            const validateParsedArray = value => Array.isArray(parseStringArrayString(value)) || value === '';
 
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
 
-                if ((sizeIsUnconstrained) || value === '')
+                if ((sizeIsUnconstrained) || value === '') {
                     return true;
+                }
 
                 const expectedLength = +this.size;
                 return Array.isArray(parseStringArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_strings_array_length', { size: +this.size });
+            const incorrectArrayLengthMessage =
+                this.$t('components.inputs.incorrect_strings_array_length', { size: +this.size });
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_strings_array_string');
 
             return [
@@ -82,7 +68,7 @@ export default {
         },
         shapedLabel() {
             const size = (Number.isInteger(+this.size) && +this.size !== -1) ? `${+this.size}` : '';
-            return `${this.label} (string[${size}])`
+            return `${this.label} (string[${size}])`;
         },
     },
     watch: {
@@ -109,8 +95,24 @@ export default {
             }
         },
     },
-}
+};
 </script>
+
+<template>
+<BaseTextInput
+    ref="input"
+    v-bind="$attrs"
+    :model-value="modelValue"
+    :label="shapedLabel"
+    :name="name"
+    :placeholder="placeholder"
+    :hint="hint"
+    :rules="rules"
+    :lazy-rules="false"
+    :size="undefined"
+    @update:modelValue="handleChange"
+/>
+</template>
 
 <style>
 

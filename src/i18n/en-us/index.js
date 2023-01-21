@@ -1,3 +1,5 @@
+/* eslint-disable max-len*/
+
 export default {
     pages: {
         staking: {
@@ -36,6 +38,8 @@ export default {
             withdraw: 'Withdraw',
             telos_evm_staking: 'Telos EVM Staking',
             stake_tlos_earn_interest: 'Stake TLOS for sTLOS to earn interest from the staking rewards pool',
+            staked: 'Staked',
+            unstaked: 'Unstaked',
             tooltip_1: 'APY: Annual Percentage Yield\n\nThe annual rate of return after taking compound interest into account.\n\n' +
             'Interest is compounded approximately every 30 minutes. The percentage rate is not fixed, meaning that ' +
             'it will change over time with the total amount of TLOS staked across Telos EVM and Native. ' +
@@ -176,12 +180,12 @@ export default {
         input: 'Input',
         output: 'Output',
         value: 'Value',
-
     },
     components: {
         verify_prompt: 'This contract has not been verified.  Would you like to upload the contract(s) and metadata to verify source now?',
         verify_contract: 'Verify Contract',
         search_evm_address_failed: 'Search for EVM address linked to { accountName } native account failed. You can create one at wallet.telos.net',
+        unknown_web3_login_type: 'Unknown web3 login type: { provider }',
         connect_wallet: 'Connect Wallet',
         view_address: 'View Address',
         disconnect: 'Disconnect',
@@ -318,6 +322,26 @@ export default {
             read_functions: 'Read functions',
             write_functions: 'Write functions',
             unverified_contract: 'Unverified contract',
+        },
+        header: {
+            sign_in: 'Sign in',
+            sign_out: 'Sign out',
+            liq_staking: 'Liquid Staking',
+            goto_staking: 'Go to Staking',
+            goto_health_monitor: 'go to Heath Monitor page',
+            goto_mainnet: 'Go to Mainnet',
+            goto_testnet: 'Go to Testnet',
+            health_monitor: 'Health Monitor',
+            health_status: 'Health Status',
+            advanced: 'Advanced',
+            light_mode: 'Light Mode',
+            dark_mode: 'Dark Mode',
+            address_not_found: 'Search for EVM address linked to { account } native account failed.',
+            search_failed: 'Search failed, please enter a valid search term.',
+            goto_address_details: 'Go to address details',
+            copy_address: 'Copy address',
+            address_copied: 'Address copied to clipboard',
+            search_placeholder: 'Address, Tx, Block',
         },
     },
     layouts: {
