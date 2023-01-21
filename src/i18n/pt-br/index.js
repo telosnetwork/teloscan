@@ -72,7 +72,7 @@ export default {
             '{prettyBalance} sTLOS',
             login_using_evm_wallet: 'Logar usando uma carteira EVM',
             max_unstake_transactions_reached: 'Você atingiu o número máximo de transações de desaplicação pendentes, ' +
-            'Por favor resgate o TLOS disponível ou aguarde que o TLOS não aplicado pendente se torne resgatável antes de fazer outro depósito.',
+            'por favor, resgate o TLOS disponível ou aguarde que o TLOS  desaplicado ainda pendente se torne resgatável antes de fazer outro depósito.',
             click_to_change_time_format: 'Clique para mudar o formato de hora',
             unstaking: 'Desaplicando',
             available_to_withdraw: 'Disponível para retirar',
