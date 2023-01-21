@@ -274,7 +274,7 @@ export default {
             too_large_unsigint: 'O valor máximo para uint{ size } é 2^{ size } - 1',
             no_negative_unsigint: 'O valor para uint{ size } não deve ser negativo',
             invalid_signed_integer: 'Inteiro com sinal inválido',
-            invalid_unsigint: 'A entrada deve ser um inteiro não assinado válido',
+            invalid_unsigint: 'A entrada deve ser um inteiro não sem sinal válido',
             str_input_placeholder: '["algum valor", ... , "valor final"]',
             str_input_hint: 'Aspas duplas em strings (sequência de textos) devem ser evitadas(\\")',
             address_placeholder: 'Endereço que começa com 0x',
