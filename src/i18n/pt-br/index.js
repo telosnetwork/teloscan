@@ -57,7 +57,7 @@ export default {
             confirm_unstake_1a: 'Ao continuar, você resgatará sTLOS em troca de TLOS. ' +
             'O TLOS não aplicado permanecerá bloqueado por um período de', /* unstakePeriodPretty...*/
             confirm_unstake_1b: /*...unstakePeriodPretty */ 'após o qual pode ser transferido para sua conta na aba Resgatar',
-            confirm_unstake_2a: 'Esteja atento que, pode desaplicar ', /* remainingDeposits...*/
+            confirm_unstake_2a: 'Atenção, você já pode desaplicar ', /* remainingDeposits...*/
             confirm_unstake_2b: /*...remainingDeposits */ 'mais vezes antes ' +
             'de atingir o máximo de ações simultâneas de desaplicação. Quando atingir o máximo, você precisará resgatar ' +
             'TLOS desbloqueado para continuar desaplicando. Se você não tiver nenhum TLOS resgatável nesse momento, você deve ' +
