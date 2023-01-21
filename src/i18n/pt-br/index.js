@@ -6,8 +6,8 @@ export default {
             add_stlos_to_metamask: 'Iniciar interação com o MetaMask para adicionar sTLOS',
             metamask_fox_logo: 'Logotipo de raposa do MetaMask',
             cancel: 'Cancelar',
-            stake_tlos_confirm: 'continuar significa aplicar TLOS em troca de sTLOS. ' +
-            'TLOS podem ser resgatados por TLOS a qualquer momento usando a aba Desaplicar.',
+            stake_tlos_confirm: 'Continuar significa aplicar TLOS em troca de sTLOS. ' +
+            'sTLOS podem ser resgatados por TLOS a qualquer momento usando a aba Desaplicar.',
             stake_tlos_confirm_2a: 'Depois que desaplicar os TLOS, eles ficarão bloqueados por um período de', /* unstakePeriodPretty...*/
             stake_tlos_confirm_2b: /*...unstakePeriodPretty */ 'depois disso, podem ser retirados da sua conta na aba Resgatar.',
             stake_tlos_confirm_3: 'Deseja continuar?',
