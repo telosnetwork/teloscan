@@ -337,7 +337,7 @@ export default {
             goto_address_details: 'Ir para detalhes do endereço',
             copy_address: 'Copiar endereço',
             address_copied: 'Endereço copiado para a área de transferência',
-            search_placeholder: 'Endereço, Tx, Bloqueio',
+            search_placeholder: 'Endereço, Tx, Bloco',
         },
     },
     layouts: {
