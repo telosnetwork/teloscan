@@ -1,4 +1,9 @@
+/* eslint-disable max-len*/
+
 export default {
+    locale: {
+        current_language_name: 'Português',
+    },
     pages: {
         staking: {
             note_unstaking_period: 'Lembre-se que há um período de retirada de {period}',
@@ -130,7 +135,6 @@ export default {
         paste_contract_code_here: 'copie e cole o código do contrato aqui...',
         enter_contract_text: 'digite ou cole o texto do contrato',
         verify_contract: 'Verificar contrato',
-        dismiss: 'Fechar',
         reset: 'Reiniciar',
         gas_used: 'Gás usado',
         transactions: 'Transações',
@@ -300,8 +304,6 @@ export default {
             write: 'Escrever',
             amount: 'Montante',
             value: 'Valor',
-            ok: 'Ok',
-            cancel: 'Cancelar',
             custom_decimals: 'Decimais personalizados',
             custom: 'Personalizado',
             unverified_contract_source: 'O código fonte deste contrato não foi verificado.',
@@ -338,7 +340,14 @@ export default {
             copy_address: 'Copiar endereço',
             address_copied: 'Endereço copiado para a área de transferência',
             search_placeholder: 'Endereço, Tx, Bloco',
+            select_language: 'Selecione o idioma',
         },
+    },
+    global: {
+        language: 'Idioma',
+        cancel: 'Cancelar',
+        ok: 'OK',
+        dismiss: 'Descartar',
     },
     layouts: {
         health_status: 'Estado de saúde',
