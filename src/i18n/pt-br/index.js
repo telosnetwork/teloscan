@@ -13,7 +13,7 @@ export default {
             stake_tlos_confirm_3: 'Deseja continuar?',
             stake_tlos: 'Aplicar TLOS',
             stake_tlos_subheader: 'Aplicar seus TLOS por sTLOS te dá acesso a uma renda estável e várias aplicações DeFi, ' +
-            'aumentando ainda mais a rentabilidade. Conforme a quantidade de recompensas aumenta, a taxa de conversão de TLOS para sTLOS mudará ' +
+            'aumentando ainda mais a rentabilidade. Conforme o tamanho da pool de recompensas aumenta, a taxa de conversão de TLOS para sTLOS mudará ' +
             'com o tempo. Portanto, a quantidade de sTLOS recebida é menor que a quantidade de TLOS aplicada. As recompensas se ' +
             'auto-compensarão. Não é necessária nenhuma ação adicional.',
             receive_stlos: 'Receber sTLOS',
