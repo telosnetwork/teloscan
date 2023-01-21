@@ -25,14 +25,14 @@
                     <q-btn
                         v-close-popup
                         flat="flat"
-                        :label="$t('components.contract_tab.ok')"
+                        :label="$t('global.ok')"
                         color="primary"
                         @click="setAmount"
                     />
                     <q-btn
                         v-close-popup
                         flat="flat"
-                        :label="$t('components.contract_tab.cancel')"
+                        :label="$t('global.cancel')"
                         color="primary"
                         @click="clearAmount"
                     />

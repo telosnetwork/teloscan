@@ -1,4 +1,7 @@
 export default {
+    locale: {
+        current_language_name: 'English',
+    },
     pages: {
         staking: {
             note_unstaking_period: 'Please note that there is an unstaking period of {period}',
@@ -47,7 +50,7 @@ export default {
             tooltip_3: 'Staked\n\n' +
             'The total staked amount associated with the logged-in account, i.e. ' +
             'your sTLOS token balance, along with its value in TLOS',
-            tooltip_4: 'Unstaked\n\n' + 
+            tooltip_4: 'Unstaked\n\n' +
             'The total value of TLOS which you have unstaked, both locked and unlocked.\n\n' +
             'When you unstake\u2014i.e. redeem\u2014some value of sTLOS, the equivalent amount of ' +
             'TLOS is sent into escrow ("locked") for {unlockPeriod}; during this time, ' +
@@ -130,7 +133,6 @@ export default {
         paste_contract_code_here: 'copy & paste contract code here...',
         enter_contract_text: 'enter or paste contract text',
         verify_contract: 'Verify Contract',
-        dismiss: 'Dismiss',
         reset: 'Reset',
         gas_used: 'Gas used',
         transactions: 'Transactions',
@@ -281,7 +283,7 @@ export default {
             address_label: '{ label } (address)',
             boolean_array_label: '{ label } (bool[{ size }])',
         },
-        health: {   
+        health: {
             status: 'Status',
             checked_at: 'Checked at',
             task: 'Task',
@@ -300,13 +302,11 @@ export default {
             write: 'Write',
             amount: 'Amount',
             value: 'Value',
-            ok: 'Ok',
-            cancel: 'Cancel',
             custom_decimals: 'Custom decimals',
             custom: 'Custom',
             unverified_contract_source: 'This contract source has not been verified.',
             click_here: 'Click here',
-            upload_source_files: 'to upload source files and verify this contract. ' + 
+            upload_source_files: 'to upload source files and verify this contract. ' +
                 'Alternatively, you can interact with the contract using an arbitrary ABI:',
             use_erc20_abi: 'Use ERC20 ABI',
             use_erc721_abi: 'Use ERC721 ABI',
@@ -338,7 +338,14 @@ export default {
             copy_address: 'Copy address',
             address_copied: 'Address copied to clipboard',
             search_placeholder: 'Address, Tx, Block',
+            select_language: 'Select Language',
         },
+    },
+    global: {
+        language: 'Language',
+        cancel: 'Cancel',
+        ok: 'Ok',
+        dismiss: 'Dismiss',
     },
     layouts: {
         health_status: 'Health Status',
