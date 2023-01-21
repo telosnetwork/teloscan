@@ -132,7 +132,7 @@ export default {
         verify_contract: 'Verificar contrato',
         dismiss: 'Fechar',
         reset: 'Reiniciar',
-        gas_used: 'Gas usado',
+        gas_used: 'Gás usado',
         transactions: 'Transações',
         account: 'Conta',
         contract: 'Contrato',
