@@ -180,7 +180,7 @@ export default {
         value: 'Valor',
     },
     components: {
-        verify_prompt: 'Este contrato não foi verificado. Você gostaria de carregar o(s) contrato(s) e os metadados para verificar o código-fonte agora?',
+        verify_prompt: 'Este contrato ainda não foi verificado. Você gostaria de carregar o(s) contrato(s) e os metadados para verificar o código-fonte agora?',
         verify_contract: 'Verificar contrato',
         search_evm_address_failed: 'A busca pelo endereço EVM vinculado à conta nativa { accountName } falhou. Você pode criar uma em wallet.telos.net',
         unknown_web3_login_type: 'Tipo de login web3 desconhecido: { provider }',
