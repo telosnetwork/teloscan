@@ -202,7 +202,7 @@ export default {
         search_failed: 'A busca falhou, digite um termo de pesquisa válido.',
         add_to_metamask: 'Adicionar { symbol } ao MetaMask',
         tx_hash: 'Tx Hash',
-        block: 'Bloqueio',
+        block: 'Bloco',
         date: 'Data',
         method: 'Método',
         to_interacted_with: 'Para / Interagido com',
