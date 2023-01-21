@@ -85,7 +85,7 @@ const routes = [
         name: 'sourcify',
         path: '',
         beforeEnter() {
-            window.open('https://sourcify.dev', '_blank')
+            window.open('https://sourcify.dev', '_blank');
         },
     },
     {

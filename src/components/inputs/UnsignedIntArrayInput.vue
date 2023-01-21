@@ -1,19 +1,3 @@
-<template>
-<base-text-input
-    ref="input"
-    v-bind="$attrs"
-    :model-value="modelValue"
-    :label="shapedLabel"
-    :name="name"
-    :placeholder="placeholder"
-    :rules="rules"
-    :lazy-rules="false"
-    :size="undefined"
-    :uint-size="undefined"
-    @update:modelValue="handleChange"
-/>
-</template>
-
 <script>
 import { integerSizeValidator, parseUintArrayString } from 'components/ContractTab/function-interface-utils';
 
@@ -65,23 +49,27 @@ export default {
             return +this.size === -1 ? undefined : +this.size;
         },
         rules() {
-            const validateParsedArray = (value) => Array.isArray(parseUintArrayString(value, undefined, +this.uintSize)) || value === '';
+            const validateParsedArray = value =>
+                Array.isArray(parseUintArrayString(value, undefined, +this.uintSize)) || value === '';
 
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
 
-                if ((sizeIsUnconstrained) || value === '')
+                if ((sizeIsUnconstrained) || value === '') {
                     return true;
+                }
 
                 const expectedLength = +this.size;
-                const parsedArrayLength = (parseUintArrayString(value, this.expectedArraySize, +this.uintSize) ?? []).length;
+                const parsedArrayLength =
+                    (parseUintArrayString(value, this.expectedArraySize, +this.uintSize) ?? []).length;
 
                 return parsedArrayLength === expectedLength;
             };
 
-            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_unsigint_array_length', { size: +this.size });
+            const incorrectArrayLengthMessage =
+                this.$t('components.inputs.incorrect_unsigint_array_length', { size: +this.size });
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_unsigint_array_string');
-            
+
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,
                 val => validateArrayLength(val) || incorrectArrayLengthMessage,
@@ -89,7 +77,7 @@ export default {
         },
         shapedLabel() {
             const size = (Number.isInteger(+this.size) && +this.size !== -1) ? `${+this.size}` : '';
-            return `${this.label} (uint${this.uintSize}[${size}])`
+            return `${this.label} (uint${this.uintSize}[${size}])`;
         },
     },
     watch: {
@@ -115,8 +103,24 @@ export default {
             }
         },
     },
-}
+};
 </script>
+
+<template>
+<BaseTextInput
+    ref="input"
+    v-bind="$attrs"
+    :model-value="modelValue"
+    :label="shapedLabel"
+    :name="name"
+    :placeholder="placeholder"
+    :rules="rules"
+    :lazy-rules="false"
+    :size="undefined"
+    :uint-size="undefined"
+    @update:modelValue="handleChange"
+/>
+</template>
 
 <style>
 

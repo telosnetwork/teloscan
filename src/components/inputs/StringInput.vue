@@ -1,13 +1,3 @@
-<template>
-<base-text-input
-    v-bind="$attrs"
-    :model-value="modelValue"
-    :label="shapedLabel"
-    :name="name"
-    @update:modelValue="handleChange"
-/>
-</template>
-
 <script>
 import BaseTextInput from 'components/inputs/BaseTextInput';
 
@@ -35,7 +25,7 @@ export default {
     },
     computed: {
         shapedLabel() {
-            return `${this.label} (string)`
+            return `${this.label} (string)`;
         },
     },
     methods: {
@@ -45,8 +35,18 @@ export default {
             }
         },
     },
-}
+};
 </script>
+
+<template>
+<BaseTextInput
+    v-bind="$attrs"
+    :model-value="modelValue"
+    :label="shapedLabel"
+    :name="name"
+    @update:modelValue="handleChange"
+/>
+</template>
 
 <style>
 

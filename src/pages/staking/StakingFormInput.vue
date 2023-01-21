@@ -1,65 +1,9 @@
-<template>
-<div
-    class="c-staking-input container-fluid shadow-3"
-    @animationend="handleWiggleEnd"
->
-    <div class="row">
-        <div class="col-6">
-            <h6 class="c-staking-input__label">
-                {{ label }}
-            </h6>
-        </div>
-        <div class="col-6 u-flex--right">
-            <p v-if="errorText" class="text-negative">
-                {{ errorText }}
-            </p>
-
-            <div
-                v-else-if="infoText"
-                class="c-staking-input__info-container"
-                @click="handleInfoClick"
-            >
-                <q-tooltip
-                    :offset="[0, 88]"
-                    anchor="top middle"
-                    self="top middle"
-                >
-                    <span class="c-staking-input__tooltip-text">{{ tooltip }}</span>
-                </q-tooltip>
-
-                {{ infoText }}
-                <q-icon name="fas fa-info-circle q-pl-xs info-icon" />
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            <input
-                v-show="!isLoading"
-                ref="input"
-                :disabled="isLoading"
-                type="text"
-                pattern="[0-9.]*"
-                inputmode="decimal"
-                placeholder="0"
-                class="c-staking-input__input"
-                @keydown="handleKeydown"
-                @input.stop="handleInput"
-            >
-            <div v-if="isLoading" class="c-staking-input__loading u-flex--left">
-                <i class="fa fa-spinner fa-spin" />
-            </div>
-        </div>
-    </div>
-</div>
-</template>
-
 <script>
 import { BigNumber, ethers } from 'ethers';
 
 import { WEI_PRECISION } from 'src/lib/utils';
 
-const { commify, parseUnits, formatEther} = ethers.utils;
+const { commify, parseUnits, formatEther } = ethers.utils;
 
 const dot = '.';
 const zeroDot = '0.';
@@ -68,7 +12,7 @@ const notIntegerOrDotRegex = /[^\d.]/g;
 const notIntegerDotOrCommaRegex = /[^\d,.]/g;
 const leadingZeroesRegex = /^0+(?!$|\.)/g;
 const decimalRegex = /\.\d+$/g;
-const dotZeroRegex = /\.0$/g
+const dotZeroRegex = /\.0$/g;
 const commaRegex = /,/g;
 const dotRegex = /\./g;
 
@@ -148,8 +92,9 @@ export default {
             const nextCharacterIsDot       =   dotRegex.test(value[caretPosition]);
             const previousCharacterIsDot   =   dotRegex.test(value[caretPosition - 1]);
 
-            const deletingDot   = (deletingForward && nextCharacterIsDot)   || (deletingBackward && previousCharacterIsDot);
-            const deletingComma = (deletingForward && nextCharacterIsComma) || (deletingBackward && previousCharacterIsComma);
+            const deletingDot = (deletingForward && nextCharacterIsDot) || (deletingBackward && previousCharacterIsDot);
+            const deletingComma = (deletingForward && nextCharacterIsComma) ||
+                (deletingBackward && previousCharacterIsComma);
 
             if (deletingDot) {
                 this.setInputValue(value.replace(dotRegex, ''));
@@ -179,7 +124,7 @@ export default {
                 const caretIsPastDecimal = caretPosition > integer.length + 1;
                 const fractionalUnderMaxLength = fractional.length < WEI_PRECISION;
 
-                return keypressIsDigit && caretIsPastDecimal && !fractionalUnderMaxLength
+                return keypressIsDigit && caretIsPastDecimal && !fractionalUnderMaxLength;
             })();
             const tryingToAddSecondDot = pressedKey === dot && value.includes(dot);
             const tryingToAddLeadingZeroes =
@@ -193,13 +138,15 @@ export default {
                 tryingToAddSecondDot ||
                 tryingToAddLeadingZeroes;
 
-            if (invalidKeystroke)
+            if (invalidKeystroke) {
                 event.preventDefault();
+            }
         },
         handleInput() {
-            const emit = val => {
-                if (val !== this.modelValue)
+            const emit = (val) => {
+                if (val !== this.modelValue) {
                     this.$emit('update:modelValue', val);
+                }
             };
 
             const { input } = this.$refs;
@@ -211,8 +158,9 @@ export default {
             );
 
             if (['', null, undefined, zero, zeroDot, dot].includes(input.value)) {
-                if (input.value === dot)
+                if (input.value === dot) {
                     this.setInputValue(zeroDot);
+                }
 
                 emit(zero);
                 return;
@@ -231,8 +179,9 @@ export default {
             }
 
             // don't format or emit if the user is about to type a decimal
-            if (input.value[input.value.length - 1] === dot && caretPosition === input.value.length)
+            if (input.value[input.value.length - 1] === dot && caretPosition === input.value.length) {
                 return;
+            }
 
             let workingValue = input.value.replace(notIntegerOrDotRegex, '') ?? '';
             let workingValueAsWeiBn = parseUnits(workingValue, 'ether');
@@ -267,7 +216,9 @@ export default {
             this.$refs.input.value = val;
         },
         setInputCaretPosition(val) {
-            ['Start', 'End'].forEach(property => this.$refs.input[`selection${property}`] = val)
+            ['Start', 'End'].forEach((property) => {
+                this.$refs.input[`selection${property}`] = val;
+            });
         },
         triggerWiggle() {
             this.$el.classList.add('c-staking-input--wiggle');
@@ -276,8 +227,64 @@ export default {
             this.$el.classList.remove('c-staking-input--wiggle');
         },
     },
-}
+};
 </script>
+
+<template>
+<div
+    class="c-staking-input container-fluid shadow-3"
+    @animationend="handleWiggleEnd"
+>
+    <div class="row">
+        <div class="col-6">
+            <h6 class="c-staking-input__label">
+                {{ label }}
+            </h6>
+        </div>
+        <div class="col-6 u-flex--right">
+            <p v-if="errorText" class="text-negative">
+                {{ errorText }}
+            </p>
+
+            <div
+                v-else-if="infoText"
+                class="c-staking-input__info-container"
+                @click="handleInfoClick"
+            >
+                <q-tooltip
+                    :offset="[0, 88]"
+                    anchor="top middle"
+                    self="top middle"
+                >
+                    <span class="c-staking-input__tooltip-text">{{ tooltip }}</span>
+                </q-tooltip>
+
+                {{ infoText }}
+                <q-icon name="fas fa-info-circle q-pl-xs info-icon" />
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <input
+                v-show="!isLoading"
+                ref="input"
+                :disabled="isLoading"
+                type="text"
+                pattern="[0-9.]*"
+                inputmode="decimal"
+                placeholder="0"
+                class="c-staking-input__input"
+                @keydown="handleKeydown"
+                @input.stop="handleInput"
+            >
+            <div v-if="isLoading" class="c-staking-input__loading u-flex--left">
+                <i class="fa fa-spinner fa-spin"></i>
+            </div>
+        </div>
+    </div>
+</div>
+</template>
 
 <style lang="scss">
 .c-staking-input {

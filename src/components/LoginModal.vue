@@ -1,6 +1,6 @@
 <script>
-import MetamaskLogo from 'src/assets/metamask-fox.svg'
-import WombatLogo from 'src/assets/wombat-logo.png'
+import MetamaskLogo from 'src/assets/metamask-fox.svg';
+import WombatLogo from 'src/assets/wombat-logo.png';
 
 import { mapGetters, mapMutations, mapState } from 'vuex';
 import { ethers } from 'ethers';
@@ -9,7 +9,7 @@ import { tlos } from 'src/lib/logos';
 
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
-const PROVIDER_WEB3_INJECTED = 'injectedWeb3'
+const PROVIDER_WEB3_INJECTED = 'injectedWeb3';
 
 export default {
     name: 'LoginModal',
@@ -35,15 +35,16 @@ export default {
     },
     async mounted() {
         const loginData = localStorage.getItem('loginData');
-        if (!loginData)
+        if (!loginData) {
             return;
+        }
 
         const loginObj = JSON.parse(loginData);
         if (loginObj.type === LOGIN_EVM) {
             const provider = this.getInjectedProvider();
-            let checkProvider = new ethers.providers.Web3Provider(provider)
-            const {chainId} = await checkProvider.getNetwork();
-            if(loginObj.chain == chainId){
+            let checkProvider = new ethers.providers.Web3Provider(provider);
+            const { chainId } = await checkProvider.getNetwork();
+            if(loginObj.chain === chainId){
                 switch (loginObj.provider) {
                 case PROVIDER_WEB3_INJECTED:
                     this.injectedWeb3Login();
@@ -52,14 +53,14 @@ export default {
                     console.error(`Unknown web3 login type: ${loginObj.provider}`);
                     this.$q.notify({
                         position: 'top',
-                        message: this.$t('components.unknown_web3_login_type', {provider: loginObj.provider}),
+                        message: this.$t('components.unknown_web3_login_type', { provider: loginObj.provider }),
                         timeout: 6000,
                     });
                     break;
                 }
             }
         } else if (loginObj.type === LOGIN_NATIVE) {
-            const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
+            const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
             this.ualLogin(wallet);
         }
     },
@@ -80,14 +81,18 @@ export default {
             if (address) {
                 this.setLogin({
                     address,
-                })
+                });
                 let provider = this.getInjectedProvider();
-                let checkProvider = new ethers.providers.Web3Provider(provider)
+                let checkProvider = new ethers.providers.Web3Provider(provider);
                 this.$providerManager.setProvider(provider);
-                const {chainId} = await checkProvider.getNetwork();
-                localStorage.setItem('loginData', JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED, chain: chainId }));
+                const { chainId } = await checkProvider.getNetwork();
+                localStorage.setItem('loginData', JSON.stringify({
+                    type: LOGIN_EVM,
+                    provider: PROVIDER_WEB3_INJECTED,
+                    chain: chainId,
+                }));
                 provider.on('chainChanged', (newNetwork) => {
-                    if(newNetwork != chainId){
+                    if(newNetwork !== chainId){
                         this.setLogin({});
                         this.$providerManager.setProvider(null);
                     }
@@ -95,8 +100,8 @@ export default {
                 provider.on('accountsChanged', (accounts) => {
                     this.setLogin({
                         address: accounts[0],
-                    })
-                })
+                    });
+                });
             }
             this.$emit('hide');
         },
@@ -112,7 +117,7 @@ export default {
                 } catch (e) {
                     this.$q.notify({
                         position: 'top',
-                        message: this.$t('components.search_evm_address_failed', {accountName}),
+                        message: this.$t('components.search_evm_address_failed', { accountName }),
                         timeout: 6000,
                     });
                     wallet.logout();
@@ -121,9 +126,9 @@ export default {
                 this.setLogin({
                     address: evmAccount.address,
                     nativeAccount: accountName,
-                })
+                });
                 this.$providerManager.setProvider(account);
-                localStorage.setItem('loginData', JSON.stringify({type: LOGIN_NATIVE, provider: wallet.getName()}));
+                localStorage.setItem('loginData', JSON.stringify({ type: LOGIN_NATIVE, provider: wallet.getName() }));
             }
             this.$emit('hide');
         },
@@ -151,7 +156,7 @@ export default {
             }
         },
         async ensureCorrectChain(checkProvider) {
-            const {chainId} = await checkProvider.getNetwork();
+            const { chainId } = await checkProvider.getNetwork();
             if (chainId !== process.env.NETWORK_EVM_CHAIN_ID) {
                 await this.switchChainInjected();
                 const provider = this.getInjectedProvider();
@@ -161,7 +166,7 @@ export default {
         getInjectedProvider() {
             const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
                 window.ethereum :
-                null
+                null;
             if (!provider) {
                 this.$q.notify({
                     position: 'top',
@@ -181,7 +186,7 @@ export default {
                 try {
                     await provider.request({
                         method: 'wallet_switchEthereumChain',
-                        params: [{chainId: chainIdParam}],
+                        params: [{ chainId: chainIdParam }],
                     });
                     return true;
                 } catch (e) {
@@ -226,15 +231,15 @@ export default {
             return wallet.getStyle().icon;
         },
     },
-}
+};
 </script>
 <template>
 <div class="c-login-modal">
     <q-dialog :model-value="show" @hide="() => $emit('hide')">
         <q-card rounded class="c-login-modal__modal-inner">
             <q-tabs v-model="tab">
-                <q-tab name="web3" :label="$t('components.evm_wallets')"></q-tab>
-                <q-tab name="native" :label="$t('components.advanced')"></q-tab>
+                <q-tab name="web3" :label="$t('components.evm_wallets')"/>
+                <q-tab name="native" :label="$t('components.advanced')"/>
             </q-tabs>
             <q-separator/>
             <q-tab-panels v-model="tab" animated>
@@ -259,9 +264,9 @@ export default {
                     </p>
                     <div class="u-flex--center">
                         <q-card
-                            class="c-login-modal__image-container"
                             v-for="wallet in $ual.authenticators"
                             :key="wallet.getStyle().text"
+                            class="c-login-modal__image-container"
                             @click="ualLogin(wallet)"
                         >
                             <q-img

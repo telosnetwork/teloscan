@@ -55,8 +55,8 @@ module.exports = function(/* ctx */) {
             env,
             chainWebpack (chain) {
                 chain.plugin('eslint-webpack-plugin')
-                    .use(ESLintPlugin, [{ extensions: [ 'js', 'vue' ] }]);
-                chain.plugin('node-polyfill').use(nodePolyfillWebpackPlugin)
+                    .use(ESLintPlugin, [{ extensions: ['js', 'vue'] }]);
+                chain.plugin('node-polyfill').use(nodePolyfillWebpackPlugin);
             },
 
             // transpile: false,

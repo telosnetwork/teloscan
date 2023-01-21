@@ -126,6 +126,7 @@ describe('function-interface-utils', () => {
     });
 
     describe('inputIsComplex', () => {
+        // eslint-disable-next-line max-len
         it('should only return true for types for which the corresponding component emits the parsedValue event', () => {
             expect(inputIsComplex('string'))     .toBe(false);
             expect(inputIsComplex('bool'))       .toBe(false);
@@ -585,7 +586,8 @@ describe('function-interface-utils', () => {
 
             // fixed length - valid
             expect(parseStringArrayString('["test"]', 1)).toEqual(['test']);
-            expect(parseStringArrayString('["test", "some other \\"test\\""]', 2)).toEqual(['test', 'some other "test"']);
+            expect(parseStringArrayString('["test", "some other \\"test\\""]', 2))
+                .toEqual(['test', 'some other "test"']);
 
             // fixed length - invalid
             expect(parseStringArrayString('[]', 2)).toEqual(undefined);

@@ -1,3 +1,90 @@
+<script>
+import { mapGetters, mapMutations } from 'vuex';
+import { stlos as stlosLogo } from 'src/lib/logos.js';
+import { directive as clickaway } from 'vue3-click-away';
+
+import LoginModal from 'components/LoginModal.vue';
+import HeaderSearch from 'components/header/HeaderSearch.vue';
+import LoginStatus from 'components/header/LoginStatus.vue';
+
+export default {
+    name: 'AppHeader',
+    components: {
+        LoginModal,
+        HeaderSearch,
+        LoginStatus,
+    },
+    directives: {
+        clickaway,
+    },
+    data: () => ({
+        stlosLogo,
+        mobileMenuIsOpen: false,
+        showLoginModal: false,
+        advancedMenuExpanded: false,
+        menuHiddenDesktop: false,
+        isTestnet: process.env.NETWORK_EVM_CHAIN_ID !== '40',
+    }),
+    computed: {
+        ...mapGetters('login', [
+            'isLoggedIn',
+            'isNative',
+        ]),
+    },
+    methods: {
+        ...mapMutations('login', [
+            'setLogin',
+        ]),
+        scrollHandler(info) {
+            this.menuHiddenDesktop = info.direction === 'down';
+        },
+        goTo(to) {
+            this.mobileMenuIsOpen = false;
+            this.advancedMenuExpanded = false;
+
+            const httpsRegex = /^https/;
+            if (typeof to === 'string' && httpsRegex.test(to)) {
+                window.location.href = to;
+                return;
+            }
+
+            this.$router.push(to);
+        },
+        handleClickaway() {
+            this.mobileMenuIsOpen = false;
+            this.advancedMenuExpanded = false;
+        },
+        toggleDarkMode() {
+            this.$q.dark.toggle();
+            localStorage.setItem('darkModeEnabled', this.$q.dark.isActive);
+        },
+        handleLoginLogout() {
+            if (this.isLoggedIn) {
+                this.logout();
+            } else {
+                this.showLoginModal = true;
+            }
+        },
+        logout() {
+            if (this.isNative) {
+                const loginData = localStorage.getItem('loginData');
+                if (!loginData) {
+                    return;
+                }
+
+                const loginObj = JSON.parse(loginData);
+                const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
+                wallet.logout();
+            }
+
+            this.setLogin({});
+            localStorage.removeItem('loginData');
+            this.$providerManager.setProvider(null);
+        },
+    },
+};
+</script>
+
 <template>
 <header v-clickaway="handleClickaway" class="c-header shadow-2">
     <router-link to="/" class="c-header__logo-container u-flex--left">
@@ -17,7 +104,7 @@
 
     <div class="c-header__right-container">
         <div class="c-header__search-container">
-            <header-search />
+            <HeaderSearch />
         </div>
 
         <div class="c-header__menu-icon-container" @click="mobileMenuIsOpen = !mobileMenuIsOpen">
@@ -28,7 +115,7 @@
         </div>
 
         <div v-if="isLoggedIn" class="c-header__login-status-desktop">
-            <login-status @navigated="mobileMenuIsOpen = false" />
+            <LoginStatus @navigated="mobileMenuIsOpen = false" />
         </div>
     </div>
 
@@ -41,7 +128,7 @@
     >
         <ul class="c-header__menu-ul" role="menu">
             <li v-if="isLoggedIn" class="c-header__menu-li c-header__menu-li--login-status">
-                <login-status :is-logged-in="isLoggedIn" @navigated="mobileMenuIsOpen = false" />
+                <LoginStatus :is-logged-in="isLoggedIn" @navigated="mobileMenuIsOpen = false" />
             </li>
 
             <li
@@ -126,7 +213,9 @@
                             class="c-header__menu-li"
                             tabindex="0"
                             role="link"
-                            :aria-label="isTestnet ? $t('components.header.goto_mainnet') : $t('components.header.goto_testnet')"
+                            :aria-label="isTestnet ? $t('components.header.goto_mainnet') :
+                                $t('components.header.goto_testnet')
+                            "
                             @keydown.enter="goTo(isTestnet ? 'https://teloscan.io' : 'https://testnet.teloscan.io')"
                             @click="goTo(isTestnet ? 'https://teloscan.io' : 'https://testnet.teloscan.io')"
                         >
@@ -195,95 +284,9 @@
         </ul>
     </div>
 </header>
-<login-modal :show="showLoginModal" @hide="showLoginModal = false" />
+<LoginModal :show="showLoginModal" @hide="showLoginModal = false" />
 <q-scroll-observer @scroll="scrollHandler" />
 </template>
-
-<script>
-import { mapGetters, mapMutations } from 'vuex';
-import { stlos as stlosLogo } from 'src/lib/logos.js';
-import { directive as clickaway } from 'vue3-click-away';
-
-import LoginModal from 'components/LoginModal.vue';
-import HeaderSearch from 'components/header/HeaderSearch.vue';
-import LoginStatus from 'components/header/LoginStatus.vue';
-
-export default {
-    name: 'AppHeader',
-    components: {
-        LoginModal,
-        HeaderSearch,
-        LoginStatus,
-    },
-    directives: {
-        clickaway,
-    },
-    data: () => ({
-        stlosLogo,
-        mobileMenuIsOpen: false,
-        showLoginModal: false,
-        advancedMenuExpanded: false,
-        menuHiddenDesktop: false,
-        isTestnet: process.env.NETWORK_EVM_CHAIN_ID !== '40',
-    }),
-    computed: {
-        ...mapGetters('login', [
-            'isLoggedIn',
-            'isNative',
-        ]),
-    },
-    methods: {
-        ...mapMutations('login', [
-            'setLogin',
-        ]),
-        scrollHandler(info) {
-            this.menuHiddenDesktop = info.direction === 'down';
-        },
-        goTo(to) {
-            this.mobileMenuIsOpen = false;
-            this.advancedMenuExpanded = false;
-
-            const httpsRegex = /^https/;
-            if (typeof to === 'string' && httpsRegex.test(to)) {
-                window.location.href = to;
-                return;
-            }
-
-            this.$router.push(to);
-        },
-        handleClickaway() {
-            this.mobileMenuIsOpen = false;
-            this.advancedMenuExpanded = false;
-        },
-        toggleDarkMode() {
-            this.$q.dark.toggle();
-            localStorage.setItem('darkModeEnabled', this.$q.dark.isActive);
-        },
-        handleLoginLogout() {
-            if (this.isLoggedIn) {
-                this.logout();
-            } else {
-                this.showLoginModal = true;
-            }
-        },
-        logout() {
-            if (this.isNative) {
-                const loginData = localStorage.getItem('loginData');
-                if (!loginData)
-                    return;
-
-                const loginObj = JSON.parse(loginData);
-                const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
-                wallet.logout();
-            }
-
-            this.setLogin({});
-            localStorage.removeItem('loginData');
-            this.$providerManager.setProvider(null);
-        },
-    },
-}
-</script>
 
 <style lang="scss">
 .c-header {

@@ -3,7 +3,7 @@ import { UAL } from 'universal-authenticator-library';
 import { Wombat } from 'ual-wombat';
 import { Anchor } from 'ual-anchor';
 
-export default boot( async({ app, store }) => {
+export default boot(async({ app, store }) => {
     const chain = {
         chainId: process.env.NETWORK_CHAIN_ID,
         rpcEndpoints: [

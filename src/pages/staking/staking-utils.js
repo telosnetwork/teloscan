@@ -8,8 +8,9 @@ const HOUR_SECONDS = 3600;
  * @returns {string} plain english time period
  */
 export function formatUnstakePeriod(seconds, $t) {
-    if (seconds === null)
+    if (seconds === null) {
         return '--';
+    }
 
     let quantity;
     let unit;
@@ -25,8 +26,9 @@ export function formatUnstakePeriod(seconds, $t) {
         unit = $t('pages.staking.days');
     }
 
-    if (!Number.isInteger(quantity))
+    if (!Number.isInteger(quantity)) {
         quantity = quantity.toFixed(1);
+    }
 
     return `${quantity} ${unit}`;
 }

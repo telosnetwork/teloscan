@@ -1,3 +1,5 @@
+/* eslint-disable max-len*/
+
 export default {
     pages: {
         staking: {
@@ -47,7 +49,7 @@ export default {
             tooltip_3: 'Staked\n\n' +
             'The total staked amount associated with the logged-in account, i.e. ' +
             'your sTLOS token balance, along with its value in TLOS',
-            tooltip_4: 'Unstaked\n\n' + 
+            tooltip_4: 'Unstaked\n\n' +
             'The total value of TLOS which you have unstaked, both locked and unlocked.\n\n' +
             'When you unstake\u2014i.e. redeem\u2014some value of sTLOS, the equivalent amount of ' +
             'TLOS is sent into escrow ("locked") for {unlockPeriod}; during this time, ' +
@@ -281,7 +283,7 @@ export default {
             address_label: '{ label } (address)',
             boolean_array_label: '{ label } (bool[{ size }])',
         },
-        health: {   
+        health: {
             status: 'Status',
             checked_at: 'Checked at',
             task: 'Task',
@@ -306,7 +308,7 @@ export default {
             custom: 'Custom',
             unverified_contract_source: 'This contract source has not been verified.',
             click_here: 'Click here',
-            upload_source_files: 'to upload source files and verify this contract. ' + 
+            upload_source_files: 'to upload source files and verify this contract. ' +
                 'Alternatively, you can interact with the contract using an arbitrary ABI:',
             use_erc20_abi: 'Use ERC20 ABI',
             use_erc721_abi: 'Use ERC721 ABI',
