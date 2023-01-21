@@ -43,7 +43,7 @@ export default {
             'mudará ao longo do tempo com a quantidade total de TLOS aplicados em Telos EVM e Telos Native. ' +
             'As recompensas são pagas de um pool de recompensas da comunidade para o contrato sTLOS.',
             tooltip_2: 'VTB: Valor Total Bloqueado (TVL em inglês)\n\nO valor atual, em TLOS, de todos os ativos mantidos no sTLOS ' +
-            '(TLOS aplicados) contrato inteligente, ou seja, a soma de todos os TLOS aplicados no Telos EVM neste momento.',
+            '(Staked TLOS, que significa TLOS aplicados em inglês), ou seja, a soma de todos os TLOS aplicados no Telos EVM neste momento.',
             tooltip_3: 'Aplicado\n\n' +
             'O montante total aplicado associado com a conta logada, ou seja, ' +
             'seu saldo de tokens sTLOS, junto com seu valor em TLOS',
