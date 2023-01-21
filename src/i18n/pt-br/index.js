@@ -51,7 +51,7 @@ export default {
             'O valor total de TLOS desaplicados que você tem, tanto bloqueados quanto desbloqueados.\n\n' +
             'Quando você desaplica\u2014ou seja, resgata\u2014parte do valor em sTLOS, a quantidade equivalente de ' +
             'TLOS permanece como garantia ("bloqueado") por {unlockPeriod}; durante este tempo, ' +
-            'não pode interagir com este TLOS.\n\n' +
+            'não é possível interagir com esta quantidade de TLOS.\n\n' +
             'Depois de decorrido o período de desbloqueio, você pode reivindicar seu TLOS disponível na aba Resgatar ' +
             'nesta página, assim será adicionado ao saldo TLOS da sua conta.',
             confirm_unstake_1a: 'Continuar resgatará sTLOS em troca de TLOS. ' +
