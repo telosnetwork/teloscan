@@ -1,20 +1,3 @@
-<template>
-<base-text-input
-    ref="input"
-    v-bind="$attrs"
-    :model-value="modelValue"
-    :label="shapedLabel"
-    :name="name"
-    :rules="rules"
-    :size="undefined"
-    @update:modelValue="handleChange"
->
-    <template #append>
-        <slot name="append" />
-    </template>
-</base-text-input>
-</template>
-
 <script>
 import { integerSizeValidator, parseUintString } from 'components/ContractTab/function-interface-utils';
 import { BigNumber } from 'ethers';
@@ -58,9 +41,9 @@ export default {
         rules() {
             const maximum = +this.size === 0 ? '0' : BigNumber.from(2).pow(+this.size).sub(1);
 
-            const errMessageInvalidInput = 'Entry must be a valid unsigned integer';
-            const errMessageTooLarge = `Maximum value for uint${this.size} is 2^${this.size} - 1`;
-            const errMessageNoNegative = `Value for uint${this.size} must not be negative`;
+            const errMessageInvalidInput = this.$t('components.inputs.invalid_unsigint');
+            const errMessageTooLarge = this.$t('components.inputs.too_large_unsigint', { size: this.size });
+            const errMessageNoNegative = this.$t('components.inputs.no_negative_unsigint', { size: this.size });
 
             return [
                 val => val[0] !== '-' || errMessageNoNegative,
@@ -69,7 +52,7 @@ export default {
             ];
         },
         shapedLabel() {
-            return `${this.label} (uint${this.size})`
+            return `${this.label} (uint${this.size})`;
         },
     },
     watch: {
@@ -95,8 +78,25 @@ export default {
             }
         },
     },
-}
+};
 </script>
+
+<template>
+<BaseTextInput
+    ref="input"
+    v-bind="$attrs"
+    :model-value="modelValue"
+    :label="shapedLabel"
+    :name="name"
+    :rules="rules"
+    :size="undefined"
+    @update:modelValue="handleChange"
+>
+    <template #append>
+        <slot name="append"></slot>
+    </template>
+</BaseTextInput>
+</template>
 
 <style>
 

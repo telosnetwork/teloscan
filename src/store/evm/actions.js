@@ -14,7 +14,8 @@ export async function doRPC(_, { method, params }) {
     return result.data;
 }
 
-// TODO: make sure we're not using this and remove... should be using the $contractManager that's on prototype (this.$contractManager)
+// TODO: make sure we're not using this and remove...
+//  should be using the $contractManager that's on prototype (this.$contractManager)
 export async function getContract(_, { address }) {
     return await this.$contractManager.getContract(address);
 }

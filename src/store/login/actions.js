@@ -52,9 +52,9 @@ export const autoLogin = async function({ dispatch, commit }, returnUrl) {
 };
 
 const getAuthenticator = function(ual, wallet = null) {
-    wallet = wallet || localStorage.getItem('autoLogin');
+    const authWallet = wallet || localStorage.getItem('autoLogin');
     const idx = ual.authenticators.findIndex(
-        auth => auth.constructor.name === wallet,
+        auth => auth.constructor.name === authWallet,
     );
     return {
         authenticator: ual.authenticators[idx],
@@ -64,7 +64,7 @@ const getAuthenticator = function(ual, wallet = null) {
 
 export const logout = async function({ getters }) {
     if (getters.isNative) {
-        const {authenticator} = getAuthenticator(this.$ual);
+        const { authenticator } = getAuthenticator(this.$ual);
         try {
             authenticator && (await authenticator.logout());
         } catch (error) {
@@ -74,7 +74,7 @@ export const logout = async function({ getters }) {
         localStorage.removeItem('autoLogin');
 
         if (this.$router.currentRoute.path !== '/') {
-            this.$router.push({path: '/'});
+            this.$router.push({ path: '/' });
         }
     }
 };

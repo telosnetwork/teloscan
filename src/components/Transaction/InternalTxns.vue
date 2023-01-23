@@ -1,11 +1,8 @@
 <script>
-import JsonViewer from 'vue-json-viewer'
-import FragmentList from './FragmentList.vue'
+import JsonViewer from 'vue-json-viewer';
+import FragmentList from 'components/Transaction/FragmentList.vue';
 import { WEI_PRECISION, formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
-
-const TLOS_TRANSFER = 'TLOS Transfer';
-const CONTRACT_DEPLOYMENT = 'Contract Deployment';
 
 export default {
     name: 'InternalTxns',
@@ -29,6 +26,12 @@ export default {
                 return  await this.$contractManager.getContract(address);
             } catch (e) {
                 console.error(`Failed to retrieve contract with address ${address}`);
+                // Notify the user
+                this.$q.notify({
+                    message: this.$t('components.transaction.failed_to_retrieve_contract', { address }),
+                    type: 'negative',
+                    position: 'top',
+                });
             }
         },
     },
@@ -38,14 +41,14 @@ export default {
             let itx = this.itxs[k];
             let contract = await this.getContract(itx.to);
             let fnsig =  itx.input.slice(0, 8);
-            let name = 'Unknown';
+            let name = this.$t('components.transaction.unknown');
             let inputs, outputs, args  = false;
             if(itx.type === 'create'){
-                name = CONTRACT_DEPLOYMENT;
+                name = this.$t('components.transaction.contract_deployment');
             } else if (fnsig){
-                name = 'Unknown (' + '0x' + fnsig + ')';
+                name = this.$t('components.transaction.unknown') + ' (' + '0x' + fnsig + ')';
             } else if (itx.value){
-                name = TLOS_TRANSFER;
+                name = this.$t('components.transaction.tlos_transfer');
             }
             if(itx.traceAddress.length < 2){
                 itx.index = i;
@@ -60,8 +63,13 @@ export default {
                 if(parsedTransaction){
                     args = parsedTransaction.args;
                     name = parsedTransaction.signature;
-                    outputs = parsedTransaction.functionFragment ? parsedTransaction.functionFragment.outputs : parsedTransaction.outputs;
-                    inputs = parsedTransaction.functionFragment ? parsedTransaction.functionFragment.inputs : parsedTransaction.inputs;
+                    outputs = parsedTransaction.functionFragment ?
+                        parsedTransaction.functionFragment.outputs :
+                        parsedTransaction.outputs;
+
+                    inputs = parsedTransaction.functionFragment ?
+                        parsedTransaction.functionFragment.inputs :
+                        parsedTransaction.inputs;
                 }
             }
             this.parsedItxs.push({
@@ -79,25 +87,23 @@ export default {
                 value: (itx.type !== 'create' && itx.value) ? formatWei('0x' + itx.value, WEI_PRECISION): 0,
             });
         }
-        this.parsedItxs.sort((a,b) => {
-            return BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber();
-        });
+        this.parsedItxs.sort((a, b) => BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber());
 
     },
     data () {
         return {
             human_readable: true,
             parsedItxs: [],
-        }
+        };
     },
-}
+};
 </script>
 <template>
 <div>
     <div v-if="itxs.length === 0" class="row">
         <div class="col-12 flex items-center justify-center">
             <q-icon class="fa fa-info-circle" size="md" />
-            <h5 class="text-center  q-ma-md">No internal transactions found</h5>
+            <h5 class="text-center  q-ma-md"> {{ $t('components.transaction.no_internal_trxs_found') }}</h5>
         </div>
     </div>
     <div v-else class="row">
@@ -108,7 +114,7 @@ export default {
                 color="secondary"
                 size="lg"
             />
-            Human-readable
+            {{ $t('components.transaction.human_readable') }}
         </div>
         <div class="col-12">
             <FragmentList

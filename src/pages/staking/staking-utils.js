@@ -7,26 +7,28 @@ const HOUR_SECONDS = 3600;
  * @param {number|null} seconds
  * @returns {string} plain english time period
  */
-export function formatUnstakePeriod(seconds) {
-    if (seconds === null)
+export function formatUnstakePeriod(seconds, $t) {
+    if (seconds === null) {
         return '--';
+    }
 
     let quantity;
     let unit;
 
     if (seconds < HOUR_SECONDS) {
         quantity = seconds / 60;
-        unit = 'minutes';
+        unit = $t('pages.staking.minutes');
     } else if (seconds < DAY_SECONDS) {
         quantity = seconds / HOUR_SECONDS;
-        unit = 'hours';
+        unit = $t('pages.staking.hours');
     } else {
         quantity = seconds / DAY_SECONDS;
-        unit = 'days';
+        unit = $t('pages.staking.days');
     }
 
-    if (!Number.isInteger(quantity))
+    if (!Number.isInteger(quantity)) {
         quantity = quantity.toFixed(1);
+    }
 
     return `${quantity} ${unit}`;
 }

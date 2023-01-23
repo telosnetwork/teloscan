@@ -1,18 +1,18 @@
 <script>
-import Endpoints from '../components/Health/Endpoints.vue';
-import Monitor from '../components/Health/Monitor.vue';
+import Endpoints from 'components/Health/Endpoints.vue';
+import Monitor from 'components/Health/Monitor.vue';
 export default {
     name: 'HealthPage',
-    components: {Endpoints, Monitor},
+    components: { Endpoints, Monitor },
 };
 </script>
 <template lang="pug">
 .pageContainer.q-pt-xl
     .homeInfo.q-mb-lg
-        .text-primary.text-h6 RPC Endpoints
+        .text-primary.text-h6 {{ $t('pages.rpc_endpoints') }}
     Endpoints()
     .homeInfo.q-mb-lg
-        .text-primary.text-h6 Monitor
+        .text-primary.text-h6 {{ $t('pages.monitor') }}
     Monitor()
 </template>
 

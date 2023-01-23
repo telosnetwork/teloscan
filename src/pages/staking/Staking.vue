@@ -1,134 +1,5 @@
-<template>
-<div class="c-staking-page pageContainer">
-    <div class="row q-mx-md">
-        <div class="c-staking-page__header col-xs-12 col-md-6">
-            <h1 class="c-staking-page__title">
-                Telos EVM Staking
-            </h1>
-            <span class="text-white">
-                Stake TLOS for sTLOS to earn interest from the staking rewards pool
-            </span>
-        </div>
-        <div class="col-xs-12 col-md-6">
-            <staking-stats
-                v-if="stlosContractInstance"
-                :stlos-contract-instance="stlosContractInstance"
-                :stlos-balance="stlosBalance"
-                :stlos-value="stlosValue"
-                :total-unstaked-tlos-balance="totalUnstakedTlosBalance"
-                :unstake-period-seconds="unstakePeriodSeconds"
-            />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <div>
-                <q-tabs
-                    v-model="selectedTab"
-                    dense
-                    active-color="secondary"
-                    align="justify"
-                    narrow-indicator
-                    class="c-staking-page__tabs-header tabsBar topRounded tableWrapper"
-                >
-                    <q-route-tab
-                        name="stake"
-                        :to="{ hash: '#stake'}"
-                        exact
-                        push
-                        label="Stake"
-                    />
-                    <q-route-tab
-                        name="unstake"
-                        :to="{ hash: '#unstake'}"
-                        exact
-                        push
-                        label="Unstake"
-                    />
-                    <q-route-tab
-                        name="withdraw"
-                        :to="{ hash: '#withdraw'}"
-                        exact
-                        push
-                        label="Withdraw"
-                        :alert="showWithdrawNotification ? 'green' : false"
-                    />
-                </q-tabs>
-                <q-tab-panels
-                    v-model="selectedTab"
-                    animated
-                    keep-alive
-                    class="q-py-lg"
-                >
-                    <q-tab-panel name="stake">
-                        <div class="row">
-                            <div v-if="!stlosContractInstance" class="col-12 u-flex--center">
-                                <q-spinner />
-                            </div>
-                            <div v-else class="col-12">
-                                <stake-form
-                                    :stlos-contract-instance="stlosContractInstance"
-                                    :tlos-balance="tlosBalance"
-                                    :has-unlocked-tlos="showWithdrawNotification"
-                                    :unstake-period-seconds="unstakePeriodSeconds"
-                                    :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
-                                    @balance-changed="handleBalanceChanged"
-                                />
-                            </div>
-                        </div>
-                    </q-tab-panel>
-
-                    <q-tab-panel name="unstake">
-                        <div class="row">
-                            <div
-                                v-if="!stlosContractInstance || !escrowContractInstance"
-                                class="col-12 u-flex--center"
-                            >
-                                <q-spinner />
-                            </div>
-                            <div v-else class="col-12">
-                                <unstake-form
-                                    :stlos-contract-instance="stlosContractInstance"
-                                    :escrow-contract-instance="escrowContractInstance"
-                                    :stlos-balance="stlosBalance"
-                                    :unlocked-tlos-balance="unlockedTlosBalance"
-                                    :unstake-period-seconds="unstakePeriodSeconds"
-                                    :deposits="escrowDeposits"
-                                    :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
-                                    @balance-changed="handleBalanceChanged"
-                                />
-                            </div>
-                        </div>
-                    </q-tab-panel>
-
-                    <q-tab-panel name="withdraw">
-                        <div class="row">
-                            <div
-                                v-if="!escrowContractInstance"
-                                class="col-12 u-flex--center"
-                            >
-                                <q-spinner />
-                            </div>
-                            <div v-else class="col-12">
-                                <withdraw-page
-                                    :escrow-contract-instance="escrowContractInstance"
-                                    :unlocked-tlos-balance="unlockedTlosBalance"
-                                    :total-unstaked="totalUnstakedTlosBalance"
-                                    :deposits="escrowDeposits"
-                                    @balance-changed="handleBalanceChanged"
-                                />
-                            </div>
-                        </div>
-                    </q-tab-panel>
-                </q-tab-panels>
-            </div>
-        </div>
-    </div>
-</div>
-</template>
-
 <script>
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { formatWei, getRouteWatcherForTabs, WEI_PRECISION } from 'src/lib/utils';
@@ -142,7 +13,7 @@ const tabs = {
     stake: '#stake',
     unstake: '#unstake',
     withdraw: '#withdraw',
-}
+};
 
 export default {
     name: 'StakingPage',
@@ -209,6 +80,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch account: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_balance_error', { message }),
+                    });
                     this.tlosBalance = null;
                 });
 
@@ -219,6 +94,11 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch account STLOS balance: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_stlos_balance_error', { message }),
+                    });
+
                     this.stlosBalance = null;
                 });
 
@@ -228,6 +108,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch account STLOS balance value: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_stlos_value_error', { message }),
+                    });
                     this.stlosValue = null;
                 });
 
@@ -237,6 +121,11 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch total unstaked TLOS balance: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_unstaked_balance_error', { message }),
+                    });
+
                     this.totalUnstakedTlosBalance = null;
                 });
 
@@ -246,6 +135,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch withdrawable STLOS balance: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_unlocked_balance_error', { message }),
+                    });
                     this.unlockedTlosBalance = null;
                 });
 
@@ -255,6 +148,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch escrow deposits: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_escrow_deposits_error', { message }),
+                    });
                 });
 
             const conversionRatePromise = this.stlosContractInstance.previewDeposit(oneEth)
@@ -263,6 +160,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch TLOS->sTLOS conversion rate: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_conversion_rate_error', { message }),
+                    });
                 });
 
             return Promise.all([
@@ -282,6 +183,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to get STLOS contract: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_stlos_contract_error', { message }),
+                    });
                     this.stlosContract = null;
                 });
 
@@ -291,6 +196,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to get STLOS contract: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_escrow_contract_error', { message }),
+                    });
                     this.escrowContract = null;
                 });
 
@@ -313,7 +222,11 @@ export default {
             try {
                 this.unstakePeriodSeconds = (await this.escrowContractInstance.lockDuration()).toNumber();
             } catch({ message }) {
-                console.error(`Failed to retrieve unstaking period: ${message}`)
+                console.error(`Failed to retrieve unstaking period: ${message}`);
+                this.$q.notify({
+                    type: 'negative',
+                    message: this.$t('page.staking.fetch_unstake_period_error', { message }),
+                });
             }
         },
         async handleBalanceChanged() {
@@ -326,12 +239,145 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to fetch account: ${message}`);
+                    this.$q.notify({
+                        type: 'negative',
+                        message: this.$t('page.staking.fetch_account_error', { message }),
+                    });
                     this.tlosBalance = null;
                 });
         },
     },
-}
+};
 </script>
+
+<template>
+<div class="c-staking-page pageContainer">
+    <div class="row q-mx-md">
+        <div class="c-staking-page__header col-xs-12 col-md-6">
+            <h1 class="c-staking-page__title">
+                {{ $t('pages.staking.telos_evm_staking') }}
+            </h1>
+            <span class="text-white">
+                {{ $t('pages.staking.stake_tlos_earn_interest') }}
+            </span>
+        </div>
+        <div class="col-xs-12 col-md-6">
+            <StakingStats
+                v-if="stlosContractInstance"
+                :stlos-contract-instance="stlosContractInstance"
+                :stlos-balance="stlosBalance"
+                :stlos-value="stlosValue"
+                :total-unstaked-tlos-balance="totalUnstakedTlosBalance"
+                :unstake-period-seconds="unstakePeriodSeconds"
+            />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div>
+                <q-tabs
+                    v-model="selectedTab"
+                    dense
+                    active-color="secondary"
+                    align="justify"
+                    narrow-indicator
+                    class="c-staking-page__tabs-header tabsBar topRounded tableWrapper"
+                >
+                    <q-route-tab
+                        name="stake"
+                        :to="{ hash: '#stake'}"
+                        exact
+                        push
+                        :label="$t('pages.staking.stake')"
+                    />
+                    <q-route-tab
+                        name="unstake"
+                        :to="{ hash: '#unstake'}"
+                        exact
+                        push
+                        :label="$t('pages.staking.unstake')"
+                    />
+                    <q-route-tab
+                        name="withdraw"
+                        :to="{ hash: '#withdraw'}"
+                        exact
+                        push
+                        :label="$t('pages.staking.withdraw')"
+                        :alert="showWithdrawNotification ? 'green' : false"
+                    />
+                </q-tabs>
+                <q-tab-panels
+                    v-model="selectedTab"
+                    animated
+                    keep-alive
+                    class="q-py-lg"
+                >
+                    <q-tab-panel name="stake">
+                        <div class="row">
+                            <div v-if="!stlosContractInstance" class="col-12 u-flex--center">
+                                <q-spinner />
+                            </div>
+                            <div v-else class="col-12">
+                                <StakeForm
+                                    :stlos-contract-instance="stlosContractInstance"
+                                    :tlos-balance="tlosBalance"
+                                    :has-unlocked-tlos="showWithdrawNotification"
+                                    :unstake-period-seconds="unstakePeriodSeconds"
+                                    :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
+                                    @balance-changed="handleBalanceChanged"
+                                />
+                            </div>
+                        </div>
+                    </q-tab-panel>
+
+                    <q-tab-panel name="unstake">
+                        <div class="row">
+                            <div
+                                v-if="!stlosContractInstance || !escrowContractInstance"
+                                class="col-12 u-flex--center"
+                            >
+                                <q-spinner />
+                            </div>
+                            <div v-else class="col-12">
+                                <UnstakeForm
+                                    :stlos-contract-instance="stlosContractInstance"
+                                    :escrow-contract-instance="escrowContractInstance"
+                                    :stlos-balance="stlosBalance"
+                                    :unlocked-tlos-balance="unlockedTlosBalance"
+                                    :unstake-period-seconds="unstakePeriodSeconds"
+                                    :deposits="escrowDeposits"
+                                    :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
+                                    @balance-changed="handleBalanceChanged"
+                                />
+                            </div>
+                        </div>
+                    </q-tab-panel>
+
+                    <q-tab-panel name="withdraw">
+                        <div class="row">
+                            <div
+                                v-if="!escrowContractInstance"
+                                class="col-12 u-flex--center"
+                            >
+                                <q-spinner />
+                            </div>
+                            <div v-else class="col-12">
+                                <WithdrawPage
+                                    :escrow-contract-instance="escrowContractInstance"
+                                    :unlocked-tlos-balance="unlockedTlosBalance"
+                                    :total-unstaked="totalUnstakedTlosBalance"
+                                    :deposits="escrowDeposits"
+                                    @balance-changed="handleBalanceChanged"
+                                />
+                            </div>
+                        </div>
+                    </q-tab-panel>
+                </q-tab-panels>
+            </div>
+        </div>
+    </div>
+</div>
+</template>
 
 <style lang="scss">
 .c-staking-page {

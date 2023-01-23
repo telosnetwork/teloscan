@@ -21,7 +21,8 @@ const tabs = {
     internal: '#internal',
 };
 
-// TODO: The get_transactions API doesn't format the internal transactions properly, need to fix that before we try to decode them
+// TODO: The get_transactions API doesn't format the internal transactions properly,
+//  need to fix that before we try to decode them
 export default {
     name: 'TransactionPage',
     components: {
@@ -43,9 +44,9 @@ export default {
             trxNotFound: false,
             errorMessage: null,
             trx: null,
-            erc20Transfers: [],
-            erc721Transfers: [],
-            erc1155Transfers: [],
+            erc20_transfers: [],
+            erc721_transfers: [],
+            erc1155_transfers: [],
             params: [],
             tab: '#general',
             isContract: false,
@@ -62,7 +63,7 @@ export default {
     watch: {
         '$route.params': {
             handler(newValue) {
-                const { hash } = newValue
+                const { hash } = newValue;
                 if (this.hash === hash) {
                     return;
                 }
@@ -92,9 +93,9 @@ export default {
             this.contract = null;
             this.parsedTransaction = null;
             this.methodTrx = null;
-            this.erc20Transfers = [];
-            this.erc721Transfers = [];
-            this.erc1155Transfers = [];
+            this.erc20_transfers = [];
+            this.erc721_transfers = [];
+            this.erc1155_transfers = [];
             this.params = [];
         },
         async loadTransaction() {
@@ -106,32 +107,51 @@ export default {
                 return;
             }
             this.trx = trxResponse.data.transactions[0];
-            this.trx.value = BigNumber.from(this.trx.value.toLocaleString('fullwide', {useGrouping:false}));
+            this.trx.value = BigNumber.from(this.trx.value.toLocaleString('fullwide', { useGrouping:false }));
             await this.loadContract();
             await this.loadTransfers();
             this.setErrorMessage();
         },
-        async loadTransfers()
-        {
+        async loadTransfers() {
             this.transfers = [];
             for (const log of this.trx.logs) {
-                // ERC20, ERC721 & ERC1155 transfers (ERC721 & ERC20 have same first topic but ERC20 has 4 topics for transfers, ERC20 has 3 log topics, ERC1155 has a different first topic)
+                // ERC20, ERC721 & ERC1155 transfers (ERC721 & ERC20 have same first topic but ERC20 has 4 topics for
+                // transfers, ERC20 has 3 log topics, ERC1155 has a different first topic)
                 let sig = log.topics[0].substr(0, 10);
                 if (TRANSFER_SIGNATURES.includes(sig)) {
                     let type = this.$contractManager.getTokenTypeFromLog(log);
                     let contract = await this.$contractManager.getContract(log.address, type);
                     if (typeof contract.token !== 'undefined' && contract.token !== null) {
-                        let token = {'symbol': contract.token.symbol, 'address': log.address, name: contract.token.name, 'decimals': contract.token.decimals}
+                        let token = {
+                            'symbol': contract.token.symbol,
+                            'address': log.address,
+                            name: contract.token.name,
+                            'decimals': contract.token.decimals,
+                        };
                         if (contract.token.type === 'erc721') {
                             let tokenId = BigNumber.from(log.topics[3]).toString();
                             if (contract.token.extensions?.metadata) {
                                 try {
-                                    token = await this.$contractManager.loadTokenMetadata(log.address, contract.token, tokenId);
+                                    token = await this.$contractManager.loadTokenMetadata(
+                                        log.address,
+                                        contract.token,
+                                        tokenId,
+                                    );
                                 } catch (e) {
                                     console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
+                                    // notify the user
+                                    this.$q.notify({
+                                        message: this.$t(
+                                            'pages.couldnt_retreive_metadata_for_address',
+                                            { address: contract.address, message: e.message },
+                                        ),
+                                        color: 'negative',
+                                        position: 'top',
+                                        timeout: 5000,
+                                    });
                                 }
                             }
-                            this.erc721Transfers.push({
+                            this.erc721_transfers.push({
                                 'tokenId': tokenId,
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                                 'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
@@ -141,12 +161,26 @@ export default {
                             let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
                             if (contract.token.extensions?.metadata) {
                                 try {
-                                    token = await this.$contractManager.loadTokenMetadata(log.address, contract.token, tokenId);
+                                    token = await this.$contractManager.loadTokenMetadata(
+                                        log.address,
+                                        contract.token,
+                                        tokenId,
+                                    );
                                 } catch (e) {
                                     console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
+                                    // notify the user
+                                    this.$q.notify({
+                                        message: this.$t(
+                                            'pages.couldnt_retreive_metadata_for_address',
+                                            { address: contract.address, message: e.message },
+                                        ),
+                                        color: 'negative',
+                                        position: 'top',
+                                        timeout: 5000,
+                                    });
                                 }
                             }
-                            this.erc1155Transfers.push({
+                            this.erc1155_transfers.push({
                                 'tokenId': tokenId,
                                 'amount': BigNumber.from(log.data).toString(),
                                 'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
@@ -154,7 +188,7 @@ export default {
                                 'token': token,
                             });
                         } else {
-                            this.erc20Transfers.push({
+                            this.erc20_transfers.push({
                                 'value': log.data,
                                 'wei': BigNumber.from(log.data).toString(),
                                 'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
@@ -167,10 +201,14 @@ export default {
             }
         },
         async loadContract() {
-            if (this.trx.input_data === '0x') return;
+            if (this.trx.input_data === '0x') {
+                return;
+            }
 
             const contract = await this.$contractManager.getContract(this.trx.to);
-            if (!contract) return;
+            if (!contract) {
+                return;
+            }
 
             this.contract = contract;
             this.parsedTransaction = await this.contract.parseTransaction(this.trx.input_data);
@@ -182,24 +220,39 @@ export default {
             this.isContract = true;
         },
         setErrorMessage() {
-            if (this.trx.status !== 0)
+            if (this.trx.status !== 0) {
                 return;
+            }
 
             this.errorMessage = parseErrorMessage(this.trx.output);
         },
         getFunctionName() {
-            if (this.parsedTransaction) return this.parsedTransaction.name;
+            if (this.parsedTransaction) {
+                return this.parsedTransaction.name;
+            }
         },
         getFunctionParams() {
-            if (!this.parsedTransaction) return [];
+            if (!this.parsedTransaction) {
+                return [];
+            }
             let args = [];
             this.parsedTransaction.functionFragment.inputs.forEach((input, i) => {
-                args.push({name: input.name, type: input.type, arrayChildren: (input.arrayChildren !== null) ? input.arrayChildren.type : false, value:  this.parsedTransaction.args[i]})
-            })
+                args.push({
+                    name: input.name,
+                    type: input.type,
+                    arrayChildren: (input.arrayChildren !== null) ? input.arrayChildren.type : false,
+                    value:  this.parsedTransaction.args[i],
+                });
+            });
             return args;
         },
         getGasFee() {
-            return formatWei(BigNumber.from(this.trx.charged_gas_price).mul(this.trx.gasused).toLocaleString('fullwide', {useGrouping:false}), WEI_PRECISION, 5);
+            return formatWei(
+                BigNumber.from(this.trx.charged_gas_price)
+                    .mul(this.trx.gasused).toLocaleString('fullwide', { useGrouping:false }),
+                WEI_PRECISION,
+                5,
+            );
         },
         getGasChargedGWEI() {
             return formatWei(this.trx.charged_gas_price, 9, 2);
@@ -207,6 +260,201 @@ export default {
     },
 };
 </script>
+<template lang='pug'>
+.pageContainer
+  .row
+    .col-12.q-px-md
+      .text-h4.text-primary.q-mb-lg.title.q-pt-xl
+        | {{ $t('pages.transaction_details') }}
+      .text-h6.q-mb-lg.text-white( v-if="trxNotFound" )
+        | {{ $t('pages.transaction_not_found', { hash }) }}
+  .row.tableWrapper
+    .col-12.q-py-lg
+      .content-container( v-if="trx"  :key="erc20_transfers.length + isContract" )
+        q-tabs.text-white.topRounded(
+          v-model="tab"
+          dense
+          active-color="secondary"
+          align="justify"
+          narrow-indicator
+          :class="$q.dark.isActive ? 'q-dark' : 'q-light'"
+        )
+          q-route-tab.topLeftRounded(
+            name="general"
+            :to="{ hash: '#general' }"
+            exact
+            replace
+            :label="$t('pages.general')"
+          )
+          q-route-tab(
+            name="details"
+            :to="{ hash: '#details' }"
+            exact
+            replace
+            :label="$t('pages.details')"
+          )
+          q-route-tab(
+            name="logs"
+            :to="{ hash: '#eventlog' }"
+            exact
+            replace
+            :label="$t('pages.logs')"
+          )
+          q-route-tab.topRightRounded(
+            name="internal"
+            :to="{ hash: '#internal' }"
+            exact
+            replace
+            :label="$t('pages.internal_txns')"
+          )
+        q-tab-panels.column.shadow-2(
+          v-model="tab"
+          animated
+          keep-alive
+        )
+          q-tab-panel( name="general" id="transaction-page" )
+            br
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+                div(class="col-3")
+                  strong.wrapStrong {{ $t('pages.transaction_hash') }}:&nbsp;
+                div(class="col-9")
+                  span {{ hash }}
+                  copy-button(:text="hash")
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+                div(class="col-3")
+
+                  strong {{ $t('pages.block_number') }}:&nbsp;
+                div(class="col-9")
+                  block-field( :block="trx.block" )
+            br
+            div( @click="showAge = !showAge" class="fit row wrap justify-start items-start content-start date")
+                div(class="col-3"  )
+                  strong {{ $t('pages.date') }}:&nbsp;
+                div.u-flex--left
+                  date-field( :epoch="trx.epoch" )
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ $t('pages.status') }}:&nbsp;
+              div(class="col-9" style="padding: 5px 0px;")
+                span(v-if="trx.status == 1", class="positive")
+                  q-icon(name='check')
+                  span {{ $t('pages.success') }}
+                span(v-else, class="negative")
+                  q-icon(name='warning')
+                  span {{ $t('pages.failure') }}
+            br
+            div( v-if="errorMessage", class="fit row wrap justify-start items-start content-start" )
+              div(class="col-3")
+                strong {{ $t('pages.error_message') }}:&nbsp;
+              div(class="col-9")
+                span.text-negative {{ errorMessage }}
+            br( v-if="errorMessage" )
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ $t('pages.from') }}:&nbsp;
+              div(class="col-9 word-break")
+                address-field(
+                    :address="trx.from"
+                    :truncate="0"
+                    :highlight="erc20_transfers.length + erc721_transfers.length > 1" copy
+                )
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ $t('pages.to') }}:&nbsp;
+              div(class="col-9 word-break")
+                address-field( :address="trx.to" :is-contract-trx="!!contract"  :truncate="0" copy)
+            br
+            div( v-if="isContract", class="fit row wrap justify-start items-start content-start" )
+              div(class="col-3")
+                strong {{ $t('pages.contract_function') }}:&nbsp;
+              div(class="col-9")
+                MethodField( :contract="contract" :trx="methodTrx" shortenSignature )
+            br(v-if="isContract")
+            div( v-if="isContract && params.length > 0" class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ $t('pages.function_parameters') }}:&nbsp;
+              div(class="col" id="function-parameters")
+                ParameterList(:params="params" :contract="contract" :trxFrom="trx.from")
+            br( v-if="isContract && params.length > 0" )
+            div( v-if="trx.createdaddr", class="fit row wrap justify-start items-start content-start" )
+              div(class="col-3")
+                strong {{ $t('pages.deployed_contract') }}:&nbsp;
+              div(class="col-9 word-break")
+                AddressField( :address="trx.createdaddr" )
+            br( v-if="trx.createdaddr" )
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ $t('pages.value') }}:&nbsp;
+              div(class="col-9 clickable" @click="showWei = !showWei")
+                div(v-if="showWei")
+                    span {{ trx.value }}
+                span(v-else)
+                    span {{ $t('pages.balance_tlos', { amount: formatWei(trx.value, 18) }) }}
+                    q-tooltip {{ $t('pages.click_to_show_in_wei') }}
+            br
+            ERCTransferList(
+                v-if="erc20_transfers.length > 0"
+                type="ERC20" :trxFrom="trx.from"
+                :contract="contract"
+                :transfers="erc20_transfers"
+            )
+            ERCTransferList(
+                v-if="erc721_transfers.length > 0"
+                type="ERC721" :trxFrom="trx.from"
+                :contract="contract"
+                :transfers="erc721_transfers"
+            )
+            ERCTransferList(
+                v-if="erc1155_transfers.length > 0"
+                type="ERC1155" :trxFrom="trx.from"
+                :contract="contract"
+                :transfers="erc1155_transfers"
+            )
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ $t('pages.gas_price_charged') }}:&nbsp;
+              span {{ $t('pages.balance_gwei', { amount: getGasChargedGWEI() }) }}
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ $t('pages.gas_fee') }}:&nbsp;
+              span {{ $t('pages.balance_tlos', { amount: getGasFee() }) }}
+                small.q-pl-sm (~ ${{ (getGasFee() * tlosPrice).toFixed(5) }})
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ $t('pages.gas_used') }}:&nbsp;
+              div(class="col-9") {{ trx.gasused }}
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ $t('pages.gas_limit') }}:&nbsp;
+              div(class="col-9") {{ trx.gas_limit }}
+            br
+            div(class="fit row wrap justify-start items-start content-start")
+              div(class="col-3")
+                strong {{ $t('pages.nonce') }}:&nbsp;
+              div(class="col-9") {{ trx.nonce }}
+          q-tab-panel( name="details" )
+            div
+              div(class="col-3")
+                strong {{ $t('pages.input') }}:&nbsp;
+              div(class="col-9") {{ trx.input_data }}
+            br
+            div
+              div(class="col-3")
+                strong {{ $t('pages.output') }}:&nbsp;
+              div(class="col-9") {{ trx.output }}
+          q-tab-panel( name="logs" )
+            .jsonViewer
+              logs-viewer(:logs="trx.logs" :contract="contract" )
+          q-tab-panel( name="internal" )
+            InternalTxns( :itxs="trx.itxs" :contract="contract" )
+</template>
 <style scoped lang="sass">
     @media screen and (max-width: 650px)
         #function-parameters
@@ -231,183 +479,6 @@ export default {
                     padding-left: 30px
                     width: 100%
 </style>
-<template lang='pug'>
-.pageContainer
-  .row
-    .col-12.q-px-md
-      .text-h4.text-primary.q-mb-lg.title.q-pt-xl
-        | Transaction Details
-      .text-h6.q-mb-lg.text-white( v-if="trxNotFound" )
-        | Not found: {{ hash }}
-  .row.tableWrapper
-    .col-12.q-py-lg
-      .content-container( v-if="trx"  :key="erc20Transfers.length + isContract" )
-        q-tabs.text-white.topRounded(
-          v-model="tab"
-          dense
-          active-color="secondary"
-          align="justify"
-          narrow-indicator
-          :class="$q.dark.isActive ? 'q-dark' : 'q-light'"
-        )
-          q-route-tab.topLeftRounded(
-            name="general"
-            :to="{ hash: '#general' }"
-            exact
-            replace
-            label="General"
-          )
-          q-route-tab(
-            name="details"
-            :to="{ hash: '#details' }"
-            exact
-            replace
-            label="Details"
-          )
-          q-route-tab(
-            name="logs"
-            :to="{ hash: '#eventlog' }"
-            exact
-            replace
-            label="Logs"
-          )
-          q-route-tab.topRightRounded(
-            name="internal"
-            :to="{ hash: '#internal' }"
-            exact
-            replace
-            label="Internal Txns"
-          )
-        q-tab-panels.column.shadow-2(
-          v-model="tab"
-          animated
-          keep-alive
-        )
-          q-tab-panel( name="general" id="transaction-page" )
-            br
-            br
-            div(class="fit row wrap justify-start items-start content-start")
-                div(class="col-3")
-                  strong.wrapStrong Transaction Hash:&nbsp;
-                div(class="col-9")
-                  span {{ hash }}
-                  copy-button(:text="hash")
-            br
-            div(class="fit row wrap justify-start items-start content-start")
-                div(class="col-3")
-                  strong {{ `Block Number: ` }}
-                div(class="col-9")
-                  block-field( :block="trx.block" )
-            br
-            div( @click="showAge = !showAge" class="fit row wrap justify-start items-start content-start date")
-                div(class="col-3"  )
-                  strong {{ `Date: ` }}
-                div.u-flex--left
-                  q-icon(class="far fa-clock q-mr-xs")
-                  date-field( :epoch="trx.epoch" :show-age="showAge" )
-                  q-tooltip Click to change date format
-            br
-            div(class="fit row wrap justify-start items-start content-start")
-              div(class="col-3")
-                strong {{ `Status: ` }}
-              div(class="col-9" style="padding: 5px 0px;")
-                span(v-if="trx.status == 1", class="positive")
-                  q-icon(name='check')
-                  span {{ "Success" }}
-                span(v-else, class="negative")
-                  q-icon(name='warning')
-                  span {{ "Failure" }}
-            br
-            div( v-if="errorMessage", class="fit row wrap justify-start items-start content-start" )
-              div(class="col-3")
-                strong {{ `Error message: ` }}
-              div(class="col-9")
-                span.text-negative {{ errorMessage }}
-            br( v-if="errorMessage" )
-            div(class="fit row wrap justify-start items-start content-start")
-              div(class="col-3")
-                strong {{ `From: ` }}
-              div(class="col-9 word-break")
-                address-field(:address="trx.from" :truncate="0" :highlight="erc20Transfers.length + erc721Transfers.length > 1" copy)
-            br
-            div(class="fit row wrap justify-start items-start content-start")
-              div(class="col-3")
-                strong {{ `To: ` }}
-              div(class="col-9 word-break")
-                address-field( :address="trx.to" :is-contract-trx="!!contract"  :truncate="0" copy)
-            br
-            div( v-if="isContract", class="fit row wrap justify-start items-start content-start" )
-              div(class="col-3")
-                strong {{ `Contract function: ` }}
-              div(class="col-9")
-                MethodField( :contract="contract" :trx="methodTrx" shortenSignature )
-            br(v-if="isContract")
-            div( v-if="isContract && params.length > 0" class="fit row wrap justify-start items-start content-start")
-              div(class="col-3")
-                strong {{ `Function parameters: ` }}
-              div(class="col" id="function-parameters")
-                ParameterList(:params="params" :contract="contract" :trxFrom="trx.from")
-            br( v-if="isContract && params.length > 0" )
-            div( v-if="trx.createdaddr", class="fit row wrap justify-start items-start content-start" )
-              div(class="col-3")
-                strong {{ `Deployed contract: ` }}
-              div(class="col-9 word-break")
-                AddressField( :address="trx.createdaddr" )
-            br( v-if="trx.createdaddr" )
-            div(class="fit row wrap justify-start items-start content-start")
-              div(class="col-3")
-                strong {{ `Value: ` }}
-              div(class="col-9 clickable" @click="showWei = !showWei")
-                div(v-if="showWei")
-                    span {{ trx.value }}
-                span(v-else)
-                    span {{ formatWei(trx.value, 18) }} TLOS
-                    q-tooltip Click to show in wei
-            br
-            ERCTransferList( v-if="erc20Transfers.length > 0" type="ERC20" :trxFrom="trx.from" :contract="contract" :transfers="erc20Transfers")
-            ERCTransferList( v-if="erc721Transfers.length > 0" type="ERC721" :trxFrom="trx.from" :contract="contract" :transfers="erc721Transfers")
-            ERCTransferList( v-if="erc1155Transfers.length > 0" type="ERC1155" :trxFrom="trx.from" :contract="contract" :transfers="erc1155Transfers")
-            div(class="fit row wrap justify-start items-start content-start")
-              div(class="col-3")
-                strong {{ `Gas Price Charged: ` }}
-              span {{ getGasChargedGWEI() }} GWEI
-            br
-            div(class="fit row wrap justify-start items-start content-start")
-              div(class="col-3")
-                strong {{ `Gas Fee: ` }}
-              span {{ getGasFee() }} TLOS
-                small.q-pl-sm (~ ${{ (getGasFee() * tlosPrice).toFixed(5) }})
-            br
-            div(class="fit row wrap justify-start items-start content-start")
-              div(class="col-3")
-                strong {{ `Gas Used: ` }}
-              div(class="col-9") {{ trx.gasused }}
-            br
-            div(class="fit row wrap justify-start items-start content-start")
-              div(class="col-3")
-                strong {{ `Gas Limit: ` }}
-              div(class="col-9") {{ trx.gas_limit }}
-            br
-            div(class="fit row wrap justify-start items-start content-start")
-              div(class="col-3")
-                strong {{ `Nonce: ` }}
-              div(class="col-9") {{ trx.nonce }}
-          q-tab-panel( name="details" )
-            div
-              div(class="col-3")
-                strong {{ `Input: ` }}
-              div(class="col-9") {{ trx.input_data }}
-            br
-            div
-              div(class="col-3")
-                strong {{ `Output: ` }}
-              div(class="col-9") {{ trx.output }}
-          q-tab-panel( name="logs" )
-            .jsonViewer
-              logs-viewer(:logs="trx.logs" :contract="contract" )
-          q-tab-panel( name="internal" )
-            InternalTxns( :itxs="trx.itxs" :contract="contract" )
-</template>
 
 <style lang="sass" scoped>
 .shadow-2

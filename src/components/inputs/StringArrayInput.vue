@@ -1,19 +1,3 @@
-<template>
-<base-text-input
-    ref="input"
-    v-bind="$attrs"
-    :model-value="modelValue"
-    :label="shapedLabel"
-    :name="name"
-    :placeholder="placeholder"
-    :hint="hint"
-    :rules="rules"
-    :lazy-rules="false"
-    :size="undefined"
-    @update:modelValue="handleChange"
-/>
-</template>
-
 <script>
 import { parseStringArrayString } from 'components/ContractTab/function-interface-utils';
 
@@ -49,26 +33,33 @@ export default {
         },
     },
     data: () => ({
-        placeholder: '["some value", ... , "final value"]',
-        hint: 'Double quotes in strings must be escaped (\\")',
+        placeholder: '',
+        hint: '',
         previousParsedValue: undefined,
     }),
+    async created() {
+        // initialization of the translated texts
+        this.placeholder = this.$t('components.inputs.str_input_placeholder');
+        this.hint = this.$t('components.inputs.str_input_hint');
+    },
     computed: {
         rules() {
-            const validateParsedArray = (value) => Array.isArray(parseStringArrayString(value)) || value === '';
+            const validateParsedArray = value => Array.isArray(parseStringArrayString(value)) || value === '';
 
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
 
-                if ((sizeIsUnconstrained) || value === '')
+                if ((sizeIsUnconstrained) || value === '') {
                     return true;
+                }
 
                 const expectedLength = +this.size;
                 return Array.isArray(parseStringArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage = `There should be ${+this.size} strings in the array`;
-            const invalidArrayStringMessage = 'Entered value does not represent an array of strings';
+            const incorrectArrayLengthMessage =
+                this.$t('components.inputs.incorrect_strings_array_length', { size: +this.size });
+            const invalidArrayStringMessage = this.$t('components.inputs.invalid_strings_array_string');
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,
@@ -77,7 +68,7 @@ export default {
         },
         shapedLabel() {
             const size = (Number.isInteger(+this.size) && +this.size !== -1) ? `${+this.size}` : '';
-            return `${this.label} (string[${size}])`
+            return `${this.label} (string[${size}])`;
         },
     },
     watch: {
@@ -104,8 +95,24 @@ export default {
             }
         },
     },
-}
+};
 </script>
+
+<template>
+<BaseTextInput
+    ref="input"
+    v-bind="$attrs"
+    :model-value="modelValue"
+    :label="shapedLabel"
+    :name="name"
+    :placeholder="placeholder"
+    :hint="hint"
+    :rules="rules"
+    :lazy-rules="false"
+    :size="undefined"
+    @update:modelValue="handleChange"
+/>
+</template>
 
 <style>
 

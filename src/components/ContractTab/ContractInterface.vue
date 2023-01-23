@@ -20,23 +20,24 @@ export default {
         this.contract = await this.$contractManager.getContract(this.$route.params.address);
         let read = [];
         let write = [];
-        this.contract.abi.forEach(a => {
-            if (a.type !== 'function')
+        this.contract.abi.forEach((a) => {
+            if (a.type !== 'function') {
                 return;
+            }
 
             if (a.stateMutability === 'view') {
                 read.push(a);
             } else {
                 write.push(a);
             }
-        })
+        });
 
         this.functions = {
             read: sortAbiFunctionsByName(read),
             write: sortAbiFunctionsByName(write),
-        }
+        };
     },
-}
+};
 </script>
 
 <template>
@@ -50,7 +51,7 @@ export default {
         >
             <q-card>
                 <div class="q-pa-md">
-                    <function-interface
+                    <FunctionInterface
                         :abi="func"
                         :contract="contract"
                         :group="write ? 'write' : 'read'"

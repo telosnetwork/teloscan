@@ -1,71 +1,3 @@
-<template>
-<div class="row">
-    <div class="col-12 q-mb-lg">
-        <base-staking-form
-            :header="header"
-            :subheader="subheader"
-            :top-input-label="topInputLabel"
-            :top-input-info-text="topInputInfoText"
-            :top-input-amount="topInputAmount"
-            :top-input-max-value="topInputMaxValue"
-            :top-input-error-text="topInputErrorText"
-            :top-input-is-loading="topInputIsLoading"
-            :top-input-tooltip="topInputTooltip"
-            :bottom-input-label="bottomInputLabel"
-            :bottom-input-amount="bottomInputAmount"
-            :bottom-input-max-value="bottomInputMaxValue"
-            :bottom-input-is-loading="bottomInputIsLoading"
-            :cta-text="ctaText"
-            :cta-disabled="ctaIsDisabled"
-            :unstake-period-seconds="unstakePeriodSeconds"
-            :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
-            @input-top="handleInputTop"
-            @input-bottom="handleInputBottom"
-            @cta-clicked="handleCtaClick"
-        />
-    </div>
-    <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
-        Unstake successful! View Transaction:
-        <transaction-field :transaction-hash="resultHash" />
-    </div>
-    <q-dialog v-model="displayConfirmModal">
-        <q-card>
-            <q-card-section>
-                <p>
-                    Continuing will redeem sTLOS in exchange for TLOS.
-                    Unstaked TLOS will remain locked for a period of
-                    <span class="text-primary">{{ unstakePeriodPretty }}</span>,
-                    after which it can be withdrawn to your account from the Claim tab.
-                </p>
-                <p v-if="remainingDeposits < 10">
-                    Heads up, you may unstake <span class="text-primary">{{ remainingDeposits }}</span> more times before
-                    you reach the maximum concurrent unstake actions. When you reach the maximum, you will need to claim
-                    unlocked TLOS to continue unstaking. If you don't have any claimable TLOS at that time, you must
-                    wait until the lock duration has elapsed before you can claim unlocked TLOS and unstake more sTLOS.
-                </p>
-                Would you like to proceed?
-            </q-card-section>
-
-            <q-card-actions align="right" class="q-pb-md q-px-md">
-                <q-btn
-                    v-close-popup
-                    flat
-                    label="Cancel"
-                    color="negative"
-                />
-                <q-btn
-                    v-close-popup
-                    label="Unstake sTLOS"
-                    color="secondary"
-                    text-color="black"
-                    @click="initiateUnstake"
-                />
-            </q-card-actions>
-        </q-card>
-    </q-dialog>
-</div>
-</template>
-
 <script>
 import { getClientIsApple } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
@@ -77,12 +9,13 @@ import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import TransactionField from 'components/TransactionField';
 
-import { triggerLogin } from 'components/ConnectButton';
+import LoginModal from 'components/LoginModal.vue';
 
 export default {
     name: 'UnstakeForm',
     components: {
         BaseStakingForm,
+        LoginModal,
         TransactionField,
     },
     props: {
@@ -118,28 +51,29 @@ export default {
     emits: ['balance-changed'],
     data: () => ({
         displayConfirmModal: false,
+        displayLoginModal: false,
         resultHash: null,
-        header: 'Unstake sTLOS',
-        subheader: 'Unstake sTLOS in exchange for TLOS',
-        topInputLabel: 'Unstake sTLOS',
+        header: '',
+        subheader: '',
+        topInputLabel: '',
         topInputAmount: '0',
         topInputIsLoading: false,
         bottomInputMaxValue: null,
         bottomInputIsLoading: false,
-        bottomInputLabel: 'Receive TLOS',
+        bottomInputLabel: '',
         bottomInputAmount: '0',
         ctaIsLoading: false,
         debouncedTopInputHandler: null,
         debouncedBottomInputHandler: null,
         columns: [{
             name: 'amount',
-            label: 'Amount',
+            label: '',
             align: 'left',
             field: 'amount',
             format: val => ethers.utils.formatEther(val.toString()),
         }, {
             name: 'time',
-            label: 'Time Remaining',
+            label: '',
             align: 'left',
             field: 'until',
             format: val => val.toString(),
@@ -150,23 +84,22 @@ export default {
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn', 'isNative']),
         unstakePeriodPretty() {
-            return formatUnstakePeriod(this.unstakePeriodSeconds);
+            return formatUnstakePeriod(this.unstakePeriodSeconds, this.$t);
         },
         topInputMaxValue() {
             return this.isLoggedIn ? this.stakedBalance : null;
         },
         topInputTooltip() {
             const prettyBalance = ethers.utils.formatEther(this.stakedBalance).toString();
-            return 'Click to input full staked balance\n\n' +
-                'Precise balance (less approximate gas fees):\n' +
-                `${prettyBalance} sTLOS`;
+            return this.$t('pages.staking.full_staked_balance_tooltip', { prettyBalance });
         },
         stakedBalance() {
             return BigNumber.from(this.stlosBalance ?? '0').toString();
         },
         topInputInfoText() {
-            if (!this.isLoggedIn)
+            if (!this.isLoggedIn) {
                 return '';
+            }
 
             let balanceEth = ethers.utils.formatEther(this.stakedBalance);
 
@@ -178,11 +111,15 @@ export default {
 
             const balanceTlos = ethers.utils.commify(balanceEth);
 
-            return `${balanceTlos} Available`;
+            return this.$t('pages.staking.available', { balanceTlos });
         },
         topInputErrorText() {
-            if(this.isLoggedIn && !this.isNative) return;
-            return this.isNative ? 'Login using an EVM wallet' : 'Wallet not connected';
+            if(this.isLoggedIn && !this.isNative) {
+                return;
+            }
+            return this.isNative ?
+                this.$t('pages.staking.login_using_evm_wallet') :
+                this.$t('pages.staking.wallet_not_connected');
         },
         canDeposit() {
             return this.deposits.length < this.maxDeposits;
@@ -190,7 +127,8 @@ export default {
         ctaIsDisabled() {
             const inputsInvalid = (
                 this.isLoggedIn &&
-                [this.topInputAmount, this.bottomInputAmount].some(amount => ['0', '', null, undefined].includes(amount))
+                [this.topInputAmount, this.bottomInputAmount]
+                    .some(amount => ['0', '', null, undefined].includes(amount))
             );
 
             return inputsInvalid ||
@@ -199,20 +137,33 @@ export default {
                 this.ctaIsLoading;
         },
         ctaText() {
-            if (this.ctaIsLoading)
-                return 'Loading...';
-
-            return this.isLoggedIn ? 'Unstake sTLOS' : 'Connect Wallet';
+            if (this.ctaIsLoading) {
+                return this.$t('pages.staking.loading');
+            } // 'Loading...'
+            return this.isLoggedIn ? this.$t('pages.staking.unstake_stlos') : this.$t('pages.staking.connect_wallet');
         },
         remainingDeposits() {
             return (this.maxDeposits ?? 0) - this.deposits.length;
         },
     },
     async created() {
+        // initialization of the translated texts
+        this.header = this.$t('pages.staking.unstake_stlos');
+        this.subheader = this.$t('pages.staking.unstake_stlos_for_tlos');
+        this.topInputLabel = this.$t('pages.staking.unstake_stlos');
+        this.bottomInputLabel = this.$t('pages.staking.receive_tlos');
+        this.columns[0].label = this.$t('pages.staking.amount');
+        this.columns[1].label = this.$t('pages.staking.time_remaining');
+
         try {
             this.maxDeposits = (await this.escrowContractInstance.maxDeposits()).toNumber();
         } catch (error) {
             console.error(`Failed to fetch max deposits from escrow contract: ${error}`);
+            this.$q.notify({
+                position: 'top',
+                message: this.$t('pages.staking.fetch_max_deposits_error', { message: error }),
+            });
+
             this.maxDeposits = null;
         }
 
@@ -227,6 +178,10 @@ export default {
                     .catch((err) => {
                         this.bottomInputAmount = '';
                         console.error(`Unable to convert TLOS to STLOS: ${err}`);
+                        this.$q.notify({
+                            position: 'top',
+                            message: this.$t('pages.staking.convert_tlos_to_stlos_error', { message: err }),
+                        });
                     })
                     .finally(async () => {
                         this.bottomInputIsLoading = false;
@@ -241,7 +196,7 @@ export default {
 
                             this.topInputAmount = old;
                         }
-                    })
+                    });
             },
             debounceWaitMs,
         );
@@ -249,12 +204,16 @@ export default {
         this.debouncedBottomInputHandler = debounce(
             () => {
                 this.stlosContractInstance.previewDeposit(this.bottomInputAmount)
-                    .then(amountBigNum => {
+                    .then((amountBigNum) => {
                         this.topInputAmount = amountBigNum.toString();
                     })
-                    .catch(err => {
+                    .catch((err) => {
                         this.topInputAmount = '';
                         console.error(`Unable to convert STLOS to TLOS: ${err}`);
+                        this.$q.notify({
+                            position: 'top',
+                            message: this.$t('pages.staking.convert_stlos_to_tlos_error', { message: err }),
+                        });
                     })
                     .finally(async () => {
                         this.topInputIsLoading = false;
@@ -269,7 +228,7 @@ export default {
 
                             this.bottomInputAmount = old;
                         }
-                    })
+                    });
             },
             debounceWaitMs,
         );
@@ -278,14 +237,14 @@ export default {
         notifyMaxDeposits(){
             this.$q.notify({
                 position: 'top',
-                message: 'You have reached the maximum number of pending unstake transactions, please claim available' +
-                    ' TLOS or wait for pending unstaked TLOS to become claimable before making another deposit.',
+                message: this.$t('pages.staking.max_unstake_transactions_reached'),
                 timeout: 6000,
             });
         },
         handleInputTop(newWei = '0') {
-            if (newWei === this.topInputAmount)
+            if (newWei === this.topInputAmount) {
                 return;
+            }
 
             this.bottomInputIsLoading = true;
             this.topInputAmount = newWei;
@@ -293,8 +252,9 @@ export default {
             this.debouncedTopInputHandler();
         },
         handleInputBottom(newWei = '0') {
-            if (newWei === this.bottomInputAmount)
+            if (newWei === this.bottomInputAmount) {
                 return;
+            }
 
             this.topInputIsLoading = true;
             this.bottomInputAmount = newWei;
@@ -303,7 +263,7 @@ export default {
         },
         handleCtaClick() {
             if (!this.isLoggedIn){
-                triggerLogin();
+                this.displayLoginModal = true;
                 return;
             }
 
@@ -324,6 +284,10 @@ export default {
                 })
                 .catch(({ message }) => {
                     console.error(`Failed to unstake sTLOS: ${message}`);
+                    this.$q.notify({
+                        position: 'top',
+                        message: this.$t('pages.staking.unstake_stlos_error', { message }),
+                    });
                     this.resultHash = null;
                 })
                 .finally(() => {
@@ -331,7 +295,76 @@ export default {
                 });
         },
     },
-}
+};
 </script>
+
+<template>
+<div class="row">
+    <div class="col-12 q-mb-lg">
+        <BaseStakingForm
+            :header="header"
+            :subheader="subheader"
+            :top-input-label="topInputLabel"
+            :top-input-info-text="topInputInfoText"
+            :top-input-amount="topInputAmount"
+            :top-input-max-value="topInputMaxValue"
+            :top-input-error-text="topInputErrorText"
+            :top-input-is-loading="topInputIsLoading"
+            :top-input-tooltip="topInputTooltip"
+            :bottom-input-label="bottomInputLabel"
+            :bottom-input-amount="bottomInputAmount"
+            :bottom-input-max-value="bottomInputMaxValue"
+            :bottom-input-is-loading="bottomInputIsLoading"
+            :cta-text="ctaText"
+            :cta-disabled="ctaIsDisabled"
+            :unstake-period-seconds="unstakePeriodSeconds"
+            :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
+            @input-top="handleInputTop"
+            @input-bottom="handleInputBottom"
+            @cta-clicked="handleCtaClick"
+        />
+    </div>
+    <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
+        {{ $t('pages.staking.unstake_stlos_success') }}
+        <TransactionField :transaction-hash="resultHash" />
+    </div>
+    <q-dialog v-model="displayConfirmModal">
+        <q-card>
+            <q-card-section>
+                <p>
+                    {{ $t('pages.staking.confirm_unstake_1a') }}
+                    <span class="text-primary">{{ unstakePeriodPretty }}</span>,
+                    {{ $t('pages.staking.confirm_unstake_1b') }}
+
+                </p>
+                <p v-if="remainingDeposits < 10">
+                    {{ $t('pages.staking.confirm_unstake_2a') }}
+                    <span class="text-primary">{{ remainingDeposits }}</span>
+                    {{ $t('pages.staking.confirm_unstake_2b') }}
+
+                </p>
+                {{ $t('pages.staking.confirm_unstake_3') }}
+            </q-card-section>
+
+            <q-card-actions align="right" class="q-pb-md q-px-md">
+                <q-btn
+                    v-close-popup
+                    flat
+                    :label="$t('pages.staking.cancel')"
+                    color="negative"
+                />
+                <q-btn
+                    v-close-popup
+                    :label="$t('pages.staking.unstake_stlos')"
+                    color="secondary"
+                    text-color="black"
+                    @click="initiateUnstake"
+                />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
+</div>
+<LoginModal :show="displayLoginModal" @hide="displayLoginModal = false" />
+</template>
 
 <style lang="sass"></style>

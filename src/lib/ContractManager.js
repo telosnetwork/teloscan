@@ -1,13 +1,13 @@
 import Contract from 'src/lib/Contract';
 import { ethers } from 'ethers';
-import functions_overrides from './abi/signature/functions_signatures_overrides.json';
-import events_overrides from './abi/signature/events_signatures_overrides.json';
+import functions_overrides from 'src/lib/abi/signature/functions_signatures_overrides.json';
+import events_overrides from 'src/lib/abi/signature/events_signatures_overrides.json';
 import Web3 from 'web3';
 import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
-import { erc721Abi, erc1155Abi, erc721MetadataAbi, supportsInterfaceAbi } from './abi';
-import { toChecksumAddress } from './utils';
-import {ERC1155_TRANSFER_SIGNATURE} from './abi/signature/transfer_signatures.js'
+import { erc721Abi, erc1155Abi, erc721MetadataAbi, supportsInterfaceAbi } from 'src/lib/abi';
+import { toChecksumAddress } from 'src/lib/utils';
+import { ERC1155_TRANSFER_SIGNATURE } from 'src/lib/abi/signature/transfer_signatures.js';
 
 const contractsBucket = axios.create({
     baseURL: `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com`,
@@ -39,11 +39,12 @@ export default class ContractManager {
     }
     async getFunctionIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
-        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, prefix))
+        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, prefix)) {
             return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
+        }
 
         try {
-            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`)
+            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`);
             if (abiResponse) {
                 if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
                     console.error(`Unable to find function signature for sig: ${prefix}`);
@@ -77,11 +78,12 @@ export default class ContractManager {
     }
     async getEventIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
-        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, prefix))
+        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, prefix)) {
             return new ethers.utils.Interface([this.eventInterfaces[prefix]]);
+        }
 
         try {
-            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`)
+            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`);
             if (abiResponse) {
                 if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
                     console.error(`Unable to find event signature for event: ${data}`);
@@ -98,25 +100,34 @@ export default class ContractManager {
     }
 
     async getContractCreation(address) {
-        if (!address) return;
+        if (!address) {
+            return;
+        }
         try {
-            const v2ContractResponse = await this.evmEndpoint.get(`/v2/evm/get_contract?contract=${address}`)
-            return v2ContractResponse.data
+            const v2ContractResponse = await this.evmEndpoint.get(`/v2/evm/get_contract?contract=${address}`);
+            return v2ContractResponse.data;
         } catch (e) {
             console.error(e.message);
         }
     }
 
     // suspectedToken is so we don't try to check for ERC20 info via eth_call unless we think this is a token...
-    // this is coming from the token transfer, transactions table & transaction (general + logs tabs) pages where we're looking for a contract based on a token transfer event
+    // this is coming from the token transfer, transactions table & transaction (general + logs tabs) pages where we're
+    // looking for a contract based on a token transfer event
     // handles erc721 & erc20 (w/ stubs for erc1155)
     async getContract(address, suspectedToken) {
-        if (!address) return;
+        if (!address) {
+            return;
+        }
         const addressLower = address.toLowerCase();
 
-        // Get from already queried contracts, add token data if needed & not present (ie: queried beforehand w/o suspectedToken or a wrong suspectedToken)
+        // Get from already queried contracts, add token data if needed & not present
+        // (ie: queried beforehand w/o suspectedToken or a wrong suspectedToken)
         if (this.contracts[addressLower]) {
-            if (!suspectedToken || this.contracts[addressLower].token && this.contracts[addressLower].token.type === suspectedToken) {
+            if (
+                !suspectedToken ||
+                this.contracts[addressLower].token && this.contracts[addressLower].token.type === suspectedToken
+            ) {
                 return this.contracts[addressLower];
             }
         }
@@ -195,7 +206,8 @@ export default class ContractManager {
     async getEmptyContract(address, creationInfo) {
         const contract = new Contract({
             name: `0x${address.slice(0, 16)}...`,
-            address, creationInfo,
+            address,
+            creationInfo,
             abi: undefined,
             manager: this,
         });
@@ -216,8 +228,7 @@ export default class ContractManager {
     async isTokenType(address, type){
         if(typeof type === 'undefined'){
             return false;
-        }
-        else if(type === 'erc721'){
+        } else if(type === 'erc721'){
             if(!await this.supportsInterface(address, '0x80ac58cd')){
                 return false;
             }
@@ -259,12 +270,12 @@ export default class ContractManager {
                 tokenData.name = await contract.name();
                 tokenData.extensions = {
                     metadata: await this.supportsInterface(address, '0x5b5e139f'),
-                }
+                };
             } else if(type === 'erc1155'){
                 tokenData.name = contract.name || contract.address;
                 tokenData.extensions = {
                     metadata: await this.supportsInterface(address, '0x0e89341c'),
-                }
+                };
             }
 
             tokenData.type = type;
@@ -290,8 +301,9 @@ export default class ContractManager {
     }
 
     async getToken(address, suspectedType) {
-        if (!this.tokenList)
+        if (!this.tokenList) {
             await this.loadTokenList();
+        }
 
         let i = this.tokenList.tokens.length;
         while (i--) {
@@ -307,7 +319,8 @@ export default class ContractManager {
         if (token) {
             return new Contract({
                 name: `${token.name} (${token.symbol})`,
-                address, creationInfo,
+                address,
+                creationInfo,
                 abi: this.getTokenABI(token.type),
                 manager: this,
                 token: Object.assign({

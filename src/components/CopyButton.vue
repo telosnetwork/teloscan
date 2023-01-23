@@ -1,28 +1,5 @@
-<template>
-<div
-    :class="containerClasses"
-    :aria-label="hint"
-    aria-role="button"
-    tabindex="0"
-    @click.stop="handleClick"
-    @keydown.space.enter="handleClick"
->
-    <q-tooltip
-        :offset="[0,0]"
-        anchor="center end"
-        self="center left"
-    >
-        {{ hint }}
-    </q-tooltip>
-
-    {{ accompanyingText }}
-
-    <q-icon :class="iconClasses" />
-</div>
-</template>
-
 <script>
-import { copyToClipboard } from 'quasar'
+import { copyToClipboard } from 'quasar';
 
 const icons = {
     copy: 'far fa-copy',
@@ -58,7 +35,7 @@ export default {
             return `${this.iconClass} q-pl-xs`;
         },
         defaultHint() {
-            return `Copy ${this.description} to clipboard`;
+            return this.$t('components.copy_to_clipboard', { text: this.description });
         },
     },
     created() {
@@ -68,18 +45,45 @@ export default {
         handleClick() {
             copyToClipboard(this.text).then(() => {
                 this.iconClass = icons.success;
-                this.hint = 'Copied';
+                this.hint = this.$t('components.copied');
                 setTimeout(() => {
                     this.iconClass = icons.copy;
                     this.hint = this.defaultHint;
                 }, 1500);
             }).catch((err) => {
                 console.error(`Failed to copy to clipboard: ${err}`);
-            })
+                this.$q.notify({
+                    type: 'negative',
+                    message: this.$t('components.copy_to_clipboard_failed'),
+                });
+            });
         },
     },
-}
+};
 </script>
+
+<template>
+<div
+    :class="containerClasses"
+    :aria-label="hint"
+    aria-role="button"
+    tabindex="0"
+    @click.stop="handleClick"
+    @keydown.space.enter="handleClick"
+>
+    <q-tooltip
+        :offset="[0,0]"
+        anchor="center end"
+        self="center left"
+    >
+        {{ hint }}
+    </q-tooltip>
+
+    {{ accompanyingText }}
+
+    <q-icon :class="iconClasses" />
+</div>
+</template>
 
 <style lang="scss">
 .c-copy-button {

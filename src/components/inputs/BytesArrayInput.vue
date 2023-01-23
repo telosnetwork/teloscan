@@ -1,18 +1,3 @@
-<template>
-<base-text-input
-    ref="input"
-    v-bind="$attrs"
-    :model-value="modelValue"
-    :label="shapedLabel"
-    :name="name"
-    :placeholder="placeholder"
-    :rules="rules"
-    :lazy-rules="false"
-    :size="undefined"
-    @update:modelValue="handleChange"
-/>
-</template>
-
 <script>
 import { parseBytesArrayString } from 'components/ContractTab/function-interface-utils';
 
@@ -54,20 +39,22 @@ export default {
     }),
     computed: {
         rules() {
-            const validateParsedArray = (value) => Array.isArray(parseBytesArrayString(value)) || value === '';
+            const validateParsedArray = value => Array.isArray(parseBytesArrayString(value)) || value === '';
 
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
 
-                if ((sizeIsUnconstrained) || value === '')
+                if ((sizeIsUnconstrained) || value === '') {
                     return true;
+                }
 
                 const expectedLength = +this.size;
                 return Array.isArray(parseBytesArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage = `There should be ${+this.size} bytes in the array`;
-            const invalidArrayStringMessage = 'Entered value does not represent an array of bytes';
+            const incorrectArrayLengthMessage =
+                this.$t('components.inputs.incorrect_bytes_array_length', { size: +this.size });
+            const invalidArrayStringMessage = this.$t('components.inputs.invalid_bytes_array_string');
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,
@@ -83,7 +70,7 @@ export default {
                 sizeLabel = `${this.size}`;
             }
 
-            return `${this.label} (bytes${sizeLabel})`
+            return `${this.label} (bytes${sizeLabel})`;
         },
     },
     watch: {
@@ -110,8 +97,23 @@ export default {
             }
         },
     },
-}
+};
 </script>
+
+<template>
+<BaseTextInput
+    ref="input"
+    v-bind="$attrs"
+    :model-value="modelValue"
+    :label="shapedLabel"
+    :name="name"
+    :placeholder="placeholder"
+    :rules="rules"
+    :lazy-rules="false"
+    :size="undefined"
+    @update:modelValue="handleChange"
+/>
+</template>
 
 <style>
 

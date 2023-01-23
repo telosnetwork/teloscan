@@ -1,31 +1,11 @@
 <script>
 import axios from 'axios';
-const API_URL = ('' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40') ? 'https://api.monitor.telos.net' : 'https://api.monitor-test.telos.net'
+const API_URL = ('' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40') ?
+    'https://api.monitor.telos.net' :
+    'https://api.monitor-test.telos.net';
 const API_ENDPOINT_TASKS = API_URL + '/tasks';
 const API_ENDPOINT_STATUSES = API_URL + '/task_status';
 
-const columns = [
-    {
-        name: 'status',
-        label: 'Status',
-        align: 'left',
-    },
-    {
-        name: 'checked_at',
-        label: 'Checked at',
-        align: 'left',
-    },
-    {
-        name: 'task',
-        label: 'Task',
-        align: 'left',
-    },
-    {
-        name: 'message',
-        label: 'Message',
-        align: 'left',
-    },
-]
 export default {
     name: 'MonitorComponent',
     async mounted() {
@@ -35,6 +15,29 @@ export default {
         });
     },
     data() {
+        const columns = [
+            {
+                name: 'status',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'checked_at',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'task',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'message',
+                label: '',
+                align: 'left',
+            },
+        ];
+
         return {
             rows: [],
             tasks: [],
@@ -47,7 +50,14 @@ export default {
                 rowsNumber: 10000,
             },
             loading: true,
-        }
+        };
+    },
+    async created() {
+        // initialization of the translated texts
+        this.columns[0].label = this.$t('components.health.status');
+        this.columns[1].label = this.$t('components.health.checked_at');
+        this.columns[2].label = this.$t('components.health.task');
+        this.columns[3].label = this.$t('components.health.message');
     },
     methods: {
         async getTasks(){
@@ -55,14 +65,18 @@ export default {
                 const results = await axios.get(API_ENDPOINT_TASKS);
                 this.tasks = results.data;
             } catch (e) {
-                console.error(e)
+                console.error(e);
             }
         },
         async onRequest(props) {
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             this.loading = true;
             try {
-                const results = await axios.get(API_ENDPOINT_STATUSES + '?order=id.desc&select=task(name),message,checked_at,id&limit=' + rowsPerPage + '&offset=' + rowsPerPage * (page - 1));
+                let url = API_ENDPOINT_STATUSES;
+                url += '?order=id.desc&select=task(name),message,checked_at,id&limit=';
+                url += rowsPerPage + '&offset=' + rowsPerPage * (page - 1);
+                const results = await axios.get(url);
+
                 this.rows = results.data;
 
                 this.pagination.page = page;
@@ -77,7 +91,7 @@ export default {
                 );
                 this.loading = false;
             } catch (e) {
-                console.error(e)
+                console.error(e);
             }
         },
     },
@@ -103,7 +117,10 @@ export default {
                 @click="col.name==='checked_at' ? showAge=!showAge : null"
             )
             template( v-if="col.name==='checked_at'" )
-                q-tooltip(anchor="bottom middle" self="bottom middle") Click to change format
+                q-tooltip(
+                    anchor="bottom middle"
+                    self="bottom middle"
+                ) {{ $t('components.health.click_to_change_format') }}
             | {{ col.label }}
 
         template(v-slot:body="props")
