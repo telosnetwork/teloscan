@@ -375,7 +375,6 @@ export default {
                     class="c-stake-form__metamask-prompt u-flex--center-y"
                     tabindex="0"
                     :aria-label="$t('pages.staking.add_stlos_to_metamask')"
-
                     @click="promptAddToMetamask"
                 >
                     {{ $t('pages.staking.add_stlos_to_metamask') }}

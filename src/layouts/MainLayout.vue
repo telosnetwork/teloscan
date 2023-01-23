@@ -39,8 +39,8 @@ export default {
     },
     methods: {
         removeOldAngularCache() {
-            // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on
-            // its own, this should remove it
+            // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own,
+            // this should remove it
             if(window.navigator && navigator.serviceWorker) {
                 navigator.serviceWorker.getRegistrations()
                     .then(function(registrations) {

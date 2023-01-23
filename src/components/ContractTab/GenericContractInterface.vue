@@ -61,7 +61,6 @@ export default {
             if (oldValue && oldValue !== newValue) {
                 this.file_model = null;
             }
-
             // if newValue is empty, we should reset
             if (!newValue) {
                 this.reset();
@@ -114,7 +113,6 @@ export default {
                 !!this.customAbiDefinition &&
                 this.customAbiIsValidJSON &&
                 customAbiSelected;
-
             if (selectedAbiIsCustomAndValid) {
                 abi = JSON.parse(this.customAbiDefinition);
             } else if (this.selectedAbi === erc20) {
@@ -124,7 +122,6 @@ export default {
             } else {
                 return;
             }
-
             if (!Array.isArray(abi)) {
                 if (abi.abi && Array.isArray(abi.abi)) {
                     abi = abi.abi;
@@ -141,7 +138,6 @@ export default {
                 abi,
                 manager: this.$contractManager,
             });
-
             let read = [];
             let write = [];
 
@@ -156,7 +152,6 @@ export default {
                     write.push(a);
                 }
             });
-
             this.functions = {
                 read: sortAbiFunctionsByName(read),
                 write: sortAbiFunctionsByName(write),
@@ -165,7 +160,6 @@ export default {
     },
 };
 </script>
-
 
 <template>
 <div class="q-pa-md">
@@ -177,7 +171,6 @@ export default {
                     class="text-negative"
                     size="1.25rem"
                 />
-
                 {{ $t('components.contract_tab.unverified_contract_source') }}
             </p>
             <p>

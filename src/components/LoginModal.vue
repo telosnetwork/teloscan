@@ -71,6 +71,28 @@ export default {
         getLoginDisplay() {
             return this.isNative ? this.nativeAccount : `0x...${this.address.slice(this.address.length - 4)}`;
         },
+        connect() {
+            this.showLogin = true;
+        },
+        disconnect() {
+            if (this.isNative) {
+                const loginData = localStorage.getItem('loginData');
+                if (!loginData) {
+                    return;
+                }
+
+                const loginObj = JSON.parse(loginData);
+                const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
+                wallet.logout();
+            }
+
+            this.setLogin({});
+            localStorage.removeItem('loginData');
+            this.$providerManager.setProvider(null);
+        },
+        goToAddress() {
+            this.$router.push(`/address/${this.address}`);
+        },
         async injectedWeb3Login() {
             if (!this.browserSupportsMetaMask) {
                 window.open('https://metamask.app.link/dapp/teloscan.io');
@@ -238,8 +260,8 @@ export default {
     <q-dialog :model-value="show" @hide="() => $emit('hide')">
         <q-card rounded class="c-login-modal__modal-inner">
             <q-tabs v-model="tab">
-                <q-tab name="web3" :label="$t('components.evm_wallets')"/>
-                <q-tab name="native" :label="$t('components.advanced')"/>
+                <q-tab name="web3" :label="$t('components.evm_wallets')" />
+                <q-tab name="native" :label="$t('components.advanced')" />
             </q-tabs>
             <q-separator/>
             <q-tab-panels v-model="tab" animated>

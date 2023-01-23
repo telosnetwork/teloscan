@@ -2,14 +2,14 @@
 import { mapGetters, mapMutations } from 'vuex';
 import { stlos as stlosLogo } from 'src/lib/logos.js';
 import { directive as clickaway } from 'vue3-click-away';
-
-import LoginModal from 'components/LoginModal.vue';
 import HeaderSearch from 'components/header/HeaderSearch.vue';
+import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
+import LoginModal from 'components/LoginModal.vue';
 import LoginStatus from 'components/header/LoginStatus.vue';
-
 export default {
     name: 'AppHeader',
     components: {
+        LanguageSwitcherModal,
         LoginModal,
         HeaderSearch,
         LoginStatus,
@@ -21,6 +21,7 @@ export default {
         stlosLogo,
         mobileMenuIsOpen: false,
         showLoginModal: false,
+        showLanguageSwitcher: false,
         advancedMenuExpanded: false,
         menuHiddenDesktop: false,
         isTestnet: process.env.NETWORK_EVM_CHAIN_ID !== '40',
@@ -41,13 +42,11 @@ export default {
         goTo(to) {
             this.mobileMenuIsOpen = false;
             this.advancedMenuExpanded = false;
-
             const httpsRegex = /^https/;
             if (typeof to === 'string' && httpsRegex.test(to)) {
                 window.location.href = to;
                 return;
             }
-
             this.$router.push(to);
         },
         handleClickaway() {
@@ -71,12 +70,10 @@ export default {
                 if (!loginData) {
                     return;
                 }
-
                 const loginObj = JSON.parse(loginData);
                 const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
                 wallet.logout();
             }
-
             this.setLogin({});
             localStorage.removeItem('loginData');
             this.$providerManager.setProvider(null);
@@ -196,6 +193,21 @@ export default {
                         <li
                             class="c-header__menu-li"
                             tabindex="0"
+                            role="menuitem"
+                            :aria-label="'open language switcher'"
+                            @keydown.enter="showLanguageSwitcher = true"
+                            @click="showLanguageSwitcher = true"
+                        >
+                            <q-icon
+                                name="language"
+                                class="c-header__menu-item-icon"
+                                size="sm"
+                            />
+                            {{ $t('global.language') }}
+                        </li>
+                        <li
+                            class="c-header__menu-li"
+                            tabindex="0"
                             :aria-label="`${$t('components.header.goto_health_monitor')}`"
                             role="link"
                             @keydown.enter="goTo('/health')"
@@ -231,6 +243,21 @@ export default {
             </li>
 
             <template v-if="advancedMenuExpanded">
+                <li
+                    class="c-header__menu-li c-header__menu-li--advanced-menu-mobile"
+                    tabindex="0"
+                    role="menuitem"
+                    :aria-label="'open language switcher'"
+                    @keydown.enter="showLanguageSwitcher = true"
+                    @click="showLanguageSwitcher = true"
+                >
+                    <q-icon
+                        name="language"
+                        class="c-header__menu-item-icon"
+                        size="sm"
+                    />
+                    {{ $t('global.language') }}
+                </li>
                 <li
                     class="c-header__menu-li c-header__menu-li--advanced-menu-mobile"
                     tabindex="0"
@@ -285,9 +312,9 @@ export default {
     </div>
 </header>
 <LoginModal :show="showLoginModal" @hide="showLoginModal = false" />
+<LanguageSwitcherModal :show="showLanguageSwitcher" @hide="showLanguageSwitcher = false" />
 <q-scroll-observer @scroll="scrollHandler" />
 </template>
-
 <style lang="scss">
 .c-header {
     $this: &;

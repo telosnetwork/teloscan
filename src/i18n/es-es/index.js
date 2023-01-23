@@ -1,15 +1,18 @@
 /* eslint-disable max-len */
 
 export default {
+    locale: {
+        current_language_name: 'Español',
+    },
     pages: {
         staking: {
             note_unstaking_period: 'Tenga en cuenta que hay un período de recuperación de {period}',
             claim_tlos: 'Reclamar TLOS',
             add_stlos_to_metamask: 'Iniciar el cuadro de diálogo MetaMask para agregar sTLOS',
             metamask_fox_logo: 'Logotipo de la zorra de MetaMask',
-            cancel: 'Cancelar',
             stake_tlos_confirm: 'continuar significa bloquer TLOS a cambio de sTLOS. ' +
             'sTLOS se puede canjear por TLOS en cualquier momento usando la pestaña Desbloquear.',
+            cancel: 'Cancelar',
             stake_tlos_confirm_2a: 'Después de que se reclamen los TLOS, éstos estarán bloqueados durante un período de', /* unstakePeriodPretty...*/
             stake_tlos_confirm_2b: /*...unstakePeriodPretty */ 'después de lo cual se puede retirar a su cuenta desde la pestaña Reclamar.',
             stake_tlos_confirm_3: '¿Le gustaría proceder?',
@@ -132,7 +135,6 @@ export default {
         paste_contract_code_here: 'copie y pegue el código del contrato aquí...',
         enter_contract_text: 'ingrese o pegue el texto del contrato',
         verify_contract: 'Verificar contrato',
-        dismiss: 'Descartar',
         reset: 'Reiniciar',
         gas_used: 'Gas usado',
         transactions: 'Transacciones',
@@ -302,8 +304,6 @@ export default {
             write: 'Escribir',
             amount: 'Cantidad',
             value: 'Valor',
-            ok: 'Ok',
-            cancel: 'Cancelar',
             custom_decimals: 'Decimales personalizados',
             custom: 'Personalizado',
             unverified_contract_source: 'El código fuente de este contrato no ha sido verificado.',
@@ -340,7 +340,14 @@ export default {
             copy_address: 'Copiar dirección',
             address_copied: 'Dirección copiada al portapapeles',
             search_placeholder: 'Dirección, Tx, Bloque',
+            select_language: 'Seleccionar idioma',
         },
+    },
+    global: {
+        language: 'Idioma',
+        ok: 'Ok',
+        cancel: 'Cancelar',
+        dismiss: 'Descartar',
     },
     layouts: {
         health_status: 'Estado de la salud',

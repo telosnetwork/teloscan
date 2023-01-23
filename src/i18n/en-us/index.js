@@ -1,6 +1,9 @@
 /* eslint-disable max-len*/
 
 export default {
+    locale: {
+        current_language_name: 'English',
+    },
     pages: {
         staking: {
             note_unstaking_period: 'Please note that there is an unstaking period of {period}',
@@ -132,7 +135,6 @@ export default {
         paste_contract_code_here: 'copy & paste contract code here...',
         enter_contract_text: 'enter or paste contract text',
         verify_contract: 'Verify Contract',
-        dismiss: 'Dismiss',
         reset: 'Reset',
         gas_used: 'Gas used',
         transactions: 'Transactions',
@@ -302,8 +304,6 @@ export default {
             write: 'Write',
             amount: 'Amount',
             value: 'Value',
-            ok: 'Ok',
-            cancel: 'Cancel',
             custom_decimals: 'Custom decimals',
             custom: 'Custom',
             unverified_contract_source: 'This contract source has not been verified.',
@@ -340,7 +340,14 @@ export default {
             copy_address: 'Copy address',
             address_copied: 'Address copied to clipboard',
             search_placeholder: 'Address, Tx, Block',
+            select_language: 'Select Language',
         },
+    },
+    global: {
+        language: 'Language',
+        cancel: 'Cancel',
+        ok: 'Ok',
+        dismiss: 'Dismiss',
     },
     layouts: {
         health_status: 'Health Status',
