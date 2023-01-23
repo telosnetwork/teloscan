@@ -2,7 +2,7 @@ import { boot } from 'quasar/wrappers';
 import { Api, JsonRpc } from 'eosjs';
 
 const signTransaction = async function(actions) {
-    actions.forEach(action => {
+    actions.forEach((action) => {
         if (!action.authorization || !action.authorization.length) {
             action.authorization = [
                 {
@@ -34,7 +34,7 @@ const signTransaction = async function(actions) {
 
 const getRpc = function () {
     return this.$type === 'ual' ? this.$ualUser.rpc : this.$defaultApi.rpc;
-}
+};
 
 const getTableRows = async function(options) {
     const rpc = this.$api.getRpc();
@@ -47,7 +47,7 @@ const getTableRows = async function(options) {
 const getAccount = async function (accountName) {
     const rpc = this.$api.getRpc();
     return await rpc.get_account(accountName);
-}
+};
 
 export default boot(async ({ store }) => {
     const rpc = new JsonRpc(
@@ -66,5 +66,5 @@ export default boot(async ({ store }) => {
         getRpc: getRpc.bind(store),
     };
 
-    store.dispatch('general/fetchBrowserEthereumSupport');
+    store.dispatch('general/fetchBrowserMetaMaskSupport');
 });

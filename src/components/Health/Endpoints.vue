@@ -18,25 +18,30 @@ export default {
     },
     methods: {
         getLatencyColor(latency) {
-            if (latency < 375)
+            if (latency < 375) {
                 return 'green';
+            }
 
-            if (latency < 650)
+            if (latency < 650) {
                 return 'yellow';
+            }
 
             return 'red';
         },
         getBlockClass(currentHeight, block) {
-            if (currentHeight === 0)
+            if (currentHeight === 0) {
                 return 'text-green';
+            }
 
             const diff = (currentHeight - block);
 
-            if (diff > 50)
+            if (diff > 50) {
                 return 'text-red';
+            }
 
-            if (diff > 20)
+            if (diff > 20) {
                 return 'text-yellow';
+            }
 
             return 'text-green';
         },
@@ -44,7 +49,7 @@ export default {
             await this.loadEndpoints();
             this.endpoints.forEach((endpoint, idx) => {
                 this.doCheck(endpoint, idx);
-            })
+            });
         },
         async loadEndpoints() {
             const results = await axios.get(ENDPOINT_LIST);
@@ -65,8 +70,9 @@ export default {
                 });
 
                 const block = parseInt(result.data.result, 16);
-                if (this.blockHeight < block)
+                if (this.blockHeight < block) {
                     this.blockHeight = block;
+                }
 
                 this.endpoints[idx].latency = result.timings.elapsedTime;
                 this.endpoints[idx].block = block;
@@ -79,25 +85,22 @@ export default {
 </script>
 
 <template lang="pug">
-.pageContainer.q-pt-xl
-    .homeInfo.q-mb-lg
-        .text-primary.text-h6 RPC ENDPOINTS
-    .q-mb-md.tableWrapper
-      q-card
-        q-item(v-for="endpoint in endpoints" :key="endpoint.endpoint")
-          q-item-section.full-width
-            q-item-label.text-weight-medium
-              span {{ endpoint.name }}
-            q-item-label(v-if="endpoint.description" caption) {{ endpoint.description }}
-          q-item-section.full-width
-            q-item-label.q-mt-sm {{ endpoint.http }}
-          q-item-section.full-width
-            q-item-label(v-if="endpoint.latency" side top)
-              span Latency: {{ endpoint.latency }}ms
-              q-icon(name="wifi" :color="getLatencyColor(endpoint.latency)")
-            q-item-label(v-if="endpoint.block" side top ) Block height:&nbsp
-              span(:class="getBlockClass(blockHeight, endpoint.block)") {{ endpoint.block }}
-            q-item-label(v-if="endpoint.error" side top).text-red Error: {{ endpoint.error }}
+.q-mb-md.tableWrapper
+  q-card
+    q-item(v-for="endpoint in endpoints" :key="endpoint.endpoint")
+      q-item-section.full-width
+        q-item-label.text-weight-medium
+          span {{ endpoint.name }}
+        q-item-label(v-if="endpoint.description" caption) {{ endpoint.description }}
+      q-item-section.full-width
+        q-item-label.q-mt-sm {{ endpoint.http }}
+      q-item-section.full-width
+        q-item-label(v-if="endpoint.latency" side top)
+          span  {{ $t('components.health.latency') }}: {{ endpoint.latency }}ms
+          q-icon(name="wifi" :color="getLatencyColor(endpoint.latency)")
+        q-item-label(v-if="endpoint.block" side top ) {{ $t('components.health.block_height') }}:&nbsp
+          span(:class="getBlockClass(blockHeight, endpoint.block)") {{ endpoint.block }}
+        q-item-label(v-if="endpoint.error" side top).text-red Error: {{ endpoint.error }}
 </template>
 
 <style scoped lang='sass'>

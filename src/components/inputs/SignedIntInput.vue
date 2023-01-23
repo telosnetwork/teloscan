@@ -1,17 +1,3 @@
-<template>
-<base-text-input
-    ref="input"
-    v-bind="$attrs"
-    :model-value="modelValue"
-    :label="shapedLabel"
-    :name="name"
-    :rules="rules"
-    :lazy-rules="false"
-    :size="undefined"
-    @update:modelValue="handleChange"
-/>
-</template>
-
 <script>
 import { BigNumber } from 'ethers';
 
@@ -54,18 +40,18 @@ export default {
             const maximum = +this.size === 0 ? '0' : BigNumber.from(2).pow(+this.size).sub(1);
             const minimum = maximum.mul(-1);
 
-            const errMessageInvalidInput = 'Entry must be a valid signed integer';
-            const errMessageTooLarge = `Maximum value for int${this.size} is 2^${this.size} - 1`;
-            const errMessageTooSmall = `Minimum value for int${this.size} is -(2^${this.size}) + 1`;
+            const errMessageInvalidInput = this.$t('components.inputs.invalid_signed_integer');
+            const errMessageTooLargePow2 = this.$t('components.inputs.too_large_pow2', { size: this.size });
+            const errMessageTooSmallPow2 = this.$t('components.inputs.too_small_pow2', { size: this.size });
 
             return [
                 val => (/^-?\d+$/.test(val) || val === '')|| errMessageInvalidInput,
-                val => BigNumber.from(val || 0).lte(maximum) || errMessageTooLarge,
-                val => BigNumber.from(val || 0).gte(minimum) || errMessageTooSmall,
+                val => BigNumber.from(val || 0).lte(maximum) || errMessageTooLargePow2,
+                val => BigNumber.from(val || 0).gte(minimum) || errMessageTooSmallPow2,
             ];
         },
         shapedLabel() {
-            return `${this.label} (int${this.size})`
+            return `${this.label} (int${this.size})`;
         },
     },
     watch: {
@@ -91,8 +77,22 @@ export default {
             }
         },
     },
-}
+};
 </script>
+
+<template>
+<BaseTextInput
+    ref="input"
+    v-bind="$attrs"
+    :model-value="modelValue"
+    :label="shapedLabel"
+    :name="name"
+    :rules="rules"
+    :lazy-rules="false"
+    :size="undefined"
+    @update:modelValue="handleChange"
+/>
+</template>
 
 <style>
 

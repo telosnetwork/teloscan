@@ -1,27 +1,3 @@
-<template>
-<div class="c-base-input q-mx-sm">
-    <q-input
-        ref="input"
-        :model-value="modelValue"
-        :reactive-rules="true"
-        v-bind="binding"
-        color="secondary"
-        @update:modelValue="handleChange"
-    >
-        <template #append>
-            <slot name="append" />
-        </template>
-    </q-input>
-    <q-tooltip
-        v-if="readonly"
-        anchor="bottom middle"
-        self="center right"
-    >
-        <span class="u-text--pre">This field is readonly</span>
-    </q-tooltip>
-</div>
-</template>
-
 <script>
 
 import { quasarInputProps } from 'components/inputs/input-helpers';
@@ -55,7 +31,7 @@ export default {
             let requiredRule = [];
 
             if (['required', true, 'true'].includes(this.required)) {
-                requiredRule.push(val => (val?.length ?? 0) > 0 || 'This field is required')
+                requiredRule.push(val => (val?.length ?? 0) > 0 || 'This field is required');
             }
 
             return [
@@ -118,5 +94,29 @@ export default {
             await this.$refs.input.resetValidation();
         },
     },
-}
+};
 </script>
+
+<template>
+<div class="c-base-input q-mx-sm">
+    <q-input
+        ref="input"
+        :model-value="modelValue"
+        :reactive-rules="true"
+        v-bind="binding"
+        color="secondary"
+        @update:modelValue="handleChange"
+    >
+        <template #append>
+            <slot name="append"></slot>
+        </template>
+    </q-input>
+    <q-tooltip
+        v-if="readonly"
+        anchor="bottom middle"
+        self="center right"
+    >
+        <span class="u-text--pre">{{  $t('components.inputs.readonly') }}</span>
+    </q-tooltip>
+</div>
+</template>

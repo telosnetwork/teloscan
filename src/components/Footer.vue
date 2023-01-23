@@ -1,3 +1,12 @@
+<script>
+export default {
+    name: 'AppFooter',
+    data: () => ({
+        year: (new Date()).getFullYear(),
+    }),
+};
+</script>
+
 <template>
 <div class="c-footer row">
     <div class="col-12">
@@ -8,15 +17,6 @@
     </div>
 </div>
 </template>
-
-<script>
-export default {
-    name: 'AppFooter',
-    data: () => ({
-        year: (new Date()).getFullYear(),
-    }),
-};
-</script>
 
 <style lang="scss">
 body.body--light .c-footer {

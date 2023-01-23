@@ -1,18 +1,3 @@
-<template>
-<q-select
-    ref="input"
-    v-bind="binding"
-    :model-value="modelValue"
-    :options="options"
-    :clearable="true"
-    :name="name"
-    :rules="rules"
-    color="secondary"
-    class="q-mx-sm q-mb-md"
-    @update:modelValue="handleChange"
-/>
-</template>
-
 <script>
 export default {
     name: 'BooleanInput',
@@ -60,8 +45,8 @@ export default {
         rules() {
             if (['required', true, 'true'].includes(this.required)) {
                 return [
-                    val => [true, false].includes(val) || 'This field is required',
-                ]
+                    val => [true, false].includes(val) || this.$t('components.inputs.required'),
+                ];
             }
 
             return [];
@@ -102,7 +87,7 @@ export default {
             }
 
             if (newValue !== this.modelValue) {
-                this.$emit('update:modelValue', newBool)
+                this.$emit('update:modelValue', newBool);
             }
         },
         async validate() {
@@ -112,8 +97,23 @@ export default {
             await this.$refs.input.resetValidation();
         },
     },
-}
+};
 </script>
+
+<template>
+<q-select
+    ref="input"
+    v-bind="binding"
+    :model-value="modelValue"
+    :options="options"
+    :clearable="true"
+    :name="name"
+    :rules="rules"
+    color="secondary"
+    class="q-mx-sm q-mb-md"
+    @update:modelValue="handleChange"
+/>
+</template>
 
 <style>
 

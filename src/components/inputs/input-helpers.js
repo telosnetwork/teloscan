@@ -112,7 +112,19 @@ export const quasarInputProps = {
     type: {
         type: String,
         default: 'text',
-        validator: type => ['text', 'password', 'textarea', 'email', 'search', 'tel', 'file', 'number', 'url', 'time', 'date'].includes(type),
+        validator: type => [
+            'text',
+            'password',
+            'textarea',
+            'email',
+            'search',
+            'tel',
+            'file',
+            'number',
+            'url',
+            'time',
+            'date',
+        ].includes(type),
     },
     debounce: {
         type: [String, Number],

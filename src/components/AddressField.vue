@@ -53,7 +53,9 @@ export default {
                 return;
             }
             if (this.name) {
-                return this.truncate > 0 && this.name.length > this.truncate ? `${this.name.slice(0, this.truncate)}...` : `${this.name}`;
+                return this.truncate > 0 && this.name.length > this.truncate ?
+                    `${this.name.slice(0, this.truncate)}...` :
+                    `${this.name}`;
             }
 
             if (this.contract && this.contract.getName()) {
@@ -61,7 +63,9 @@ export default {
                 if(name[0] === '0' && name[1] === 'x'){
                     return this.truncate > 0 ? `${this.address.slice(0, this.truncate)}...` : this.address;
                 }
-                return this.truncate > 0 && name.length > this.truncate ? `${name.slice(0, this.truncate)}...` : `${name}`;
+                return this.truncate > 0 && name.length > this.truncate ?
+                    `${name.slice(0, this.truncate)}...` :
+                    `${name}`;
             }
             if (!this.address) {
                 return '';
@@ -79,14 +83,14 @@ export default {
             // TODO: check if this is a contract, account lookup via telosevm-js?
             // TODO: if this is linked to a Telos account, display the Telos account name and link it to bloks
             //   for now if we ask for a contract, we'll get one back and it'll be labeled as undefined
-            let contract = await this.getContract({address: this.address});
+            let contract = await this.getContract({ address: this.address });
             if (contract) {
                 this.contract = contract;
             }
         },
 
     },
-}
+};
 </script>
 
 <template lang="pug">
@@ -107,6 +111,6 @@ a.highlighted {
     color: #bb9200;
 }
 body.body--dark a.highlighted {
-    color: $yellow;
+    color: $warning;
 }
 </style>

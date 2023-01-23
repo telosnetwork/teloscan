@@ -1,4 +1,4 @@
-import { boot } from 'quasar/wrappers'
+import { boot } from 'quasar/wrappers';
 import { QTooltip } from 'quasar';
 
 const setDefault = (component, key, value) => {
@@ -24,7 +24,7 @@ function isTouchDevice() {
     var prefixes = ' -webkit- -moz- -o- -ms- '.split(' ');
     var mq = function(query) {
         return window.matchMedia(query).matches;
-    }
+    };
 
     if (('ontouchstart' in window) || window.DocumentTouch && document instanceof window.DocumentTouch) {
         return true;
@@ -45,4 +45,4 @@ export default boot((/* { app, router, ... } */) => {
     // required, as this only changes the default prop value
     const tooltipHideDelay =  isTouchDevice() ? 9999999 : undefined;
     setDefault(QTooltip, 'hideDelay', tooltipHideDelay);
-})
+});

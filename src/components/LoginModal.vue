@@ -1,29 +1,29 @@
 <script>
-import MetamaskLogo from 'src/assets/metamask-fox.svg'
-import WombatLogo from 'src/assets/wombat-logo.png'
+import MetamaskLogo from 'src/assets/metamask-fox.svg';
+import WombatLogo from 'src/assets/wombat-logo.png';
 
 import { mapGetters, mapMutations, mapState } from 'vuex';
 import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
 
-const providersError = 'More than one provider is active, disable additional providers.';
-const unsupportedError ='current EVM wallet provider is not supported.';
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
-const PROVIDER_WEB3_INJECTED = 'injectedWeb3'
-
-export const triggerLogin = () => document.querySelector('#c-connect-button__login-button')?.click();
+const PROVIDER_WEB3_INJECTED = 'injectedWeb3';
 
 export default {
-    name: 'ConnectButton',
-    data() {
-        return {
-            tab: 'web3',
-            showLogin: false,
-            metamaskLogo: MetamaskLogo,
-        }
+    name: 'LoginModal',
+    props: {
+        show: {
+            type: Boolean,
+            default: false,
+        },
     },
+    emits: ['hide'],
+    data: () => ({
+        metamaskLogo: MetamaskLogo,
+        tab: 'web3',
+    }),
     computed: {
         ...mapGetters('login', [
             'isLoggedIn',
@@ -31,30 +31,36 @@ export default {
             'address',
             'nativeAccount',
         ]),
-        ...mapState('general', ['browserSupportsEthereum']),
+        ...mapState('general', ['browserSupportsMetaMask']),
     },
     async mounted() {
         const loginData = localStorage.getItem('loginData');
-        if (!loginData)
+        if (!loginData) {
             return;
+        }
 
         const loginObj = JSON.parse(loginData);
         if (loginObj.type === LOGIN_EVM) {
             const provider = this.getInjectedProvider();
-            let checkProvider = new ethers.providers.Web3Provider(provider)
-            const {chainId} = await checkProvider.getNetwork();
-            if(loginObj.chain == chainId){
+            let checkProvider = new ethers.providers.Web3Provider(provider);
+            const { chainId } = await checkProvider.getNetwork();
+            if(loginObj.chain === chainId){
                 switch (loginObj.provider) {
                 case PROVIDER_WEB3_INJECTED:
                     this.injectedWeb3Login();
                     break;
                 default:
                     console.error(`Unknown web3 login type: ${loginObj.provider}`);
+                    this.$q.notify({
+                        position: 'top',
+                        message: this.$t('components.unknown_web3_login_type', { provider: loginObj.provider }),
+                        timeout: 6000,
+                    });
                     break;
                 }
             }
         } else if (loginObj.type === LOGIN_NATIVE) {
-            const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
+            const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
             this.ualLogin(wallet);
         }
     },
@@ -71,11 +77,12 @@ export default {
         disconnect() {
             if (this.isNative) {
                 const loginData = localStorage.getItem('loginData');
-                if (!loginData)
+                if (!loginData) {
                     return;
+                }
 
                 const loginObj = JSON.parse(loginData);
-                const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
+                const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
                 wallet.logout();
             }
 
@@ -87,7 +94,7 @@ export default {
             this.$router.push(`/address/${this.address}`);
         },
         async injectedWeb3Login() {
-            if (!this.browserSupportsEthereum) {
+            if (!this.browserSupportsMetaMask) {
                 window.open('https://metamask.app.link/dapp/teloscan.io');
                 return;
             }
@@ -96,14 +103,18 @@ export default {
             if (address) {
                 this.setLogin({
                     address,
-                })
+                });
                 let provider = this.getInjectedProvider();
-                let checkProvider = new ethers.providers.Web3Provider(provider)
+                let checkProvider = new ethers.providers.Web3Provider(provider);
                 this.$providerManager.setProvider(provider);
-                const {chainId} = await checkProvider.getNetwork();
-                localStorage.setItem('loginData', JSON.stringify({type: LOGIN_EVM, provider: PROVIDER_WEB3_INJECTED, chain: chainId }));
+                const { chainId } = await checkProvider.getNetwork();
+                localStorage.setItem('loginData', JSON.stringify({
+                    type: LOGIN_EVM,
+                    provider: PROVIDER_WEB3_INJECTED,
+                    chain: chainId,
+                }));
                 provider.on('chainChanged', (newNetwork) => {
-                    if(newNetwork != chainId){
+                    if(newNetwork !== chainId){
                         this.setLogin({});
                         this.$providerManager.setProvider(null);
                     }
@@ -111,10 +122,10 @@ export default {
                 provider.on('accountsChanged', (accounts) => {
                     this.setLogin({
                         address: accounts[0],
-                    })
-                })
+                    });
+                });
             }
-            this.showLogin = false;
+            this.$emit('hide');
         },
         async ualLogin(wallet, account) {
             await wallet.init();
@@ -128,7 +139,7 @@ export default {
                 } catch (e) {
                     this.$q.notify({
                         position: 'top',
-                        message: `Search for EVM address linked to ${accountName} native account failed.  You can create one at wallet.telos.net`,
+                        message: this.$t('components.search_evm_address_failed', { accountName }),
                         timeout: 6000,
                     });
                     wallet.logout();
@@ -137,11 +148,11 @@ export default {
                 this.setLogin({
                     address: evmAccount.address,
                     nativeAccount: accountName,
-                })
+                });
                 this.$providerManager.setProvider(account);
-                localStorage.setItem('loginData', JSON.stringify({type: LOGIN_NATIVE, provider: wallet.getName()}));
+                localStorage.setItem('loginData', JSON.stringify({ type: LOGIN_NATIVE, provider: wallet.getName() }));
             }
-            this.showLogin = false;
+            this.$emit('hide');
         },
         async getInjectedAddress() {
             const provider = this.getInjectedProvider();
@@ -167,7 +178,7 @@ export default {
             }
         },
         async ensureCorrectChain(checkProvider) {
-            const {chainId} = await checkProvider.getNetwork();
+            const { chainId } = await checkProvider.getNetwork();
             if (chainId !== process.env.NETWORK_EVM_CHAIN_ID) {
                 await this.switchChainInjected();
                 const provider = this.getInjectedProvider();
@@ -177,9 +188,13 @@ export default {
         getInjectedProvider() {
             const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
                 window.ethereum :
-                null
+                null;
             if (!provider) {
-                console.error(providersError, 'or', unsupportedError);
+                this.$q.notify({
+                    position: 'top',
+                    message: this.$t('components.no_provider_found'),
+                    timeout: 6000,
+                });
             }
             return provider;
         },
@@ -193,7 +208,7 @@ export default {
                 try {
                     await provider.request({
                         method: 'wallet_switchEthereumChain',
-                        params: [{chainId: chainIdParam}],
+                        params: [{ chainId: chainIdParam }],
                     });
                     return true;
                 } catch (e) {
@@ -238,69 +253,42 @@ export default {
             return wallet.getStyle().icon;
         },
     },
-}
+};
 </script>
 <template>
-<div class="c-connect-button">
-    <q-btn
-        v-if="!isLoggedIn"
-        id="c-connect-button__login-button"
-        label="Connect Wallet"
-        @click="connect"
-    />
-
-    <q-btn-dropdown
-        flat
-        round
-        v-else
-        :label="getLoginDisplay()"
-    >
-        <q-list>
-            <q-item clickable v-close-popup @click="goToAddress()">
-                <q-item-section>
-                    <q-item-label>View address</q-item-label>
-                </q-item-section>
-            </q-item>
-            <q-item clickable v-close-popup @click="disconnect()">
-                <q-item-section>
-                    <q-item-label>Disconnect</q-item-label>
-                </q-item-section>
-            </q-item>
-        </q-list>
-    </q-btn-dropdown>
-
-    <q-dialog v-model="showLogin">
-        <q-card rounded class="c-connect-button__modal-inner">
+<div class="c-login-modal">
+    <q-dialog :model-value="show" @hide="() => $emit('hide')">
+        <q-card rounded class="c-login-modal__modal-inner">
             <q-tabs v-model="tab">
-                <q-tab name="web3" label="EVM Wallets"></q-tab>
-                <q-tab name="native" label="Advanced"></q-tab>
+                <q-tab name="web3" :label="$t('components.evm_wallets')" />
+                <q-tab name="native" :label="$t('components.advanced')" />
             </q-tabs>
             <q-separator/>
             <q-tab-panels v-model="tab" animated>
                 <q-tab-panel name="web3">
-                    <div class="u-flex--center">
-                        <q-card
-                            class="cursor-pointer c-connect-button__image-container"
-                            @click="injectedWeb3Login()"
-                        >
-                            <q-img
-                                :src="metamaskLogo"
-                                height="64px"
-                                width="64px"
-                            />
-                            {{ !browserSupportsEthereum ? 'Continue on ' : '' }}Metamask
-                        </q-card>
-                    </div>
-
+                    <q-card class="c-login-modal__image-container" @click="injectedWeb3Login()">
+                        <q-img
+                            :src="metamaskLogo"
+                            class="wallet-img"
+                            height="64px"
+                            width="64px"
+                        />
+                        <p>{{ !browserSupportsMetaMask ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
+                    </q-card>
                 </q-tab-panel>
                 <q-tab-panel name="native">
-                    <p>Native wallets for <span class="text-red">advanced users</span>, or to recover assets sent to a native-linked address</p>
-
+                    <p>
+                        {{ $t('components.text1_native_wallets') }}
+                        <span class="text-red">
+                            {{ $t('components.text2_advanced_users') }}
+                        </span>
+                        {{ $t('components.text3_or_to_recover_assets') }}
+                    </p>
                     <div class="u-flex--center">
                         <q-card
-                            class="cursor-pointer c-connect-button__image-container"
                             v-for="wallet in $ual.authenticators"
                             :key="wallet.getStyle().text"
+                            class="c-login-modal__image-container"
                             @click="ualLogin(wallet)"
                         >
                             <q-img
@@ -320,7 +308,7 @@ export default {
 
 <style lang='scss'>
 
-.c-connect-button {
+.c-login-modal {
     &__modal-inner {
         min-width: 300px;
     }
@@ -335,6 +323,8 @@ export default {
         align-items: center;
         justify-content: center;
         flex-direction: column;
+
+        cursor: pointer;
     }
 }
 

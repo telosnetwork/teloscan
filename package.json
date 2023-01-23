@@ -1,6 +1,6 @@
 {
   "name": "telos-template",
-  "version": "0.0.1",
+  "version": "1.2.0",
   "description": "Teloscan block explorer",
   "productName": "Teloscan",
   "author": "Jesse Schulman <jesse@caleos.io>",
@@ -41,6 +41,7 @@
     "ual-wombat": "^0.3.3",
     "universal-authenticator-library": "^0.3.0",
     "vue": "3",
+    "vue-i18n": "^9.0.0",
     "vue-json-viewer": "3",
     "vue-router": "4",
     "vue3-click-away": "^1.2.4",
