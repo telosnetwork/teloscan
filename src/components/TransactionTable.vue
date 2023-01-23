@@ -209,65 +209,79 @@ export default {
 };
 </script>
 
-<template lang="pug">
-q-table(
-    :rows="rows"
-    :row-key='row => row.hash'
-    :columns="columns"
+<template>
+<q-table
     v-model:pagination="pagination"
+    :rows="rows"
+    :row-key="row => row.hash"
+    :columns="columns"
     :loading="loading"
-    @request="onRequest"
     :rows-per-page-options="[10, 20, 50]"
     flat
-)
-    template( v-slot:header="props" )
-        q-tr( :props="props" )
-            q-th(
-                v-for="col in props.cols"
-                :key="col.name"
-                :props="props"
-            )
-                | {{ col.label }}
-                template( v-if="col.name === 'date'" )
-                    q-icon(
-                        name="fas fa-info-circle",
-                        style="margin-top: -5px; margin-left: 3px;"
-                        @click="toggleDateFormat"
-                    ).info-icon
-                        q-tooltip(
-                            anchor="bottom middle"
-                            self="bottom middle"
-                            :offset="[0, 36]"
-                            ) {{ $t('components.click_to_change_format') }}
-                template( v-if="col.name === 'method'" )
-                    q-icon(name="fas fa-info-circle", style="margin-top: -5px; margin-left: 3px;").info-icon
-                    q-tooltip(
-                        anchor="bottom middle"
-                        self="top middle"
-                        max-width="10rem"
-                        ) {{ $t('components.executed_based_on_decoded_data') }}
-
-    template(v-slot:body="props")
-        q-tr( :props="props")
-            q-td( key="hash" :props="props" )
-                transaction-field( :transaction-hash="props.row.hash" )
-            q-td( key="block" :props="props")
-                block-field( :block="props.row.block" )
-            q-td( key="date" :props="props")
-                date-field( :epoch="props.row.epoch" :force-show-age="showDateAge" )
-            q-td( key="method" :props="props")
-                method-field( v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"  )
-            q-td( key="from" :props="props")
-                address-field(v-if="props.row.from" :address="props.row.from" )
-            q-td( key="to" :props="props")
-                address-field(
+    @request="onRequest"
+>
+    <template v-slot:header="props">
+        <q-tr :props="props">
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <div class="u-flex--center-y">
+                    {{ col.label }}
+                    <template v-if="col.name === 'date'">
+                        <q-icon
+                            class="info-icon"
+                            name="fas fa-info-circle"
+                            @click="toggleDateFormat"
+                        >
+                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                                {{ $t('components.click_to_change_format') }}
+                            </q-tooltip>
+                        </q-icon>
+                    </template>
+                    <template v-if="col.name === 'method'">
+                        <q-icon class="info-icon" name="fas fa-info-circle" />
+                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                            {{ $t('components.executed_based_on_decoded_data') }}
+                        </q-tooltip>
+                    </template>
+                </div>
+            </q-th>
+        </q-tr>
+    </template>
+    <template v-slot:body="props">
+        <q-tr :props="props">
+            <q-td key="hash" :props="props">
+                <TransactionField :transaction-hash="props.row.hash"/>
+            </q-td>
+            <q-td key="block" :props="props">
+                <BlockField :block="props.row.block"/>
+            </q-td>
+            <q-td key="date" :props="props">
+                <DateField :epoch="props.row.epoch" :force-show-age="showDateAge"/>
+            </q-td>
+            <q-td key="method" :props="props">
+                <MethodField v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"/>
+            </q-td>
+            <q-td key="from" :props="props">
+                <AddressField v-if="props.row.from" :address="props.row.from"/>
+            </q-td>
+            <q-td key="to" :props="props">
+                <AddressField
                     v-if="props.row.to"
                     :key="props.row.to + ((props.row.contract) ? '1' : '0')"
                     :address="props.row.to"
-                    :isContractTrx="(props.row.contract) ? true : false"
-                )
-            q-td( key="value" :props="props")
-                span(v-if="props.row.value > 0 ||  !props.row.transfer ") {{ props.row.value }} TLOS
-                div(v-else)
-                    span(v-if="props.row.transfer") {{ props.row.transfer.value }} {{ props.row.transfer.symbol }}
+                    :isContractTrx="!!(props.row.contract)"
+                />
+            </q-td>
+            <q-td key="value" :props="props">
+                <span v-if="props.row.value > 0 ||  !props.row.transfer ">
+                    {{ props.row.value }} TLOS
+                </span>
+                <div v-else>
+                    <span v-if="props.row.transfer">
+                        {{ props.row.transfer.value }} {{ props.row.transfer.symbol }}
+                    </span>
+                </div>
+            </q-td>
+        </q-tr>
+    </template>
+</q-table>
 </template>
