@@ -84,23 +84,46 @@ export default {
 };
 </script>
 
-<template lang="pug">
-.q-mb-md.tableWrapper
-  q-card
-    q-item(v-for="endpoint in endpoints" :key="endpoint.endpoint")
-      q-item-section.full-width
-        q-item-label.text-weight-medium
-          span {{ endpoint.name }}
-        q-item-label(v-if="endpoint.description" caption) {{ endpoint.description }}
-      q-item-section.full-width
-        q-item-label.q-mt-sm {{ endpoint.http }}
-      q-item-section.full-width
-        q-item-label(v-if="endpoint.latency" side top)
-          span  {{ $t('components.health.latency') }}: {{ endpoint.latency }}ms
-          q-icon(name="wifi" :color="getLatencyColor(endpoint.latency)")
-        q-item-label(v-if="endpoint.block" side top ) {{ $t('components.health.block_height') }}:&nbsp
-          span(:class="getBlockClass(blockHeight, endpoint.block)") {{ endpoint.block }}
-        q-item-label(v-if="endpoint.error" side top).text-red Error: {{ endpoint.error }}
+<template>
+<div class="q-mb-md tableWrapper">
+    <q-card>
+        <q-item v-for="endpoint in endpoints" :key="endpoint.endpoint">
+            <q-item-section class="full-width">
+                <q-item-label class="text-weight-medium">
+                    {{ endpoint.name }}
+                </q-item-label>
+                <q-item-label v-if="endpoint.description" caption="caption">
+                    {{ endpoint.description }}
+                </q-item-label>
+            </q-item-section>
+            <q-item-section class="full-width">
+                <q-item-label class="q-mt-sm">
+                    {{ endpoint.http }}
+                </q-item-label>
+            </q-item-section>
+            <q-item-section class="full-width">
+                <q-item-label v-if="endpoint.latency" side top>
+                    {{ $t('components.health.latency') }}: {{ endpoint.latency }}ms
+                    <q-icon name="wifi" :color="getLatencyColor(endpoint.latency)"/>
+                </q-item-label>
+                <q-item-label v-if="endpoint.block" side top>
+                    {{ $t('components.health.block_height') }}:&nbsp;
+                    <span :class="getBlockClass(blockHeight, endpoint.block)">
+                        {{ endpoint.block }}
+                    </span>
+                </q-item-label>
+                <q-item-label
+                    v-if="endpoint.error"
+                    class="text-red"
+                    side
+                    top
+                >
+                    Error: {{ endpoint.error }}
+                </q-item-label>
+            </q-item-section>
+        </q-item>
+    </q-card>
+</div>
 </template>
 
 <style scoped lang='sass'>
