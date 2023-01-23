@@ -40,8 +40,6 @@ export default {
     },
     methods: {
         changeLanguage() {
-            console.log('changeLanguage()', this.selectedLanguage.code);
-            console.log('typeof $setLocale.setLocale', typeof this.$setLocale);
             this.$setLocale(this.selectedLanguage.code);
         },
     },
