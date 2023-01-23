@@ -109,6 +109,7 @@ module.exports = {
                 'eslint:recommended',
                 'plugin:@typescript-eslint/eslint-recommended',
                 'plugin:@typescript-eslint/recommended',
+                'plugin:vue/vue3-essential',
             ],
             'parser': '@typescript-eslint/parser',
             'parserOptions': {
@@ -119,11 +120,7 @@ module.exports = {
             },
             'plugins': ['vue', '@typescript-eslint'],
             'rules': {
-                'indent': ['error', 2, { 'SwitchCase': 1 }],
-                'linebreak-style': ['error', 'unix'],
-                'quotes': ['error', 'single'],
-                'comma-dangle': ['error', 'always-multiline'],
-                '@typescript-eslint/no-explicit-any': 0,
+                '@typescript-eslint/no-explicit-any': 1,
             },
         },
     ],
