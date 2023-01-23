@@ -93,12 +93,16 @@ export default {
 };
 </script>
 
-<template lang="pug">
-div.c-address-field
-  q-icon( v-if="contract && !copy" class="far fa-file-alt" )
-    q-tooltip Contract
-  router-link( :to="`/address/${address}`" :class="highlight ? 'highlighted' : ''") {{ getDisplay() }}
-  copy-button(v-if="copy && address" :text="address" description="address" )
+<template>
+<div class="c-address-field">
+    <q-icon v-if="contract && !copy" class="far fa-file-alt">
+        <q-tooltip>Contract</q-tooltip>
+    </q-icon>
+    <router-link :to="`/address/${address}`" :class="highlight ? 'highlighted' : ''">
+        {{ getDisplay() }}
+    </router-link>
+    <CopyButton v-if="copy && address" :text="address" description="address"/>
+</div>
 </template>
 
 <style lang="scss" scoped>
