@@ -105,11 +105,20 @@ export default {
         disconnect() {
             if (this.isNative) {
                 const loginData = localStorage.getItem('loginData');
+<<<<<<< HEAD
                 if (!loginData)
                     return;
 
                 const loginObj = JSON.parse(loginData);
                 const wallet = this.$ual.authenticators.find(a => a.getName() == loginObj.provider);
+=======
+                if (!loginData) {
+                    return;
+                }
+
+                const loginObj = JSON.parse(loginData);
+                const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
+>>>>>>> 18613edc710e12443feeb0084554c28ee4d978d2
                 wallet.logout();
             }
 
@@ -120,6 +129,7 @@ export default {
         goToAddress() {
             this.$router.push(`/address/${this.address}`);
         },
+<<<<<<< HEAD
         async connectBraveWallet(){
             // Brave Wallet is not set as default and/or has other extensions enabled
             if (!window.ethereum.isBraveWallet){
@@ -128,6 +138,11 @@ export default {
                     message: this.$t('components.disable_wallet_extensions'),
                     timeout: 6000,
                 });
+=======
+        async injectedWeb3Login() {
+            if (!this.browserSupportsMetaMask) {
+                window.open('https://metamask.app.link/dapp/teloscan.io');
+>>>>>>> 18613edc710e12443feeb0084554c28ee4d978d2
                 return;
             }
 
@@ -324,8 +339,8 @@ export default {
     <q-dialog :model-value="show" @hide="() => $emit('hide')">
         <q-card rounded class="c-login-modal__modal-inner">
             <q-tabs v-model="tab">
-                <q-tab name="web3" :label="$t('components.evm_wallets')"/>
-                <q-tab name="native" :label="$t('components.advanced')"/>
+                <q-tab name="web3" :label="$t('components.evm_wallets')" />
+                <q-tab name="native" :label="$t('components.advanced')" />
             </q-tabs>
             <q-separator/>
             <q-tab-panels v-model="tab" animated>

@@ -238,14 +238,14 @@ q-table(
                             anchor="bottom middle"
                             self="bottom middle"
                             :offset="[0, 36]"
-                        ) {{ $t('components.click_to_change_format') }}
+                            ) {{ $t('components.click_to_change_format') }}
                 template( v-if="col.name === 'method'" )
                     q-icon(name="fas fa-info-circle", style="margin-top: -5px; margin-left: 3px;").info-icon
                     q-tooltip(
                         anchor="bottom middle"
                         self="top middle"
                         max-width="10rem"
-                    ) {{ $t('components.executed_based_on_decoded_data') }}
+                        ) {{ $t('components.executed_based_on_decoded_data') }}
 
     template(v-slot:body="props")
         q-tr( :props="props")
