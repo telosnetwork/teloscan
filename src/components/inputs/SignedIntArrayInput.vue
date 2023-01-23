@@ -1,19 +1,3 @@
-<template>
-<base-text-input
-    ref="input"
-    v-bind="$attrs"
-    :model-value="modelValue"
-    :label="shapedLabel"
-    :name="name"
-    :placeholder="placeholder"
-    :rules="rules"
-    :lazy-rules="false"
-    :size="undefined"
-    :int-size="undefined"
-    @update:modelValue="handleChange"
-/>
-</template>
-
 <script>
 import { integerSizeValidator, parseSignedIntArrayString } from 'components/ContractTab/function-interface-utils';
 
@@ -69,27 +53,32 @@ export default {
             const maximum = +this.intSize === 0 ? '0' : BigNumber.from(2).pow(+this.intSize).sub(1);
             const minimum = maximum.mul(-1);
 
-            const getIntsFromString = (str) => str.match(/-?\d+/g) ?? [];
-            const validateMaximum = (val) => getIntsFromString(val).every(int => BigNumber.from(int).lte(maximum));
-            const validateMinimum = (val) => getIntsFromString(val).every(int => BigNumber.from(int).gte(minimum));
-            const validateParsedArray = (value) => /^\[(-?\d+, *)*(-?\d+)]$/.test(value) || value === '';
+            const getIntsFromString = str => str.match(/-?\d+/g) ?? [];
+            const validateMaximum = val => getIntsFromString(val).every(int => BigNumber.from(int).lte(maximum));
+            const validateMinimum = val => getIntsFromString(val).every(int => BigNumber.from(int).gte(minimum));
+            const validateParsedArray = value => /^\[(-?\d+, *)*(-?\d+)]$/.test(value) || value === '';
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
 
-                if ((sizeIsUnconstrained) || value === '')
+                if ((sizeIsUnconstrained) || value === '') {
                     return true;
+                }
 
                 const expectedLength = +this.size;
-                const parsedArrayLength = (parseSignedIntArrayString(value, this.expectedArraySize, +this.intSize) ?? []).length;
+                const parsedArrayLength =
+                    (parseSignedIntArrayString(value, this.expectedArraySize, +this.intSize) ?? []).length;
 
                 return parsedArrayLength === expectedLength;
             };
 
-            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_sigint_array_length', { size: +this.size });
+            const incorrectArrayLengthMessage =
+                this.$t('components.inputs.incorrect_sigint_array_length', { size: +this.size });
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_sigint_array_string');
 
-            const errMessageTooLarge = this.$t('components.inputs.too_large', { size: this.intSize, max: maximum.toString() });
-            const errMessageTooSmall = this.$t('components.inputs.too_small', { size: this.intSize, min: minimum.toString() });
+            const errMessageTooLarge =
+                this.$t('components.inputs.too_large', { size: this.intSize, max: maximum.toString() });
+            const errMessageTooSmall =
+                this.$t('components.inputs.too_small', { size: this.intSize, min: minimum.toString() });
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,
@@ -100,7 +89,7 @@ export default {
         },
         shapedLabel() {
             const size = (Number.isInteger(+this.size) && +this.size !== -1) ? `${+this.size}` : '';
-            return `${this.label} (int${this.intSize}[${size}])`
+            return `${this.label} (int${this.intSize}[${size}])`;
         },
     },
     watch: {
@@ -126,8 +115,24 @@ export default {
             }
         },
     },
-}
+};
 </script>
+
+<template>
+<BaseTextInput
+    ref="input"
+    v-bind="$attrs"
+    :model-value="modelValue"
+    :label="shapedLabel"
+    :name="name"
+    :placeholder="placeholder"
+    :rules="rules"
+    :lazy-rules="false"
+    :size="undefined"
+    :int-size="undefined"
+    @update:modelValue="handleChange"
+/>
+</template>
 
 <style>
 

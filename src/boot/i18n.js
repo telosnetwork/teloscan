@@ -4,11 +4,11 @@ import messages from 'src/i18n';
 
 export default boot(({ app }) => {
     // Get user's last chosen language from local storage
-    let lastChosenLanguage = localStorage.getItem('language')
+    let lastChosenLanguage = localStorage.getItem('language');
 
     //if not present in local storage then check user browser language
     if(!lastChosenLanguage) {
-        lastChosenLanguage = navigator.language.toLowerCase().split(/[_-]+/)[0]
+        lastChosenLanguage = navigator.language.toLowerCase().split(/[_-]+/)[0];
     }
     // Check if the browser language is supported, if not, fall back to 'en-us'
     if(!Object.keys(messages).includes(lastChosenLanguage)) {
@@ -38,7 +38,7 @@ export default boot(({ app }) => {
         // i18n.locale = newLanguage;
         // i18n.global.setLocaleMessage(newLanguage, messages[newLanguage]);
         // app.use(i18n);
-    }
+    };
 
     // Set setLocale and i18n reference available for global access
     app.config.globalProperties.$setLocale = setLocale;

@@ -1,83 +1,3 @@
-<template>
-<div class="c-staking-stats">
-    <div class="c-staking-stats__stats-container c-staking-stats__stats-container--global">
-        <div
-            v-for="{ label, value, unit, tooltip } in globalStats"
-            :key="label"
-            class="c-staking-stats__stat c-staking-stats__stat--global"
-        >
-            <div class="c-staking-stats__stat-label c-staking-stats__stat-label--global">
-                {{ label }}
-                <q-icon name="fas fa-info-circle" />
-            </div>
-
-            <div class="c-staking-stats__stat-value">
-                {{ value }}
-                <span class="c-staking-stats__stat-unit">{{ unit }}</span>
-            </div>
-
-            <q-tooltip
-                :offset="[0, 56]"
-                anchor="bottom middle"
-                self="center middle"
-            >
-                <span class="u-text--pre">{{ tooltip }}</span>
-            </q-tooltip>
-        </div>
-    </div>
-
-    <q-card class="c-staking-stats__stats-container c-staking-stats__stats-container--personal">
-        <div class="c-staking-stats__stat">
-            <div class="c-staking-stats__stat-label">
-                {{ personalStats.staked.label }}
-                <q-icon name="fas fa-info-circle" />
-            </div>
-
-            <span class="c-staking-stats__stat-value">
-                {{ personalStats.staked.value.stlos }}
-                <span v-if="isLoggedIn" class="c-staking-stats__stat-unit c-staking-stats__stat-unit--personal">sTLOS</span>
-                &#32; <!-- breaking space - avoid whitespace collapsing when this long stat wraps-->
-            </span>
-            <span v-if="isLoggedIn" class="c-staking-stats__stat-value">
-                <wbr>
-                &#8776; <!-- ≈ -->
-                {{ personalStats.staked.value.tlos }}
-                <span class="c-staking-stats__stat-unit c-staking-stats__stat-unit--personal">TLOS</span>
-            </span>
-
-            <q-tooltip
-                :offset="[0, 56]"
-                anchor="bottom middle"
-                self="center middle"
-            >
-                <span class="u-text--pre">{{ personalStats.staked.tooltip }}</span>
-            </q-tooltip>
-        </div>
-        <div class="c-staking-stats__stat">
-            <div class="c-staking-stats__stat-label">
-                {{ personalStats.unstaked.label }}
-                <q-icon name="fas fa-info-circle" />
-            </div>
-
-            <span class="c-staking-stats__stat-value">
-                {{ personalStats.unstaked.value }}
-                <span v-if="isLoggedIn" class="c-staking-stats__stat-unit c-staking-stats__stat-unit--personal">
-                    TLOS
-                </span>
-            </span>
-
-            <q-tooltip
-                :offset="[0, 56]"
-                anchor="bottom middle"
-                self="center middle"
-            >
-                <span class="u-text--pre">{{ personalStats.unstaked.tooltip }}</span>
-            </q-tooltip>
-        </div>
-    </q-card>
-</div>
-</template>
-
 <script>
 import { fetchStlosApy, formatUnstakePeriod } from 'pages/staking/staking-utils';
 import { formatWei, WEI_PRECISION } from 'src/lib/utils';
@@ -166,8 +86,9 @@ export default {
                 return;
             }
 
-            if (this.stlosTvl === null)
+            if (this.stlosTvl === null) {
                 return;
+            }
 
             try {
                 this.stlosApy = await fetchStlosApy(this.$telosApi);
@@ -186,8 +107,90 @@ export default {
             return wei === null ? '--' : format(wei);
         },
     },
-}
+};
 </script>
+
+<template>
+<div class="c-staking-stats">
+    <div class="c-staking-stats__stats-container c-staking-stats__stats-container--global">
+        <div
+            v-for="{ label, value, unit, tooltip } in globalStats"
+            :key="label"
+            class="c-staking-stats__stat c-staking-stats__stat--global"
+        >
+            <div class="c-staking-stats__stat-label c-staking-stats__stat-label--global">
+                {{ label }}
+                <q-icon name="fas fa-info-circle" />
+            </div>
+
+            <div class="c-staking-stats__stat-value">
+                {{ value }}
+                <span class="c-staking-stats__stat-unit">{{ unit }}</span>
+            </div>
+
+            <q-tooltip
+                :offset="[0, 56]"
+                anchor="bottom middle"
+                self="center middle"
+            >
+                <span class="u-text--pre">{{ tooltip }}</span>
+            </q-tooltip>
+        </div>
+    </div>
+
+    <q-card class="c-staking-stats__stats-container c-staking-stats__stats-container--personal">
+        <div class="c-staking-stats__stat">
+            <div class="c-staking-stats__stat-label">
+                {{ personalStats.staked.label }}
+                <q-icon name="fas fa-info-circle" />
+            </div>
+
+            <span class="c-staking-stats__stat-value">
+                {{ personalStats.staked.value.stlos }}
+                <span v-if="isLoggedIn" class="c-staking-stats__stat-unit c-staking-stats__stat-unit--personal">
+                    sTLOS
+                </span>
+                &#32; <!-- breaking space - avoid whitespace collapsing when this long stat wraps-->
+            </span>
+            <span v-if="isLoggedIn" class="c-staking-stats__stat-value">
+                <wbr>
+                &#8776; <!-- ≈ -->
+                {{ personalStats.staked.value.tlos }}
+                <span class="c-staking-stats__stat-unit c-staking-stats__stat-unit--personal">TLOS</span>
+            </span>
+
+            <q-tooltip
+                :offset="[0, 56]"
+                anchor="bottom middle"
+                self="center middle"
+            >
+                <span class="u-text--pre">{{ personalStats.staked.tooltip }}</span>
+            </q-tooltip>
+        </div>
+        <div class="c-staking-stats__stat">
+            <div class="c-staking-stats__stat-label">
+                {{ personalStats.unstaked.label }}
+                <q-icon name="fas fa-info-circle" />
+            </div>
+
+            <span class="c-staking-stats__stat-value">
+                {{ personalStats.unstaked.value }}
+                <span v-if="isLoggedIn" class="c-staking-stats__stat-unit c-staking-stats__stat-unit--personal">
+                    TLOS
+                </span>
+            </span>
+
+            <q-tooltip
+                :offset="[0, 56]"
+                anchor="bottom middle"
+                self="center middle"
+            >
+                <span class="u-text--pre">{{ personalStats.unstaked.tooltip }}</span>
+            </q-tooltip>
+        </div>
+    </q-card>
+</div>
+</template>
 
 <style lang="scss">
 .c-staking-stats {

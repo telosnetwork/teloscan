@@ -1,4 +1,4 @@
-export const setLogin = (state, {address, nativeAccount}) => {
+export const setLogin = (state, { address, nativeAccount }) => {
     state.address = address;
     state.isLoggedIn = !!address;
     if (nativeAccount) {

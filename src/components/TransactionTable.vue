@@ -108,8 +108,9 @@ export default {
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             let result = await this.$evmEndpoint.get(this.getPath(props));
 
-            if (this.total == null)
+            if (this.total === null) {
                 this.pagination.rowsNumber = result.data.total.value;
+            }
 
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
@@ -124,15 +125,21 @@ export default {
             for (const transaction of this.transactions) {
                 try {
                     transaction.transfer = false;
-                    transaction.value = formatWei(transaction.value.toLocaleString(0, {useGrouping: false}), 18);
-                    if (transaction.input_data === '0x') continue;
-                    if(!transaction.to) continue;
+                    transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
+                    if (transaction.input_data === '0x') {
+                        continue;
+                    }
+                    if(!transaction.to) {
+                        continue;
+                    }
 
                     const contract = await this.$contractManager.getContract(
                         transaction.to,
                     );
 
-                    if (!contract) continue;
+                    if (!contract) {
+                        continue;
+                    }
 
                     const parsedTransaction = await contract.parseTransaction(
                         transaction.input_data,
@@ -143,10 +150,17 @@ export default {
                     }
                     // Get ERC20 transfer from main function call
                     let signature = transaction.input_data.substring(0, 10);
-                    if (signature && TRANSFER_SIGNATURES.includes(signature) && transaction.parsedTransaction.args['amount']) {
+                    if (
+                        signature &&
+                        TRANSFER_SIGNATURES.includes(signature) &&
+                        transaction.parsedTransaction.args['amount']
+                    ) {
                         let token = await this.$contractManager.getTokenData(transaction.to, 'erc20');
                         if(transaction.contract && token && token.decimals){
-                            transaction.transfer = {'value': `${formatWei(transaction.parsedTransaction.args['amount'], token.decimals)}`, 'symbol': token.symbol};
+                            transaction.transfer = {
+                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], token.decimals)}`,
+                                'symbol': token.symbol,
+                            };
                         }
                     }
                 } catch (e) {
@@ -155,7 +169,7 @@ export default {
                     );
                     // notifiy user
                     this.$q.notify({
-                        message: this.$t('components.failed_to_parse_transaction', {message: e.message}),
+                        message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
                         color: 'negative',
                         position: 'top',
                         timeout: 5000,
@@ -171,11 +185,17 @@ export default {
                 rowsPerPage === 0 ? 500 : rowsPerPage
             }`;
             const filter = Object.assign({}, this.filter ? this.filter : {});
-            if (filter.address) path += `&address=${filter.address}`;
+            if (filter.address) {
+                path += `&address=${filter.address}`;
+            }
 
-            if (filter.block) path += `&block=${filter.block}`;
+            if (filter.block) {
+                path += `&block=${filter.block}`;
+            }
 
-            if (filter.hash) path += `&hash=${filter.hash}`;
+            if (filter.hash) {
+                path += `&hash=${filter.hash}`;
+            }
 
             path += `&skip=${(page - 1) * rowsPerPage}`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
@@ -214,10 +234,18 @@ q-table(
                         style="margin-top: -5px; margin-left: 3px;"
                         @click="toggleDateFormat"
                     ).info-icon
-                        q-tooltip(anchor="bottom middle" self="bottom middle" :offset="[0, 36]") {{ $t('components.click_to_change_format') }}
+                        q-tooltip(
+                            anchor="bottom middle"
+                            self="bottom middle"
+                            :offset="[0, 36]"
+                            ) {{ $t('components.click_to_change_format') }}
                 template( v-if="col.name === 'method'" )
                     q-icon(name="fas fa-info-circle", style="margin-top: -5px; margin-left: 3px;").info-icon
-                    q-tooltip(anchor="bottom middle" self="top middle" max-width="10rem") {{ $t('components.executed_based_on_decoded_data') }}
+                    q-tooltip(
+                        anchor="bottom middle"
+                        self="top middle"
+                        max-width="10rem"
+                        ) {{ $t('components.executed_based_on_decoded_data') }}
 
     template(v-slot:body="props")
         q-tr( :props="props")
@@ -232,7 +260,12 @@ q-table(
             q-td( key="from" :props="props")
                 address-field(v-if="props.row.from" :address="props.row.from" )
             q-td( key="to" :props="props")
-                address-field(v-if="props.row.to" :key="props.row.to + ((props.row.contract) ? '1' : '0')" :address="props.row.to" :isContractTrx="(props.row.contract) ? true : false" )
+                address-field(
+                    v-if="props.row.to"
+                    :key="props.row.to + ((props.row.contract) ? '1' : '0')"
+                    :address="props.row.to"
+                    :isContractTrx="(props.row.contract) ? true : false"
+                )
             q-td( key="value" :props="props")
                 span(v-if="props.row.value > 0 ||  !props.row.transfer ") {{ props.row.value }} TLOS
                 div(v-else)

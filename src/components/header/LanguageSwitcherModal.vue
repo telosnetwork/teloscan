@@ -26,7 +26,7 @@ export default {
         //     { code: 'es-es', name: 'Español'},
         //     ...
         // ],
-        this.languageOptions = Object.keys(messages).map((key) => ({
+        this.languageOptions = Object.keys(messages).map(key => ({
             code: key,
             name: messages[key].locale.current_language_name,
         }));
@@ -45,7 +45,7 @@ export default {
             this.$setLocale(this.selectedLanguage.code);
         },
     },
-}
+};
 </script>
 
 <template>
@@ -66,9 +66,9 @@ export default {
 
             <q-card-actions align="right">
                 <q-btn
+                    v-close-popup
                     flat
                     :label="$t('global.cancel')"
-                    v-close-popup
                 />
             </q-card-actions>
         </q-card-section>

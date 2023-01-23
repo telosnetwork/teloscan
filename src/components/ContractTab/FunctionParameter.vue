@@ -16,12 +16,12 @@ export default {
             label: null,
             value: null,
             typeIcon: null,
-        }
+        };
     },
     mounted() {
-        this.label = `${this.abiParam.name ? this.abiParam.name : `Param ${this.position}`} (${this.abiParam.type})`
+        this.label = `${this.abiParam.name ? this.abiParam.name : `Param ${this.position}`} (${this.abiParam.type})`;
     },
-}
+};
 </script>
 
 <template>
