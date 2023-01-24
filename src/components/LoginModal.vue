@@ -327,17 +327,20 @@ export default {
                         <q-img
                             :src="metamaskLogo"
                             height="64px"
-                            width="64px"/>
+                            width="64px"
+                        />
                         <p>{{ isMobile ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
                     </q-card>
                     <q-card
                         v-if="isBraveBrowser"
                         class="c-login-modal__image-container"
-                        @click="connectBraveWallet()">
+                        @click="connectBraveWallet()"
+                    >
                         <q-img
                             :src="braveBrowserLogo"
                             height="64px"
-                            width="64px"/>
+                            width="64px"
+                        />
                         <p> Brave Wallet </p>
                     </q-card>
                 </q-tab-panel>
