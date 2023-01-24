@@ -97,6 +97,10 @@ module.exports = {
             ],
             'alphabetical': false,
         }],
+        'vue/html-closing-bracket-newline': ['error', {
+            'singleline': 'never',
+            'multiline': 'always',
+        }],
         'vue/component-options-name-casing': ['error', 'PascalCase'],
         'vue/component-definition-name-casing': ['error', 'PascalCase'],
         'vue/component-name-in-template-casing': ['error', 'PascalCase'],
