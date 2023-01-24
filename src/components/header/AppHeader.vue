@@ -24,7 +24,7 @@ export default {
         showLanguageSwitcher: false,
         advancedMenuExpanded: false,
         menuHiddenDesktop: false,
-        isTestnet: process.env.NETWORK_EVM_CHAIN_ID !== '40',
+        isTestnet: process.env.NETWORK_EVM_CHAIN_ID !== 40,
     }),
     computed: {
         ...mapGetters('login', [
