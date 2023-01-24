@@ -2,7 +2,10 @@
 import MetamaskLogo from 'src/assets/metamask-fox.svg';
 import WombatLogo from 'src/assets/wombat-logo.png';
 import BraveBrowserLogo from 'src/assets/brave_lion.svg';
+import WalletConnectLogo from 'src/assets/wallet_connect.svg';
 import detectEthereumProvider from '@metamask/detect-provider';
+import SignClient from '@walletconnect/sign-client';
+import { Web3Modal } from '@web3modal/standalone';
 import { mapGetters, mapMutations } from 'vuex';
 import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
@@ -11,6 +14,7 @@ import { tlos } from 'src/lib/logos';
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
 const PROVIDER_WEB3_INJECTED = 'injectedWeb3';
+const PROJECT_ID = '14ec76c44bae7d461fa0f5fd5f8a9da1';
 
 export default {
     name: 'LoginModal',
@@ -25,9 +29,11 @@ export default {
         showLogin: false,
         metamaskLogo: MetamaskLogo,
         braveBrowserLogo: BraveBrowserLogo,
+        walletConnectLogo: WalletConnectLogo,
         isMobile: false,
         browserSupportsMetaMask: true,
         isBraveBrowser: false,
+        web3Modal: null,
     }),
     emits: ['hide'],
     computed: {
@@ -184,6 +190,30 @@ export default {
             }
             this.$emit('hide');
         },
+        async connectWalletConnect() {
+
+            this.web3Modal = new Web3Modal({
+                projectId: PROJECT_ID,
+            });
+            const signClient = await SignClient.init({ projectId: PROJECT_ID });
+
+            const { uri, approval } = await signClient.connect({
+                requiredNamespaces: {
+                    eip155: {
+                        methods: ['eth_sign'],
+                        chains: ['eip155:1'],
+                        events: ['accountsChanged'],
+                    },
+                },
+            });
+
+            if (uri) {
+                this.web3Modal.openModal({ uri, standaloneChains: ['eip155:1'] });
+                this.$emit('hide');
+                await approval();
+                this.web3Modal.closeModal();
+            }
+        },
         async ualLogin(wallet, account) {
             await wallet.init();
             const users = await wallet.login(account);
@@ -327,18 +357,29 @@ export default {
                         <q-img
                             :src="metamaskLogo"
                             height="64px"
-                            width="64px"/>
+                            width="64px"
+                        />
                         <p>{{ isMobile ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
                     </q-card>
                     <q-card
                         v-if="isBraveBrowser"
                         class="c-login-modal__image-container"
-                        @click="connectBraveWallet()">
+                        @click="connectBraveWallet()"
+                    >
                         <q-img
                             :src="braveBrowserLogo"
                             height="64px"
-                            width="64px"/>
+                            width="64px"
+                        />
                         <p> Brave Wallet </p>
+                    </q-card>
+                    <q-card class="c-login-modal__image-container" @click="connectWalletConnect()">
+                        <q-img
+                            :src="walletConnectLogo"
+                            height="64px"
+                            width="64px"
+                        />
+                        <p> WalletConnect </p>
                     </q-card>
                 </q-tab-panel>
                 <q-tab-panel name="native">
