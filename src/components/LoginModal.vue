@@ -138,7 +138,7 @@ export default {
                 return;
             }
 
-            if (!this.browserSupportsMetaMask || !window.ethereum){
+            if (!this.browserSupportsMetaMask || !window.ethereum || (this.isMobile && this.isBraveBrowser)){
                 try {
                     window.open('https://metamask.app.link/dapp/teloscan.io');
                 } catch {
@@ -330,7 +330,7 @@ export default {
                             width="64px"
                         />
                         <p>
-                            {{ isMobile && !browserSupportsMetaMask ?
+                            {{ isMobile && (!browserSupportsMetaMask || isBraveBrowser) ?
                                 $t('components.continue_on_metamask') : 'Metamask' }}</p>
                     </q-card>
                     <q-card
