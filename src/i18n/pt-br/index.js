@@ -26,7 +26,7 @@ export default {
             insufficient_tlos_balance: 'Saldo de TLOS insuficiente para aplicar',
             login_using_an_evm_wallet: 'Logar usando uma carteira EVM',
             wallet_not_connected: 'Carteira não conectada',
-            click_to_input_full_wallet_balance: 'Clique para inserir o saldo completo de sua carteira\n\n' +  
+            click_to_input_full_wallet_balance: 'Clique para inserir o saldo completo de sua carteira\n\n' +
             'O saldo mostrado é reduzido em 1 TLOS para manter sua conta operacional.\n' +
             'Saldo exato (menos as tarifas de gás aproximadas):\n' +
             '{prettyBalance} TLOS',
@@ -39,7 +39,7 @@ export default {
             unstake: 'Desaplicar',
             stake: 'Aplicar',
             withdraw: 'Retirar',
-            telos_evm_staking: 'Aplicação de TLOS em EVM',  
+            telos_evm_staking: 'Aplicação de TLOS em EVM',
             stake_tlos_earn_interest: 'Aplicar TLOS em sTLOS para ganhar juros do pool de recompensas por aplicação',
             staked: 'Aplicado',
             unstaked: 'Desaplicado',
