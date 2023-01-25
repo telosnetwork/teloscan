@@ -191,6 +191,8 @@ export default {
         connect_wallet: 'Conectar carteira',
         view_address: 'Ver endereço',
         disconnect: 'Desconectar',
+        disable_wallet_extensions: 'Desative as carteiras de extensão ou defina a Brave Wallet como padrão nas configurações da carteira do navegador para usar a Brave Wallet',
+        enable_wallet_extensions: 'Ative a extensão MetaMask e defina o padrão como `preferir extensões` nas configurações da carteira do navegador para usar a carteira MetaMask',
         evm_wallets: 'Carteiras EVM',
         advanced: 'Avançado',
         continue_on_metamask: 'Continuar no Metamask',
