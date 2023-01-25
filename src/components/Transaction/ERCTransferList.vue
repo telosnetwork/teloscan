@@ -77,7 +77,7 @@ export default {
                     {{ transfer.token.symbol }}
                 </router-link>
                 <div class="col">
-                    <span v-if="transfer.tokenId.length &gt; 15">
+                    <span v-if="transfer.tokenId.length > 15">
                         <span class="word-break q-pl-xs">
                             {{ ' #' + transfer.tokenId.slice(0, 15) + '...' }}
                             <q-tooltip>{{ '#' + transfer.tokenId }}</q-tooltip>
@@ -129,9 +129,9 @@ export default {
                 <router-link class="q-ml-xs" :to="`/address/${transfer.token.address}`">
                     <span>
                         <span>{{ transfer.token.symbol.slice(0, 10) }}</span>
-                        <span v-if="transfer.token.symbol.length &gt; 10">...</span>
+                        <span v-if="transfer.token.symbol.length > 10">...</span>
                     </span>
-                    <q-tooltip v-if="transfer.token.symbol.length &gt; 10">{{ transfer.token.symbol }}</q-tooltip>
+                    <q-tooltip v-if="transfer.token.symbol.length > 10">{{ transfer.token.symbol }}</q-tooltip>
                 </router-link>
             </div>
         </div>
