@@ -329,7 +329,9 @@ export default {
                             height="64px"
                             width="64px"
                         />
-                        <p>{{ isMobile && !window.ethereum ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
+                        <p>
+                            {{ isMobile && !browserSupportsMetaMask ?
+                                $t('components.continue_on_metamask') : 'Metamask' }}</p>
                     </q-card>
                     <q-card
                         v-if="isBraveBrowser"
