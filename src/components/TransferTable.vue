@@ -86,7 +86,7 @@ export default {
                 rowsPerPage: 10,
                 rowsNumber: 0,
             },
-            showAge: true,
+            showDateAge: true,
             tokenList: {},
         };
     },
@@ -244,57 +244,79 @@ export default {
 
             return path;
         },
+        toggleDateFormat() {
+            this.showDateAge = !this.showDateAge;
+        },
     },
 };
 </script>
-<template lang="pug">
-q-table(
-    :rows="rows"
-    :row-key='row => row.hash'
-    :columns="columns"
+
+<template>
+<q-table
     v-model:pagination="pagination"
+    :rows="rows"
+    :row-key="row => row.hash"
+    :columns="columns"
     :loading="loading"
-    @request="onRequest"
     :rows-per-page-options="[10, 20, 50]"
     flat
-)
-    q-tr( slot="header" slot-scope="props", :props="props" )
-      q-th(
-        v-for="col in props.cols"
-        :key="col.name"
-        :props="props"
-        @click="col.name==='date' ? showAge=!showAge : null"
-      )
-        template(
-          v-if="col.name==='date'"
-          class=""
-        )
-          q-tooltip(anchor="bottom middle" self="bottom middle") {{ $t('components.click_to_change_format') }}
-        | {{ col.label }}
-        template(
-          v-if="col.name==='method'"
-        )
-          q-icon(name="fas fa-info-circle").info-icon
-            q-tooltip(
-                anchor="bottom middle"
-                self="top middle"
-                max-width="10rem"
-            ) {{ $t('components.func_exed_based_on_dec_data') }}
+    @request="onRequest"
+>
+    <template v-slot:header="props">
+        <q-tr :props="props">
+            <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+            >
+                <div class="u-flex--center-y">
+                    {{ col.label }}
 
-    template(v-slot:body="props")
-        q-tr( :props="props" )
-            q-td( key="hash" :props="props" )
-                transaction-field( :transaction-hash="props.row.hash" )
-            q-td( key="date" :props="props" )
-                date-field( :epoch="props.row.epoch" )
-            q-td( key="from" :props="props" )
-                address-field( :address="props.row.from" )
-            q-td( key="to" :props="props" )
-                address-field( :address="props.row.to" )
-            q-td( key="value" :props="props" ) {{ props.row.valueDisplay }}
-            q-td( key="token" :props="props" )
-                q-img.coin-icon(v-if="tokenType==='erc20'" :src="getIcon(props.row)" )
-                address-field.token-name( :address="props.row.address" :name="props.row.name" :truncate="15" )
+                    <q-icon
+                        v-if="col.name==='date'"
+                        class="info-icon"
+                        name="fas fa-info-circle"
+                        @click="toggleDateFormat"
+                    >
+                        <q-tooltip anchor="bottom middle" self="bottom middle">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
+                    </q-icon>
+                </div>
+
+            </q-th>
+        </q-tr>
+    </template>
+
+    <template v-slot:body="props">
+        <q-tr :props="props">
+            <q-td key="hash" :props="props">
+                <TransactionField :transaction-hash="props.row.hash"/>
+            </q-td>
+            <q-td key="date" :props="props">
+                <DateField :epoch="props.row.epoch" :force-show-age="showDateAge" />
+            </q-td>
+            <q-td key="from" :props="props">
+                <AddressField :address="props.row.from"/>
+            </q-td>
+            <q-td key="to" :props="props">
+                <AddressField :address="props.row.to"/>
+            </q-td>
+            <q-td key="value" :props="props">
+                {{ props.row.valueDisplay }}
+            </q-td>
+            <q-td key="token" :props="props">
+                <q-img v-if="tokenType==='erc20'" class="coin-icon" :src="getIcon(props.row)"/>
+                <AddressField
+                    class="token-name"
+                    :address="props.row.address"
+                    :name="props.row.name"
+                    :truncate="15"
+                />
+            </q-td>
+        </q-tr>
+    </template>
+</q-table>
 </template>
 
 <style lang='sass' scoped>
