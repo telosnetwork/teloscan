@@ -138,7 +138,7 @@ export default {
                 return;
             }
 
-            if (!this.browserSupportsMetaMask || this.isMobile || !window.ethereum){
+            if (!this.browserSupportsMetaMask || !window.ethereum){
                 try {
                     window.open('https://metamask.app.link/dapp/teloscan.io');
                 } catch {
@@ -329,7 +329,7 @@ export default {
                             height="64px"
                             width="64px"
                         />
-                        <p>{{ isMobile ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
+                        <p>{{ isMobile && !window.ethereum ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
                     </q-card>
                     <q-card
                         v-if="isBraveBrowser"
