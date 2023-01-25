@@ -1,6 +1,6 @@
 <script>
 import axios from 'axios';
-const API_URL = ('' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40') ?
+const API_URL = (process.env.NETWORK_EVM_CHAIN_ID === 40) ?
     'https://api.monitor.telos.net' :
     'https://api.monitor-test.telos.net';
 const API_ENDPOINT_TASKS = API_URL + '/tasks';

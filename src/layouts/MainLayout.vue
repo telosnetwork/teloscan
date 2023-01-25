@@ -15,7 +15,7 @@ export default {
     data() {
         return {
             stlosLogo: stlos,
-            mainnet: '' + process.env.NETWORK_EVM_CHAIN_ID + '' === '40',
+            mainnet: process.env.NETWORK_EVM_CHAIN_ID === 40,
             accountConnected: false,
             drawer: false,
         };
