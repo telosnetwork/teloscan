@@ -50,18 +50,38 @@ export default {
     },
 };
 </script>
-<!-- eslint-disable max-len -->
-<template lang="pug">
-div
-  span(v-if="trx.parsedTransaction" )
-    span() {{ trx.parsedTransaction.name.length > 11 && shortenName ? `${trx.parsedTransaction.name.slice(0,8)}...` : trx.parsedTransaction.name }}
-    span(v-if="transferAmount")  ({{ transferAmount }})
-    q-tooltip(v-if="shortenName" anchor="center middle" self="center middle")
-      | {{ trx.parsedTransaction.name }}
-  span(v-else :class="shortenSignature && 'clickable'")
-    span(v-if="!expand" v-on:click="shortenSignature && toggle()" clickable) {{trx.input_data.length > 10 && shortenSignature ? `${trx.input_data.slice(0,10)}` : trx.input_data}}
-    q-tooltip( v-if="shortenSignature && !expand") {{ $t('components.click_to_expand') }}
-    span( v-if="shortenSignature && expand" anchor="center middle" class="word-break" self="center middle" v-on:click="toggle()")
-      | {{ trx.input_data }}
+
+<template>
+<div>
+    <span v-if="trx.parsedTransaction">
+        <span>
+            {{
+                trx.parsedTransaction.name.length > 11 && shortenName ?
+                    `${trx.parsedTransaction.name.slice(0,8)}...` :
+                    trx.parsedTransaction.name
+            }}
+        </span>
+        <span v-if="transferAmount"> ({{ transferAmount }})</span>
+        <q-tooltip v-if="shortenName" anchor="center middle" self="center middle">
+            {{ trx.parsedTransaction.name }}
+        </q-tooltip>
+    </span>
+    <span v-else :class="shortenSignature && 'clickable'">
+        <span v-if="!expand" clickable="clickable" v-on:click="shortenSignature && toggle()">
+            {{trx.input_data.length > 10 && shortenSignature ? `${trx.input_data.slice(0,10)}` : trx.input_data}}
+        </span>
+        <q-tooltip v-if="shortenSignature &amp;&amp; !expand">
+            {{ $t('components.click_to_expand') }}
+        </q-tooltip>
+        <span
+            v-if="shortenSignature && expand"
+            class="word-break"
+            anchor="center middle"
+            self="center middle"
+            v-on:click="toggle()"
+        >
+            {{ trx.input_data }}
+        </span>
+    </span>
+</div>
 </template>
-<!--eslint-enable-->
