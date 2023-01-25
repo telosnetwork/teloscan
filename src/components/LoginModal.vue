@@ -28,6 +28,7 @@ export default {
         isMobile: false,
         browserSupportsMetaMask: true,
         isBraveBrowser: false,
+        isIOSMobile: false,
     }),
     emits: ['hide'],
     computed: {
@@ -87,6 +88,9 @@ export default {
             // eslint-disable-next-line max-len
             const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i;
             this.isMobile = mobileRegex.test(navigator.userAgent);
+            /* used for temp exclusion from Brave Browser wallet.
+               See https://github.com/telosnetwork/teloscan/issues/335 */
+            this.isIOSMobile = (/iPhone|iPad|iPod/i).test(navigator.userAgent);
         },
 
         getLoginDisplay() {
@@ -334,7 +338,7 @@ export default {
                                 $t('components.continue_on_metamask') : 'Metamask' }}</p>
                     </q-card>
                     <q-card
-                        v-if="isBraveBrowser"
+                        v-if="isBraveBrowser && !isIOSMobile"
                         class="c-login-modal__image-container"
                         @click="connectBraveWallet()"
                     >
