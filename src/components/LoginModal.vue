@@ -338,8 +338,7 @@ export default {
                     >
                         <q-img
                             :src="braveBrowserLogo"
-                            height="64px"
-                            width="64px"
+                            width="50px"
                         />
                         <p> Brave Wallet </p>
                     </q-card>
