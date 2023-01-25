@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils'
+import { mount } from '@vue/test-utils';
 import {
     oneEthInWei,
     oneHundredFiftyEthInWei,
@@ -36,11 +36,11 @@ const mountInput = props => mount(
 
 describe('StakingFormInput.vue', () => {
     it('should have the correct name', () => {
-        expect(StakingFormInput.name).toBe('StakingFormInput')
+        expect(StakingFormInput.name).toBe('StakingFormInput');
     });
 
     describe('v-model implementation', () => {
-        const getInputValue = (wrapper) => wrapper.find('input').element.value;
+        const getInputValue = wrapper => wrapper.find('input').element.value;
 
         const simulateUserInput = async (wrapper, key, newInputValue) => {
             const input = wrapper.find('input');
@@ -51,10 +51,10 @@ describe('StakingFormInput.vue', () => {
             input.element.value = newInputValue;
             await input.trigger('keydown', { key });
             await input.trigger('input');
-        }
+        };
 
-        // check the emits, then simulates the flow of data back down to the component from parent via v-model binding and ensures
-        // the component handles that update properly
+        // check the emits, then simulates the flow of data back down to the component from parent via v-model
+        // binding and ensures the component handles that update properly
         const checkInputExpectations = async (wrapper, expectedEmitCount, expectedLastEmitValue, expectedFormatted) => {
             const getEmittedVModel = () => wrapper.emitted()?.['update:modelValue'];
 
@@ -63,7 +63,8 @@ describe('StakingFormInput.vue', () => {
 
             await wrapper.setProps({ modelValue: expectedLastEmitValue });
 
-            // input component should not emit after parent updates the modelValue, i.e. should not enter feedback loop of emit and update
+            // input component should not emit after parent updates the modelValue,
+            // i.e. should not enter feedback loop of emit and update
             expect(getInputValue(wrapper)).toBe(expectedFormatted);
             expect(getEmittedVModel()?.length).toBe(expectedEmitCount);
 

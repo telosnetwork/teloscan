@@ -13,7 +13,7 @@ const asyncInputComponents = {
     UnsignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntArrayInput')),
     UnsignedIntInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntInput')),
     SignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/SignedIntArrayInput')),
-}
+};
 
 /**
  * Given a function interface type, returns true iff that type is "address"
@@ -57,7 +57,7 @@ function parameterTypeIsBooleanArray(type) {
  * @returns {boolean}
  */
 function parameterTypeIsBytes(type) {
-    return /^bytes/.test(type)
+    return /^bytes/.test(type);
 }
 
 /**
@@ -66,7 +66,7 @@ function parameterTypeIsBytes(type) {
  * @returns {boolean}
  */
 function parameterTypeIsSignedInt(type) {
-    return /^int\d+$/.test(type)
+    return /^int\d+$/.test(type);
 }
 
 /**
@@ -75,7 +75,7 @@ function parameterTypeIsSignedInt(type) {
  * @returns {boolean}
  */
 function parameterTypeIsSignedIntArray(type) {
-    return /^int\d+\[\d*]/.test(type)
+    return /^int\d+\[\d*]/.test(type);
 }
 
 /**
@@ -102,7 +102,7 @@ function parameterTypeIsStringArray(type) {
  * @returns {boolean}
  */
 function parameterTypeIsUnsignedInt(type) {
-    return /^uint\d+$/.test(type)
+    return /^uint\d+$/.test(type);
 }
 
 /**
@@ -111,7 +111,7 @@ function parameterTypeIsUnsignedInt(type) {
  * @returns {boolean}
  */
 function parameterTypeIsUnsignedIntArray(type) {
-    return /^uint\d+\[\d*]$/.test(type)
+    return /^uint\d+\[\d*]$/.test(type);
 }
 
 
@@ -319,7 +319,7 @@ function parseUintArrayString (str, expectedLength, expectedIntSize) {
     let intBigNums;
 
     try {
-        intBigNums = intStrings.map(int => BigNumber.from(int))
+        intBigNums = intStrings.map(int => BigNumber.from(int));
     } catch {
         return undefined;
     }
@@ -409,7 +409,7 @@ function parseSignedIntArrayString (str, expectedLength, expectedIntSize) {
     let intBigNums;
 
     try {
-        intBigNums = intStrings.map(int => BigNumber.from(int))
+        intBigNums = intStrings.map(int => BigNumber.from(int));
     } catch {
         return undefined;
     }
@@ -448,14 +448,16 @@ function parseAddressString(str) {
  * @returns {string[]|undefined}
  */
 function parseAddressArrayString(str, expectedLength) {
-    if (str === '[]' && expectedLength === undefined)
+    if (str === '[]' && expectedLength === undefined) {
         return [];
+    }
 
     const arrayOfAddressRegex = /^\[((0x[a-zA-Z0-9]{40}, *)*(0x[a-zA-Z0-9]{40}))]$/;
     const stringRepresentsValidAddressArray = arrayOfAddressRegex.test(str);
 
-    if (!stringRepresentsValidAddressArray)
+    if (!stringRepresentsValidAddressArray) {
         return undefined;
+    }
 
     let addressArray;
 
@@ -469,8 +471,9 @@ function parseAddressArrayString(str, expectedLength) {
     if (Number.isInteger(expectedLength)) {
         const actualLength = addressArray.length;
 
-        if (actualLength !== expectedLength)
+        if (actualLength !== expectedLength) {
             return undefined;
+        }
     }
 
     return addressArray;
@@ -486,11 +489,13 @@ function parseBooleanString(str) {
     const trueRegex  = /^true$/i;
     const falseRegex = /^false$/i;
 
-    if (trueRegex.test(str))
+    if (trueRegex.test(str)) {
         return true;
+    }
 
-    if (falseRegex.test(str))
+    if (falseRegex.test(str)) {
         return false;
+    }
 
     return undefined;
 }
@@ -504,14 +509,16 @@ function parseBooleanString(str) {
  * @returns {boolean[]|undefined}
  */
 function parseBooleanArrayString(str, expectedLength) {
-    if (str === '[]' && expectedLength === undefined)
+    if (str === '[]' && expectedLength === undefined) {
         return [];
+    }
 
     const booleanArrayStringRegex = /^\[((true|false), *)*(true|false)]$/;
 
     const stringRepresentValidBoolArray = booleanArrayStringRegex.test(str);
-    if (!stringRepresentValidBoolArray)
+    if (!stringRepresentValidBoolArray) {
         return undefined;
+    }
 
     const booleanRegex = /true|false/g;
     const trueRegex = /true/;
@@ -520,8 +527,9 @@ function parseBooleanArrayString(str, expectedLength) {
     if (Number.isInteger(expectedLength)) {
         const actualLength = boolArray.length;
 
-        if (actualLength !== expectedLength)
+        if (actualLength !== expectedLength) {
             return undefined;
+        }
     }
 
     return boolArray;
@@ -536,14 +544,16 @@ function parseBooleanArrayString(str, expectedLength) {
  * @returns {string[]|undefined}
  */
 function parseBytesArrayString(str, expectedLength) {
-    if (str === '[]' && expectedLength === undefined)
+    if (str === '[]' && expectedLength === undefined) {
         return [];
+    }
 
     const bytesArrayStringRegex = /^\[(([0-9A-Fa-f]{2}), *)*([0-9A-Fa-f]{2})]$/;
 
     const stringRepresentValidBoolArray = bytesArrayStringRegex.test(str);
-    if (!stringRepresentValidBoolArray)
+    if (!stringRepresentValidBoolArray) {
         return undefined;
+    }
 
     const byteRegex = /[0-9A-Fa-f]{2}/g;
     const bytesArray = str.match(byteRegex);
@@ -551,8 +561,9 @@ function parseBytesArrayString(str, expectedLength) {
     if (Number.isInteger(expectedLength)) {
         const actualLength = bytesArray.length;
 
-        if (actualLength !== expectedLength)
+        if (actualLength !== expectedLength) {
             return undefined;
+        }
     }
 
     return bytesArray;
@@ -585,8 +596,9 @@ function parseStringArrayString(str, expectedLength) {
     if (Number.isInteger(expectedLength)) {
         const actualLength = parsedArrayOfStrings.length;
 
-        if (actualLength !== expectedLength)
+        if (actualLength !== expectedLength) {
             return undefined;
+        }
     }
 
     return parsedArrayOfStrings;
@@ -625,4 +637,4 @@ export {
     parseStringArrayString,
     parseUintArrayString,
     parseUintString,
-}
+};

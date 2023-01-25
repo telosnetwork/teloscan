@@ -1,20 +1,3 @@
-<template>
-<base-text-input
-    ref="input"
-    v-bind="$attrs"
-    :model-value="modelValue"
-    :label="shapedLabel"
-    :name="name"
-    :rules="rules"
-    :size="undefined"
-    @update:modelValue="handleChange"
->
-    <template #append>
-        <slot name="append" />
-    </template>
-</base-text-input>
-</template>
-
 <script>
 import { integerSizeValidator, parseUintString } from 'components/ContractTab/function-interface-utils';
 import { BigNumber } from 'ethers';
@@ -69,7 +52,7 @@ export default {
             ];
         },
         shapedLabel() {
-            return `${this.label} (uint${this.size})`
+            return `${this.label} (uint${this.size})`;
         },
     },
     watch: {
@@ -95,8 +78,25 @@ export default {
             }
         },
     },
-}
+};
 </script>
+
+<template>
+<BaseTextInput
+    ref="input"
+    v-bind="$attrs"
+    :model-value="modelValue"
+    :label="shapedLabel"
+    :name="name"
+    :rules="rules"
+    :size="undefined"
+    @update:modelValue="handleChange"
+>
+    <template #append>
+        <slot name="append"></slot>
+    </template>
+</BaseTextInput>
+</template>
 
 <style>
 

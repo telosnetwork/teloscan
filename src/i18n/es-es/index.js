@@ -1,13 +1,18 @@
+/* eslint-disable max-len */
+
 export default {
+    locale: {
+        current_language_name: 'Español',
+    },
     pages: {
         staking: {
             note_unstaking_period: 'Tenga en cuenta que hay un período de recuperación de {period}',
             claim_tlos: 'Reclamar TLOS',
             add_stlos_to_metamask: 'Iniciar el cuadro de diálogo MetaMask para agregar sTLOS',
             metamask_fox_logo: 'Logotipo de la zorra de MetaMask',
-            cancel: 'Cancelar',
             stake_tlos_confirm: 'continuar significa bloquer TLOS a cambio de sTLOS. ' +
             'sTLOS se puede canjear por TLOS en cualquier momento usando la pestaña Desbloquear.',
+            cancel: 'Cancelar',
             stake_tlos_confirm_2a: 'Después de que se reclamen los TLOS, éstos estarán bloqueados durante un período de', /* unstakePeriodPretty...*/
             stake_tlos_confirm_2b: /*...unstakePeriodPretty */ 'después de lo cual se puede retirar a su cuenta desde la pestaña Reclamar.',
             stake_tlos_confirm_3: '¿Le gustaría proceder?',
@@ -36,6 +41,8 @@ export default {
             withdraw: 'Retirar',
             telos_evm_staking: 'Bloqueo de TLOS en EVM',
             stake_tlos_earn_interest: 'Bloquear TLOS para obtener sTLOS y ganar intereses de la recompensa de bloqueo',
+            staked: 'Bloqueado',
+            unstaked: 'Desbloqueado',
             tooltip_1: 'TAE: Tasa Anual Efectiva (APY en Inglés)\n\nLa tasa de retorno anual después de tomar en cuenta el interés compuesto.\n\n' +
             'El interés se compone aproximadamente cada 30 minutos. La tasa porcentual no es fija, lo que significa que ' +
             'cambiará con el tiempo con la cantidad total de TLOS bloqueado en Telos EVM y Telos nativo. ' +
@@ -99,7 +106,7 @@ export default {
             convert_tlos_to_stlos_error: 'No se puede convertir TLOS a sTLOS { message }',
             convert_stlos_to_tlos_error: 'No se puede convertir sTLOS a TLOS { message }',
             unstake_stlos_error: 'Error al desbloquear sTLOS { message }',
-            withdraw_failed: 'Error al retirar TLOS desbloqueado: { message }',  
+            withdraw_failed: 'Error al retirar TLOS desbloqueado: { message }',
         },
         explore_transactions: 'Explorar transacciones',
         recent_transactions: 'Transacciones recientes',
@@ -136,6 +143,7 @@ export default {
         erc20_transfers: 'Transferencias ERC20',
         erc721_transfers: 'Transferencias ERC721',
         erc1155_transfers: 'Transferencias ERC1155',
+        tokens: 'Tokens',
         created_at_trx: 'Creada en la Trx',
         by_address: 'Por la dirección',
         number_used_once: 'Número usado una vez (nonce)',
@@ -179,6 +187,7 @@ export default {
         verify_prompt: 'Este contrato no ha sido verificado. ¿Le gustaría cargar el (los) contrato (s) y los metadatos para verificar el código fuente ahora?',
         verify_contract: 'Verificar contrato',
         search_evm_address_failed: 'La búsqueda de la dirección EVM vinculada a la cuenta nativa { accountName } falló. Puede crear una en wallet.telos.net',
+        unknown_web3_login_type: 'Tipo de inicio de sesión web3 desconocido: { provider }',
         connect_wallet: 'Conectar billetera',
         view_address: 'Ver dirección',
         disconnect: 'Desconectar',
@@ -239,7 +248,7 @@ export default {
             no_internal_trxs_found: 'No se encontraron transacciones internas',
             human_readable: 'Lectura humana',
             no_logs_found: 'No se encontraron registros',
-            verify_related_contract: 'Verifique el contrato relacionado para cada registro para ver su versión legible por humanos',      
+            verify_related_contract: 'Verifique el contrato relacionado para cada registro para ver su versión legible por humanos',
             failed_to_retrieve_contract: 'No se pudo recuperar el contrato con la dirección { address }',
         },
         inputs: {
@@ -274,7 +283,7 @@ export default {
             str_input_hint: 'Las comillas dobles en las cadenas deben escaparse (\\")',
             address_placeholder: 'Dirección que comienza con 0x',
             address_label: '{ label } (address)',
-            boolean_array_label: '{ label } (bool[{ size }])',            
+            boolean_array_label: '{ label } (bool[{ size }])',
         },
         health: {
             status: 'Estado',
@@ -295,8 +304,6 @@ export default {
             write: 'Escribir',
             amount: 'Cantidad',
             value: 'Valor',
-            ok: 'Ok',
-            cancel: 'Cancelar',
             custom_decimals: 'Decimales personalizados',
             custom: 'Personalizado',
             unverified_contract_source: 'El código fuente de este contrato no ha sido verificado.',
@@ -312,8 +319,35 @@ export default {
             provided_json_invalid: 'JSON proporcionado no válido',
             read_functions: 'Funciones de lectura',
             write_functions: 'Funciones de escritura',
-            unverified_contract: 'Contrato no verificado',            
+            unverified_contract: 'Contrato no verificado',
         },
+        header: {
+            sign_in: 'Iniciar sesión',
+            sign_out: 'Cerrar sesión',
+            liq_staking: 'Bloqueado líquido',
+            goto_staking: 'Ir a Bloqueado',
+            goto_health_monitor: 'ir a la página de monitoreo de salud',
+            goto_mainnet: 'Ir a Mainnet',
+            goto_testnet: 'Ir a Testnet',
+            health_monitor: 'Monitoreo de salud',
+            health_status: 'Estado de la salud',
+            advanced: 'Avanzado',
+            light_mode: 'Modo claro',
+            dark_mode: 'Modo oscuro',
+            address_not_found: 'La búsqueda de la dirección EVM vinculada a la cuenta nativa { account } falló.',
+            search_failed: 'La búsqueda falló, ingrese un término de búsqueda válido.',
+            goto_address_details: 'Ir a los detalles de la dirección',
+            copy_address: 'Copiar dirección',
+            address_copied: 'Dirección copiada al portapapeles',
+            search_placeholder: 'Dirección, Tx, Bloque',
+            select_language: 'Seleccionar idioma',
+        },
+    },
+    global: {
+        language: 'Idioma',
+        ok: 'Ok',
+        cancel: 'Cancelar',
+        dismiss: 'Descartar',
     },
     layouts: {
         health_status: 'Estado de la salud',
@@ -321,4 +355,4 @@ export default {
         teloscan_mainnet: 'Teloscan Mainnet',
         teloscan_testnet: 'Teloscan Testnet',
     },
-}
+};

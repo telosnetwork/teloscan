@@ -1,61 +1,3 @@
-<template>
-<div class="c-base-staking-form container-fluid">
-    <div class="row">
-        <div class="col-sm-12 col-md-6 offset-md-3">
-            <div class="row q-mb-md">
-                <div class="col">
-                    <h5 class="c-base-staking-form__header">
-                        {{ header }}
-                    </h5>
-                    <p>{{ subheader }}</p>
-                </div>
-            </div>
-            <div class="row">
-                <div v-if="valueOfOneStlosInTlos !== null" class="col-12 q-mb-sm u-flex--right">
-                    <q-badge outline color="secondary" :label="`1 TLOS = ${valueOfOneStlosInTlos} sTLOS`" />
-                </div>
-                <div class="col-12">
-                    <staking-form-input
-                        :model-value="topInputAmount"
-                        v-bind="inputs[0]"
-                        @update:modelValue="handleInput($event, 0)"
-                    />
-                </div>
-
-                <div class="col-12 u-flex--center">
-                    <div class="c-base-staking-form__decorative-chevron" />
-                </div>
-
-                <div class="col-12 q-mb-md">
-                    <staking-form-input
-                        :model-value="bottomInputAmount"
-                        v-bind="inputs[1]"
-                        @update:modelValue="handleInput($event, 1)"
-                    />
-                </div>
-
-                <div class="col-xs-12 col-sm-8 u-flex--center-y">
-                    <p class="c-base-staking-form__footer-p">
-                        {{ $t('pages.staking.note_unstaking_period', { period: unstakePeriodPretty }) }}
-                    </p>
-                </div>
-
-                <div class="col-xs-12 col-sm-4 u-flex--right">
-                    <q-btn
-                        :disabled="ctaDisabled"
-                        color="secondary"
-                        text-color="black"
-                        @click="handleCtaClick"
-                    >
-                        {{ ctaText }}
-                    </q-btn>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-</template>
-
 <script>
 import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 
@@ -177,8 +119,66 @@ export default {
             this.$emit('cta-clicked');
         },
     },
-}
+};
 </script>
+
+<template>
+<div class="c-base-staking-form container-fluid">
+    <div class="row">
+        <div class="col-sm-12 col-md-6 offset-md-3">
+            <div class="row q-mb-md">
+                <div class="col">
+                    <h5 class="c-base-staking-form__header">
+                        {{ header }}
+                    </h5>
+                    <p>{{ subheader }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div v-if="valueOfOneStlosInTlos !== null" class="col-12 q-mb-sm u-flex--right">
+                    <q-badge outline color="secondary" :label="`1 TLOS = ${valueOfOneStlosInTlos} sTLOS`" />
+                </div>
+                <div class="col-12">
+                    <StakingFormInput
+                        :model-value="topInputAmount"
+                        v-bind="inputs[0]"
+                        @update:modelValue="handleInput($event, 0)"
+                    />
+                </div>
+
+                <div class="col-12 u-flex--center">
+                    <div class="c-base-staking-form__decorative-chevron"></div>
+                </div>
+
+                <div class="col-12 q-mb-md">
+                    <StakingFormInput
+                        :model-value="bottomInputAmount"
+                        v-bind="inputs[1]"
+                        @update:modelValue="handleInput($event, 1)"
+                    />
+                </div>
+
+                <div class="col-xs-12 col-sm-8 u-flex--center-y">
+                    <p class="c-base-staking-form__footer-p">
+                        {{ $t('pages.staking.note_unstaking_period', { period: unstakePeriodPretty }) }}
+                    </p>
+                </div>
+
+                <div class="col-xs-12 col-sm-4 u-flex--right">
+                    <q-btn
+                        :disabled="ctaDisabled"
+                        color="secondary"
+                        text-color="black"
+                        @click="handleCtaClick"
+                    >
+                        {{ ctaText }}
+                    </q-btn>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</template>
 
 <style lang="scss">
 .c-base-staking-form {

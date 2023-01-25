@@ -1,6 +1,6 @@
-import { route } from 'quasar/wrappers'
-import { createRouter, createWebHistory } from 'vue-router'
-import routes from './routes'
+import { route } from 'quasar/wrappers';
+import { createRouter, createWebHistory } from 'vue-router';
+import routes from 'src/router/routes';
 
 /*
  * If not building with SSR mode, you can
@@ -22,6 +22,6 @@ export default route(function (/* { store, ssrContext } */) {
         // quasar.conf.js -> build -> vueRouterMode
         // quasar.conf.js -> build -> publicPath
         history: createHistory(process.env.VUE_ROUTER_BASE),
-    })
-    return Router
-})
+    });
+    return Router;
+});

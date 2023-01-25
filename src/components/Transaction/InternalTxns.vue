@@ -1,6 +1,6 @@
 <script>
-import JsonViewer from 'vue-json-viewer'
-import FragmentList from './FragmentList.vue'
+import JsonViewer from 'vue-json-viewer';
+import FragmentList from 'components/Transaction/FragmentList.vue';
 import { WEI_PRECISION, formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
 
@@ -63,8 +63,13 @@ export default {
                 if(parsedTransaction){
                     args = parsedTransaction.args;
                     name = parsedTransaction.signature;
-                    outputs = parsedTransaction.functionFragment ? parsedTransaction.functionFragment.outputs : parsedTransaction.outputs;
-                    inputs = parsedTransaction.functionFragment ? parsedTransaction.functionFragment.inputs : parsedTransaction.inputs;
+                    outputs = parsedTransaction.functionFragment ?
+                        parsedTransaction.functionFragment.outputs :
+                        parsedTransaction.outputs;
+
+                    inputs = parsedTransaction.functionFragment ?
+                        parsedTransaction.functionFragment.inputs :
+                        parsedTransaction.inputs;
                 }
             }
             this.parsedItxs.push({
@@ -82,18 +87,16 @@ export default {
                 value: (itx.type !== 'create' && itx.value) ? formatWei('0x' + itx.value, WEI_PRECISION): 0,
             });
         }
-        this.parsedItxs.sort((a,b) => {
-            return BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber();
-        });
+        this.parsedItxs.sort((a, b) => BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber());
 
     },
     data () {
         return {
             human_readable: true,
             parsedItxs: [],
-        }
+        };
     },
-}
+};
 </script>
 <template>
 <div>

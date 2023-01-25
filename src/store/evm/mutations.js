@@ -4,8 +4,8 @@ export const setTlosPrice = (state, tlosPrice) => {
 
 export const setGasPrice = (state, gasPrice) => {
     state.gasPrice = gasPrice;
-}
+};
 
 export const setLatestBlock = (state, latestBlock) => {
     state.latestBlock = latestBlock;
-}
+};

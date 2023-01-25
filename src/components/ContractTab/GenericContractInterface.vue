@@ -1,3 +1,166 @@
+<script>
+import JsonViewer from 'vue-json-viewer';
+
+import Contract from 'src/lib/Contract';
+import { erc721Abi } from 'src/lib/abi';
+import erc20Abi from 'erc-20-abi';
+
+import { sortAbiFunctionsByName } from 'src/lib/utils';
+
+import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
+
+export default {
+    name: 'GenericContractInterface',
+    components: {
+        FunctionInterface,
+        JsonViewer,
+    },
+    data: () => ({
+        file_model: null,
+        address: null,
+        contract: null,
+        functions: null,
+        displayWriteFunctions: false,
+        customAbiDefinition: '',
+        selectedAbi: null,
+        abiOptions: {
+            erc20: 'erc20',
+            erc721: 'erc721',
+            custom: 'custom',
+        },
+    }),
+    computed: {
+        showAbiFunctions() {
+            return Object.values(this.abiOptions).includes(this.selectedAbi) &&
+                ['read', 'write']
+                    .some(access => (this.functions?.[access] ?? [])
+                        .some(member => member.type === 'function'));
+        },
+        customAbiIsValidJSON() {
+            try {
+                return !!JSON.parse(this.customAbiDefinition);
+            } catch {
+                return false;
+            }
+        },
+    },
+    watch: {
+        selectedAbi(newValue, oldValue) {
+            if (oldValue !== newValue) {
+                this.formatAbiFunctionLists();
+                this.displayWriteFunctions = false;
+            }
+        },
+        customAbiDefinition(newValue, oldValue) {
+            console.log('Watching customAbiDefinition:', [newValue, oldValue]);
+            if (oldValue !== newValue && this.customAbiIsValidJSON) {
+                this.formatAbiFunctionLists();
+                this.displayWriteFunctions = false;
+            }
+            // if we detect any change in the custom abi definition, we should reset the file_model
+            if (oldValue && oldValue !== newValue) {
+                this.file_model = null;
+            }
+            // if newValue is empty, we should reset
+            if (!newValue) {
+                this.reset();
+            }
+        },
+    },
+    created() {
+        this.address = this.$route.params.address;
+    },
+    methods: {
+        reset() {
+            this.functions = {
+                read: [],
+                write: [],
+            };
+            this.file_model = null;
+            this.customAbiDefinition = '';
+        },
+        async uploadFile(e) {
+            let file = e.target.files[0];
+            let fileReader = new FileReader();
+            fileReader.onload = (event) => {
+                let json = event.target.result;
+                try {
+                    JSON.parse(json); // this will throw an error if the json is invalid
+                    this.customAbiDefinition = json;
+                } catch (error) {
+                    console.error(error);
+                    this.reset();
+                    this.$q.notify({
+                        message: 'Invalid JSON file',
+                        color: 'negative',
+                    });
+                }
+            };
+            fileReader.readAsText(file);
+        },
+        async formatAbiFunctionLists() {
+            this.functions = {
+                read: [],
+                write: [],
+            };
+
+            const { custom, erc20, erc721 } = this.abiOptions;
+
+            let abi;
+            const customAbiSelected = this.selectedAbi === custom;
+
+            const selectedAbiIsCustomAndValid =
+                !!this.customAbiDefinition &&
+                this.customAbiIsValidJSON &&
+                customAbiSelected;
+            if (selectedAbiIsCustomAndValid) {
+                abi = JSON.parse(this.customAbiDefinition);
+            } else if (this.selectedAbi === erc20) {
+                abi = erc20Abi;
+            } else if (this.selectedAbi === erc721) {
+                abi = erc721Abi;
+            } else {
+                return;
+            }
+            if (!Array.isArray(abi)) {
+                if (abi.abi && Array.isArray(abi.abi)) {
+                    abi = abi.abi;
+                }
+            }
+
+            // abi.map function is used here:
+            // https://github.com/ethers-io/ethers.js/blob/master/packages/abi/lib.esm/interface.js#L57
+            console.assert(typeof abi.map === 'function', 'ERROR: abi is not an array');
+
+            this.contract = new Contract({
+                name: this.$t('components.contract_tab.unverified_contract'),
+                address: this.address,
+                abi,
+                manager: this.$contractManager,
+            });
+            let read = [];
+            let write = [];
+
+            (this.contract?.abi ?? []).forEach((a) => {
+                if (a.type !== 'function') {
+                    return;
+                }
+
+                if (a.stateMutability === 'view') {
+                    read.push(a);
+                } else {
+                    write.push(a);
+                }
+            });
+            this.functions = {
+                read: sortAbiFunctionsByName(read),
+                write: sortAbiFunctionsByName(write),
+            };
+        },
+    },
+};
+</script>
+
 <template>
 <div class="q-pa-md">
     <div class="row q-pb-md">
@@ -8,11 +171,10 @@
                     class="text-negative"
                     size="1.25rem"
                 />
-                
                 {{ $t('components.contract_tab.unverified_contract_source') }}
             </p>
             <p>
-                <router-link :to="{ name: 'sourcify' }" :key="$route.path">
+                <router-link :key="$route.path" :to="{ name: 'sourcify' }">
                     {{ $t('components.contract_tab.click_here') }}
                 </router-link>
                 {{ $t('components.contract_tab.upload_source_files') }}
@@ -52,17 +214,33 @@
     </div>
 
     <div v-if="selectedAbi === abiOptions.custom" class="row q-mb-lg">
-        <div class="col-sm-12 col-md-10 col-lg-8 col-xl-6">
-            <q-input
-                v-model="customAbiDefinition"
-                clearable
-                name="custom-abi"
-                :label="$t('components.contract_tab.paste_abi_json_here')"
-                class="q-pb-lg"
-                autocomplete="off"
-                type="text"
-            />
-
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12 col-sm-8 col-lg-9">
+                    <q-input
+                        v-model="customAbiDefinition"
+                        clearable
+                        name="custom-abi"
+                        label="Paste ABI JSON here"
+                        class="q-pb-lg"
+                        autocomplete="off"
+                        type="text"
+                    />
+                </div>
+                <div class="col-12 col-sm-4 col-lg-3">
+                    <q-file
+                        v-model="file_model"
+                        outlined
+                        name="custom-abi-file"
+                        label="upload ABI JSON file"
+                        class="abi-json-uploader q-ml-md text-center"
+                        accept=".json"
+                        @input="uploadFile"
+                    />
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12">
             <template v-if="!!customAbiDefinition">
                 <template v-if="customAbiIsValidJSON">
                     <p class="q-mb-sm">
@@ -119,7 +297,7 @@
                 >
                     <q-card>
                         <div class="q-pa-md">
-                            <function-interface
+                            <FunctionInterface
                                 :abi="func"
                                 :contract="contract"
                                 :write="true"
@@ -134,121 +312,9 @@
     </div>
 </div>
 </template>
-
-<script>
-import JsonViewer from 'vue-json-viewer';
-
-import Contract from 'src/lib/Contract';
-import { erc721Abi } from 'src/lib/abi';
-import erc20Abi from 'erc-20-abi';
-
-import { sortAbiFunctionsByName } from 'src/lib/utils';
-
-import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
-
-export default {
-    name: 'GenericContractInterface',
-    components: {
-        FunctionInterface,
-        JsonViewer,
-    },
-    data: () => ({
-        address: null,
-        contract: null,
-        functions: null,
-        displayWriteFunctions: false,
-        customAbiDefinition: '',
-        selectedAbi: null,
-        abiOptions: {
-            erc20: 'erc20',
-            erc721: 'erc721',
-            custom: 'custom',
-        },
-    }),
-    computed: {
-        showAbiFunctions() {
-            return Object.values(this.abiOptions).includes(this.selectedAbi) &&
-                ['read', 'write']
-                    .some(access => (this.functions?.[access] ?? [])
-                        .some(member => member.type === 'function'))
-        },
-        customAbiIsValidJSON() {
-            try {
-                return !!JSON.parse(this.customAbiDefinition);
-            } catch {
-                return false;
-            }
-        },
-    },
-    watch: {
-        selectedAbi(oldValue, newValue) {
-            if (oldValue !== newValue) {
-                this.formatAbiFunctionLists();
-                this.displayWriteFunctions = false;
-            }
-        },
-        customAbiDefinition(oldValue, newValue) {
-            if (oldValue !== newValue && this.customAbiIsValidJSON) {
-                this.formatAbiFunctionLists();
-                this.displayWriteFunctions = false;
-            }
-        },
-    },
-    created() {
-        this.address = this.$route.params.address;
-    },
-    methods: {
-        async formatAbiFunctionLists() {
-            this.functions = {
-                read: [],
-                write: [],
-            };
-
-            const { custom, erc20, erc721 } = this.abiOptions;
-
-            let abi;
-            const customAbiSelected = this.selectedAbi === custom;
-
-            const selectedAbiIsCustomAndValid =
-                !!this.customAbiDefinition &&
-                this.customAbiIsValidJSON &&
-                customAbiSelected;
-
-            if (selectedAbiIsCustomAndValid) {
-                abi = JSON.parse(this.customAbiDefinition);
-            } else if (this.selectedAbi === erc20) {
-                abi = erc20Abi;
-            } else if (this.selectedAbi === erc721) {
-                abi = erc721Abi;
-            } else {
-                return;
-            }
-
-            this.contract = new Contract({
-                name: this.$t('components.contract_tab.unverified_contract'),
-                address: this.address,
-                abi,
-                manager: this.$contractManager,
-            });
-
-            let read = [];
-            let write = [];
-
-            (this.contract?.abi ?? []).forEach(a => {
-                if (a.type !== 'function') return;
-
-                if (a.stateMutability === 'view') {
-                    read.push(a);
-                } else {
-                    write.push(a);
-                }
-            });
-
-            this.functions = {
-                read: sortAbiFunctionsByName(read),
-                write: sortAbiFunctionsByName(write),
-            };
-        },
-    },
+<style>
+.abi-json-uploader .q-field__label {
+    text-align: center;
+    width: 100%;
 }
-</script>
+</style>
