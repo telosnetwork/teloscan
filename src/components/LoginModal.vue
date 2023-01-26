@@ -33,6 +33,7 @@ export default {
         isMobile: false,
         browserSupportsMetaMask: true,
         isBraveBrowser: false,
+        isIOSMobile: false,
         web3Modal: null,
     }),
     emits: ['hide'],
@@ -93,6 +94,9 @@ export default {
             // eslint-disable-next-line max-len
             const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i;
             this.isMobile = mobileRegex.test(navigator.userAgent);
+            /* used for temp exclusion from Brave Browser wallet.
+               See https://github.com/telosnetwork/teloscan/issues/335 */
+            this.isIOSMobile = (/iPhone|iPad|iPod/i).test(navigator.userAgent);
         },
 
         getLoginDisplay() {
@@ -144,7 +148,7 @@ export default {
                 return;
             }
 
-            if (!this.browserSupportsMetaMask || this.isMobile || !window.ethereum){
+            if (!this.browserSupportsMetaMask || !window.ethereum || (this.isMobile && this.isBraveBrowser)){
                 try {
                     window.open('https://metamask.app.link/dapp/teloscan.io');
                 } catch {
@@ -359,17 +363,18 @@ export default {
                             height="64px"
                             width="64px"
                         />
-                        <p>{{ isMobile ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
+                        <p>
+                            {{ isMobile && (!browserSupportsMetaMask || isBraveBrowser) ?
+                                $t('components.continue_on_metamask') : 'Metamask' }}</p>
                     </q-card>
                     <q-card
-                        v-if="isBraveBrowser"
+                        v-if="isBraveBrowser && !isIOSMobile"
                         class="c-login-modal__image-container"
                         @click="connectBraveWallet()"
                     >
                         <q-img
                             :src="braveBrowserLogo"
-                            height="64px"
-                            width="64px"
+                            width="50px"
                         />
                         <p> Brave Wallet </p>
                     </q-card>
