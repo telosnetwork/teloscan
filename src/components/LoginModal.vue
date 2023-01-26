@@ -198,23 +198,29 @@ export default {
 
             this.web3Modal = new Web3Modal({
                 projectId: PROJECT_ID,
+                standaloneChains: ['eip155:40', 'eip155:41'],
             });
             const signClient = await SignClient.init({ projectId: PROJECT_ID });
-
+            debugger;
             const { uri, approval } = await signClient.connect({
                 requiredNamespaces: {
                     eip155: {
-                        methods: ['eth_sign'],
-                        chains: ['eip155:1'],
-                        events: ['accountsChanged'],
+                        methods: [
+                            'eth_sendTransaction',
+                            'eth_signTransaction',
+                            'eth_sign',
+                        ],
+                        chains: ['eip155:40', 'eip155:41'],
+                        events: ['chainChanged', 'accountsChanged'],
                     },
                 },
             });
 
             if (uri) {
-                this.web3Modal.openModal({ uri, standaloneChains: ['eip155:1'] });
+                this.web3Modal.openModal({ uri });
                 this.$emit('hide');
                 await approval();
+                debugger;
                 this.web3Modal.closeModal();
             }
         },
