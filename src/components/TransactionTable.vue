@@ -7,6 +7,8 @@ import MethodField from 'components/MethodField';
 import { formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
+const STORAGE_KEY = 'tx-table-pagination';
+
 export default {
     name: 'TransactionTable',
     components: {
@@ -97,13 +99,28 @@ export default {
         this.columns[6].label = this.$t('components.value_transfer');
     },
     mounted() {
+        // restoring a possible last pagination state
+        const paginationStaet = localStorage.getItem(STORAGE_KEY);
+        if (paginationStaet) {
+            try {
+                this.pagination = JSON.parse(paginationStaet);
+            } catch (e) {
+                console.error(e);
+                localStorage.removeItem(STORAGE_KEY);
+            }
+        }
+
         this.onRequest({
             pagination: this.pagination,
         });
     },
     methods: {
         async onRequest(props) {
+            console.log('onRequest', props);
             this.loading = true;
+
+            // saving last pagination state
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(props.pagination));
 
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             let result = await this.$evmEndpoint.get(this.getPath(props));
@@ -211,6 +228,7 @@ export default {
 
 <template lang="pug">
 q-table(
+    ref="table"
     :rows="rows"
     :row-key='row => row.hash'
     :columns="columns"

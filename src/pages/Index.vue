@@ -21,5 +21,5 @@ q-page.pageContainer
     .row.tableWrapper
       .col-12.q-pb-lg
           q-card
-            TransactionTable( title="$t('pages.recent_transactions')" )
+            TransactionTable( :title="$t('pages.recent_transactions')" )
 </template>
