@@ -1,8 +1,9 @@
 <script>
 import MetamaskLogo from 'src/assets/metamask-fox.svg';
 import WombatLogo from 'src/assets/wombat-logo.png';
-
-import { mapGetters, mapMutations, mapState } from 'vuex';
+import BraveBrowserLogo from 'src/assets/brave_lion.svg';
+import detectEthereumProvider from '@metamask/detect-provider';
+import { mapGetters, mapMutations } from 'vuex';
 import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
@@ -19,11 +20,17 @@ export default {
             default: false,
         },
     },
-    emits: ['hide'],
     data: () => ({
-        metamaskLogo: MetamaskLogo,
         tab: 'web3',
+        showLogin: false,
+        metamaskLogo: MetamaskLogo,
+        braveBrowserLogo: BraveBrowserLogo,
+        isMobile: false,
+        browserSupportsMetaMask: true,
+        isBraveBrowser: false,
+        isIOSMobile: false,
     }),
+    emits: ['hide'],
     computed: {
         ...mapGetters('login', [
             'isLoggedIn',
@@ -31,9 +38,11 @@ export default {
             'address',
             'nativeAccount',
         ]),
-        ...mapState('general', ['browserSupportsMetaMask']),
     },
     async mounted() {
+        await this.detectProvider();
+        this.detectMobile();
+
         const loginData = localStorage.getItem('loginData');
         if (!loginData) {
             return;
@@ -68,6 +77,22 @@ export default {
         ...mapMutations('login', [
             'setLogin',
         ]),
+
+        async detectProvider() {
+            const provider = await detectEthereumProvider({ mustBeMetaMask: true });
+            this.browserSupportsMetaMask = provider?.isMetaMask;
+            this.isBraveBrowser = navigator.brave && await navigator.brave.isBrave();
+        },
+
+        detectMobile() {
+            // eslint-disable-next-line max-len
+            const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i;
+            this.isMobile = mobileRegex.test(navigator.userAgent);
+            /* used for temp exclusion from Brave Browser wallet.
+               See https://github.com/telosnetwork/teloscan/issues/335 */
+            this.isIOSMobile = (/iPhone|iPad|iPod/i).test(navigator.userAgent);
+        },
+
         getLoginDisplay() {
             return this.isNative ? this.nativeAccount : `0x...${this.address.slice(this.address.length - 4)}`;
         },
@@ -93,12 +118,48 @@ export default {
         goToAddress() {
             this.$router.push(`/address/${this.address}`);
         },
-        async injectedWeb3Login() {
-            if (!this.browserSupportsMetaMask) {
-                window.open('https://metamask.app.link/dapp/teloscan.io');
+        async connectBraveWallet(){
+            // Brave Wallet is not set as default and/or has other extensions enabled
+            if (!window.ethereum.isBraveWallet){
+                this.$q.notify({
+                    position: 'top',
+                    message: this.$t('components.disable_wallet_extensions'),
+                    timeout: 6000,
+                });
                 return;
             }
 
+            await this.injectedWeb3Login();
+        },
+
+        async connectMetaMask(){
+            if (this.isBraveBrowser && window.ethereum.isBraveWallet && !this.isMobile){
+                this.$q.notify({
+                    position: 'top',
+                    message: this.$t('components.enable_wallet_extensions'),
+                    timeout: 6000,
+                });
+                return;
+            }
+
+            if (!this.browserSupportsMetaMask || !window.ethereum || (this.isMobile && this.isBraveBrowser)){
+                try {
+                    window.open('https://metamask.app.link/dapp/teloscan.io');
+                } catch {
+
+                    this.$q.notify({
+                        position: 'top',
+                        message: this.$t('components.enable_wallet_extensions'),
+                        timeout: 6000,
+                    });
+                }
+                return;
+            }
+
+            await this.injectedWeb3Login();
+        },
+
+        async injectedWeb3Login() {
             const address = await this.getInjectedAddress();
             if (address) {
                 this.setLogin({
@@ -168,7 +229,6 @@ export default {
                 return accounts[0];
             } else {
                 const accessGranted = await provider.request({ method: 'eth_requestAccounts' });
-
                 if (accessGranted.length < 1) {
                     return false;
                 }
@@ -186,6 +246,7 @@ export default {
             }
         },
         getInjectedProvider() {
+            // window.ethereum.isMetaMask includes Brave Wallet
             const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
                 window.ethereum :
                 null;
@@ -266,14 +327,26 @@ export default {
             <q-separator/>
             <q-tab-panels v-model="tab" animated>
                 <q-tab-panel name="web3">
-                    <q-card class="c-login-modal__image-container" @click="injectedWeb3Login()">
+                    <q-card class="c-login-modal__image-container" @click="connectMetaMask()">
                         <q-img
                             :src="metamaskLogo"
-                            class="wallet-img"
                             height="64px"
                             width="64px"
                         />
-                        <p>{{ !browserSupportsMetaMask ? $t('components.continue_on_metamask') : 'Metamask' }}</p>
+                        <p>
+                            {{ isMobile && (!browserSupportsMetaMask || isBraveBrowser) ?
+                                $t('components.continue_on_metamask') : 'Metamask' }}</p>
+                    </q-card>
+                    <q-card
+                        v-if="isBraveBrowser && !isIOSMobile"
+                        class="c-login-modal__image-container"
+                        @click="connectBraveWallet()"
+                    >
+                        <q-img
+                            :src="braveBrowserLogo"
+                            width="50px"
+                        />
+                        <p> Brave Wallet </p>
                     </q-card>
                 </q-tab-panel>
                 <q-tab-panel name="native">

@@ -1,12 +1,11 @@
-import state from 'src/store/general/state';
-import * as getters from 'src/store/general/getters';
-import * as mutations from 'src/store/general/mutations';
-import * as actions from 'src/store/general/actions';
+/* eslint-disable no-restricted-imports */
+import state from './state';
+import * as getters from './getters';
+import * as mutations from './mutations';
 
 export default {
     namespaced: true,
     state,
     getters,
     mutations,
-    actions,
 };

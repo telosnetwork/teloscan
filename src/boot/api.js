@@ -66,5 +66,4 @@ export default boot(async ({ store }) => {
         getRpc: getRpc.bind(store),
     };
 
-    store.dispatch('general/fetchBrowserMetaMaskSupport');
 });
