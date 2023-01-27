@@ -30,8 +30,8 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
     >
       <input
         class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
+        inputmode="numeric"
+        pattern="[0-9]*"
         placeholder="0"
         type="text"
       />
@@ -71,8 +71,8 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
     >
       <input
         class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
+        inputmode="numeric"
+        pattern="[0-9]*"
         placeholder="0"
         type="text"
       />
@@ -112,8 +112,8 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
     >
       <input
         class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
+        inputmode="numeric"
+        pattern="[0-9]*"
         placeholder="0"
         type="text"
       />
@@ -153,8 +153,8 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
     >
       <input
         class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
+        inputmode="numeric"
+        pattern="[0-9]*"
         placeholder="0"
         type="text"
       />
@@ -194,8 +194,8 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
     >
       <input
         class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
+        inputmode="numeric"
+        pattern="[0-9]*"
         placeholder="0"
         type="text"
       />
@@ -235,8 +235,8 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
     >
       <input
         class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
+        inputmode="numeric"
+        pattern="[0-9]*"
         placeholder="0"
         type="text"
       />
@@ -276,8 +276,8 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
     >
       <input
         class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
+        inputmode="numeric"
+        pattern="[0-9]*"
         placeholder="0"
         type="text"
       />
@@ -317,8 +317,8 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
     >
       <input
         class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
+        inputmode="numeric"
+        pattern="[0-9]*"
         placeholder="0"
         type="text"
       />
