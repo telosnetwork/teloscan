@@ -14,7 +14,7 @@ export default {
             stake_tlos_confirm: 'Continuing will stake TLOS in exchange for sTLOS. ' +
             'sTLOS can be redeemed for TLOS at any time using the Unstake tab.',
             stake_tlos_confirm_2a: 'After TLOS has been unstaked, it will be locked for a period of', /* unstakePeriodPretty...*/
-            stake_tlos_confirm_2b: /*...unstakePeriodPretty */ 'after which it can be withdrawn to your account from the Claim tab.',
+            stake_tlos_confirm_2b: /*...unstakePeriodPretty */ 'after which it can be withdrawn to your account from the Withdraw tab.',
             stake_tlos_confirm_3: 'Would you like to proceed?',
             stake_tlos: 'Stake TLOS',
             stake_tlos_subheader: 'Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, ' +
@@ -57,16 +57,16 @@ export default {
             'When you unstake\u2014i.e. redeem\u2014some value of sTLOS, the equivalent amount of ' +
             'TLOS is sent into escrow ("locked") for {unlockPeriod}; during this time, ' +
             'you cannot interact with this TLOS.\n\n' +
-            'After the unlock period has elapsed, you can claim your unlocked TLOS from the Claim tab ' +
+            'After the unlock period has elapsed, you can withdraw your unlocked TLOS from the Withdraw tab ' +
             'on this page, at which point it will be added to your account TLOS balance.',
             confirm_unstake_1a: 'Continuing will redeem sTLOS in exchange for TLOS. ' +
             'Unstaked TLOS will remain locked for a period of', /* unstakePeriodPretty...*/
-            confirm_unstake_1b: /*...unstakePeriodPretty */ 'after which it can be withdrawn to your account from the Claim tab',
+            confirm_unstake_1b: /*...unstakePeriodPretty */ 'after which it can be withdrawn to your account from the Withdraw tab',
             confirm_unstake_2a: 'Heads up, you may unstake ', /* remainingDeposits...*/
             confirm_unstake_2b: /*...remainingDeposits */ 'more times before ' +
-            'you reach the maximum concurrent unstake actions. When you reach the maximum, you will need to claim' +
-            'unlocked TLOS to continue unstaking. If you don\'t have any claimable TLOS at that time, you must' +
-            'wait until the lock duration has elapsed before you can claim unlocked TLOS and unstake more sTLOS. -',
+            'you reach the maximum concurrent unstake actions. When you reach the maximum, you will need to withdraw' +
+            'unlocked TLOS to continue unstaking. If you don\'t have any withdrawable TLOS at that time, you must' +
+            'wait until the lock duration has elapsed before you can withdraw unlocked TLOS and unstake more sTLOS. -',
             unstake_stlos_for_tlos: 'Unstake sTLOS in exchange for TLOS',
             unstake_stlos: 'Unstake sTLOS',
             receive_tlos: 'Receive TLOS',
@@ -77,7 +77,7 @@ export default {
             '{prettyBalance} sTLOS',
             login_using_evm_wallet: 'Login using an EVM wallet',
             max_unstake_transactions_reached: 'You have reached the maximum number of pending unstake transactions, ' +
-            'please claim available TLOS or wait for pending unstaked TLOS to become claimable before making another deposit.',
+            'please withdraw available TLOS or wait for pending unstaked TLOS to become withdrawable before making another deposit.',
             click_to_change_time_format: 'Click to change time format',
             unstaking: 'Unstaking',
             available_to_withdraw: 'Available to withdraw',
