@@ -343,7 +343,7 @@ export default {
             address_copied: 'Endereço copiado para a área de transferência',
             search_placeholder: 'Endereço, Tx, Bloco',
             select_language: 'Selecione o idioma',
-            open_language_switcher: '',
+            open_language_switcher: 'Abrir o seletor de idioma',
         },
     },
     global: {
