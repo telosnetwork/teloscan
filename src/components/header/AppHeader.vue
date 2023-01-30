@@ -24,6 +24,7 @@ export default {
         showLanguageSwitcher: false,
         advancedMenuExpanded: false,
         menuHiddenDesktop: false,
+        searchHiddenMobile: true,
         isTestnet: process.env.NETWORK_EVM_CHAIN_ID !== 40,
     }),
     computed: {
@@ -96,12 +97,19 @@ export default {
             </div>
         </div>
 
-        <span class="c-header__logo-text">Teloscan</span>
+        <span
+            :class="{
+                'c-header__logo-text': true,
+                'c-header__logo-text--hidden-mobile': !searchHiddenMobile,
+            }"
+        >
+            Teloscan
+        </span>
     </router-link>
 
     <div class="c-header__right-container">
         <div class="c-header__search-container">
-            <HeaderSearch />
+            <HeaderSearch @hidden-mobile="searchHiddenMobile = $event" />
         </div>
 
         <div class="c-header__menu-icon-container" @click="mobileMenuIsOpen = !mobileMenuIsOpen">
@@ -379,10 +387,17 @@ export default {
     }
 
     &__logo-text {
-        display: none;
+        color: var(--text-color);
+        font-size: 18px;
+        margin-left: 12px;
+
+        &--hidden-mobile {
+            display: none;
+        }
 
         @media screen and (min-width: $breakpoint-lg-min) {
             display: block;
+            margin-left: 0;
         }
     }
 
