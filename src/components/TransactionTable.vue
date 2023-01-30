@@ -7,6 +7,9 @@ import MethodField from 'components/MethodField';
 import { formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
+const PAGE_KEY = 'page';
+const PSIZE_KEY = 'pagesize';
+
 export default {
     name: 'TransactionTable',
     components: {
@@ -97,13 +100,64 @@ export default {
         this.columns[6].label = this.$t('components.value_transfer');
     },
     mounted() {
-        this.onRequest({
-            pagination: this.pagination,
-        });
+
+        addEventListener('popstate', this.popstate.bind(this));
+
+        // restoring a possible last pagination state from the URL
+        const params = new URLSearchParams(window.location.search);
+        let page = params.get(PAGE_KEY) || window.history.state?.pagination?.page;
+        let size = params.get(PSIZE_KEY) || window.history.state?.pagination?.size;
+        this.setPagination(page, size);
+    },
+    beforeUnmount() {
+        window.removeEventListener('popstate', this.popstate);
     },
     methods: {
+        popstate(event) {
+            const page = event.state.pagination.page;
+            const size = event.state.pagination.size;
+
+            this.setPagination(page, size);
+        },
+        setPagination(page, size) {
+            if (page) {
+                this.pagination.page = Number(page);
+            }
+            if (size) {
+                this.pagination.rowsPerPage = Number(size);
+            }
+
+            this.onRequest({
+                pagination: this.pagination,
+            });
+        },
         async onRequest(props) {
             this.loading = true;
+
+            // saving last pagination state
+            const url = new URL(window.location);
+            url.searchParams.set(PAGE_KEY, props.pagination.page);
+            url.searchParams.set(PSIZE_KEY, props.pagination.rowsPerPage);
+            const pagination = {
+                page: props.pagination.page,
+                size: props.pagination.rowsPerPage,
+            };
+
+            const params = new URLSearchParams(window.location.search);
+            const page_url = params.get(PAGE_KEY);
+            const size_url = params.get(PSIZE_KEY);
+
+            // this is a workaround to avoid the pushState() to fail
+            // https://github.com/vuejs/router/issues/366#issuecomment-1408501848
+            const current = '/';
+
+            if (this.pagination.page !== props.pagination.page ||
+                this.pagination.rowsPerPage !== props.pagination.rowsPerPage
+            ) {
+                window.history.pushState({ pagination, current }, '', url.toString());
+            } else if (!page_url || !size_url) {
+                window.history.replaceState({ pagination, current }, '', url.toString());
+            }
 
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             let result = await this.$evmEndpoint.get(this.getPath(props));
