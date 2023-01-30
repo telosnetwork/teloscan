@@ -343,6 +343,7 @@ export default {
             address_copied: 'Address copied to clipboard',
             search_placeholder: 'Address, Tx, Block',
             select_language: 'Select Language',
+            open_language_switcher: 'open language switcher',
         },
     },
     global: {

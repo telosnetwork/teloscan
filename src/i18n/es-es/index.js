@@ -343,6 +343,7 @@ export default {
             address_copied: 'Dirección copiada al portapapeles',
             search_placeholder: 'Dirección, Tx, Bloque',
             select_language: 'Seleccionar idioma',
+            open_language_switcher: '',
         },
     },
     global: {
