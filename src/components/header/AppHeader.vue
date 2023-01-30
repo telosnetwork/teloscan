@@ -382,6 +382,8 @@ export default {
         margin: auto;
         font-size: 10px;
         height: min-content;
+        padding: 0 2px;
+        border-radius: 2px;
         background: rgba($dark, 0.4);
         color: white;
     }
