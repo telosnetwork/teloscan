@@ -178,6 +178,7 @@ export default {
                     name="code"
                     class="c-header__menu-item-icon"
                     size="sm"
+                    @click="advancedMenuExpanded = !advancedMenuExpanded"
                 />
                 <div class="c-header__advanced-container">
                     <div
