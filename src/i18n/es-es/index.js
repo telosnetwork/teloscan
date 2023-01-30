@@ -6,15 +6,15 @@ export default {
     },
     pages: {
         staking: {
-            note_unstaking_period: 'Tenga en cuenta que hay un período de recuperación de {period}',
-            claim_tlos: 'Reclamar TLOS',
+            note_unstaking_period: 'Tenga en cuenta que hay un período de recuperación de { period }',
+            claim_tlos: 'Retirar TLOS',
             add_stlos_to_metamask: 'Iniciar el cuadro de diálogo MetaMask para agregar sTLOS',
             metamask_fox_logo: 'Logotipo de la zorra de MetaMask',
             stake_tlos_confirm: 'continuar significa bloquer TLOS a cambio de sTLOS. ' +
             'sTLOS se puede canjear por TLOS en cualquier momento usando la pestaña Desbloquear.',
             cancel: 'Cancelar',
-            stake_tlos_confirm_2a: 'Después de que se reclamen los TLOS, éstos estarán bloqueados durante un período de', /* unstakePeriodPretty...*/
-            stake_tlos_confirm_2b: /*...unstakePeriodPretty */ 'después de lo cual se puede retirar a su cuenta desde la pestaña Reclamar.',
+            stake_tlos_confirm_2a: 'Después de que se canjéen los TLOS, éstos estarán bloqueados durante un período de', /* unstakePeriodPretty...*/
+            stake_tlos_confirm_2b: /*...unstakePeriodPretty */ 'después de lo cual se puede retirar a su cuenta desde la pestaña Retirar.',
             stake_tlos_confirm_3: '¿Le gustaría proceder?',
             stake_tlos: 'Bloquar TLOS',
             stake_tlos_subheader: 'Su bloqueo de TLOS a sTLOS le otorga acceso a una renta constante y varias aplicaciones DeFi, ' +
@@ -43,12 +43,12 @@ export default {
             stake_tlos_earn_interest: 'Bloquear TLOS para obtener sTLOS y ganar intereses de la recompensa de bloqueo',
             staked: 'Bloqueado',
             unstaked: 'Desbloqueado',
-            tooltip_1: 'TAE: Tasa Anual Efectiva (APY en Inglés)\n\nLa tasa de retorno anual después de tomar en cuenta el interés compuesto.\n\n' +
+            tooltip_1: 'APY: Tasa Anual Efectiva (APY en Inglés)\n\nLa tasa de retorno anual después de tomar en cuenta el interés compuesto.\n\n' +
             'El interés se compone aproximadamente cada 30 minutos. La tasa porcentual no es fija, lo que significa que ' +
-            'cambiará con el tiempo con la cantidad total de TLOS bloqueado en Telos EVM y Telos nativo. ' +
+            'cambiará con el tiempo con la cantidad total de TLOS bloqueados en Telos EVM y Telos nativo. ' +
             'Las recompensas se pagan desde un fondo de recompensas de la comunidad al contrato de sTLOS.',
-            tooltip_2: 'VTB: Valor Total Bloqueado (TVL en Inglés)\n\nEl valor actual, en TLOS, de todos los activos en el contrato inteligente de sTLOS ' +
-            '(TLOS bloqueado), es decir, la suma de todo el TLOS bloqueado en Telos EVM en este momento.',
+            tooltip_2: 'TVL: Valor Total Bloqueado (TVL en Inglés)\n\nEl valor actual, en TLOS, de todos los activos en el contrato inteligente de sTLOS ' +
+            '(TLOS bloqueado), es decir, la suma de todos los TLOS bloqueados en Telos EVM en este momento.',
             tooltip_3: 'Bloqueado\n\n' +
             'La cantidad total bloqueada asociada con la cuenta iniciada, es decir, ' +
             'su saldo de sTLOS, junto con su valor en TLOS',
@@ -57,16 +57,16 @@ export default {
             'Cuando desbloquea\u2014es decir, canjea\u2014algun valor de sTLOS, la cantidad equivalente de ' +
             'TLOS se envía en garantía ("bloqueado") por {unlockPeriod}; durante este tiempo, ' +
             'no puede interactuar con este TLOS.\n\n' +
-            'Después de que transcurra el período de desbloqueo, puede reclamar su TLOS desbloqueado desde la pestaña Reclamar ' +
+            'Después de que transcurra el período de desbloqueo, puede retirar su TLOS desbloqueados desde la pestaña Retirar ' +
             'en esta página, momento en el que se agregará a su saldo de TLOS de su cuenta.',
             confirm_unstake_1a: 'Continuará canjeando sTLOS a cambio de TLOS. ' +
             'El TLOS desbloqueado permanecerá bloqueado por un período de', /* unstakePeriodPretty...*/
-            confirm_unstake_1b: /*...unstakePeriodPretty */ 'después del cual se puede retirar a su cuenta desde la pestaña Reclamar',
-            confirm_unstake_2a: 'Ten en cuenta, puede desbloquear ', /* remainingDeposits...*/
-            confirm_unstake_2b: /*...remainingDeposits */ 'más veces antes ' +
-            'de alcanzar el máximo de acciones de desbloqueo concurrentes. Cuando llegue al máximo, deberá reclamar ' +
-            'el TLOS desbloqueado para continuar desbloqueando sTLOS. Si no tiene ningún TLOS reclamable en ese momento, debe ' +
-            'espear hasta que transcurra el período de bloqueo antes de que pueda reclamar el TLOS reclamado y desbloquear más sTLOS. -',
+            confirm_unstake_1b: /*...unstakePeriodPretty */ 'después del cual se puede retirar a su cuenta desde la pestaña Retirar',
+            confirm_unstake_2a: 'Tenga en cuenta, que sólo puede desbloquear ', /* remainingDeposits...*/
+            confirm_unstake_2b: /*...remainingDeposits */ 'veces más antes ' +
+            'de alcanzar el máximo de acciones de desbloqueo concurrentes. Cuando llegue al máximo, deberá retirar ' +
+            'los TLOS desbloqueados para continuar desbloqueando más sTLOS. Si no tiene ningún TLOS desbloqueado en ese momento, debe ' +
+            'espear hasta que transcurra el período de bloqueo antes de que pueda retirar los TLOS canjeados y pueda desbloquear más sTLOS. -',
             unstake_stlos_for_tlos: 'Desbloquear sTLOS a cambio de TLOS',
             unstake_stlos: 'Desbloquear sTLOS',
             receive_tlos: 'Recibir TLOS',
@@ -77,7 +77,7 @@ export default {
             '{prettyBalance} sTLOS',
             login_using_evm_wallet: 'Inicie sesión usando una billetera EVM',
             max_unstake_transactions_reached: 'Ha alcanzado el número máximo de transacciones de desbloqueo pendientes, ' +
-            'por favor reclame el TLOS disponible o espere a que el TLOS desbloqueado pendiente se convierta en reclamable antes de realizar otro depósito.',
+            'por favor retire los TLOS disponibles o espere a que los TLOS desbloqueados pendientes se conviertan en retirables antes de realizar otro depósito.',
             click_to_change_time_format: 'Haga clic para cambiar el formato de tiempo',
             unstaking: 'Desbloqueando',
             available_to_withdraw: 'Disponible para retirar',
