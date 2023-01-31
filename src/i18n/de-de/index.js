@@ -326,7 +326,7 @@ export default {
             sign_out: 'Abmelden',
             liq_staking: 'Liquid Staking / flexible Anlage',
             goto_staking: 'Staking/Anlage öffnen',
-            goto_health_monitor: 'Heath Monitor öffnen',
+            goto_health_monitor: 'Health Monitor öffnen',
             goto_mainnet: 'Mainnet auswählen',
             goto_testnet: 'Testnet auswählen',
             health_monitor: 'Health Monitor',
