@@ -14,13 +14,13 @@ export default {
             stake_tlos_confirm: 'En continuant vous miserez vos TLOS en échange de sTLOS. ' +
                 'Les sTLOS peuvent être converti en TLOS à tout moment à l\'aide de l\'onglet Unstake.',
             stake_tlos_confirm_2a: 'Après que les TLOS sont unstake, ils seront vérouillés pour une période de', /* unstakePeriodPretty...*/
-            stake_tlos_confirm_2b: /*...unstakePeriodPretty */ 'after which it can be withdrawn to your account from the Withdraw tab.',
-            stake_tlos_confirm_3: 'Voulez vous continuer?',
+            stake_tlos_confirm_2b: /*...unstakePeriodPretty */ ' après quoi ils seront retirable sur votre compte à partir de l\'onglet Retrait.',
+            stake_tlos_confirm_3: 'Voulez-vous continuer?',
             stake_tlos: 'Stake TLOS',
-            stake_tlos_subheader: 'Staker votre TLOS contre des sTLOS vous permet d\'accèder à un revenu passif ainsi que diverses applications DeFi, ' +
-                'augmentant encore plus le rendement. Le taux de conversion de TLOS à sTLOS changera au fur et à mesure que le bassin de récompense se rempli,  ' +
-                'C\'est pourquoi, le montant de sTLOS reçu est moins important que le montant de Telos déposés. Les récompenses s\'accumulent' +
-                'automatiquement. Vous n\'avez pas besoin de les réclamer.',
+            stake_tlos_subheader: 'Staker vos TLOS contre des sTLOS vous permet d\'accèder à un revenu passif ainsi qu\'à diverses applications DeFi, ' +
+                'vous permettant d\'augmenter encore plus le rendement. Le taux de conversion de TLOS à sTLOS change au fur et à mesure que le bassin de récompense se rempli,  ' +
+                'c\'est pourquoi le montant de sTLOS reçu est moins important que le montant de Telos déposé. Les récompenses s\'accumulent ' +
+                'automatiquement et vous n\'avez donc pas besoin de les réclamer.',
             receive_stlos: 'Recevez sTLOS',
             available: '{balanceTlos} Disponible',
             insufficient_tlos_balance: 'Solde de TLOS non suffisant pour stake',
@@ -41,29 +41,29 @@ export default {
             withdraw: 'Retirer',
             telos_evm_staking: 'Telos EVM Staking',
             stake_tlos_earn_interest: 'Stakez votre TLOS contre des sTLOS pour gagner des interêts à partir du bassin de récompense de staking',
-            staked: 'Staked',
-            unstaked: 'Unstaked',
-            tooltip_1: 'APY: Annual Percentage Yield\n\nThe annual rate of return after taking compound interest into account.\n\n' +
-                'Interest is compounded approximately every 30 minutes. The percentage rate is not fixed, meaning that ' +
-                'it will change over time with the total amount of TLOS staked across Telos EVM and Native. ' +
-                'Rewards are disbursed from a community rewards pool into the sTLOS contract.',
-            tooltip_2: 'TVL: Total Value Locked\n\nThe current value, in TLOS, of all assets held in the sTLOS ' +
-                '(Staked TLOS) smart contract, i.e. the sum of all TLOS staked on the Telos EVM at this moment.',
-            tooltip_3: 'Staked\n\n' +
-                'The total staked amount associated with the logged-in account, i.e. ' +
-                'your sTLOS token balance, along with its value in TLOS',
-            tooltip_4: 'Unstaked\n\n' +
-                'The total value of TLOS which you have unstaked, both locked and unlocked.\n\n' +
-                'When you unstake\u2014i.e. redeem\u2014some value of sTLOS, the equivalent amount of ' +
-                'TLOS is sent into escrow ("locked") for {unlockPeriod}; during this time, ' +
-                'you cannot interact with this TLOS.\n\n' +
-                'After the unlock period has elapsed, you can withdraw your unlocked TLOS from the Withdraw tab ' +
-                'on this page, at which point it will be added to your account TLOS balance.',
-            confirm_unstake_1a: 'Continuing will redeem sTLOS in exchange for TLOS. ' +
-                'Unstaked TLOS will remain locked for a period of', /* unstakePeriodPretty...*/
+            staked: 'Staké',
+            unstaked: 'Unstaké',
+            tooltip_1: 'APY: Pourcentage annuel de rendement\n\n Ce pourcentage répresente les interêts gagnés sur un an et prend.\n\n' +
+                'Les interêts s\'accumulent automatiquement toute les 30 minutes (\'auto-compounding\'). Ce pourcentage n\'est pas fixe,' +
+                'ce qui veut dire qu\'il changera au fur et à mesure du temps suivant le total de TLOS stake à la fois sur l\'EVM et la chaîne native. ' +
+                'Les récompenses sont distribués à partir d\'un bassin de récompense communautaire directement dans le contract sTLOS.',
+            tooltip_2: 'TVL: Valeur Totale Vérouillé\n\nLa valeur actuelle, en TLOS, de tout les actifs déposés dans le contrat sTLOS ' +
+                '(Staked TLOS), c\'est à dire la somme de tout les TLOS stakés sur l\'EVM Telos à l\'instant T.',
+            tooltip_3: 'Staké\n\n' +
+                'Le montant total staké par le compte connecté, c\'est à dire ' +
+                ' votre solde de jetons sTLOS, ainsi que sa valeur en TLOS',
+            tooltip_4: 'Unstaké\n\n' +
+                'La valeur total de TLOS que vous avez unstaké, vérouillé ou non.\n\n' +
+                'Quand vous unstakez\u2014c\'est à dire récuperez\u2014 un montant de sTLOS, le montant équivalent de ' +
+                'TLOS est envoyé dans un contract de dépot fiduciare où il est verrouillé pour {unlockPeriod}; pendant cette période, ' +
+                'vous ne pourrez pas intéragir avec voc TLOS.\n\n' +
+                'Une fois la période de vérouillage finie, vous pourrez éffectuer un retrait de vos TLOS dévérouiller ' +
+                ' à partir de l\'onglet Retrait sur cette page, il sera alors ajouté au solde TLOS de votre compte.',
+            confirm_unstake_1a: 'Continuer va échanger vos sTLOS contre des TLOS. ' +
+                'Les TLOS unstaké vont rester vérouillé pour une période de', /* unstakePeriodPretty...*/
             confirm_unstake_1b: /*...unstakePeriodPretty */ 'après quoi ils peuvent être retirer sur votre compte à partir de l\'onglet Retrait',
-            confirm_unstake_2a: 'Heads up, you may unstake ', /* remainingDeposits...*/
-            confirm_unstake_2b: /*...remainingDeposits */ 'more times before ' +
+            confirm_unstake_2a: 'Attention, vous pouvez unstake encore', /* remainingDeposits...*/
+            confirm_unstake_2b: /*...remainingDeposits */ 'fois avant ' +
                 'you reach the maximum concurrent unstake actions. When you reach the maximum, you will need to withdraw' +
                 'unlocked TLOS to continue unstaking. If you don\'t have any withdrawable TLOS at that time, you must' +
                 'wait until the lock duration has elapsed before you can withdraw unlocked TLOS and unstake more sTLOS. -',
@@ -161,7 +161,7 @@ export default {
         internal_txns: 'Transactions Internes',
         transaction_hash: 'Hash de la transaction ',
         click_to_change_date_format: 'Cliquer pour changer le format de la date',
-        block_number: 'Nombre du bloc',
+        block_number: 'Numéro de bloc',
         from: 'Expéditeur',
         to: 'Destination',
         date: 'Date',
@@ -171,7 +171,7 @@ export default {
         balance_gwei: '{ amount } GWEI',
         balance_tlos: '{ amount } TLOS',
         error_message: 'Message d\'Erreur',
-        contract_function: 'Fonction du contrat',
+        contract_function: 'Fonction appelée',
         function_parameters: 'Paramètres de la fonction',
         deployed_contract: 'Contrat Déployé',
         click_to_show_in_wei: 'Cliquez pour voir en wei',
@@ -354,7 +354,7 @@ export default {
     },
     layouts: {
         health_status: 'Health Statut',
-        stake_telos: 'Stake TLOS',
+        stake_telos: 'Stakez vos TLOS',
         teloscan_mainnet: 'Teloscan Mainnet',
         teloscan_testnet: 'Teloscan Testnet',
     },
