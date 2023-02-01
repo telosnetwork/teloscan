@@ -1,7 +1,9 @@
+<!-- eslint-disable vue/no-unused-components -->
 <script>
 import { toChecksumAddress } from 'src/lib/utils';
 import Web3 from 'web3';
 import TransactionTable from 'components/TransactionTable';
+import InternalTransactionTable from 'components/InternalTransactionTable';
 import TransferTable from 'components/TransferTable';
 import TokenList from 'components/TokenList';
 import ConfirmationDialog from 'components/ConfirmationDialog';
@@ -15,6 +17,7 @@ const web3 = new Web3();
 
 const tabs = {
     transactions: '#transactions',
+    int_transactions: '#int_transactions',
     erc20_transfers: '#erc20',
     erc721_transfers: '#erc721',
     erc1155_transfers: '#erc1155',
@@ -33,6 +36,7 @@ export default {
         TokenList,
         TransactionField,
         TransactionTable,
+        InternalTransactionTable,
         TransferTable,
     },
     data() {
@@ -243,6 +247,13 @@ export default {
                 :label="$t('pages.transactions')"
             />
             <q-route-tab
+                name="int_transactions"
+                :to="{ hash: '#int_transactions' }"
+                exact
+                replace
+                :label="$t('pages.internal_txns')"
+            />
+            <q-route-tab
                 name="erc20_transfers"
                 :to="{ hash: '#erc20' }"
                 exact
@@ -289,6 +300,9 @@ export default {
             >
                 <q-tab-panel name="transactions">
                     <TransactionTable :title="address" :filter="{address}"/>
+                </q-tab-panel>
+                <q-tab-panel name="int_transactions">
+                    <InternalTransactionTable :title="address" :filter="{address}"/>
                 </q-tab-panel>
                 <q-tab-panel name="erc20_transfers">
                     <TransferTable
