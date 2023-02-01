@@ -17,17 +17,17 @@ export default {
             stake_tlos_confirm_2b: /*...unstakePeriodPretty */ 'after which it can be withdrawn to your account from the Withdraw tab.',
             stake_tlos_confirm_3: 'Voulez vous continuer?',
             stake_tlos: 'Stake TLOS',
-            stake_tlos_subheader: 'Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, ' +
-                'further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change ' +
-                'over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be ' +
-                'auto-compounded. No further action is required.',
+            stake_tlos_subheader: 'Staker votre TLOS contre des sTLOS vous permet d\'accèder à un revenu passif ainsi que diverses applications DeFi, ' +
+                'augmentant encore plus le rendement. Le taux de conversion de TLOS à sTLOS changera au fur et à mesure que le bassin de récompense se rempli,  ' +
+                'C\'est pourquoi, le montant de sTLOS reçu est moins important que le montant de Telos déposés. Les récompenses s\'accumulent' +
+                'automatiquement. Vous n\'avez pas besoin de les réclamer.',
             receive_stlos: 'Recevez sTLOS',
             available: '{balanceTlos} Disponible',
-            insufficient_tlos_balance: 'Insufficient TLOS balance to stake',
+            insufficient_tlos_balance: 'Solde de TLOS non suffisant pour stake',
             login_using_an_evm_wallet: 'Connectez vous à l\'aide d\'un portefeuille EVM',
             wallet_not_connected: 'Portefeuille non connecté',
             click_to_input_full_wallet_balance: 'Cliquez pour choisir le solde entier de votre portefeuille\n\n' +
-                'Le solde montré est réduit de 1 TLOS afin de garder de quoi payer les frais de gaz.\n' +
+                'Le solde montré est réduit de 1 TLOS afin de pouvoir régler les frais de gaz.\n' +
                 'Solde exact (moins les frais de gaz approximatifs):\n' +
                 '{prettyBalance} TLOS',
             loading: 'Chargement...',
@@ -40,7 +40,7 @@ export default {
             stake: 'Stake',
             withdraw: 'Retirer',
             telos_evm_staking: 'Telos EVM Staking',
-            stake_tlos_earn_interest: 'Stake TLOS for sTLOS to earn interest from the staking rewards pool',
+            stake_tlos_earn_interest: 'Stakez votre TLOS contre des sTLOS pour gagner des interêts à partir du bassin de récompense de staking',
             staked: 'Staked',
             unstaked: 'Unstaked',
             tooltip_1: 'APY: Annual Percentage Yield\n\nThe annual rate of return after taking compound interest into account.\n\n' +
