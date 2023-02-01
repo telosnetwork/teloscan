@@ -184,6 +184,9 @@ export default {
         value: 'Valor',
     },
     components: {
+        internal_txns: 'Transacciones internas',
+        n_internal_txns: '{ amount } transacciones internas',
+        none: 'Ninguno',
         verify_prompt: 'Este contrato no ha sido verificado. ¿Le gustaría cargar el (los) contrato (s) y los metadatos para verificar el código fuente ahora?',
         verify_contract: 'Verificar contrato',
         search_evm_address_failed: 'La búsqueda de la dirección EVM vinculada a la cuenta nativa { accountName } falló. Puede crear una en wallet.telos.net',
