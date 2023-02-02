@@ -17,6 +17,7 @@ const routes = [
             {
                 path: '',
                 name: 'address',
+                props: route => ({ page: route.query.page, pagesize: route.query.pagesize }),
                 component: () => import('pages/AccountAddress.vue'),
             },
         ],

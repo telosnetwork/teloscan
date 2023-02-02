@@ -7,9 +7,6 @@ import { formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 import InternalTxns from 'components/Transaction/InternalTxns';
 
-const PAGE_KEY = 'page';
-const PSIZE_KEY = 'pagesize';
-
 export default {
     name: 'InternalTransactionTable',
     components: {
@@ -20,6 +17,12 @@ export default {
         InternalTxns,
     },
     props: {
+        page: {
+            type: Number,
+        },
+        pagesize: {
+            type: Number,
+        },
         title: {
             type: String,
             required: true,
@@ -87,16 +90,27 @@ export default {
         this.columns[3].label = this.$t('components.method');
         this.columns[4].label = this.$t('components.internal_txns');
     },
-    mounted() {
-        addEventListener('popstate', this.popstate.bind(this));
-        // restoring a possible last pagination state from the URL
-        const params = new URLSearchParams(window.location.search);
-        let page = params.get(PAGE_KEY) || window.history.state?.pagination?.page;
-        let size = params.get(PSIZE_KEY) || window.history.state?.pagination?.size;
-        this.setPagination(page, size);
-    },
-    beforeUnmount() {
-        window.removeEventListener('popstate', this.popstate);
+    watch: {
+        '$route.query.page': {
+            handler(_pag) {
+                let pag = _pag;
+                let page = 1;
+                let size = this.pagination.rowsPerPage;
+
+                // we also allow to pass a single number as the page number
+                if (typeof pag === 'number') {
+                    page = pag;
+                } else if (typeof pag === 'string') {
+                    // we also allow to pass a string of two numbers: [page, rowsPerPage]
+                    const [p, s] = pag.split(',');
+                    page = p;
+                    size = s;
+                }
+
+                this.setPagination(page, size);
+            },
+            immediate: true,
+        },
     },
     methods: {
         popstate(event) {
@@ -115,30 +129,23 @@ export default {
                 pagination: this.pagination,
             });
         },
+        async onPaginationChange(props) {
+            const { page, rowsPerPage } = props.pagination;
+
+            // we need to change the URL to keep the pagination state by changing the this.$route.query.page
+            // with a string like 'page,rowsPerPage'
+            this.$router.push({
+                // taking care to preserve the current #hash anchor and the current query parameters
+                hash: window.location.hash,
+                query: {
+                    ...this.$route.query,
+                    page: `${page},${rowsPerPage}`,
+                },
+            });
+
+        },
         async onRequest(props) {
             this.loading = true;
-
-            // saving last pagination state
-            const url = new URL(window.location);
-            url.searchParams.set(PAGE_KEY, props.pagination.page);
-            url.searchParams.set(PSIZE_KEY, props.pagination.rowsPerPage);
-            const pagination = {
-                page: props.pagination.page,
-                size: props.pagination.rowsPerPage,
-            };
-            const params = new URLSearchParams(window.location.search);
-            const page_url = params.get(PAGE_KEY);
-            const size_url = params.get(PSIZE_KEY);
-            // this is a workaround to avoid the pushState() to fail
-            // https://github.com/vuejs/router/issues/366#issuecomment-1408501848
-            const current = '/';
-            if (this.pagination.page !== props.pagination.page ||
-                this.pagination.rowsPerPage !== props.pagination.rowsPerPage
-            ) {
-                window.history.pushState({ pagination, current }, '', url.toString());
-            } else if (!page_url || !size_url) {
-                window.history.replaceState({ pagination, current }, '', url.toString());
-            }
 
             // this line cleans the table for a second and the components have to be created again (clean)
             this.rows = [];
@@ -254,7 +261,7 @@ export default {
     :loading="loading"
     :rows-per-page-options="[10, 20, 50]"
     flat
-    @request="onRequest"
+    @request="onPaginationChange"
 >
     <template v-slot:header="props">
         <q-tr :props="props">
