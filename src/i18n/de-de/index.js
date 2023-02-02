@@ -184,6 +184,9 @@ export default {
         value: 'Wert',
     },
     components: {
+        internal_txns: 'Interne Transaktionen',
+        n_internal_txns: '{ amount } interne transaktionen',
+        none: 'Keine',
         verify_prompt: 'Dieser Smart Contract wurde noch nicht überprüft.  Möchten Sie den Contract/die Contracts und deren Metadaten jetzt hochladen, um die Quelle zu verifizieren?',
         verify_contract: 'Smart Contract verifizieren',
         search_evm_address_failed: 'Suche nach EVM-Adresse zu Telos Native Konto { accountName } fehlgeschlagen. Sie können auf wallet.telos.net eine EVM-Adresse erstellen.',
@@ -191,6 +194,8 @@ export default {
         connect_wallet: 'Wallet verbinden',
         view_address: 'Adresse ansehen',
         disconnect: 'Verbindung trennen',
+        disable_wallet_extensions: 'Disable extension wallets or set Brave Wallet as default in browser wallet settings to use Brave Wallet',
+        enable_wallet_extensions: 'Enable MetaMask extension and set default to `prefer extensions` in browser wallet settings to use MetaMask wallet',
         evm_wallets: 'EVM-Wallets',
         advanced: 'Erweiterte Optionen',
         continue_on_metamask: 'Mit Metamask fortfahren',
