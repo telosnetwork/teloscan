@@ -37,43 +37,53 @@ export default {
 };
 </script>
 
-<template lang='pug'>
-.row.homeInfo
-    .col.q-pa-md
-      .row.items-center
-        .col-2
-        .col-2
-            img(:src="exchangeImage" width="40")
-        .col-8.q-pl-sm
-            .col-12
-              .column.text-subtitle2 {{ $t('components.tlos_price') }}
-            .col-12
-              .column.text-h6.text-weight-bold
-                | $ {{ tlosPrice }}
-    .col.q-pa-md
-      .row.items-center
-        .col-2
-        .col-2
-            img(:src="gasImage" width="40")
-        .col-8.q-pl-sm
-            .col-12
-              .column.text-subtitle2 {{ $t('components.gas_price') }}
-            .col-12
-              .column.text-h6.text-weight-bold
-                | {{ gasPriceGwei }} {{ $t('components.gwei') }}
-    .col.q-pa-md
-      .row.items-center
-        .col-2
-        .col-2
-            img(:src="blockImage" width="40")
-        .col-8.q-pl-sm
-            .col-12
-              .column.text-subtitle2
-                | {{ $t('components.latest_block') }}
-            .col-12
-              .column.text-h6.text-weight-bold
-                | {{ latestBlock }}
+<template>
+<div class="row homeInfo">
+    <div class="col q-pa-md">
+        <div class="row items-center">
+            <div class="col-2"></div>
+            <div class="col-2"><img :src="exchangeImage" width="40"></div>
+            <div class="col-8 q-pl-sm">
+                <div class="col-12">
+                    <div class="column text-subtitle2">{{ $t('components.tlos_price') }}</div>
+                </div>
+                <div class="col-12">
+                    <div class="column text-h6 text-weight-bold">$ {{ tlosPrice }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col q-pa-md">
+        <div class="row items-center">
+            <div class="col-2"></div>
+            <div class="col-2"><img :src="gasImage" width="40"></div>
+            <div class="col-8 q-pl-sm">
+                <div class="col-12">
+                    <div class="column text-subtitle2">{{ $t('components.gas_price') }}</div>
+                </div>
+                <div class="col-12">
+                    <div class="column text-h6 text-weight-bold">{{ gasPriceGwei }} {{ $t('components.gwei') }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col q-pa-md">
+        <div class="row items-center">
+            <div class="col-2"></div>
+            <div class="col-2"><img :src="blockImage" width="40"></div>
+            <div class="col-8 q-pl-sm">
+                <div class="col-12">
+                    <div class="column text-subtitle2">{{ $t('components.latest_block') }}</div>
+                </div>
+                <div class="col-12">
+                    <div class="column text-h6 text-weight-bold">{{ latestBlock }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </template>
+
 <style scoped lang="sass">
 .homeInfo
     user-select: none

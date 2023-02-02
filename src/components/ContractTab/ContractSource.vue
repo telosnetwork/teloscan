@@ -62,20 +62,24 @@ export default {
 };
 </script>
 
-<template lang='pug'>
-.contract-source
-  div( v-for='(item, key, index) in json' :key='key')
-    p.file-label {{ item.name }}
-    JsonViewer.source-container(
-      :value='item.content'
-      copyable
-      expanded
-      :expand-depth=1
-      theme="custom-theme"
-    )
-  div( v-for='(item, key, index) in contracts')
-    p.file-label {{ item.name }}
-    pre.source-container.q-pa-md(v-html='item.content')
+<template>
+<div class="contract-source">
+    <div v-for="(item, index) in json" :key="`viewer-${index}`">
+        <p class="file-label">{{ item.name }}</p>
+        <JsonViewer
+            class="source-container"
+            :value="item.content"
+            copyable="copyable"
+            expanded="expanded"
+            :expand-depth="1"
+            theme="custom-theme"
+        />
+    </div>
+    <div v-for="(item, index) in contracts" :key="`contract-${index}`">
+        <p class="file-label">{{ item.name }}</p>
+        <pre class="source-container q-pa-md" v-html="item.content"></pre>
+    </div>
+</div>
 </template>
 
 <style lang='sass'>
@@ -85,5 +89,5 @@ export default {
 .source-container
   max-height: 20rem
   overflow-y: auto
-  margin-bottom:2rem
+  margin-bottom: 2rem
 </style>

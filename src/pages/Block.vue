@@ -27,29 +27,49 @@ export default {
     },
 };
 </script>
-
-<template lang="pug">
-.pageContainer.q-pt-xl
-    div
-      .row.justify-between.q-mb-lg
-        div
-          .text-primary.text-h4
-            div Block
-          .text-white
-            div {{block}}
-        .dataCardsContainer(v-if="blockData")
-          .dataCardItem
-            .dataCardTile {{ $t('pages.gas_used') }}
-            .dataCardData {{ parseInt(blockData.gasUsed, 16) }}
-          .dataCardItem
-            .dataCardTile {{ $t('pages.transactions') }}
-            .dataCardData {{ blockData.transactions.length || 0 }}
-          .dataCardItem
-            .dataCardTile
-              date-field( :epoch="blockData.timestamp" )
-    .tableWrapper.shadow-2.content-container.q-mt-lg
-      transaction-table( :title="block" :filter="{block}" )
+<template>
+<div class="pageContainer q-pt-xl">
+    <div>
+        <div class="row justify-between q-mb-lg">
+            <div>
+                <div class="text-primary text-h4">
+                    <div>Block</div>
+                </div>
+                <div class="text-white">
+                    <div>{{block}}</div>
+                </div>
+            </div>
+            <div v-if="blockData" class="dataCardsContainer">
+                <div class="dataCardItem">
+                    <div class="dataCardTile">
+                        {{ $t('pages.gas_used') }}
+                    </div>
+                    <div class="dataCardData">
+                        {{ parseInt(blockData.gasUsed, 16) }}
+                    </div>
+                </div>
+                <div class="dataCardItem">
+                    <div class="dataCardTile">
+                        {{ $t('pages.transactions') }}
+                    </div>
+                    <div class="dataCardData">
+                        {{ blockData.transactions.length || 0 }}
+                    </div>
+                </div>
+                <div class="dataCardItem">
+                    <div class="dataCardTile">
+                        <DateField :epoch="blockData.timestamp"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tableWrapper shadow-2 content-container q-mt-lg">
+        <TransactionTable :title="block" :filter="{block}"/>
+    </div>
+</div>
 </template>
+
 <style scoped lang="sass">
 .shadow-2
     box-shadow: none !important

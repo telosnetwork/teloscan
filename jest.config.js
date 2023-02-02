@@ -5,11 +5,6 @@
 
 module.exports = {
     rootDir: './',
-    globals: {
-        'vue-jest': {
-            pug: { doctype: 'html' },
-        },
-    },
     moduleNameMapper: {
         '^src(.*)$': '<rootDir>/src$1',
         '^components(.*)$': '<rootDir>/src/components$1',
@@ -22,6 +17,8 @@ module.exports = {
         '^.+\\.js$': 'babel-jest',
         '^.+\\.vue$': '@vue/vue3-jest',
         '^.+\\.svg$': '<rootDir>/test/__mocks__/svg.mocks.js',
+        '\\.(jpg|ico|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+            '<rootDir>/test/__mocks__/svg.mocks.js',
     },
     testMatch: [
         '**/*.test.js',

@@ -6,6 +6,7 @@ export default {
     directives: {
         clickaway,
     },
+    emits: ['hidden-mobile'],
     data() {
         return {
             inputHiddenMobile: true,
@@ -13,6 +14,13 @@ export default {
             searchHintIndex: 0,
             TIME_DELAY: 6000,
         };
+    },
+    watch: {
+        inputHiddenMobile(newValue, oldValue) {
+            if (newValue !== oldValue) {
+                this.$emit('hidden-mobile', newValue);
+            }
+        },
     },
     methods: {
         async iconClicked() {
