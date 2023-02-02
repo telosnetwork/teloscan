@@ -101,7 +101,7 @@ export default {
                 if (typeof pag === 'number') {
                     page = pag;
                 } else if (typeof pag === 'string') {
-                    // we also allow to pass a string of two numbers: [page, rowsPerPage]
+                    // we also allow to pass a string of two numbers: 'page,rowsPerPage'
                     const [p, s] = pag.split(',');
                     page = p;
                     size = s;
@@ -142,7 +142,6 @@ export default {
                     page: `${page},${rowsPerPage}`,
                 },
             });
-
         },
         async onRequest(props) {
             this.loading = true;
