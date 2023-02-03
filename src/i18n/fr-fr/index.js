@@ -64,15 +64,15 @@ export default {
             confirm_unstake_1b: /*...unstakePeriodPretty */ 'après quoi ils peuvent être retirer sur votre compte à partir de l\'onglet Retrait',
             confirm_unstake_2a: 'Attention, vous pouvez unstake encore', /* remainingDeposits...*/
             confirm_unstake_2b: /*...remainingDeposits */ 'fois avant ' +
-                'you reach the maximum concurrent unstake actions. When you reach the maximum, you will need to withdraw' +
-                'unlocked TLOS to continue unstaking. If you don\'t have any withdrawable TLOS at that time, you must' +
-                'wait until the lock duration has elapsed before you can withdraw unlocked TLOS and unstake more sTLOS. -',
+                'd\'atteindre le nombre d\'unstake simultané maximum. Si vous atteignez ce maximum vous devrez' +
+                'retirer vos TLOS pour continuer à unstaker. Si vous n\'avez pas encore de TLOS retirable il vous faudra' +
+                'attendre jusqu\'a que la durée de verrouillage soit écoulée avant de pouvoir les retirer et de unstake plus de sTLOS. -',
             unstake_stlos_for_tlos: 'Unstake vos sTLOS contre des TLOS',
             unstake_stlos: 'Unstake sTLOS',
             receive_tlos: 'Recevez TLOS',
             amount: 'Montant',
             time_remaining: 'Temps restant',
-            full_staked_balance_tooltip: 'Click to input full staked balance\n\n' +
+            full_staked_balance_tooltip: 'Cliquez pour saisir le solde total staké\n\n' +
                 'Solde précis (moins frais de gaz approximatifs):\n' +
                 '{prettyBalance} sTLOS',
             login_using_evm_wallet: 'Connectez vous à l\'aide d\'un portefeuille EVM',
@@ -115,9 +115,9 @@ export default {
         monitor: 'Moniteur',
         oops: 'Oops. Il n\'y a rien ici...',
         go_home: 'Accueil',
-        select_sol_file: 'Sélectionner votre fichier .sol pour l\'envoyer',
-        select_json_file: 'Select standard JSON input object file for upload',
-        paste_contract_contents: 'you must select a file for upload or toggle input to paste contract contents',
+        select_sol_file: 'Sélectionnez votre fichier .sol pour l\'envoyer',
+        select_json_file: 'Sélectionnez un fichier avec un objet JSON standard à envoyer',
+        paste_contract_contents: 'vous devez séléctionner un fichier à envoyer ou utiliser le boutton de bascule pour pouvoir coller le contenu de votre contrat',
         contract_address: 'Adresse du contrat',
         enter_contract_address: 'Veuillez saisir une adresse valide, ex: \'0x0123...\'',
         invalid_address_format: 'Format de l\'adresse invalide',
@@ -149,10 +149,10 @@ export default {
         number_used_once: 'Nombre utilisé une fois (nonce)',
         native_account: 'Compte natif',
         balance: 'Solde',
-        view_source_prompt: 'This contract has been verified. You can view the source code & metadata in the \'contract\' tab',
+        view_source_prompt: 'Ce contrat à été vérifié. Vous pouvez consulter son code source et metadonnées dans l\'onglet \'contrat\'',
         account_url: '{ domain }/account/{ account }',
         tlos_balance: '{ balance } TLOS',
-        couldnt_retreive_metadata_for_address: 'Could not retreive metadata for { address }: { message }',
+        couldnt_retreive_metadata_for_address: 'Impossible de récupérer les metadonnées pour { address }: { message }',
         transaction_details: 'Détails de la transaction',
         transaction_not_found: 'Non trouvé: { hash }',
         general: 'Général',
@@ -254,7 +254,7 @@ export default {
             human_readable: 'Lisible par l\'homme',
             no_logs_found: 'Aucun log trouvé',
             verify_related_contract: 'Vérifiez les contrats relatifs à chaque logs pour voir sa version lisible par l\'homme',
-            failed_to_retrieve_contract: 'Failed to retrieve contract with address { address }',
+            failed_to_retrieve_contract: 'Impossible de récupérer le contrat à l\'adresse { address }',
         },
         inputs: {
             incorrect_address_array_length: 'Le tableau doit contenir { size } adresses',
@@ -283,7 +283,7 @@ export default {
             too_large_unsigint: 'La valeur maximum pour uint{ size } est 2^{ size } - 1',
             no_negative_unsigint: 'La valeur pour uint{ size } ne peut pas être négative',
             invalid_signed_integer: 'Entier signé non valide',
-            invalid_unsigint: 'Entry must be a valid unsigned integer',
+            invalid_unsigint: 'L\'entrée doit être un entier non signé valide',
             str_input_placeholder: '["une valeur", ... , "valeur final"]',
             str_input_hint: 'Les guillemets dans les strings doivent être échappés (\\")',
             address_placeholder: 'Adresse commençant par 0x',
@@ -292,7 +292,7 @@ export default {
         },
         health: {
             status: 'Statut',
-            checked_at: 'Checked at',
+            checked_at: 'Vérifié à',
             task: 'Tâche',
             message: 'Message',
             block_height: 'Bloc',
@@ -300,9 +300,9 @@ export default {
             click_to_change_format: 'Cliquer pour changer de format',
         },
         contract_tab: {
-            copy_abi_to_clipboard: 'Copy contract ABI JSON to clipboard',
-            enter_amount: 'Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256',
-            result: 'Resultat',
+            copy_abi_to_clipboard: 'Copier l\'ABI du contrat sur le presse-papiers',
+            enter_amount: 'Séléctionnez un nombre de décimales et saisissez un montant qui sera injecté pour vous dans la fonction en tant que uint256',
+            result: 'Résultat',
             view_transaction: 'Voir la transaction',
             code: 'Code',
             read: 'Lire',
@@ -331,10 +331,10 @@ export default {
             sign_out: 'Déconnexion',
             liq_staking: 'Staking Liquide',
             goto_staking: 'Aller au Staking',
-            goto_health_monitor: 'go to Heath Monitor page',
+            goto_health_monitor: 'aller à la page Moniteur de Santé',
             goto_mainnet: 'Aller au Mainnet',
             goto_testnet: 'Aller au Testnet',
-            health_monitor: 'Moniteur de santé',
+            health_monitor: 'Moniteur de Santé',
             health_status: 'Statut',
             advanced: 'Avancé',
             light_mode: 'Mode Clair',
@@ -356,7 +356,7 @@ export default {
         dismiss: 'Rejeter',
     },
     layouts: {
-        health_status: 'Health Statut',
+        health_status: 'Statut santé',
         stake_telos: 'Stakez vos TLOS',
         teloscan_mainnet: 'Teloscan Mainnet',
         teloscan_testnet: 'Teloscan Testnet',
