@@ -83,6 +83,7 @@ export default {
                 rowsPerPage: 10,
                 rowsNumber: 0,
             },
+            page_size_options: [10, 20, 50],
             showDateAge: true,
         };
     },
@@ -101,7 +102,7 @@ export default {
             handler(_pag) {
                 let pag = _pag;
                 let page = 1;
-                let size = this.pagination.rowsPerPage;
+                let size = this.page_size_options[0];
 
                 // we also allow to pass a single number as the page number
                 if (typeof pag === 'number') {
@@ -258,7 +259,7 @@ export default {
     :row-key="row => row.hash"
     :columns="columns"
     :loading="loading"
-    :rows-per-page-options="[10, 20, 50]"
+    :rows-per-page-options="page_size_options"
     flat
     @request="onPaginationChange"
 >
