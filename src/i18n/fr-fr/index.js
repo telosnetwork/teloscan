@@ -16,7 +16,7 @@ export default {
             stake_tlos_confirm_2a: 'Après que les TLOS sont unstake, ils seront vérouillés pour une période de', /* unstakePeriodPretty...*/
             stake_tlos_confirm_2b: /*...unstakePeriodPretty */ ' après quoi ils seront retirable sur votre compte à partir de l\'onglet Retrait.',
             stake_tlos_confirm_3: 'Voulez-vous continuer?',
-            stake_tlos: 'Stake TLOS',
+            stake_tlos: 'Staker vos TLOS',
             stake_tlos_subheader: 'Staker vos TLOS contre des sTLOS vous permet d\'accèder à un revenu passif ainsi qu\'à diverses applications DeFi, ' +
                 'vous permettant d\'augmenter encore plus le rendement. Le taux de conversion de TLOS à sTLOS change au fur et à mesure que le bassin de récompense se rempli,  ' +
                 'c\'est pourquoi le montant de sTLOS reçu est moins important que le montant de Telos déposé. Les récompenses s\'accumulent ' +
@@ -36,9 +36,9 @@ export default {
             minutes: 'minutes',
             hours: 'heures',
             days: 'jours',
-            unstake: 'Unstake',
-            stake: 'Stake',
-            withdraw: 'Retirer',
+            unstake: 'Unstaker',
+            stake: 'Staker',
+            withdraw: 'Retrait',
             telos_evm_staking: 'Staking Telos EVM',
             stake_tlos_earn_interest: 'Stakez votre TLOS contre des sTLOS pour gagner des interêts à partir du bassin de récompense de staking',
             staked: 'Staké',
@@ -57,7 +57,7 @@ export default {
                 'Quand vous unstakez\u2014c\'est à dire récuperez\u2014 un montant de sTLOS, le montant équivalent de ' +
                 'TLOS est envoyé dans un contract de dépot fiduciare où il est verrouillé pour {unlockPeriod}; pendant cette période, ' +
                 'vous ne pourrez pas intéragir avec voc TLOS.\n\n' +
-                'Une fois la période de vérouillage finie, vous pourrez éffectuer un retrait de vos TLOS dévérouiller ' +
+                'Une fois la période de vérouillage finie, vous pourrez éffectuer un retrait de vos TLOS dévérouillés ' +
                 ' à partir de l\'onglet Retrait sur cette page, il sera alors ajouté au solde TLOS de votre compte.',
             confirm_unstake_1a: 'Continuer va échanger vos sTLOS contre des TLOS. ' +
                 'Les TLOS unstaké vont rester vérouillé pour une période de', /* unstakePeriodPretty...*/
@@ -67,8 +67,8 @@ export default {
                 'd\'atteindre le nombre d\'unstake simultané maximum. Si vous atteignez ce maximum vous devrez' +
                 'retirer vos TLOS pour continuer à unstaker. Si vous n\'avez pas encore de TLOS retirable il vous faudra' +
                 'attendre jusqu\'a que la durée de verrouillage soit écoulée avant de pouvoir les retirer et de unstake plus de sTLOS. -',
-            unstake_stlos_for_tlos: 'Unstake vos sTLOS contre des TLOS',
-            unstake_stlos: 'Unstake sTLOS',
+            unstake_stlos_for_tlos: 'Unstaker vos sTLOS contre des TLOS',
+            unstake_stlos: 'Unstaker vos sTLOS',
             receive_tlos: 'Recevez TLOS',
             amount: 'Montant',
             time_remaining: 'Temps restant',
