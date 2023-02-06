@@ -184,9 +184,9 @@ export default {
         value: 'Valeur',
     },
     components: {
-        internal_txns: 'Internal Transactions',
-        n_internal_txns: '{ amount } internal transactions',
-        none: 'None',
+        internal_txns: 'Transactions Internes',
+        n_internal_txns: '{ amount } transactions internes',
+        none: 'Aucun',
         verify_prompt: 'Ce contrat n\'a pas encore été vérifié. Voulez vous envoyer le code et metadata du contrat afin de le vérifier maintenant ?',
         verify_contract: 'Verifiez le contrat',
         search_evm_address_failed: 'La recherche d\'une addresse EVM lié au compte natif { accountName } a échouée. Vous pouvez en créer une en vous connectant sur wallet.telos.net',
@@ -313,8 +313,8 @@ export default {
             custom: 'Personalisé',
             unverified_contract_source: 'Ce contrat n\'a pas été vérifié.',
             click_here: 'Cliquez ici',
-            upload_source_files: 'to upload source files and verify this contract. ' +
-                'Alternatively, you can interact with the contract using an arbitrary ABI:',
+            upload_source_files: 'pour envoyer le fichier source et vérifier votre contrat.  ' +
+                'Alternativement, vous pouvez intéragir avec le contrat en utilisant un ABI arbitraire:',
             use_erc20_abi: 'Utiliser l\'ABI ERC20',
             use_erc721_abi: 'Utiliser l\'ABI ERC721',
             abi_from_json: 'ABI depuis JSON',
