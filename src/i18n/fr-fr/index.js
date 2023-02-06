@@ -214,7 +214,7 @@ export default {
         block: 'Bloc',
         date: 'Date',
         method: 'Méthode',
-        to_interacted_with: 'Destinataire',
+        to_interacted_with: 'À',
         value_transfer: 'Valeur / Transfert',
         value: 'Valeur',
         token: 'Jeton',
