@@ -285,7 +285,7 @@ export default {
             invalid_signed_integer: 'Entier signé non valide',
             invalid_unsigint: 'L\'entrée doit être un entier non signé valide',
             str_input_placeholder: '["une valeur", ... , "valeur final"]',
-            str_input_hint: 'Les guillemets dans les strings doivent être échappés (\\")',
+            str_input_hint: 'Les guillemets dans les chaînes de caractères doivent être échappés (\\")',
             address_placeholder: 'Adresse commençant par 0x',
             address_label: '{ label } (adresse)',
             boolean_array_label: '{ label } (bool[{ size }])',
