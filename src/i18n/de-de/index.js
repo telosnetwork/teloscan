@@ -18,8 +18,8 @@ export default {
             stake_tlos_confirm_3: 'Möchten Sie fortfahren?',
             stake_tlos: 'TLOS tauschen',
             stake_tlos_subheader: 'Ihr Einsatz von TLOS in sTLOS gewährt Ihnen Zugriff auf einen regelmäßige Belohnungen und Zugang zu verschiedene DeFi-Anwendungen, ' +
-            'dies kann Ihre Erlöse weiter erhöhen. Der Umrechnungskurs von TLOS zu sTLOS erhöht sich regelmäßig durch das Wachstum des Belohnungs-Pools' +
-            'Daher ist die Menge an sTLOS, die Sie erhalten, grundsätzlich geringer als die Menge an TLOS, die Sie einsetzen. Aufgrund der thesaurierenden' +
+            'dies kann Ihre Erlöse weiter erhöhen. Der Umrechnungskurs von TLOS zu sTLOS erhöht sich regelmäßig durch das Wachstum des Belohnungs-Pools ' +
+            'Daher ist die erhaltene Menge an sTLOS grundsätzlich geringer als die Menge der eingesetzten TLOS. Aufgrund der thesaurierenden ' +
             'Auszahlung ist keine zusätzliche Aktion erforderlich.',
             receive_stlos: 'sTLOS erhalten',
             available: '{balanceTlos} Verfügbar',
@@ -251,7 +251,7 @@ export default {
             unknown: 'Unbekannt',
             contract_deployment: 'Smart Contract Deployment',
             no_internal_trxs_found: 'Keine interne Transaktion gefunden',
-            human_readable: 'Von Menschen lesbar',
+            human_readable: 'Für Menschen lesbar',
             no_logs_found: 'Keine Protokolle gefunden',
             verify_related_contract: 'Überprüfen Sie den zugehörigen Smart Contract für jedes Protokoll, um seine für den Menschen lesbare Version zu sehen',
             failed_to_retrieve_contract: 'Smart Contract mit dieser Adresse konnte nicht abgerufen werden { address }',
@@ -271,9 +271,9 @@ export default {
             invalid_strings_array_string: 'Eingegebener Wert entspricht keinem Array von Strings dar',
             invalid_unsigint_array_string: 'Eingegebener Wert entspricht keinem Array von unsigned Integers dar',
 
-            invalid_address_length: 'Eine Adresse muss genau 40 Zeichen lang sein, ohne den Prefix "0x"',
+            invalid_address_length: 'Eine Adresse muss genau 40 Zeichen lang sein, exklusive Prefix "0x"',
             invalid_address_start: 'Eine Adresse muss mit 0x beginnen',
-            invalid_address_characters: 'Eintrag enthält ungültige Zeichen',
+            invalid_address_characters: 'Der Eintrag enthält ungültige Zeichen',
             readonly: 'Dieses Feld ist schreibgeschützt',
             required: 'Dieses Feld ist erforderlich',
             too_large: 'Maximalwert für int{ size } ist { max }',
@@ -311,9 +311,9 @@ export default {
             value: 'Wert',
             custom_decimals: 'Benutzerdefinierte Dezimalen',
             custom: 'Benutzerdefiniert',
-            unverified_contract_source: 'Dieser Smart Contract wurde nicht überprüft..',
+            unverified_contract_source: 'Dieser Smart Contract wurde nicht verifiziert...',
             click_here: 'Klicken Sie hier, ',
-            upload_source_files: 'um Quelldateien hochzuladen und diesen Smart Contract zu überprüfen. ' +
+            upload_source_files: 'um Quelldateien hochzuladen und diesen Smart Contract zu verifizieren. ' +
                 'Alternativ können Sie mit dem Smart Contract interagieren, indem Sie ein beliebiges ABI verwenden:',
             use_erc20_abi: 'ERC20 ABI nutzen',
             use_erc721_abi: 'ERC721 ABI nutzen',
