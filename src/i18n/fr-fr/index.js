@@ -40,7 +40,7 @@ export default {
             stake: 'Staker',
             withdraw: 'Retrait',
             telos_evm_staking: 'Staking Telos EVM',
-            stake_tlos_earn_interest: 'Stakez votre TLOS contre des sTLOS pour gagner des interêts à partir du bassin de récompense de staking',
+            stake_tlos_earn_interest: 'Stakez votre TLOS contre des sTLOS pour gagner des interêts à partir du bassin de récompense',
             staked: 'Staké',
             unstaked: 'Unstaké',
             tooltip_1: 'APY: Pourcentage annuel de rendement\n\n Ce pourcentage répresente les interêts gagnés sur un an et prend.\n\n' +
