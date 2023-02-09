@@ -284,7 +284,7 @@ export default {
             no_negative_unsigint: 'Wert für uint{ size } darf nicht negativ sein',
             invalid_signed_integer: 'Ungültiger signed integer',
             invalid_unsigint: 'Der Eintrag muss einen gültigen unsigned integer enthalten',
-            str_input_placeholder: '["some value", ... , "final value"]',
+            str_input_placeholder: '["Wert", ... , "Endgültiger Wert"]',
             str_input_hint: 'Doppelte Anführungszeichen in Strings müssen escaped werden (\\")',
             address_placeholder: 'Adresse beginnt mit 0x',
             address_label: '{ label } (Adresse/Konto)',
