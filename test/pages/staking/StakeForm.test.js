@@ -28,6 +28,7 @@ describe('StakeForm.vue', () => {
                         getters: {
                             address: () => '0x'.concat('0'.repeat(40)),
                             isLoggedIn: isLoggedInMock,
+                            isNative: () => false,
                         },
                     },
                 },
@@ -163,7 +164,7 @@ describe('StakeForm.vue', () => {
         // q-dialog expects a boolean v-model binding to show/hide the element
         expect(wrapper.element).toMatchSnapshot();
 
-        const confirmStakeButton = wrapper.findComponent('[label="Stake TLOS"]');
+        const confirmStakeButton = wrapper.findComponent('[label="pages.staking.stake_tlos"]');
         confirmStakeButton.vm.$emit('click');
 
         expect(stlosContractInstanceMock['depositTLOS()']).toHaveBeenCalledTimes(1);
