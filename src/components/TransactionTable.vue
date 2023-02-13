@@ -7,9 +7,6 @@ import MethodField from 'components/MethodField';
 import { formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
-const PAGE_KEY = 'page';
-const PSIZE_KEY = 'pagesize';
-
 export default {
     name: 'TransactionTable',
     components: {
@@ -86,6 +83,7 @@ export default {
                 rowsPerPage: 10,
                 rowsNumber: 0,
             },
+            page_size_options: [10, 20, 50],
             showDateAge: true,
         };
     },
@@ -99,26 +97,29 @@ export default {
         this.columns[5].label = this.$t('components.to_interacted_with');
         this.columns[6].label = this.$t('components.value_transfer');
     },
-    mounted() {
+    watch: {
+        '$route.query.page': {
+            handler(_pag) {
+                let pag = _pag;
+                let page = 1;
+                let size = this.page_size_options[0];
 
-        addEventListener('popstate', this.popstate.bind(this));
+                // we also allow to pass a single number as the page number
+                if (typeof pag === 'number') {
+                    page = pag;
+                } else if (typeof pag === 'string') {
+                    // we also allow to pass a string of two numbers: 'page,rowsPerPage'
+                    const [p, s] = pag.split(',');
+                    page = p;
+                    size = s;
+                }
 
-        // restoring a possible last pagination state from the URL
-        const params = new URLSearchParams(window.location.search);
-        let page = params.get(PAGE_KEY) || window.history.state?.pagination?.page;
-        let size = params.get(PSIZE_KEY) || window.history.state?.pagination?.size;
-        this.setPagination(page, size);
-    },
-    beforeUnmount() {
-        window.removeEventListener('popstate', this.popstate);
+                this.setPagination(page, size);
+            },
+            immediate: true,
+        },
     },
     methods: {
-        popstate(event) {
-            const page = event.state.pagination.page;
-            const size = event.state.pagination.size;
-
-            this.setPagination(page, size);
-        },
         setPagination(page, size) {
             if (page) {
                 this.pagination.page = Number(page);
@@ -126,38 +127,26 @@ export default {
             if (size) {
                 this.pagination.rowsPerPage = Number(size);
             }
-
             this.onRequest({
                 pagination: this.pagination,
             });
         },
+        async onPaginationChange(props) {
+            const { page, rowsPerPage } = props.pagination;
+
+            // we need to change the URL to keep the pagination state by changing the this.$route.query.page
+            // with a string like 'page,rowsPerPage'
+            this.$router.push({
+                // taking care to preserve the current #hash anchor and the current query parameters
+                hash: window.location.hash,
+                query: {
+                    ...this.$route.query,
+                    page: `${page},${rowsPerPage}`,
+                },
+            });
+        },
         async onRequest(props) {
             this.loading = true;
-
-            // saving last pagination state
-            const url = new URL(window.location);
-            url.searchParams.set(PAGE_KEY, props.pagination.page);
-            url.searchParams.set(PSIZE_KEY, props.pagination.rowsPerPage);
-            const pagination = {
-                page: props.pagination.page,
-                size: props.pagination.rowsPerPage,
-            };
-
-            const params = new URLSearchParams(window.location.search);
-            const page_url = params.get(PAGE_KEY);
-            const size_url = params.get(PSIZE_KEY);
-
-            // this is a workaround to avoid the pushState() to fail
-            // https://github.com/vuejs/router/issues/366#issuecomment-1408501848
-            const current = '/';
-
-            if (this.pagination.page !== props.pagination.page ||
-                this.pagination.rowsPerPage !== props.pagination.rowsPerPage
-            ) {
-                window.history.pushState({ pagination, current }, '', url.toString());
-            } else if (!page_url || !size_url) {
-                window.history.replaceState({ pagination, current }, '', url.toString());
-            }
 
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             let result = await this.$evmEndpoint.get(this.getPath(props));
@@ -270,9 +259,9 @@ export default {
     :row-key="row => row.hash"
     :columns="columns"
     :loading="loading"
-    :rows-per-page-options="[10, 20, 50]"
+    :rows-per-page-options="page_size_options"
     flat
-    @request="onRequest"
+    @request="onPaginationChange"
 >
     <template v-slot:header="props">
         <q-tr :props="props">
