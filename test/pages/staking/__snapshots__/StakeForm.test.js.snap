@@ -48,13 +48,7 @@ exports[`StakeForm.vue should render a banner when the user has unlocked TLOS 1`
             pages.staking.stake_tlos_confirm
           </p>
           <p>
-            pages.staking.stake_tlos_confirm_2a 
-            <span
-              class="text-primary"
-            >
-              1 pages.staking.minutes
-            </span>
-            , pages.staking.stake_tlos_confirm_2b
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
           </p>
           <p>
             pages.staking.stake_tlos_confirm_3
@@ -115,7 +109,7 @@ exports[`StakeForm.vue should render a banner when the user has unlocked TLOS 2`
         <q-btn-stub
           color="black"
           flat=""
-          label="pages.staking.dismiss"
+          label="global.dismiss"
         />
         <q-btn-stub
           color="black"
@@ -160,13 +154,7 @@ exports[`StakeForm.vue should render a banner when the user has unlocked TLOS 2`
             pages.staking.stake_tlos_confirm
           </p>
           <p>
-            pages.staking.stake_tlos_confirm_2a 
-            <span
-              class="text-primary"
-            >
-              1 pages.staking.minutes
-            </span>
-            , pages.staking.stake_tlos_confirm_2b
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
           </p>
           <p>
             pages.staking.stake_tlos_confirm_3
@@ -250,13 +238,7 @@ exports[`StakeForm.vue should render correctly when the user is not logged in 1`
             pages.staking.stake_tlos_confirm
           </p>
           <p>
-            pages.staking.stake_tlos_confirm_2a 
-            <span
-              class="text-primary"
-            >
-              1 pages.staking.minutes
-            </span>
-            , pages.staking.stake_tlos_confirm_2b
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
           </p>
           <p>
             pages.staking.stake_tlos_confirm_3
@@ -341,13 +323,7 @@ exports[`StakeForm.vue should render properly when the user has successfully sta
             pages.staking.stake_tlos_confirm
           </p>
           <p>
-            pages.staking.stake_tlos_confirm_2a 
-            <span
-              class="text-primary"
-            >
-              1 pages.staking.minutes
-            </span>
-            , pages.staking.stake_tlos_confirm_2b
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
           </p>
           <p>
             pages.staking.stake_tlos_confirm_3
@@ -432,13 +408,7 @@ exports[`StakeForm.vue should render properly when the user has successfully sta
             pages.staking.stake_tlos_confirm
           </p>
           <p>
-            pages.staking.stake_tlos_confirm_2a 
-            <span
-              class="text-primary"
-            >
-              1 pages.staking.minutes
-            </span>
-            , pages.staking.stake_tlos_confirm_2b
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
           </p>
           <p>
             pages.staking.stake_tlos_confirm_3
@@ -533,13 +503,7 @@ exports[`StakeForm.vue should render properly when the user has successfully sta
             pages.staking.stake_tlos_confirm
           </p>
           <p>
-            pages.staking.stake_tlos_confirm_2a 
-            <span
-              class="text-primary"
-            >
-              1 pages.staking.minutes
-            </span>
-            , pages.staking.stake_tlos_confirm_2b
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
           </p>
           <p>
             pages.staking.stake_tlos_confirm_3
@@ -624,13 +588,7 @@ exports[`StakeForm.vue user input should be correctly handled for the bottom inp
             pages.staking.stake_tlos_confirm
           </p>
           <p>
-            pages.staking.stake_tlos_confirm_2a 
-            <span
-              class="text-primary"
-            >
-              1 pages.staking.minutes
-            </span>
-            , pages.staking.stake_tlos_confirm_2b
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
           </p>
           <p>
             pages.staking.stake_tlos_confirm_3
@@ -715,13 +673,7 @@ exports[`StakeForm.vue user input should be correctly handled for the bottom inp
             pages.staking.stake_tlos_confirm
           </p>
           <p>
-            pages.staking.stake_tlos_confirm_2a 
-            <span
-              class="text-primary"
-            >
-              1 pages.staking.minutes
-            </span>
-            , pages.staking.stake_tlos_confirm_2b
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
           </p>
           <p>
             pages.staking.stake_tlos_confirm_3
@@ -806,13 +758,7 @@ exports[`StakeForm.vue user input should be correctly handled for the top input 
             pages.staking.stake_tlos_confirm
           </p>
           <p>
-            pages.staking.stake_tlos_confirm_2a 
-            <span
-              class="text-primary"
-            >
-              1 pages.staking.minutes
-            </span>
-            , pages.staking.stake_tlos_confirm_2b
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
           </p>
           <p>
             pages.staking.stake_tlos_confirm_3
@@ -897,13 +843,7 @@ exports[`StakeForm.vue user input should be correctly handled for the top input 
             pages.staking.stake_tlos_confirm
           </p>
           <p>
-            pages.staking.stake_tlos_confirm_2a 
-            <span
-              class="text-primary"
-            >
-              1 pages.staking.minutes
-            </span>
-            , pages.staking.stake_tlos_confirm_2b
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
           </p>
           <p>
             pages.staking.stake_tlos_confirm_3
