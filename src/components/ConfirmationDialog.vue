@@ -51,8 +51,8 @@ export default {
         },
     },
     methods: {
-        async navigate(){
-            await this.$router.push({ name:'sourcify' });
+        navigate(){
+            window.open('https://sourcify.dev', '_blank');
         },
     },
 };
