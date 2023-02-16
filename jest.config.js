@@ -30,6 +30,7 @@ module.exports = {
             'node-addons',
         ],
     },
+    setupFiles: ['<rootDir>/jest.init.js'],
     snapshotSerializers: ['jest-serializer-vue'],
 
     // coverage config

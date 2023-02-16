@@ -1,22 +1,28 @@
 <script>
-import AddressField from 'components/AddressField';
 import BlockField from 'components/BlockField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import MethodField from 'components/MethodField';
 import { formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+import InternalTxns from 'components/Transaction/InternalTxns';
 
 export default {
-    name: 'TransactionTable',
+    name: 'InternalTransactionTable',
     components: {
         TransactionField,
         DateField,
         BlockField,
-        AddressField,
         MethodField,
+        InternalTxns,
     },
     props: {
+        page: {
+            type: Number,
+        },
+        pagesize: {
+            type: Number,
+        },
         title: {
             type: String,
             required: true,
@@ -53,19 +59,9 @@ export default {
                 align: 'left',
             },
             {
-                name: 'from',
+                name: 'int_txns',
                 label: '',
-                align: 'left',
-            },
-            {
-                name: 'to',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'value',
-                label: '',
-                align: 'left',
+                align: 'right',
             },
         ];
 
@@ -93,9 +89,7 @@ export default {
         this.columns[1].label = this.$t('components.block');
         this.columns[2].label = this.$t('components.date');
         this.columns[3].label = this.$t('components.method');
-        this.columns[4].label = this.$t('components.from');
-        this.columns[5].label = this.$t('components.to_interacted_with');
-        this.columns[6].label = this.$t('components.value_transfer');
+        this.columns[4].label = this.$t('components.internal_txns');
     },
     watch: {
         '$route.query.page': {
@@ -120,6 +114,11 @@ export default {
         },
     },
     methods: {
+        popstate(event) {
+            const page = event.state.pagination.page;
+            const size = event.state.pagination.size;
+            this.setPagination(page, size);
+        },
         setPagination(page, size) {
             if (page) {
                 this.pagination.page = Number(page);
@@ -148,6 +147,9 @@ export default {
         async onRequest(props) {
             this.loading = true;
 
+            // this line cleans the table for a second and the components have to be created again (clean)
+            this.rows = [];
+
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             let result = await this.$evmEndpoint.get(this.getPath(props));
 
@@ -160,11 +162,9 @@ export default {
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
 
-            this.transactions.splice(
-                0,
-                this.transactions.length,
-                ...result.data.transactions,
-            );
+            this.transactions = [...result.data.transactions];
+            this.rows = this.transactions;
+
             for (const transaction of this.transactions) {
                 try {
                     transaction.transfer = false;
@@ -266,7 +266,7 @@ export default {
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div class="u-flex--center-y">
+                <div :class="[ 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" >
                     {{ col.label }}
                     <template v-if="col.name === 'date'">
                         <q-icon
@@ -287,6 +287,7 @@ export default {
                     </template>
                 </div>
             </q-th>
+            <q-td auto-width/>
         </q-tr>
     </template>
     <template v-slot:body="props">
@@ -303,26 +304,29 @@ export default {
             <q-td key="method" :props="props">
                 <MethodField v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"/>
             </q-td>
-            <q-td key="from" :props="props">
-                <AddressField v-if="props.row.from" :address="props.row.from"/>
+            <q-td key="int_txns" :props="props">
+                <span v-if="props.row.itxs.length > 0">
+                    <b> {{ $t('components.n_internal_txns', {amount: props.row.itxs.length} ) }} </b>
+                </span>
+                <span v-else>{{ $t('components.none') }}</span>
             </q-td>
-            <q-td key="to" :props="props">
-                <AddressField
-                    v-if="props.row.to"
-                    :key="props.row.to + ((props.row.contract) ? '1' : '0')"
-                    :address="props.row.to"
-                    :isContractTrx="!!(props.row.contract)"
+            <q-td auto-width>
+                <q-icon
+                    v-if="props.row.itxs.length > 0"
+                    :name="props.expand ? 'expand_more' : 'expand_less'"
+                    size="sm"
+                    @click="props.expand = !props.expand"
                 />
             </q-td>
-            <q-td key="value" :props="props">
-                <span v-if="props.row.value > 0 ||  !props.row.transfer ">
-                    {{ props.row.value }} TLOS
-                </span>
-                <div v-else>
-                    <span v-if="props.row.transfer">
-                        {{ props.row.transfer.value }} {{ props.row.transfer.symbol }}
-                    </span>
-                </div>
+        </q-tr>
+        <q-tr
+            v-show="!props.expand"
+            v-if="props.row.itxs.length > 0"
+            :props="props"
+            class="q-virtual-scroll--with-prev"
+        >
+            <q-td colspan="100%">
+                <InternalTxns :itxs="props.row.itxs"/>
             </q-td>
         </q-tr>
     </template>

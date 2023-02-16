@@ -11,7 +11,7 @@
     "lint": "eslint --ext .js,.vue ./",
     "test": "jest",
     "nuke": "rm -rf node_modules && yarn cache clean && yarn install",
-    "prepare": "husky install"
+    "prepare": "husky install && chmod +x .husky/*"
   },
   "dependencies": {
     "@eosrio/hyperion-stream-client": "^0.4.0-beta.5",
