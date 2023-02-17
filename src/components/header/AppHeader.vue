@@ -173,23 +173,22 @@ export default {
 
             <q-separator class="c-header__menu-separator"/>
 
-            <li class="c-header__menu-li">
+            <li
+                class="c-header__menu-li"
+                tabindex="0"
+                aria-label="expand advanced menu"
+                role="menuitem"
+                aria-haspopup="menu"
+                @keydown.enter="advancedMenuExpanded = !advancedMenuExpanded"
+                @click="advancedMenuExpanded = !advancedMenuExpanded"
+            >
                 <q-icon
                     name="code"
                     class="c-header__menu-item-icon"
                     size="sm"
-                    @click="advancedMenuExpanded = !advancedMenuExpanded"
                 />
                 <div class="c-header__advanced-container">
-                    <div
-                        class="c-header__advanced-container-header"
-                        tabindex="0"
-                        aria-label="expand advanced menu"
-                        role="menuitem"
-                        aria-haspopup="menu"
-                        @keydown.enter="advancedMenuExpanded = !advancedMenuExpanded"
-                        @click="advancedMenuExpanded = !advancedMenuExpanded"
-                    >
+                    <div class="c-header__advanced-container-header">
                         {{ $t('components.header.advanced') }}
 
                         <q-icon
