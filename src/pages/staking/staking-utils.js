@@ -33,9 +33,9 @@ export function formatUnstakePeriod(seconds, $t) {
     return `${quantity} ${unit}`;
 }
 
-export async function fetchStlosApy($telosApi) {
+export async function fetchStlosApy($api) {
     try{
-        return (await $telosApi.get('apy/evm')).data;
+        return (await $api.get('apy/evm')).data;
     }catch(e) {
         console.error(e);
     }

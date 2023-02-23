@@ -16,7 +16,7 @@ export default {
         this.loadBlock();
     },
     methods: {
-        ...mapActions('evm', ['doRPC']),
+        ...mapActions('chain', ['doRPC']),
         async loadBlock() {
             const blockResponse = await this.doRPC({
                 method: 'eth_getBlockByNumber',

@@ -30,7 +30,7 @@ module.exports = function(/* ctx */) {
         // app boot file (/src/boot)
         // --> boot files are part of "main.js"
         // https://quasar.dev/quasar-cli/boot-files
-        boot: ['ual', 'hyperion', 'i18n', 'api', 'telosApi', 'evm', 'q-component-defaults'],
+        boot: ['ual', 'hyperion', 'i18n', 'api', 'evm', 'q-component-defaults'],
 
         // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
         css: ['fonts/silka/silka.css', 'app.sass'],

@@ -47,7 +47,7 @@ export default {
         await this.loadContract();
     },
     methods: {
-        ...mapActions('evm', ['getContract']),
+        ...mapActions('chain', ['getContract']),
         getDisplay() {
             if(!this.address){
                 return;

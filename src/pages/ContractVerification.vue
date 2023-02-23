@@ -112,7 +112,7 @@ export default {
             const formData = this.getFormData();
             formData.append('files', this.contractInput);
             try{
-                const result = await this.$telosApi.post('contracts/verify', formData);
+                const result = await this.$telosApi.general.post('contracts/verify', formData);
                 this.onNotify(result.data);
                 if (result.data.type === 'positive'){
                     this.navToAddress();

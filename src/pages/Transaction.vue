@@ -57,7 +57,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters('evm', ['tlosPrice']),
+        ...mapGetters('chain', ['tlosPrice']),
     },
     watch: {
         '$route.params': {
@@ -82,7 +82,7 @@ export default {
         this.fetchTlosPrice();
     },
     methods: {
-        ...mapActions('evm', ['fetchTlosPrice']),
+        ...mapActions('chain', ['fetchTlosPrice']),
         formatWei,
         resetTransaction() {
             this.blockData = null;

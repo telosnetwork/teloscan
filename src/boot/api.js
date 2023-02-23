@@ -1,5 +1,6 @@
 import { boot } from 'quasar/wrappers';
 import { Api, JsonRpc } from 'eosjs';
+import axios from 'axios';
 
 const signTransaction = async function(actions) {
     actions.forEach((action) => {
@@ -37,7 +38,7 @@ const getRpc = function () {
 };
 
 const getTableRows = async function(options) {
-    const rpc = this.$api.getRpc();
+    const rpc = this.$antelopeApi.getRpc();
     return await rpc.get_table_rows({
         json: true,
         ...options,
@@ -45,7 +46,7 @@ const getTableRows = async function(options) {
 };
 
 const getAccount = async function (accountName) {
-    const rpc = this.$api.getRpc();
+    const rpc = this.$antelopeApi.getRpc();
     return await rpc.get_account(accountName);
 };
 
@@ -58,12 +59,19 @@ export default boot(async ({ store }) => {
         textDecoder: new TextDecoder(),
         textEncoder: new TextEncoder(),
     });
-
-    store['$api'] = {
+    store['$antelopeApi'] = {
         signTransaction: signTransaction.bind(store),
         getTableRows: getTableRows.bind(store),
         getAccount: getAccount.bind(store),
         getRpc: getRpc.bind(store),
+    };
+    store['$telosApi'] = {
+        'general': axios.create({
+            baseURL: process.env.TELOS_API_ENDPOINT,
+        }),
+        'indexer': axios.create({
+            baseURL: process.env.TELOS_INDEXER_API_ENDPOINT,
+        }),
     };
 
 });

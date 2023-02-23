@@ -16,13 +16,14 @@ export async function doRPC(_, { method, params }) {
 
 // TODO: make sure we're not using this and remove...
 //  should be using the $contractManager that's on prototype (this.$contractManager)
-export async function getContract(_, { address }) {
-    return await this.$contractManager.getContract(address);
-}
+//export async function getContract(_, { address }) {
+//    return await this.$contractManager.getContract(address);
+//}
+
 
 export const fetchTlosPrice = async function({ commit }) {
     try {
-        const response = await this.$api.getTableRows({
+        const response = await this.$antelopeApi.getTableRows({
             code: 'delphioracle',
             limit: '1000',
             scope: 'tlosusd',
