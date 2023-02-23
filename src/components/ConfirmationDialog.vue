@@ -68,24 +68,34 @@ export default {
                 size="1.25rem"
                 text-color="white"
             />
-            <span class="q-ml-sm">{{ dialogMessage }}</span>
+            <span class="q-ml-sm c-verification-dialog__text">{{ dialogMessage }}</span>
         </q-card-section>
         <q-card-actions align="right">
             <q-btn
                 v-close-popup
                 flat
                 :label="$t('global.dismiss')"
-                color="primary"
             />
             <q-btn
                 v-if="!status"
                 v-close-popup
                 flat
                 :label="$t('pages.verify_contract')"
-                color="primary"
                 @click="navigate"
             />
         </q-card-actions>
     </q-card>
 </q-dialog>
 </template>
+
+<style lang="scss">
+.c-verification-dialog {
+    &__text {
+        color: black;
+
+        @at-root .body--dark & {
+            color: white;
+        }
+    }
+}
+</style>

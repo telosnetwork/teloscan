@@ -315,7 +315,7 @@ export default {
                 <q-btn
                     flat
                     color="black"
-                    :label="$t('pages.staking.dismiss')"
+                    :label="$t('global.dismiss')"
                     @click="hideClaimBanner"
                 />
                 <q-btn
@@ -363,7 +363,7 @@ export default {
                 </p>
                 <p>
                     {{ $t('pages.staking.stake_tlos_confirm_2a' ) }}
-                    <span class="text-primary">{{ unstakePeriodPretty }}</span>,
+                    {{ unstakePeriodPretty }},
                     {{ $t('pages.staking.stake_tlos_confirm_2b' ) }}
                 </p>
                 <p>{{ $t('pages.staking.stake_tlos_confirm_3' ) }}</p>
