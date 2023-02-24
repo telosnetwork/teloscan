@@ -1,6 +1,5 @@
 import { boot } from 'quasar/wrappers';
 import { Api, JsonRpc } from 'eosjs';
-import axios from 'axios';
 
 const signTransaction = async function(actions) {
     actions.forEach((action) => {
@@ -65,13 +64,4 @@ export default boot(async ({ store }) => {
         getAccount: getAccount.bind(store),
         getRpc: getRpc.bind(store),
     };
-    store['$telosApi'] = {
-        'general': axios.create({
-            baseURL: process.env.TELOS_API_ENDPOINT,
-        }),
-        'indexer': axios.create({
-            baseURL: process.env.TELOS_INDEXER_API_ENDPOINT,
-        }),
-    };
-
 });

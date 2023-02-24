@@ -149,10 +149,16 @@ export default {
             this.loading = true;
 
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
-            let result = await this.$evmEndpoint.get(this.getPath(props));
-
+            let response = await this.$indexerApi.get(this.getPath(props));
             if (this.total === null) {
-                this.pagination.rowsNumber = result.data.total.value;
+                this.pagination.rowsNumber = response.data.total_count;
+            }
+
+            // Add ABI data to cache
+            if(response.data.abi){
+                for (const [key, value] of Object.entries(response.data.abi)) {
+                    this.$contractManager.addFunctionInterface(key, value);
+                }
             }
 
             this.pagination.page = page;
@@ -163,7 +169,7 @@ export default {
             this.transactions.splice(
                 0,
                 this.transactions.length,
-                ...result.data.transactions,
+                ...response.data.results,
             );
             for (const transaction of this.transactions) {
                 try {
@@ -185,14 +191,14 @@ export default {
                     }
 
                     const parsedTransaction = await contract.parseTransaction(
-                        transaction.input_data,
+                        transaction.input,
                     );
                     if (parsedTransaction) {
                         transaction.parsedTransaction = parsedTransaction;
                         transaction.contract = contract;
                     }
                     // Get ERC20 transfer from main function call
-                    let signature = transaction.input_data.substring(0, 10);
+                    let signature = transaction.input.substring(0, 10);
                     if (
                         signature &&
                         TRANSFER_SIGNATURES.includes(signature) &&
@@ -224,25 +230,12 @@ export default {
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/v2/evm/get_transactions?limit=${
+            let path = `/transactions?limit=${
                 rowsPerPage === 0 ? 500 : rowsPerPage
             }`;
-            const filter = Object.assign({}, this.filter ? this.filter : {});
-            if (filter.address) {
-                path += `&address=${filter.address}`;
-            }
-
-            if (filter.block) {
-                path += `&block=${filter.block}`;
-            }
-
-            if (filter.hash) {
-                path += `&hash=${filter.hash}`;
-            }
-
-            path += `&skip=${(page - 1) * rowsPerPage}`;
+            path += `&offset=${(page - 1) * rowsPerPage}`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
-
+            path += '&includePagination=true&includeAbi=true';
             return path;
         },
         toggleDateFormat() {
@@ -295,10 +288,10 @@ export default {
                 <TransactionField :transaction-hash="props.row.hash"/>
             </q-td>
             <q-td key="block" :props="props">
-                <BlockField :block="props.row.block"/>
+                <BlockField :block="props.row.blockNumber"/>
             </q-td>
             <q-td key="date" :props="props">
-                <DateField :epoch="props.row.epoch" :force-show-age="showDateAge"/>
+                <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
             </q-td>
             <q-td key="method" :props="props">
                 <MethodField v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"/>

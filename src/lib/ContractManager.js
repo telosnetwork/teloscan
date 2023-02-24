@@ -15,7 +15,6 @@ const contractsBucket = axios.create({
 
 const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 export default class ContractManager {
-
     constructor(evmEndpoint) {
         this.tokenList = null;
         this.contracts = {};
@@ -37,13 +36,23 @@ export default class ContractManager {
     getEthersProvider() {
         return this.ethersProvider;
     }
+    async addFunctionInterface(hex, signature){
+        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, hex)) {
+            return;
+        }
+        this.functionInterfaces[hex] = signature;
+    }
     async getFunctionIface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
+        if(prefix === '0x'){
+            return;
+        }
         if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, prefix)) {
             return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
         }
 
         try {
+            // TODO: replace this with ABI cache
             const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`);
             if (abiResponse) {
                 if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
@@ -116,7 +125,7 @@ export default class ContractManager {
     // looking for a contract based on a token transfer event
     // handles erc721 & erc20 (w/ stubs for erc1155)
     async getContract(address, suspectedToken) {
-        if (!address) {
+        if (!address || typeof address !== 'string') {
             return;
         }
         const addressLower = address.toLowerCase();
