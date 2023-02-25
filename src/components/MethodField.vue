@@ -68,7 +68,7 @@ export default {
     </span>
     <span v-else :class="shortenSignature && 'clickable'">
         <span v-if="!expand" clickable="clickable" v-on:click="shortenSignature && toggle()">
-            {{trx.input_data.length > 10 && shortenSignature ? `${trx.input_data.slice(0,10)}` : trx.input_data}}
+            {{trx.input.length > 10 && shortenSignature ? `${trx.input.slice(0,10)}` : trx.input}}
         </span>
         <q-tooltip v-if="shortenSignature &amp;&amp; !expand">
             {{ $t('components.click_to_expand') }}
@@ -80,7 +80,7 @@ export default {
             self="center middle"
             v-on:click="toggle()"
         >
-            {{ trx.input_data }}
+            {{ trx.input }}
         </span>
     </span>
 </div>

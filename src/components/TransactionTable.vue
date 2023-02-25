@@ -154,6 +154,12 @@ export default {
                 this.pagination.rowsNumber = response.data.total_count;
             }
 
+            // Add contracts to cache if sent back
+            if(response.data.contracts){
+                this.$contractManager.addContractsToCache(response.data.contracts);
+            }
+
+
             // Add ABI data to cache
             if(response.data.abi){
                 for (const [key, value] of Object.entries(response.data.abi)) {
@@ -175,7 +181,7 @@ export default {
                 try {
                     transaction.transfer = false;
                     transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
-                    if (transaction.input_data === '0x') {
+                    if (transaction.input === '0x') {
                         continue;
                     }
                     if(!transaction.to) {
@@ -190,25 +196,25 @@ export default {
                         continue;
                     }
 
-                    const parsedTransaction = await contract.parseTransaction(
-                        transaction.input,
+                    const parsedTransaction = await this.$contractManager.parseContractTransaction(
+                        transaction.input, contract,
                     );
                     if (parsedTransaction) {
                         transaction.parsedTransaction = parsedTransaction;
                         transaction.contract = contract;
-                    }
-                    // Get ERC20 transfer from main function call
-                    let signature = transaction.input.substring(0, 10);
-                    if (
-                        signature &&
-                        TRANSFER_SIGNATURES.includes(signature) &&
-                        transaction.parsedTransaction.args['amount']
-                    ) {
-                        let token = await this.$contractManager.getTokenData(transaction.to, 'erc20');
-                        if(transaction.contract && token && token.decimals){
+                        // Get ERC20 transfer from main function call
+                        let signature = transaction.input.substring(0, 10);
+                        if (
+                            signature &&
+                            TRANSFER_SIGNATURES.includes(signature) &&
+                            transaction.parsedTransaction.args['amount']
+                        ) {
                             transaction.transfer = {
-                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], token.decimals)}`,
-                                'symbol': token.symbol,
+                                'value': `${
+                                    formatWei(transaction.parsedTransaction.args['amount'],
+                                        contract.properties.decimals)
+                                }`,
+                                'symbol': contract.properties.symbol,
                             };
                         }
                     }

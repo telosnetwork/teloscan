@@ -98,14 +98,17 @@ export default {
             this.params = [];
         },
         async loadTransaction() {
-            const trxResponse = await this.$evmEndpoint.get(
-                `/v2/evm/get_transactions?hash=${this.hash}`,
+            const trxResponse = await this.$indexerApi.get(
+                `/transaction/${this.hash}?full=true`,
             );
-            if (trxResponse.data.transactions.length === 0) {
+            if (trxResponse.data.results.length === 0) {
                 this.trxNotFound = true;
                 return;
             }
-            this.trx = trxResponse.data.transactions[0];
+            this.trx = trxResponse.data.results[0];
+            this.trx.logs = JSON.parse(this.trx.logs);
+            this.trx.gasUsed = BigNumber.from(this.trx.gasUsed);
+            this.trx.gasLimit = BigNumber.from(this.trx.gasLimit);
             this.trx.value = BigNumber.from(this.trx.value.toLocaleString('fullwide', { useGrouping:false }));
             await this.loadContract();
             await this.loadTransfers();
@@ -200,7 +203,7 @@ export default {
             }
         },
         async loadContract() {
-            if (this.trx.input_data === '0x') {
+            if (this.trx.input === '0x') {
                 return;
             }
 
@@ -210,7 +213,7 @@ export default {
             }
 
             this.contract = contract;
-            this.parsedTransaction = await this.contract.parseTransaction(this.trx.input_data);
+            this.parsedTransaction = await this.$contractManager.parseContractTransaction(this.trx.input, contract);
             this.params = this.getFunctionParams();
             this.methodTrx = Object.assign(
                 { parsedTransaction: this.parsedTransaction },
@@ -247,14 +250,14 @@ export default {
         },
         getGasFee() {
             return formatWei(
-                BigNumber.from(this.trx.charged_gas_price)
-                    .mul(this.trx.gasused).toLocaleString('fullwide', { useGrouping:false }),
+                BigNumber.from(this.trx.gasPrice)
+                    .mul(this.trx.gasUsed).toLocaleString('fullwide', { useGrouping:false }),
                 WEI_PRECISION,
                 5,
             );
         },
         getGasChargedGWEI() {
-            return formatWei(this.trx.charged_gas_price, 9, 2);
+            return formatWei(this.trx.gasPrice, 9, 2);
         },
     },
 };
@@ -336,7 +339,7 @@ export default {
                                 <strong>{{ $t('pages.block_number') }}:&nbsp;</strong>
                             </div>
                             <div class="col-9">
-                                <BlockField :block="trx.block"/>
+                                <BlockField :block="trx.blockNumber"/>
                             </div>
                         </div><br>
                         <div
@@ -347,7 +350,7 @@ export default {
                                 <strong>{{ $t('pages.date') }}:&nbsp;</strong>
                             </div>
                             <div class="u-flex--left">
-                                <DateField :epoch="trx.epoch"/>
+                                <DateField :epoch="trx.timestamp  / 1000"/>
                             </div>
                         </div><br>
                         <div class="fit row wrap justify-start items-start content-start">
@@ -471,11 +474,11 @@ export default {
                         </div><br>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3"><strong>{{ $t('pages.gas_used') }}:&nbsp;</strong></div>
-                            <div class="col-9">{{ trx.gasused }}</div>
+                            <div class="col-9">{{ trx.gasUsed }}</div>
                         </div><br>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3"><strong>{{ $t('pages.gas_limit') }}:&nbsp;</strong></div>
-                            <div class="col-9">{{ trx.gas_limit }}</div>
+                            <div class="col-9">{{ trx.gasLimit }}</div>
                         </div><br>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3"><strong>{{ $t('pages.nonce') }}:&nbsp;</strong></div>
@@ -485,7 +488,7 @@ export default {
                     <q-tab-panel name="details">
                         <div>
                             <div class="col-3"><strong>{{ $t('pages.input') }}:&nbsp;</strong></div>
-                            <div class="col-9">{{ trx.input_data }}</div>
+                            <div class="col-9">{{ trx.input }}</div>
                         </div><br>
                         <div>
                             <div class="col-3"><strong>{{ $t('pages.output') }}:&nbsp;</strong></div>
