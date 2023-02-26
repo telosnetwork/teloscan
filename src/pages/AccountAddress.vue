@@ -125,12 +125,7 @@ export default {
             }
 
             const isVerifiedContract = this.isContract && this.isVerified;
-            const knownToken = this.$contractManager.tokenList.tokens
-                .find(({ address }) => address.toLowerCase() === this.address.toLowerCase());
-
-            if (knownToken?.name) {
-                this.title = knownToken.name;
-            } else if (isVerifiedContract) {
+            if (isVerifiedContract) {
                 this.title = this.contract.getName();
             } else if (this.isContract) {
                 this.title = this.$t('pages.contract');

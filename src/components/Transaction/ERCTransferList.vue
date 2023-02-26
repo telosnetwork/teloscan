@@ -57,7 +57,7 @@ export default {
                     :truncate="15"
                     copy
                     :name="
-                        transfer.contract && transfer.from === transfer.contract.address
+                        transfer.contract && transfer.from.toLowerCase() === transfer.contract.address.toLowerCase()
                             && transfer.contract.name ?  transfer.contract.name : null
                     "
                 />
@@ -70,7 +70,7 @@ export default {
                     :truncate="15"
                     copy
                     :name="
-                        transfer.contract && transfer.to === transfer.contract.address
+                        transfer.contract && transfer.to.toLowerCase() === transfer.contract.address.toLowerCase()
                             && transfer.contract.name ?  transfer.contract.name : null
                     "
                 />

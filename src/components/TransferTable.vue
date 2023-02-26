@@ -231,7 +231,7 @@ export default {
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/v2/evm/get_transactions?limit=${
+            let path = `/v1/transactions?limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
             let signature = TRANSFER_EVENT_ERC20_SIGNATURE;
@@ -239,7 +239,7 @@ export default {
                 signature = TRANSFER_EVENT_ERC1155_SIGNATURE;
             }
             path += `&log_topics=${signature},${this.address}`;
-            path += `&skip=${(page - 1) * rowsPerPage}`;
+            path += `&offset=${(page - 1) * rowsPerPage}`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
 
             return path;
