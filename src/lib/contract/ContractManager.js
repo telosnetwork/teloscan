@@ -28,8 +28,6 @@ export default class ContractManager {
             }
         }
         try {
-            // this functionIface is an interface for a single function
-            // signature as discovered via 4bytes.directory...
             const functionIface = await this.parser.getFunctionInterface(data);
             if (functionIface) {
                 return functionIface.parseTransaction({ data });
@@ -87,7 +85,11 @@ export default class ContractManager {
 
         try {
             let response = await this.indexerApi.get(`/contract/${address}?full=true`);
-            let contract = this.factory.buildContract(response.data.results[0]);
+            console.log(response.data);
+            let contract = (response.data?.success) ?
+                this.factory.buildContract(response.data.results[0]) :
+                this.factory.buildEmptyContract(address)
+            ;
             this.addContractToCache(contract);
             return contract;
         } catch (e) {

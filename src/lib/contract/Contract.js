@@ -29,6 +29,7 @@ export default class Contract {
   }
 
   isToken() {
+    if(this.supportedInterfaces === null) return;
     return (
         this.supportedInterfaces.includes('erc721') ||
         this.supportedInterfaces.includes('erc1155') ||

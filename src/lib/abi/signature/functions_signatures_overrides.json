@@ -22,5 +22,6 @@
   "0x2195995c": "function removeLiquidityWithPermit(address tokenA, address tokenB, uint256 liquidity, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline, bool approveMax, uint8 v, bytes32 r, bytes32 s)",
   "0x70a08231": "function balanceOf(address)",
   "0xf23a6e61": "function onERC1155Received(address operator, address from, uint256 id, uint256 value, bytes data)",
+  "0x02751cec": "function removeLiquidityETH(address token,uint256 liquidity,uint256 amountTokenMin,uint256 amountETHMin,address to,uint256 deadline)",
   "0x3542aee2": "function mintByOwner(address to, uint256 tokenType)"
 }

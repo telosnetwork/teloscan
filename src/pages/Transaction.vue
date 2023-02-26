@@ -127,7 +127,7 @@ export default {
                 let sig = log.topics[0].substr(0, 10);
                 if (TRANSFER_SIGNATURES.includes(sig)) {
                     let contract = await this.$contractManager.getContract(log.address);
-                    if(!contract){
+                    if(!contract || contract.supportedInterfaces === null){
                         continue;
                     }
                     if (contract.supportedInterfaces.includes('erc721')) {
@@ -164,11 +164,11 @@ export default {
             }
         },
         async loadContract() {
-            if (this.trx.input === '0x') {
+            if (!this.trx || this.trx.input === '0x') {
                 return;
             }
 
-            const contract = await this.$contractManager.getContract(this.trx.to);
+            const contract = await this.$contractManager.getContract(this.trx.to.toLowerCase());
             if (!contract) {
                 return;
             }

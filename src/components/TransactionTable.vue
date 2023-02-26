@@ -5,7 +5,6 @@ import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import MethodField from 'components/MethodField';
 import { formatWei } from 'src/lib/utils';
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 export default {
     name: 'TransactionTable',
@@ -201,23 +200,8 @@ export default {
                     );
                     if (parsedTransaction) {
                         transaction.parsedTransaction = parsedTransaction;
-                        transaction.contract = contract;
-                        // Get ERC20 transfer from main function call
-                        let signature = transaction.input.substring(0, 10);
-                        if (
-                            signature &&
-                            TRANSFER_SIGNATURES.includes(signature) &&
-                            transaction.parsedTransaction.args['amount']
-                        ) {
-                            transaction.transfer = {
-                                'value': `${
-                                    formatWei(transaction.parsedTransaction.args['amount'],
-                                        contract.properties.decimals)
-                                }`,
-                                'symbol': contract.properties.symbol,
-                            };
-                        }
                     }
+                    transaction.contract = contract;
                 } catch (e) {
                     console.error(
                         `Failed to parse data for transaction, error was: ${e.message}`,

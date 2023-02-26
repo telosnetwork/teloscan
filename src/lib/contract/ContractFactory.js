@@ -28,6 +28,17 @@ export default class ContractFactory {
         if(data.abi){
             verified = true;
         }
+        let properties = JSON.parse(data.calldata);
+        if(!data.name){
+            if(properties?.name){
+                data.name = properties.name;
+            } else if(data.metadata) {
+                let metadata = JSON.parse(data.metadata);
+                if(metadata?.settings?.compilationTarget){
+                    data.name = Object.values(metadata?.settings?.compilationTarget)[0];
+                }
+            }
+        }
         const contract = new Contract({
             address: data.address,
             name: data.name,
@@ -39,7 +50,7 @@ export default class ContractFactory {
             },
             type: null,
             supportedInterfaces: data.supportedInterfaces,
-            properties: JSON.parse(data.calldata),
+            properties: properties,
             nfts: {},
             abi: data.abi | undefined,
         });
