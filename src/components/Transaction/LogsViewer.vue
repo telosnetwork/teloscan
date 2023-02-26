@@ -1,7 +1,6 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
 import FragmentList from 'components/Transaction/FragmentList';
-import { TRANSFER_SIGNATURES, ERC1155_TRANSFER_SIGNATURE } from 'src/lib/abi/signature/transfer_signatures';
 import { BigNumber } from 'ethers';
 
 export default {
@@ -11,9 +10,9 @@ export default {
         FragmentList,
     },
     methods: {
-        async getLogContract(log, type){
+        async getLogContract(log){
             try {
-                return  await this.$contractManager.getContract(log.address.toLowerCase(), type);
+                return  await this.$contractManager.getContract(log.address.toLowerCase());
             } catch (e) {
                 console.error(`Failed to retrieve contract with address ${log.address}`);
                 // notify the user
@@ -42,16 +41,10 @@ export default {
             let contract;
             const log = this.logs[i];
             const function_signature = log.topics[0].substr(0, 10);
-            if(TRANSFER_SIGNATURES.includes(function_signature)) {
-                let type = (log.topics.length === 4) ? 'erc721': 'erc20';
-                type = (function_signature === ERC1155_TRANSFER_SIGNATURE) ? 'erc1155' : type;
-                contract = await this.getLogContract(log, type);
-            } else {
-                contract = await this.getLogContract(log);
-            }
+            contract = await this.getLogContract(log);
             if (contract){
                 verified = (contract.isVerified()) ? verified + 1: verified;
-                let parsedLog = await contract.parseLogs([log]);
+                let parsedLog = await this.$contractManager.parseLogs([log], contract);
                 if(parsedLog[0]){
                     parsedLog[0].contract = contract;
                     parsedLog[0].sig = function_signature;

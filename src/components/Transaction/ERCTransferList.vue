@@ -30,6 +30,7 @@ export default {
         formatWei,
     },
     data() {
+        console.log(this.contract);
         return {
             BigNumber: BigNumber,
         };
@@ -74,7 +75,7 @@ export default {
                     {{ $t('components.transaction.form_token') }}
                 </strong>
                 <router-link class="q-ml-xs" :to="'/address/' + transfer.token.address">
-                    {{ transfer.token.symbol }}
+                    {{ contract.properties.symbol }}
                 </router-link>
                 <div class="col">
                     <span v-if="transfer.tokenId.length > 15">
@@ -93,19 +94,19 @@ export default {
                             <q-tooltip>{{ $t('components.transaction.consult_collection') }}</q-tooltip>
                         </a>
                     </span>
-                    <span v-if="transfer.token.metadata" class="word-break">
+                    <span v-if="transfer.token?.metadata" class="word-break">
                         <span>
-                            <a clickable="clickable" :href="transfer.token.metadata" target="_blank">
+                            <a clickable="clickable" :href="transfer.token?.metadata" target="_blank">
                                 <q-icon class="q-pb-sm q-ml-xs" name="description" size="14px"/>
                             </a>
                             <q-tooltip>{{ $t('components.transaction.consult_metadata') }}</q-tooltip>
                         </span>
                         <span>
                             <a
-                                v-if="transfer.token.image"
+                                v-if="transfer.token?.image"
                                 class="q-pl-xs"
                                 clickable="clickable"
-                                :href="transfer.token.image"
+                                :href="transfer.token?.image"
                                 target="_blank"
                             >
                                 <q-icon class="q-pb-sm q-ml-xs" name="image" size="14px"/>
@@ -122,16 +123,18 @@ export default {
                         <q-tooltip>{{ $t('components.transaction.show_total') }}</q-tooltip>
                     </span>
                     <span v-else>
-                        {{ formatWei(transfer.value, transfer.token.decimals) }}
+                        {{ formatWei(transfer.value, transfer.contract.properties.decimals) }}
                         <q-tooltip>{{ $t('components.transaction.show_wei') }}</q-tooltip>
                     </span>
                 </span>
-                <router-link class="q-ml-xs" :to="`/address/${transfer.token.address}`">
+                <router-link class="q-ml-xs" :to="`/address/${transfer.contract.address}`">
                     <span>
-                        <span>{{ transfer.token.symbol.slice(0, 10) }}</span>
-                        <span v-if="transfer.token.symbol.length > 10">...</span>
+                        <span>{{ transfer.contract.properties?.symbol?.slice(0, 10) }}</span>
+                        <span v-if="transfer.contract.properties?.symbol?.length > 10">...</span>
                     </span>
-                    <q-tooltip v-if="transfer.token.symbol.length > 10">{{ transfer.token.symbol }}</q-tooltip>
+                    <q-tooltip v-if="transfer.contract.properties?.symbol?.length > 10">
+                        {{ contract.properties.symbol }}
+                    </q-tooltip>
                 </router-link>
             </div>
         </div>

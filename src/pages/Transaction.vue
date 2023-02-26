@@ -111,7 +111,9 @@ export default {
             this.trx.gasLimit = BigNumber.from(this.trx.gasLimit);
             this.trx.value = BigNumber.from(this.trx.value.toLocaleString('fullwide', { useGrouping:false }));
             await this.loadContract();
-            await this.loadTransfers();
+            if(this.trx.logs){
+                await this.loadTransfers();
+            }
             this.setErrorMessage();
         },
         async loadTransfers() {
@@ -121,83 +123,39 @@ export default {
                 // transfers, ERC20 has 3 log topics, ERC1155 has a different first topic)
                 let sig = log.topics[0].substr(0, 10);
                 if (TRANSFER_SIGNATURES.includes(sig)) {
-                    let type = this.$contractManager.getTokenTypeFromLog(log);
-                    let contract = await this.$contractManager.getContract(log.address, type);
-                    if (typeof contract.token !== 'undefined' && contract.token !== null) {
-                        let token = {
-                            'symbol': contract.token.symbol,
-                            'address': log.address,
-                            name: contract.token.name,
-                            'decimals': contract.token.decimals,
-                        };
-                        if (contract.token.type === 'erc721') {
-                            let tokenId = BigNumber.from(log.topics[3]).toString();
-                            if (contract.token.extensions?.metadata) {
-                                try {
-                                    token = await this.$contractManager.loadTokenMetadata(
-                                        log.address,
-                                        contract.token,
-                                        tokenId,
-                                    );
-                                } catch (e) {
-                                    console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
-                                    // notify the user
-                                    this.$q.notify({
-                                        message: this.$t(
-                                            'pages.couldnt_retreive_metadata_for_address',
-                                            { address: contract.address, message: e.message },
-                                        ),
-                                        color: 'negative',
-                                        position: 'top',
-                                        timeout: 5000,
-                                    });
-                                }
-                            }
-                            this.erc721_transfers.push({
-                                'tokenId': tokenId,
-                                'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                                'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
-                                'token': token,
-                            });
-                        } else if (contract.token.type === 'erc1155') {
-                            let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
-                            if (contract.token.extensions?.metadata) {
-                                try {
-                                    token = await this.$contractManager.loadTokenMetadata(
-                                        log.address,
-                                        contract.token,
-                                        tokenId,
-                                    );
-                                } catch (e) {
-                                    console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
-                                    // notify the user
-                                    this.$q.notify({
-                                        message: this.$t(
-                                            'pages.couldnt_retreive_metadata_for_address',
-                                            { address: contract.address, message: e.message },
-                                        ),
-                                        color: 'negative',
-                                        position: 'top',
-                                        timeout: 5000,
-                                    });
-                                }
-                            }
-                            this.erc1155_transfers.push({
-                                'tokenId': tokenId,
-                                'amount': BigNumber.from(log.data).toString(),
-                                'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
-                                'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                                'token': token,
-                            });
-                        } else {
-                            this.erc20_transfers.push({
-                                'value': log.data,
-                                'wei': BigNumber.from(log.data).toString(),
-                                'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                                'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
-                                'token': token,
-                            });
-                        }
+                    let contract = await this.$contractManager.getContract(log.address);
+                    if(!contract){
+                        continue;
+                    }
+                    if (contract.supportedInterfaces.includes('erc721')) {
+                        let tokenId = BigNumber.from(log.topics[3]).toString();
+                        let token = this.$contractManager.loadNFT(log.address, tokenId);
+                        this.erc721_transfers.push({
+                            'tokenId': tokenId,
+                            'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
+                            'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
+                            'token' : token,
+                            'contract' : contract,
+                        });
+                    } else if (contract.supportedInterfaces.includes('erc1155')) {
+                        let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
+                        let token = this.$contractManager.loadNFT(log.address, tokenId);
+                        this.erc1155_transfers.push({
+                            'amount': BigNumber.from(log.data).toString(),
+                            'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
+                            'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
+                            'tokenId': tokenId,
+                            'token' : token,
+                            'contract' : contract,
+                        });
+                    } else {
+                        this.erc20_transfers.push({
+                            'value': log.data,
+                            'wei': BigNumber.from(log.data).toString(),
+                            'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
+                            'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
+                            'contract' : contract,
+                        });
                     }
                 }
             }
