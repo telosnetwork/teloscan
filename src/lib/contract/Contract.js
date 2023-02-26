@@ -5,7 +5,7 @@ export default class Contract {
 
   constructor({address, creationInfo, name, abi, manager, supportedInterfaces = [], properties = {}, verified = false, nfts = {}}) {
     this.address = address;
-    this.name = name;
+    this.name = name || properties?.name;
     this.nfts = {};
     this.abi = abi;
     this.supportedInterfaces = supportedInterfaces;

@@ -15,7 +15,7 @@ export default {
         },
         title: {
             type: String,
-            required: false
+            required: false,
         },
         trxFrom: {
             type: String,
@@ -30,7 +30,6 @@ export default {
         formatWei,
     },
     data() {
-        console.log(this.contract);
         return {
             BigNumber: BigNumber,
         };
@@ -40,7 +39,7 @@ export default {
 
 <template>
 <div class="fit row wrap justify-start items-start content-start">
-    <div class="col-3" v-if="title"><strong>{{ title }}</strong></div>
+    <div  class="col-3"><strong>{{ title }}</strong></div>
     <div id="erc-transfers" class="col-9">
         <div
             v-for="(transfer, index) in transfers"

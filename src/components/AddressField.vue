@@ -55,7 +55,7 @@ export default {
                     `${this.name.slice(0, this.truncate)}...` :
                     `${this.name}`;
             }
-
+            console.log(this.contract);
             if (this.contract && this.contract.getName()) {
                 const name = this.contract.getName();
                 if(name[0] === '0' && name[1] === 'x'){
@@ -78,10 +78,7 @@ export default {
                 return;
             }
 
-            // TODO: check if this is a contract, account lookup via telosevm-js?
-            // TODO: if this is linked to a Telos account, display the Telos account name and link it to bloks
-            //   for now if we ask for a contract, we'll get one back and it'll be labeled as undefined
-            let contract = await this.$contractManager.getContract({ address: this.address });
+            let contract = await this.$contractManager.getContract(this.address);
             if (contract) {
                 this.contract = contract;
             }

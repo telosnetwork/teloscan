@@ -163,7 +163,7 @@ export default {
             // Add ABI data to cache
             if(response.data.abi){
                 for (const [key, value] of Object.entries(response.data.abi)) {
-                    this.$contractManager.addFunctionInterface(key, value);
+                    this.$fragmentParser.addFunctionInterface(key, value);
                 }
             }
 

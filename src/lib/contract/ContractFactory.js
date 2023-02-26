@@ -1,4 +1,4 @@
-import Contract from 'src/lib/Contract';
+import Contract from 'src/lib/contract/Contract';
 import axios from 'axios';
 import { toChecksumAddress } from 'src/lib/utils';
 

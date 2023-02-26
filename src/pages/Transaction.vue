@@ -99,11 +99,16 @@ export default {
         },
         async loadTransaction() {
             const trxResponse = await this.$indexerApi.get(
-                `/transaction/${this.hash}?full=true`,
+                `/transaction/${this.hash}?full=true&includeAbi=true`,
             );
             if (trxResponse.data.results.length === 0) {
                 this.trxNotFound = true;
                 return;
+            }
+            if(trxResponse.data.abi){
+                for (const [key, value] of Object.entries(trxResponse.data.abi)) {
+                    this.$fragmentParser.addFunctionInterface(key, value);
+                }
             }
             this.trx = trxResponse.data.results[0];
             this.trx.logs = JSON.parse(this.trx.logs);
@@ -396,7 +401,7 @@ export default {
                             v-if="erc20_transfers.length > 0"
                             :trxFrom="trx.from"
                             :contract="contract"
-                            type="ERC20 transfers"
+                            title="ERC20 transfers"
                             :transfers="erc20_transfers"
                         />
                         <ERCTransferList

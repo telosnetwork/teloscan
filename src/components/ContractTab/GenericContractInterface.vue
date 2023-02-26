@@ -1,7 +1,7 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
 
-import Contract from 'src/lib/Contract';
+import Contract from 'src/lib/contract/Contract';
 import { erc721Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
 

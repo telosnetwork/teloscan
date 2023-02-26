@@ -42,7 +42,7 @@ export default {
             let contract = await this.getLogContract(log);
             if (contract){
                 verified = (contract.isVerified()) ? verified + 1: verified;
-                let parsedLog = await this.$contractManager.parseLog(log, contract);
+                let parsedLog = await this.$fragmentParser.parseLog(log, contract);
                 if(parsedLog){
                     this.parsedLogs.push(parsedLog);
                 } else {
