@@ -55,7 +55,6 @@ export default {
                     `${this.name.slice(0, this.truncate)}...` :
                     `${this.name}`;
             }
-            console.log(this.contract);
             if (this.contract && this.contract.getName()) {
                 const name = this.contract.getName();
                 if(name[0] === '0' && name[1] === 'x'){

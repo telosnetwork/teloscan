@@ -52,7 +52,7 @@ export default {
                     {{ $t('components.transaction.form_from') }}
                 </strong>
                 <AddressField
-                    :highlight="trxFrom === transfer.from && transfers.length > 1"
+                    :highlight="trxFrom.toLowerCase() === transfer.from.toLowerCase() && transfers.length > 1"
                     :address="transfer.from"
                     :truncate="15"
                     copy
@@ -65,7 +65,7 @@ export default {
             <div class="col-3">
                 <strong>{{ $t('components.transaction.form_to') }}</strong>
                 <AddressField
-                    :highlight="trxFrom === transfer.to && transfers.length > 1"
+                    :highlight="trxFrom.toLowerCase() === transfer.to.toLowerCase() && transfers.length > 1"
                     :address="transfer.to"
                     :truncate="15"
                     copy

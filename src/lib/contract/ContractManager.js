@@ -85,7 +85,6 @@ export default class ContractManager {
 
         try {
             let response = await this.indexerApi.get(`/contract/${address}?full=true&includeAbi=true`);
-            console.log(response.data);
             let contract = (response.data?.success) ?
                 this.factory.buildContract(response.data.results[0]) :
                 this.factory.buildEmptyContract(address)

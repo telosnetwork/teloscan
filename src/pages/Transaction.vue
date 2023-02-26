@@ -367,7 +367,7 @@ export default {
                                 <strong>{{ $t('pages.contract_function') }}:&nbsp;</strong>
                             </div>
                             <div class="col-9">
-                                <MethodField :contract="contract" :trx="methodTrx" shortenSignature="shortenSignature"/>
+                                <MethodField :contract="contract" :trx="methodTrx" :shortenSignature="true"/>
                             </div>
                         </div><br v-if="isContract">
                         <div

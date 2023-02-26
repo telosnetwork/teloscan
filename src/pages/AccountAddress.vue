@@ -124,8 +124,7 @@ export default {
                 this.nonce = account.nonce;
             }
 
-            const isVerifiedContract = this.isContract && this.isVerified;
-            if (isVerifiedContract) {
+            if (this.isContract && this.contract.getName()) {
                 this.title = this.contract.getName();
             } else if (this.isContract) {
                 this.title = this.$t('pages.contract');
