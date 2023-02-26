@@ -396,18 +396,21 @@ export default {
                             v-if="erc20_transfers.length > 0"
                             :trxFrom="trx.from"
                             :contract="contract"
+                            type="ERC20 transfers"
                             :transfers="erc20_transfers"
                         />
                         <ERCTransferList
                             v-if="erc721_transfers.length > 0"
                             :trxFrom="trx.from"
                             :contract="contract"
+                            title="ERC721 transfers"
                             :transfers="erc721_transfers"
                         />
                         <ERCTransferList
                             v-if="erc1155_transfers.length > 0"
                             :trxFrom="trx.from"
                             :contract="contract"
+                            title="ERC1155 transfers"
                             :transfers="erc1155_transfers"
                         />
                         <div class="fit row wrap justify-start items-start content-start">

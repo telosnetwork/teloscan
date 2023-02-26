@@ -13,6 +13,10 @@ export default {
             type: Array,
             required: true,
         },
+        title: {
+            type: String,
+            required: false
+        },
         trxFrom: {
             type: String,
             required: false,
@@ -36,7 +40,7 @@ export default {
 
 <template>
 <div class="fit row wrap justify-start items-start content-start">
-    <div class="col-3"><strong>{{ type + ` transfers: ` }}</strong></div>
+    <div class="col-3" v-if="title"><strong>{{ title }}</strong></div>
     <div id="erc-transfers" class="col-9">
         <div
             v-for="(transfer, index) in transfers"
