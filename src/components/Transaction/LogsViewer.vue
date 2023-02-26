@@ -12,7 +12,7 @@ export default {
     methods: {
         async getLogContract(log){
             try {
-                return  await this.$contractManager.getContract(log.address.toLowerCase());
+                return await this.$contractManager.getContract(log.address.toLowerCase());
             } catch (e) {
                 console.error(`Failed to retrieve contract with address ${log.address}`);
                 // notify the user
@@ -38,21 +38,16 @@ export default {
     async created() {
         let verified = 0;
         for(let i = 0; i < this.logs.length; i++){
-            let contract;
             const log = this.logs[i];
-            const function_signature = log.topics[0].substr(0, 10);
-            contract = await this.getLogContract(log);
+            let contract = await this.getLogContract(log);
             if (contract){
                 verified = (contract.isVerified()) ? verified + 1: verified;
-                let parsedLog = await this.$contractManager.parseLogs([log], contract);
-                if(parsedLog[0]){
-                    parsedLog[0].contract = contract;
-                    parsedLog[0].sig = function_signature;
-                    this.parsedLogs.push(parsedLog[0]);
+                console.log(contract);
+                let parsedLog = await this.$contractManager.parseLog(log, contract);
+                if(parsedLog){
+                    this.parsedLogs.push(parsedLog);
                 } else {
                     let nLog = Object.assign({}, log);
-                    nLog.contract = contract;
-                    nLog.sig = function_signature;
                     this.parsedLogs.push(nLog);
                 }
                 this.parsedLogs.sort((a, b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());

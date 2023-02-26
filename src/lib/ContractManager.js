@@ -60,14 +60,15 @@ export default class ContractManager {
         }
     }
 
-    async loadNFT(address, tokenId){
-        if(this.contracts[address.toLowerCase()]?.nfts[tokenId]){
-            return this.contracts[address.toLowerCase()].nfts[tokenId];
+    async loadNFT(contract, tokenId){
+        let address = contract.address.toLowerCase();
+        if(this.contracts[address]?.nfts[tokenId]){
+            return this.contracts[address].nfts[tokenId];
         }
         try {
             let response = await this.indexerApi.get(`/contract/${address}/nfts?tokenId=${tokenId}`);
-            if(this.contracts[address.toLowerCase()]){
-                this.contracts[address.toLowerCase()].nfts[tokenId] = response.data.results[0];
+            if(this.contracts[address]){
+                this.contracts[address].nfts[tokenId] = response.data.results[0];
             }
             return response.data.results[0];
         } catch (e) {
@@ -174,7 +175,7 @@ export default class ContractManager {
         }
     }
 
-    formatLog(log, parsedLog){
+    formatLog(contract, log, parsedLog){
         if(!parsedLog.signature){
             return log;
         }
@@ -182,51 +183,46 @@ export default class ContractManager {
         parsedLog.isTransfer = TRANSFER_SIGNATURES.includes(parsedLog.function_signature);
         parsedLog.logIndex = log.logIndex;
         parsedLog.address = log.address;
-        parsedLog.token = this.token;
+        parsedLog.contract = contract;
         parsedLog.name = parsedLog.signature;
         return parsedLog;
     }
 
-    async parseLogs(logsArray, contract) {
+    async parseLog(log, contract) {
         if (contract.getInterface()) {
-            let parsedArray = await Promise.all(logsArray.map(async (log) => {
-                try {
-                    let parsedLog = contract.getInterface().parseLog(log);
-                    parsedLog = this.formatLog(log, parsedLog);
-                    return parsedLog;
-                } catch (e) {
-                    return await this.parseEvent(log);
-                }
-            }));
-            parsedArray.forEach((parsed) => {
-                if(parsed.name && parsed.eventFragment?.inputs){
-                    parsed.inputs = parsed.eventFragment.inputs;
-                }
-            });
-            return parsedArray;
-        }
-
-
-        return await Promise.all(logsArray.map(async (log) => {
-            let parsedLog = await this.parseEvent(log);
+            let parsedLog;
+            try {
+                parsedLog = contract.getInterface().parseLog(log);
+            } catch (e) {
+                parsedLog = await this.parseEvent(contract, log);
+            }
+            parsedLog = this.formatLog(contract, log, parsedLog);
             if(parsedLog.name && parsedLog.eventFragment?.inputs){
                 parsedLog.inputs = parsedLog.eventFragment.inputs;
             }
             return parsedLog;
-        }));
+        }
+
+        let parsedLog = await this.parseEvent(contract, log);
+        parsedLog = this.formatLog(contract, log, parsedLog);
+        if(parsedLog.name && parsedLog.eventFragment?.inputs){
+            parsedLog.inputs = parsedLog.eventFragment.inputs;
+        }
+        parsedLog = this.formatLog(contract, log, parsedLog);
+        return parsedLog;
     }
 
-    async parseEvent(log){
+    async parseEvent(contract, log){
         const eventIface = await this.getEventIface(log.topics[0]);
         if (eventIface) {
             try {
                 let parsedLog = eventIface.parseLog(log);
-                parsedLog = this.formatLog(log, parsedLog);
                 return parsedLog;
             } catch(e) {
-                console.log(`Failed to parse log ${log.logIndex} from event interface`);
+                console.log(`Failed to parse log #${log.logIndex} from event interface: ${e.message}`);
             }
         }
+        log.function_signature = log.topics[0]?.substr(0, 10);
         return log;
     }
     async getContractFromAbi(address, abi){

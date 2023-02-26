@@ -9,10 +9,6 @@ export default {
         AddressField,
     },
     props: {
-        type: {
-            type: String,
-            required: true,
-        },
         transfers: {
             type: Array,
             required: true,
@@ -57,7 +53,10 @@ export default {
                     :address="transfer.from"
                     :truncate="15"
                     copy
-                    :name="contract && transfer.from === contract.address && contract.name ?  contract.name : null"
+                    :name="
+                        transfer.contract && transfer.from === transfer.contract.address
+                            && transfer.contract.name ?  transfer.contract.name : null
+                    "
                 />
             </div>
             <div class="col-3">
@@ -67,14 +66,23 @@ export default {
                     :address="transfer.to"
                     :truncate="15"
                     copy
-                    :name="contract && transfer.to === contract.address && contract.name ?  contract.name : null"
+                    :name="
+                        transfer.contract && transfer.to === transfer.contract.address
+                            && transfer.contract.name ?  transfer.contract.name : null
+                    "
                 />
             </div>
-            <div v-if="type === 'ERC721' || type==='ERC1155'" class="flex col-4">
+            <div
+                v-if="
+                    transfer.contract.supportedInterfaces.includes('erc721')
+                        || transfer.contract.supportedInterfaces.includes('erc1155')
+                "
+                class="flex col-4"
+            >
                 <strong class="col-2">
                     {{ $t('components.transaction.form_token') }}
                 </strong>
-                <router-link class="q-ml-xs" :to="'/address/' + transfer.token.address">
+                <router-link class="q-ml-xs" :to="'/address/' + transfer.contract.address">
                     {{ contract.properties.symbol }}
                 </router-link>
                 <div class="col">
@@ -127,7 +135,11 @@ export default {
                         <q-tooltip>{{ $t('components.transaction.show_wei') }}</q-tooltip>
                     </span>
                 </span>
-                <router-link class="q-ml-xs" :to="`/address/${transfer.contract.address}`">
+                <router-link
+                    v-if="transfer.contract.properties?.symbol"
+                    class="q-ml-xs"
+                    :to="`/address/${transfer.contract.address}`"
+                >
                     <span>
                         <span>{{ transfer.contract.properties?.symbol?.slice(0, 10) }}</span>
                         <span v-if="transfer.contract.properties?.symbol?.length > 10">...</span>

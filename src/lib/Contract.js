@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { ethers } from 'ethers';
 
 export default class Contract {
 
@@ -15,6 +16,24 @@ export default class Contract {
     this.verified = verified;
     this.sources = [];
     this.creationInfo = creationInfo;
+  }
+
+  isVerified() {
+    return this.verified;
+  }
+
+  isNonFungible() {
+    return (
+        this.supportedInterfaces.includes('erc721')
+    );
+  }
+
+  isToken() {
+    return (
+        this.supportedInterfaces.includes('erc721') ||
+        this.supportedInterfaces.includes('erc1155') ||
+        this.supportedInterfaces.includes('erc20')
+    );
   }
 
   getNfts() {
@@ -47,10 +66,6 @@ export default class Contract {
 
   setVerified(status) {
     this.verified = status;
-  }
-
-  isVerified() {
-    return this.verified;
   }
 
   getCreationBlock() {

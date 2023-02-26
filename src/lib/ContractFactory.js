@@ -38,7 +38,8 @@ export default class ContractFactory {
                 block: data.block,
             },
             type: null,
-            properties: data.calldata,
+            supportedInterfaces: data.supportedInterfaces,
+            properties: JSON.parse(data.calldata),
             nfts: {},
             abi: data.abi | undefined,
         });

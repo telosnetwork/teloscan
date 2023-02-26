@@ -86,7 +86,7 @@ export default {
                 {{ fragment.name }}
             </strong>
             <strong v-else>
-                {{ $t('components.transaction.unknown') }} ({{ fragment.sig }})
+                {{ $t('components.transaction.unknown') }} ({{ fragment.function_signature }})
             </strong>
         </span>
         <small v-if="fragment.contract">
@@ -129,19 +129,22 @@ export default {
                         :copy="true"
                     />
                     <div v-else-if="param.type === 'uint256' || param.type === 'uint128'"  class="word-break">
-                        <div v-if="fragment.isTransfer && fragment.token">
+                        <div v-if="fragment.isTransfer && fragment.contract && fragment.contract.isToken()">
                             <div
-                                v-if="!fragment.token.type || fragment.token.type === 'erc20'"
+                                v-if="fragment.contract.supportedInterfaces.includes('erc20')"
                                 class="clickable"
                                 @click="showWei = !showWei"
                             >
                                 <span v-if="!showWei">
-                                    <span> {{ formatWei(fragment.args[index], fragment.token.decimals) }}</span>
+                                    <span> {{
+                                        formatWei(fragment.args[index],
+                                                  fragment.contract.properties.decimals)
+                                    }}</span>
                                     <q-tooltip>Show wei</q-tooltip>
                                     <AddressField
-                                        :address="fragment.token.address"
+                                        :address="fragment.contract.address"
                                         :truncate="0"
-                                        :name="fragment.token.symbol"
+                                        :name="fragment.contract.properties.symbol"
                                         class="word-break q-ml-xs"
                                     />
                                 </span>
@@ -151,13 +154,13 @@ export default {
                             </div>
                             <div v-else>
                                 <AddressField
-                                    v-if="fragment.token.symbol"
-                                    :address="fragment.token.address"
+                                    v-if="fragment.contract.properties.symbol"
+                                    :address="fragment.contract.address"
                                     :truncate="0"
-                                    :name="fragment.token.symbol"
+                                    :name="fragment.contract.properties.symbol"
                                     class="word-break"
                                 />
-                                <span v-if="fragment.token.symbol"> #</span>
+                                <span v-if="fragment.contract.properties.symbol"> #</span>
                                 <span> {{ fragment.args[index] }}</span>
                             </div>
                         </div>

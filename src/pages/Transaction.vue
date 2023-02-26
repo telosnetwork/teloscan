@@ -119,8 +119,6 @@ export default {
         async loadTransfers() {
             this.transfers = [];
             for (const log of this.trx.logs) {
-                // ERC20, ERC721 & ERC1155 transfers (ERC721 & ERC20 have same first topic but ERC20 has 4 topics for
-                // transfers, ERC20 has 3 log topics, ERC1155 has a different first topic)
                 let sig = log.topics[0].substr(0, 10);
                 if (TRANSFER_SIGNATURES.includes(sig)) {
                     let contract = await this.$contractManager.getContract(log.address);
@@ -129,7 +127,7 @@ export default {
                     }
                     if (contract.supportedInterfaces.includes('erc721')) {
                         let tokenId = BigNumber.from(log.topics[3]).toString();
-                        let token = this.$contractManager.loadNFT(log.address, tokenId);
+                        let token = this.$contractManager.loadNFT(contract, tokenId);
                         this.erc721_transfers.push({
                             'tokenId': tokenId,
                             'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
@@ -139,7 +137,7 @@ export default {
                         });
                     } else if (contract.supportedInterfaces.includes('erc1155')) {
                         let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
-                        let token = this.$contractManager.loadNFT(log.address, tokenId);
+                        let token = this.$contractManager.loadNFT(contract, tokenId);
                         this.erc1155_transfers.push({
                             'amount': BigNumber.from(log.data).toString(),
                             'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
@@ -396,21 +394,18 @@ export default {
                         </div><br>
                         <ERCTransferList
                             v-if="erc20_transfers.length > 0"
-                            type="ERC20"
                             :trxFrom="trx.from"
                             :contract="contract"
                             :transfers="erc20_transfers"
                         />
                         <ERCTransferList
                             v-if="erc721_transfers.length > 0"
-                            type="ERC721"
                             :trxFrom="trx.from"
                             :contract="contract"
                             :transfers="erc721_transfers"
                         />
                         <ERCTransferList
                             v-if="erc1155_transfers.length > 0"
-                            type="ERC1155"
                             :trxFrom="trx.from"
                             :contract="contract"
                             :transfers="erc1155_transfers"
