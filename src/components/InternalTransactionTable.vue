@@ -184,7 +184,7 @@ export default {
                         continue;
                     }
 
-                    const parsedTransaction = await contract.parseTransaction(
+                    const parsedTransaction = await this.$contractManager.parseContractTransaction(
                         transaction.input_data,
                     );
                     if (parsedTransaction) {
@@ -198,11 +198,12 @@ export default {
                         TRANSFER_SIGNATURES.includes(signature) &&
                         transaction.parsedTransaction.args['amount']
                     ) {
-                        let token = await this.$contractManager.getTokenData(transaction.to, 'erc20');
-                        if(transaction.contract && token && token.decimals){
+                        let token = await this.$contractManager(transaction.to);
+                        if(token && token.properties?.decimals){
+                            let decimals = token.properties.decimals;
                             transaction.transfer = {
-                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], token.decimals)}`,
-                                'symbol': token.symbol,
+                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], decimals)}`,
+                                'symbol': token.properties.symbol,
                             };
                         }
                     }

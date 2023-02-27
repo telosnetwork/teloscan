@@ -56,7 +56,7 @@ export default {
             }
 
             if(itx.input_trimmed){
-                const parsedTransaction = await contract.parseTransaction(
+                const parsedTransaction = await this.$contractManager.parseContractTransaction(
                     '0x' + itx.input_trimmed,
                 );
 

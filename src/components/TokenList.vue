@@ -2,6 +2,7 @@
 import AddressField from 'components/AddressField';
 import { promptAddToMetamask } from 'src/lib/token-utils';
 import { formatWei } from 'src/lib/utils';
+import erc20Abi from 'erc-20-abi';
 
 export default {
     name: 'TokenList',
@@ -42,6 +43,9 @@ export default {
                 }
 
                 const contract = await this.$contractManager.getContract(token.address);
+                if(!contract.abi){
+                    contract.abi = erc20Abi;
+                }
                 const contractInstance = this.$contractManager.getContractInstance(contract);
 
                 try {
@@ -89,48 +93,49 @@ export default {
 
 <template>
 <div class="c-token-list">
-    <div
-        v-for="{ name, logoURI, address, balance, symbol, fullBalance, type, decimals } in tokens"
-        :key="address"
-        class="c-token-list__token-card"
-    >
-        <q-card>
-            <q-card-section class="u-flex--center-y">
-                <q-avatar class="q-mr-md">
-                    <img :src="logoURI" alt="Token Logo">
-                </q-avatar>
-                <div class="c-token-list__token-info-container">
-                    <div class="text-h6 c-token-list__token-name" :title="name">
-                        {{ name }}
+    <template v-for="{ name, logoURI, address, balance, symbol, fullBalance, type, decimals } in tokens" :key="address">
+        <div
+            v-if="fullBalance > 0"
+            class="c-token-list__token-card"
+        >
+            <q-card >
+                <q-card-section class="u-flex--center-y">
+                    <q-avatar class="q-mr-md">
+                        <img :src="logoURI" alt="Token Logo">
+                    </q-avatar>
+                    <div class="c-token-list__token-info-container">
+                        <div class="text-h6 c-token-list__token-name" :title="name">
+                            {{ name }}
+                        </div>
+                        <AddressField :address="address" class="q-mb-sm"/>
+                        <div class="q-mb-sm">
+                            <span class="q-pr-xs">
+                                {{ $t('components.balance') }}
+                            </span>
+                            <span v-if="balance === '0.0000'">
+                                {{ '< 0.0001 ' + symbol }}
+                            </span>
+                            <span v-else>
+                                {{ balance + ' ' + symbol || $t('components.error_fetching_balance') }}
+                            </span>
+                            <q-tooltip v-if="fullBalance > balance">
+                                {{ fullBalance + ' ' + symbol || $t('components.error_fetching_balance') }}
+                            </q-tooltip>
+                        </div>
+                        <span
+                            v-if="showMetamaskPrompt"
+                            class="c-token-list__metamask-prompt"
+                            tabindex="0"
+                            :aria-label="$t('components.launch_metamask_dialog_to_add', { symbol })"
+                            @click="promptAddToMetamask(address, symbol, logoURI, type, decimals)"
+                        >
+                            {{ $t('components.add_to_metamask', { symbol }) }}
+                        </span>
                     </div>
-                    <AddressField :address="address" class="q-mb-sm"/>
-                    <div class="q-mb-sm">
-                        <span class="q-pr-xs">
-                            {{ $t('components.balance') }}
-                        </span>
-                        <span v-if="balance === '0.0000'">
-                            {{ '< 0.0001 ' + symbol }}
-                        </span>
-                        <span v-else>
-                            {{ balance + ' ' + symbol || $t('components.error_fetching_balance') }}
-                        </span>
-                        <q-tooltip v-if="fullBalance > balance">
-                            {{ fullBalance + ' ' + symbol || $t('components.error_fetching_balance') }}
-                        </q-tooltip>
-                    </div>
-                    <span
-                        v-if="showMetamaskPrompt"
-                        class="c-token-list__metamask-prompt"
-                        tabindex="0"
-                        :aria-label="$t('components.launch_metamask_dialog_to_add', { symbol })"
-                        @click="promptAddToMetamask(address, symbol, logoURI, type, decimals)"
-                    >
-                        {{ $t('components.add_to_metamask', { symbol }) }}
-                    </span>
-                </div>
-            </q-card-section>
-        </q-card>
-    </div>
+                </q-card-section>
+            </q-card>
+        </div>
+    </template>
 </div>
 </template>
 

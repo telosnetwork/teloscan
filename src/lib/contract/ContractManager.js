@@ -1,8 +1,10 @@
 import ContractFactory from 'src/lib/contract/ContractFactory';
 import { ethers } from 'ethers';
 import erc20Abi from 'erc-20-abi';
+import axios from 'axios';
 import { erc721Abi, erc1155Abi } from 'src/lib/abi';
 import { ERC1155_TRANSFER_SIGNATURE } from 'src/lib/abi/signature/transfer_signatures.js';
+const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 
 export default class ContractManager {
     constructor(indexerApi, parser) {
@@ -75,16 +77,28 @@ export default class ContractManager {
         }
     }
 
-    getContractInstance(contract, provider, createNew=false) {
+    async loadTokenList() {
+        const results = await axios.get(tokenList);
+        const { tokens } = results.data;
+        results.data.tokens = (tokens ?? []).filter(({ chainId }) => chainId === +process.env.NETWORK_EVM_CHAIN_ID);
+
+        this.tokenList = results.data;
+    }
+
+    async getTokenList() {
+        if (!this.tokenList) {
+            await this.loadTokenList();
+        }
+        return this.tokenList;
+    }
+
+    getContractInstance(contract, provider) {
         if (!contract.abi){
             console.log('Cannot create contract instance without ABI !');
             return false;
         }
 
-        if (!contract.contract || createNew){
-            return new ethers.Contract(contract.address, contract.abi, provider ? provider : this.getEthersProvider());
-        }
-        return false;
+        return new ethers.Contract(contract.address, contract.abi, provider ? provider : this.getEthersProvider());
     }
     async getContract(address) {
         if (!address || typeof address !== 'string') {
@@ -93,8 +107,6 @@ export default class ContractManager {
         const addressLower = address.toLowerCase();
 
         if (this.contracts[addressLower]) {
-            console.log('CACHE HIT: ');
-            console.log(this.contracts[addressLower]);
             return this.contracts[addressLower];
         }
 
@@ -105,8 +117,6 @@ export default class ContractManager {
                 this.factory.buildEmptyContract(address)
             ;
             this.addContractToCache(address, contract);
-            console.log('CACHE ADD: ');
-            console.log(this.contracts[addressLower]);
             return contract;
         } catch (e) {
             console.error(`Could not retrieve contract ${address}: ${e.message}`);
