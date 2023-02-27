@@ -6,9 +6,14 @@ export default class ContractFactory {
             return;
         }
         let verified = false;
+        if(data.abi) {
+            data.abi = JSON.parse(data.abi);
+        }
         if(data.metadata) {
             let metadata = JSON.parse(data.metadata);
             data.abi = metadata.output.abi;
+            console.log('PARSED METADATA');
+            console.log(data.abi);
         }
         if(data.abi){
             verified = true;
@@ -36,7 +41,7 @@ export default class ContractFactory {
             supportedInterfaces: data.supportedInterfaces,
             properties: properties,
             nfts: {},
-            abi: data.abi | undefined,
+            abi: data.abi,
         });
     }
     buildEmptyContract(address) {

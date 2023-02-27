@@ -2,7 +2,7 @@
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
-import { ethers, BigNumber } from 'ethers';
+import { BigNumber } from 'ethers';
 import { formatWei, getTopicHash } from 'src/lib/utils';
 import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
@@ -125,8 +125,12 @@ export default {
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
             let response = await this.$indexerApi.get(this.getPath(props));
-            if (this.total === null) {
+            if (this.total === null && response.data?.total_count) {
                 this.pagination.rowsNumber = response.data.total_count;
+            }
+
+            if(response.data?.contracts){
+                this.$contractManager.addContractsToCache(response.data.contracts);
             }
 
             this.pagination.page = page;
@@ -137,7 +141,8 @@ export default {
             let newTransfers = [];
             for (const transaction of response.data.results) {
                 try {
-                    for (const log of transaction.logs) {
+                    let logs = JSON.parse(transaction.logs);
+                    for (const log of logs) {
                         if (this.expectedTopicLength !== log.topics.length) {
                             continue;
                         }
@@ -163,12 +168,12 @@ export default {
                         }
 
                         const contract = await this.$contractManager.getContract(
-                            ethers.utils.getAddress(address),
+                            address,
                         );
 
                         let valueDisplay;
                         if (this.tokenType === 'erc20') {
-                            if (contract && typeof contract.properties.decimals === 'number') {
+                            if (contract?.properties?.decimals) {
                                 valueDisplay = formatWei(log.data, contract.properties.decimals);
                             } else {
                                 valueDisplay = this.$t('components.unknown_precision');
@@ -185,7 +190,7 @@ export default {
 
                         const transfer = {
                             hash: transaction.hash,
-                            epoch: transaction.epoch,
+                            timestamp: transaction.timestamp / 1000,
                             valueDisplay,
                             address,
                             from,
@@ -237,7 +242,7 @@ export default {
                 signature = TRANSFER_EVENT_ERC1155_SIGNATURE;
             }
             path += `&log_topic=${signature}`;
-            path += `&offset=${(page - 1) * rowsPerPage}`;
+            path += `&offset=${(page - 1) * rowsPerPage}&includePagination=true`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
 
             return path;
@@ -292,7 +297,7 @@ export default {
                 <TransactionField :transaction-hash="props.row.hash"/>
             </q-td>
             <q-td key="date" :props="props">
-                <DateField :epoch="props.row.epoch" :force-show-age="showDateAge" />
+                <DateField :epoch="props.row.timestamp" :force-show-age="showDateAge" />
             </q-td>
             <q-td key="from" :props="props">
                 <AddressField :address="props.row.from"/>

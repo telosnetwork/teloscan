@@ -214,8 +214,10 @@ export default {
                 this.$providerManager.getEthersProvider().getSigner() :
                 this.$contractManager.getEthersProvider();
 
-            this.stlosContractInstance  = this.stlosContract.getContractInstance(provider, true);
-            this.escrowContractInstance = this.escrowContract.getContractInstance(provider, true);
+            this.stlosContractInstance  = this.$contractManager.getContractInstance(this.stlosContract, provider, true);
+            this.escrowContractInstance = this.$contractManager.getContractInstance(
+                this.escrowContract, provider, true,
+            );
 
             await this.fetchBalances();
 

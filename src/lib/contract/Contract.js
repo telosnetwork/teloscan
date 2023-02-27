@@ -1,5 +1,6 @@
 /* eslint-disable */
 import { ethers } from 'ethers';
+import {markRaw} from "vue";
 
 export default class Contract {
 
@@ -18,6 +19,9 @@ export default class Contract {
     this.creationInfo = creationInfo;
   }
 
+  getInstance(){
+
+  }
   isVerified() {
     return this.verified;
   }

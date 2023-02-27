@@ -216,7 +216,7 @@ export default {
             return `${this.abi.name}(${this.abi.inputs.map(i => i.type).join(',')})`;
         },
         async getEthersFunction(provider) {
-            const contractInstance = await this.contract.getContractInstance(provider);
+            const contractInstance = await this.$contractManager.getContractInstance(this.contract, provider);
             return contractInstance[this.getFunctionAbi()];
         },
         runRead() {
@@ -233,7 +233,7 @@ export default {
                 );
         },
         async runNative(opts) {
-            const contractInstance = await this.contract.getContractInstance();
+            const contractInstance = await this.$contractManager.getContractInstance(this.contract);
             const func = contractInstance.populateTransaction[this.getFunctionAbi()];
             const gasEstimater = contractInstance.estimateGas[this.getFunctionAbi()];
             const gasLimit = await gasEstimater(...this.params, Object.assign({ from: this.address }, opts));

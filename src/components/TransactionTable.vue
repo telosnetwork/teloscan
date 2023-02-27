@@ -165,11 +165,6 @@ export default {
                     this.$fragmentParser.addFunctionInterface(key, value);
                 }
             }
-            if(response.data.contracts){
-                for (const [key, value] of Object.entries(response.data.contracts)) {
-                    this.$contractManager.addContractToCache(key, value);
-                }
-            }
 
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;

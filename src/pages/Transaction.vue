@@ -111,9 +111,7 @@ export default {
                 }
             }
             if(trxResponse.data.contracts){
-                for (const [key, value] of Object.entries(trxResponse.data.contracts)) {
-                    this.$contractManager.addContractToCache(key, value);
-                }
+                this.$contractManager.addContractsToCache(trxResponse.data.contracts);
             }
             this.trx = trxResponse.data.results[0];
             this.trx.logs = JSON.parse(this.trx.logs);

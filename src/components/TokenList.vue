@@ -42,7 +42,7 @@ export default {
                 }
 
                 const contract = await this.$contractManager.getContract(token.address);
-                const contractInstance = contract.getContractInstance();
+                const contractInstance = this.$contractManager.getContractInstance(contract);
 
                 try {
                     const balance = await contractInstance.balanceOf(this.address);

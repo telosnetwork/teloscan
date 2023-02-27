@@ -65,24 +65,36 @@ export default class ContractManager {
         }
         let index = address.toString().toLowerCase();
         if(typeof this.contracts[index] === 'undefined'){
-            this.contracts[index] = this.factory.buildContract(contract);
+            this.contracts[index] = contract;
         }
     }
 
     addContractsToCache(contracts){
         for(const [key, contract] in contracts){
-            this.addContractToCache(key, contract);
+            this.addContractToCache(key, this.factory.buildContract(contract));
         }
     }
 
+    getContractInstance(contract, provider, createNew=false) {
+        if (!contract.abi){
+            console.log('Cannot create contract instance without ABI !');
+            return false;
+        }
+
+        if (!contract.contract || createNew){
+            return new ethers.Contract(contract.address, contract.abi, provider ? provider : this.getEthersProvider());
+        }
+        return false;
+    }
     async getContract(address) {
         if (!address || typeof address !== 'string') {
             return;
         }
         const addressLower = address.toLowerCase();
 
-        // Get from cache
         if (this.contracts[addressLower]) {
+            console.log('CACHE HIT: ');
+            console.log(this.contracts[addressLower]);
             return this.contracts[addressLower];
         }
 
@@ -93,13 +105,15 @@ export default class ContractManager {
                 this.factory.buildEmptyContract(address)
             ;
             this.addContractToCache(address, contract);
+            console.log('CACHE ADD: ');
+            console.log(this.contracts[addressLower]);
             return contract;
         } catch (e) {
             console.error(`Could not retrieve contract ${address}: ${e.message}`);
         }
 
-        let contract = await this.factory.buildEmptyContract(address);
-        await this.addContractToCache(address, contract);
+        let contract = this.factory.buildEmptyContract(address);
+        this.addContractToCache(address, contract);
         return contract;
     }
 

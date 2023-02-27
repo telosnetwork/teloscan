@@ -319,7 +319,7 @@ export default {
                     <TokenList :address="address"/>
                 </q-tab-panel>
                 <q-tab-panel v-if="isContract" name="contract">
-                    <ContractTab v-if="this.contract.isVerified()" :contract="contract"/>
+                    <ContractTab v-if="this.contract?.isVerified()" :contract="contract"/>
                     <GenericContractInterface v-else/>
                 </q-tab-panel>
             </q-tab-panels>
