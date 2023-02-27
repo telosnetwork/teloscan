@@ -59,14 +59,17 @@ export default class ContractManager {
         return (sig === ERC1155_TRANSFER_SIGNATURE) ? 'erc1155' : type;
     }
 
-    async addContractToCache(address, contract){
+    addContractToCache(address, contract){
+        if(!address){
+            return;
+        }
         let index = address.toString().toLowerCase();
         if(typeof this.contracts[index] === 'undefined'){
             this.contracts[index] = this.factory.buildContract(contract);
         }
     }
 
-    async addContractsToCache(contracts){
+    addContractsToCache(contracts){
         for(const [key, contract] in contracts){
             this.addContractToCache(key, contract);
         }
@@ -89,14 +92,14 @@ export default class ContractManager {
                 this.factory.buildContract(response.data.results[0]) :
                 this.factory.buildEmptyContract(address)
             ;
-            this.addContractToCache(contract);
+            this.addContractToCache(address, contract);
             return contract;
         } catch (e) {
             console.error(`Could not retrieve contract ${address}: ${e.message}`);
         }
 
-        let contract = this.factory.buildEmptyContract(address);
-        this.addContractToCache(address, contract);
+        let contract = await this.factory.buildEmptyContract(address);
+        await this.addContractToCache(address, contract);
         return contract;
     }
 

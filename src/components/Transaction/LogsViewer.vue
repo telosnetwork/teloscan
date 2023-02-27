@@ -12,7 +12,7 @@ export default {
     methods: {
         async getLogContract(log){
             try {
-                return await this.$contractManager.getContract(log.address.toLowerCase());
+                return await this.$contractManager.getContract(log.address);
             } catch (e) {
                 console.error(`Failed to retrieve contract with address ${log.address}`);
                 // notify the user
@@ -31,13 +31,14 @@ export default {
         },
         logs: {
             type: Array,
-            required: true,
+            required: false,
+            default: () => [],
         },
     },
 
     async created() {
         let verified = 0;
-        for(let i = 0; i < this.logs.length; i++){
+        for(let i = 0; i < this.logs?.length; i++){
             const log = this.logs[i];
             let contract = await this.getLogContract(log);
             if (contract){
@@ -54,7 +55,7 @@ export default {
 
         }
 
-        this.allVerified = (verified === this.logs.length);
+        this.allVerified = (verified === this.logs?.length);
     },
     data: () => ({
         human_readable: true,
@@ -66,7 +67,7 @@ export default {
 
 <template>
 <div>
-    <div v-if="logs.length === 0" class="row">
+    <div v-if="logs === null || logs.length === 0" class="row">
         <div class="col-12 u-flex--center">
             <q-icon class="fa fa-info-circle q-mr-md" size="md" />
             <h5>{{ $t('components.transaction.no_logs_found') }}</h5>

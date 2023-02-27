@@ -110,6 +110,11 @@ export default {
                     this.$fragmentParser.addFunctionInterface(key, value);
                 }
             }
+            if(trxResponse.data.contracts){
+                for (const [key, value] of Object.entries(trxResponse.data.contracts)) {
+                    this.$contractManager.addContractToCache(key, value);
+                }
+            }
             this.trx = trxResponse.data.results[0];
             this.trx.logs = JSON.parse(this.trx.logs);
             this.trx.gasUsed = BigNumber.from(this.trx.gasUsed);
@@ -458,7 +463,7 @@ export default {
                     </q-tab-panel>
                     <q-tab-panel name="logs">
                         <div class="jsonViewer">
-                            <LogsViewer :logs="trx.logs" :contract="contract"/>
+                            <LogsViewer :logs="trx?.logs" :contract="contract"/>
                         </div>
                     </q-tab-panel>
                     <q-tab-panel name="internal">

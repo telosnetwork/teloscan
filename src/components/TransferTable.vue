@@ -124,9 +124,9 @@ export default {
 
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
-            let result = await this.$evmEndpoint.get(this.getPath(props));
+            let response = await this.$indexerApi.get(this.getPath(props));
             if (this.total === null) {
-                this.pagination.rowsNumber = result.data.total.value;
+                this.pagination.rowsNumber = response.data.total_count;
             }
 
             this.pagination.page = page;
@@ -135,7 +135,7 @@ export default {
             this.pagination.descending = descending;
 
             let newTransfers = [];
-            for (const transaction of result.data.transactions) {
+            for (const transaction of response.data.results) {
                 try {
                     for (const log of transaction.logs) {
                         if (this.expectedTopicLength !== log.topics.length) {
@@ -164,14 +164,12 @@ export default {
 
                         const contract = await this.$contractManager.getContract(
                             ethers.utils.getAddress(address),
-                            this.tokenType,
                         );
 
-                        const token = contract.token;
                         let valueDisplay;
                         if (this.tokenType === 'erc20') {
-                            if (token && typeof token.decimals === 'number') {
-                                valueDisplay = formatWei(log.data, token.decimals);
+                            if (contract && typeof contract.properties.decimals === 'number') {
+                                valueDisplay = formatWei(log.data, contract.properties.decimals);
                             } else {
                                 valueDisplay = this.$t('components.unknown_precision');
                             }
@@ -220,25 +218,25 @@ export default {
             this.loading = false;
         },
         getIcon(row) {
-            if (row.token && row.token.logoURI) {
-                if (row.token.logoURI.startsWith('ipfs://')) {
-                    return row.token.logoURI.replace(/ipfs:\/\//, 'https://ipfs.io/ipfs/');
+            if (row.logoURI) {
+                if (row.logoURI.startsWith('ipfs://')) {
+                    return row.logoURI.replace(/ipfs:\/\//, 'https://ipfs.io/ipfs/');
                 }
-                return row.token.logoURI;
+                return row.logoURI;
             } else {
                 return DEFAULT_TOKEN_LOGO;
             }
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/v1/transactions?limit=${
+            let path = `/address/${this.address}/transactions?limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
             let signature = TRANSFER_EVENT_ERC20_SIGNATURE;
             if(this.tokenType === 'erc1155'){
                 signature = TRANSFER_EVENT_ERC1155_SIGNATURE;
             }
-            path += `&log_topics=${signature},${this.address}`;
+            path += `&log_topic=${signature}`;
             path += `&offset=${(page - 1) * rowsPerPage}`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
 

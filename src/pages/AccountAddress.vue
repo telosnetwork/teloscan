@@ -47,7 +47,6 @@ export default {
             balance: null,
             nonce: null,
             isContract: false,
-            isVerified: null,
             contract: null,
             verificationDate: '',
             tab: '#transactions',
@@ -101,7 +100,7 @@ export default {
             },
         },
     },
-    mounted() {
+    created() {
         this.loadAccount();
     },
     methods: {
@@ -112,26 +111,20 @@ export default {
             if (account.code.length > 0){
                 this.isContract = true;
                 this.contract = await this.$contractManager.getContract(this.address);
-                this.isVerified = this.contract.verified;
+                this.isContract = true;
+                if (this.contract.getName()) {
+                    this.title = this.contract.getName();
+                } else {
+                    this.title = this.$t('pages.contract');
+                }
+            } else {
+                this.contract = null;
+                this.nonce = account.nonce;
+                this.title = this.$t('pages.account');
             }
 
             this.balance = this.getBalanceDisplay(account.balance);
             this.telosAccount = account.account;
-            this.isContract = account.code.length > 0;
-
-            if (this.isContract === false){
-                this.contract = null;
-                this.nonce = account.nonce;
-            }
-
-            if (this.isContract && this.contract.getName()) {
-                this.title = this.contract.getName();
-            } else if (this.isContract) {
-                this.title = this.$t('pages.contract');
-            } else {
-                this.title = this.$t('pages.account');
-            }
-
             this.accountLoading = false;
         },
         getBalanceDisplay(balance) {
@@ -168,10 +161,10 @@ export default {
                     {{ title }}
                 </div>
                 <q-icon
-                    v-if="isContract && isVerified !== null"
+                    v-if="isContract"
                     class="cursor"
-                    :name="isVerified ? 'verified' : 'warning'"
-                    :class="isVerified ? 'text-positive' : 'text-negative'"
+                    :name="this.contract?.isVerified() ? 'verified' : 'warning'"
+                    :class="this.contract?.isVerified() ? 'text-positive' : 'text-negative'"
                     size="1.25rem"
                     @click="confirmationDialog = true"
                 />
@@ -179,7 +172,7 @@ export default {
                     class="text-secondary"
                     :flag="confirmationDialog"
                     :address="address"
-                    :status="isVerified"
+                    :status="this.contract?.isVerified()"
                     @dialog="disableConfirmation"
                 />
                 <CopyButton
@@ -293,7 +286,7 @@ export default {
                 keep-alive="keep-alive"
             >
                 <q-tab-panel name="transactions">
-                    <TransactionTable :title="address" :filter="{address}"/>
+                    <TransactionTable :title="address" :filter="'/address/' + address"/>
                 </q-tab-panel>
                 <q-tab-panel name="int_transactions">
                     <InternalTransactionTable :title="address" :filter="{address}"/>
@@ -326,7 +319,7 @@ export default {
                     <TokenList :address="address"/>
                 </q-tab-panel>
                 <q-tab-panel v-if="isContract" name="contract">
-                    <ContractTab v-if="isVerified" :contract="contract"/>
+                    <ContractTab v-if="this.contract.isVerified()" :contract="contract"/>
                     <GenericContractInterface v-else/>
                 </q-tab-panel>
             </q-tab-panels>

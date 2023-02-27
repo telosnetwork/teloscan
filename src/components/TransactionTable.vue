@@ -21,8 +21,8 @@ export default {
             required: true,
         },
         filter: {
-            type: Object,
-            default: () => ({}),
+            type: String,
+            default: '',
         },
         initialPageSize: {
             type: Number,
@@ -225,7 +225,8 @@ export default {
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/transactions?limit=${
+            const filter =  (this.filter.toString().length > 0) ? this.filter.toString() : '';
+            let path = `${filter}/transactions?limit=${
                 rowsPerPage === 0 ? 500 : rowsPerPage
             }`;
             path += `&offset=${(page - 1) * rowsPerPage}`;
