@@ -30,9 +30,29 @@ export default {
         promptAddToMetamask(address, symbol, logoURI, type, decimals) {
             promptAddToMetamask(this.$q, address, symbol, logoURI, type, decimals);
         },
+        checkTokenList(address, tokenList){
+            return tokenList.tokens.filter((token) => {
+                if(address === token.address.toLowerCase()){
+                    return token;
+                }
+            })[0];
+        },
         async loadTokens() {
+            // TODO: Get the address' balances from API and then split into official/nonofficial using the token list
             const tokenList = await this.$contractManager.getTokenList();
-            let tokens = tokenList.tokens;
+            const response = await this.$indexerApi.get(`/account/${this.address}/balances`);
+            if(response.data?.contracts){
+                this.$contractManager.addContractsToCache(response.data.contracts);
+            }
+            let tokens = [];
+            response.data.results.forEach((result) => {
+                if(result.balance > 0){
+                    let token = this.checkTokenList(result.contract.toLowerCase(), tokenList);
+                    if(token && !tokens.includes(token)){
+                        tokens.push(token);
+                    }
+                }
+            });
             tokens = this.sortTokens(tokens);
             await Promise.all(tokens.map(async (token) => {
                 if (token.logoURI && token.logoURI.startsWith('ipfs://')) {
@@ -52,6 +72,9 @@ export default {
                     const balance = await contractInstance.balanceOf(this.address);
                     token.balance = `${formatWei(balance, token.decimals, 4)}`;
                     token.fullBalance = `${formatWei(balance, token.decimals)}`;
+                    if(balance === 0){
+                        tokens.remove(token);
+                    }
                 } catch (e) {
                     throw `Failed to fetch balance:\n${e}`;
                 }
@@ -93,49 +116,48 @@ export default {
 
 <template>
 <div class="c-token-list">
-    <template v-for="{ name, logoURI, address, balance, symbol, fullBalance, type, decimals } in tokens" :key="address">
-        <div
-            v-if="fullBalance > 0"
-            class="c-token-list__token-card"
-        >
-            <q-card >
-                <q-card-section class="u-flex--center-y">
-                    <q-avatar class="q-mr-md">
-                        <img :src="logoURI" alt="Token Logo">
-                    </q-avatar>
-                    <div class="c-token-list__token-info-container">
-                        <div class="text-h6 c-token-list__token-name" :title="name">
-                            {{ name }}
-                        </div>
-                        <AddressField :address="address" class="q-mb-sm"/>
-                        <div class="q-mb-sm">
-                            <span class="q-pr-xs">
-                                {{ $t('components.balance') }}
-                            </span>
-                            <span v-if="balance === '0.0000'">
-                                {{ '< 0.0001 ' + symbol }}
-                            </span>
-                            <span v-else>
-                                {{ balance + ' ' + symbol || $t('components.error_fetching_balance') }}
-                            </span>
-                            <q-tooltip v-if="fullBalance > balance">
-                                {{ fullBalance + ' ' + symbol || $t('components.error_fetching_balance') }}
-                            </q-tooltip>
-                        </div>
-                        <span
-                            v-if="showMetamaskPrompt"
-                            class="c-token-list__metamask-prompt"
-                            tabindex="0"
-                            :aria-label="$t('components.launch_metamask_dialog_to_add', { symbol })"
-                            @click="promptAddToMetamask(address, symbol, logoURI, type, decimals)"
-                        >
-                            {{ $t('components.add_to_metamask', { symbol }) }}
-                        </span>
+    <div
+        v-for="{ name, logoURI, address, balance, symbol, fullBalance, type, decimals } in tokens"
+        :key="address"
+        class="c-token-list__token-card"
+    >
+        <q-card >
+            <q-card-section class="u-flex--center-y">
+                <q-avatar class="q-mr-md">
+                    <img :src="logoURI" alt="Token Logo">
+                </q-avatar>
+                <div class="c-token-list__token-info-container">
+                    <div class="text-h6 c-token-list__token-name" :title="name">
+                        {{ name }}
                     </div>
-                </q-card-section>
-            </q-card>
-        </div>
-    </template>
+                    <AddressField :address="address" class="q-mb-sm"/>
+                    <div class="q-mb-sm">
+                        <span class="q-pr-xs">
+                            {{ $t('components.balance') }}
+                        </span>
+                        <span v-if="balance === '0.0000'">
+                            {{ '< 0.0001 ' + symbol }}
+                        </span>
+                        <span v-else>
+                            {{ balance + ' ' + symbol || $t('components.error_fetching_balance') }}
+                        </span>
+                        <q-tooltip v-if="fullBalance > balance">
+                            {{ fullBalance + ' ' + symbol || $t('components.error_fetching_balance') }}
+                        </q-tooltip>
+                    </div>
+                    <span
+                        v-if="showMetamaskPrompt"
+                        class="c-token-list__metamask-prompt"
+                        tabindex="0"
+                        :aria-label="$t('components.launch_metamask_dialog_to_add', { symbol })"
+                        @click="promptAddToMetamask(address, symbol, logoURI, type, decimals)"
+                    >
+                        {{ $t('components.add_to_metamask', { symbol }) }}
+                    </span>
+                </div>
+            </q-card-section>
+        </q-card>
+    </div>
 </div>
 </template>
 

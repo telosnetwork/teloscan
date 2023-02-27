@@ -12,8 +12,6 @@ export default class ContractFactory {
         if(data.metadata) {
             let metadata = JSON.parse(data.metadata);
             data.abi = metadata.output.abi;
-            console.log('PARSED METADATA');
-            console.log(data.abi);
         }
         if(data.abi){
             verified = true;
