@@ -105,14 +105,6 @@ export default {
                 this.trxNotFound = true;
                 return;
             }
-            if(trxResponse.data.abi){
-                for (const [key, value] of Object.entries(trxResponse.data.abi)) {
-                    this.$fragmentParser.addFunctionInterface(key, value);
-                }
-            }
-            if(trxResponse.data.contracts){
-                this.$contractManager.addContractsToCache(trxResponse.data.contracts);
-            }
             this.trx = trxResponse.data.results[0];
             this.trx.logs = JSON.parse(this.trx.logs);
             this.trx.gasUsed = BigNumber.from(this.trx.gasUsed);
@@ -135,13 +127,15 @@ export default {
                     }
                     if (contract.supportedInterfaces.includes('erc721')) {
                         let tokenId = BigNumber.from(log.topics[3]).toString();
-                        let token = this.$contractManager.loadNFT(contract, tokenId);
+                        let token = await this.$contractManager.loadNFT(contract, tokenId);
+                        let tokenUri = token.tokenUri?.replace('ipfs://', 'https://ipfs.io/ipfs/');
                         this.erc721_transfers.push({
                             'tokenId': tokenId,
                             'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                             'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
                             'token' : token,
                             'contract' : contract,
+                            'tokenUri': tokenUri,
                         });
                     } else if (contract.supportedInterfaces.includes('erc1155')) {
                         let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
@@ -426,7 +420,8 @@ export default {
                                 <strong>{{ $t('pages.gas_price_charged') }}:&nbsp;</strong>
                             </div>
                             <span>{{ $t('pages.balance_gwei', { amount: getGasChargedGWEI() }) }}</span>
-                        </div><br>
+                        </div>
+                        <br>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3">
                                 <strong>{{ $t('pages.gas_fee') }}:&nbsp;</strong>
@@ -435,15 +430,18 @@ export default {
                                 {{ $t('pages.balance_tlos', { amount: getGasFee() }) }}
                                 <small class="q-pl-sm">(~ ${{ (getGasFee() * tlosPrice).toFixed(5) }})</small>
                             </span>
-                        </div><br>
+                        </div>
+                        <br>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3"><strong>{{ $t('pages.gas_used') }}:&nbsp;</strong></div>
                             <div class="col-9">{{ trx.gasUsed }}</div>
-                        </div><br>
+                        </div>
+                        <br>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3"><strong>{{ $t('pages.gas_limit') }}:&nbsp;</strong></div>
                             <div class="col-9">{{ trx.gasLimit }}</div>
-                        </div><br>
+                        </div>
+                        <br>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3"><strong>{{ $t('pages.nonce') }}:&nbsp;</strong></div>
                             <div class="col-9">{{ trx.nonce }}</div>
@@ -461,7 +459,7 @@ export default {
                     </q-tab-panel>
                     <q-tab-panel name="logs">
                         <div class="jsonViewer">
-                            <LogsViewer :logs="trx?.logs" :contract="contract"/>
+                            <LogsViewer :logs="trx?.logs" :trx="trx" :contract="contract"/>
                         </div>
                     </q-tab-panel>
                     <q-tab-panel name="internal">
@@ -475,17 +473,17 @@ export default {
 </template>
 
 <style scoped lang="sass">
-    @media screen and (max-width: 650px)
-        #function-parameters
-            width: 100%
-            flex: auto
-            margin-top: 20px
+@media screen and (max-width: 650px)
+    #function-parameters
+        width: 100%
+        flex: auto
+        margin-top: 20px
 
-        #transaction-page
-            .col-3
-                width: 100%
-            .col-9
-                width: 100%
+    #transaction-page
+        .col-3
+            width: 100%
+        .col-9
+            width: 100%
 
     @media only screen and (max-width: 900px)
         #function-parameters

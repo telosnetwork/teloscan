@@ -106,10 +106,10 @@ export default {
     methods: {
         async loadAccount() {
             this.accountLoading = true;
+            this.isContract = false;
 
             const account = await this.$evm.telos.getEthAccount(this.address);
             if (account.code.length > 0){
-                this.isContract = true;
                 this.contract = await this.$contractManager.getContract(this.address);
                 this.isContract = true;
                 if (this.contract.getName()) {
@@ -153,7 +153,7 @@ export default {
 </script>
 
 <template>
-<div class="pageContainer q-pt-xl">
+<div :key="'aa' + this.address" class="pageContainer q-pt-xl">
     <div>
         <div class="row tableWrapper justify-between q-mb-lg">
             <div class="homeInfo">

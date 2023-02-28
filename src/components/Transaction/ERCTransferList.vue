@@ -105,16 +105,19 @@ export default {
                             <q-tooltip>{{ $t('components.transaction.consult_collection') }}</q-tooltip>
                         </a>
                     </span>
-                    <span v-if="transfer.token?.metadata" class="word-break">
-                        <span>
-                            <a clickable="clickable" :href="transfer.token?.metadata" target="_blank">
+                    <span>
+                        <span v-if="transfer.contract.metadata" class="word-break">
+                            <q-icon class="q-pb-sm q-ml-xs" name="eye" size="14px"/>
+                            <q-tooltip >{{ transfer.contract.metadata }}</q-tooltip>
+                        </span>
+                        <span v-if="transfer.tokenUri" class="word-break">
+                            <a clickable="clickable" :href="transfer.tokenUri" target="_blank">
                                 <q-icon class="q-pb-sm q-ml-xs" name="description" size="14px"/>
                             </a>
                             <q-tooltip>{{ $t('components.transaction.consult_metadata') }}</q-tooltip>
                         </span>
-                        <span>
+                        <span v-if="transfer.token?.image">
                             <a
-                                v-if="transfer.token?.image"
                                 class="q-pl-xs"
                                 clickable="clickable"
                                 :href="transfer.token?.image"

@@ -153,19 +153,6 @@ export default {
                 this.pagination.rowsNumber = response.data.total_count;
             }
 
-            // Add contracts to cache if sent back
-            if(response.data.contracts){
-                this.$contractManager.addContractsToCache(response.data.contracts);
-            }
-
-
-            // Add ABI data to cache
-            if(response.data.abi){
-                for (const [key, value] of Object.entries(response.data.abi)) {
-                    this.$fragmentParser.addFunctionInterface(key, value);
-                }
-            }
-
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
             this.pagination.sortBy = sortBy;

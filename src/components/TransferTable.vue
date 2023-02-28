@@ -120,9 +120,6 @@ export default {
                 this.pagination.rowsNumber = response.data.total_count;
             }
 
-            if(response.data?.contracts){
-                this.$contractManager.addContractsToCache(response.data.contracts);
-            }
             const tokenList = await this.$contractManager.getTokenList();
 
             this.pagination.page = page;

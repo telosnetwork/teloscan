@@ -67,13 +67,13 @@ export default class ContractManager {
         }
         let index = address.toString().toLowerCase();
         if(typeof this.contracts[index] === 'undefined'){
-            this.contracts[index] = contract;
+            this.contracts[index] = this.factory.buildContract(contract);
         }
     }
 
     addContractsToCache(contracts){
-        for(const [key, contract] in contracts){
-            this.addContractToCache(key, this.factory.buildContract(contract));
+        for(const index in contracts){
+            this.addContractToCache(index, contracts[index]);
         }
     }
 

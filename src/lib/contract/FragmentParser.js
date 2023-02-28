@@ -86,6 +86,7 @@ export default class FragmentParser {
     }
 
     async parseLog(log, contract) {
+        log.transactionHash = log.transaction_hash;
         if (contract.getInterface()) {
             let parsedLog;
             try {
@@ -110,12 +111,13 @@ export default class FragmentParser {
     }
 
     async parseEvent(contract, log){
-        const eventIface = await this.getEventInterface(log.topics[0]);
-        if (eventIface) {
+        const eventInterface = await this.getEventInterface(log.topics[0]);
+        if (eventInterface) {
             try {
-                let parsedLog = eventIface.parseLog(log);
+                let parsedLog = eventInterface.parseLog(log);
                 return parsedLog;
             } catch(e) {
+                console.log(log);
                 console.log(`Failed to parse log #${log.logIndex} from event interface: ${e.message}`);
             }
         }

@@ -25,6 +25,10 @@ export default {
         },
     },
     props: {
+        trx : {
+            type: Object,
+            required: false,
+        },
         contract : {
             type: Object,
             required: false,
@@ -40,6 +44,12 @@ export default {
         let verified = 0;
         for(let i = 0; i < this.logs?.length; i++){
             const log = this.logs[i];
+            if(this.trx){
+                log.blockNumber = this.trx.blockNumber;
+                log.transactionIndex = this.trx.index;
+                log.transactionHash = this.trx.hash;
+                delete log.transaction_hash;
+            }
             let contract = await this.getLogContract(log);
             if (contract){
                 verified = (contract.isVerified()) ? verified + 1: verified;

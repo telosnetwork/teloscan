@@ -10,13 +10,12 @@ const telosApi = axios.create({
 const indexerApi = axios.create({
     baseURL: process.env.INDEXER_API_ENDPOINT,
 });
-
 const hyperion = axios.create({
     baseURL: process.env.NETWORK_EVM_ENDPOINT,
 });
 
 const fragmentParser = new FragmentParser(hyperion);
-const contractManager = new ContractManager(indexerApi, fragmentParser);
+let contractManager = new ContractManager(indexerApi, fragmentParser);
 
 
 export default boot(({ app, store }) => {
@@ -24,6 +23,21 @@ export default boot(({ app, store }) => {
     app.config.globalProperties.$indexerApi = indexerApi;
     app.config.globalProperties.$fragmentParser = fragmentParser;
     store.$contractManager = app.config.globalProperties.$contractManager = markRaw(contractManager);
+
+    indexerApi.interceptors.response.use(function (response) {
+        if(response.data.abi){
+            for (const [key, value] of Object.entries(response.data.abi)) {
+                app.config.globalProperties.$contractManager.parser.addFunctionInterface(key, value);
+                app.config.globalProperties.$fragmentParser.addFunctionInterface(key, value);
+            }
+        }
+        if(response.data.contracts){
+            app.config.globalProperties.$contractManager.addContractsToCache(response.data.contracts);
+        }
+        return response;
+    }, function (error) {
+        return Promise.reject(error);
+    });
 });
 
 export { telosApi, indexerApi };
