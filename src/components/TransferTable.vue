@@ -2,14 +2,8 @@
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
-import { BigNumber } from 'ethers';
-import { formatWei, getTopicHash } from 'src/lib/utils';
 import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
-
-const TRANSFER_EVENT_ERC20_SIGNATURE = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
-const TRANSFER_EVENT_ERC1155_SIGNATURE = '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62';
-const TOKEN_ID_TRUNCATE_LENGTH = 66;
+import { formatWei } from 'src/lib/utils';
 
 export default {
     name: 'TransferTable',
@@ -102,13 +96,10 @@ export default {
     mounted() {
         switch (this.tokenType) {
         case 'erc20':
-            this.expectedTopicLength = 3;
             break;
         case 'erc721':
-            this.expectedTopicLength = 4;
             break;
         case 'erc1155':
-            this.expectedTopicLength = 4;
             break;
         default:
             throw new Error(this.$t('components.unsupported_token_type', { tokenType: this.tokenType }));
@@ -132,6 +123,7 @@ export default {
             if(response.data?.contracts){
                 this.$contractManager.addContractsToCache(response.data.contracts);
             }
+            const tokenList = await this.$contractManager.getTokenList();
 
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
@@ -139,78 +131,35 @@ export default {
             this.pagination.descending = descending;
 
             let newTransfers = [];
-            for (const transaction of response.data.results) {
-                try {
-                    let logs = JSON.parse(transaction.logs);
-                    for (const log of logs) {
-                        if (this.expectedTopicLength !== log.topics.length) {
-                            continue;
-                        }
-
-                        if (!TRANSFER_SIGNATURES.includes(log.topics[0].substr(0, 10).toLowerCase())) {
-                            continue;
-                        }
-
-                        const address = `0x${log.address.substring(log.address.length - 40)}`;
-                        let from, to;
-                        if(this.tokenType === 'erc1155'){
-                            from = getTopicHash(log.topics[2]);
-                            to = getTopicHash(log.topics[3]);
-                        } else {
-                            from = getTopicHash(log.topics[1]);
-                            to = getTopicHash(log.topics[2]);
-                        }
-                        if (
-                            to.toLowerCase() !== this.address.toLowerCase() &&
-                            from.toLowerCase() !== this.address.toLowerCase()
-                        ) {
-                            continue;
-                        }
-
-                        const contract = await this.$contractManager.getContract(
-                            address,
-                        );
-
-                        let valueDisplay;
-                        if (this.tokenType === 'erc20') {
-                            if (contract?.properties?.decimals) {
-                                valueDisplay = formatWei(log.data, contract.properties.decimals);
-                            } else {
-                                valueDisplay = this.$t('components.unknown_precision');
-                            }
-                        } else {
-                            let tokenId = (this.tokenType === 'erc1155') ?
-                                BigNumber.from(log.data.substr(0, TOKEN_ID_TRUNCATE_LENGTH)).toString() :
-                                BigNumber.from(log.topics[3]).toString();
-                            if(tokenId.length > 15){
-                                tokenId = tokenId.substr(0, 15) + '...';
-                            }
-                            valueDisplay = this.$t('components.token_id', { tokenId });
-                        }
-
-                        const transfer = {
-                            hash: transaction.hash,
-                            timestamp: transaction.timestamp / 1000,
-                            valueDisplay,
-                            address,
-                            from,
-                            to,
-                            ...contract,
-                        };
-
-                        newTransfers.push(transfer);
+            for (const transfer of response.data.results) {
+                let contract = await this.$contractManager.getContract(transfer.contract);
+                let valueDisplay;
+                if(this.tokenType === 'erc20'){
+                    if (contract && contract.properties.decimals) {
+                        valueDisplay = formatWei(transfer.amount, contract.properties.decimals);
+                    } else {
+                        valueDisplay = this.$t('components.unknown_precision');
                     }
-
-                } catch (e) {
-                    console.error(
-                        `Failed to parse data for transaction, error was: ${e.message}`,
-                    );
-                    // notify the user
-                    this.$q.notify({
-                        message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
-                        type: 'negative',
-                    });
+                } else if (this.tokenType === 'erc721') {
+                    valueDisplay = '#' + transfer.id;
                 }
+                tokenList.tokens.forEach((token) => {
+                    if(token.address.toLowerCase() === transfer.contract.toLowerCase()){
+                        contract.logoURI = token.logoURI;
+                    }
+                });
+                const nTransfer = {
+                    hash: transfer.transaction,
+                    timestamp: transfer.timestamp / 1000,
+                    count: 1,
+                    value: valueDisplay,
+                    contract: contract,
+                    from: transfer.from,
+                    to: transfer.to,
+                    ...contract,
+                };
+
+                newTransfers.push(nTransfer);
             }
 
             this.transfers.splice(
@@ -234,14 +183,10 @@ export default {
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/address/${this.address}/transactions?limit=${
+            let path = `/account/${this.address}/transfers?limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
-            let signature = TRANSFER_EVENT_ERC20_SIGNATURE;
-            if(this.tokenType === 'erc1155'){
-                signature = TRANSFER_EVENT_ERC1155_SIGNATURE;
-            }
-            path += `&log_topic=${signature}`;
+            path += `&type=${this.tokenType}`;
             path += `&offset=${(page - 1) * rowsPerPage}&includePagination=true`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
 
@@ -306,7 +251,7 @@ export default {
                 <AddressField :address="props.row.to"/>
             </q-td>
             <q-td key="value" :props="props">
-                {{ props.row.valueDisplay }}
+                {{ props.row.value }}
             </q-td>
             <q-td key="token" :props="props">
                 <q-img v-if="tokenType==='erc20'" class="coin-icon" :src="getIcon(props.row)"/>
@@ -327,6 +272,7 @@ export default {
   width: 20px
   margin-right: .25rem
   vertical-align: middle
+  border-radius: 100%
 
 .token-name
   vertical-align: middle

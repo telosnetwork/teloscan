@@ -184,6 +184,7 @@ export default {
         value: 'Valeur',
     },
     components: {
+        no_balances_found: 'Aucun jetons trouvés pour cette adresse',
         internal_txns: 'Transactions Internes',
         n_internal_txns: '{ amount } transactions internes',
         none: 'Aucun',

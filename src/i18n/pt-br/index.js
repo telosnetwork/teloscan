@@ -184,6 +184,7 @@ export default {
         value: 'Valor',
     },
     components: {
+        no_balances_found: 'No token balances found for this address',
         internal_txns: 'Transações internas',
         n_internal_txns: '{ amount } transações internas',
         none: 'Nenhum',

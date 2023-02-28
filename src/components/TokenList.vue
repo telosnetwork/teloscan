@@ -115,7 +115,18 @@ export default {
 </script>
 
 <template>
-<div class="c-token-list">
+<div v-if="!tokens" class="row">
+    <div class="col-12 flex items-center justify-center">
+        <q-spinner size="md" class="q-mb-xl q-mt-xl" />
+    </div>
+</div>
+<div v-else-if="tokens.length === 0" class="row">
+    <div class="col-12 flex items-center justify-center">
+        <q-icon class="fa fa-info-circle" size="md" />
+        <h5 class="text-center  q-mb-xl q-mt-xl q-ml-md"> {{ $t('components.no_balances_found') }}</h5>
+    </div>
+</div>
+<div v-else class="c-token-list">
     <div
         v-for="{ name, logoURI, address, balance, symbol, fullBalance, type, decimals } in tokens"
         :key="address"
