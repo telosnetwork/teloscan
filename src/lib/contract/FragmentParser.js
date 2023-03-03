@@ -78,8 +78,8 @@ export default class FragmentParser {
         }
         parsedLog.function_signature = log.topics[0].substr(0, 10);
         parsedLog.isTransfer = TRANSFER_SIGNATURES.includes(parsedLog.function_signature);
-        parsedLog.logIndex = log.logIndex;
         parsedLog.address = log.address;
+        parsedLog.logIndex = log.logIndex;
         parsedLog.contract = contract;
         parsedLog.name = parsedLog.signature;
         return parsedLog;

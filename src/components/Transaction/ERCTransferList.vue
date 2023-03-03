@@ -106,9 +106,11 @@ export default {
                         </a>
                     </span>
                     <span>
-                        <span v-if="transfer.contract.metadata" class="word-break">
-                            <q-icon class="q-pb-sm q-ml-xs" name="eye" size="14px"/>
-                            <q-tooltip >{{ transfer.contract.metadata }}</q-tooltip>
+                        <span v-if="transfer.token.metadata" class="word-break">
+                            <a clickable="clickable">
+                                <q-icon class="q-pb-sm q-ml-xs" name="info" size="14px"/>
+                            </a>
+                            <q-tooltip ><pre>{{ JSON.parse(transfer.token.metadata)}}</pre></q-tooltip>
                         </span>
                         <span v-if="transfer.tokenUri" class="word-break">
                             <a clickable="clickable" :href="transfer.tokenUri" target="_blank">
@@ -116,14 +118,14 @@ export default {
                             </a>
                             <q-tooltip>{{ $t('components.transaction.consult_metadata') }}</q-tooltip>
                         </span>
-                        <span v-if="transfer.token?.image">
+                        <span v-if="transfer.token?.imageCache">
                             <a
                                 class="q-pl-xs"
                                 clickable="clickable"
-                                :href="transfer.token?.image"
+                                :href="transfer.token?.imageCache + '/1440.webp'"
                                 target="_blank"
                             >
-                                <q-icon class="q-pb-sm q-ml-xs" name="image" size="14px"/>
+                                <q-icon class="q-pb-sm" name="image" size="14px"/>
                             </a>
                             <q-tooltip>{{ $t('components.transaction.consult_media') }}</q-tooltip>
                         </span>

@@ -1,6 +1,17 @@
 import Contract from 'src/lib/contract/Contract';
+import erc20Abi from 'erc-20-abi';
+import { erc721Abi, erc1155Abi } from 'src/lib/abi';
 
 export default class ContractFactory {
+
+    getTokenABI(type){
+        if(type === 'erc721'){
+            return erc721Abi;
+        } else if(type === 'erc1155'){
+            return erc1155Abi;
+        }
+        return erc20Abi;
+    }
     buildContract(data) {
         if(!data || !data.address){
             return;
@@ -15,7 +26,14 @@ export default class ContractFactory {
         }
         if(data.abi){
             verified = true;
+        } else if(data.supportedInterfaces.includes('erc20')) {
+            data.abi = erc20Abi;
+        } else if(data.supportedInterfaces.includes('erc721')) {
+            data.abi = erc721Abi;
+        } else if(data.supportedInterfaces.includes('erc1155')) {
+            data.abi = erc1155Abi;
         }
+
         let properties = (data.calldata) ? JSON.parse(data.calldata) : {};
         if(!data.name){
             if(properties?.name){

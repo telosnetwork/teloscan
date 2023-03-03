@@ -1,8 +1,6 @@
 import ContractFactory from 'src/lib/contract/ContractFactory';
 import { ethers } from 'ethers';
-import erc20Abi from 'erc-20-abi';
 import axios from 'axios';
-import { erc721Abi, erc1155Abi } from 'src/lib/abi';
 import { ERC1155_TRANSFER_SIGNATURE } from 'src/lib/abi/signature/transfer_signatures.js';
 const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 
@@ -125,15 +123,6 @@ export default class ContractManager {
         let contract = this.factory.buildEmptyContract(address);
         this.addContractToCache(address, contract);
         return contract;
-    }
-
-    getTokenABI(type){
-        if(type === 'erc721'){
-            return erc721Abi;
-        } else if(type === 'erc1155'){
-            return erc1155Abi;
-        }
-        return erc20Abi;
     }
     async getContractFromAbi(address, abi){
         return  new ethers.Contract(address, abi, this.getEthersProvider());
