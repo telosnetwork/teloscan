@@ -11,6 +11,10 @@ export default {
         FragmentList,
     },
     props: {
+        traces : {
+            type: Object,
+            required: false,
+        },
         transaction : {
             type: Object,
             required: true,
@@ -32,74 +36,82 @@ export default {
         },
     },
     async created() {
-        let query = `/transaction/${this.transaction.hash}/internal?limit=250&sort=ASC&offset=0&includeAbi=1`;
         try {
             let i = 0;
-            let response = await this.$indexerApi.get(query);
-            if(response && response.data?.results?.length > 0) {
-                for (let k = 0; k < response.data.results.length; k++) {
-                    let itx = response.data.results[k];
-                    itx.action = JSON.parse(itx.action);
-                    let contract = await this.getContract(itx.to);
-                    let fnsig = (itx.action.input) ? itx.action.input.slice(0, 10) : '';
-                    let name = this.$t('components.transaction.unknown');
-                    let inputs, outputs, args = false;
-                    if (itx.type === 'create') {
-                        name = this.$t('components.transaction.contract_deployment');
-                    } else if (fnsig) {
-                        name = this.$t('components.transaction.unknown') + ' (' + fnsig + ')';
-                    } else if (itx.value.toString() !== '0') {
-                        name = this.$t('components.transaction.tlos_transfer');
-                    }
-                    if (itx.traceAddress.length < 2) {
-                        itx.index = i;
-                        i++;
-                    }
-
-                    if (itx.action.input) {
-                        const parsedTransaction = await this.$contractManager.parseContractTransaction(
-                            itx.action.input,
-                            contract,
-                        );
-                        if (parsedTransaction) {
-                            args = parsedTransaction.args;
-                            name = parsedTransaction.signature;
-                            outputs = parsedTransaction.functionFragment ?
-                                parsedTransaction.functionFragment.outputs :
-                                parsedTransaction.outputs;
-
-                            inputs = parsedTransaction.functionFragment ?
-                                parsedTransaction.functionFragment.inputs :
-                                parsedTransaction.inputs;
-                        }
-                    }
-                    this.itxs.push(itx);
-                    this.parsedItxs.push({
-                        index: itx.index,
-                        args: args,
-                        traceAddress: itx.traceAddress,
-                        parent: itx.traceAddress[0] || itx.index || 0,
-                        name: name,
-                        from: itx.from,
-                        sig: fnsig,
-                        inputs: inputs,
-                        outputs: outputs,
-                        depth: itx.traceAddress.length,
-                        to: itx.to,
-                        contract: contract,
-                        value: (itx.type !== 'create' && !fnsig && itx.value)
-                            ? formatWei(itx.value.toString(), WEI_PRECISION)
-                            : 0,
-                    });
-                }
-                this.parsedItxs.sort((a, b) => BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber());
+            let dataset;
+            if(typeof this.traces !== 'undefined' && this.traces !== null) {
+                dataset = this.traces;
             } else {
-                console.error(`Could not retrieve internal transactions for transaction ${this.transaction.hash}`,
-                    response,
-                );
+                let query = `/transaction/${this.transaction.hash}/internal?limit=250&sort=ASC&offset=0&includeAbi=1`;
+                let response = await this.$indexerApi.get(query);
+                if(response && response.data?.results?.length > 0) {
+                    dataset = response.data?.results;
+                } else {
+                    console.error(`Could not retrieve internal transactions for transaction ${this.transaction.hash}`,
+                        response,
+                    );
+                    return;
+                }
             }
+            for (let k = 0; k < dataset.length; k++) {
+                let itx = dataset[k];
+                itx.action = JSON.parse(itx.action);
+                let contract = await this.getContract(itx.to);
+                let fnsig = (itx.action.input) ? itx.action.input.slice(0, 10) : '';
+                let name = this.$t('components.transaction.unknown');
+                let inputs, outputs, args = false;
+                if (itx.type === 'create') {
+                    name = this.$t('components.transaction.contract_deployment');
+                } else if (fnsig) {
+                    name = this.$t('components.transaction.unknown') + ' (' + fnsig + ')';
+                } else if (itx.value.toString() !== '0') {
+                    name = this.$t('components.transaction.tlos_transfer');
+                }
+                if (itx.traceAddress.length < 2) {
+                    itx.index = i;
+                    i++;
+                }
+
+                if (itx.action.input) {
+                    const parsedTransaction = await this.$contractManager.parseContractTransaction(
+                        itx.action.input,
+                        contract,
+                    );
+                    if (parsedTransaction) {
+                        args = parsedTransaction.args;
+                        name = parsedTransaction.signature;
+                        outputs = parsedTransaction.functionFragment ?
+                            parsedTransaction.functionFragment.outputs :
+                            parsedTransaction.outputs;
+
+                        inputs = parsedTransaction.functionFragment ?
+                            parsedTransaction.functionFragment.inputs :
+                            parsedTransaction.inputs;
+                    }
+                }
+                this.itxs.push(itx);
+                this.parsedItxs.push({
+                    index: itx.index,
+                    args: args,
+                    traceAddress: itx.traceAddress,
+                    parent: itx.traceAddress[0] || itx.index || 0,
+                    name: name,
+                    from: itx.from,
+                    sig: fnsig,
+                    inputs: inputs,
+                    outputs: outputs,
+                    depth: itx.traceAddress.length,
+                    to: itx.to,
+                    contract: contract,
+                    value: (itx.type !== 'create' && !fnsig && itx.value)
+                        ? formatWei(itx.value.toString(), WEI_PRECISION)
+                        : 0,
+                });
+            }
+            this.parsedItxs.sort((a, b) => BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber());
+
         } catch (e) {
-            console.error(`Could not retrieve internal transactions for transaction ${this.transaction.hash}: ${e}`);
+            console.error(`Could not retrieve internal transactions for transaction: ${e}`);
         }
     },
     data () {

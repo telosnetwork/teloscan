@@ -174,7 +174,13 @@ export default {
                     if (!contract) {
                         continue;
                     }
+                    // TODO: We should batch this instead of loop, need a new API route tho...
+                    let traces = await this.$indexerApi.get('/transaction/' + transaction.hash + '/internal');
+                    for(const trace of [...traces.data.results]){
+                        trace.hash = trace.transaction_hash;
+                    }
                     transaction.logs = JSON.parse(transaction.logs);
+                    transaction.traces = traces.data?.results;
                     transaction.contract = contract;
                     transaction.contractAddress = contract.address;
                     const parsedTransaction = await this.$contractManager.parseContractTransaction(
@@ -197,6 +203,7 @@ export default {
                             };
                         }
                     }
+                    console.log(transaction);
                 } catch (e) {
                     console.error(
                         `Failed to parse data for transaction, error was: ${e.message}`,
@@ -295,37 +302,39 @@ export default {
                 <TransactionField :transaction-hash="props.row.hash"/>
             </q-td>
             <q-td key="block" :props="props">
-                <BlockField :block="props.row.block"/>
+                <BlockField :block="props.row.blockNumber"/>
             </q-td>
             <q-td key="date" :props="props">
-                <DateField :epoch="props.row.timestamp" :force-show-age="showDateAge"/>
+                <DateField :epoch="(props.row.timestamp / 1000)" :force-show-age="showDateAge"/>
             </q-td>
             <q-td key="method" :props="props">
                 <MethodField v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"/>
             </q-td>
             <q-td key="int_txns" :props="props">
-                <span v-if="props.row.itxs?.length > 0">
-                    <b> {{ $t('components.n_internal_txns', {amount: props.row.itxs.length} ) }} </b>
+                <span v-if="props.row.traces?.length > 0">
+                    <b> {{ $t('components.n_internal_txns', {amount: props.row.traces.length} ) }} </b>
                 </span>
                 <span v-else>{{ $t('components.none') }}</span>
             </q-td>
             <q-td auto-width>
                 <q-icon
-                    v-if="props.row.itxs.length > 0"
+                    v-if="props.row.traces?.length > 0"
                     :name="props.expand ? 'expand_more' : 'expand_less'"
                     size="sm"
+                    class="clickable"
+                    clickable
                     @click="props.expand = !props.expand"
                 />
             </q-td>
         </q-tr>
         <q-tr
-            v-show="!props.expand"
-            v-if="props.row.itxs.length > 0"
+            v-show="props.expand"
+            v-if="props.row.traces?.length > 0"
             :props="props"
             class="q-virtual-scroll--with-prev"
         >
             <q-td colspan="100%">
-                <InternalTxns :itxs="props.row.itxs"/>
+                <InternalTxns :traces="props.row.traces"/>
             </q-td>
         </q-tr>
     </template>
