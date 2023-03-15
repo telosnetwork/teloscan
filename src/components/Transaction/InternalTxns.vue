@@ -32,22 +32,23 @@ export default {
         },
     },
     async created() {
-        let query = `/transaction/${this.transaction.hash}/internal?limit=150&sort=ASC&offset=0`;
+        let query = `/transaction/${this.transaction.hash}/internal?limit=250&sort=ASC&offset=0&includeAbi=1`;
         try {
             let i = 0;
             let response = await this.$indexerApi.get(query);
-            if(response && response.code === 200 && response.data?.results?.length > 0) {
+            if(response && response.data?.results?.length > 0) {
                 for (let k = 0; k < response.data.results.length; k++) {
                     let itx = response.data.results[k];
+                    itx.action = JSON.parse(itx.action);
                     let contract = await this.getContract(itx.to);
-                    let fnsig = itx.input.slice(0, 8);
+                    let fnsig = (itx.action.input) ? itx.action.input.slice(0, 10) : '';
                     let name = this.$t('components.transaction.unknown');
                     let inputs, outputs, args = false;
                     if (itx.type === 'create') {
                         name = this.$t('components.transaction.contract_deployment');
                     } else if (fnsig) {
-                        name = this.$t('components.transaction.unknown') + ' (' + '0x' + fnsig + ')';
-                    } else if (itx.value) {
+                        name = this.$t('components.transaction.unknown') + ' (' + fnsig + ')';
+                    } else if (itx.value.toString() !== '0') {
                         name = this.$t('components.transaction.tlos_transfer');
                     }
                     if (itx.traceAddress.length < 2) {
@@ -55,11 +56,11 @@ export default {
                         i++;
                     }
 
-                    if (itx.input) {
+                    if (itx.action.input) {
                         const parsedTransaction = await this.$contractManager.parseContractTransaction(
-                            '0x' + itx.input_trimmed,
+                            itx.action.input,
+                            contract,
                         );
-
                         if (parsedTransaction) {
                             args = parsedTransaction.args;
                             name = parsedTransaction.signature;
@@ -76,16 +77,19 @@ export default {
                     this.parsedItxs.push({
                         index: itx.index,
                         args: args,
-                        parent: itx.traceAddress[0] || itx.index,
+                        traceAddress: itx.traceAddress,
+                        parent: itx.traceAddress[0] || itx.index || 0,
                         name: name,
                         from: itx.from,
-                        sig: '0x' + itx.input.slice(0, 8),
+                        sig: fnsig,
                         inputs: inputs,
                         outputs: outputs,
-                        depth: itx.depth,
+                        depth: itx.traceAddress.length,
                         to: itx.to,
                         contract: contract,
-                        value: (itx.type !== 'create' && itx.value) ? formatWei('0x' + itx.value, WEI_PRECISION) : 0,
+                        value: (itx.type !== 'create' && !fnsig && itx.value)
+                            ? formatWei(itx.value.toString(), WEI_PRECISION)
+                            : 0,
                     });
                 }
                 this.parsedItxs.sort((a, b) => BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber());
@@ -124,6 +128,12 @@ export default {
                 size="lg"
             />
             {{ $t('components.transaction.human_readable') }}
+            <small>
+                <q-icon name="info" class="q-mb-xs q-ml-xs" size="14px"/>
+                <q-tooltip>
+                    {{ $t('components.transaction.verify_related_contract') }}
+                </q-tooltip>
+            </small>
         </div>
         <div class="col-12">
             <FragmentList

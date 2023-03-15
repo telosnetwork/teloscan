@@ -4,6 +4,8 @@ import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import MethodField from 'components/MethodField';
 import InternalTxns from 'components/Transaction/InternalTxns';
+import { formatWei } from 'src/lib/utils';
+import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 export default {
     name: 'InternalTransactionTable',
@@ -142,12 +144,74 @@ export default {
                 },
             });
         },
-        async onRequest() {
+        async onRequest(props) {
             this.loading = true;
-
             // this line cleans the table for a second and the components have to be created again (clean)
             this.rows = [];
-
+            const { page, rowsPerPage, sortBy, descending } = props.pagination;
+            let result = await this.$indexerApi.get(this.getPath(props));
+            if (this.total === null) {
+                this.pagination.rowsNumber = result.data.total_count;
+            }
+            this.pagination.page = page;
+            this.pagination.rowsPerPage = rowsPerPage;
+            this.pagination.sortBy = sortBy;
+            this.pagination.descending = descending;
+            this.transactions = [...result.data.results];
+            for (const transaction of this.transactions) {
+                try {
+                    transaction.transfer = false;
+                    transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
+                    if (transaction.input === '0x') {
+                        continue;
+                    }
+                    if(!transaction.to) {
+                        continue;
+                    }
+                    const contract = await this.$contractManager.getContract(
+                        transaction.to,
+                    );
+                    if (!contract) {
+                        continue;
+                    }
+                    transaction.logs = JSON.parse(transaction.logs);
+                    transaction.contract = contract;
+                    transaction.contractAddress = contract.address;
+                    const parsedTransaction = await this.$contractManager.parseContractTransaction(
+                        transaction.input,
+                        contract,
+                    );
+                    transaction.parsedTransaction = parsedTransaction;
+                    // Get ERC20 transfer from main function call
+                    let signature = transaction.input.substring(0, 10);
+                    if (
+                        signature &&
+                        TRANSFER_SIGNATURES.includes(signature) &&
+                        transaction.parsedTransaction.args['amount']
+                    ) {
+                        let decimals = transaction.contract.properties?.decimals;
+                        if(transaction.contract && decimals){
+                            transaction.transfer = {
+                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], decimals)}`,
+                                'symbol': transaction.contract.properties.symbol,
+                            };
+                        }
+                    }
+                } catch (e) {
+                    console.error(
+                        `Failed to parse data for transaction, error was: ${e.message}`,
+                    );
+                    // notifiy user
+                    this.$q.notify({
+                        message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
+                        color: 'negative',
+                        position: 'top',
+                        timeout: 5000,
+                    });
+                }
+            }
+            this.rows = this.transactions;
+            this.loading = false;
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
@@ -240,7 +304,7 @@ export default {
                 <MethodField v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"/>
             </q-td>
             <q-td key="int_txns" :props="props">
-                <span v-if="props.row.itxs.length > 0">
+                <span v-if="props.row.itxs?.length > 0">
                     <b> {{ $t('components.n_internal_txns', {amount: props.row.itxs.length} ) }} </b>
                 </span>
                 <span v-else>{{ $t('components.none') }}</span>

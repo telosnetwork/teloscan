@@ -142,6 +142,8 @@ export default {
                     if(contract){
                         transfer.token = await this.$contractManager.loadNFT(contract, transfer.id);
                     }
+                } else if(transfer.id) {
+                    valueDisplay = '#' + transfer.id.toString();
                 }
                 tokenList.tokens.forEach((token) => {
                     if(token.address.toLowerCase() === transfer.contract.toLowerCase()){

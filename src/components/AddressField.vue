@@ -93,9 +93,6 @@ export default {
 
 <template>
 <div class="c-address-field">
-    <q-icon v-if="contract && !copy" class="far fa-file-alt">
-        <q-tooltip>Contract</q-tooltip>
-    </q-icon>
     <router-link :to="`/address/${address}`" :class="highlight ? 'highlighted' : ''">
         {{ getDisplay() }}
     </router-link>

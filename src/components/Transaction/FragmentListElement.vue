@@ -81,7 +81,11 @@ export default {
 <div v-if="fragment" class="c-fragment-list-element" :style="depthStyle"  >
     <div :class="fragmentClass" @click="expanded = !expanded">
         <span class="row items-center">
-            <q-icon :name="arrowIcon" size="sm" />
+            <q-icon
+                v-if="inputs?.length > 0 || fragment.value && fragment.value !== '0.0'"
+                :name="arrowIcon"
+                size="sm"
+            />
             <strong v-if="fragment?.name">
                 {{ fragment.name }}
             </strong>
@@ -151,6 +155,17 @@ export default {
                                 <span v-else>
                                     {{ fragment.args[index] }}
                                 </span>
+                            </div>
+                            <div v-else-if="fragment.contract.supportedInterfaces.includes('erc1155')">
+                                <AddressField
+                                    v-if="index === 3 && fragment.contract.properties.symbol"
+                                    :address="fragment.contract.address"
+                                    :truncate="0"
+                                    :name="fragment.contract.properties.symbol"
+                                    class="word-break"
+                                />
+                                <span v-if="index === 3 && fragment.contract.properties.symbol"> #</span>
+                                <span> {{ fragment.args[index] }}</span>
                             </div>
                             <div v-else>
                                 <AddressField
@@ -222,10 +237,10 @@ export default {
                     </div>
                 </div>
             </div>
-            <div v-if="fragment.value">
+            <div v-if="fragment.value && fragment.value !== '0.0'">
                 <div class="fit row justify-start items-start content-start">
                     <div class="col-4">
-                        {{ $t('components.transaction.value_uint256') }}
+                        {{ $t('components.transaction.value_uint256').toLowerCase() }}
                     </div>
                     <div class="col-8">
                         {{ fragment.value }} TLOS
