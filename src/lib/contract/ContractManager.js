@@ -98,6 +98,13 @@ export default class ContractManager {
 
         return new ethers.Contract(contract.address, contract.abi, provider ? provider : this.getEthersProvider());
     }
+    async getCachedContract(address) {
+        const addressLower = address.toLowerCase();
+        if (this.contracts[addressLower]) {
+            return this.contracts[addressLower];
+        }
+        return null;
+    }
     async getContract(address) {
         if (!address || typeof address !== 'string') {
             return;

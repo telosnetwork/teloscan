@@ -3,8 +3,6 @@ import BlockField from 'components/BlockField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import MethodField from 'components/MethodField';
-import { formatWei } from 'src/lib/utils';
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 import InternalTxns from 'components/Transaction/InternalTxns';
 
 export default {
@@ -144,94 +142,25 @@ export default {
                 },
             });
         },
-        async onRequest(props) {
+        async onRequest() {
             this.loading = true;
 
             // this line cleans the table for a second and the components have to be created again (clean)
             this.rows = [];
 
-            const { page, rowsPerPage, sortBy, descending } = props.pagination;
-            let result = await this.$evmEndpoint.get(this.getPath(props));
-
-            if (this.total === null) {
-                this.pagination.rowsNumber = result.data.total.value;
-            }
-
-            this.pagination.page = page;
-            this.pagination.rowsPerPage = rowsPerPage;
-            this.pagination.sortBy = sortBy;
-            this.pagination.descending = descending;
-
-            this.transactions = [...result.data.transactions];
-            this.rows = this.transactions;
-
-            for (const transaction of this.transactions) {
-                try {
-                    transaction.transfer = false;
-                    transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
-                    if (transaction.input_data === '0x') {
-                        continue;
-                    }
-                    if(!transaction.to) {
-                        continue;
-                    }
-
-                    const contract = await this.$contractManager.getContract(
-                        transaction.to,
-                    );
-
-                    if (!contract) {
-                        continue;
-                    }
-
-                    const parsedTransaction = await this.$contractManager.parseContractTransaction(
-                        transaction.input_data,
-                    );
-                    if (parsedTransaction) {
-                        transaction.parsedTransaction = parsedTransaction;
-                        transaction.contract = contract;
-                    }
-                    // Get ERC20 transfer from main function call
-                    let signature = transaction.input_data.substring(0, 10);
-                    if (
-                        signature &&
-                        TRANSFER_SIGNATURES.includes(signature) &&
-                        transaction.parsedTransaction.args['amount']
-                    ) {
-                        let token = await this.$contractManager(transaction.to);
-                        if(token && token.properties?.decimals){
-                            let decimals = token.properties.decimals;
-                            transaction.transfer = {
-                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], decimals)}`,
-                                'symbol': token.properties.symbol,
-                            };
-                        }
-                    }
-                } catch (e) {
-                    console.error(
-                        `Failed to parse data for transaction, error was: ${e.message}`,
-                    );
-                    // notifiy user
-                    this.$q.notify({
-                        message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
-                        color: 'negative',
-                        position: 'top',
-                        timeout: 5000,
-                    });
-                }
-            }
-            this.rows = this.transactions;
-            this.loading = false;
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/v2/evm/get_transactions?limit=${
-                rowsPerPage === 0 ? 500 : rowsPerPage
-            }`;
+            let path;
             const filter = Object.assign({}, this.filter ? this.filter : {});
             if (filter.address) {
-                path += `&address=${filter.address}`;
+                path = `/address/${filter.address}/transactions`;
+            } else {
+                path = '/transactions';
             }
+            path += `?limit=${
+                rowsPerPage === 0 ? 500 : rowsPerPage
+            }`;
 
             if (filter.block) {
                 path += `&block=${filter.block}`;
@@ -241,8 +170,13 @@ export default {
                 path += `&hash=${filter.hash}`;
             }
 
-            path += `&skip=${(page - 1) * rowsPerPage}`;
+            path += `&offset=${(page - 1) * rowsPerPage}`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
+            path += '&includeAbi=1';
+
+            if (this.total === null) {
+                path += '&includePagination=1';
+            }
 
             return path;
         },
@@ -300,7 +234,7 @@ export default {
                 <BlockField :block="props.row.block"/>
             </q-td>
             <q-td key="date" :props="props">
-                <DateField :epoch="props.row.epoch" :force-show-age="showDateAge"/>
+                <DateField :epoch="props.row.timestamp" :force-show-age="showDateAge"/>
             </q-td>
             <q-td key="method" :props="props">
                 <MethodField v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"/>

@@ -127,8 +127,13 @@ export default {
                     }
                     if (contract.supportedInterfaces.includes('erc721')) {
                         let tokenId = BigNumber.from(log.topics[3]).toString();
-                        let token = await this.$contractManager.loadNFT(contract, tokenId);
-                        let tokenUri = token.tokenUri?.replace('ipfs://', 'https://ipfs.io/ipfs/');
+                        let token = await this.$contractManager.loadNFT(contract, tokenId.toString());
+                        let tokenUri = null;
+                        if(token){
+                            tokenUri = token.tokenUri?.replace('ipfs://', 'https://ipfs.io/ipfs/');
+                        } else {
+                            token = contract;
+                        }
                         this.erc721_transfers.push({
                             'tokenId': tokenId,
                             'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
@@ -140,6 +145,9 @@ export default {
                     } else if (contract.supportedInterfaces.includes('erc1155')) {
                         let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
                         let token = this.$contractManager.loadNFT(contract, tokenId);
+                        if(!token){
+                            token = contract;
+                        }
                         this.erc1155_transfers.push({
                             'amount': BigNumber.from(log.data).toString(),
                             'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
@@ -463,7 +471,7 @@ export default {
                         </div>
                     </q-tab-panel>
                     <q-tab-panel name="internal">
-                        <InternalTxns :itxs="trx.itxs" :contract="contract"/>
+                        <InternalTxns :transaction="trx" />
                     </q-tab-panel>
                 </q-tab-panels>
             </div>

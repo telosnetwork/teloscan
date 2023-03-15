@@ -138,7 +138,10 @@ export default {
                         valueDisplay = this.$t('components.unknown_precision');
                     }
                 } else if (this.tokenType === 'erc721') {
-                    valueDisplay = '#' + transfer.id;
+                    valueDisplay = '#' + transfer.id.toString();
+                    if(contract){
+                        transfer.token = await this.$contractManager.loadNFT(contract, transfer.id);
+                    }
                 }
                 tokenList.tokens.forEach((token) => {
                     if(token.address.toLowerCase() === transfer.contract.toLowerCase()){
@@ -149,6 +152,7 @@ export default {
                     hash: transfer.transaction,
                     timestamp: transfer.timestamp / 1000,
                     count: 1,
+                    token: transfer.token,
                     value: valueDisplay,
                     contract: contract,
                     from: transfer.from,
@@ -248,7 +252,20 @@ export default {
                 <AddressField :address="props.row.to"/>
             </q-td>
             <q-td key="value" :props="props">
-                {{ props.row.value }}
+                <span v-if="tokenType==='erc721' && props.row.token?.imageCache">
+                    <q-img
+                        class="nft-icon"
+                        :src="props.row.token.imageCache + '/280.webp'"
+                    />
+                    <q-tooltip>{{ props.row.value }}</q-tooltip>
+                </span>
+                <span v-else-if="tokenType==='erc721' && props.row.value.length > 7">
+                    <span>{{ props.row.value.substr(0, 7) + "..." }}</span>
+                    <q-tooltip>{{ props.row.value }}</q-tooltip>
+                </span>
+                <span v-else>
+                    {{ props.row.value }}
+                </span>
             </q-td>
             <q-td key="token" :props="props">
                 <q-img v-if="tokenType==='erc20'" class="coin-icon" :src="getIcon(props.row)"/>
@@ -265,8 +282,15 @@ export default {
 </template>
 
 <style lang='sass' scoped>
+.nft-icon
+    width: 32px
+    height: 32px
+    vertical-align: middle
+    border-radius: 100%
+
 .coin-icon
   width: 20px
+  height: 20px
   margin-right: .25rem
   vertical-align: middle
   border-radius: 100%

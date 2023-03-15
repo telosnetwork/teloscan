@@ -11,13 +11,9 @@ export default {
         FragmentList,
     },
     props: {
-        itxs: {
-            type: Array,
-            required: true,
-        },
-        contract: {
+        transaction : {
             type: Object,
-            required: false,
+            required: true,
         },
     },
     methods: {
@@ -36,64 +32,77 @@ export default {
         },
     },
     async created() {
-        let i = 0;
-        for(let k = 0; k < this.itxs.length;k++){
-            let itx = this.itxs[k];
-            let contract = await this.getContract(itx.to);
-            let fnsig =  itx.input.slice(0, 8);
-            let name = this.$t('components.transaction.unknown');
-            let inputs, outputs, args  = false;
-            if(itx.type === 'create'){
-                name = this.$t('components.transaction.contract_deployment');
-            } else if (fnsig){
-                name = this.$t('components.transaction.unknown') + ' (' + '0x' + fnsig + ')';
-            } else if (itx.value){
-                name = this.$t('components.transaction.tlos_transfer');
-            }
-            if(itx.traceAddress.length < 2){
-                itx.index = i;
-                i++;
-            }
+        let query = `/transaction/${this.transaction.hash}/internal?limit=150&sort=ASC&offset=0`;
+        try {
+            let i = 0;
+            let response = await this.$indexerApi.get(query);
+            if(response && response.code === 200 && response.data?.results?.length > 0) {
+                for (let k = 0; k < response.data.results.length; k++) {
+                    let itx = response.data.results[k];
+                    let contract = await this.getContract(itx.to);
+                    let fnsig = itx.input.slice(0, 8);
+                    let name = this.$t('components.transaction.unknown');
+                    let inputs, outputs, args = false;
+                    if (itx.type === 'create') {
+                        name = this.$t('components.transaction.contract_deployment');
+                    } else if (fnsig) {
+                        name = this.$t('components.transaction.unknown') + ' (' + '0x' + fnsig + ')';
+                    } else if (itx.value) {
+                        name = this.$t('components.transaction.tlos_transfer');
+                    }
+                    if (itx.traceAddress.length < 2) {
+                        itx.index = i;
+                        i++;
+                    }
 
-            if(itx.input_trimmed){
-                const parsedTransaction = await this.$contractManager.parseContractTransaction(
-                    '0x' + itx.input_trimmed,
-                );
+                    if (itx.input) {
+                        const parsedTransaction = await this.$contractManager.parseContractTransaction(
+                            '0x' + itx.input_trimmed,
+                        );
 
-                if(parsedTransaction){
-                    args = parsedTransaction.args;
-                    name = parsedTransaction.signature;
-                    outputs = parsedTransaction.functionFragment ?
-                        parsedTransaction.functionFragment.outputs :
-                        parsedTransaction.outputs;
+                        if (parsedTransaction) {
+                            args = parsedTransaction.args;
+                            name = parsedTransaction.signature;
+                            outputs = parsedTransaction.functionFragment ?
+                                parsedTransaction.functionFragment.outputs :
+                                parsedTransaction.outputs;
 
-                    inputs = parsedTransaction.functionFragment ?
-                        parsedTransaction.functionFragment.inputs :
-                        parsedTransaction.inputs;
+                            inputs = parsedTransaction.functionFragment ?
+                                parsedTransaction.functionFragment.inputs :
+                                parsedTransaction.inputs;
+                        }
+                    }
+                    this.itxs.push(itx);
+                    this.parsedItxs.push({
+                        index: itx.index,
+                        args: args,
+                        parent: itx.traceAddress[0] || itx.index,
+                        name: name,
+                        from: itx.from,
+                        sig: '0x' + itx.input.slice(0, 8),
+                        inputs: inputs,
+                        outputs: outputs,
+                        depth: itx.depth,
+                        to: itx.to,
+                        contract: contract,
+                        value: (itx.type !== 'create' && itx.value) ? formatWei('0x' + itx.value, WEI_PRECISION) : 0,
+                    });
                 }
+                this.parsedItxs.sort((a, b) => BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber());
+            } else {
+                console.error(`Could not retrieve internal transactions for transaction ${this.transaction.hash}`,
+                    response,
+                );
             }
-            this.parsedItxs.push({
-                index: itx.index,
-                args: args,
-                parent: itx.traceAddress[0] || itx.index,
-                name: name,
-                from: itx.from,
-                sig: '0x' + itx.input.slice(0, 8),
-                inputs: inputs,
-                outputs: outputs,
-                depth: itx.depth,
-                to: itx.to,
-                contract: contract,
-                value: (itx.type !== 'create' && itx.value) ? formatWei('0x' + itx.value, WEI_PRECISION): 0,
-            });
+        } catch (e) {
+            console.error(`Could not retrieve internal transactions for transaction ${this.transaction.hash}: ${e}`);
         }
-        this.parsedItxs.sort((a, b) => BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber());
-
     },
     data () {
         return {
             human_readable: true,
             parsedItxs: [],
+            itxs: [],
         };
     },
 };

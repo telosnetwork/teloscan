@@ -193,8 +193,8 @@ export default {
                 </template>
                 <small v-else>
                     <div class="text-white">
-                        {{ $t('pages.number_used_once') }}: &nbsp;
-                        <span class="q-pl-xs">{{ nonce }}</span>
+                        {{ $t('pages.number_used_once') }}:&nbsp;
+                        <span>{{ nonce }}</span>
                     </div>
                 </small>
             </div>

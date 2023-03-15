@@ -74,6 +74,10 @@ export default {
         async loadContract() {
             this.contract = null;
             if (!this.isContractTrx) {
+                let contract = await this.$contractManager.getCachedContract(this.address);
+                if (contract) {
+                    this.contract = contract;
+                }
                 return;
             }
 
@@ -100,6 +104,12 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+.c-address-field .q-icon {
+    margin-right: 3px;
+}
+.c-address-field a {
+    vertical-align: middle;
+}
 .c-address-field {
     display: inline-flex;
     align-items: center;
