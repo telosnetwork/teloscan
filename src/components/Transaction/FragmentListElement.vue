@@ -208,7 +208,7 @@ export default {
                     >
                         <div>[ </div>
                         <div
-                            v-for="i in fragment.args[index].length - 1"
+                            v-for="i in fragment.args[index].length"
                             :key="param.type + i"
                             :class="
                                 (expanded_parameters[index]['expanded']) ?
@@ -218,13 +218,26 @@ export default {
                         >
                             <div v-if="param.arrayChildren.type === 'address'">
                                 <AddressField
-                                    :address="fragment.args[index][i]"
+                                    :address="fragment.args[index][i  - 1]"
                                     :truncate="0"
                                     class="word-break"
                                     :copy="true"
                                 />
                             </div>
-                            <span v-else class="word-break">{{ fragment.args[index][i] }},</span>
+                            <div v-else-if="param.arrayChildren.type === 'address[]'">
+                                <div
+                                    v-for="arg in fragment.args[index][i  - 1]"
+                                    :key="`address-${index}-${arg}`"
+                                >
+                                    <AddressField
+                                        :address="arg"
+                                        :truncate="0"
+                                        class="word-break"
+                                        :copy="true"
+                                    />,
+                                </div>
+                            </div>
+                            <span v-else class="word-break">{{ fragment.args[index][i  - 1] }},</span>
                         </div>
                         <div
                             v-if="!expanded_parameters[index]['expanded']"
