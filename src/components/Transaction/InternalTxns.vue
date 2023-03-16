@@ -36,6 +36,7 @@ export default {
         },
     },
     async created() {
+        this.loading = true;
         try {
             let i = 0;
             let dataset;
@@ -113,11 +114,13 @@ export default {
         } catch (e) {
             console.error(`Could not retrieve internal transactions for transaction: ${e}`);
         }
+        this.loading = false;
     },
     data () {
         return {
             human_readable: true,
             parsedItxs: [],
+            loading:  true,
             itxs: [],
         };
     },
@@ -125,7 +128,10 @@ export default {
 </script>
 <template>
 <div>
-    <div v-if="itxs.length === 0" class="row">
+    <div v-if="loading" class="row center justify-center items-center">
+        <q-spinner size="md" />
+    </div>
+    <div v-else-if="itxs.length === 0" class="row">
         <div class="col-12 flex items-center justify-center">
             <q-icon class="fa fa-info-circle" size="md" />
             <h5 class="text-center  q-ma-md"> {{ $t('components.transaction.no_internal_trxs_found') }}</h5>
