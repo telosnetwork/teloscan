@@ -63,7 +63,7 @@ export default {
                 let inputs, outputs, args = false;
                 if (itx.type === 'create') {
                     name = this.$t('components.transaction.contract_deployment');
-                } else if (fnsig) {
+                } else if (fnsig && fnsig !== '0x') {
                     name = this.$t('components.transaction.unknown') + ' (' + fnsig + ')';
                 } else if (itx.value.toString() !== '0') {
                     name = this.$t('components.transaction.tlos_transfer');
@@ -104,7 +104,7 @@ export default {
                     depth: itx.traceAddress.length,
                     to: itx.to,
                     contract: contract,
-                    value: (itx.type !== 'create' && !fnsig && itx.value)
+                    value: (itx.type !== 'create' && (!fnsig || fnsig === '0x') && itx.value)
                         ? formatWei(itx.value.toString(), WEI_PRECISION)
                         : 0,
                 });

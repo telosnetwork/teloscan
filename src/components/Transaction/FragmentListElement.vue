@@ -203,7 +203,7 @@ export default {
                         <div>]</div>
                     </div>
                     <div
-                        v-else-if="param.arrayChildren && fragment.args[index]"
+                        v-else-if="param.arrayChildren && fragment.args[index] && fragment.args[index].length > 0"
                         v-on:click.stop="toggle(index, 'expanded')"
                     >
                         <div>[ </div>
