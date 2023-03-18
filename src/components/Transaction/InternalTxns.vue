@@ -38,7 +38,6 @@ export default {
     async created() {
         this.loading = true;
         try {
-            let i = 0;
             let dataset;
             if(typeof this.traces !== 'undefined' && this.traces !== null) {
                 dataset = this.traces;
@@ -57,12 +56,20 @@ export default {
             for (let k = 0; k < dataset.length; k++) {
                 let itx = dataset[k];
                 itx.action = JSON.parse(itx.action);
-                itx.isTransferETH = false;
                 let contract = await this.getContract(itx.to);
                 let fnsig = (itx.action.input) ? itx.action.input.slice(0, 10) : '';
                 let name = this.$t('components.transaction.unknown');
                 let inputs, outputs, args = false;
+                let isTransferETH = false;
 
+                if (itx.type === 'create') {
+                    name = this.$t('components.transaction.contract_deployment');
+                } else if (fnsig && fnsig !== '0x') {
+                    name = this.$t('components.transaction.unknown') + ' (' + fnsig + ')';
+                } else if (itx.value.toString() !== '0') {
+                    name = this.$t('components.transaction.tlos_transfer');
+                    isTransferETH = true;
+                }
                 if (itx.action.input) {
                     const parsedTransaction = await this.$contractManager.parseContractTransaction(
                         itx.action.input,
@@ -81,26 +88,16 @@ export default {
                             parsedTransaction.inputs;
                     }
                 }
-                if (itx.type === 'create') {
-                    name = this.$t('components.transaction.contract_deployment');
-                } else if (fnsig && fnsig !== '0x') {
-                    name = this.$t('components.transaction.unknown') + ' (' + fnsig + ')';
-                } else if (itx.value.toString() !== '0') {
-                    name = this.$t('components.transaction.tlos_transfer');
-                    parsedTransaction?.isTransferETH = true;
-                }
-                if (itx.traceAddress.length < 2) {
-                    itx.index = i;
-                    i++;
-                }
                 this.itxs.push(itx);
                 this.parsedItxs.push({
                     index: itx.index,
+                    type: itx.type,
                     args: args,
                     traceAddress: itx.traceAddress,
                     parent: itx.traceAddress[0] || itx.index || 0,
                     name: name,
                     from: itx.from,
+                    isTransferETH: isTransferETH,
                     sig: fnsig,
                     inputs: inputs,
                     outputs: outputs,

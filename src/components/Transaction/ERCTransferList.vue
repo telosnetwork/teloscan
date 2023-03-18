@@ -129,7 +129,7 @@ export default {
                             <q-img :src="transfer.token?.imageCache + '/280.webp'" class="nft-thumbnail" />
                         </a>
                     </span>
-                    <span v-if="type==='ERC1155'">
+                    <span v-if="transfer.contract.supportedInterfaces.includes('erc1155')">
                         <a clickable="clickable" :href="'/address/' + transfer.token.address" target="_blank">
                             <q-tooltip>{{ $t('components.transaction.consult_collection') }}</q-tooltip>
                         </a>

@@ -251,12 +251,32 @@ export default {
                 </div>
             </div>
             <div v-if="fragment.value && fragment.value !== '0.0'">
-                <div v-if="fragment.isTransferETH" class="fit row justify-start items-start content-start">
-                    <div class="col-4">
-                        {{ $t('pages.to').toLowerCase() }}
+                <div v-if="fragment.isTransferETH" >
+                    <div class="fit row justify-start items-start content-start">
+                        <div class="col-4">
+                            {{ $t('pages.from').toLowerCase() }}
+                        </div>
+                        <div class="col-8">
+                            <AddressField
+                                :address="fragment.from"
+                                :truncate="0"
+                                :copy="true"
+                                class="word-break"
+                            />
+                        </div>
                     </div>
-                    <div class="col-8">
-                        {{ fragment.to }}
+                    <div class="fit row justify-start items-start content-start">
+                        <div class="col-4">
+                            {{ $t('pages.to').toLowerCase() }}
+                        </div>
+                        <div class="col-8">
+                            <AddressField
+                                :address="fragment.to"
+                                :truncate="0"
+                                :copy="true"
+                                class="word-break"
+                            />
+                        </div>
                     </div>
                 </div>
                 <div class="fit row justify-start items-start content-start">
