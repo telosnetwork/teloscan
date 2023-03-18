@@ -253,6 +253,14 @@ export default {
             <div v-if="fragment.value && fragment.value !== '0.0'">
                 <div class="fit row justify-start items-start content-start">
                     <div class="col-4">
+                        {{ $t('pages.to').toLowerCase() }}
+                    </div>
+                    <div class="col-8">
+                        {{ fragment.to }}
+                    </div>
+                </div>
+                <div class="fit row justify-start items-start content-start">
+                    <div class="col-4">
                         {{ $t('components.transaction.value_uint256').toLowerCase() }}
                     </div>
                     <div class="col-8">

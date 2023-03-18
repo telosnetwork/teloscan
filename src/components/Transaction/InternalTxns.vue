@@ -57,6 +57,7 @@ export default {
             for (let k = 0; k < dataset.length; k++) {
                 let itx = dataset[k];
                 itx.action = JSON.parse(itx.action);
+                itx.isTransferETH = false;
                 let contract = await this.getContract(itx.to);
                 let fnsig = (itx.action.input) ? itx.action.input.slice(0, 10) : '';
                 let name = this.$t('components.transaction.unknown');
@@ -67,6 +68,7 @@ export default {
                     name = this.$t('components.transaction.unknown') + ' (' + fnsig + ')';
                 } else if (itx.value.toString() !== '0') {
                     name = this.$t('components.transaction.tlos_transfer');
+                    itx.isTransferETH = true;
                 }
                 if (itx.traceAddress.length < 2) {
                     itx.index = i;
