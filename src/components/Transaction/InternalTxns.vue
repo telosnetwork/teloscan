@@ -62,18 +62,6 @@ export default {
                 let fnsig = (itx.action.input) ? itx.action.input.slice(0, 10) : '';
                 let name = this.$t('components.transaction.unknown');
                 let inputs, outputs, args = false;
-                if (itx.type === 'create') {
-                    name = this.$t('components.transaction.contract_deployment');
-                } else if (fnsig && fnsig !== '0x') {
-                    name = this.$t('components.transaction.unknown') + ' (' + fnsig + ')';
-                } else if (itx.value.toString() !== '0') {
-                    name = this.$t('components.transaction.tlos_transfer');
-                    itx.isTransferETH = true;
-                }
-                if (itx.traceAddress.length < 2) {
-                    itx.index = i;
-                    i++;
-                }
 
                 if (itx.action.input) {
                     const parsedTransaction = await this.$contractManager.parseContractTransaction(
@@ -83,6 +71,7 @@ export default {
                     if (parsedTransaction) {
                         args = parsedTransaction.args;
                         name = parsedTransaction.signature;
+                        parsedTransaction.isTransferETH = false;
                         outputs = parsedTransaction.functionFragment ?
                             parsedTransaction.functionFragment.outputs :
                             parsedTransaction.outputs;
@@ -91,6 +80,18 @@ export default {
                             parsedTransaction.functionFragment.inputs :
                             parsedTransaction.inputs;
                     }
+                }
+                if (itx.type === 'create') {
+                    name = this.$t('components.transaction.contract_deployment');
+                } else if (fnsig && fnsig !== '0x') {
+                    name = this.$t('components.transaction.unknown') + ' (' + fnsig + ')';
+                } else if (itx.value.toString() !== '0') {
+                    name = this.$t('components.transaction.tlos_transfer');
+                    parsedTransaction?.isTransferETH = true;
+                }
+                if (itx.traceAddress.length < 2) {
+                    itx.index = i;
+                    i++;
                 }
                 this.itxs.push(itx);
                 this.parsedItxs.push({
