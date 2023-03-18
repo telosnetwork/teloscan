@@ -2,6 +2,7 @@ import ContractFactory from 'src/lib/contract/ContractFactory';
 import { ethers } from 'ethers';
 import axios from 'axios';
 import { ERC1155_TRANSFER_SIGNATURE } from 'src/lib/abi/signature/transfer_signatures.js';
+import { erc721MetadataAbi } from 'src/lib/abi';
 const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 
 export default class ContractManager {
@@ -39,17 +40,36 @@ export default class ContractManager {
 
     async loadNFT(contract, tokenId){
         let address = contract.address.toLowerCase();
-        if(this.contracts[address]?.nfts[tokenId]){
+        if(!this.contracts[address]) {
+            this.contracts[address] = { 'nfts': [] };
+        } else if(this.contracts[address].nfts[tokenId]){
             return this.contracts[address].nfts[tokenId];
         }
         try {
             let response = await this.indexerApi.get(`/contract/${address}/nfts?tokenId=${tokenId}`);
-            if(this.contracts[address]){
+            if(response.data.results[0]?.length > 0){
                 this.contracts[address].nfts[tokenId] = response.data.results[0];
+                return response.data.results[0];
             }
-            return response.data.results[0];
+            console.info(`Could load NFT #${tokenId} for ${address} from indexer: no NFT found. Trying fallback...`);
         } catch (e) {
-            console.error(`Could load NFT #${tokenId} for ${address}: ${e.message}`);
+            console.info(`Could load NFT #${tokenId} for ${address} from indexer: ${e.message}, trying fallback...`);
+        }
+
+        // If indexer call failed, try a direct RPC call
+        // This is to account for possible lag in indexing NFTs
+        try {
+            let contractInstance = await this.getContractFromAbi(contract.address, erc721MetadataAbi);
+            let tokenURI = await contractInstance.tokenURI(tokenId);
+            this.contracts[address].nfts[tokenId] = {
+                'id': tokenId,
+                'tokenUri': tokenURI,
+                'metadata': null,
+                'imageCache': null,
+            };
+            return this.contracts[address].nfts[tokenId];
+        } catch (e) {
+            console.error(`Could load NFT #${tokenId} for ${address} from fallback RPC calls: ${e.message}`);
         }
     }
 
@@ -132,6 +152,6 @@ export default class ContractManager {
         return contract;
     }
     async getContractFromAbi(address, abi){
-        return  new ethers.Contract(address, abi, this.getEthersProvider());
+        return new ethers.Contract(address, abi, this.getEthersProvider());
     }
 }
