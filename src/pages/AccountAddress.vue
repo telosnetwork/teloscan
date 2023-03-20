@@ -109,18 +109,19 @@ export default {
             this.isContract = false;
 
             const account = await this.$evm.telos.getEthAccount(this.address);
+            this.contract = null;
+            this.nonce = account.nonce;
+            this.title = this.$t('pages.account');
             if (account.code.length > 0){
                 this.contract = await this.$contractManager.getContract(this.address);
-                this.isContract = true;
-                if (this.contract.getName()) {
-                    this.title = this.contract.getName();
-                } else {
-                    this.title = this.$t('pages.contract');
+                if(this.contract){
+                    this.isContract = true;
+                    if (this.contract.getName()) {
+                        this.title = this.contract.getName();
+                    } else {
+                        this.title = this.$t('pages.contract');
+                    }
                 }
-            } else {
-                this.contract = null;
-                this.nonce = account.nonce;
-                this.title = this.$t('pages.account');
             }
 
             this.balance = this.getBalanceDisplay(account.balance);

@@ -60,11 +60,18 @@ export default {
                     let nLog = Object.assign({}, log);
                     this.parsedLogs.push(nLog);
                 }
-                this.parsedLogs.sort((a, b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());
+            } else {
+                let nLog = Object.assign({}, log);
+                this.parsedLogs.push(nLog);
+                this.$q.notify({
+                    message: this.$t('components.transaction.failed_to_retrieve_contract', { address: log.address }),
+                    type: 'negative',
+                    position: 'top',
+                });
             }
 
         }
-
+        this.parsedLogs.sort((a, b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());
         this.allVerified = (verified === this.logs?.length);
     },
     data: () => ({

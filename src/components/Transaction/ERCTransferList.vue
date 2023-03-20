@@ -127,6 +127,7 @@ export default {
                             target="_blank"
                         >
                             <q-img :src="transfer.token?.imageCache + '/280.webp'" class="nft-thumbnail" />
+                            <q-tooltip>{{ $t('components.transaction.consult_media') }}</q-tooltip>
                         </a>
                     </span>
                     <span v-if="transfer.contract.supportedInterfaces.includes('erc1155')">
@@ -187,6 +188,15 @@ export default {
 </template>
 
 <!--eslint-enable-->
+<style lang="sass">
+    .q-tooltip
+        pre
+            white-space: pre-wrap
+            word-break: break-all
+    .q-tooltip
+        word-break: break-all
+        max-height: 100% !important
+</style>
 <style scoped lang="sass">
 pre
     font-size: 0.8em

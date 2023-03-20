@@ -18,7 +18,7 @@ export default class ContractManager {
         return this.ethersProvider;
     }
     async parseContractTransaction(data, contract) {
-        if (data === '0x' || data === null) {
+        if (data === '0x' || data === null || typeof contract === 'undefined') {
             return false;
         }
         if (contract.getInterface()) {
@@ -47,7 +47,7 @@ export default class ContractManager {
         }
         try {
             let response = await this.indexerApi.get(`/contract/${address}/nfts?tokenId=${tokenId}`);
-            if(response.data.results[0]?.length > 0){
+            if(response.data.results?.length > 0){
                 this.contracts[address].nfts[tokenId] = response.data.results[0];
                 return response.data.results[0];
             }

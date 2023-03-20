@@ -54,8 +54,23 @@ export default {
                 }
             }
             for (let k = 0; k < dataset.length; k++) {
+                dataset[k].action = JSON.parse(dataset[k].action);
+            }
+            for (let k = 0; k < dataset.length; k++) {
                 let itx = dataset[k];
-                itx.action = JSON.parse(itx.action);
+
+                // Get rid of duplicated calls
+                if(k > 0){
+                    if(itx.action.input === dataset[k - 1].action.input
+                        && itx.action.from === dataset[k - 1].action.from
+                        && itx.action.to === dataset[k - 1].action.to
+                        && itx.action.value === dataset[k - 1].action.value
+                    ){
+                        continue;
+                    }
+                }
+
+                itx.callType = itx.action.callType;
                 let contract = await this.getContract(itx.to);
                 let fnsig = (itx.action.input) ? itx.action.input.slice(0, 10) : '';
                 let name = this.$t('components.transaction.unknown');
@@ -94,7 +109,7 @@ export default {
                     type: itx.type,
                     args: args,
                     traceAddress: itx.traceAddress,
-                    parent: itx.traceAddress[0] || itx.index || 0,
+                    parent: itx.traceAddress[0] || 0,
                     name: name,
                     from: itx.from,
                     isTransferETH: isTransferETH,
@@ -110,7 +125,6 @@ export default {
                 });
             }
             this.parsedItxs.sort((a, b) => BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber());
-
         } catch (e) {
             console.error(`Could not retrieve internal transactions for transaction: ${e}`);
         }
