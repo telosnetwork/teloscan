@@ -112,7 +112,7 @@ export default class ContractManager {
 
     getContractInstance(contract, provider) {
         if (!contract.abi){
-            console.log('Cannot create contract instance without ABI !');
+            console.error('Cannot create contract instance without ABI !');
             return false;
         }
 

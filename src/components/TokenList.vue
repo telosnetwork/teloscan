@@ -38,7 +38,6 @@ export default {
             })[0];
         },
         async loadTokens() {
-            // TODO: Get the address' balances from API and then split into official/nonofficial using the token list
             const tokenList = await this.$contractManager.getTokenList();
             const response = await this.$indexerApi.get(`/account/${this.address}/balances`);
             if(response.data?.contracts){

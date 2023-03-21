@@ -154,7 +154,7 @@ export default {
 </script>
 
 <template>
-<div :key="'aa' + this.address" class="pageContainer q-pt-xl">
+<div class="pageContainer q-pt-xl">
     <div>
         <div class="row tableWrapper justify-between q-mb-lg">
             <div class="homeInfo">

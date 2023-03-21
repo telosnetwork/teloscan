@@ -174,7 +174,6 @@ export default {
                     if (!contract) {
                         continue;
                     }
-                    // TODO: We should batch this instead of loop, need a new API route tho...
                     let traces = await this.$indexerApi.get('/transaction/' + transaction.hash + '/internal');
                     for(const trace of [...traces.data.results]){
                         trace.hash = trace.transaction_hash;
@@ -203,7 +202,6 @@ export default {
                             };
                         }
                     }
-                    console.log(transaction);
                 } catch (e) {
                     console.error(
                         `Failed to parse data for transaction, error was: ${e.message}`,

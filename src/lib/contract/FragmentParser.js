@@ -117,8 +117,7 @@ export default class FragmentParser {
                 let parsedLog = eventInterface.parseLog(log);
                 return parsedLog;
             } catch(e) {
-                console.log(log);
-                console.log(`Failed to parse log #${log.logIndex} from event interface: ${e.message}`);
+                console.error(`Failed to parse log #${log.logIndex} from event interface: ${e.message}`);
             }
         }
         log.function_signature = log.topics[0]?.substr(0, 10);

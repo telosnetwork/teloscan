@@ -60,7 +60,7 @@ export default {
                 let itx = dataset[k];
 
                 // Get rid of duplicated calls
-                if(k > 0){
+                if(k === 1){
                     if(itx.action.input === dataset[k - 1].action.input
                         && itx.action.from === dataset[k - 1].action.from
                         && itx.action.to === dataset[k - 1].action.to
