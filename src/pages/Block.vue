@@ -1,7 +1,6 @@
 <script>
 import TransactionTable from 'components/TransactionTable';
 import DateField from 'components/DateField';
-import { mapActions } from 'vuex';
 
 export default {
     name: 'BlockPage',
@@ -10,19 +9,23 @@ export default {
         return {
             block: this.$route.params.block,
             blockData: null,
+            error: false,
         };
     },
     mounted() {
         this.loadBlock();
     },
     methods: {
-        ...mapActions('chain', ['doRPC']),
         async loadBlock() {
-            const blockResponse = await this.doRPC({
-                method: 'eth_getBlockByNumber',
-                params: [parseInt(this.block).toString(16), false],
-            });
-            this.blockData = blockResponse.result;
+            try {
+                const blockResponse = await this.$indexerApi.get(`/block/${this.block}?includeAbi=true`);
+                if(blockResponse){
+                    this.blockData = blockResponse.data.results[0];
+                }
+            } catch (e) {
+                this.error = this.$t('components.failed_to_fetch_transactions');
+                console.error(e);
+            }
         },
     },
 };
@@ -53,19 +56,28 @@ export default {
                         {{ $t('pages.transactions') }}
                     </div>
                     <div class="dataCardData">
-                        {{ blockData.transactions.length || 0 }}
+                        {{ blockData.transactionsCount }}
                     </div>
                 </div>
                 <div class="dataCardItem">
                     <div class="dataCardTile">
-                        <DateField :epoch="blockData.timestamp"/>
+                        <DateField :epoch="blockData.timestamp / 1000"/>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="tableWrapper shadow-2 content-container q-mt-lg">
-        <TransactionTable :title="block" :filter="{block}"/>
+    <div v-if="!error" class="tableWrapper shadow-2 content-container q-mt-lg">
+        <TransactionTable :title="block" :filter="`block/${block}`"/>
+    </div>
+    <div v-else class="bg-white q-pa-xl rounded-borders">
+        <div class="flex">
+            <q-icon name="warning" size="md" />
+            <span class="q-pl-md text-h5">{{ error }}</span>
+        </div>
+        <div class="q-pt-md">
+            {{ $t('global.async_error_description') }}
+        </div>
     </div>
 </div>
 </template>

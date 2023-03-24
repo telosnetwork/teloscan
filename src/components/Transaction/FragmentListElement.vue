@@ -326,6 +326,21 @@ export default {
 .jv-container .jv-code {
     padding: 10px 10px 10px 10px;
 }
+@media only screen and (max-width: 480px){
+    .c-fragment-list-element {
+        &__head {
+            display: block;
+            text-align: center;
+            .c-address-field {
+                border-top: 1px solid rgba(255, 255, 255, 0.3);
+                padding-top: 10px;
+                width: 100%;
+                display: block;
+                margin-top: 15px;
+            }
+        }
+    }
+}
 @media only screen and (max-width: 400px){
     .c-fragment-list-element {
         &__head {

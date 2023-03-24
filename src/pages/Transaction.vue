@@ -534,6 +534,8 @@ span
     margin-bottom: -1px
 
 @media only screen and (max-width: 550px)
+    .col-9 .positive .q-icon, .col-9 .negative .q-icon
+        margin-top: 0px
     .q-tab
         padding: 0px 5px
     .q-tab__label

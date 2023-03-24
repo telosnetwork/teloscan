@@ -230,6 +230,7 @@ export default {
         copied: 'Copié',
         copy_to_clipboard_failed: 'La copie sur le presse-papiers à échoué',
         gwei: 'Gwei',
+        failed_to_fetch_transactions: 'Erreur lors du chargement des transactions.',
         failed_to_parse_transaction: 'Echec de l\'analyse des données de la transaction. Erreur: { message }',
         executed_based_on_decoded_data: 'Fonction executé à partir des données d\'entrée décodé. Pour les fonctions non identifiés, l\'ID de méthode est affiché à la place.',
         unsupported_token_type: 'Type de jeton non supporté: { tokenType }',
@@ -351,6 +352,7 @@ export default {
         },
     },
     global: {
+        async_error_description: 'Désolé ! Un erreur est survenue lors de la requête d\'une ressource. Assurez vous que votre connection internet fonctionne et réessayez. Si cela ne marche toujours pas, contactez nous directement sur nos canaux Telegram.',
         language: 'Language',
         cancel: 'Annuler',
         ok: 'Ok',

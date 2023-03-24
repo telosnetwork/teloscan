@@ -230,6 +230,7 @@ export default {
         copied: 'Kopiert',
         copy_to_clipboard_failed: 'Koipieren in die Zwischenablage ist fehlgeschlagen',
         gwei: 'Gwei',
+        failed_to_fetch_transactions: 'Failed to fetch transactions.',
         failed_to_parse_transaction: 'Das Parsen der Daten für die Transaktion ist fehlgeschlagen, Fehler: { message }',
         executed_based_on_decoded_data: 'Funktion wird auf der Grundlage der dekodierten Eingabedaten ausgeführt. Bei nicht identifizierter Funktion wird stattdessen die Methoden-ID angezeigt.',
         unsupported_token_type: 'Token Typ nicht unterstützt: { tokenType }',
@@ -350,6 +351,7 @@ export default {
         },
     },
     global: {
+        async_error_description: 'Sorry ! An error occured trying to request resources. Please make sure your internet connection is working and try again. If the error persists, contact us directly on our Telegram channel.',
         language: 'Sprache',
         cancel: 'Abbrechen',
         ok: 'Ok',
