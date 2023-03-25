@@ -1,4 +1,5 @@
 import { WEI_PRECISION } from 'src/lib/utils';
+import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
 
 /**
  * Launches a prompt in MetaMask to add a given token as a tracked token, allowing the user to view their balance of
@@ -39,4 +40,14 @@ export async function promptAddToMetamask(
             color: 'negative',
         });
     });
+}
+export function getIcon(logoURI) {
+    if (logoURI) {
+        if (logoURI.startsWith('ipfs://')) {
+            return logoURI.replace(/ipfs:\/\//, 'https://ipfs.io/ipfs/');
+        }
+        return logoURI;
+    } else {
+        return DEFAULT_TOKEN_LOGO;
+    }
 }

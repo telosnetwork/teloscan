@@ -17,6 +17,7 @@ export function formatWei(bn, tokenDecimals, displayDecimals) {
     }
     return str;
 }
+
 export function isValidAddressFormat(ethAddressString) {
     const pattern = /^0x[a-fA-F0-9]{40}$/;
     return pattern.test(ethAddressString);

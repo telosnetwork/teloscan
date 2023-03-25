@@ -2,8 +2,8 @@
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
-import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
 import { formatWei } from 'src/lib/utils';
+import { getIcon } from 'src/lib/token-utils';
 
 export default {
     name: 'TransferTable',
@@ -174,16 +174,6 @@ export default {
             this.rows = this.transfers;
             this.loading = false;
         },
-        getIcon(row) {
-            if (row.logoURI) {
-                if (row.logoURI.startsWith('ipfs://')) {
-                    return row.logoURI.replace(/ipfs:\/\//, 'https://ipfs.io/ipfs/');
-                }
-                return row.logoURI;
-            } else {
-                return DEFAULT_TOKEN_LOGO;
-            }
-        },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
             let path = `/account/${this.address}/transfers?limit=${
@@ -198,6 +188,7 @@ export default {
         toggleDateFormat() {
             this.showDateAge = !this.showDateAge;
         },
+        getIcon,
     },
 };
 </script>
@@ -270,7 +261,7 @@ export default {
                 </span>
             </q-td>
             <q-td key="token" :props="props">
-                <q-img v-if="tokenType==='erc20'" class="coin-icon" :src="getIcon(props.row)"/>
+                <q-img v-if="tokenType==='erc20'" class="coin-icon" :src="getIcon(props.row.logoURI)"/>
                 <AddressField
                     class="token-name"
                     :address="props.row.address"

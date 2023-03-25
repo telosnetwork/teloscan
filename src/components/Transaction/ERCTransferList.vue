@@ -2,6 +2,7 @@
 import AddressField from 'components/AddressField';
 import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
+import { getIcon } from 'src/lib/token-utils';
 
 export default {
     name: 'ERCTransfersList',
@@ -28,6 +29,17 @@ export default {
     },
     methods: {
         formatWei,
+        getIcon,
+    },
+    async mounted() {
+        const tokenList = await this.$contractManager.getTokenList();
+        for(let i = 0; i < this.pTransfers.length;i++){
+            tokenList.tokens.forEach((token) => {
+                if(token.address.toLowerCase() ===  this.pTransfers.contract.toLowerCase()){
+                    this.pTransfers.contract.logoURI = token.logoURI;
+                }
+            });
+        }
     },
     setup(props) {
         let transfers = [...props.transfers];
@@ -173,6 +185,11 @@ export default {
                     :to="`/address/${transfer.contract.address}`"
                 >
                     <span>
+                        <q-img
+                            v-if="transfer.contract.supportedInterfaces.includes('erc20')"
+                            class="coin-icon"
+                            :src="getIcon(transfer.contract.logoURI)"
+                        />
                         <span>{{ transfer.contract.properties?.symbol?.slice(0, 10) }}</span>
                         <span v-if="transfer.contract.properties?.symbol?.length > 10">...</span>
                     </span>
@@ -209,6 +226,13 @@ pre
     width: 16px
     height: 16px
     margin-top: -7px
+.coin-icon
+    width: 16px
+    height: 16px
+    margin-top: -4px
+    margin-right: .25rem
+    vertical-align: middle
+    border-radius: 100%
 
 @media (max-width: $breakpoint-sm-max)
     #erc-transfers
