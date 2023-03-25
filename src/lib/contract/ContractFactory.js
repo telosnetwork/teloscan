@@ -3,15 +3,6 @@ import erc20Abi from 'erc-20-abi';
 import { erc721Abi, erc1155Abi } from 'src/lib/abi';
 
 export default class ContractFactory {
-
-    getTokenABI(type){
-        if(type === 'erc721'){
-            return erc721Abi;
-        } else if(type === 'erc1155'){
-            return erc1155Abi;
-        }
-        return erc20Abi;
-    }
     buildContract(data) {
         if(!data || !data.address){
             return;

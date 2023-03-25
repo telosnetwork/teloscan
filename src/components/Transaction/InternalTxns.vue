@@ -46,6 +46,7 @@ export default {
                 let response = await this.$indexerApi.get(query);
                 if(response && response.data?.results?.length > 0) {
                     dataset = response.data?.results;
+                    this.$contractManager.addContractsToCache(response.data?.contracts);
                 } else {
                     console.error(`Could not retrieve internal transactions for transaction ${this.transaction.hash}`,
                         response,
@@ -71,7 +72,7 @@ export default {
                 }
 
                 itx.callType = itx.action.callType;
-                let contract = await this.getContract(itx.to);
+                let contract = await this.getContract(itx.action.to);
                 let fnsig = (itx.action.input) ? itx.action.input.slice(0, 10) : '';
                 let name = this.$t('components.transaction.unknown');
                 let inputs, outputs, args = false;
@@ -81,10 +82,11 @@ export default {
                     name = this.$t('components.transaction.contract_deployment');
                 } else if (fnsig && fnsig !== '0x') {
                     name = this.$t('components.transaction.unknown') + ' (' + fnsig + ')';
-                } else if (itx.value.toString() !== '0') {
+                } else if (itx.value?.toString() !== '0') {
                     name = this.$t('components.transaction.tlos_transfer');
                     isTransferETH = true;
                 }
+
                 if (itx.action.input) {
                     const parsedTransaction = await this.$contractManager.parseContractTransaction(
                         itx.action.input,
