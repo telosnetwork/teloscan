@@ -199,8 +199,6 @@ export default {
         enable_wallet_extensions: 'Enable MetaMask extension and set default to `prefer extensions` in browser wallet settings to use MetaMask wallet',
         evm_wallets: 'EVM Wallets',
         advanced: 'Advanced',
-        no_contract_code: 'No contract code',
-        no_contract_code_description: 'No contract code could be found, we are using a default ABI. Please verify the contract using sourcify to see the code here.',
         continue_on_metamask: 'Continue on Metamask',
         text1_native_wallets: 'Native wallets for',
         text2_advanced_users: 'advanced users',

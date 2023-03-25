@@ -162,120 +162,122 @@ export default {
 </script>
 
 <template>
-<div class="pageContainer row q-pt-xl tableWrapper">
-    <div class="text-h4 text-primary q-mb-lg">{{ $t('pages.verify_contract') }}</div>
-    <div class="col-12 q-py-lg">
-        <div class="content-container">
-            <q-form @submit="submitFormHandler" @reset="resetForm">
-                <div class="inputs-container-row">
-                    <div class="inputs-container-col inputs-container-padding-right">
-                        <q-input
-                            v-model="contractAddress"
-                            name="contractAddress"
-                            :label="$t('pages.contract_address')+' *'"
-                            :placeholder="$t('pages.enter_contract_address')"
-                            debounce="500"
-                            :rules="[val => isValidAddressFormat(val) || $t('pages.invalid_address_format')]"
-                        />
-                        <q-select
-                            v-model="compilerVersion"
-                            :options="compilerOptions"
-                            :label="$t('pages.compiler_version')+' *'"
-                            :rules="[val => val.length || $t('pages.select_compiler_version')]"
-                        />
-                        <q-input
-                            v-model="sourcePath"
-                            :disable="!pathInput"
-                            :label="$t('pages.contract_file_directory_path')"
-                            :placeholder="$t('pages.eg_contracts')"
-                            debounce="750"
-                            :rules="sourcePathRules"
-                        />
-                        <div class="radio-container">
-                            <q-radio
-                                v-model="inputMethod"
-                                :label="$t('pages.upload_file')"
-                                :val="true"
-                                color="secondary"
+<div class="pageContainer">
+    <div class="bg-white q-pa-xl  q-mt-xl">
+        <div class="text-h4 text-primary">{{ $t('pages.verify_contract') }}</div>
+        <div class="col-12">
+            <div class="content-container">
+                <q-form @submit="submitFormHandler" @reset="resetForm">
+                    <div class="inputs-container-row">
+                        <div class="inputs-container-col inputs-container-padding-right">
+                            <q-input
+                                v-model="contractAddress"
+                                name="contractAddress"
+                                :label="$t('pages.contract_address')+' *'"
+                                :placeholder="$t('pages.enter_contract_address')"
+                                debounce="500"
+                                :rules="[val => isValidAddressFormat(val) || $t('pages.invalid_address_format')]"
                             />
-                            <q-radio
-                                v-model="inputMethod"
-                                :label="$t('pages.text_input')"
-                                :val="false"
-                                color="secondary"
+                            <q-select
+                                v-model="compilerVersion"
+                                :options="compilerOptions"
+                                :label="$t('pages.compiler_version')+' *'"
+                                :rules="[val => val.length || $t('pages.select_compiler_version')]"
                             />
+                            <q-input
+                                v-model="sourcePath"
+                                :disable="!pathInput"
+                                :label="$t('pages.contract_file_directory_path')"
+                                :placeholder="$t('pages.eg_contracts')"
+                                debounce="750"
+                                :rules="sourcePathRules"
+                            />
+                            <div class="radio-container">
+                                <q-radio
+                                    v-model="inputMethod"
+                                    :label="$t('pages.upload_file')"
+                                    :val="true"
+                                    color="secondary"
+                                />
+                                <q-radio
+                                    v-model="inputMethod"
+                                    :label="$t('pages.text_input')"
+                                    :val="false"
+                                    color="secondary"
+                                />
+                            </div>
+                        </div>
+                        <div class="inputs-container-col">
+                            <q-input
+                                v-model="runs"
+                                class="q-field--with-bottom"
+                                type="number"
+                                :label="$t('pages.runs_value_for_optimization')"
+                                :class="!optimizer ? 'disabled-input' : ''"
+                            >
+                                <q-toggle v-model="optimizer" label="Optimization"/>
+                            </q-input>
+                            <q-select v-model="targetEvm" :options="evmOptions" label="Target EVM"/>
+                            <q-input
+                                v-model="constructorArgs"
+                                :label="$t('pages.constructor_arguments')"
+                                :placeholder="$t('pages.comma_seperated_values')"
+                                debounce="750"
+                                :rules="constructorArgsRules"
+                                class="q-pb-sm"
+                            />
+                            <div class="radio-container">
+                                <q-radio
+                                    v-if="inputMethod"
+                                    v-model="fileType"
+                                    label=".sol"
+                                    :val="true"
+                                    color="secondary"
+                                />
+                                <q-radio
+                                    v-if="inputMethod"
+                                    v-model="fileType"
+                                    label=".json"
+                                    :val="false"
+                                    color="secondary"
+                                />
+                            </div>
+                        </div>
+                        <q-input
+                            v-if="!inputMethod"
+                            v-model="contractInput"
+                            class="border-radius"
+                            type="textarea"
+                            name="contractInput"
+                            rows="5"
+                            square
+                            outlined
+                            :placeholder="$t('pages.paste_contract_code_here')"
+                            :rules="[val => val.length || $t('pages.enter_contract_text')]"
+                        />
+                        <q-uploader
+                            v-else
+                            ref="uploader"
+                            :url="getUrl"
+                            multiple
+                            batch="batch"
+                            :label="uploaderLabel"
+                            :form-fields="getFormFields"
+                            field-name="files"
+                            no-thumbnails
+                            class="uploader"
+                            accept=".sol, .json"
+                            hide-upload-btn
+                            @uploaded="uploaded"
+                            @rejected="onNotify"
+                        />
+                        <div class="button-container">
+                            <q-btn :label="$t('pages.verify_contract')" type="submit" color="secondary"/>
+                            <q-btn :label="$t('pages.reset')" type="reset" color="secondary"/>
                         </div>
                     </div>
-                    <div class="inputs-container-col">
-                        <q-input
-                            v-model="runs"
-                            class="q-field--with-bottom"
-                            type="number"
-                            :label="$t('pages.runs_value_for_optimization')"
-                            :class="!optimizer ? 'disabled-input' : ''"
-                        >
-                            <q-toggle v-model="optimizer" label="Optimization"/>
-                        </q-input>
-                        <q-select v-model="targetEvm" :options="evmOptions" label="Target EVM"/>
-                        <q-input
-                            v-model="constructorArgs"
-                            :label="$t('pages.constructor_arguments')"
-                            :placeholder="$t('pages.comma_seperated_values')"
-                            debounce="750"
-                            :rules="constructorArgsRules"
-                            class="q-pb-sm"
-                        />
-                        <div class="radio-container">
-                            <q-radio
-                                v-if="inputMethod"
-                                v-model="fileType"
-                                label=".sol"
-                                :val="true"
-                                color="secondary"
-                            />
-                            <q-radio
-                                v-if="inputMethod"
-                                v-model="fileType"
-                                label=".json"
-                                :val="false"
-                                color="secondary"
-                            />
-                        </div>
-                    </div>
-                    <q-input
-                        v-if="!inputMethod"
-                        v-model="contractInput"
-                        class="border-radius"
-                        type="textarea"
-                        name="contractInput"
-                        rows="5"
-                        square
-                        outlined
-                        :placeholder="$t('pages.paste_contract_code_here')"
-                        :rules="[val => val.length || $t('pages.enter_contract_text')]"
-                    />
-                    <q-uploader
-                        v-else
-                        ref="uploader"
-                        :url="getUrl"
-                        multiple
-                        batch="batch"
-                        :label="uploaderLabel"
-                        :form-fields="getFormFields"
-                        field-name="files"
-                        no-thumbnails
-                        class="uploader"
-                        accept=".sol, .json"
-                        hide-upload-btn
-                        @uploaded="uploaded"
-                        @rejected="onNotify"
-                    />
-                    <div class="button-container">
-                        <q-btn :label="$t('pages.verify_contract')" type="submit" color="secondary"/>
-                        <q-btn :label="$t('pages.reset')" type="reset" color="secondary"/>
-                    </div>
-                </div>
-            </q-form>
+                </q-form>
+            </div>
         </div>
     </div>
 </div>

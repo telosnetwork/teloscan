@@ -335,8 +335,8 @@ export default {
                     <TokenList :address="address"/>
                 </q-tab-panel>
                 <q-tab-panel v-if="isContract" name="contract">
-                    <ContractTab v-if="this.contract?.isVerified()" :contract="contract"/>
-                    <GenericContractInterface v-else/>
+                    <ContractTab v-if="contract?.isVerified()" :contract="contract"/>
+                    <GenericContractInterface v-else  :contract="contract" />
                 </q-tab-panel>
             </q-tab-panels>
         </div>
@@ -366,6 +366,7 @@ export default {
   cursor: pointer
 
 .coin-icon
+  border-radius: 100%
   width: 32px
   height: 32px
   vertical-align: middle

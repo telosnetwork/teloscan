@@ -1,7 +1,7 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
 
-import Contract from 'src/lib/contract/Contract';
+import ContractFactory from 'src/lib/contract/ContractFactory';
 import { erc721Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
 
@@ -15,10 +15,14 @@ export default {
         FunctionInterface,
         JsonViewer,
     },
+    props: {
+        contract: {
+            type: Object,
+        },
+    },
     data: () => ({
         file_model: null,
         address: null,
-        contract: null,
         functions: null,
         displayWriteFunctions: false,
         customAbiDefinition: '',
@@ -132,16 +136,16 @@ export default {
             // https://github.com/ethers-io/ethers.js/blob/master/packages/abi/lib.esm/interface.js#L57
             console.assert(typeof abi.map === 'function', 'ERROR: abi is not an array');
 
-            this.contract = new Contract({
+            let contract = ContractFactory.buildContract({
                 name: this.$t('components.contract_tab.unverified_contract'),
                 address: this.address,
-                abi,
+                abi: abi,
                 manager: this.$contractManager,
             });
             let read = [];
             let write = [];
 
-            (this.contract?.abi ?? []).forEach((a) => {
+            (contract?.abi ?? []).forEach((a) => {
                 if (a.type !== 'function') {
                     return;
                 }
@@ -165,18 +169,18 @@ export default {
 <div class="q-pa-md">
     <div class="row q-pb-md">
         <div class="col-12">
-            <p>
+            <p class="text-h5 flex">
                 <q-icon
                     name="warning"
-                    class="text-negative"
-                    size="1.25rem"
+                    class="text-negative q-mt-xs q-mr-xs"
+                    size="1.5rem"
                 />
-                {{ $t('components.contract_tab.unverified_contract_source') }}
+                <span>{{ $t('components.contract_tab.unverified_contract_source') }}</span>
             </p>
             <p>
-                <router-link :key="$route.path" :to="{ name: 'sourcify' }">
+                <a href="https://sourcify.dev/" target="_blank">
                     {{ $t('components.contract_tab.click_here') }}
-                </router-link>
+                </a>
                 {{ $t('components.contract_tab.upload_source_files') }}
             </p>
         </div>

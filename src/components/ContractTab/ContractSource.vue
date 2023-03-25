@@ -67,32 +67,20 @@ export default {
 
 <template>
 <div class="contract-source">
-    <div v-if="!sources" class="q-pt-md q-pb-xl">
-        <hr>
-        <div class="flex q-pt-md">
-            <q-icon class="q-mr-md" name="warning" size="md" />
-            <span class="text-h5">{{ $t("components.no_contract_code")}}</span>
-        </div>
-        <div class="q-mt-md">
-            {{ $t("components.no_contract_code_description")}}
-        </div>
+    <div v-for="(item, index) in json" :key="`viewer-${index}`">
+        <p class="file-label">{{ item.name }}</p>
+        <JsonViewer
+            class="source-container"
+            :value="item.content"
+            copyable="copyable"
+            expanded="expanded"
+            :expand-depth="1"
+            theme="custom-theme"
+        />
     </div>
-    <div v-else>
-        <div v-for="(item, index) in json" :key="`viewer-${index}`">
-            <p class="file-label">{{ item.name }}</p>
-            <JsonViewer
-                class="source-container"
-                :value="item.content"
-                copyable="copyable"
-                expanded="expanded"
-                :expand-depth="1"
-                theme="custom-theme"
-            />
-        </div>
-        <div v-for="(item, index) in contracts" :key="`contract-${index}`">
-            <p class="file-label">{{ item.name }}</p>
-            <pre class="source-container q-pa-md" v-html="item.content"></pre>
-        </div>
+    <div v-for="(item, index) in contracts" :key="`contract-${index}`">
+        <p class="file-label">{{ item.name }}</p>
+        <pre class="source-container q-pa-md" v-html="item.content"></pre>
     </div>
 </div>
 </template>
