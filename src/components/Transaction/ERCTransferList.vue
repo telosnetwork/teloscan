@@ -251,6 +251,11 @@ pre
             padding-left: 20px
 
 @media screen and (max-width: 420px)
+    .coin-icon
+        width: 12px
+        height: 12px
+        margin-right: 3px
+        margin-top: -3px
     .row
         .col-3, .col-9, .col-5
             width: 100%
