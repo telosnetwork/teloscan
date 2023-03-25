@@ -67,20 +67,38 @@ export default {
 
 <template>
 <div class="contract-source">
-    <div v-for="(item, index) in json" :key="`viewer-${index}`">
-        <p class="file-label">{{ item.name }}</p>
-        <JsonViewer
-            class="source-container"
-            :value="item.content"
-            copyable="copyable"
-            expanded="expanded"
-            :expand-depth="1"
-            theme="custom-theme"
-        />
+    <div v-if="!sources" class="q-pt-md q-pb-xl">
+        <p class="text-h5 flex">
+            <q-icon
+                name="warning"
+                class="text-negative q-mt-xs q-mr-xs"
+                size="1.5rem"
+            />
+            <span>{{ $t('components.contract_tab.unverified_contract_source') }}</span>
+        </p>
+        <p>
+            <a href="https://sourcify.dev/" target="_blank">
+                {{ $t('components.contract_tab.click_here') }}
+            </a>
+            {{ $t('components.contract_tab.upload_source_files') }}
+        </p>
     </div>
-    <div v-for="(item, index) in contracts" :key="`contract-${index}`">
-        <p class="file-label">{{ item.name }}</p>
-        <pre class="source-container q-pa-md" v-html="item.content"></pre>
+    <div v-else>
+        <div v-for="(item, index) in json" :key="`viewer-${index}`">
+            <p class="file-label">{{ item.name }}</p>
+            <JsonViewer
+                class="source-container"
+                :value="item.content"
+                copyable="copyable"
+                expanded="expanded"
+                :expand-depth="1"
+                theme="custom-theme"
+            />
+        </div>
+        <div v-for="(item, index) in contracts" :key="`contract-${index}`">
+            <p class="file-label">{{ item.name }}</p>
+            <pre class="source-container q-pa-md" v-html="item.content"></pre>
+        </div>
     </div>
 </div>
 </template>

@@ -32,6 +32,7 @@ export default {
             erc721: 'erc721',
             custom: 'custom',
         },
+        factory: new ContractFactory(),
     }),
     computed: {
         showAbiFunctions() {
@@ -136,10 +137,10 @@ export default {
             // https://github.com/ethers-io/ethers.js/blob/master/packages/abi/lib.esm/interface.js#L57
             console.assert(typeof abi.map === 'function', 'ERROR: abi is not an array');
 
-            let contract = ContractFactory.buildContract({
+            let contract = this.factory.buildContract({
                 name: this.$t('components.contract_tab.unverified_contract'),
                 address: this.address,
-                abi: abi,
+                abi: JSON.stringify(abi),
                 manager: this.$contractManager,
             });
             let read = [];
