@@ -316,7 +316,7 @@ export default {
             unverified_contract_source: 'Ce contrat n\'a pas été vérifié.',
             click_here: 'Cliquez ici',
             upload_source_files: 'pour envoyer le fichier source et vérifier votre contrat.  ' +
-                'Alternativement, vous pouvez intéragir avec le contrat en utilisant un ABI arbitraire:',
+                'Alternativement, vous pouvez intéragir avec le contrat en utilisant soit l\'ABI détécté soit, si inconnu, un ABI de votre choix:',
             use_erc20_abi: 'Utiliser l\'ABI ERC20',
             use_erc721_abi: 'Utiliser l\'ABI ERC721',
             abi_from_json: 'ABI depuis JSON',

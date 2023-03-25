@@ -13,6 +13,7 @@ import TransactionField from 'components/TransactionField';
 import AddressField from 'components/AddressField';
 import CopyButton from 'components/CopyButton';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
+import DateField from 'components/DateField';
 
 const web3 = new Web3();
 
@@ -36,6 +37,7 @@ export default {
         GenericContractInterface,
         TokenList,
         TransactionField,
+        DateField,
         TransactionTable,
         InternalTransactionTable,
         TransferTable,
@@ -50,6 +52,7 @@ export default {
             isContract: false,
             contract: null,
             verificationDate: '',
+            creationDate: 0,
             tab: '#transactions',
             tokens: null,
             confirmationDialog: false,
@@ -123,6 +126,8 @@ export default {
                         }
                     });
                     this.isContract = true;
+                    const response = await this.$indexerApi.get(`/block/${this.contract.getCreationBlock()}`);
+                    this.creationDate = response.data.results[0]?.timestamp;
                     if (this.contract.getName()) {
                         this.title = this.contract.getName();
                     } else {
@@ -203,8 +208,10 @@ export default {
                         <TransactionField :transaction-hash="contract.getCreationTrx()"/>
                     </div>
                     <div class="text-white">{{ $t('pages.by_address') }}
-                        &nbsp;
                         <AddressField :address="contract.getCreator()"/>
+                    </div>
+                    <div class="text-white">
+                        <DateField :epoch="creationDate / 1000" :default-to-age="false" :force-show-age="showDateAge" />
                     </div>
                 </template>
                 <small v-else>
