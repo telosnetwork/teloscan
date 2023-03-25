@@ -229,8 +229,8 @@ pre
 .coin-icon
     width: 16px
     height: 16px
-    margin-top: -4px
-    margin-right: .25rem
+    margin-top: -5px
+    margin-right: .15rem
     vertical-align: middle
     border-radius: 100%
 
@@ -252,7 +252,7 @@ pre
 
 @media screen and (max-width: 420px)
     .row
-        .col-3, .col-9
+        .col-3, .col-9, .col-5
             width: 100%
             padding-left: 0px
         .col-9
