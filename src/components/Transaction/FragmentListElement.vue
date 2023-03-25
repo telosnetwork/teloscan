@@ -82,7 +82,12 @@ export default {
     <div :class="fragmentClass" @click="expanded = !expanded">
         <span class="row items-center">
             <q-icon
-                v-if="inputs?.length > 0 || fragment.value && fragment.value !== '0.0'"
+                v-if="
+                    inputs?.length > 0 ||
+                        fragment.fnsig != '0x' ||
+                        fragment.value &&
+                        fragment.value !== '0.0'
+                "
                 :name="arrowIcon"
                 size="sm"
             />

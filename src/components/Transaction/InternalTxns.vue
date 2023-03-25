@@ -113,16 +113,16 @@ export default {
                     traceAddress: itx.traceAddress,
                     parent: itx.traceAddress[0] || 0,
                     name: name,
-                    from: itx.from,
+                    from: itx.action?.from,
                     isTransferETH: isTransferETH,
                     sig: fnsig,
                     inputs: inputs,
                     outputs: outputs,
                     depth: itx.traceAddress.length,
-                    to: itx.to,
+                    to: itx.action?.to,
                     contract: contract,
-                    value: (itx.type !== 'create' && (!fnsig || fnsig === '0x') && itx.value)
-                        ? formatWei(itx.value.toString(), WEI_PRECISION)
+                    value: (itx.type !== 'create' && (!fnsig || fnsig === '0x') && itx.action.value)
+                        ? formatWei(itx.action.value.toString(), WEI_PRECISION)
                         : 0,
                 });
             }
