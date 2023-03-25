@@ -1,6 +1,7 @@
 <!-- eslint-disable vue/no-unused-components -->
 <script>
 import { toChecksumAddress } from 'src/lib/utils';
+import { getIcon } from 'src/lib/token-utils';
 import Web3 from 'web3';
 import TransactionTable from 'components/TransactionTable';
 import InternalTransactionTable from 'components/InternalTransactionTable';
@@ -107,7 +108,7 @@ export default {
         async loadAccount() {
             this.accountLoading = true;
             this.isContract = false;
-
+            const tokenList = await this.$contractManager.getTokenList();
             const account = await this.$evm.telos.getEthAccount(this.address);
             this.contract = null;
             this.nonce = account.nonce;
@@ -115,6 +116,12 @@ export default {
             if (account.code.length > 0){
                 this.contract = await this.$contractManager.getContract(this.address);
                 if(this.contract){
+                    tokenList.tokens.forEach((token) => {
+                        if(token.address.toLowerCase() ===  this.contract.address.toLowerCase()){
+                            this.contract.logoURI = token.logoURI;
+                            this.contract.setVerified(true);
+                        }
+                    });
                     this.isContract = true;
                     if (this.contract.getName()) {
                         this.title = this.contract.getName();
@@ -149,6 +156,7 @@ export default {
         disableConfirmation(){
             this.confirmationDialog = false;
         },
+        getIcon,
     },
 };
 </script>
@@ -158,17 +166,24 @@ export default {
     <div>
         <div class="row tableWrapper justify-between q-mb-lg">
             <div class="homeInfo">
-                <div class="text-primary text-h4 q-pr-xs">
-                    {{ title }}
+                <div class="flex">
+                    <q-img
+                        v-if="this.contract?.supportedInterfaces.includes('erc20')"
+                        class="coin-icon"
+                        :src="getIcon(this.contract.logoURI)"
+                    />
+                    <div class="text-primary text-h4 q-pr-xs">
+                        {{ title }}
+                    </div>
+                    <q-icon
+                        v-if="isContract"
+                        class="cursor"
+                        :name="this.contract?.isVerified() ? 'verified' : 'warning'"
+                        :class="this.contract?.isVerified() ? 'text-positive' : 'text-negative'"
+                        size="1.25rem"
+                        @click="confirmationDialog = true"
+                    />
                 </div>
-                <q-icon
-                    v-if="isContract"
-                    class="cursor"
-                    :name="this.contract?.isVerified() ? 'verified' : 'warning'"
-                    :class="this.contract?.isVerified() ? 'text-positive' : 'text-negative'"
-                    size="1.25rem"
-                    @click="confirmationDialog = true"
-                />
                 <ConfirmationDialog
                     class="text-secondary"
                     :flag="confirmationDialog"
@@ -345,9 +360,17 @@ export default {
 
 .q-icon
   padding-bottom: .75rem
+  vertical-align: middle
 
 .cursor
   cursor: pointer
+
+.coin-icon
+  width: 32px
+  height: 32px
+  vertical-align: middle
+  margin-right: 7px
+  margin-bottom: 5px
 
 .tabs-header
   background: white

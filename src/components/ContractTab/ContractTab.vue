@@ -16,16 +16,23 @@ export default {
             default: () => ({}),
         },
     },
+    methods: {
+        mounted: () => {
+            if(this.abi() !== ''){
+                this.source = true;
+            }
+        },
+    },
     data: () => ({
-        source: true,
+        source: false,
         write: false,
     }),
     computed: {
         abi() {
-            const { abi } = this.contract;
+            const abi  = this.contract.abi;
 
-            if (!Array.isArray(abi)) {
-                return '';
+            if (!abi || abi === null || !Array.isArray(abi)) {
+                return false;
             }
 
             return JSON.stringify(this.contract.abi);
@@ -44,21 +51,20 @@ export default {
 </script>
 
 <template>
-<div class="contract-tab">
+<div v-if="abi" class="contract-tab">
     <CopyButton
-        v-if="abi"
         :text="abi"
         :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
         class="q-mb-md"
     />
     <br>
 
-    <q-btn-group>
+    <q-btn-group >
         <q-btn
             :outline="codeSeleted"
             :label="$t('components.contract_tab.code')"
             push
-            @click="source = true"
+            @click="source = true; write = false"
         />
         <q-btn
             :outline="readSelected"
@@ -78,6 +84,7 @@ export default {
     <ContractInterface
         v-else
         :write="write"
+        :contract="contract"
     />
 </div>
 </template>

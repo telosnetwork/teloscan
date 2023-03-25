@@ -20,20 +20,23 @@ export default {
             tab:'sources',
             contracts: [],
             json: [],
+            sources: false,
         };
     },
     async mounted() {
         let sources;
         try{
             const checkSumAddress = toChecksumAddress(this.$route.params.address);
-            sources =
-        (await axios.get(
-            `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com/${checkSumAddress}/source.json`)
-        ).data.files;
+            sources = await axios.get(
+                `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com/${checkSumAddress}/source.json`,
+            );
         }catch(e){
             console.log(e);
         }
-        this.sortFiles(sources);
+        if(sources){
+            this.sources = sources;
+            this.sortFiles(sources.data.files);
+        }
     },
     methods: {
         sortFiles(files){
@@ -64,20 +67,32 @@ export default {
 
 <template>
 <div class="contract-source">
-    <div v-for="(item, index) in json" :key="`viewer-${index}`">
-        <p class="file-label">{{ item.name }}</p>
-        <JsonViewer
-            class="source-container"
-            :value="item.content"
-            copyable="copyable"
-            expanded="expanded"
-            :expand-depth="1"
-            theme="custom-theme"
-        />
+    <div v-if="!sources" class="q-pt-md q-pb-xl">
+        <hr>
+        <div class="flex q-pt-md">
+            <q-icon class="q-mr-md" name="warning" size="md" />
+            <span class="text-h5">{{ $t("components.no_contract_code")}}</span>
+        </div>
+        <div class="q-mt-md">
+            {{ $t("components.no_contract_code_description")}}
+        </div>
     </div>
-    <div v-for="(item, index) in contracts" :key="`contract-${index}`">
-        <p class="file-label">{{ item.name }}</p>
-        <pre class="source-container q-pa-md" v-html="item.content"></pre>
+    <div v-else>
+        <div v-for="(item, index) in json" :key="`viewer-${index}`">
+            <p class="file-label">{{ item.name }}</p>
+            <JsonViewer
+                class="source-container"
+                :value="item.content"
+                copyable="copyable"
+                expanded="expanded"
+                :expand-depth="1"
+                theme="custom-theme"
+            />
+        </div>
+        <div v-for="(item, index) in contracts" :key="`contract-${index}`">
+            <p class="file-label">{{ item.name }}</p>
+            <pre class="source-container q-pa-md" v-html="item.content"></pre>
+        </div>
     </div>
 </div>
 </template>

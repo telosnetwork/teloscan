@@ -11,13 +11,14 @@ export default {
             type: Boolean,
             required: true,
         },
+        contract: {
+            type: Object,
+        },
     },
     data: () => ({
         functions: [],
-        contract: [],
     }),
     async mounted() {
-        this.contract = await this.$contractManager.getContract(this.$route.params.address);
         let read = [];
         let write = [];
         this.contract.abi.forEach((a) => {

@@ -19,12 +19,15 @@ export default class Contract {
     this.creationInfo = creationInfo;
   }
 
-  getInstance(){
-
-  }
   isVerified() {
     return this.verified;
   }
+
+  setVerified(verified) {
+    this.verified = verified;
+    return this;
+  }
+
 
   isNonFungible() {
     return (
