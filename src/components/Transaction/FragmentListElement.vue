@@ -255,7 +255,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <div v-if="fragment.value && fragment.value !== '0.0'">
+            <div v-if="fragment.value && fragment.value !== 0">
                 <div v-if="fragment.isTransferETH" >
                     <div class="fit row justify-start items-start content-start">
                         <div class="col-4">

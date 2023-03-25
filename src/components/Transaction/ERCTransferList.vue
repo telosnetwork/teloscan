@@ -35,8 +35,8 @@ export default {
         const tokenList = await this.$contractManager.getTokenList();
         for(let i = 0; i < this.pTransfers.length;i++){
             tokenList.tokens.forEach((token) => {
-                if(token.address.toLowerCase() ===  this.pTransfers.contract.toLowerCase()){
-                    this.pTransfers.contract.logoURI = token.logoURI;
+                if(token.address.toLowerCase() ===  this.pTransfers[i]?.contract?.address.toLowerCase()){
+                    this.pTransfers[i].contract.logoURI = token.logoURI;
                 }
             });
         }
@@ -229,7 +229,7 @@ pre
 .coin-icon
     width: 16px
     height: 16px
-    margin-top: -5px
+    margin-top: -6px
     margin-right: .15rem
     vertical-align: middle
     border-radius: 100%
