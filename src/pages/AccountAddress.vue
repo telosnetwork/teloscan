@@ -130,6 +130,9 @@ export default {
                     this.creationDate = response.data.results[0]?.timestamp;
                     if (this.contract.getName()) {
                         this.title = this.contract.getName();
+                        if(this.contract.properties?.symbol){
+                            this.title = this.title + ' (' + this.contract.properties.symbol + ')';
+                        }
                     } else {
                         this.title = this.$t('pages.contract');
                     }
@@ -397,6 +400,14 @@ export default {
                 &:first-child
                     padding: 20px
 @media only screen and (max-width: 768px)
+    .homeInfo > .flex
+        align-items: center
+        flex-wrap: inherit
+    .coin-icon
+        margin-bottom: 8px
+        flex-shrink: 0
+        width: 28px
+        height: 28px
     .dataCardsContainer
         width: 100%
         justify-content: center
@@ -413,6 +424,7 @@ export default {
         margin-bottom: 30px
         .c-copy-button
             width: 100%
+            word-break: break-word
         .text-h4
             margin-bottom: 10px
             word-break: break-word

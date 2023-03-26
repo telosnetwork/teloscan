@@ -170,7 +170,6 @@ export default {
 <div class="q-pa-md">
     <div class="row q-pb-md">
         <div class="col-12">
-            <hr >
             <p class="text-h5 flex">
                 <q-icon
                     name="warning"
