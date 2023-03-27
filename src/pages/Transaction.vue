@@ -179,7 +179,11 @@ export default {
             }
 
             this.contract = contract;
-            this.parsedTransaction = await this.$contractManager.parseContractTransaction(this.trx.input, contract);
+            this.parsedTransaction = await this.$contractManager.parseContractTransaction(
+                this.trx,
+                this.trx.input,
+                contract,
+            );
             this.params = this.getFunctionParams();
             this.methodTrx = Object.assign(
                 { parsedTransaction: this.parsedTransaction },

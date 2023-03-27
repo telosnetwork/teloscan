@@ -51,7 +51,7 @@ export default {
 </script>
 
 <template>
-<div v-if="abi" class="contract-tab">
+<div v-if="abi" :key="contract.address + abi.length" class="contract-tab">
     <CopyButton
         :text="abi"
         :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"

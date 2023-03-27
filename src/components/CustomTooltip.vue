@@ -6,6 +6,18 @@ export default {
             type: [Object, String],
             required: true,
         },
+        anchor: {
+            type: String,
+            default: 'bottom middle',
+        },
+        self: {
+            type: String,
+            default: 'top middle',
+        },
+        offset: {
+            type: Array,
+            default: () => [14, 14],
+        },
         long: {
             type: Boolean,
             default: false,
@@ -15,7 +27,12 @@ export default {
 </script>
 
 <template>
-<q-tooltip :class="(long) ? 'tooltip-long' : 'tooltip'">
+<q-tooltip
+    :self="self"
+    :offset="offset"
+    :anchor="anchor"
+    :class="(long) ? 'tooltip-long' : 'tooltip'"
+>
     <span class="tooltip-content">{{ content }}</span>
 </q-tooltip>
 </template>

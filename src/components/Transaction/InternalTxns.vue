@@ -93,6 +93,7 @@ export default {
 
                 if (itx.action.input) {
                     const parsedTransaction = await this.$contractManager.parseContractTransaction(
+                        itx,
                         itx.action.input,
                         contract,
                     );

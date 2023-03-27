@@ -1,7 +1,8 @@
 import ContractFactory from 'src/lib/contract/ContractFactory';
 import { ethers } from 'ethers';
 import axios from 'axios';
-import { ERC1155_TRANSFER_SIGNATURE } from 'src/lib/abi/signature/transfer_signatures.js';
+import { formatWei, getTopicHash } from 'src/lib/utils';
+import { ERC1155_TRANSFER_SIGNATURE, TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures.js';
 import { erc721MetadataAbi } from 'src/lib/abi';
 const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 
@@ -17,24 +18,57 @@ export default class ContractManager {
     getEthersProvider() {
         return this.ethersProvider;
     }
-    async parseContractTransaction(data, contract) {
+    async getTransfers(raw) {
+        if(!raw.logs || raw.logs?.length === 0){
+            return [];
+        }
+        const logs = (typeof raw.logs === 'string') ? JSON.parse(raw.logs) : raw.logs;
+        let transfers = [];
+        for(let i = 0;i < logs.length; i++){
+            const log = logs[i];
+            const sig = log.topics[0].slice(0, 10);
+            if(TRANSFER_SIGNATURES.includes(sig)){
+                const contract = await this.getCachedContract(log.address);
+                if(contract.supportedInterfaces.includes('erc20')){
+                    transfers.push({
+                        'value': `${formatWei(log.data, contract.properties?.decimals)}`,
+                        'to': getTopicHash(log.topics[1]),
+                        'from': getTopicHash(log.topics[2]),
+                        'symbol': contract.properties?.symbol,
+                    });
+                }
+            }
+        }
+        return transfers;
+    }
+    async parseContractTransaction(raw, data, contract, transfers) {
         if (data === '0x' || data === null || typeof contract === 'undefined') {
             return false;
         }
         if (contract.getInterface()) {
             try {
-                return await contract.getInterface().parseTransaction({ data });
+                let transaction = await contract.getInterface().parseTransaction({ data });
+                if(!transfers){
+                    return transaction;
+                }
+                transaction.transfers = await this.getTransfers(raw);
+                return transaction;
             } catch (e) {
-                console.log(`Failed to parse transaction data ${data} using abi for ${contract.address}`);
+                console.log(`Failed to parse transaction data ${data} using abi for ${contract.address}: ${e}`);
             }
         }
         try {
             const functionIface = await this.parser.getFunctionInterface(data);
             if (functionIface) {
-                return functionIface.parseTransaction({ data });
+                let transaction = functionIface.parseTransaction({ data });
+                if(!transfers){
+                    return transaction;
+                }
+                transaction.transfers = await this.getTransfers(raw);
+                return transaction;
             }
         } catch (e) {
-            console.error(`Failed to parse transaction data ${data} using abi for ${contract.address}`);
+            console.error(`Failed to parse transaction data ${data} using abi for ${contract.address}: ${e}`);
         }
     }
 

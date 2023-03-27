@@ -165,7 +165,6 @@ export default {
             );
             for (const transaction of this.transactions) {
                 try {
-                    transaction.transfer = false;
                     transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
                     if (transaction.input === '0x') {
                         continue;
@@ -183,7 +182,7 @@ export default {
                     }
 
                     const parsedTransaction = await this.$contractManager.parseContractTransaction(
-                        transaction.input, contract,
+                        transaction, transaction.input, contract, true,
                     );
                     if (parsedTransaction) {
                         transaction.parsedTransaction = parsedTransaction;
@@ -286,14 +285,19 @@ export default {
                 />
             </q-td>
             <q-td key="value" :props="props">
-                <span v-if="props.row.value > 0 ||  !props.row.transfer ">
-                    {{ props.row.value }} TLOS
-                </span>
-                <div v-else>
-                    <span v-if="props.row.transfer">
-                        {{ props.row.transfer.value }} {{ props.row.transfer.symbol }}
+                <div
+                    v-if="
+                        props.row.parsedTransaction?.transfers?.length > 0
+                    "
+                >
+                    <span v-if="props.row.parsedTransaction?.transfers?.length > 0">
+                        {{ props.row.parsedTransaction?.transfers[0].value }}
+                        {{ props.row.parsedTransaction?.transfers[0].symbol }}
                     </span>
                 </div>
+                <span v-else>
+                    {{ props.row.value }} TLOS
+                </span>
             </q-td>
         </q-tr>
     </template>
