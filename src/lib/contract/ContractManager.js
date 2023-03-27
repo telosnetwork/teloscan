@@ -29,7 +29,7 @@ export default class ContractManager {
             const sig = log.topics[0].slice(0, 10);
             if(TRANSFER_SIGNATURES.includes(sig)){
                 const contract = await this.getCachedContract(log.address);
-                if(contract.supportedInterfaces.includes('erc20')){
+                if(contract && contract.supportedInterfaces.includes('erc20')){
                     transfers.push({
                         'value': `${formatWei(log.data, contract.properties?.decimals)}`,
                         'to': getTopicHash(log.topics[1]),
