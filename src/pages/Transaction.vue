@@ -411,6 +411,7 @@ export default {
                         />
                         <ERCTransferList
                             v-if="erc721_transfers.length > 0"
+                            :key="erc721_transfers.length + 'erct'"
                             :trxFrom="trx.from"
                             :contract="contract"
                             title="ERC721 transfers"

@@ -82,7 +82,11 @@ export default {
                     name = this.$t('components.transaction.contract_deployment');
                 } else if (fnsig && fnsig !== '0x') {
                     name = this.$t('components.transaction.unknown') + ' (' + fnsig + ')';
-                } else if (itx.value?.toString() !== '0') {
+                } else if (
+                    itx.action.value
+                    && itx.action.value.toString() !== '0'
+                    && itx.action.value.toString() !== '0.0'
+                ) {
                     name = this.$t('components.transaction.tlos_transfer');
                     isTransferETH = true;
                 }

@@ -3,11 +3,13 @@ import AddressField from 'components/AddressField';
 import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
 import { getIcon } from 'src/lib/token-utils';
+import CustomTooltip  from 'components/CustomTooltip';
 
 export default {
     name: 'ERCTransfersList',
     components: {
         AddressField,
+        CustomTooltip,
     },
     props: {
         transfers: {
@@ -41,7 +43,7 @@ export default {
             });
         }
     },
-    setup(props) {
+    data(props) {
         let transfers = [...props.transfers];
         for(let i = 0; i < transfers.length;i++){
             if(transfers[i].token?.metadata){
@@ -54,12 +56,8 @@ export default {
             }
         }
         return {
-            pTransfers: transfers,
-        };
-    },
-    data() {
-        return {
             BigNumber: BigNumber,
+            pTransfers: transfers,
         };
     },
 };
@@ -68,10 +66,10 @@ export default {
 <template>
 <div class="fit row wrap justify-start items-start content-start">
     <div  class="col-3"><strong>{{ title }}</strong></div>
-    <div id="erc-transfers" class="col-9">
+    <div class="col-9 erc-transfers">
         <div
             v-for="(transfer, index) in pTransfers"
-            :key="index"
+            :key="'erct' + index +  pTransfers.length"
             class="fit row wrap justify-start items-start content-start"
         >
             <div class="col-4">
@@ -124,7 +122,7 @@ export default {
                     <span v-if="transfer.tokenId.length > 15">
                         <span class="word-break">
                             {{ ' #' + transfer.tokenId.slice(0, 15) + '...' }}
-                            <q-tooltip>{{ '#' + transfer.tokenId }}</q-tooltip>
+                            <CustomTooltip :content="'#' + transfer.tokenId" />
                         </span>
                     </span>
                     <span v-else>
@@ -139,12 +137,12 @@ export default {
                             target="_blank"
                         >
                             <q-img :src="transfer.token?.imageCache + '/280.webp'" class="nft-thumbnail" />
-                            <q-tooltip>{{ $t('components.transaction.consult_media') }}</q-tooltip>
+                            <CustomTooltip :content="$t('components.transaction.consult_media')" />
                         </a>
                     </span>
                     <span v-if="transfer.contract.supportedInterfaces.includes('erc1155')">
                         <a clickable="clickable" :href="'/address/' + transfer.token.address" target="_blank">
-                            <q-tooltip>{{ $t('components.transaction.consult_collection') }}</q-tooltip>
+                            <CustomTooltip :content="$t('components.transaction.consult_collection')" />
                         </a>
                     </span>
                     <span>
@@ -155,15 +153,13 @@ export default {
                             <a clickable="clickable">
                                 <q-icon class="q-pb-sm q-ml-xs" name="info" size="18px"/>
                             </a>
-                            <q-tooltip>
-                                <pre>{{ transfer.metadata }}</pre>
-                            </q-tooltip>
+                            <CustomTooltip :content="transfer.metadata" :long="true" />
                         </span>
                         <span v-if="transfer.tokenUri" class="word-break">
                             <a clickable="clickable" :href="transfer.tokenUri" target="_blank">
                                 <q-icon class="q-pb-sm q-ml-xs" name="description" size="18px"/>
                             </a>
-                            <q-tooltip>{{ $t('components.transaction.consult_metadata') }}</q-tooltip>
+                            <CustomTooltip :content="$t('components.transaction.consult_metadata')" />
                         </span>
                     </span>
                 </div>
@@ -172,11 +168,11 @@ export default {
                 <strong>{{ $t('components.transaction.form_token') }}</strong>
                 <span class="clickable" @click="transfer.showWei = !transfer.showWei">
                     <span v-if="transfer.showWei">{{ BigNumber.from(transfer.value) }}
-                        <q-tooltip>{{ $t('components.transaction.show_total') }}</q-tooltip>
+                        <CustomTooltip :content="$t('components.transaction.show_total')" />
                     </span>
                     <span v-else>
                         {{ formatWei(transfer.value, transfer.contract.properties.decimals) }}
-                        <q-tooltip>{{ $t('components.transaction.show_wei') }}</q-tooltip>
+                        <CustomTooltip :content="$t('components.transaction.show_wei')" />
                     </span>
                 </span>
                 <router-link
@@ -193,9 +189,10 @@ export default {
                         <span>{{ transfer.contract.properties?.symbol?.slice(0, 10) }}</span>
                         <span v-if="transfer.contract.properties?.symbol?.length > 10">...</span>
                     </span>
-                    <q-tooltip v-if="transfer.contract.properties?.symbol?.length > 10">
-                        {{ contract.properties.symbol }}
-                    </q-tooltip>
+                    <CustomTooltip
+                        v-if="transfer.contract.properties?.symbol?.length > 10"
+                        :content="contract.properties.symbol"
+                    />
                 </router-link>
             </div>
         </div>
@@ -205,15 +202,6 @@ export default {
 </template>
 
 <!--eslint-enable-->
-<style lang="sass">
-    .q-tooltip
-        pre
-            white-space: pre-wrap
-            word-break: break-all
-    .q-tooltip
-        word-break: break-all
-        max-height: 100% !important
-</style>
 <style scoped lang="sass">
 pre
     font-size: 0.8em
