@@ -155,7 +155,7 @@ export default {
                             </a>
                             <CustomTooltip :content="transfer.metadata" :long="true" />
                         </span>
-                        <span v-if="transfer.tokenUri" class="word-break">
+                        <span v-if="transfer.tokenUri?.startsWith('http')" class="word-break">
                             <a clickable="clickable" :href="transfer.tokenUri" target="_blank">
                                 <q-icon class="q-pb-sm q-ml-xs" name="description" size="18px"/>
                             </a>

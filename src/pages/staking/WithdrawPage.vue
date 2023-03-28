@@ -193,6 +193,7 @@ export default {
 .deposits-table
     max-height: 50rem
     max-width: 30rem
+    width: 100%
     margin: auto
 
     .q-table__top,
