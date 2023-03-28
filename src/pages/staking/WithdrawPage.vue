@@ -39,12 +39,14 @@ export default {
                 label: '',
                 field: 'amount',
                 sortable: true,
+                align: 'left',
             },
             {
                 name: 'time',
                 label: '',
                 field: 'until',
                 sortable: true,
+                align: 'right',
             },
         ],
         showAge: true,
@@ -190,7 +192,7 @@ export default {
 
 .deposits-table
     max-height: 50rem
-    max-width: 20rem
+    max-width: 30rem
     margin: auto
 
     .q-table__top,
