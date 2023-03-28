@@ -287,7 +287,8 @@ export default {
             <q-td key="value" :props="props">
                 <div
                     v-if="
-                        props.row.parsedTransaction?.transfers?.length > 0
+                        props.row.value === 0
+                            && props.row.parsedTransaction?.transfers?.length > 0
                     "
                 >
                     <span v-if="props.row.parsedTransaction?.transfers?.length > 0">

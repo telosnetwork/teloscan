@@ -31,7 +31,7 @@ export default class ContractManager {
                 const contract = await this.getCachedContract(log.address);
                 if(contract && contract.supportedInterfaces.includes('erc20')){
                     transfers.push({
-                        'value': `${formatWei(log.data, contract.properties?.decimals)}`,
+                        'value': `${formatWei(log.data, contract.properties?.decimals || 18)}`,
                         'to': getTopicHash(log.topics[1]),
                         'from': getTopicHash(log.topics[2]),
                         'symbol': contract.properties?.symbol,
