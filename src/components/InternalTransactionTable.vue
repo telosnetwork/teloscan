@@ -183,6 +183,7 @@ export default {
                     transaction.contract = contract;
                     transaction.contractAddress = contract.address;
                     const parsedTransaction = await this.$contractManager.parseContractTransaction(
+                        transaction,
                         transaction.input,
                         contract,
                     );
@@ -332,7 +333,7 @@ export default {
             class="q-virtual-scroll--with-prev"
         >
             <q-td colspan="100%">
-                <InternalTxns :traces="props.row.traces"/>
+                <InternalTxns :traces="props.row.traces" />
             </q-td>
         </q-tr>
     </template>

@@ -17,7 +17,8 @@ export default {
         },
         transaction : {
             type: Object,
-            required: true,
+            required: false,
+            default: null,
         },
     },
     methods: {
@@ -42,6 +43,9 @@ export default {
             if(typeof this.traces !== 'undefined' && this.traces !== null) {
                 dataset = this.traces;
             } else {
+                if(this.transaction === null){
+                    return;
+                }
                 let query = `/transaction/${this.transaction.hash}/internal?limit=250&sort=ASC&offset=0&includeAbi=1`;
                 let response = await this.$indexerApi.get(query);
                 if(response && response.data?.results?.length > 0) {

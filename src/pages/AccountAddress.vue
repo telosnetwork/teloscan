@@ -214,7 +214,7 @@ export default {
                         <AddressField :address="contract.getCreator()"/>
                     </div>
                     <div class="text-white">
-                        <DateField :epoch="creationDate / 1000" :default-to-age="false" :force-show-age="showDateAge" />
+                        <DateField :epoch="creationDate / 1000" :default-to-age="false" :force-show-age="false" />
                     </div>
                 </template>
                 <small v-else>

@@ -476,7 +476,7 @@ export default {
                         </div>
                     </q-tab-panel>
                     <q-tab-panel name="internal">
-                        <InternalTxns :transaction="trx" />
+                        <InternalTxns />
                     </q-tab-panel>
                 </q-tab-panels>
             </div>
