@@ -76,7 +76,7 @@ export default class FragmentParser {
         if(!parsedLog.signature){
             return log;
         }
-        parsedLog.function_signature = log.topics[0].substr(0, 10);
+        parsedLog.function_signature = log.topics[0].slice(0, 10);
         parsedLog.isTransfer = TRANSFER_SIGNATURES.includes(parsedLog.function_signature);
         parsedLog.address = log.address;
         parsedLog.logIndex = log.logIndex;
@@ -110,17 +110,27 @@ export default class FragmentParser {
         return parsedLog;
     }
 
-    async parseEvent(contract, log){
+    async parseEvent(contract, log, tries){
         const eventInterface = await this.getEventInterface(log.topics[0]);
         if (eventInterface) {
             try {
                 let parsedLog = eventInterface.parseLog(log);
                 return parsedLog;
             } catch(e) {
-                console.error(`Failed to parse log #${log.logIndex} from event interface: ${e.message}`);
+                if(tries && tries > 0){
+                    console.error(`Failed to parse log #${log.logIndex} from event interface: ${e.message}`);
+                } else {
+                    // This is a fix for weird ABIs....
+                    let data = log.data.slice(2, log.data.length);
+                    log.topics.push('0x' + data.slice(0, (data.length / 2)));
+                    log.topics.push('0x' + data.slice((data.length / 2), data.length));
+                    log.data = '0x' + data.slice((data.length / 2), data.length);
+                    return this.parseEvent(contract, log, 1);
+                    // End fix
+                }
             }
         }
-        log.function_signature = log.topics[0]?.substr(0, 10);
+        log.function_signature = log.topics[0]?.slice(0, 10);
         return log;
     }
 }
