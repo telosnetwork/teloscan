@@ -31,6 +31,7 @@ export default class ContractManager {
                 const contract = await this.getCachedContract(log.address);
                 if(contract && contract.supportedInterfaces.includes('erc20')){
                     transfers.push({
+                        'index': log.logIndex,
                         'address': contract.address,
                         'value': log.data,
                         'decimal': contract.properties?.decimal,
@@ -41,6 +42,7 @@ export default class ContractManager {
                 }
             }
         }
+        transfers.sort((a, b) => a.index - b.index);
         return transfers;
     }
     async parseContractTransaction(raw, data, contract, transfers) {

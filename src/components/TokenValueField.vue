@@ -81,8 +81,8 @@ export default {
             <q-tooltip v-else >{{ $t('components.transaction.show_wei') }}</q-tooltip>
         </span>
         <router-link v-if="symbol != 'TLOS'" :to="`/address/${address}`">
-            <span>{{ symbol.slice(0, 7) }}</span>
-            <span v-if="symbol.length > 7">...</span>
+            <span>{{ symbol.slice(0, 6) }}</span>
+            <span v-if="symbol.length > 6">...</span>
         </router-link>
         <span v-else>TLOS</span>
     </span>

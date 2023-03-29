@@ -260,7 +260,7 @@ export default {
         </q-tr>
     </template>
     <template v-slot:body="props">
-        <q-tr :key="props.row.hash" :props="props">
+        <q-tr :key="props.row.hash + props.row.parsedTransaction?.transfers?.length" :props="props">
             <q-td key="hash" :props="props">
                 <TransactionField :transaction-hash="props.row.hash"/>
             </q-td>
