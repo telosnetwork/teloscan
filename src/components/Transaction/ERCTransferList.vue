@@ -168,7 +168,12 @@ export default {
             </div>
             <div v-else class="col-5">
                 <strong>{{ $t('components.transaction.form_token') }}</strong>
-                <TokenValueField :value="transfer.value" :showWei="true" :address="transfer.contract.address" />
+                <TokenValueField
+                    :value="transfer.value"
+                    :showWei="true"
+                    :address="transfer.contract.address"
+                    :truncate="18"
+                />
             </div>
         </div>
     </div>
