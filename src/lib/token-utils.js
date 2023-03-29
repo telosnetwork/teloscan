@@ -42,7 +42,7 @@ export async function promptAddToMetamask(
     });
 }
 export function getIcon(logoURI) {
-    if (logoURI) {
+    if (logoURI && logoURI !== '') {
         if (logoURI.startsWith('ipfs://')) {
             return logoURI.replace(/ipfs:\/\//, 'https://ipfs.io/ipfs/');
         }

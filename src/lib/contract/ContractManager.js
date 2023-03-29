@@ -1,7 +1,7 @@
 import ContractFactory from 'src/lib/contract/ContractFactory';
 import { ethers } from 'ethers';
 import axios from 'axios';
-import { formatWei, getTopicHash } from 'src/lib/utils';
+import { getTopicHash } from 'src/lib/utils';
 import { ERC1155_TRANSFER_SIGNATURE, TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures.js';
 import { erc721MetadataAbi } from 'src/lib/abi';
 const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
@@ -31,7 +31,9 @@ export default class ContractManager {
                 const contract = await this.getCachedContract(log.address);
                 if(contract && contract.supportedInterfaces.includes('erc20')){
                     transfers.push({
-                        'value': `${formatWei(log.data, contract.properties?.decimals || 18)}`,
+                        'address': contract.address,
+                        'value': log.data,
+                        'decimal': contract.properties?.decimal,
                         'to': getTopicHash(log.topics[1]),
                         'from': getTopicHash(log.topics[2]),
                         'symbol': contract.properties?.symbol,

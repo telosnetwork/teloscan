@@ -246,6 +246,7 @@ export default {
             consult_collection: 'Consultar coleção',
             consult_metadata: 'Consultar metadados',
             consult_media: 'Consultar mídia',
+            show_short: 'Show short',
             show_total: 'Mostrar total',
             show_wei: 'Mostrar wei',
             value_uint256: 'Valor (uint256) : ',

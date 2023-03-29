@@ -1,10 +1,10 @@
 <script>
+import TokenValueField from 'components/TokenValueField';
 import AddressField from 'components/AddressField';
 import BlockField from 'components/BlockField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import MethodField from 'components/MethodField';
-import { formatWei } from 'src/lib/utils';
 
 export default {
     name: 'TransactionTable',
@@ -14,6 +14,7 @@ export default {
         BlockField,
         AddressField,
         MethodField,
+        TokenValueField,
     },
     props: {
         title: {
@@ -165,7 +166,6 @@ export default {
             );
             for (const transaction of this.transactions) {
                 try {
-                    transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
                     if (transaction.input === '0x') {
                         continue;
                     }
@@ -260,7 +260,7 @@ export default {
         </q-tr>
     </template>
     <template v-slot:body="props">
-        <q-tr :props="props">
+        <q-tr :key="props.row.hash" :props="props">
             <q-td key="hash" :props="props">
                 <TransactionField :transaction-hash="props.row.hash"/>
             </q-td>
@@ -284,21 +284,13 @@ export default {
                     :isContractTrx="!!(props.row.contract)"
                 />
             </q-td>
-            <q-td key="value" :props="props">
-                <div
-                    v-if="
-                        props.row.value === '0.0'
-                            && props.row.parsedTransaction?.transfers?.length > 0
-                    "
-                >
-                    <span v-if="props.row.parsedTransaction?.transfers?.length > 0">
-                        {{ props.row.parsedTransaction?.transfers[0].value }}
-                        {{ props.row.parsedTransaction?.transfers[0].symbol }}
-                    </span>
-                </div>
-                <span v-else>
-                    {{ props.row.value }} TLOS
-                </span>
+            <q-td key='value' :props="props">
+                <TokenValueField
+                    v-if="props.row.value === 0 && props.row.parsedTransaction?.transfers?.length > 0"
+                    :value="props.row.parsedTransaction.transfers[0].value.toString(16) || '0.0'"
+                    :address="props.row.parsedTransaction.transfers[0].address"
+                />
+                <TokenValueField v-else :value="props.row.value || '0.0'" />
             </q-td>
         </q-tr>
     </template>
