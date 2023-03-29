@@ -108,6 +108,7 @@ export default {
             unstake_stlos_error: 'Échec lors de l\'unstake de sTLOS { message }',
             withdraw_failed: 'Échec du retrait des TLOS déverrouillés: { message }',
         },
+        supported_interfaces: 'Interface(s) supporté(s)',
         explore_transactions: 'Explorer les transactions',
         recent_transactions: 'Transactions récentes',
         telos_evm_explorer: 'Exploreur Telos EVM',

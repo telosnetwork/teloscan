@@ -108,6 +108,7 @@ export default {
             unstake_stlos_error: 'Failed to unstake sTLOS { message }',
             withdraw_failed: 'Failed to withdraw unlocked TLOS: { message }',
         },
+        supported_interfaces: 'Supported interface(s)',
         explore_transactions: 'Explore Transactions',
         recent_transactions: 'Recent transactions',
         telos_evm_explorer: 'Telos EVM Explorer',

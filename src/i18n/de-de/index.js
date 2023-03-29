@@ -108,6 +108,7 @@ export default {
             unstake_stlos_error: 'sTLOS konnte nicht abgehoben werden: { message }',
             withdraw_failed: 'TLOS Position konnte nicht ausgezahlt werden: { message }',
         },
+        supported_interfaces: 'Supported interface(s)',
         explore_transactions: 'Transaktionen prüfen',
         recent_transactions: 'Neueste Transaktionen',
         telos_evm_explorer: 'Telos EVM Explorer',

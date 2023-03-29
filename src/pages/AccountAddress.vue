@@ -217,12 +217,15 @@ export default {
                         <DateField :epoch="creationDate / 1000" :default-to-age="false" :force-show-age="false" />
                     </div>
                     <div v-if="contract.supportedInterfaces.length > 0" class="q-pt-md">
-                        <span
-                            v-for="intf in contract.supportedInterfaces"
-                            v-bind:key="intf"
-                            class="supported-interface bg-primary q-pa-sm text-secondary"
-                        >
-                            {{ intf }}
+                        <span>
+                            <span
+                                v-for="intf in contract.supportedInterfaces"
+                                v-bind:key="intf"
+                                class="supported-interface bg-primary q-pa-sm text-secondary"
+                            >
+                                {{ intf.replace('_', ' ') }}
+                            </span>
+                            <q-tooltip>{{ $t('pages.supported_interfaces')}}</q-tooltip>
                         </span>
                     </div>
                 </template>
