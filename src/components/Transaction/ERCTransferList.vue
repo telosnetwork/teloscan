@@ -35,16 +35,6 @@ export default {
         formatWei,
         getIcon,
     },
-    async mounted() {
-        const tokenList = await this.$contractManager.getTokenList();
-        for(let i = 0; i < this.pTransfers.length;i++){
-            tokenList.tokens.forEach((token) => {
-                if(token.address.toLowerCase() ===  this.pTransfers[i]?.contract?.address.toLowerCase()){
-                    this.pTransfers[i].contract.logoURI = token.logoURI;
-                }
-            });
-        }
-    },
     data(props) {
         let transfers = [...props.transfers];
         for(let i = 0; i < transfers.length;i++){

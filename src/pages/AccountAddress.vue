@@ -180,7 +180,7 @@ export default {
                         class="coin-icon"
                         :src="getIcon(this.contract.logoURI)"
                     />
-                    <div class="text-primary text-h4 q-pr-xs">
+                    <div class="text-primary text-h4 q-pr-xs q-pb-md">
                         {{ title }}
                     </div>
                     <q-icon
@@ -215,6 +215,15 @@ export default {
                     </div>
                     <div class="text-white">
                         <DateField :epoch="creationDate / 1000" :default-to-age="false" :force-show-age="false" />
+                    </div>
+                    <div v-if="contract.supportedInterfaces.length > 0" class="q-pt-md">
+                        <span
+                            v-for="intf in contract.supportedInterfaces"
+                            v-bind:key="intf"
+                            class="supported-interface bg-primary q-pa-sm text-secondary"
+                        >
+                            {{ intf }}
+                        </span>
                     </div>
                 </template>
                 <small v-else>
@@ -361,6 +370,16 @@ export default {
 .dataCardsContainer .dataCardItem
   width: fit-content
   height: 5rem
+
+body.body--dark .supported-interface
+  background: #282828 !important
+
+.supported-interface
+  height: auto
+  border-radius: 5px
+  font-size: 0.8em
+  margin-right: 3px
+  line-height: initial
 
 .homeInfo .text-secondary .q-icon
   color: white !important
