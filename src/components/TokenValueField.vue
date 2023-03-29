@@ -26,24 +26,40 @@ export default {
     methods: {
         getIcon,
         BigNumber,
+        shorten(value, decimals){
+            let valueShort = formatWei(value, decimals, this.truncate);
+            let valueRaw = formatWei(value, decimals);
+            let parts = valueRaw.split('.');
+            let compare = '0.';
+            for (let i = 0; i < this.truncate - 1; i++) {
+                compare += '0';
+            }
+            if (valueShort === (compare + '0') && parts[1]?.length > this.truncate) {
+                valueShort = '< ' + compare + '1';
+            }
+            return valueShort;
+        },
+        async getLogo(contract){
+            let logoURI = '';
+            const tokenList = await this.$contractManager.getTokenList();
+            tokenList.tokens.forEach((token) => {
+                if(token.address.toLowerCase() ===  contract.address.toLowerCase()){
+                    logoURI = token.logoURI;
+                }
+            });
+            return logoURI;
+        },
     },
     async mounted() {
         this.valueRaw = this.value.toLocaleString(0, { useGrouping: false }).replace('.', '');
         if(this.address){
             const contract = await this.$contractManager.getContract(this.address);
             if(contract){
-                this.valueShort = formatWei(this.valueRaw, contract.properties?.decimals, this.truncate);
-                this.valueRaw = formatWei(this.valueRaw, contract.properties?.decimals);
                 this.valueWei = BigNumber.from(this.value);
-                let logoURI = '';
-                const tokenList = await this.$contractManager.getTokenList();
-                tokenList.tokens.forEach((token) => {
-                    if(token.address.toLowerCase() ===  contract.address.toLowerCase()){
-                        logoURI = token.logoURI;
-                    }
-                });
+                this.valueShort = this.shorten(this.valueRaw, contract.properties?.decimals);
+                this.valueRaw = formatWei(this.valueRaw, contract.properties?.decimals);
                 this.symbol = contract.properties?.symbol;
-                this.logo = logoURI || '';
+                this.logo = await this.getLogo(contract);
                 return;
             }
         }
