@@ -4,12 +4,14 @@ import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
 import { getIcon } from 'src/lib/token-utils';
 import CustomTooltip  from 'components/CustomTooltip';
+import TokenValueField from 'components/TokenValueField';
 
 export default {
     name: 'ERCTransfersList',
     components: {
         AddressField,
         CustomTooltip,
+        TokenValueField,
     },
     props: {
         transfers: {
@@ -166,34 +168,7 @@ export default {
             </div>
             <div v-else class="col-5">
                 <strong>{{ $t('components.transaction.form_token') }}</strong>
-                <span class="clickable" @click="transfer.showWei = !transfer.showWei">
-                    <span v-if="transfer.showWei">{{ BigNumber.from(transfer.value) }}
-                        <CustomTooltip :content="$t('components.transaction.show_total')" />
-                    </span>
-                    <span v-else>
-                        {{ formatWei(transfer.value, transfer.contract.properties.decimals) }}
-                        <CustomTooltip :content="$t('components.transaction.show_wei')" />
-                    </span>
-                </span>
-                <router-link
-                    v-if="transfer.contract.properties?.symbol"
-                    class="q-ml-xs"
-                    :to="`/address/${transfer.contract.address}`"
-                >
-                    <span>
-                        <q-img
-                            v-if="transfer.contract.supportedInterfaces.includes('erc20')"
-                            class="coin-icon"
-                            :src="getIcon(transfer.contract.logoURI)"
-                        />
-                        <span>{{ transfer.contract.properties?.symbol?.slice(0, 10) }}</span>
-                        <span v-if="transfer.contract.properties?.symbol?.length > 10">...</span>
-                    </span>
-                    <CustomTooltip
-                        v-if="transfer.contract.properties?.symbol?.length > 10"
-                        :content="contract.properties.symbol"
-                    />
-                </router-link>
+                <TokenValueField :value="transfer.value" :showWei="true" :address="transfer.contract.address" />
             </div>
         </div>
     </div>

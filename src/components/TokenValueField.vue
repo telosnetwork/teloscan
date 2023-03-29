@@ -1,5 +1,6 @@
 <script>
 import { getIcon } from 'src/lib/token-utils';
+import { BigNumber } from 'ethers';
 import { formatWei } from 'src/lib/utils';
 export default {
     name: 'TokenValueField',
@@ -12,6 +13,10 @@ export default {
             type: String,
             required: false,
         },
+        showWei: {
+            type: Boolean,
+            required: false,
+        },
         truncate: {
             type: Number,
             required: false,
@@ -20,6 +25,7 @@ export default {
     },
     methods: {
         getIcon,
+        BigNumber,
     },
     async mounted() {
         this.valueRaw = this.value.toLocaleString(0, { useGrouping: false }).replace('.', '');
@@ -28,6 +34,7 @@ export default {
             if(contract){
                 this.valueShort = formatWei(this.valueRaw, contract.properties?.decimals, this.truncate);
                 this.valueRaw = formatWei(this.valueRaw, contract.properties?.decimals);
+                this.valueWei = BigNumber.from(this.value);
                 let logoURI = '';
                 const tokenList = await this.$contractManager.getTokenList();
                 tokenList.tokens.forEach((token) => {
@@ -42,41 +49,52 @@ export default {
         }
         this.valueShort = formatWei(this.valueRaw, 18, this.truncate);
         this.valueRaw = formatWei(this.valueRaw, 18);
+        this.valueWei = this.value;
         this.symbol = 'TLOS';
         this.logo = false;
     },
     data(){
         return {
             valueShort: this.valueShort,
+            valueRaw: this.valueRaw,
+            valueWei: this.valueWei,
             symbol: this.symbol,
             logo: this.logo,
-            showWei: this.showWei,
-            valueRaw: this.valueRaw,
+            displaySwitch: this.displaySwitch,
         };
     },
 };
 </script>
 <template>
-<div v-if="symbol" class="clickable" @click="showWei = !showWei">
-    <div v-if="!showWei">
+<span v-if="symbol" class="clickable" @click="displaySwitch = !displaySwitch">
+    <span v-if="!displaySwitch">
         <span>
-            {{ valueShort }}
-            <q-img
-                v-if="logo !== false"
-                class="coin-icon"
-                :src="getIcon(logo)"
-            />
-            {{ symbol }}
+            <span>
+                {{ valueShort }}
+                <q-img
+                    v-if="logo !== false"
+                    class="coin-icon"
+                    :src="getIcon(logo)"
+                />
+            </span>
+            <q-tooltip v-if="!showWei">{{ $t('components.transaction.show_total') }}</q-tooltip>
+            <q-tooltip v-else >{{ $t('components.transaction.show_wei') }}</q-tooltip>
         </span>
-        <q-tooltip>{{ $t('components.transaction.show_total') }}</q-tooltip>
-    </div>
-    <div v-else>
-        <span>
+        <router-link :to="`/address/${address}`" >
+            <span>{{ symbol.slice(0, 7) }}</span>
+            <span v-if="symbol.length > 7">...</span>
+        </router-link>
+    </span>
+    <span v-else>
+        <span v-if="!showWei">
             {{ valueRaw }}
         </span>
+        <span v-else>
+            {{ valueWei }}
+        </span>
         <q-tooltip>{{ $t('components.transaction.show_short') }}</q-tooltip>
-    </div>
-</div>
+    </span>
+</span>
 </template>
 
 <!--eslint-enable-->
@@ -85,8 +103,7 @@ export default {
         width: 16px
         height: 16px
         margin-top: -6px
-        margin-left: 2px
+        margin-right: 3px
         vertical-align: middle
         border-radius: 100%
-
 </style>
