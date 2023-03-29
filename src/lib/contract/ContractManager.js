@@ -28,7 +28,7 @@ export default class ContractManager {
             const log = logs[i];
             const sig = log.topics[0].slice(0, 10);
             if(TRANSFER_SIGNATURES.includes(sig)){
-                const contract = await this.getCachedContract(log.address);
+                const contract = await this.getContract(log.address);
                 if(contract && contract.supportedInterfaces.includes('erc20')){
                     transfers.push({
                         'index': log.logIndex,
