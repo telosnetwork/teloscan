@@ -261,6 +261,7 @@ export default {
             }
         },
         getInjectedProvider() {
+            debugger;
             // window.ethereum.isMetaMask includes Brave Wallet
             const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
                 window.ethereum :
@@ -275,6 +276,7 @@ export default {
             return provider;
         },
         async switchChainInjected() {
+            debugger;
             const provider = this.getInjectedProvider();
 
             if (provider) {
@@ -328,8 +330,9 @@ export default {
 
             return wallet.getStyle().icon;
         },
-        onModalReady(modalInstance) {
+        async onModalReady(modalInstance) {
             this.web3Modal = modalInstance;
+            await this.injectedWeb3Login();
         },
     },
 };
