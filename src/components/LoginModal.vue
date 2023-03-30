@@ -7,6 +7,7 @@ import { mapGetters, mapMutations } from 'vuex';
 import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
+import  Web3ModalWrapper from 'src/components/Web3ModalWrapper.vue';
 
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
@@ -20,6 +21,9 @@ export default {
             default: false,
         },
     },
+    components: {
+        Web3ModalWrapper,
+    },
     data: () => ({
         tab: 'web3',
         showLogin: false,
@@ -29,7 +33,18 @@ export default {
         browserSupportsMetaMask: true,
         isBraveBrowser: false,
         isIOSMobile: false,
+        openModalFunction: null,
+        web3Modal: null,
     }),
+    watch: {
+        web3Modal(newValue) {
+            if (newValue && typeof newValue.openModal === 'function') {
+                this.openModalFunction = newValue.openModal;
+            } else {
+                this.openModalFunction = null;
+            }
+        },
+    },
     emits: ['hide'],
     computed: {
         ...mapGetters('login', [
@@ -313,6 +328,9 @@ export default {
 
             return wallet.getStyle().icon;
         },
+        onModalReady(modalInstance) {
+            this.web3Modal = modalInstance;
+        },
     },
 };
 </script>
@@ -336,6 +354,18 @@ export default {
                         <p>
                             {{ isMobile && (!browserSupportsMetaMask || isBraveBrowser) ?
                                 $t('components.continue_on_metamask') : 'Metamask' }}</p>
+                    </q-card>
+                    <q-card
+                        class="c-login-modal__image-container"
+                        @click="openModalFunction()"
+                    >
+                        <q-img
+                            :src="metamaskLogo"
+                            height="64px"
+                            width="64px"
+                        />
+
+                        <p>WalletConnect</p>
                     </q-card>
                     <q-card
                         v-if="isBraveBrowser && !isIOSMobile"
@@ -376,6 +406,7 @@ export default {
             </q-tab-panels>
         </q-card>
     </q-dialog>
+    <Web3ModalWrapper @modal-ready="onModalReady"/>
 </div>
 </template>
 
