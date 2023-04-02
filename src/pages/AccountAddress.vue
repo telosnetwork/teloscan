@@ -379,6 +379,7 @@ body.body--dark .supported-interface
 
 .supported-interface
   height: auto
+  user-select: none
   border-radius: 5px
   font-size: 0.8em
   margin-right: 3px

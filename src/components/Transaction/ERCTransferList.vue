@@ -28,7 +28,7 @@ export default {
         },
         contract: {
             type: Object,
-            required: true,
+            required: false,
         },
     },
     methods: {
@@ -104,11 +104,11 @@ export default {
                     {{ $t('components.transaction.form_token') }}
                 </strong>
                 <router-link
-                    :if="contract.properties.symbol"
+                    :if="transfer.contract?.properties?.symbol"
                     class="q-ml-xs q-mr-xs"
                     :to="'/address/' + transfer.contract.address"
                 >
-                    {{ contract.properties.symbol }}
+                    {{ transfer.contract?.properties?.symbol }}
                 </router-link>
                 <div class="col">
                     <span v-if="transfer.tokenId.length > 15">
