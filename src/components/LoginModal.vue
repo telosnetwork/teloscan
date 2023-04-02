@@ -168,7 +168,7 @@ export default {
         },
 
         async injectedWeb3Login() {
-            await this.detectProvider()
+            await this.detectProvider();
             const address = await this.getInjectedAddress();
             if (address) {
                 this.setLogin({
