@@ -4,12 +4,14 @@ import WombatLogo from 'src/assets/wombat-logo.png';
 import BraveBrowserLogo from 'src/assets/brave_lion.svg';
 import WalletConnectLogo from 'src/assets/wallet_connect.svg';
 import detectEthereumProvider from '@metamask/detect-provider';
-import SignClient from '@walletconnect/sign-client';
-import { Web3Modal } from '@web3modal/standalone';
 import { mapGetters, mapMutations } from 'vuex';
 import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
+import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
+import { Web3Modal } from '@web3modal/html';
+import { configureChains, createClient } from '@wagmi/core';
+import { telos, telosTestnet } from '@wagmi/core/chains';
 
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
@@ -195,7 +197,20 @@ export default {
             this.$emit('hide');
         },
         async connectWalletConnect() {
+            debugger;
 
+            const chains = [telos, telosTestnet];
+
+            const { provider } = configureChains(chains, [w3mProvider({ projectId: PROJECT_ID })]);
+            const wagmiClient = createClient({
+                autoConnect: true,
+                connectors: w3mConnectors({ projectId: PROJECT_ID, version: 1, chains }),
+                provider,
+            });
+            const ethereumClient = new EthereumClient(wagmiClient, chains);
+            const web3modal = new Web3Modal({ projectId: PROJECT_ID }, ethereumClient);
+            web3modal.openModal();
+            /**
             this.web3Modal = new Web3Modal({
                 projectId: PROJECT_ID,
                 standaloneChains: ['eip155:40', 'eip155:41'],
@@ -223,6 +238,7 @@ export default {
                 debugger;
                 this.web3Modal.closeModal();
             }
+            */
         },
         async ualLogin(wallet, account) {
             await wallet.init();
