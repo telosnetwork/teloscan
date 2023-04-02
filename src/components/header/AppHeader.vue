@@ -24,6 +24,7 @@ export default {
         showLanguageSwitcher: false,
         advancedMenuExpanded: false,
         menuHiddenDesktop: false,
+        searchHiddenMobile: true,
         isTestnet: process.env.NETWORK_EVM_CHAIN_ID !== 40,
     }),
     computed: {
@@ -96,12 +97,19 @@ export default {
             </div>
         </div>
 
-        <span class="c-header__logo-text">Teloscan</span>
+        <span
+            :class="{
+                'c-header__logo-text': true,
+                'c-header__logo-text--hidden-mobile': !searchHiddenMobile,
+            }"
+        >
+            Teloscan
+        </span>
     </router-link>
 
     <div class="c-header__right-container">
         <div class="c-header__search-container">
-            <HeaderSearch />
+            <HeaderSearch @hidden-mobile="searchHiddenMobile = $event" />
         </div>
 
         <div class="c-header__menu-icon-container" @click="mobileMenuIsOpen = !mobileMenuIsOpen">
@@ -165,22 +173,22 @@ export default {
 
             <q-separator class="c-header__menu-separator"/>
 
-            <li class="c-header__menu-li">
+            <li
+                class="c-header__menu-li"
+                tabindex="0"
+                aria-label="expand advanced menu"
+                role="menuitem"
+                aria-haspopup="menu"
+                @keydown.enter="advancedMenuExpanded = !advancedMenuExpanded"
+                @click="advancedMenuExpanded = !advancedMenuExpanded"
+            >
                 <q-icon
                     name="code"
                     class="c-header__menu-item-icon"
                     size="sm"
                 />
                 <div class="c-header__advanced-container">
-                    <div
-                        class="c-header__advanced-container-header"
-                        tabindex="0"
-                        aria-label="expand advanced menu"
-                        role="menuitem"
-                        aria-haspopup="menu"
-                        @keydown.enter="advancedMenuExpanded = !advancedMenuExpanded"
-                        @click="advancedMenuExpanded = !advancedMenuExpanded"
-                    >
+                    <div class="c-header__advanced-container-header">
                         {{ $t('components.header.advanced') }}
 
                         <q-icon
@@ -374,15 +382,24 @@ export default {
         margin: auto;
         font-size: 10px;
         height: min-content;
+        padding: 0 2px;
+        border-radius: 2px;
         background: rgba($dark, 0.4);
         color: white;
     }
 
     &__logo-text {
-        display: none;
+        color: var(--text-color);
+        font-size: 18px;
+        margin-left: 12px;
+
+        &--hidden-mobile {
+            display: none;
+        }
 
         @media screen and (min-width: $breakpoint-lg-min) {
             display: block;
+            margin-left: 0;
         }
     }
 

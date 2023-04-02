@@ -17,6 +17,7 @@ const routes = [
             {
                 path: '',
                 name: 'address',
+                props: route => ({ page: route.query.page, pagesize: route.query.pagesize }),
                 component: () => import('pages/AccountAddress.vue'),
             },
         ],
@@ -47,17 +48,6 @@ const routes = [
         ],
     },
     {
-        path: '/contract',
-        component: () => import('layouts/MainLayout.vue'),
-        children: [
-            {
-                path: 'verify/:address?',
-                name: 'verify',
-                component: () => import('pages/ContractVerification.vue'),
-            },
-        ],
-    },
-    {
         path: '/staking',
         component: () => import('layouts/MainLayout.vue'),
         children: [{
@@ -80,13 +70,6 @@ const routes = [
         path: '/health',
         component: () => import('layouts/MainLayout.vue'),
         children: [{ path: '', component: () => import('pages/Health.vue') }],
-    },
-    {
-        name: 'sourcify',
-        path: '',
-        beforeEnter() {
-            window.open('https://sourcify.dev', '_blank');
-        },
     },
     {
         path: '/:catchAll(.*)*',

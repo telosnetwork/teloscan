@@ -59,6 +59,7 @@ export default {
                 :options="languageOptions"
                 option-value="code"
                 option-label="name"
+                color="secondary"
                 class="q-mb-lg"
             />
 

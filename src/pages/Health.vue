@@ -6,14 +6,18 @@ export default {
     components: { Endpoints, Monitor },
 };
 </script>
-<template lang="pug">
-.pageContainer.q-pt-xl
-    .homeInfo.q-mb-lg
-        .text-primary.text-h6 {{ $t('pages.rpc_endpoints') }}
-    Endpoints()
-    .homeInfo.q-mb-lg
-        .text-primary.text-h6 {{ $t('pages.monitor') }}
-    Monitor()
+
+<template>
+<div class="pageContainer q-pt-xl">
+    <div class="homeInfo q-mb-lg">
+        <div class="text-primary text-h6">{{ $t('pages.rpc_endpoints') }}</div>
+    </div>
+    <Endpoints/>
+    <div class="homeInfo q-mb-lg">
+        <div class="text-primary text-h6">{{ $t('pages.monitor') }}</div>
+    </div>
+    <Monitor/>
+</div>
 </template>
 
 <style scoped lang='sass'>

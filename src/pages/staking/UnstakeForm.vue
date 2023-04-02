@@ -343,7 +343,7 @@ export default {
                     {{ $t('pages.staking.confirm_unstake_2b') }}
 
                 </p>
-                {{ $t('pages.staking.confirm_unstake_3') }}
+                {{ $t('pages.staking.stake_tlos_confirm_3') }}
             </q-card-section>
 
             <q-card-actions align="right" class="q-pb-md q-px-md">

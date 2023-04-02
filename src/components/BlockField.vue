@@ -10,6 +10,8 @@ export default {
 };
 </script>
 
-<template lang="pug">
-router-link(:to="`/block/${this.block}`" :key="$route.path") {{ block }}
+<template>
+<RouterLink :key="$route.path" :to="`/block/${this.block}`">
+    {{ block }}
+</RouterLink>
 </template>

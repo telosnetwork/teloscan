@@ -2,1000 +2,880 @@
 
 exports[`StakeForm.vue should render a banner when the user has unlocked TLOS 1`] = `
 <div
-  class="c-stake-form row"
+  data-v-app=""
 >
+  
   <div
-    class="col-xs-12 col-md-6 offset-md-3"
+    class="c-stake-form row"
   >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="0"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        ctadisabled="true"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="0"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
     <!--v-if-->
-  </div>
-  <div
-    class="col-12 q-mb-lg"
-  >
-    <base-staking-form-stub
-      bottominputamount="0"
-      bottominputisloading="false"
-      bottominputlabel="Receive sTLOS"
-      ctadisabled="true"
-      ctatext="Stake TLOS"
-      header="Stake TLOS"
-      subheader="Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be auto-compounded. No further action is required."
-      topinputamount="0"
-      topinputerrortext=""
-      topinputinfotext="149.0 Available"
-      topinputisloading="false"
-      topinputlabel="Stake TLOS"
-      topinputmaxvalue="149000000000000000000"
-      topinputtooltip="Click to input full wallet balance
-
-Balance displayed is reduced by 1 TLOS to keep your account actionable.
-Precise balance (less approximate gas fees):
-149.0 TLOS"
-      unstakeperiodseconds="60"
-      valueofonestlosintlos="1.23456789"
-    />
-  </div>
-  <!--v-if-->
-  <q-dialog-stub
-    modelvalue="false"
-  >
-    
-    <q-card-stub>
+    <q-dialog-stub
+      modelvalue="false"
+    >
       
-      <q-card-section-stub>
+      <q-card-stub>
         
-        <p>
-           Continuing will stake TLOS in exchange for sTLOS. sTLOS can be redeemed for TLOS at any time using the Unstake tab. 
-        </p>
-        <p>
-           After TLOS has been unstaked, it will be locked for a period of 
-          <span
-            class="text-primary"
-          >
-            1 minutes
-          </span>
-          , after which it can be withdrawn to your account from the Claim tab. 
-        </p>
-         Would you like to proceed? 
-        
-      </q-card-section-stub>
-      <q-card-actions-stub
-        align="right"
-        class="q-pb-md q-px-md"
-      >
-        
-        <p
-          aria-label="Launch MetaMask dialog to add sTLOS"
-          class="c-stake-form__metamask-prompt u-flex--center-y"
-          tabindex="0"
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
         >
-           Add sTLOS to MetaMask 
-          <img
-            alt="MetaMask Fox Logo"
-            class="q-ml-xs"
-            height="24"
-            src="[object Object]"
-            width="24"
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
           />
-        </p>
-        <q-btn-stub
-          color="negative"
-          flat=""
-          label="Cancel"
-        />
-        <q-btn-stub
-          color="secondary"
-          label="Stake TLOS"
-          text-color="black"
-        />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
         
-      </q-card-actions-stub>
+      </q-card-stub>
       
-    </q-card-stub>
-    
-  </q-dialog-stub>
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
 </div>
 `;
 
 exports[`StakeForm.vue should render a banner when the user has unlocked TLOS 2`] = `
 <div
-  class="c-stake-form row"
+  data-v-app=""
 >
+  
   <div
-    class="col-xs-12 col-md-6 offset-md-3"
+    class="c-stake-form row"
   >
-    <q-banner-stub
-      class="bg-green text-black"
-      dense=""
-      inline-actions=""
-      rounded=""
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
     >
-      
-       You have unlocked TLOS! 
-      
-      
-      <q-btn-stub
-        color="black"
-        flat=""
-        label="Dismiss"
-      />
-      <q-btn-stub
-        color="black"
-        flat=""
-        label="Claim TLOS"
-      />
-      
-    </q-banner-stub>
-  </div>
-  <div
-    class="col-12 q-mb-lg"
-  >
-    <base-staking-form-stub
-      bottominputamount="0"
-      bottominputisloading="false"
-      bottominputlabel="Receive sTLOS"
-      ctadisabled="true"
-      ctatext="Stake TLOS"
-      header="Stake TLOS"
-      subheader="Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be auto-compounded. No further action is required."
-      topinputamount="0"
-      topinputerrortext=""
-      topinputinfotext="149.0 Available"
-      topinputisloading="false"
-      topinputlabel="Stake TLOS"
-      topinputmaxvalue="149000000000000000000"
-      topinputtooltip="Click to input full wallet balance
-
-Balance displayed is reduced by 1 TLOS to keep your account actionable.
-Precise balance (less approximate gas fees):
-149.0 TLOS"
-      unstakeperiodseconds="60"
-      valueofonestlosintlos="1.23456789"
-    />
-  </div>
-  <!--v-if-->
-  <q-dialog-stub
-    modelvalue="false"
-  >
-    
-    <q-card-stub>
-      
-      <q-card-section-stub>
-        
-        <p>
-           Continuing will stake TLOS in exchange for sTLOS. sTLOS can be redeemed for TLOS at any time using the Unstake tab. 
-        </p>
-        <p>
-           After TLOS has been unstaked, it will be locked for a period of 
-          <span
-            class="text-primary"
-          >
-            1 minutes
-          </span>
-          , after which it can be withdrawn to your account from the Claim tab. 
-        </p>
-         Would you like to proceed? 
-        
-      </q-card-section-stub>
-      <q-card-actions-stub
-        align="right"
-        class="q-pb-md q-px-md"
+      <q-banner-stub
+        class="bg-green text-black"
+        dense=""
+        inline-actions=""
+        rounded=""
       >
         
-        <p
-          aria-label="Launch MetaMask dialog to add sTLOS"
-          class="c-stake-form__metamask-prompt u-flex--center-y"
-          tabindex="0"
-        >
-           Add sTLOS to MetaMask 
-          <img
-            alt="MetaMask Fox Logo"
-            class="q-ml-xs"
-            height="24"
-            src="[object Object]"
-            width="24"
-          />
-        </p>
+        pages.staking.you_have_unlocked_tlos 
+        
+        
         <q-btn-stub
-          color="negative"
+          color="black"
           flat=""
-          label="Cancel"
+          label="global.dismiss"
         />
         <q-btn-stub
-          color="secondary"
-          label="Stake TLOS"
-          text-color="black"
+          color="black"
+          flat=""
+          label="pages.staking.claim_tlos"
         />
         
-      </q-card-actions-stub>
+      </q-banner-stub>
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="0"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        ctadisabled="true"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="0"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
+    <!--v-if-->
+    <q-dialog-stub
+      modelvalue="false"
+    >
       
-    </q-card-stub>
-    
-  </q-dialog-stub>
+      <q-card-stub>
+        
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
+        >
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
+          />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
+        
+      </q-card-stub>
+      
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
 </div>
 `;
 
 exports[`StakeForm.vue should render correctly when the user is not logged in 1`] = `
 <div
-  class="c-stake-form row"
+  data-v-app=""
 >
+  
   <div
-    class="col-xs-12 col-md-6 offset-md-3"
+    class="c-stake-form row"
   >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="0"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        ctadisabled="false"
+        ctatext="pages.staking.connect_wallet"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="0"
+        topinputerrortext="pages.staking.wallet_not_connected"
+        topinputinfotext=""
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
     <!--v-if-->
-  </div>
-  <div
-    class="col-12 q-mb-lg"
-  >
-    <base-staking-form-stub
-      bottominputamount="0"
-      bottominputisloading="false"
-      bottominputlabel="Receive sTLOS"
-      ctadisabled="false"
-      ctatext="Connect Wallet"
-      header="Stake TLOS"
-      subheader="Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be auto-compounded. No further action is required."
-      topinputamount="0"
-      topinputerrortext="Wallet not connected"
-      topinputinfotext=""
-      topinputisloading="false"
-      topinputlabel="Stake TLOS"
-      topinputtooltip="Click to input full wallet balance
-
-Balance displayed is reduced by 1 TLOS to keep your account actionable.
-Precise balance (less approximate gas fees):
-149.0 TLOS"
-      unstakeperiodseconds="60"
-      valueofonestlosintlos="1.23456789"
-    />
-  </div>
-  <!--v-if-->
-  <q-dialog-stub
-    modelvalue="false"
-  >
-    
-    <q-card-stub>
+    <q-dialog-stub
+      modelvalue="false"
+    >
       
-      <q-card-section-stub>
+      <q-card-stub>
         
-        <p>
-           Continuing will stake TLOS in exchange for sTLOS. sTLOS can be redeemed for TLOS at any time using the Unstake tab. 
-        </p>
-        <p>
-           After TLOS has been unstaked, it will be locked for a period of 
-          <span
-            class="text-primary"
-          >
-            1 minutes
-          </span>
-          , after which it can be withdrawn to your account from the Claim tab. 
-        </p>
-         Would you like to proceed? 
-        
-      </q-card-section-stub>
-      <q-card-actions-stub
-        align="right"
-        class="q-pb-md q-px-md"
-      >
-        
-        <p
-          aria-label="Launch MetaMask dialog to add sTLOS"
-          class="c-stake-form__metamask-prompt u-flex--center-y"
-          tabindex="0"
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
         >
-           Add sTLOS to MetaMask 
-          <img
-            alt="MetaMask Fox Logo"
-            class="q-ml-xs"
-            height="24"
-            src="[object Object]"
-            width="24"
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
           />
-        </p>
-        <q-btn-stub
-          color="negative"
-          flat=""
-          label="Cancel"
-        />
-        <q-btn-stub
-          color="secondary"
-          label="Stake TLOS"
-          text-color="black"
-        />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
         
-      </q-card-actions-stub>
+      </q-card-stub>
       
-    </q-card-stub>
-    
-  </q-dialog-stub>
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
 </div>
 `;
 
 exports[`StakeForm.vue should render properly when the user has successfully staked TLOS 1`] = `
 <div
-  class="c-stake-form row"
+  data-v-app=""
 >
+  
   <div
-    class="col-xs-12 col-md-6 offset-md-3"
+    class="c-stake-form row"
   >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="1500000000000000000"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        ctadisabled="false"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="1000000000000000000"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
     <!--v-if-->
-  </div>
-  <div
-    class="col-12 q-mb-lg"
-  >
-    <base-staking-form-stub
-      bottominputamount="1500000000000000000"
-      bottominputisloading="false"
-      bottominputlabel="Receive sTLOS"
-      ctadisabled="false"
-      ctatext="Stake TLOS"
-      header="Stake TLOS"
-      subheader="Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be auto-compounded. No further action is required."
-      topinputamount="1000000000000000000"
-      topinputerrortext=""
-      topinputinfotext="149.0 Available"
-      topinputisloading="false"
-      topinputlabel="Stake TLOS"
-      topinputmaxvalue="149000000000000000000"
-      topinputtooltip="Click to input full wallet balance
-
-Balance displayed is reduced by 1 TLOS to keep your account actionable.
-Precise balance (less approximate gas fees):
-149.0 TLOS"
-      unstakeperiodseconds="60"
-      valueofonestlosintlos="1.23456789"
-    />
-  </div>
-  <!--v-if-->
-  <q-dialog-stub
-    modelvalue="false"
-  >
-    
-    <q-card-stub>
+    <q-dialog-stub
+      modelvalue="false"
+    >
       
-      <q-card-section-stub>
+      <q-card-stub>
         
-        <p>
-           Continuing will stake TLOS in exchange for sTLOS. sTLOS can be redeemed for TLOS at any time using the Unstake tab. 
-        </p>
-        <p>
-           After TLOS has been unstaked, it will be locked for a period of 
-          <span
-            class="text-primary"
-          >
-            1 minutes
-          </span>
-          , after which it can be withdrawn to your account from the Claim tab. 
-        </p>
-         Would you like to proceed? 
-        
-      </q-card-section-stub>
-      <q-card-actions-stub
-        align="right"
-        class="q-pb-md q-px-md"
-      >
-        
-        <p
-          aria-label="Launch MetaMask dialog to add sTLOS"
-          class="c-stake-form__metamask-prompt u-flex--center-y"
-          tabindex="0"
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
         >
-           Add sTLOS to MetaMask 
-          <img
-            alt="MetaMask Fox Logo"
-            class="q-ml-xs"
-            height="24"
-            src="[object Object]"
-            width="24"
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
           />
-        </p>
-        <q-btn-stub
-          color="negative"
-          flat=""
-          label="Cancel"
-        />
-        <q-btn-stub
-          color="secondary"
-          label="Stake TLOS"
-          text-color="black"
-        />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
         
-      </q-card-actions-stub>
+      </q-card-stub>
       
-    </q-card-stub>
-    
-  </q-dialog-stub>
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
 </div>
 `;
 
 exports[`StakeForm.vue should render properly when the user has successfully staked TLOS 2`] = `
 <div
-  class="c-stake-form row"
+  data-v-app=""
 >
+  
   <div
-    class="col-xs-12 col-md-6 offset-md-3"
+    class="c-stake-form row"
   >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="1500000000000000000"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        ctadisabled="false"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="1000000000000000000"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
     <!--v-if-->
-  </div>
-  <div
-    class="col-12 q-mb-lg"
-  >
-    <base-staking-form-stub
-      bottominputamount="1500000000000000000"
-      bottominputisloading="false"
-      bottominputlabel="Receive sTLOS"
-      ctadisabled="false"
-      ctatext="Stake TLOS"
-      header="Stake TLOS"
-      subheader="Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be auto-compounded. No further action is required."
-      topinputamount="1000000000000000000"
-      topinputerrortext=""
-      topinputinfotext="149.0 Available"
-      topinputisloading="false"
-      topinputlabel="Stake TLOS"
-      topinputmaxvalue="149000000000000000000"
-      topinputtooltip="Click to input full wallet balance
-
-Balance displayed is reduced by 1 TLOS to keep your account actionable.
-Precise balance (less approximate gas fees):
-149.0 TLOS"
-      unstakeperiodseconds="60"
-      valueofonestlosintlos="1.23456789"
-    />
-  </div>
-  <!--v-if-->
-  <q-dialog-stub
-    modelvalue="true"
-  >
-    
-    <q-card-stub>
+    <q-dialog-stub
+      modelvalue="true"
+    >
       
-      <q-card-section-stub>
+      <q-card-stub>
         
-        <p>
-           Continuing will stake TLOS in exchange for sTLOS. sTLOS can be redeemed for TLOS at any time using the Unstake tab. 
-        </p>
-        <p>
-           After TLOS has been unstaked, it will be locked for a period of 
-          <span
-            class="text-primary"
-          >
-            1 minutes
-          </span>
-          , after which it can be withdrawn to your account from the Claim tab. 
-        </p>
-         Would you like to proceed? 
-        
-      </q-card-section-stub>
-      <q-card-actions-stub
-        align="right"
-        class="q-pb-md q-px-md"
-      >
-        
-        <p
-          aria-label="Launch MetaMask dialog to add sTLOS"
-          class="c-stake-form__metamask-prompt u-flex--center-y"
-          tabindex="0"
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
         >
-           Add sTLOS to MetaMask 
-          <img
-            alt="MetaMask Fox Logo"
-            class="q-ml-xs"
-            height="24"
-            src="[object Object]"
-            width="24"
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
           />
-        </p>
-        <q-btn-stub
-          color="negative"
-          flat=""
-          label="Cancel"
-        />
-        <q-btn-stub
-          color="secondary"
-          label="Stake TLOS"
-          text-color="black"
-        />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
         
-      </q-card-actions-stub>
+      </q-card-stub>
       
-    </q-card-stub>
-    
-  </q-dialog-stub>
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
 </div>
 `;
 
 exports[`StakeForm.vue should render properly when the user has successfully staked TLOS 3`] = `
 <div
-  class="c-stake-form row"
+  data-v-app=""
 >
+  
   <div
-    class="col-xs-12 col-md-6 offset-md-3"
+    class="c-stake-form row"
   >
-    <!--v-if-->
-  </div>
-  <div
-    class="col-12 q-mb-lg"
-  >
-    <base-staking-form-stub
-      bottominputamount="1500000000000000000"
-      bottominputisloading="false"
-      bottominputlabel="Receive sTLOS"
-      ctadisabled="false"
-      ctatext="Stake TLOS"
-      header="Stake TLOS"
-      subheader="Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be auto-compounded. No further action is required."
-      topinputamount="1000000000000000000"
-      topinputerrortext=""
-      topinputinfotext="149.0 Available"
-      topinputisloading="false"
-      topinputlabel="Stake TLOS"
-      topinputmaxvalue="149000000000000000000"
-      topinputtooltip="Click to input full wallet balance
-
-Balance displayed is reduced by 1 TLOS to keep your account actionable.
-Precise balance (less approximate gas fees):
-149.0 TLOS"
-      unstakeperiodseconds="60"
-      valueofonestlosintlos="1.23456789"
-    />
-  </div>
-  <div
-    class="col-sm-12 col-md-6 offset-md-3"
-  >
-     Stake successful! View Transaction: 
-    <transaction-field-stub
-      transaction-hash="0x123"
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
     >
-      
-      
-    </transaction-field-stub>
-  </div>
-  <q-dialog-stub
-    modelvalue="true"
-  >
-    
-    <q-card-stub>
-      
-      <q-card-section-stub>
-        
-        <p>
-           Continuing will stake TLOS in exchange for sTLOS. sTLOS can be redeemed for TLOS at any time using the Unstake tab. 
-        </p>
-        <p>
-           After TLOS has been unstaked, it will be locked for a period of 
-          <span
-            class="text-primary"
-          >
-            1 minutes
-          </span>
-          , after which it can be withdrawn to your account from the Claim tab. 
-        </p>
-         Would you like to proceed? 
-        
-      </q-card-section-stub>
-      <q-card-actions-stub
-        align="right"
-        class="q-pb-md q-px-md"
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="1500000000000000000"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        ctadisabled="false"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="1000000000000000000"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
+    <div
+      class="col-sm-12 col-md-6 offset-md-3"
+    >
+      pages.staking.stake_tlos_success 
+      <transaction-field-stub
+        transaction-hash="0x123"
       >
         
-        <p
-          aria-label="Launch MetaMask dialog to add sTLOS"
-          class="c-stake-form__metamask-prompt u-flex--center-y"
-          tabindex="0"
-        >
-           Add sTLOS to MetaMask 
-          <img
-            alt="MetaMask Fox Logo"
-            class="q-ml-xs"
-            height="24"
-            src="[object Object]"
-            width="24"
-          />
-        </p>
-        <q-btn-stub
-          color="negative"
-          flat=""
-          label="Cancel"
-        />
-        <q-btn-stub
-          color="secondary"
-          label="Stake TLOS"
-          text-color="black"
-        />
         
-      </q-card-actions-stub>
+      </transaction-field-stub>
+    </div>
+    <q-dialog-stub
+      modelvalue="true"
+    >
       
-    </q-card-stub>
-    
-  </q-dialog-stub>
+      <q-card-stub>
+        
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
+        >
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
+          />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
+        
+      </q-card-stub>
+      
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
 </div>
 `;
 
 exports[`StakeForm.vue user input should be correctly handled for the bottom input 1`] = `
 <div
-  class="c-stake-form row"
+  data-v-app=""
 >
+  
   <div
-    class="col-xs-12 col-md-6 offset-md-3"
+    class="c-stake-form row"
   >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="1000000000000000000"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        ctadisabled="false"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="1500000000000000000"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
     <!--v-if-->
-  </div>
-  <div
-    class="col-12 q-mb-lg"
-  >
-    <base-staking-form-stub
-      bottominputamount="1000000000000000000"
-      bottominputisloading="false"
-      bottominputlabel="Receive sTLOS"
-      ctadisabled="false"
-      ctatext="Stake TLOS"
-      header="Stake TLOS"
-      subheader="Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be auto-compounded. No further action is required."
-      topinputamount="1500000000000000000"
-      topinputerrortext=""
-      topinputinfotext="149.0 Available"
-      topinputisloading="false"
-      topinputlabel="Stake TLOS"
-      topinputmaxvalue="149000000000000000000"
-      topinputtooltip="Click to input full wallet balance
-
-Balance displayed is reduced by 1 TLOS to keep your account actionable.
-Precise balance (less approximate gas fees):
-149.0 TLOS"
-      unstakeperiodseconds="60"
-      valueofonestlosintlos="1.23456789"
-    />
-  </div>
-  <!--v-if-->
-  <q-dialog-stub
-    modelvalue="false"
-  >
-    
-    <q-card-stub>
+    <q-dialog-stub
+      modelvalue="false"
+    >
       
-      <q-card-section-stub>
+      <q-card-stub>
         
-        <p>
-           Continuing will stake TLOS in exchange for sTLOS. sTLOS can be redeemed for TLOS at any time using the Unstake tab. 
-        </p>
-        <p>
-           After TLOS has been unstaked, it will be locked for a period of 
-          <span
-            class="text-primary"
-          >
-            1 minutes
-          </span>
-          , after which it can be withdrawn to your account from the Claim tab. 
-        </p>
-         Would you like to proceed? 
-        
-      </q-card-section-stub>
-      <q-card-actions-stub
-        align="right"
-        class="q-pb-md q-px-md"
-      >
-        
-        <p
-          aria-label="Launch MetaMask dialog to add sTLOS"
-          class="c-stake-form__metamask-prompt u-flex--center-y"
-          tabindex="0"
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
         >
-           Add sTLOS to MetaMask 
-          <img
-            alt="MetaMask Fox Logo"
-            class="q-ml-xs"
-            height="24"
-            src="[object Object]"
-            width="24"
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
           />
-        </p>
-        <q-btn-stub
-          color="negative"
-          flat=""
-          label="Cancel"
-        />
-        <q-btn-stub
-          color="secondary"
-          label="Stake TLOS"
-          text-color="black"
-        />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
         
-      </q-card-actions-stub>
+      </q-card-stub>
       
-    </q-card-stub>
-    
-  </q-dialog-stub>
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
 </div>
 `;
 
 exports[`StakeForm.vue user input should be correctly handled for the bottom input 2`] = `
 <div
-  class="c-stake-form row"
+  data-v-app=""
 >
+  
   <div
-    class="col-xs-12 col-md-6 offset-md-3"
+    class="c-stake-form row"
   >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="0"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        ctadisabled="true"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="0"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
     <!--v-if-->
-  </div>
-  <div
-    class="col-12 q-mb-lg"
-  >
-    <base-staking-form-stub
-      bottominputamount="0"
-      bottominputisloading="false"
-      bottominputlabel="Receive sTLOS"
-      ctadisabled="true"
-      ctatext="Stake TLOS"
-      header="Stake TLOS"
-      subheader="Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be auto-compounded. No further action is required."
-      topinputamount="0"
-      topinputerrortext=""
-      topinputinfotext="149.0 Available"
-      topinputisloading="false"
-      topinputlabel="Stake TLOS"
-      topinputmaxvalue="149000000000000000000"
-      topinputtooltip="Click to input full wallet balance
-
-Balance displayed is reduced by 1 TLOS to keep your account actionable.
-Precise balance (less approximate gas fees):
-149.0 TLOS"
-      unstakeperiodseconds="60"
-      valueofonestlosintlos="1.23456789"
-    />
-  </div>
-  <!--v-if-->
-  <q-dialog-stub
-    modelvalue="false"
-  >
-    
-    <q-card-stub>
+    <q-dialog-stub
+      modelvalue="false"
+    >
       
-      <q-card-section-stub>
+      <q-card-stub>
         
-        <p>
-           Continuing will stake TLOS in exchange for sTLOS. sTLOS can be redeemed for TLOS at any time using the Unstake tab. 
-        </p>
-        <p>
-           After TLOS has been unstaked, it will be locked for a period of 
-          <span
-            class="text-primary"
-          >
-            1 minutes
-          </span>
-          , after which it can be withdrawn to your account from the Claim tab. 
-        </p>
-         Would you like to proceed? 
-        
-      </q-card-section-stub>
-      <q-card-actions-stub
-        align="right"
-        class="q-pb-md q-px-md"
-      >
-        
-        <p
-          aria-label="Launch MetaMask dialog to add sTLOS"
-          class="c-stake-form__metamask-prompt u-flex--center-y"
-          tabindex="0"
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
         >
-           Add sTLOS to MetaMask 
-          <img
-            alt="MetaMask Fox Logo"
-            class="q-ml-xs"
-            height="24"
-            src="[object Object]"
-            width="24"
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
           />
-        </p>
-        <q-btn-stub
-          color="negative"
-          flat=""
-          label="Cancel"
-        />
-        <q-btn-stub
-          color="secondary"
-          label="Stake TLOS"
-          text-color="black"
-        />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
         
-      </q-card-actions-stub>
+      </q-card-stub>
       
-    </q-card-stub>
-    
-  </q-dialog-stub>
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
 </div>
 `;
 
 exports[`StakeForm.vue user input should be correctly handled for the top input 1`] = `
 <div
-  class="c-stake-form row"
+  data-v-app=""
 >
+  
   <div
-    class="col-xs-12 col-md-6 offset-md-3"
+    class="c-stake-form row"
   >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="1500000000000000000"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        ctadisabled="false"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="1000000000000000000"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
     <!--v-if-->
-  </div>
-  <div
-    class="col-12 q-mb-lg"
-  >
-    <base-staking-form-stub
-      bottominputamount="1500000000000000000"
-      bottominputisloading="false"
-      bottominputlabel="Receive sTLOS"
-      ctadisabled="false"
-      ctatext="Stake TLOS"
-      header="Stake TLOS"
-      subheader="Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be auto-compounded. No further action is required."
-      topinputamount="1000000000000000000"
-      topinputerrortext=""
-      topinputinfotext="149.0 Available"
-      topinputisloading="false"
-      topinputlabel="Stake TLOS"
-      topinputmaxvalue="149000000000000000000"
-      topinputtooltip="Click to input full wallet balance
-
-Balance displayed is reduced by 1 TLOS to keep your account actionable.
-Precise balance (less approximate gas fees):
-149.0 TLOS"
-      unstakeperiodseconds="60"
-      valueofonestlosintlos="1.23456789"
-    />
-  </div>
-  <!--v-if-->
-  <q-dialog-stub
-    modelvalue="false"
-  >
-    
-    <q-card-stub>
+    <q-dialog-stub
+      modelvalue="false"
+    >
       
-      <q-card-section-stub>
+      <q-card-stub>
         
-        <p>
-           Continuing will stake TLOS in exchange for sTLOS. sTLOS can be redeemed for TLOS at any time using the Unstake tab. 
-        </p>
-        <p>
-           After TLOS has been unstaked, it will be locked for a period of 
-          <span
-            class="text-primary"
-          >
-            1 minutes
-          </span>
-          , after which it can be withdrawn to your account from the Claim tab. 
-        </p>
-         Would you like to proceed? 
-        
-      </q-card-section-stub>
-      <q-card-actions-stub
-        align="right"
-        class="q-pb-md q-px-md"
-      >
-        
-        <p
-          aria-label="Launch MetaMask dialog to add sTLOS"
-          class="c-stake-form__metamask-prompt u-flex--center-y"
-          tabindex="0"
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
         >
-           Add sTLOS to MetaMask 
-          <img
-            alt="MetaMask Fox Logo"
-            class="q-ml-xs"
-            height="24"
-            src="[object Object]"
-            width="24"
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
           />
-        </p>
-        <q-btn-stub
-          color="negative"
-          flat=""
-          label="Cancel"
-        />
-        <q-btn-stub
-          color="secondary"
-          label="Stake TLOS"
-          text-color="black"
-        />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
         
-      </q-card-actions-stub>
+      </q-card-stub>
       
-    </q-card-stub>
-    
-  </q-dialog-stub>
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
 </div>
 `;
 
 exports[`StakeForm.vue user input should be correctly handled for the top input 2`] = `
 <div
-  class="c-stake-form row"
+  data-v-app=""
 >
+  
   <div
-    class="col-xs-12 col-md-6 offset-md-3"
+    class="c-stake-form row"
   >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="0"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        ctadisabled="true"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="0"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
     <!--v-if-->
-  </div>
-  <div
-    class="col-12 q-mb-lg"
-  >
-    <base-staking-form-stub
-      bottominputamount="0"
-      bottominputisloading="false"
-      bottominputlabel="Receive sTLOS"
-      ctadisabled="true"
-      ctatext="Stake TLOS"
-      header="Stake TLOS"
-      subheader="Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be auto-compounded. No further action is required."
-      topinputamount="0"
-      topinputerrortext=""
-      topinputinfotext="149.0 Available"
-      topinputisloading="false"
-      topinputlabel="Stake TLOS"
-      topinputmaxvalue="149000000000000000000"
-      topinputtooltip="Click to input full wallet balance
-
-Balance displayed is reduced by 1 TLOS to keep your account actionable.
-Precise balance (less approximate gas fees):
-149.0 TLOS"
-      unstakeperiodseconds="60"
-      valueofonestlosintlos="1.23456789"
-    />
-  </div>
-  <!--v-if-->
-  <q-dialog-stub
-    modelvalue="false"
-  >
-    
-    <q-card-stub>
+    <q-dialog-stub
+      modelvalue="false"
+    >
       
-      <q-card-section-stub>
+      <q-card-stub>
         
-        <p>
-           Continuing will stake TLOS in exchange for sTLOS. sTLOS can be redeemed for TLOS at any time using the Unstake tab. 
-        </p>
-        <p>
-           After TLOS has been unstaked, it will be locked for a period of 
-          <span
-            class="text-primary"
-          >
-            1 minutes
-          </span>
-          , after which it can be withdrawn to your account from the Claim tab. 
-        </p>
-         Would you like to proceed? 
-        
-      </q-card-section-stub>
-      <q-card-actions-stub
-        align="right"
-        class="q-pb-md q-px-md"
-      >
-        
-        <p
-          aria-label="Launch MetaMask dialog to add sTLOS"
-          class="c-stake-form__metamask-prompt u-flex--center-y"
-          tabindex="0"
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
         >
-           Add sTLOS to MetaMask 
-          <img
-            alt="MetaMask Fox Logo"
-            class="q-ml-xs"
-            height="24"
-            src="[object Object]"
-            width="24"
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
           />
-        </p>
-        <q-btn-stub
-          color="negative"
-          flat=""
-          label="Cancel"
-        />
-        <q-btn-stub
-          color="secondary"
-          label="Stake TLOS"
-          text-color="black"
-        />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
         
-      </q-card-actions-stub>
+      </q-card-stub>
       
-    </q-card-stub>
-    
-  </q-dialog-stub>
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
 </div>
 `;

@@ -1,7 +1,9 @@
+<!-- eslint-disable vue/no-unused-components -->
 <script>
 import { toChecksumAddress } from 'src/lib/utils';
 import Web3 from 'web3';
 import TransactionTable from 'components/TransactionTable';
+import InternalTransactionTable from 'components/InternalTransactionTable';
 import TransferTable from 'components/TransferTable';
 import TokenList from 'components/TokenList';
 import ConfirmationDialog from 'components/ConfirmationDialog';
@@ -15,6 +17,7 @@ const web3 = new Web3();
 
 const tabs = {
     transactions: '#transactions',
+    int_transactions: '#int_transactions',
     erc20_transfers: '#erc20',
     erc721_transfers: '#erc721',
     erc1155_transfers: '#erc1155',
@@ -33,6 +36,7 @@ export default {
         TokenList,
         TransactionField,
         TransactionTable,
+        InternalTransactionTable,
         TransferTable,
     },
     data() {
@@ -161,108 +165,180 @@ export default {
 };
 </script>
 
-<template lang="pug">
-.pageContainer.q-pt-xl
-    div
-      .row(class="tableWrapper").justify-between.q-mb-lg
-        div(class="homeInfo")
-          .text-primary.text-h4.q-pr-xs {{ title }}
-          q-icon.cursor(
-              v-if='isContract && isVerified !== null'
-              :name="isVerified ? 'verified' : 'warning'"
-              :class="isVerified ? 'text-positive' : 'text-negative'"
-              size='1.25rem' @click='confirmationDialog = true'
-          )
-          ConfirmationDialog.text-secondary(
-              :flag='confirmationDialog'
-              :address='address'
-              :status="isVerified"
-              @dialog='disableConfirmation'
-          )
-          CopyButton.text-secondary(:text="address" :accompanyingText="address" description="address")
-          span(v-if='contract')
-            .text-white {{ $t('pages.created_at_trx' )}} &nbsp
-              TransactionField(:transaction-hash="contract.getCreationTrx()" )
-            .text-white {{ $t('pages.by_address') }} &nbsp
-              AddressField(:address="contract.getCreator()")
-          small(v-else)
-            .text-white {{ $t('pages.number_used_once') }}: &nbsp
-              span.q-pl-xs {{ nonce }}
-        .dataCardsContainer()
-          .dataCardItem(v-if="!!telosAccount")
-            .dataCardTile {{ $t('pages.native_account') }}
-            .dataCardData
-              a(:href="getAddressNativeExplorerURL()" target="_blank") {{ telosAccount }}
-          .dataCardItem(v-if="!!balance" class="balance ")
-            .dataCardTile {{ $t('pages.balance') }}
-            .dataCardData {{balance}}
-      q-tabs.tabs-header(
-          v-model="tab"
-          dense
-          active-color="secondary"
-          align="justify"
-          narrow-indicator
-          class="tabsBar topRounded text-white tableWrapper"
-          :class='{"q-dark": $q.dark.isActive}'
-      )
-        q-route-tab(
-            name="transactions"
-            :to="{ hash: '#transactions' }"
-            exact
-            replace
-            :label="$t('pages.transactions')"
-        )
-        q-route-tab(
-            name="erc20_transfers"
-            :to="{ hash: '#erc20' }"
-            exact
-            replace
-            :label="$t('pages.erc20_transfers')"
-        )
-        q-route-tab(
-            name="erc721_transfers"
-            :to="{ hash: '#erc721' }"
-            exact
-            replace
-            :label="$t('pages.erc721_transfers')"
-        )
-        q-route-tab(
-            name="erc1155_transfers"
-            :to="{ hash: '#erc1155' }"
-            exact
-            replace
-            :label="$t('pages.erc1155_transfers')"
-        )
-        q-route-tab(
-            name="tokens"
-            :to="{ hash: '#tokens' }"
-            exact
-            replace
-            :label="$t('pages.tokens')"
-        )
-        q-route-tab(
-            v-if="isContract"
-            name="contract"
-            :to="{ hash: '#contract' }"
-            exact
-            replace
-            :label="$t('pages.contract')"
-        )
-      .q-mb-md.tableWrapper
-        q-tab-panels( v-model="tab" animated keep-alive class="shadow-2"  :key="address" )
-          q-tab-panel( name="transactions" )
-            transaction-table( :title="address" :filter="{address}" )
-          q-tab-panel( name="erc20_transfers" )
-            transfer-table( title="ERC-20 Transfers" token-type="erc20" :initialPageSize="10" :address="address" )
-          q-tab-panel( name="erc1155_transfers" )
-            transfer-table( title="ERC-1155 Transfers" token-type="erc1155" :initialPageSize="10" :address="address" )
-          q-tab-panel( name="erc721_transfers" )
-            transfer-table( title="ERC-721 Transfers" token-type="erc721" :initialPageSize="10" :address="address" )
-          q-tab-panel( name="tokens" )
-            token-list( :address="address" )
-          q-tab-panel( v-if="isContract" name="contract" )
-            ContractTab(v-if='isVerified' :contract="contract")
-            GenericContractInterface(v-else)
+<template>
+<div class="pageContainer q-pt-xl">
+    <div>
+        <div class="row tableWrapper justify-between q-mb-lg">
+            <div class="homeInfo">
+                <div class="text-primary text-h4 q-pr-xs">
+                    {{ title }}
+                </div>
+                <q-icon
+                    v-if="isContract && isVerified !== null"
+                    class="cursor"
+                    :name="isVerified ? 'verified' : 'warning'"
+                    :class="isVerified ? 'text-positive' : 'text-negative'"
+                    size="1.25rem"
+                    @click="confirmationDialog = true"
+                />
+                <ConfirmationDialog
+                    class="text-secondary"
+                    :flag="confirmationDialog"
+                    :address="address"
+                    :status="isVerified"
+                    @dialog="disableConfirmation"
+                />
+                <CopyButton
+                    class="text-secondary"
+                    :text="address"
+                    :accompanyingText="address"
+                    description="address"
+                />
+                <template v-if="contract">
+                    <div class="text-white">
+                        {{ $t('pages.created_at_trx' )}} &nbsp;
+                        <TransactionField :transaction-hash="contract.getCreationTrx()"/>
+                    </div>
+                    <div class="text-white">{{ $t('pages.by_address') }}
+                        &nbsp;
+                        <AddressField :address="contract.getCreator()"/>
+                    </div>
+                </template>
+                <small v-else>
+                    <div class="text-white">
+                        {{ $t('pages.number_used_once') }}: &nbsp;
+                        <span class="q-pl-xs">{{ nonce }}</span>
+                    </div>
+                </small>
+            </div>
+            <div class="dataCardsContainer">
+                <div v-if="!!telosAccount" class="dataCardItem">
+                    <div class="dataCardTile">
+                        {{ $t('pages.native_account') }}
+                    </div>
+                    <div class="dataCardData">
+                        <a :href="getAddressNativeExplorerURL()" target="_blank">{{ telosAccount }}</a>
+                    </div>
+                </div>
+                <div v-if="!!balance" class="dataCardItem balance ">
+                    <div class="dataCardTile">
+                        {{ $t('pages.balance') }}
+                    </div>
+                    <div class="dataCardData">
+                        {{balance}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <q-tabs
+            v-model="tab"
+            class="tabs-header tabsBar topRounded text-white tableWrapper"
+            dense
+            active-color="secondary"
+            align="justify"
+            narrow-indicator
+            :class="{ 'q-dark': $q.dark.isActive}"
+        >
+            <q-route-tab
+                name="transactions"
+                :to="{ hash: '#transactions' }"
+                exact
+                replace
+                :label="$t('pages.transactions')"
+            />
+            <q-route-tab
+                name="int_transactions"
+                :to="{ hash: '#int_transactions' }"
+                exact
+                replace
+                :label="$t('pages.internal_txns')"
+            />
+            <q-route-tab
+                name="erc20_transfers"
+                :to="{ hash: '#erc20' }"
+                exact
+                replace
+                :label="$t('pages.erc20_transfers')"
+            />
+            <q-route-tab
+                name="erc721_transfers"
+                :to="{ hash: '#erc721' }"
+                exact
+                replace
+                :label="$t('pages.erc721_transfers')"
+            />
+            <q-route-tab
+                name="erc1155_transfers"
+                :to="{ hash: '#erc1155' }"
+                exact
+                replace
+                :label="$t('pages.erc1155_transfers')"
+            />
+            <q-route-tab
+                name="tokens"
+                :to="{ hash: '#tokens' }"
+                exact
+                replace
+                :label="$t('pages.tokens')"
+            />
+            <q-route-tab
+                v-if="isContract"
+                name="contract"
+                :to="{ hash: '#contract' }"
+                exact
+                replace
+                :label="$t('pages.contract')"
+            />
+        </q-tabs>
+        <div class="q-mb-md tableWrapper">
+            <q-tab-panels
+                :key="address"
+                v-model="tab"
+                class="shadow-2"
+                animated
+                keep-alive="keep-alive"
+            >
+                <q-tab-panel name="transactions">
+                    <TransactionTable :title="address" :filter="{address}"/>
+                </q-tab-panel>
+                <q-tab-panel name="int_transactions">
+                    <InternalTransactionTable :title="address" :filter="{address}"/>
+                </q-tab-panel>
+                <q-tab-panel name="erc20_transfers">
+                    <TransferTable
+                        title="ERC-20 Transfers"
+                        token-type="erc20"
+                        :initialPageSize="10"
+                        :address="address"
+                    />
+                </q-tab-panel>
+                <q-tab-panel name="erc1155_transfers">
+                    <TransferTable
+                        title="ERC-1155 Transfers"
+                        token-type="erc1155"
+                        :initialPageSize="10"
+                        :address="address"
+                    />
+                </q-tab-panel>
+                <q-tab-panel name="erc721_transfers">
+                    <TransferTable
+                        title="ERC-721 Transfers"
+                        token-type="erc721"
+                        :initialPageSize="10"
+                        :address="address"
+                    />
+                </q-tab-panel>
+                <q-tab-panel name="tokens">
+                    <TokenList :address="address"/>
+                </q-tab-panel>
+                <q-tab-panel v-if="isContract" name="contract">
+                    <ContractTab v-if="isVerified" :contract="contract"/>
+                    <GenericContractInterface v-else/>
+                </q-tab-panel>
+            </q-tab-panels>
+        </div>
+    </div>
+</div>
 </template>
 
 <style scoped lang="sass">
