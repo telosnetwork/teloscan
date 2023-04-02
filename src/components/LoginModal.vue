@@ -89,6 +89,7 @@ export default {
         ]),
 
         async detectProvider() {
+            await this.injectedWeb3Login();
             const provider = await detectEthereumProvider({ mustBeMetaMask: true });
             this.browserSupportsMetaMask = provider?.isMetaMask;
             this.isBraveBrowser = navigator.brave && await navigator.brave.isBrave();
@@ -105,25 +106,6 @@ export default {
 
         getLoginDisplay() {
             return this.isNative ? this.nativeAccount : `0x...${this.address.slice(this.address.length - 4)}`;
-        },
-        connect() {
-            this.showLogin = true;
-        },
-        disconnect() {
-            if (this.isNative) {
-                const loginData = localStorage.getItem('loginData');
-                if (!loginData) {
-                    return;
-                }
-
-                const loginObj = JSON.parse(loginData);
-                const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
-                wallet.logout();
-            }
-
-            this.setLogin({});
-            localStorage.removeItem('loginData');
-            this.$providerManager.setProvider(null);
         },
         goToAddress() {
             this.$router.push(`/address/${this.address}`);
@@ -203,14 +185,14 @@ export default {
 
             const { provider } = configureChains(chains, [w3mProvider({ projectId: PROJECT_ID })]);
             const wagmiClient = createClient({
-                autoConnect: true,
+                autoConnect: false,
                 connectors: w3mConnectors({ projectId: PROJECT_ID, version: 1, chains }),
                 provider,
             });
             const ethereumClient = new EthereumClient(wagmiClient, chains);
-            const web3modal = new Web3Modal({ projectId: PROJECT_ID }, ethereumClient);
+            this.web3modal = new Web3Modal({ projectId: PROJECT_ID }, ethereumClient);
             this.$emit('hide');
-            web3modal.openModal();
+            await this.web3modal.openModal();
         },
         async ualLogin(wallet, account) {
             await wallet.init();
