@@ -12,6 +12,8 @@ import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
 import { Web3Modal } from '@web3modal/html';
 import { configureChains, createClient } from '@wagmi/core';
 import { telos, telosTestnet } from '@wagmi/core/chains';
+// eslint-disable-next-line no-unused-vars
+import { getAccount, readContract, getSigner } from '@wagmi/core';
 
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
@@ -197,8 +199,6 @@ export default {
             this.$emit('hide');
         },
         async connectWalletConnect() {
-            debugger;
-
             const chains = [telos, telosTestnet];
 
             const { provider } = configureChains(chains, [w3mProvider({ projectId: PROJECT_ID })]);
@@ -209,36 +209,8 @@ export default {
             });
             const ethereumClient = new EthereumClient(wagmiClient, chains);
             const web3modal = new Web3Modal({ projectId: PROJECT_ID }, ethereumClient);
+            this.$emit('hide');
             web3modal.openModal();
-            /**
-            this.web3Modal = new Web3Modal({
-                projectId: PROJECT_ID,
-                standaloneChains: ['eip155:40', 'eip155:41'],
-            });
-            const signClient = await SignClient.init({ projectId: PROJECT_ID });
-            debugger;
-            const { uri, approval } = await signClient.connect({
-                requiredNamespaces: {
-                    eip155: {
-                        methods: [
-                            'eth_sendTransaction',
-                            'eth_signTransaction',
-                            'eth_sign',
-                        ],
-                        chains: ['eip155:40', 'eip155:41'],
-                        events: ['chainChanged', 'accountsChanged'],
-                    },
-                },
-            });
-
-            if (uri) {
-                this.web3Modal.openModal({ uri });
-                this.$emit('hide');
-                await approval();
-                debugger;
-                this.web3Modal.closeModal();
-            }
-            */
         },
         async ualLogin(wallet, account) {
             await wallet.init();
