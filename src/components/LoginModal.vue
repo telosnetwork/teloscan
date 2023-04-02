@@ -2,6 +2,7 @@
 import MetamaskLogo from 'src/assets/metamask-fox.svg';
 import WombatLogo from 'src/assets/wombat-logo.png';
 import BraveBrowserLogo from 'src/assets/brave_lion.svg';
+import WalletConnectLogo from 'src/assets/wallet_connect.svg';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { mapGetters, mapMutations } from 'vuex';
 import { ethers } from 'ethers';
@@ -29,22 +30,14 @@ export default {
         showLogin: false,
         metamaskLogo: MetamaskLogo,
         braveBrowserLogo: BraveBrowserLogo,
+        walletConnectLogo: WalletConnectLogo,
         isMobile: false,
         browserSupportsMetaMask: true,
         isBraveBrowser: false,
         isIOSMobile: false,
-        openModalFunction: null,
+        toggleWalletConnect: null,
         web3Modal: null,
     }),
-    watch: {
-        web3Modal(newValue) {
-            if (newValue && typeof newValue.openModal === 'function') {
-                this.openModalFunction = newValue.openModal;
-            } else {
-                this.openModalFunction = null;
-            }
-        },
-    },
     emits: ['hide'],
     computed: {
         ...mapGetters('login', [
@@ -175,6 +168,7 @@ export default {
         },
 
         async injectedWeb3Login() {
+            await this.detectProvider()
             const address = await this.getInjectedAddress();
             if (address) {
                 this.setLogin({
@@ -261,7 +255,6 @@ export default {
             }
         },
         getInjectedProvider() {
-            debugger;
             // window.ethereum.isMetaMask includes Brave Wallet
             const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
                 window.ethereum :
@@ -276,7 +269,6 @@ export default {
             return provider;
         },
         async switchChainInjected() {
-            debugger;
             const provider = this.getInjectedProvider();
 
             if (provider) {
@@ -330,8 +322,13 @@ export default {
 
             return wallet.getStyle().icon;
         },
-        async onModalReady(modalInstance) {
+        async onWalletConnectModalReady(modalInstance) {
+            this.$emit('hide');
             this.web3Modal = modalInstance;
+            this.toggleWalletConnect = () => {
+                this.web3Modal.openModal();
+                this.$emit('hide');
+            };
             await this.injectedWeb3Login();
         },
     },
@@ -360,10 +357,10 @@ export default {
                     </q-card>
                     <q-card
                         class="c-login-modal__image-container"
-                        @click="openModalFunction()"
+                        @click="toggleWalletConnect()"
                     >
                         <q-img
-                            :src="metamaskLogo"
+                            :src="walletConnectLogo"
                             height="64px"
                             width="64px"
                         />
@@ -409,7 +406,7 @@ export default {
             </q-tab-panels>
         </q-card>
     </q-dialog>
-    <Web3ModalWrapper @modal-ready="onModalReady"/>
+    <Web3ModalWrapper @modal-ready="onWalletConnectModalReady"/>
 </div>
 </template>
 

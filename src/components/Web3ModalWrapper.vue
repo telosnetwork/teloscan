@@ -8,15 +8,19 @@ import {
     ThemeCtrl,
 } from '@web3modal/core';
 import { configureChains, createClient } from '@wagmi/core';
-import { telos } from '@wagmi/core/chains';
+import { telos, telosTestnet } from '@wagmi/core/chains';
 import {
     EthereumClient,
     w3mConnectors,
     w3mProvider,
 } from '@web3modal/ethereum';
+import { ConfigCtrlState, ThemeCtrlState } from '@web3modal/core';
+
+type Web3ModalConfig = Omit<ConfigCtrlState, 'enableStandaloneMode' |
+ 'standaloneChains' | 'walletConnectVersion'> & ThemeCtrlState;
 // Define constants for configuration
 const projectId = '14ec76c44bae7d461fa0f5fd5f8a9da1';
-const chains = [telos];
+const chains = [telos, telosTestnet];
 // Configure wagmi client
 const { provider } = configureChains(chains, [w3mProvider({ projectId })]);
 const wagmiClient = createClient({
@@ -26,8 +30,6 @@ const wagmiClient = createClient({
 });
 // Create ethereum and modal clients
 const ethereumClient = new EthereumClient(wagmiClient, chains);
-
-import { Web3ModalConfig } from 'src/types';
 
 export class Web3Modal {
     constructor(config: Web3ModalConfig, client: EthereumClient) {
