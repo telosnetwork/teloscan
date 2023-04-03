@@ -116,6 +116,19 @@ export default {
             }
             this.setErrorMessage();
         },
+        async loadOutput() {
+            const response = await this.$indexerApi.get(
+                `/transaction/${this.hash}/internal`,
+            );
+            const intrxs = response.data.results;
+            for(let i = 0; i < intrxs.length; i++){
+                const intrx = intrxs[i];
+                if(intrx.error !== null){
+                    this.trx.output = intrx.result?.output;
+                    return;
+                }
+            }
+        },
         async loadTransfers() {
             this.transfers = [];
             for (const log of this.trx.logs) {
@@ -191,11 +204,11 @@ export default {
             );
             this.isContract = true;
         },
-        setErrorMessage() {
-            if (this.trx.status !== 0) {
+        async setErrorMessage() {
+            if (this.trx.status === '0x1') {
                 return;
             }
-
+            await this.loadOutput();
             this.errorMessage = parseErrorMessage(this.trx.output);
         },
         getFunctionName() {
@@ -378,7 +391,8 @@ export default {
                             <div class="col-9">
                                 <MethodField :contract="contract" :trx="methodTrx" :shortenSignature="true"/>
                             </div>
-                        </div><br v-if="isContract">
+                        </div>
+                        <br v-if="isContract">
                         <div
                             v-if="isContract && params.length > 0"
                             class="fit row wrap justify-start items-start content-start"

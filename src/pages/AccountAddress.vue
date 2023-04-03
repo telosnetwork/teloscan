@@ -130,6 +130,7 @@ export default {
                     this.creationDate = response.data.results[0]?.timestamp;
                     if (this.contract.getName()) {
                         this.title = this.contract.getName();
+                        this.title = (this.title.length > 22) ? this.title.slice(0, 22) + '...' : this.title;
                         if(this.contract.properties?.symbol){
                             this.title = this.title + ' (' + this.contract.properties.symbol + ')';
                         }
@@ -384,6 +385,9 @@ body.body--dark .supported-interface
   font-size: 0.8em
   margin-right: 3px
   line-height: initial
+
+.homeInfo
+  max-width: 80%
 
 .homeInfo .text-secondary .q-icon
   color: white !important
