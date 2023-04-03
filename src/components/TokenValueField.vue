@@ -82,9 +82,9 @@ export default {
 };
 </script>
 <template>
-<span v-if="symbol" class="clickable" @click="displaySwitch = !displaySwitch">
+<span v-if="symbol" >
     <span v-if="!displaySwitch">
-        <span>
+        <span class="clickable" @click="displaySwitch = !displaySwitch">
             <span>
                 {{ valueShort }}
                 <q-img
@@ -102,7 +102,7 @@ export default {
         </router-link>
         <span v-else>TLOS</span>
     </span>
-    <span v-else>
+    <span v-else class="clickable" @click="displaySwitch = !displaySwitch">
         <span v-if="!showWei">
             {{ valueRaw }}
         </span>
