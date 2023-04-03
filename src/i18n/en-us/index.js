@@ -354,6 +354,7 @@ export default {
         },
     },
     global: {
+        error: 'Error',
         async_error_description: 'Sorry ! An error occured trying to request resources. Please make sure your internet connection is working and try again. If the error persists, contact us directly on our Telegram channel.',
         language: 'Language',
         cancel: 'Cancel',

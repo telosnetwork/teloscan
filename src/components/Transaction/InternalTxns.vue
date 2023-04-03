@@ -1,7 +1,7 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
 import FragmentList from 'components/Transaction/FragmentList.vue';
-import { WEI_PRECISION, formatWei } from 'src/lib/utils';
+import { WEI_PRECISION, formatWei, parseErrorMessage  } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
 
 export default {
@@ -60,6 +60,7 @@ export default {
             }
             for (let k = 0; k < dataset.length; k++) {
                 dataset[k].action = JSON.parse(dataset[k].action);
+                console.log(dataset[k].action.value);
             }
             for (let k = 0; k < dataset.length; k++) {
                 let itx = dataset[k];
@@ -87,12 +88,13 @@ export default {
                 } else if (fnsig && fnsig !== '0x') {
                     name = this.$t('components.transaction.unknown') + ' (' + fnsig + ')';
                 } else if (
-                    itx.action.value
-                    && itx.action.value.toString() !== '0'
-                    && itx.action.value.toString() !== '0.0'
+                    itx.action.value > 0
                 ) {
                     name = this.$t('components.transaction.tlos_transfer');
                     isTransferETH = true;
+                }
+                if(itx.error !== null){
+                    name = name + ' - ' + this.$t('global.error');
                 }
 
                 if (itx.action.input) {
@@ -119,6 +121,9 @@ export default {
                     index: itx.index,
                     type: itx.type,
                     args: args,
+                    error: (itx.error !== null)
+                        ? parseErrorMessage(itx.result?.output)
+                        : itx.error,
                     traceAddress: itx.traceAddress,
                     parent: itx.traceAddress[0] || 0,
                     name: name,
@@ -131,7 +136,7 @@ export default {
                     to: itx.action?.to,
                     contract: contract,
                     value: (itx.type !== 'create' && (!fnsig || fnsig === '0x') && itx.action.value)
-                        ? formatWei(itx.action.value.toString(), WEI_PRECISION)
+                        ? formatWei(itx.action.value, WEI_PRECISION)
                         : 0,
                 });
             }

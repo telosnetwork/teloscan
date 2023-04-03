@@ -350,9 +350,11 @@ export default {
             address_copied: 'Adresse/Konto in Zwischenablage kopiert',
             search_placeholder: 'Adresse/Konto, Transaktion, Block',
             select_language: 'Sprache wählen',
+            open_language_switcher: 'open language switcher',
         },
     },
     global: {
+        error: 'Error',
         async_error_description: 'Sorry ! An error occured trying to request resources. Please make sure your internet connection is working and try again. If the error persists, contact us directly on our Telegram channel.',
         language: 'Sprache',
         cancel: 'Abbrechen',

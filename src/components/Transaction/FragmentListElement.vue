@@ -97,6 +97,12 @@ export default {
             <strong v-else>
                 {{ $t('components.transaction.unknown') }} ({{ fragment.function_signature }})
             </strong>
+            <q-icon
+                v-if="fragment.error !== null"
+                name="warning"
+                color="negative"
+                class="q-ml-xs"
+            />
         </span>
         <small v-if="fragment.contract">
             <AddressField
@@ -113,7 +119,10 @@ export default {
         </small>
     </div>
     <div v-if="expanded" class="q-pl-md">
-        <div v-if="fragment?.name" :key="fragment.name">
+        <div v-if="fragment.error !== null">
+            <span class="text-negative">{{ fragment.error }}</span>
+        </div>
+        <div v-else-if="fragment?.name" :key="fragment.name">
             <div
                 v-for="(param, index) in inputs"
                 :key="`fragment-${index}`"

@@ -354,6 +354,7 @@ export default {
         },
     },
     global: {
+        error: 'Erreur',
         async_error_description: 'Désolé ! Un erreur est survenue lors de la requête d\'une ressource. Assurez vous que votre connection internet fonctionne et réessayez. Si cela ne marche toujours pas, contactez nous directement sur nos canaux Telegram.',
         language: 'Language',
         cancel: 'Annuler',
