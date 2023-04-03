@@ -194,16 +194,22 @@ pre
 
 @media (max-width: 1024px)
     .row
-        .col-3, .col-9, .col-5
+        .col-3
             width: 100%
-            padding-left: 0px
-        .col-4
-            padding-top: 10px
-        .col-9
-            padding-top: 10px
-            padding-left: 10px
-        .list-arrow
-            display: none
+    .erc-transfers
+        .row
+            .col-3, .col-9, .col-5
+                width: 100%
+                padding-left: 0px
+            .col-5
+                padding-top: 2px
+            .col-3, .col-5
+                padding-left: 15px
+            .col-4
+                padding-top: 10px
+                width: 100%
+            .col-9
+                padding-left: 10px
 
 
 @media screen and (max-width: 420px)
