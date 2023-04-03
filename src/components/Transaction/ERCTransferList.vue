@@ -192,21 +192,19 @@ pre
     vertical-align: middle
     border-radius: 100%
 
-@media (max-width: $breakpoint-sm-max)
-    #erc-transfers
-        .row
-            display: block
-            margin-bottom: 10px
-            .col-4
-                display: block
-                width: 100%
+@media (max-width: 1024px)
+    .row
+        .col-3, .col-9, .col-5
+            width: 100%
+            padding-left: 0px
+        .col-4
+            padding-top: 10px
+        .col-9
+            padding-top: 10px
+            padding-left: 10px
         .list-arrow
             display: none
 
-@media screen and (max-width: 650px)
-    .row
-        .col-9
-            padding-left: 20px
 
 @media screen and (max-width: 420px)
     .coin-icon
@@ -214,10 +212,4 @@ pre
         height: 12px
         margin-right: 3px
         margin-top: -3px
-    .row
-        .col-3, .col-9, .col-5
-            width: 100%
-            padding-left: 0px
-        .col-9
-            padding-top: 10px
 </style>
