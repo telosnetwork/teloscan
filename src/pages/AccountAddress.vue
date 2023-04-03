@@ -193,65 +193,73 @@ export default {
                         @click="confirmationDialog = true"
                     />
                 </div>
-                <ConfirmationDialog
-                    class="text-secondary"
-                    :flag="confirmationDialog"
-                    :address="address"
-                    :status="this.contract?.isVerified()"
-                    @dialog="disableConfirmation"
-                />
-                <CopyButton
-                    class="text-secondary"
-                    :text="address"
-                    :accompanyingText="address"
-                    description="address"
-                />
-                <template v-if="contract">
-                    <div class="text-white">
-                        {{ $t('pages.created_at_trx' )}} &nbsp;
-                        <TransactionField :transaction-hash="contract.getCreationTrx()"/>
+                <div class="flex">
+                    <div>
+                        <ConfirmationDialog
+                            class="text-secondary"
+                            :flag="confirmationDialog"
+                            :address="address"
+                            :status="this.contract?.isVerified()"
+                            @dialog="disableConfirmation"
+                        />
+                        <CopyButton
+                            class="text-secondary"
+                            :text="address"
+                            :accompanyingText="address"
+                            description="address"
+                        />
+                        <template v-if="contract">
+                            <div class="text-white">
+                                {{ $t('pages.created_at_trx' )}} &nbsp;
+                                <TransactionField :transaction-hash="contract.getCreationTrx()"/>
+                            </div>
+                            <div class="text-white">{{ $t('pages.by_address') }}
+                                <AddressField :address="contract.getCreator()"/>
+                            </div>
+                            <div class="text-white">
+                                <DateField
+                                    :epoch="creationDate / 1000"
+                                    :default-to-age="false"
+                                    :force-show-age="false"
+                                />
+                            </div>
+                            <div v-if="contract.supportedInterfaces.length > 0" class="q-pt-md">
+                                <span>
+                                    <span
+                                        v-for="intf in contract.supportedInterfaces"
+                                        v-bind:key="intf"
+                                        class="supported-interface bg-primary q-pa-sm text-secondary"
+                                    >
+                                        {{ intf.replace('_', ' ') }}
+                                    </span>
+                                    <q-tooltip>{{ $t('pages.supported_interfaces')}}</q-tooltip>
+                                </span>
+                            </div>
+                        </template>
+                        <small v-else>
+                            <div class="text-white">
+                                {{ $t('pages.number_used_once') }}:&nbsp;
+                                <span>{{ nonce }}</span>
+                            </div>
+                        </small>
                     </div>
-                    <div class="text-white">{{ $t('pages.by_address') }}
-                        <AddressField :address="contract.getCreator()"/>
-                    </div>
-                    <div class="text-white">
-                        <DateField :epoch="creationDate / 1000" :default-to-age="false" :force-show-age="false" />
-                    </div>
-                    <div v-if="contract.supportedInterfaces.length > 0" class="q-pt-md">
-                        <span>
-                            <span
-                                v-for="intf in contract.supportedInterfaces"
-                                v-bind:key="intf"
-                                class="supported-interface bg-primary q-pa-sm text-secondary"
-                            >
-                                {{ intf.replace('_', ' ') }}
-                            </span>
-                            <q-tooltip>{{ $t('pages.supported_interfaces')}}</q-tooltip>
-                        </span>
-                    </div>
-                </template>
-                <small v-else>
-                    <div class="text-white">
-                        {{ $t('pages.number_used_once') }}:&nbsp;
-                        <span>{{ nonce }}</span>
-                    </div>
-                </small>
-            </div>
-            <div class="dataCardsContainer">
-                <div v-if="!!telosAccount" class="dataCardItem">
-                    <div class="dataCardTile">
-                        {{ $t('pages.native_account') }}
-                    </div>
-                    <div class="dataCardData">
-                        <a :href="getAddressNativeExplorerURL()" target="_blank">{{ telosAccount }}</a>
-                    </div>
-                </div>
-                <div v-if="!!balance" class="dataCardItem balance ">
-                    <div class="dataCardTile">
-                        {{ $t('pages.balance') }}
-                    </div>
-                    <div class="dataCardData">
-                        {{balance}}
+                    <div class="dataCardsContainer">
+                        <div v-if="!!telosAccount" class="dataCardItem">
+                            <div class="dataCardTile">
+                                {{ $t('pages.native_account') }}
+                            </div>
+                            <div class="dataCardData">
+                                <a :href="getAddressNativeExplorerURL()" target="_blank">{{ telosAccount }}</a>
+                            </div>
+                        </div>
+                        <div v-if="!!balance" class="dataCardItem balance ">
+                            <div class="dataCardTile">
+                                {{ $t('pages.balance') }}
+                            </div>
+                            <div class="dataCardData">
+                                {{balance}}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -386,8 +394,12 @@ body.body--dark .supported-interface
   margin-right: 3px
   line-height: initial
 
+.homeInfo > .flex:nth-child(2)
+  align-content: stretch
+  justify-content: space-between
+
 .homeInfo
-  max-width: 80%
+  width: 100%
 
 .homeInfo .text-secondary .q-icon
   color: white !important
@@ -427,6 +439,8 @@ body.body--dark .supported-interface
                 &:first-child
                     padding: 20px
 @media only screen and (max-width: 768px)
+    .homeInfo > .flex:nth-child(2)
+        display: block
     .homeInfo > .flex
         align-items: center
         flex-wrap: inherit
@@ -437,6 +451,7 @@ body.body--dark .supported-interface
         height: 28px
     .dataCardsContainer
         width: 100%
+        margin-top: 30px
         justify-content: center
         .dataCardItem
             width: 100%
