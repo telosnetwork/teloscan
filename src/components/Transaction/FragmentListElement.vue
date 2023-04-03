@@ -98,7 +98,7 @@ export default {
                 {{ $t('components.transaction.unknown') }} ({{ fragment.function_signature }})
             </strong>
             <q-icon
-                v-if="fragment.error !== null"
+                v-if="fragment.error"
                 name="warning"
                 color="negative"
                 class="q-ml-xs"
@@ -119,7 +119,7 @@ export default {
         </small>
     </div>
     <div v-if="expanded" class="q-pl-md">
-        <div v-if="fragment.error !== null">
+        <div v-if="fragment.error">
             <span class="text-negative">{{ fragment.error }}</span>
         </div>
         <div v-else-if="fragment?.name" :key="fragment.name">
