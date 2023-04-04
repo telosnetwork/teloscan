@@ -38,7 +38,7 @@ export default {
     data(props) {
         let transfers = [...props.transfers];
         for(let i = 0; i < transfers.length;i++){
-            if(transfers[i].token?.metadata){
+            if(transfers[i].token?.metadata && transfers[i].token.metadata !== '"___INVALID_METADATA___"'){
                 transfers[i].metadata = JSON.parse(transfers[i].token.metadata);
                 Object.keys(transfers[i].metadata).forEach((key) => {
                     if(['image', 'attributes', 'name', 'description'].includes(key) === false){
