@@ -50,14 +50,12 @@ const contractManager = new ContractManager(hyperion);
 contractManager.init();
 
 /** Wagmi Client for WalletConnect */
-const PROJECT_ID = '14ec76c44bae7d461fa0f5fd5f8a9da1';
-
 const chains = [telos, telosTestnet];
-const { provider } = configureChains(chains, [w3mProvider({ projectId: PROJECT_ID })]);
+const { provider } = configureChains(chains, [w3mProvider({ projectId: process.env.PROJECT_ID })]);
 
 const wagmi = createClient({
     autoConnect: false,
-    connectors: w3mConnectors({ projectId: PROJECT_ID, version: 1, chains }),
+    connectors: w3mConnectors({ projectId: process.env.PROJECT_ID, version: 1, chains }),
     provider,
 });
 

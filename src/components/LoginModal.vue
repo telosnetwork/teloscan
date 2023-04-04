@@ -188,8 +188,7 @@ export default {
         },
 
         async connectWalletConnect() {
-            const PROJECT_ID = '14ec76c44bae7d461fa0f5fd5f8a9da1';
-            this.web3modal = new Web3Modal({ projectId: PROJECT_ID }, this.$wagmiClient);
+            this.web3modal = new Web3Modal({ projectId: process.env.PROJECT_ID }, this.$wagmiClient);
             await this.web3modal.openModal();
             this.$emit('hide'); //hide general login modal
             this.web3modal.subscribeModal((newState) => {
