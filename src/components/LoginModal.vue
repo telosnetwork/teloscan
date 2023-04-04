@@ -1,3 +1,4 @@
+<!-- eslint-disable no-unused-vars -->
 <script>
 import MetamaskLogo from 'src/assets/metamask-fox.svg';
 import WombatLogo from 'src/assets/wombat-logo.png';
@@ -8,17 +9,11 @@ import { mapGetters, mapMutations } from 'vuex';
 import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
-import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
 import { Web3Modal } from '@web3modal/html';
-import { configureChains, createClient } from '@wagmi/core';
-import { telos, telosTestnet } from '@wagmi/core/chains';
-// eslint-disable-next-line no-unused-vars
-import { getAccount, readContract, getSigner } from '@wagmi/core';
 
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
 const PROVIDER_WEB3_INJECTED = 'injectedWeb3';
-const PROJECT_ID = '14ec76c44bae7d461fa0f5fd5f8a9da1';
 
 export default {
     name: 'LoginModal',
@@ -105,7 +100,7 @@ export default {
         },
 
         getWalletConnectAccount() {
-            const { address } = getAccount();
+            const { address } = this.$wagmiClient.getAccount();
             if (address){
                 this.setLogin({
                     address,
@@ -116,9 +111,11 @@ export default {
         getLoginDisplay() {
             return this.isNative ? this.nativeAccount : `0x...${this.address.slice(this.address.length - 4)}`;
         },
+
         goToAddress() {
             this.$router.push(`/address/${this.address}`);
         },
+
         async connectBraveWallet(){
             // Brave Wallet is not set as default and/or has other extensions enabled
             if (!window.ethereum.isBraveWallet){
@@ -189,25 +186,20 @@ export default {
             }
             this.$emit('hide');
         },
-        async connectWalletConnect() {
-            const chains = [telos, telosTestnet];
 
-            const { provider } = configureChains(chains, [w3mProvider({ projectId: PROJECT_ID })]);
-            const wagmiClient = createClient({
-                autoConnect: false,
-                connectors: w3mConnectors({ projectId: PROJECT_ID, version: 1, chains }),
-                provider,
-            });
-            const ethereumClient = new EthereumClient(wagmiClient, chains);
-            this.web3modal = new Web3Modal({ projectId: PROJECT_ID }, ethereumClient);
-            this.$emit('hide');
+        async connectWalletConnect() {
+            const PROJECT_ID = '14ec76c44bae7d461fa0f5fd5f8a9da1';
+            this.web3modal = new Web3Modal({ projectId: PROJECT_ID }, this.$wagmiClient);
             await this.web3modal.openModal();
+            this.$emit('hide'); //hide general login modal
             this.web3modal.subscribeModal((newState) => {
                 if (newState.open === false) {
                     this.getWalletConnectAccount();
                 }
             });
+            // await this.detectProvider();
         },
+
         async ualLogin(wallet, account) {
             await wallet.init();
             const users = await wallet.login(account);
@@ -235,6 +227,7 @@ export default {
             }
             this.$emit('hide');
         },
+
         async getInjectedAddress() {
             const provider = this.getInjectedProvider();
             let checkProvider = new ethers.providers.Web3Provider(provider);
@@ -257,6 +250,7 @@ export default {
                 return accessGranted[0];
             }
         },
+
         async ensureCorrectChain(checkProvider) {
             const { chainId } = await checkProvider.getNetwork();
             if (chainId !== process.env.NETWORK_EVM_CHAIN_ID) {
@@ -265,6 +259,7 @@ export default {
                 return new ethers.providers.Web3Provider(provider);
             }
         },
+
         getInjectedProvider() {
             // window.ethereum.isMetaMask includes Brave Wallet
             const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
@@ -279,6 +274,7 @@ export default {
             }
             return provider;
         },
+
         async switchChainInjected() {
             const provider = this.getInjectedProvider();
 
@@ -325,6 +321,7 @@ export default {
                 return false;
             }
         },
+
         getIconForWallet(wallet) {
             if (wallet.getName() === 'wombat') {
                 // Wombat UAL logo is 32x32px; substitute for higher res
