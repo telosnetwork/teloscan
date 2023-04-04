@@ -104,6 +104,15 @@ export default {
             this.isIOSMobile = (/iPhone|iPad|iPod/i).test(navigator.userAgent);
         },
 
+        getWalletConnectAccount() {
+            const { address } = getAccount();
+            if (address){
+                this.setLogin({
+                    address,
+                });
+            }
+        },
+
         getLoginDisplay() {
             return this.isNative ? this.nativeAccount : `0x...${this.address.slice(this.address.length - 4)}`;
         },
@@ -193,6 +202,11 @@ export default {
             this.web3modal = new Web3Modal({ projectId: PROJECT_ID }, ethereumClient);
             this.$emit('hide');
             await this.web3modal.openModal();
+            this.web3modal.subscribeModal((newState) => {
+                if (newState.open === false) {
+                    this.getWalletConnectAccount();
+                }
+            });
         },
         async ualLogin(wallet, account) {
             await wallet.init();
