@@ -99,12 +99,22 @@ export default {
             this.isIOSMobile = (/iPhone|iPad|iPod/i).test(navigator.userAgent);
         },
 
-        getWalletConnectAccount() {
+        async getWalletConnectAccount() {
             const { address } = this.$wagmiClient.getAccount();
             if (address){
                 this.setLogin({
                     address,
                 });
+                debugger;
+                this.$providerManager.setProvider(this.$wagmiClient.wagmi.providers.get(40));
+                console.log(this.$providerManager.getProvider().getSigner());
+                // const receipt = await this.$providerManager.getProvider().getSigner([0]).sendTransaction({
+                //     to: '0xD478589b68e162B1D5B3e57323d0b280A96896Bf',
+                //     value: 10, // amount to transfer, in wei
+                // });
+                // debugger;
+                // console.log('Receipt:', receipt);
+                // this.$providerManager.getProvider().getSigner();
             }
         },
 
@@ -194,6 +204,10 @@ export default {
             this.web3modal.subscribeModal((newState) => {
                 if (newState.open === false) {
                     this.getWalletConnectAccount();
+                    debugger;
+                    console.log((this.$wagmiClient.wagmi.providers.get(40)).getSigner());
+                    // this.$wagmiClient.wagmi.providers.get(40)
+
                 }
             });
             // await this.detectProvider();

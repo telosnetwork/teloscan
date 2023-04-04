@@ -4,7 +4,7 @@ import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { formatWei, getRouteWatcherForTabs, WEI_PRECISION } from 'src/lib/utils';
 // eslint-disable-next-line no-unused-vars
-import { getAccount, readContract, getSigner } from '@wagmi/core';
+import { getAccount, readContract, fetchSigner } from '@wagmi/core';
 
 
 import StakeForm from 'pages/staking/StakeForm';
@@ -77,7 +77,8 @@ export default {
                 return;
             }
 
-            const tlosPromise = this.$providerManager.getEthersProvider().getBalance(this.address)
+            // const tlosPromise = this.$providerManager.getEthersProvider().getBalance(this.address)
+            const tlosPromise = this.$providerManager.getProvider().getBalance(this.address)
                 .then((balanceBn) => {
                     this.tlosBalance = balanceBn.toString();
                 })
@@ -212,9 +213,12 @@ export default {
             if (!this.stlosContract || !this.escrowContract) {
                 await this.fetchContracts();
             }
-
+            debugger;
+            console.log(this.$wagmiClient.wagmi);
             const provider = this.isLoggedIn && !this.isNative ?
-                this.$providerManager.getEthersProvider().getSigner() :
+                // this.$providerManager.getEthersProvider().getSigner()
+                this.$providerManager.getProvider().getSigner()
+                :
                 this.$contractManager.getEthersProvider();
 
             this.stlosContractInstance  = this.stlosContract.getContractInstance(provider, true);
