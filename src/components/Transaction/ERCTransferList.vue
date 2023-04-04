@@ -156,7 +156,7 @@ export default {
                     </span>
                 </div>
             </div>
-            <div v-else class="col-5">
+            <div v-else class="col-5 flex">
                 <strong>{{ $t('components.transaction.form_token') }}</strong>
                 <TokenValueField
                     :value="transfer.value"

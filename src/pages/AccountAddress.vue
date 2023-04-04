@@ -444,6 +444,7 @@ body.body--dark .supported-interface
     .homeInfo > .flex
         align-items: center
         flex-wrap: inherit
+        justify-content: space-evenly
     .coin-icon
         margin-bottom: 8px
         flex-shrink: 0

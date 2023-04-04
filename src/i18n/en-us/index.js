@@ -185,7 +185,7 @@ export default {
         value: 'Value',
     },
     components: {
-        no_balances_found: 'No official token balances found for this address',
+        no_balances_found: 'No official erc20 token balance found for this address',
         internal_txns: 'Internal Transactions',
         n_internal_txns: '{ amount } internal transactions',
         none: 'None',
