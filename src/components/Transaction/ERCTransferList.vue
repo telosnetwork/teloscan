@@ -162,7 +162,7 @@ export default {
                     :value="transfer.value"
                     :showWei="true"
                     :address="transfer.contract.address"
-                    :truncate="18"
+                    :truncate="6"
                 />
             </div>
         </div>
@@ -191,6 +191,11 @@ pre
     margin-right: .15rem
     vertical-align: middle
     border-radius: 100%
+.erc-transfers
+    .row
+        .col-5
+            strong
+                margin-right: 3px
 
 @media (max-width: 1024px)
     .row

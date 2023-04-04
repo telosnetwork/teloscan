@@ -186,7 +186,8 @@ export default {
                 return;
             }
 
-            const contract = await this.$contractManager.getContract(this.trx.to?.toLowerCase() | this.trx.address);
+
+            const contract = await this.$contractManager.getContract(this.trx.to?.toLowerCase());
             if (!contract) {
                 return;
             }
