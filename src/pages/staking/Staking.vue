@@ -77,8 +77,7 @@ export default {
                 return;
             }
 
-            // const tlosPromise = this.$providerManager.getEthersProvider().getBalance(this.address)
-            const tlosPromise = this.$providerManager.getProvider().getBalance(this.address)
+            const tlosPromise = this.$providerManager.getEthersProvider().getBalance(this.address)
                 .then((balanceBn) => {
                     this.tlosBalance = balanceBn.toString();
                 })
@@ -214,10 +213,10 @@ export default {
                 await this.fetchContracts();
             }
             debugger;
-            console.log(this.$wagmiClient.wagmi);
+            console.log(this.$wagmiClient);
             const provider = this.isLoggedIn && !this.isNative ?
+                fetchSigner() //wagmi
                 // this.$providerManager.getEthersProvider().getSigner()
-                this.$providerManager.getProvider().getSigner()
                 :
                 this.$contractManager.getEthersProvider();
 

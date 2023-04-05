@@ -10,6 +10,9 @@ import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
 import { Web3Modal } from '@web3modal/html';
+import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
+import { telos, telosTestnet } from '@wagmi/core/chains';
+import { configureChains, createClient, getAccount,  prepareSendTransaction, sendTransaction } from '@wagmi/core';
 
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
@@ -99,22 +102,21 @@ export default {
             this.isIOSMobile = (/iPhone|iPad|iPod/i).test(navigator.userAgent);
         },
 
-        async getWalletConnectAccount() {
-            const { address } = this.$wagmiClient.getAccount();
+        async setWalletConnectAccount() {
+            const { address } = getAccount(); //wagmi
             if (address){
                 this.setLogin({
                     address,
                 });
-                debugger;
-                this.$providerManager.setProvider(this.$wagmiClient.wagmi.providers.get(40));
-                console.log(this.$providerManager.getProvider().getSigner());
-                // const receipt = await this.$providerManager.getProvider().getSigner([0]).sendTransaction({
-                //     to: '0xD478589b68e162B1D5B3e57323d0b280A96896Bf',
-                //     value: 10, // amount to transfer, in wei
-                // });
-                // debugger;
-                // console.log('Receipt:', receipt);
-                // this.$providerManager.getProvider().getSigner();
+                // mobile testing
+                const receipt = await prepareSendTransaction({
+                    request: {
+                        to: '0xD478589b68e162B1D5B3e57323d0b280A96896Bf',
+                        value: 1, // amount to transfer, in wei
+                    },
+                });
+                const { hash } = await sendTransaction(receipt);
+                alert(hash);
             }
         },
 
@@ -198,19 +200,27 @@ export default {
         },
 
         async connectWalletConnect() {
-            this.web3modal = new Web3Modal({ projectId: process.env.PROJECT_ID }, this.$wagmiClient);
-            await this.web3modal.openModal();
-            this.$emit('hide'); //hide general login modal
-            this.web3modal.subscribeModal((newState) => {
-                if (newState.open === false) {
-                    this.getWalletConnectAccount();
-                    debugger;
-                    console.log((this.$wagmiClient.wagmi.providers.get(40)).getSigner());
-                    // this.$wagmiClient.wagmi.providers.get(40)
+            const chains = [telos, telosTestnet];
+            const { provider } = configureChains(chains, [w3mProvider({ projectId: process.env.PROJECT_ID })]);
 
+            const wagmi = createClient({
+                autoConnect: false,
+                connectors: w3mConnectors({ projectId: process.env.PROJECT_ID, version: 1, chains }),
+                provider,
+            });
+
+            const wagmiClient = new EthereumClient(wagmi, chains);
+            this.web3modal = new Web3Modal({ projectId: process.env.PROJECT_ID }, wagmiClient);
+
+            await this.web3modal.openModal();
+
+            this.$emit('hide'); //hide general login modal
+
+            this.web3modal.subscribeModal(async (newState) => {
+                if (newState.open === false) {
+                    await this.setWalletConnectAccount();
                 }
             });
-            // await this.detectProvider();
         },
 
         async ualLogin(wallet, account) {

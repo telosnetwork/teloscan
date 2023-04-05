@@ -5,9 +5,10 @@ import fetch from 'node-fetch';
 import axios from 'axios';
 import { ethers } from 'ethers';
 import { markRaw } from 'vue';
-import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
-import { configureChains, createClient } from '@wagmi/core';
-import { telos, telosTestnet } from '@wagmi/core/chains';
+// import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
+// import { configureChains, createClient } from '@wagmi/core';
+// import { telos, telosTestnet } from '@wagmi/core/chains';
+
 
 
 const evm = new TelosEvmApi({
@@ -49,17 +50,17 @@ const hyperion = axios.create({
 const contractManager = new ContractManager(hyperion);
 contractManager.init();
 
-/** Wagmi Client for WalletConnect */
-const chains = [telos, telosTestnet];
-const { provider } = configureChains(chains, [w3mProvider({ projectId: process.env.PROJECT_ID })]);
+// /** Wagmi Client for WalletConnect */
+// const chains = [telos, telosTestnet];
+// const { provider } = configureChains(chains, [w3mProvider({ projectId: process.env.PROJECT_ID })]);
 
-const wagmi = createClient({
-    autoConnect: false,
-    connectors: w3mConnectors({ projectId: process.env.PROJECT_ID, version: 1, chains }),
-    provider,
-});
+// const wagmi = createClient({
+//     autoConnect: false,
+//     connectors: w3mConnectors({ projectId: process.env.PROJECT_ID, version: 1, chains }),
+//     provider,
+// });
 
-const wagmiClient = new EthereumClient(wagmi, chains);
+// const wagmiClient = new EthereumClient(wagmi, chains);
 
 
 export default boot(({ app, store }) => {
@@ -67,7 +68,7 @@ export default boot(({ app, store }) => {
     store.$evm = app.config.globalProperties.$evm = evm;
     store.$evmEndpoint = app.config.globalProperties.$evmEndpoint = hyperion;
     store.$contractManager = app.config.globalProperties.$contractManager = markRaw(contractManager);
-    store.$wagmiClient = app.config.globalProperties.$wagmiClient = wagmiClient;
+    // store.$wagmiClient = app.config.globalProperties.$wagmiClient = wagmiClient;
 });
 
 export { evm };
