@@ -12,7 +12,7 @@ export default {
         AppHeader,
         FooterMain,
     },
-    data() {
+    async data() {
         return {
             stlosLogo: stlos,
             mainnet: process.env.NETWORK_EVM_CHAIN_ID === 40,
@@ -57,8 +57,6 @@ export default {
 <template>
 <AppHeader />
 <q-layout view="lhh Lpr lFf ">
-    <div :class="`banner ${onHomePage ? 'home' : ''}`" ></div>
-
     <q-page-container class="flex flex-center page-container">
         <router-view />
     </q-page-container>
@@ -70,7 +68,7 @@ export default {
 .page-container
     margin-top: 48px
     @media screen and (min-width: $breakpoint-lg-min)
-        margin-top: 96px
+        margin-top: 105px
 
 
 .separator
@@ -102,7 +100,7 @@ export default {
         color: $secondary
 
 .account
-  width: 120px
+  width: 96px
   white-space: nowrap
   overflow: hidden
   text-overflow: ellipsis

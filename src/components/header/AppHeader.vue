@@ -6,6 +6,7 @@ import HeaderSearch from 'components/header/HeaderSearch.vue';
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import LoginModal from 'components/LoginModal.vue';
 import LoginStatus from 'components/header/LoginStatus.vue';
+import moment from 'moment';
 export default {
     name: 'AppHeader',
     components: {
@@ -16,6 +17,20 @@ export default {
     },
     directives: {
         clickaway,
+    },
+    async mounted () {
+        const health = await this.$indexerApi.get('/health');
+        if(health.data?.secondsBehind > 3){
+            const behindBy = moment(health.data.secondsBehind*1000).utc().format('HH:mm:ss');
+            this.$q.notify({
+                type: 'negative',
+                timeout: 12000,
+                progress: true,
+                message: this.$t('global.not_synced'),
+                caption: this.$t('global.data_behind_by') + ' ' +
+                    behindBy + '. ' + this.$t('global.try_reloading'),
+            });
+        }
     },
     data: () => ({
         stlosLogo,
