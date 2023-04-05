@@ -108,7 +108,8 @@ export default {
                     class="q-ml-xs q-mr-xs"
                     :to="'/address/' + transfer.contract.address"
                 >
-                    {{ transfer.contract?.properties?.symbol }}
+                    <span>{{ transfer.contract?.properties?.symbol.slice(0, 6) }}</span>
+                    <span v-if="transfer.contract?.properties?.symbol.length > 6">...</span>
                 </router-link>
                 <div class="col">
                     <span v-if="transfer.tokenId.length > 15">
