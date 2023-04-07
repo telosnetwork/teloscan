@@ -116,15 +116,25 @@ export default {
             }
             this.setErrorMessage();
         },
-        async loadOutput() {
+        async loadErrorMessage() {
+            if(this.trx.output){
+                return;
+            }
             const response = await this.$indexerApi.get(
                 `/transaction/${this.hash}/internal`,
             );
             const intrxs = response.data.results;
             for(let i = 0; i < intrxs.length; i++){
                 const intrx = intrxs[i];
+                const output = (intrx.result?.output.slice(0, 10) === '0x08c379a0')
+                    ? intrx.result?.output
+                    : this.trx.output
+                ;
                 if(intrx.error !== null){
-                    this.trx.output = intrx.result?.output;
+                    this.errorMessage = (output?.slice(0, 10) === '0x08c379a0')
+                        ? parseErrorMessage(output)
+                        : intrx.error
+                    ;
                     return;
                 }
             }
@@ -209,8 +219,7 @@ export default {
             if (this.trx.status === '0x1') {
                 return;
             }
-            await this.loadOutput();
-            this.errorMessage = parseErrorMessage(this.trx.output);
+            await this.loadErrorMessage();
         },
         getFunctionName() {
             if (this.parsedTransaction) {
@@ -538,6 +547,16 @@ span
 
 .date .col-9 > div
     display: inline-block
+
+body.body--dark
+    .col-9 .positive
+        background: $positive
+        span, .q-icon
+            color: white !important
+    .col-9 .negative
+        background: $negative
+        span, .q-icon
+            color: white !important
 
 .col-9 .positive, .col-9 .negative
     border: 1px solid

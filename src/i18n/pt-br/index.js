@@ -354,6 +354,9 @@ export default {
         },
     },
     global: {
+        data_behind_by: 'The data shown is behind by',
+        not_synced: 'Indexer is not synced to latest block',
+        try_reloading: 'You can try reloading the page to fix it',
         error: 'Error',
         async_error_description: 'Sorry ! An error occured trying to request resources. Please make sure your internet connection is working and try again. If the error persists, contact us directly on our Telegram channel.',
         language: 'Idioma',

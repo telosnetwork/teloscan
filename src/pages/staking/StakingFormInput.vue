@@ -235,11 +235,28 @@ export default {
     class="c-staking-input container-fluid shadow-3"
     @animationend="handleWiggleEnd"
 >
-    <div class="row">
+    <div class="row items-start">
         <div class="col-6">
             <h6 class="c-staking-input__label">
                 {{ label }}
             </h6>
+            <div class="col">
+                <input
+                    v-show="!isLoading"
+                    ref="input"
+                    :disabled="isLoading"
+                    type="text"
+                    pattern="[0-9.]*"
+                    inputmode="decimal"
+                    placeholder="0"
+                    class="c-staking-input__input"
+                    @keydown="handleKeydown"
+                    @input.stop="handleInput"
+                >
+                <div v-if="isLoading" class="c-staking-input__loading u-flex--left">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </div>
+            </div>
         </div>
         <div class="col-6 u-flex--right">
             <p v-if="errorText" class="text-negative">
@@ -265,23 +282,6 @@ export default {
         </div>
     </div>
     <div class="row">
-        <div class="col">
-            <input
-                v-show="!isLoading"
-                ref="input"
-                :disabled="isLoading"
-                type="text"
-                pattern="[0-9.]*"
-                inputmode="decimal"
-                placeholder="0"
-                class="c-staking-input__input"
-                @keydown="handleKeydown"
-                @input.stop="handleInput"
-            >
-            <div v-if="isLoading" class="c-staking-input__loading u-flex--left">
-                <i class="fa fa-spinner fa-spin"></i>
-            </div>
-        </div>
     </div>
 </div>
 </template>

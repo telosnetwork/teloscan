@@ -118,11 +118,17 @@ export default {
             />
         </small>
     </div>
-    <div v-if="expanded" class="q-pl-md">
-        <div v-if="fragment.error">
+    <div v-if="expanded" class="q-pl-md q-pr-md">
+        <div v-if="fragment.error" class="negative q-pa-md flex align-center q-mb-sm rounded-borders">
+            <q-icon
+                name="warning"
+                color="negative"
+                class="q-mr-xs"
+                size="1.4em"
+            />
             <span class="text-negative">{{ fragment.error }}</span>
         </div>
-        <div v-else-if="fragment?.name" :key="fragment.name">
+        <div v-if="fragment?.name" :key="fragment.name">
             <div
                 v-for="(param, index) in inputs"
                 :key="`fragment-${index}`"
@@ -314,6 +320,12 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+body.body--dark .c-fragment-list-element  .negative {
+    background: $negative;
+    span, .q-icon {
+        color: white !important;
+    }
+}
 .c-fragment-list-element {
     margin-bottom: 24px;
 
@@ -335,6 +347,9 @@ export default {
 
     &__fragment {
         white-space: pre;
+    }
+    .negative {
+        border: 1px solid;
     }
 }
 .jv-container .jv-code {

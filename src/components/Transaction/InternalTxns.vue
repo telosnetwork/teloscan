@@ -60,7 +60,6 @@ export default {
             }
             for (let k = 0; k < dataset.length; k++) {
                 dataset[k].action = JSON.parse(dataset[k].action);
-                console.log(dataset[k].action.value);
             }
             for (let k = 0; k < dataset.length; k++) {
                 let itx = dataset[k];
@@ -121,8 +120,8 @@ export default {
                     index: itx.index,
                     type: itx.type,
                     args: args,
-                    error: (itx.error !== null)
-                        ? parseErrorMessage(itx.result?.output)
+                    error: (itx.error !== null && itx.result?.output.slice(0, 10) === '0x08c379a0')
+                        ? itx.error + ': ' + parseErrorMessage(itx.result?.output)
                         : itx.error,
                     traceAddress: itx.traceAddress,
                     parent: itx.traceAddress[0] || 0,

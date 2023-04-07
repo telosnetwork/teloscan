@@ -58,6 +58,7 @@ export default {
 <AppHeader />
 <q-layout view="lhh Lpr lFf ">
     <q-page-container class="flex flex-center page-container">
+        <div :class="`banner ${onHomePage ? 'home' : ''}`" ></div>
         <router-view />
     </q-page-container>
     <FooterMain />
