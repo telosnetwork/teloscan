@@ -21,7 +21,7 @@ export default {
                 return this.nativeAccount;
             }
 
-            return `0x...${this.address.slice(38, 42)}`;
+            return `0x${this.address.slice(2, 5)}...${this.address.slice(38, 42)}`;
         },
     },
     methods: {
@@ -78,7 +78,7 @@ export default {
 
 <style lang="scss">
 .c-login-status {
-    font-size: 18px;
+    font-size: 16px;
 
     &__account-icon {
         margin-right: 8px;
