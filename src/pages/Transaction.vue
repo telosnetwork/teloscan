@@ -117,7 +117,8 @@ export default {
             this.setErrorMessage();
         },
         async loadErrorMessage() {
-            if(this.trx.output){
+            if(this.trx.output && this.trx.output.slice(0, 10) === '0x08c379a0'){
+                this.errorMessage = parseErrorMessage(this.trx.output);
                 return;
             }
             const response = await this.$indexerApi.get(
