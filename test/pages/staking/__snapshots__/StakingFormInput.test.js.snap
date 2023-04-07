@@ -5,7 +5,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   class="c-staking-input container-fluid shadow-3"
 >
   <div
-    class="row"
+    class="row items-start"
   >
     <div
       class="col-6"
@@ -15,6 +15,18 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
       >
         Label Text
       </h6>
+      <div
+        class="col"
+      >
+        <input
+          class="c-staking-input__input"
+          inputmode="decimal"
+          pattern="[0-9.]*"
+          placeholder="0"
+          type="text"
+        />
+        <!--v-if-->
+      </div>
     </div>
     <div
       class="col-6 u-flex--right"
@@ -24,20 +36,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   </div>
   <div
     class="row"
-  >
-    <div
-      class="col"
-    >
-      <input
-        class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
-        placeholder="0"
-        type="text"
-      />
-      <!--v-if-->
-    </div>
-  </div>
+  />
 </div>
 `;
 
@@ -46,7 +45,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   class="c-staking-input container-fluid shadow-3"
 >
   <div
-    class="row"
+    class="row items-start"
   >
     <div
       class="col-6"
@@ -56,6 +55,18 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
       >
         Label Text
       </h6>
+      <div
+        class="col"
+      >
+        <input
+          class="c-staking-input__input"
+          inputmode="decimal"
+          pattern="[0-9.]*"
+          placeholder="0"
+          type="text"
+        />
+        <!--v-if-->
+      </div>
     </div>
     <div
       class="col-6 u-flex--right"
@@ -65,20 +76,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   </div>
   <div
     class="row"
-  >
-    <div
-      class="col"
-    >
-      <input
-        class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
-        placeholder="0"
-        type="text"
-      />
-      <!--v-if-->
-    </div>
-  </div>
+  />
 </div>
 `;
 
@@ -87,7 +85,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   class="c-staking-input container-fluid shadow-3"
 >
   <div
-    class="row"
+    class="row items-start"
   >
     <div
       class="col-6"
@@ -97,6 +95,18 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
       >
         Label Text
       </h6>
+      <div
+        class="col"
+      >
+        <input
+          class="c-staking-input__input"
+          inputmode="decimal"
+          pattern="[0-9.]*"
+          placeholder="0"
+          type="text"
+        />
+        <!--v-if-->
+      </div>
     </div>
     <div
       class="col-6 u-flex--right"
@@ -106,20 +116,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   </div>
   <div
     class="row"
-  >
-    <div
-      class="col"
-    >
-      <input
-        class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
-        placeholder="0"
-        type="text"
-      />
-      <!--v-if-->
-    </div>
-  </div>
+  />
 </div>
 `;
 
@@ -128,7 +125,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   class="c-staking-input container-fluid shadow-3"
 >
   <div
-    class="row"
+    class="row items-start"
   >
     <div
       class="col-6"
@@ -138,6 +135,18 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
       >
         Label Text
       </h6>
+      <div
+        class="col"
+      >
+        <input
+          class="c-staking-input__input"
+          inputmode="decimal"
+          pattern="[0-9.]*"
+          placeholder="0"
+          type="text"
+        />
+        <!--v-if-->
+      </div>
     </div>
     <div
       class="col-6 u-flex--right"
@@ -147,20 +156,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   </div>
   <div
     class="row"
-  >
-    <div
-      class="col"
-    >
-      <input
-        class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
-        placeholder="0"
-        type="text"
-      />
-      <!--v-if-->
-    </div>
-  </div>
+  />
 </div>
 `;
 
@@ -169,7 +165,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   class="c-staking-input container-fluid shadow-3"
 >
   <div
-    class="row"
+    class="row items-start"
   >
     <div
       class="col-6"
@@ -179,6 +175,18 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
       >
         Label Text
       </h6>
+      <div
+        class="col"
+      >
+        <input
+          class="c-staking-input__input"
+          inputmode="decimal"
+          pattern="[0-9.]*"
+          placeholder="0"
+          type="text"
+        />
+        <!--v-if-->
+      </div>
     </div>
     <div
       class="col-6 u-flex--right"
@@ -188,20 +196,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   </div>
   <div
     class="row"
-  >
-    <div
-      class="col"
-    >
-      <input
-        class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
-        placeholder="0"
-        type="text"
-      />
-      <!--v-if-->
-    </div>
-  </div>
+  />
 </div>
 `;
 
@@ -210,7 +205,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   class="c-staking-input container-fluid shadow-3"
 >
   <div
-    class="row"
+    class="row items-start"
   >
     <div
       class="col-6"
@@ -220,6 +215,18 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
       >
         Label Text
       </h6>
+      <div
+        class="col"
+      >
+        <input
+          class="c-staking-input__input"
+          inputmode="decimal"
+          pattern="[0-9.]*"
+          placeholder="0"
+          type="text"
+        />
+        <!--v-if-->
+      </div>
     </div>
     <div
       class="col-6 u-flex--right"
@@ -229,20 +236,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   </div>
   <div
     class="row"
-  >
-    <div
-      class="col"
-    >
-      <input
-        class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
-        placeholder="0"
-        type="text"
-      />
-      <!--v-if-->
-    </div>
-  </div>
+  />
 </div>
 `;
 
@@ -251,7 +245,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   class="c-staking-input container-fluid shadow-3"
 >
   <div
-    class="row"
+    class="row items-start"
   >
     <div
       class="col-6"
@@ -261,6 +255,18 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
       >
         Label Text
       </h6>
+      <div
+        class="col"
+      >
+        <input
+          class="c-staking-input__input"
+          inputmode="decimal"
+          pattern="[0-9.]*"
+          placeholder="0"
+          type="text"
+        />
+        <!--v-if-->
+      </div>
     </div>
     <div
       class="col-6 u-flex--right"
@@ -270,20 +276,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   </div>
   <div
     class="row"
-  >
-    <div
-      class="col"
-    >
-      <input
-        class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
-        placeholder="0"
-        type="text"
-      />
-      <!--v-if-->
-    </div>
-  </div>
+  />
 </div>
 `;
 
@@ -292,7 +285,7 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   class="c-staking-input container-fluid shadow-3"
 >
   <div
-    class="row"
+    class="row items-start"
   >
     <div
       class="col-6"
@@ -302,6 +295,18 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
       >
         Label Text
       </h6>
+      <div
+        class="col"
+      >
+        <input
+          class="c-staking-input__input"
+          inputmode="decimal"
+          pattern="[0-9.]*"
+          placeholder="0"
+          type="text"
+        />
+        <!--v-if-->
+      </div>
     </div>
     <div
       class="col-6 u-flex--right"
@@ -311,19 +316,6 @@ exports[`StakingFormInput.vue v-model implementation should correctly handle use
   </div>
   <div
     class="row"
-  >
-    <div
-      class="col"
-    >
-      <input
-        class="c-staking-input__input"
-        inputmode="decimal"
-        pattern="[0-9.]*"
-        placeholder="0"
-        type="text"
-      />
-      <!--v-if-->
-    </div>
-  </div>
+  />
 </div>
 `;
