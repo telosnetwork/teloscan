@@ -11,8 +11,17 @@ import ERCTransferList from 'components/Transaction/ERCTransferList';
 import ParameterList from 'components/Transaction/ParameterList';
 
 import { BigNumber } from 'ethers';
-import { WEI_PRECISION, formatWei, parseErrorMessage, getRouteWatcherForTabs } from 'src/lib/utils';
+import {
+    WEI_PRECISION,
+    REVERT_FUNCTION_SELECTOR,
+    REVERT_PANIC_SELECTOR,
+    formatWei,
+    parseErrorMessage,
+    getRouteWatcherForTabs,
+} from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+
+const REVERT_SELECTORS = [REVERT_FUNCTION_SELECTOR, REVERT_PANIC_SELECTOR];
 
 const tabs = {
     general: '#general',
@@ -117,7 +126,7 @@ export default {
             this.setErrorMessage();
         },
         async loadErrorMessage() {
-            if(this.trx.output && this.trx.output.slice(0, 10) === '0x08c379a0'){
+            if(this.trx.output && REVERT_SELECTORS.includes(this.trx.output.slice(0, 10))){
                 this.errorMessage = parseErrorMessage(this.trx.output);
                 return;
             }
@@ -127,12 +136,12 @@ export default {
             const intrxs = response.data.results;
             for(let i = 0; i < intrxs.length; i++){
                 const intrx = intrxs[i];
-                const output = (intrx.result?.output.slice(0, 10) === '0x08c379a0')
+                const output = (REVERT_SELECTORS.includes(intrx.result?.output.slice(0, 10)))
                     ? intrx.result?.output
                     : this.trx.output
                 ;
                 if(intrx.error !== null){
-                    this.errorMessage = (output?.slice(0, 10) === '0x08c379a0')
+                    this.errorMessage = (REVERT_SELECTORS.includes(output?.slice(0, 10)))
                         ? parseErrorMessage(output)
                         : intrx.error
                     ;

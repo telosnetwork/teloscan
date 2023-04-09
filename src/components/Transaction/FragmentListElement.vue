@@ -62,8 +62,9 @@ export default {
         },
         isExpandable(){
             return (
+                this.fragment.error ||
                 this.fragment.inputs && this.fragment.inputs.length > 0 ||
-                this.fragment.value ||
+                this.fragment.value && this.fragment.value !== '0.0' ||
                 !this.fragment.name
             );
         },
@@ -82,12 +83,7 @@ export default {
     <div :class="fragmentClass" @click="expanded = !expanded">
         <span class="row items-center">
             <q-icon
-                v-if="
-                    inputs?.length > 0 ||
-                        fragment.fnsig != '0x' ||
-                        fragment.value &&
-                        fragment.value !== '0.0'
-                "
+                v-if="isExpandable"
                 :name="arrowIcon"
                 size="sm"
             />

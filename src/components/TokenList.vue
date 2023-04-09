@@ -39,13 +39,13 @@ export default {
         },
         async loadTokens() {
             const tokenList = await this.$contractManager.getTokenList();
-            const response = await this.$indexerApi.get(`/account/${this.address}/balances`);
+            const response = await this.$indexerApi.get(`/account/${this.address}/balances?limit=250`);
             if(response.data?.contracts){
                 this.$contractManager.addContractsToCache(response.data.contracts);
             }
             let tokens = [];
             response.data.results.forEach((result) => {
-                if(result.balance > 0){
+                if(result.balance !== '0'){
                     let token = this.checkTokenList(result.contract.toLowerCase(), tokenList);
                     if(token && !tokens.includes(token)){
                         tokens.push(token);
@@ -62,6 +62,9 @@ export default {
                 }
 
                 const contract = await this.$contractManager.getContract(token.address);
+                if(!contract.supportedInterfaces.includes('erc20')){
+                    return;
+                }
                 if(!contract.abi){
                     contract.abi = erc20Abi;
                 }
@@ -140,7 +143,7 @@ export default {
                     <div class="text-h6 c-token-list__token-name" :title="name">
                         {{ name }}
                     </div>
-                    <AddressField :address="address" class="q-mb-sm"/>
+                    <AddressField :address="address" :name="symbol" class="q-mb-sm"/>
                     <div class="q-mb-sm">
                         <span class="q-pr-xs">
                             {{ $t('components.balance') }}
