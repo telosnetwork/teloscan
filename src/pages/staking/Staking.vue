@@ -212,7 +212,6 @@ export default {
             if (!this.stlosContract || !this.escrowContract) {
                 await this.fetchContracts();
             }
-            debugger;
             console.log(this.$wagmiClient);
             const provider = this.isLoggedIn && !this.isNative ?
                 fetchSigner() //wagmi
