@@ -43,12 +43,11 @@ export default {
     async created() {
         let verified = 0;
         for(let i = 0; i < this.logs?.length; i++){
-            const log = this.logs[i];
+            let log = this.logs[i];
             if(this.trx){
                 log.blockNumber = this.trx.blockNumber;
                 log.transactionIndex = this.trx.index;
                 log.transactionHash = this.trx.hash;
-                delete log.transaction_hash;
             }
             let contract = await this.getLogContract(log);
             if (contract){
@@ -74,11 +73,21 @@ export default {
         this.parsedLogs.sort((a, b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());
         this.allVerified = (verified === this.logs?.length);
     },
-    data: () => ({
-        human_readable: true,
-        parsedLogs: [],
-        allVerified: false,
-    }),
+    data () {
+        let rawLogs = [];
+        // Loop to normalize transactionHash
+        for(let i = 0; i < this.logs?.length; i++) {
+            let log = this.logs[i];
+            log.transactionHash = this.trx.hash;
+            rawLogs.push({ ...log });
+        }
+        return ({
+            human_readable: true,
+            parsedLogs: [],
+            rawLogs: rawLogs,
+            allVerified: false,
+        });
+    },
 };
 </script>
 
@@ -109,12 +118,12 @@ export default {
         <div class="col-12">
             <FragmentList
                 v-if="human_readable"
-                :fragments="logs"
+                :fragments="rawLogs"
                 :parsedFragments="parsedLogs"
             />
             <JsonViewer
                 v-else
-                :value="logs"
+                :value="rawLogs"
                 theme="custom-theme"
                 class="q-mb-md"
             />

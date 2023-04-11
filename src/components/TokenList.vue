@@ -135,7 +135,7 @@ export default {
         class="c-token-list__token-card"
     >
         <q-card >
-            <q-card-section class="u-flex--center-y">
+            <q-card-section class="flex">
                 <q-avatar class="q-mr-md">
                     <img :src="logoURI" alt="Token Logo">
                 </q-avatar>
