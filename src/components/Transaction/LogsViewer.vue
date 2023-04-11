@@ -78,6 +78,7 @@ export default {
         // Loop to normalize transactionHash
         for(let i = 0; i < this.logs?.length; i++) {
             let log = this.logs[i];
+            delete log.transaction_hash;
             log.transactionHash = this.trx.hash;
             rawLogs.push({ ...log });
         }
