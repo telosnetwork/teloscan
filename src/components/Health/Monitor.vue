@@ -126,7 +126,18 @@ export default {
         <template v-slot:body="props">
             <q-tr :props="props">
                 <q-td key="status" :props="props">
-                    <q-icon v-if="props.row.message !== ''" name="warning" color="negative"/>
+                    <q-icon
+                        v-if="props.row.message !== ''"
+                        name="warning"
+                        color="negative"
+                        size="1.15em"
+                    />
+                    <q-icon
+                        v-else
+                        name="task_alt"
+                        color="positive"
+                        size="1.15em"
+                    />
                 </q-td>
                 <q-td key="checked_at" :props="props">{{ props.row.checked_at }}</q-td>
                 <q-td key="task" :props="props">{{ props.row.task.name }}</q-td>
