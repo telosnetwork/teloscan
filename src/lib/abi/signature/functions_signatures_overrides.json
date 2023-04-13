@@ -26,7 +26,10 @@
   "0x3542aee2": "function mintByOwner(address to, uint256 tokenType)",
   "0xbaa2abde": "function removeLiquidity(address tokenA, address tokenB, uint256 liquidity, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline)",
   "0xb6f9de95": "function swapExactETHForTokensSupportingFeeOnTransferTokens(uint amountOutMin, address[] path, address to, uint deadline)",
+  "0xd0e30db0": "function deposit()",
+  "0x0902f1ac": "function getReserves()",
   "0xee42b10b": "function act()",
   "0xc09707a5": "function getIt()",
-  "0x2e1a7d4d": "function withdraw(uint256 amount)"
+  "0x2e1a7d4d": "function withdraw(uint256 amount)",
+  "0x6a627842": "function mint(address to)"
 }
