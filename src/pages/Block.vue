@@ -15,6 +15,19 @@ export default {
     mounted() {
         this.loadBlock();
     },
+    watch: {
+        '$route.params.block': {
+            handler(newBlock) {
+                const { block } = newBlock;
+                if (this.block === block) {
+                    return;
+                }
+                this.block = newBlock;
+                this.loadBlock();
+            },
+            immediate: true,
+        },
+    },
     methods: {
         ...mapActions('evm', ['doRPC']),
         async loadBlock() {
@@ -23,6 +36,12 @@ export default {
                 params: [parseInt(this.block).toString(16), false],
             });
             this.blockData = blockResponse.result;
+        },
+        prevBlock() {
+            this.$router.push({ name: 'block', params: { block: parseInt(this.block) - 1 } });
+        },
+        nextBlock() {
+            this.$router.push({ name:'block', params: { block: parseInt(this.block) + 1 } });
         },
     },
 };
@@ -37,10 +56,10 @@ export default {
                 </div>
                 <div class="inline block-container__block-navigation">
                     <span class="inline text-white block-container__block-number">{{block}}</span>
-                    <div class="block-container__block-navigation--box inline">
+                    <div class="block-container__block-navigation--box inline" @click="prevBlock">
                         <q-icon class="fas fa-arrow-left" size="8px"/>
                     </div>
-                    <div class="block-container__block-navigation--box inline">
+                    <div class="block-container__block-navigation--box inline" @click="nextBlock">
                         <q-icon class="fas fa-arrow-right" size="8px"/>
                     </div>
                 </div>
