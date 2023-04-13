@@ -53,8 +53,8 @@ export default {
                 <div class="text-primary text-h4">
                     <div>Block</div>
                 </div>
-                <div class="inline block-container__block-navigation">
-                    <span class="inline text-white block-container__block-number">{{block}}</span>
+                <div class="block-container__block-navigation inline ">
+                    <span class="block-container__block-number inline text-white">{{block}}</span>
                     <div class="block-container__block-navigation--box inline" @click="prevBlock">
                         <q-icon class="fas fa-arrow-left" size="8px"/>
                     </div>
@@ -113,6 +113,7 @@ export default {
             margin: 0 2px 0 2px
             border: 1px solid $white
             border-radius: 2px
+            cursor: pointer
 .shadow-2
     box-shadow: none !important
 
