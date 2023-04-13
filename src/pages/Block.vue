@@ -32,7 +32,7 @@ export default {
         async loadBlock() {
             const blockResponse = await this.doRPC({
                 method: 'eth_getBlockByNumber',
-                params: [parseInt(this.block).toString(16), false],
+                params: [`0x${parseInt(this.block).toString(16)}`, false],
             });
             this.blockData = blockResponse.result;
         },
