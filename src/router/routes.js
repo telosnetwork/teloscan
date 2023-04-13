@@ -34,7 +34,11 @@ const routes = [
     {
         path: '/block/:block',
         component: () => import('layouts/MainLayout.vue'),
-        children: [{ path: '', component: () => import('pages/Block.vue') }],
+        children: [{
+            path: '',
+            name: 'block',
+            component: () => import('pages/Block.vue'),
+        }],
     },
     {
         path: '/transactions',
@@ -44,17 +48,6 @@ const routes = [
                 path: '',
                 name: 'transactions',
                 component: () => import('pages/Transactions.vue'),
-            },
-        ],
-    },
-    {
-        path: '/contract',
-        component: () => import('layouts/MainLayout.vue'),
-        children: [
-            {
-                path: 'verify/:address?',
-                name: 'verify',
-                component: () => import('pages/ContractVerification.vue'),
             },
         ],
     },
@@ -81,13 +74,6 @@ const routes = [
         path: '/health',
         component: () => import('layouts/MainLayout.vue'),
         children: [{ path: '', component: () => import('pages/Health.vue') }],
-    },
-    {
-        name: 'sourcify',
-        path: '',
-        beforeEnter() {
-            window.open('https://sourcify.dev', '_blank');
-        },
     },
     {
         path: '/:catchAll(.*)*',

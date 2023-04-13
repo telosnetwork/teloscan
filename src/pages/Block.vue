@@ -15,6 +15,18 @@ export default {
     mounted() {
         this.loadBlock();
     },
+    watch: {
+        '$route.params.block': {
+            handler(newBlock) {
+                if (this.block === newBlock) {
+                    return;
+                }
+                this.block = newBlock;
+                this.loadBlock();
+            },
+            immediate: true,
+        },
+    },
     methods: {
         ...mapActions('evm', ['doRPC']),
         async loadBlock() {
@@ -24,6 +36,12 @@ export default {
             });
             this.blockData = blockResponse.result;
         },
+        prevBlock() {
+            this.$router.push({ name: 'block', params: { block: parseInt(this.block) - 1 } });
+        },
+        nextBlock() {
+            this.$router.push({ name: 'block', params: { block: parseInt(this.block) + 1 } });
+        },
     },
 };
 </script>
@@ -31,12 +49,18 @@ export default {
 <div class="pageContainer q-pt-xl">
     <div>
         <div class="row justify-between q-mb-lg">
-            <div>
+            <div class="block-container">
                 <div class="text-primary text-h4">
                     <div>Block</div>
                 </div>
-                <div class="text-white">
-                    <div>{{block}}</div>
+                <div class="block-container__block-navigation inline ">
+                    <span class="block-container__block-number inline text-white">{{block}}</span>
+                    <div class="block-container__block-navigation--box inline" @click="prevBlock">
+                        <q-icon class="fas fa-arrow-left" size="8px"/>
+                    </div>
+                    <div class="block-container__block-navigation--box inline" @click="nextBlock">
+                        <q-icon class="fas fa-arrow-right" size="8px"/>
+                    </div>
                 </div>
             </div>
             <div v-if="blockData" class="dataCardsContainer">
@@ -71,6 +95,25 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.inline
+    display: inline-flex
+    align-items: center
+    justify-content: center
+
+.block-container
+    &__block-number
+        font-size: 16px
+        margin-right: 6px
+    &__block-navigation
+        height: 24px
+        margin-top: 8px
+        &--box
+            height: 16px
+            width: 16px
+            margin: 0 2px 0 2px
+            border: 1px solid $white
+            border-radius: 2px
+            cursor: pointer
 .shadow-2
     box-shadow: none !important
 
