@@ -21,5 +21,7 @@
   "0xda919360": "event BorrowAllowanceDelegated(address indexed fromUser, address indexed toUser, address asset, uint256 amount)",
   "0xdccd412f": "event Burn(address indexed sender, uint256 amount0, uint256 amount1, address indexed to)",
   "0x4a39dc06": "event TransferBatch(address indexed operator, address indexed from, address indexed to, uint256[] ids,uint256[] amounts)",
-  "0xc3d58168": "event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 amount)"
+  "0xc3d58168": "event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 amount)",
+  "0xc4109843": "event OrdersMatched(bytes32 buyHash, bytes32 sellHash, address maker, address taker, uint256 price, bytes32 metadata)",
+  "0x9aa05b3d": "event ClaimRewards(address indexed from, address indexed reward, uint256 amount)"
 }

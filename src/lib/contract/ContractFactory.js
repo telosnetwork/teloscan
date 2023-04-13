@@ -17,11 +17,11 @@ export default class ContractFactory {
         }
         if(data.abi){
             verified = true;
-        } else if(data.supportedInterfaces.includes('erc20')) {
+        } else if(data.supportedInterfaces && data.supportedInterfaces.includes('erc20')) {
             data.abi = erc20Abi;
-        } else if(data.supportedInterfaces.includes('erc721')) {
+        } else if(data.supportedInterfaces && data.supportedInterfaces.includes('erc721')) {
             data.abi = erc721Abi;
-        } else if(data.supportedInterfaces.includes('erc1155')) {
+        } else if(data.supportedInterfaces && data.supportedInterfaces.includes('erc1155')) {
             data.abi = erc1155Abi;
         }
 
