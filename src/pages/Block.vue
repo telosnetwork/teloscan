@@ -41,7 +41,7 @@ export default {
             this.$router.push({ name: 'block', params: { block: parseInt(this.block) - 1 } });
         },
         nextBlock() {
-            this.$router.push({ name:'block', params: { block: parseInt(this.block) + 1 } });
+            this.$router.push({ name: 'block', params: { block: parseInt(this.block) + 1 } });
         },
     },
 };
