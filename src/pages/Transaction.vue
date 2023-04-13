@@ -115,8 +115,10 @@ export default {
                 return;
             }
             this.trx = trxResponse.data.results[0];
-            this.trx.logs = this.trx.logs?.replace('transaction_hash', 'transactionHash');
-            this.trx.logs = JSON.parse(this.trx.logs);
+            if(this.trx.logs){
+                this.trx.logs = this.trx.logs.replace('transaction_hash', 'transactionHash');
+                this.trx.logs = JSON.parse(this.trx.logs);
+            }
             this.trx.gasUsed = BigNumber.from(this.trx.gasUsed);
             this.trx.gasLimit = BigNumber.from(this.trx.gasLimit);
             this.trx.value = BigNumber.from(this.trx.value.toLocaleString('fullwide', { useGrouping:false }));
