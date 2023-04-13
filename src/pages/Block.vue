@@ -31,12 +31,18 @@ export default {
 <div class="pageContainer q-pt-xl">
     <div>
         <div class="row justify-between q-mb-lg">
-            <div>
+            <div class="block-container">
                 <div class="text-primary text-h4">
                     <div>Block</div>
                 </div>
-                <div class="text-white">
-                    <div>{{block}}</div>
+                <div class="inline block-container__block-navigation">
+                    <span class="inline text-white block-container__block-number">{{block}}</span>
+                    <div class="block-container__block-navigation--box inline">
+                        <q-icon class="fas fa-arrow-left" size="8px"/>
+                    </div>
+                    <div class="block-container__block-navigation--box inline">
+                        <q-icon class="fas fa-arrow-right" size="8px"/>
+                    </div>
                 </div>
             </div>
             <div v-if="blockData" class="dataCardsContainer">
@@ -71,6 +77,25 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.inline
+    display: inline-flex
+    align-items: center
+    justify-content: center
+
+.block-container
+    &__block-number
+        font-size: 16px
+        margin-right: 6px
+    &__block-navigation
+        height: 24px
+        margin-top: 8px
+        &--box
+            height: 16px
+            width: 16px
+            margin: 0 2px 0 2px
+            border: 1px solid $white
+            border-radius: 2px
+        .q-icon
 .shadow-2
     box-shadow: none !important
 
