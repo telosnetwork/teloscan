@@ -18,8 +18,7 @@ export default {
     watch: {
         '$route.params.block': {
             handler(newBlock) {
-                const { block } = newBlock;
-                if (this.block === block) {
+                if (this.block === newBlock) {
                     return;
                 }
                 this.block = newBlock;
@@ -114,7 +113,6 @@ export default {
             margin: 0 2px 0 2px
             border: 1px solid $white
             border-radius: 2px
-        .q-icon
 .shadow-2
     box-shadow: none !important
 
