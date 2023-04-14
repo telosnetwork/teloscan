@@ -91,10 +91,6 @@ export default {
                     <DateField :epoch="parseInt(blockData.timestamp, 16)"/>
                 </div>
                 <div v-else class="dataCardItem">
-                    <div class="dataCardTile">
-                        Time
-                    </div>
-                    <div class="dataCardData">-</div>
                 </div>
             </div>
         </div>
