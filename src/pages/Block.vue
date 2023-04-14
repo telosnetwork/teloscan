@@ -34,6 +34,7 @@ export default {
                 method: 'eth_getBlockByNumber',
                 params: [`0x${parseInt(this.block).toString(16)}`, false],
             });
+            debugger;
             this.blockData = blockResponse.result;
         },
         prevBlock() {
@@ -76,7 +77,7 @@ export default {
                     <div v-if="blockData" class="dataCardData">
                         {{ parseInt(blockData.gasUsed, 16) }}
                     </div>
-                    <div v-else>-</div>
+                    <div v-else class="dataCardData">-</div>
                 </div>
                 <div class="dataCardItem">
                     <div class="dataCardTile">
@@ -85,18 +86,16 @@ export default {
                     <div v-if="blockData" class="dataCardData">
                         {{ blockData.transactions.length }}
                     </div>
-                    <div v-else>-</div>
+                    <div v-else class="dataCardData">-</div>
                 </div>
                 <div v-if="blockData" class="dataCardItem">
-                    <div class="dataCardTile">
-                        <DateField :epoch="blockData.timestamp"/>
-                    </div>
+                    <DateField :epoch="parseInt(blockData.timestamp, 16)"/>
                 </div>
                 <div v-else class="dataCardItem">
                     <div class="dataCardTile">
-                        <div>Time</div>
+                        Time
                     </div>
-                    <div>-</div>
+                    <div class="dataCardData">-</div>
                 </div>
             </div>
         </div>
