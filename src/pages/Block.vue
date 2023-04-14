@@ -101,6 +101,8 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.dataCardData
+    height: 40px
 .inline
     display: inline-flex
     align-items: center
