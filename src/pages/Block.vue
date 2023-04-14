@@ -34,7 +34,6 @@ export default {
                 method: 'eth_getBlockByNumber',
                 params: [`0x${parseInt(this.block).toString(16)}`, false],
             });
-            debugger;
             this.blockData = blockResponse.result;
         },
         prevBlock() {
