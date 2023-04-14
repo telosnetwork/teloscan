@@ -109,6 +109,7 @@ export default {
 
 .block-container
     &__block-number
+        width: 100px
         font-size: 16px
         margin-right: 6px
     &__block-navigation
