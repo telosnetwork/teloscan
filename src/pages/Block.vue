@@ -76,7 +76,7 @@ export default {
                     <div v-if="blockData" class="dataCardData">
                         {{ parseInt(blockData.gasUsed, 16) }}
                     </div>
-                    <div v-else class="dataCardData">-</div>
+                    <div v-else class="dataCardData">&nbsp;</div>
                 </div>
                 <div class="dataCardItem">
                     <div class="dataCardTile">
@@ -85,7 +85,7 @@ export default {
                     <div v-if="blockData" class="dataCardData">
                         {{ blockData.transactions.length }}
                     </div>
-                    <div v-else class="dataCardData">-</div>
+                    <div v-else class="dataCardData">&nbsp;</div>
                 </div>
                 <div v-if="blockData" class="dataCardItem">
                     <DateField :epoch="parseInt(blockData.timestamp, 16)"/>
