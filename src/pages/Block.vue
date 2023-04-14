@@ -37,10 +37,15 @@ export default {
             this.blockData = blockResponse.result;
         },
         prevBlock() {
+            this.resetBlockData();
             this.$router.push({ name: 'block', params: { block: parseInt(this.block) - 1 } });
         },
         nextBlock() {
+            this.resetBlockData();
             this.$router.push({ name: 'block', params: { block: parseInt(this.block) + 1 } });
+        },
+        resetBlockData() {
+            this.blockData = null;
         },
     },
 };
@@ -63,27 +68,35 @@ export default {
                     </div>
                 </div>
             </div>
-            <div v-if="blockData" class="dataCardsContainer">
+            <div class="dataCardsContainer">
                 <div class="dataCardItem">
                     <div class="dataCardTile">
                         {{ $t('pages.gas_used') }}
                     </div>
-                    <div class="dataCardData">
+                    <div v-if="blockData" class="dataCardData">
                         {{ parseInt(blockData.gasUsed, 16) }}
                     </div>
+                    <div v-else>-</div>
                 </div>
                 <div class="dataCardItem">
                     <div class="dataCardTile">
                         {{ $t('pages.transactions') }}
                     </div>
-                    <div class="dataCardData">
-                        {{ blockData.transactions.length || 0 }}
+                    <div v-if="blockData" class="dataCardData">
+                        {{ blockData.transactions.length }}
                     </div>
+                    <div v-else>-</div>
                 </div>
-                <div class="dataCardItem">
+                <div v-if="blockData" class="dataCardItem">
                     <div class="dataCardTile">
                         <DateField :epoch="blockData.timestamp"/>
                     </div>
+                </div>
+                <div v-else class="dataCardItem">
+                    <div class="dataCardTile">
+                        <div>Time</div>
+                    </div>
+                    <div>-</div>
                 </div>
             </div>
         </div>
