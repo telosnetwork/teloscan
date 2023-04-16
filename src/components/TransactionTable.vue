@@ -150,8 +150,8 @@ export default {
 
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             let response = await this.$indexerApi.get(this.getPath(props));
-            if (this.total === null) {
-                this.pagination.rowsNumber = response.data.total_count;
+            if (this.pagination.rowsNumber === 0) {
+                this.pagination.rowsNumber = response.data?.total_count;
             }
 
             this.pagination.page = page;
@@ -212,7 +212,8 @@ export default {
             }`;
             path += `&offset=${(page - 1) * rowsPerPage}`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
-            path += '&includePagination=true&includeAbi=true';
+            path += (this.pagination.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
+            path += '&includeAbi=true';
             return path;
         },
         toggleDateFormat() {

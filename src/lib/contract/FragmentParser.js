@@ -2,11 +2,13 @@ import functions_overrides from 'src/lib/abi/signature/functions_signatures_over
 import events_overrides from 'src/lib/abi/signature/events_signatures_overrides.json';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 import { ethers } from 'ethers';
+import axios from 'axios';
 
 export default class FragmentParser {
     constructor(evmEndpoint) {
         this.functionInterfaces = functions_overrides;
         this.eventInterfaces = events_overrides;
+        this.processing = [];
         this.evmEndpoint = evmEndpoint;
     }
 
@@ -48,28 +50,46 @@ export default class FragmentParser {
         }
     }
     async getEventInterface(data) {
-        let prefix = data.toLowerCase().slice(0, 10);
-        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, prefix)) {
-            return new ethers.utils.Interface([this.eventInterfaces[prefix]]);
-        }
         if(data === '0x'){
-            return;
+            return false;
         }
+        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, data)) {
+            return new ethers.utils.Interface([this.eventInterfaces[data]]);
+        }
+        if(this.processing.includes(data)){
+            await new Promise(resolve => setTimeout(resolve, 300));
+            return await this.getEventInterface(data);
+        }
+        this.processing.push(data);
+
+        try {
+            const url = `https://cdn.statically.io/gh/telosnetwork/topic0/main/with_parameter_names/${data.substr(2)}`;
+            const response = await axios.get(url);
+            if(response.data){
+                this.eventInterfaces[data] = `event ${response.data}`;
+                return new ethers.utils.Interface([this.eventInterfaces[data]]);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+
         try {
             const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`);
             if (abiResponse) {
                 if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
                     console.error(`Unable to find event signature for event: ${data}`);
-                    return;
+                    return false;
                 }
-
-                this.eventInterfaces[data] = `event ${abiResponse.data.text_signature}`;
+                let sig = abiResponse.data.text_signature.replace('address', 'address indexed');
+                this.eventInterfaces[data] = `event ${sig}`;
                 return new ethers.utils.Interface([this.eventInterfaces[data]]);
             }
+            this.processing.remove(data);
         } catch (e) {
             console.error(`Error trying to find event signature for event ${data}: ${e.message}`);
-            return;
+            return false;
         }
+        return false;
     }
 
     formatLog(contract, log, parsedLog){

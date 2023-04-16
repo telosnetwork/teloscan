@@ -23,6 +23,7 @@ export default {
     data(){
         return {
             showWei: false,
+            address: null,
             expanded: false,
             expanded_parameters: [],
         };
@@ -30,6 +31,10 @@ export default {
     created(){
         if(!this.fragment) {
             return;
+        }
+        this.address = (this.fragment.contract) ? this.fragment.contract.address : this.fragment.address;
+        if(this.address){
+            this.address = (this.address.startsWith('0x')) ? this.address : '0x' + this.address;
         }
         let inputs = this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
         if(inputs){
@@ -100,16 +105,13 @@ export default {
                 class="q-ml-xs"
             />
         </span>
-        <small v-if="fragment.contract">
+        <small>
             <AddressField
-                :address="
-                    (fragment.contract.address[0] === '0' && fragment.contract.address[1] === 'x') ?
-                        fragment.contract.address :
-                        '0x' + fragment.contract.address
-                "
+                v-if="address"
+                :address="address"
                 :truncate="15"
                 class="word-break"
-                :name="fragment.contract.name"
+                :name="fragment.contract?.name"
                 :copy="true"
             />
         </small>

@@ -49,6 +49,7 @@ export default {
                 log.transactionIndex = this.trx.index;
                 log.transactionHash = this.trx.hash;
             }
+            this.rawLogs.push({ ...log });
             let contract = await this.getLogContract(log);
             if (contract){
                 verified = (contract.isVerified()) ? verified + 1: verified;
@@ -74,18 +75,10 @@ export default {
         this.allVerified = (verified === this.logs?.length);
     },
     data () {
-        let rawLogs = [];
-        // Loop to normalize transactionHash
-        for(let i = 0; i < this.logs?.length; i++) {
-            let log = this.logs[i];
-            delete log.transaction_hash;
-            log.transactionHash = this.trx.hash;
-            rawLogs.push({ ...log });
-        }
         return ({
             human_readable: true,
             parsedLogs: [],
-            rawLogs: rawLogs,
+            rawLogs: [],
             allVerified: false,
         });
     },

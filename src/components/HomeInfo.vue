@@ -29,7 +29,7 @@ export default {
             this.fetchTlosPrice();
             this.fetchGasPrice();
             this.fetchLatestBlock();
-        }, 3000);
+        }, 6000);
     },
     methods: {
         ...mapActions('chain', ['fetchTlosPrice', 'fetchGasPrice', 'fetchLatestBlock']),

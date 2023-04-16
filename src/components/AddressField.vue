@@ -93,7 +93,7 @@ export default {
 
 <template>
 <div class="c-address-field">
-    <router-link :to="`/address/${address}`" :class="highlight ? 'highlighted' : ''">
+    <router-link :to="`/address/${address}`" :class="highlight ? 'highlighted' : ''" @click.capture.stop="">
         {{ getDisplay() }}
     </router-link>
     <CopyButton v-if="copy && address" :text="address" description="address"/>

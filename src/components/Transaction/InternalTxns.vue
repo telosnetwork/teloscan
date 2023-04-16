@@ -43,7 +43,7 @@ export default {
             if(typeof this.traces !== 'undefined' && this.traces !== null) {
                 dataset = this.traces;
             } else {
-                if(this.transaction === null){
+                if(this.transaction === null || this.itxs.length > 0){
                     return;
                 }
                 let query = `/transaction/${this.transaction.hash}/internal?limit=250&sort=ASC&offset=0&includeAbi=1`;
