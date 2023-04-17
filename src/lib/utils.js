@@ -7,16 +7,21 @@ const REVERT_PANIC_SELECTOR = '0x4e487b71';
 export const WEI_PRECISION = 18;
 
 export function formatWei(bn, tokenDecimals, displayDecimals) {
-    const amount = BigNumber.from(bn);
+    let inputBn = bn;
+    if (bn === '0.0') {
+        inputBn = '0';
+    }
+    const amount = BigNumber.from(inputBn);
     const formatted = ethers.utils.formatUnits(amount.toString(), (tokenDecimals || WEI_PRECISION));
     let str = formatted.toString();
-    // Use string, do not convert to number so we never loose precision
+    // Use string, do not convert to number so we never lose precision
     if(displayDecimals > 0 && str.includes('.')) {
         const parts = str.split('.');
         return parts[0] + '.' + parts[1].slice(0, displayDecimals);
     }
     return str;
 }
+
 export function isValidAddressFormat(ethAddressString) {
     const pattern = /^0x[a-fA-F0-9]{40}$/;
     return pattern.test(ethAddressString);
