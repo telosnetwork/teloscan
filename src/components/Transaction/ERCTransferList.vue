@@ -64,14 +64,21 @@ export default {
             this.isLoading = true;
             let transfers = [];
             for (const log of this.logs) {
-                if(transfers.length >= 10 && this.isExpanded === false){
-                    break;
-                }
                 let sig = log.topics[0].substr(0, 10);
                 if (TRANSFER_SIGNATURES.includes(sig)) {
                     let contract = await this.$contractManager.getContract(log.address);
                     if(!contract || contract.supportedInterfaces === null){
                         continue;
+                    }
+                    if(transfers.length >= 10 && this.isExpanded === false){
+                        if (
+                            this.type === 'erc721' && contract.supportedInterfaces.includes('erc721') ||
+                            this.type === 'erc1155' && contract.supportedInterfaces.includes('erc1155') ||
+                            this.type === 'erc20' && contract.supportedInterfaces.includes('erc20')
+                        ) {
+                            this.more = true;
+                        }
+                        break;
                     }
                     if (this.type === 'erc721' && contract.supportedInterfaces.includes('erc721')) {
                         let tokenId = BigNumber.from(log.topics[3]).toString();
@@ -131,6 +138,7 @@ export default {
             BigNumber: BigNumber,
             pTransfers: [],
             isExpanded: this.expanded,
+            more: false,
             isLoading: true,
         };
     },
@@ -249,7 +257,7 @@ export default {
                 />
             </div>
         </div>
-        <div v-if="!isExpanded" class="expand-btn fit row items-center" @click="expand">
+        <div v-if="!isExpanded && more" class="expand-btn fit row items-center" @click="expand">
             <div class="separator"></div>
             <div class="flex items-center">
                 <q-icon name="add_circle_outline" class="q-mr-xs" />
