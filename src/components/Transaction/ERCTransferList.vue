@@ -24,16 +24,8 @@ export default {
             required: false,
             default: 'erc20',
         },
-        title: {
-            type: String,
-            required: false,
-        },
         trxFrom: {
             type: String,
-            required: false,
-        },
-        contract: {
-            type: Object,
             required: false,
         },
         expanded: {
@@ -61,7 +53,6 @@ export default {
             this.pTransfers = await this.loadTransfers();
         },
         async loadTransfers() {
-            this.isLoading = true;
             let transfers = [];
             for (const log of this.logs) {
                 let sig = log.topics[0].substr(0, 10);
@@ -82,6 +73,7 @@ export default {
                     }
                     if (this.type === 'erc721' && contract.supportedInterfaces.includes('erc721')) {
                         let tokenId = BigNumber.from(log.topics[3]).toString();
+                        this.isLoading = true;
                         let token = await this.$contractManager.loadNFT(contract, tokenId.toString());
                         let tokenUri = null;
                         if(token){
@@ -99,6 +91,7 @@ export default {
                         });
                     } else if (this.type === 'erc1155' && contract.supportedInterfaces.includes('erc1155')) {
                         let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
+                        this.isLoading = true;
                         let token = this.$contractManager.loadNFT(contract, tokenId.toString());
                         if(!token){
                             token = contract;
@@ -139,7 +132,7 @@ export default {
             pTransfers: [],
             isExpanded: this.expanded,
             more: false,
-            isLoading: true,
+            isLoading: false,
         };
     },
 };
@@ -147,7 +140,11 @@ export default {
 
 <template>
 <div v-if="pTransfers.length > 0" class="fit row wrap justify-start items-start content-start">
-    <div  class="col-3"><strong>{{ title }}</strong></div>
+    <div  class="col-3">
+        <strong>
+            <span>{{ $t('pages.transfers_title', {'type': type.toUpperCase() }) }}</span>
+        </strong>
+    </div>
     <div class="col-9 erc-transfers">
         <div
             v-for="(transfer, index) in pTransfers"

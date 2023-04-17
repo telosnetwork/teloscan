@@ -381,27 +381,23 @@ export default {
                                 </span>
                             </div>
                         </div><br>
-                        <ERCTransferList
-                            :trxFrom="trx.from"
-                            :contract="contract"
-                            title="ERC20 transfers"
-                            type="erc20"
-                            :logs="trx.logs"
-                        />
-                        <ERCTransferList
-                            :trxFrom="trx.from"
-                            :contract="contract"
-                            title="ERC721 transfers"
-                            type="erc721"
-                            :logs="trx.logs"
-                        />
-                        <ERCTransferList
-                            :trxFrom="trx.from"
-                            :contract="contract"
-                            title="ERC1155 transfers"
-                            type="erc1155"
-                            :logs="trx.logs"
-                        />
+                        <div v-if="trx.logs?.length > 0">
+                            <ERCTransferList
+                                :trxFrom="trx.from"
+                                type="erc20"
+                                :logs="trx.logs"
+                            />
+                            <ERCTransferList
+                                :trxFrom="trx.from"
+                                type="erc721"
+                                :logs="trx.logs"
+                            />
+                            <ERCTransferList
+                                :trxFrom="trx.from"
+                                type="erc1155"
+                                :logs="trx.logs"
+                            />
+                        </div>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3">
                                 <strong>{{ $t('pages.gas_price_charged') }}:&nbsp;</strong>

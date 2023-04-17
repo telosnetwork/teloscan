@@ -141,6 +141,7 @@ export default {
         transactions: 'Transactions',
         account: 'Compte',
         contract: 'Contrat',
+        transfers_title: 'Transferts { type }',
         loading_transfers: 'Chargement des transferts',
         erc20_transfers: 'Transferts ERC20',
         erc721_transfers: 'Transferts ERC721',
