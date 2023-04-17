@@ -19,7 +19,6 @@ import {
     parseErrorMessage,
     getRouteWatcherForTabs,
 } from 'src/lib/utils';
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 const REVERT_SELECTORS = [REVERT_FUNCTION_SELECTOR, REVERT_PANIC_SELECTOR];
 
@@ -52,9 +51,6 @@ export default {
             trxNotFound: false,
             errorMessage: null,
             trx: null,
-            erc20_transfers: [],
-            erc721_transfers: [],
-            erc1155_transfers: [],
             params: [],
             tab: '#general',
             isContract: false,
@@ -88,7 +84,7 @@ export default {
         await this.loadTransaction();
     },
     async created() {
-        this.fetchTlosPrice();
+        await this.fetchTlosPrice();
     },
     methods: {
         ...mapActions('chain', ['fetchTlosPrice']),
@@ -101,9 +97,6 @@ export default {
             this.contract = null;
             this.parsedTransaction = null;
             this.methodTrx = null;
-            this.erc20_transfers = [];
-            this.erc721_transfers = [];
-            this.erc1155_transfers = [];
             this.params = [];
         },
         async loadTransaction() {
@@ -123,9 +116,6 @@ export default {
             this.trx.gasLimit = BigNumber.from(this.trx.gasLimit);
             this.trx.value = BigNumber.from(this.trx.value.toLocaleString('fullwide', { useGrouping:false }));
             await this.loadContract();
-            if(this.trx.logs){
-                await this.loadTransfers();
-            }
             this.setErrorMessage();
         },
         async loadErrorMessage() {
@@ -149,58 +139,6 @@ export default {
                         : intrx.error
                     ;
                     return;
-                }
-            }
-        },
-        async loadTransfers() {
-            this.transfers = [];
-            for (const log of this.trx.logs) {
-                let sig = log.topics[0].substr(0, 10);
-                if (TRANSFER_SIGNATURES.includes(sig)) {
-                    let contract = await this.$contractManager.getContract(log.address);
-                    if(!contract || contract.supportedInterfaces === null){
-                        continue;
-                    }
-                    if (contract.supportedInterfaces.includes('erc721')) {
-                        let tokenId = BigNumber.from(log.topics[3]).toString();
-                        let token = await this.$contractManager.loadNFT(contract, tokenId.toString());
-                        let tokenUri = null;
-                        if(token){
-                            tokenUri = token.tokenUri?.replace('ipfs://', 'https://ipfs.io/ipfs/');
-                        } else {
-                            token = contract;
-                        }
-                        this.erc721_transfers.push({
-                            'tokenId': tokenId,
-                            'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                            'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
-                            'token' : token,
-                            'contract' : contract,
-                            'tokenUri': tokenUri,
-                        });
-                    } else if (contract.supportedInterfaces.includes('erc1155')) {
-                        let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
-                        let token = this.$contractManager.loadNFT(contract, tokenId);
-                        if(!token){
-                            token = contract;
-                        }
-                        this.erc1155_transfers.push({
-                            'amount': BigNumber.from(log.data).toString(),
-                            'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
-                            'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                            'tokenId': tokenId,
-                            'token' : token,
-                            'contract' : contract,
-                        });
-                    } else {
-                        this.erc20_transfers.push({
-                            'value': log.data,
-                            'wei': BigNumber.from(log.data).toString(),
-                            'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                            'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
-                            'contract' : contract,
-                        });
-                    }
                 }
             }
         },
@@ -283,7 +221,7 @@ export default {
     </div>
     <div class="row tableWrapper">
         <div class="col-12 q-py-lg">
-            <div v-if="trx" :key="erc20_transfers.length + isContract" class="content-container">
+            <div v-if="trx" :key="isContract" class="content-container">
                 <q-tabs
                     v-model="tab"
                     class="text-white topRounded"
@@ -389,7 +327,7 @@ export default {
                                 <AddressField
                                     :address="trx.from"
                                     :truncate="0"
-                                    :highlight="erc20_transfers.length + erc721_transfers.length > 1"
+                                    :highlight="this.trx.logs?.length > 1"
                                     copy="copy"
                                 />
                             </div>
@@ -444,26 +382,25 @@ export default {
                             </div>
                         </div><br>
                         <ERCTransferList
-                            v-if="erc20_transfers.length > 0"
                             :trxFrom="trx.from"
                             :contract="contract"
                             title="ERC20 transfers"
-                            :transfers="erc20_transfers"
+                            type="erc20"
+                            :logs="trx.logs"
                         />
                         <ERCTransferList
-                            v-if="erc721_transfers.length > 0"
-                            :key="erc721_transfers.length + 'erct'"
                             :trxFrom="trx.from"
                             :contract="contract"
                             title="ERC721 transfers"
-                            :transfers="erc721_transfers"
+                            type="erc721"
+                            :logs="trx.logs"
                         />
                         <ERCTransferList
-                            v-if="erc1155_transfers.length > 0"
                             :trxFrom="trx.from"
                             :contract="contract"
                             title="ERC1155 transfers"
-                            :transfers="erc1155_transfers"
+                            type="erc1155"
+                            :logs="trx.logs"
                         />
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3">

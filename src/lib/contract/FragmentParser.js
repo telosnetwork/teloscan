@@ -61,6 +61,7 @@ export default class FragmentParser {
             return await this.getEventInterface(data);
         }
         this.processing.push(data);
+        var index = this.processing.indexOf(data);
 
         try {
             const url = `https://cdn.statically.io/gh/telosnetwork/topic0/main/with_parameter_names/${data.substr(2)}`;
@@ -70,7 +71,7 @@ export default class FragmentParser {
                 return new ethers.utils.Interface([this.eventInterfaces[data]]);
             }
         } catch (e) {
-            console.log(e);
+            console.debug(e);
         }
 
         try {
@@ -80,12 +81,12 @@ export default class FragmentParser {
                     console.error(`Unable to find event signature for event: ${data}`);
                     return false;
                 }
-                let sig = abiResponse.data.text_signature.replace('address', 'address indexed');
-                this.eventInterfaces[data] = `event ${sig}`;
+                this.eventInterfaces[data] = `event ${abiResponse.data.text_signature}`;
                 return new ethers.utils.Interface([this.eventInterfaces[data]]);
             }
-            this.processing.remove(data);
+            this.processing = this.processing.splice(index, 1);
         } catch (e) {
+            this.processing = this.processing.splice(index, 1);
             console.error(`Error trying to find event signature for event ${data}: ${e.message}`);
             return false;
         }

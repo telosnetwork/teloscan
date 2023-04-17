@@ -141,6 +141,7 @@ export default {
         transactions: 'Transactions',
         account: 'Compte',
         contract: 'Contrat',
+        loading_transfers: 'Chargement des transferts',
         erc20_transfers: 'Transferts ERC20',
         erc721_transfers: 'Transferts ERC721',
         erc1155_transfers: 'Transferts ERC1155',
@@ -362,6 +363,7 @@ export default {
         language: 'Language',
         cancel: 'Annuler',
         ok: 'Ok',
+        expand: 'Voir plus',
         dismiss: 'Rejeter',
     },
     layouts: {

@@ -9,6 +9,7 @@ const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/mai
 export default class ContractManager {
     constructor(indexerApi, parser) {
         this.contracts = {};
+        this.processing = [];
         this.parser = parser;
         this.factory = new ContractFactory();
         this.indexerApi = indexerApi;
@@ -176,6 +177,13 @@ export default class ContractManager {
             return this.contracts[addressLower];
         }
 
+        if (this.processing.includes(addressLower)) {
+            await new Promise(resolve => setTimeout(resolve, 300));
+            return await this.getContract(address);
+        }
+        this.processing.push(addressLower);
+        var index = this.processing.indexOf(addressLower);
+
         try {
             let response = await this.indexerApi.get(`/contract/${address}?full=true&includeAbi=true`);
             let contract = (response.data?.success) ?
@@ -183,8 +191,10 @@ export default class ContractManager {
                 this.factory.buildEmptyContract(address)
             ;
             this.addContractToCache(address, contract);
+            this.processing = this.processing.splice(index, 1);
             return contract;
         } catch (e) {
+            this.processing = this.processing.splice(index, 1);
             console.error(`Could not retrieve contract ${address}: ${e.message}`);
         }
 

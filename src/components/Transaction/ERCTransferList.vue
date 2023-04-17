@@ -5,6 +5,7 @@ import { BigNumber } from 'ethers';
 import { getIcon } from 'src/lib/token-utils';
 import CustomTooltip  from 'components/CustomTooltip';
 import TokenValueField from 'components/TokenValueField';
+import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 export default {
     name: 'ERCTransfersList',
@@ -14,9 +15,14 @@ export default {
         TokenValueField,
     },
     props: {
-        transfers: {
+        logs: {
             type: Array,
             required: true,
+        },
+        type: {
+            type: String,
+            required: false,
+            default: 'erc20',
         },
         title: {
             type: String,
@@ -30,38 +36,114 @@ export default {
             type: Object,
             required: false,
         },
+        expanded: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
     },
     methods: {
         formatWei,
         getIcon,
-    },
-    data(props) {
-        let transfers = [...props.transfers];
-        for(let i = 0; i < transfers.length;i++){
-            if(transfers[i].token?.metadata && transfers[i].token.metadata !== '"___INVALID_METADATA___"'){
-                transfers[i].metadata = JSON.parse(transfers[i].token.metadata);
-                Object.keys(transfers[i].metadata).forEach((key) => {
+        parseTransfer(transfer){
+            if(transfer.token?.metadata && transfer.token.metadata !== '"___INVALID_METADATA___"'){
+                transfer.metadata = JSON.parse(transfer.token.metadata);
+                Object.keys(transfer.metadata).forEach((key) => {
                     if(['image', 'attributes', 'name', 'description'].includes(key) === false){
-                        delete transfers[i].metadata[key];
+                        delete transfer.metadata[key];
                     }
                 });
             }
-        }
+            return transfer;
+        },
+        async expand(){
+            this.isExpanded = true;
+            this.pTransfers = await this.loadTransfers();
+        },
+        async loadTransfers() {
+            this.isLoading = true;
+            let transfers = [];
+            for (const log of this.logs) {
+                if(transfers.length >= 10 && this.isExpanded === false){
+                    break;
+                }
+                let sig = log.topics[0].substr(0, 10);
+                if (TRANSFER_SIGNATURES.includes(sig)) {
+                    let contract = await this.$contractManager.getContract(log.address);
+                    if(!contract || contract.supportedInterfaces === null){
+                        continue;
+                    }
+                    if (this.type === 'erc721' && contract.supportedInterfaces.includes('erc721')) {
+                        let tokenId = BigNumber.from(log.topics[3]).toString();
+                        let token = await this.$contractManager.loadNFT(contract, tokenId.toString());
+                        let tokenUri = null;
+                        if(token){
+                            tokenUri = token.tokenUri?.replace('ipfs://', 'https://ipfs.io/ipfs/');
+                        } else {
+                            token = contract;
+                        }
+                        transfers.push({
+                            'tokenId': tokenId,
+                            'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
+                            'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
+                            'token' : token,
+                            'contract' : contract,
+                            'tokenUri': tokenUri,
+                        });
+                    } else if (this.type === 'erc1155' && contract.supportedInterfaces.includes('erc1155')) {
+                        let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
+                        let token = this.$contractManager.loadNFT(contract, tokenId.toString());
+                        if(!token){
+                            token = contract;
+                        }
+                        transfers.push({
+                            'amount': BigNumber.from(log.data).toString(),
+                            'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
+                            'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
+                            'tokenId': tokenId,
+                            'token' : token,
+                            'contract' : contract,
+                        });
+                    } else if (this.type === 'erc20' && contract.supportedInterfaces.includes('erc20')) {
+                        transfers.push({
+                            'value': log.data,
+                            'wei': BigNumber.from(log.data).toString(),
+                            'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
+                            'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
+                            'contract' : contract,
+                        });
+                    }
+                }
+            }
+            for(let i = 0; i < transfers.length;i++){
+                transfers[i] = this.parseTransfer(transfers[i]);
+            }
+            this.isLoading = false;
+            return  transfers;
+        },
+    },
+
+    async mounted() {
+        this.pTransfers = await this.loadTransfers();
+    },
+    data() {
         return {
             BigNumber: BigNumber,
-            pTransfers: transfers,
+            pTransfers: [],
+            isExpanded: this.expanded,
+            isLoading: true,
         };
     },
 };
 </script>
 
 <template>
-<div class="fit row wrap justify-start items-start content-start">
+<div v-if="pTransfers.length > 0" class="fit row wrap justify-start items-start content-start">
     <div  class="col-3"><strong>{{ title }}</strong></div>
     <div class="col-9 erc-transfers">
         <div
             v-for="(transfer, index) in pTransfers"
-            :key="'erct' + index +  pTransfers.length"
+            :key="'erct' + index"
             class="fit row wrap justify-start items-start content-start"
         >
             <div class="col-4">
@@ -129,7 +211,10 @@ export default {
                             :href="transfer.token?.imageCache + '/1440.webp'"
                             target="_blank"
                         >
-                            <q-img :src="transfer.token?.imageCache + '/280.webp'" class="nft-thumbnail" />
+                            <q-img
+                                :src="transfer.token?.imageCache + '/280.webp'"
+                                class="nft-thumbnail"
+                            />
                             <CustomTooltip :content="$t('components.transaction.consult_media')" />
                         </a>
                     </span>
@@ -139,10 +224,7 @@ export default {
                         </a>
                     </span>
                     <span>
-                        <span
-                            v-if="transfer.metadata"
-                            class="word-break"
-                        >
+                        <span v-if="transfer.metadata" class="word-break">
                             <a clickable="clickable">
                                 <q-icon class="q-pb-sm q-ml-xs" name="info" size="18px"/>
                             </a>
@@ -167,6 +249,20 @@ export default {
                 />
             </div>
         </div>
+        <div v-if="!isExpanded" class="expand-btn fit row items-center" @click="expand">
+            <div class="separator"></div>
+            <div class="flex items-center">
+                <q-icon name="add_circle_outline" class="q-mr-xs" />
+                <span>{{ $t('global.expand') }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+<div v-if="isLoading" class="fit row wrap justify-center items-center q-mt-sm">
+    <div class="col-3"></div>
+    <div class="col-9 justify-center flex">
+        <q-spinner size="1.5em" class="q-mr-xs"/>
+        <span>{{ $t('pages.loading_transfers') }}</span>
     </div>
 </div>
 <br>
@@ -176,6 +272,28 @@ export default {
 <style scoped lang="sass">
 pre
     font-size: 0.8em
+.body--dark .expand-btn
+    color: rgba(255, 255, 255, 0.6)
+.expand-btn
+    position: relative
+    margin-top: 4px
+    cursor: pointer
+    color: rgba(0, 0, 0, 0.6)
+.body--dark .expand-btn .flex
+    background: var(--q-dark)
+.expand-btn .flex
+    background: white
+    padding-right: 5px
+    z-index: 2
+.body--dark .separator
+    border-top: 1px dashed rgba(255, 255, 255, 0.3)
+.separator
+    z-index: 1
+    background: transparent
+    position: absolute
+    width: 320px
+    border-top: 1px dashed rgba(0, 0, 0, 0.3)
+    top: 10px
 .nft-thumbnail:hover
     transform: scale(1.2)
 .nft-thumbnail
