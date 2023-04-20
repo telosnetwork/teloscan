@@ -46,7 +46,7 @@ export default {
                 if(this.transaction === null || this.itxs.length > 0){
                     return;
                 }
-                let query = `/transaction/${this.transaction.hash}/internal?limit=250&sort=ASC&offset=0&includeAbi=1`;
+                let query = `/transaction/${this.transaction.hash}/internal?limit=1000&sort=ASC&offset=0&includeAbi=1`;
                 let response = await this.$indexerApi.get(query);
                 if(response && response.data?.results?.length > 0) {
                     dataset = response.data?.results;
