@@ -118,6 +118,11 @@ export default {
             },
             immediate: true,
         },
+        filter: {
+            async handler(){
+                await this.onRequest({ pagination: this.pagination });
+            },
+        },
     },
     methods: {
         setPagination(page, size) {
