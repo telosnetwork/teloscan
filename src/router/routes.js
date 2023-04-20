@@ -45,7 +45,11 @@ const routes = [
     {
         path: '/block/:block',
         component: () => import('layouts/MainLayout.vue'),
-        children: [{ path: '', component: () => import('pages/Block.vue') }],
+        children: [{
+            path: '',
+            name: 'block',
+            component: () => import('pages/Block.vue'),
+        }],
     },
     {
         path: '/transactions',

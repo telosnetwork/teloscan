@@ -9,4 +9,9 @@
     "eslint.format.enable": true,
     "eslint.lintTask.enable": true,
     "eslint.packageManager": "yarn",
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#233211",
+        "titleBar.activeBackground": "#314618",
+        "titleBar.activeForeground": "#F8FBF4"
+    },
 }
