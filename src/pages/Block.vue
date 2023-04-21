@@ -134,7 +134,7 @@ export default {
         background: linear-gradient(#252a5e 17.19%, #2d4684 65.83%, transparent 100%)
     .row.justify-between.q-mb-lg
         div
-            &:first-child
+            &:last-child
                 text-align: center
                 width: 100%
     .dataCardsContainer
