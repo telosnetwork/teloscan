@@ -87,10 +87,10 @@ export default {
                     </div>
                     <div v-else class="dataCardData">0</div>
                 </div>
-                <div v-if="blockData" class="dataCardItem">
+                <div v-if="blockData" class="dataCardItem time-stamp">
                     <DateField :epoch="parseInt(blockData.timestamp, 16)"/>
                 </div>
-                <div v-else class="dataCardItem"></div>
+                <div v-else class="dataCardItem time-stamp"></div>
             </div>
         </div>
     </div>
@@ -132,11 +132,10 @@ export default {
 @media only screen and (max-width: 768px)
     .pageContainer
         background: linear-gradient(#252a5e 17.19%, #2d4684 65.83%, transparent 100%)
-    .row.justify-between.q-mb-lg
-        div
-            &:last-child
-                text-align: center
-                width: 100%
+    .time-stamp
+        text-align: center
+        width: 100%
+        min-height: 38px
     .dataCardsContainer
         width: 100%
         margin-top: 30px
