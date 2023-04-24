@@ -103,6 +103,10 @@ export default {
 <style scoped lang="sass">
 .dataCardData
     height: 40px
+
+.dataCardItem
+    color: $white
+
 .inline
     display: inline-flex
     align-items: center
@@ -116,6 +120,7 @@ export default {
     &__block-navigation
         height: 24px
         margin-top: 8px
+        color: $white
         &--box
             height: 16px
             width: 16px
