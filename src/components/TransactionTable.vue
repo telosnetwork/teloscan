@@ -72,6 +72,7 @@ export default {
         return {
             rows: [],
             columns,
+            filterUpdated: false,
             transactions: [],
             pageSize: this.initialPageSize,
             total: null,
@@ -119,7 +120,11 @@ export default {
             immediate: true,
         },
         filter: {
-            async handler(){
+            async handler() {
+                if (!this.filterUpdated) {
+                    this.filterUpdated = true;
+                    return;
+                }
                 await this.onRequest({ pagination: this.pagination });
             },
         },
@@ -164,12 +169,7 @@ export default {
             this.pagination.rowsPerPage = rowsPerPage;
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
-
-            this.transactions.splice(
-                0,
-                this.transactions.length,
-                ...result.data.transactions,
-            );
+            this.transactions = result.data.transactions;
             for (const transaction of this.transactions) {
                 try {
                     transaction.transfer = false;
