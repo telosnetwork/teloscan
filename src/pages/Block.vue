@@ -40,10 +40,15 @@ export default {
             }
         },
         prevBlock() {
+            this.resetBlockData();
             this.$router.push({ name: 'block', params: { block: parseInt(this.block) - 1 } });
         },
         nextBlock() {
+            this.resetBlockData();
             this.$router.push({ name: 'block', params: { block: parseInt(this.block) + 1 } });
+        },
+        resetBlockData() {
+            this.blockData = null;
         },
     },
 };
@@ -66,28 +71,30 @@ export default {
                     </div>
                 </div>
             </div>
-            <div v-if="blockData" class="dataCardsContainer">
+            <div class="dataCardsContainer">
                 <div class="dataCardItem">
                     <div class="dataCardTile">
                         {{ $t('pages.gas_used') }}
                     </div>
-                    <div class="dataCardData">
+                    <div v-if="blockData" class="dataCardData">
                         {{ parseInt(blockData.gasUsed, 16) }}
                     </div>
+                    <div v-else class="dataCardData">0</div>
                 </div>
                 <div class="dataCardItem">
                     <div class="dataCardTile">
                         {{ $t('pages.transactions') }}
                     </div>
-                    <div class="dataCardData">
-                        {{ blockData.transactionsCount }}
+                    <div v-if="blockData" class="dataCardData">
+                        {{ blockData.transactions.length }}
+
                     </div>
+                    <div v-else class="dataCardData">0</div>
                 </div>
-                <div class="dataCardItem">
-                    <div class="dataCardTile">
-                        <DateField :epoch="blockData.timestamp / 1000"/>
-                    </div>
+                <div v-if="blockData" class="dataCardItem time-stamp">
+                    <DateField :epoch="parseInt(blockData.timestamp, 16)"/>
                 </div>
+                <div v-else class="dataCardItem time-stamp"></div>
             </div>
         </div>
     </div>
@@ -107,6 +114,12 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.dataCardData
+    height: 40px
+
+.dataCardItem
+    color: $white
+
 .inline
     display: inline-flex
     align-items: center
@@ -114,11 +127,13 @@ export default {
 
 .block-container
     &__block-number
+        width: 100px
         font-size: 16px
         margin-right: 6px
     &__block-navigation
         height: 24px
         margin-top: 8px
+        color: $white
         &--box
             height: 16px
             width: 16px
@@ -135,11 +150,10 @@ export default {
 @media only screen and (max-width: 768px)
     .pageContainer
         background: linear-gradient(#252a5e 17.19%, #2d4684 65.83%, transparent 100%)
-    .row.justify-between.q-mb-lg
-        div
-            &:first-child
-                text-align: center
-                width: 100%
+    .time-stamp
+        text-align: center
+        width: 100%
+        min-height: 38px
     .dataCardsContainer
         width: 100%
         margin-top: 30px

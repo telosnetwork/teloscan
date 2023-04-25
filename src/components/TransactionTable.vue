@@ -72,6 +72,7 @@ export default {
         return {
             rows: [],
             columns,
+            filterUpdated: false,
             transactions: [],
             pageSize: this.initialPageSize,
             total: null,
@@ -119,7 +120,11 @@ export default {
             immediate: true,
         },
         filter: {
-            async handler(){
+            async handler() {
+                if (!this.filterUpdated) {
+                    this.filterUpdated = true;
+                    return;
+                }
                 await this.onRequest({ pagination: this.pagination });
             },
         },
@@ -169,6 +174,7 @@ export default {
                 this.transactions.length,
                 ...response.data.results,
             );
+
             for (const transaction of this.transactions) {
                 try {
                     if (transaction.input === '0x') {
