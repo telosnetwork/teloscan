@@ -12,8 +12,8 @@ export default {
             error: false,
         };
     },
-    mounted() {
-        this.loadBlock();
+    async mounted() {
+        await this.loadBlock();
     },
     watch: {
         '$route.params.block': {
@@ -73,7 +73,7 @@ export default {
             </div>
             <div class="dataCardsContainer">
                 <div class="dataCardItem">
-                    <div class="dataCardTile">
+                    <div class="dataCardTile q-mt-sm">
                         {{ $t('pages.gas_used') }}
                     </div>
                     <div v-if="blockData" class="dataCardData">
@@ -82,17 +82,17 @@ export default {
                     <div v-else class="dataCardData">0</div>
                 </div>
                 <div class="dataCardItem">
-                    <div class="dataCardTile">
+                    <div class="dataCardTile q-mt-sm">
                         {{ $t('pages.transactions') }}
                     </div>
                     <div v-if="blockData" class="dataCardData">
-                        {{ blockData.transactions.length }}
+                        {{ blockData.transactionsCount }}
 
                     </div>
                     <div v-else class="dataCardData">0</div>
                 </div>
                 <div v-if="blockData" class="dataCardItem time-stamp">
-                    <DateField :epoch="parseInt(blockData.timestamp, 16)"/>
+                    <DateField :epoch="parseInt(blockData.timestamp / 1000)"/>
                 </div>
                 <div v-else class="dataCardItem time-stamp"></div>
             </div>

@@ -56,7 +56,10 @@ export default {
                     `${this.name}`;
             }
             if (this.contract && this.contract.getName()) {
-                const name = this.contract.getName();
+                const name = (this.contract.isToken() && this.contract.getProperties()?.symbol)
+                    ? this.contract.getProperties().symbol
+                    : this.contract.getName()
+                ;
                 if(name[0] === '0' && name[1] === 'x'){
                     return this.truncate > 0 ? `${this.address.slice(0, this.truncate)}...` : this.address;
                 }
