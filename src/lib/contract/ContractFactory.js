@@ -10,7 +10,7 @@ export default class ContractFactory {
         let verified = false;
         if(typeof data.abi !== 'undefined' && data.abi.length > 0) {
             data.abi = (typeof data.abi === 'string') ? JSON.parse(data.abi) : data.abi;
-        } else if(typeof data.metadata !== 'undefined' && data.metadata.length > 0) {
+        } else if(typeof data.metadata !== 'undefined' && data.metadata?.length > 0) {
             let metadata = JSON.parse(data.metadata);
             data.abi = metadata.output.abi;
         }
