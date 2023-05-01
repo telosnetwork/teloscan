@@ -302,7 +302,7 @@ export default {
                     :value="props.row.parsedTransaction.transfers[0].value.toString(16) || '0.0'"
                     :address="props.row.parsedTransaction.transfers[0].address"
                 />
-                <TokenValueField v-else :value="props.row.value || '0.0'" />
+                <TokenValueField v-else :value="BigInt(props.row.value).toString(10) || '0.0'" />
             </q-td>
         </q-tr>
     </template>

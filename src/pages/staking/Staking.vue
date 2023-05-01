@@ -177,7 +177,7 @@ export default {
             ]);
         },
         async fetchContracts() {
-            const stlosPromise = this.$contractManager.getContract(process.env.STAKED_TLOS_CONTRACT_ADDRESS)
+            const stlosPromise = await this.$contractManager.getContract(process.env.STAKED_TLOS_CONTRACT_ADDRESS)
                 .then((contract) => {
                     this.stlosContract = contract;
                 })
@@ -190,12 +190,12 @@ export default {
                     this.stlosContract = null;
                 });
 
-            const escrowPromise = this.$contractManager.getContract(process.env.TELOS_ESCROW_CONTRACT_ADDRESS)
+            const escrowPromise = await this.$contractManager.getContract(process.env.TELOS_ESCROW_CONTRACT_ADDRESS)
                 .then((contract) => {
                     this.escrowContract = contract;
                 })
                 .catch(({ message }) => {
-                    console.error(`Failed to get STLOS contract: ${message}`);
+                    console.error(`Failed to get Escrow contract: ${message}`);
                     this.$q.notify({
                         type: 'negative',
                         message: this.$t('page.staking.fetch_escrow_contract_error', { message }),
@@ -203,10 +203,10 @@ export default {
                     this.escrowContract = null;
                 });
 
-            return Promise.all([stlosPromise, escrowPromise]);
+            return await Promise.all([stlosPromise, escrowPromise]);
         },
         async fetchContractInstances() {
-            if (!this.stlosContract || !this.escrowContract) {
+            if (!this.stlosContract || !this.escrowContract || !this.escrowContract.abi) {
                 await this.fetchContracts();
             }
 

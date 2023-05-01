@@ -118,13 +118,18 @@ export default class ContractManager {
         return (sig === ERC1155_TRANSFER_SIGNATURE) ? 'erc1155' : type;
     }
 
-    addContractToCache(address, contract){
+    addContractToCache(address, contractData){
         if(!address){
             return;
         }
         let index = address.toString().toLowerCase();
-        if(typeof this.contracts[index] === 'undefined'){
-            this.contracts[index] = this.factory.buildContract(contract);
+        let contract = this.factory.buildContract(contractData);
+        if(
+            typeof this.contracts[index] === 'undefined'
+            || contract.abi?.length > 0 && !this.contracts[index].abi
+            || contract.abi?.length > 0 && contract.abi.length > this.contracts[index].abi?.length
+        ){
+            this.contracts[index] = contract;
         }
     }
 
@@ -173,7 +178,7 @@ export default class ContractManager {
         }
         const addressLower = address.toLowerCase();
 
-        if (this.contracts[addressLower]) {
+        if (typeof this.contracts[addressLower] !== 'undefined') {
             return this.contracts[addressLower];
         }
 
@@ -182,24 +187,18 @@ export default class ContractManager {
             return await this.getContract(address);
         }
         this.processing.push(addressLower);
-        var index = this.processing.indexOf(addressLower);
-
+        let index = this.processing.indexOf(addressLower);
+        let contract = this.factory.buildEmptyContract(address);
         try {
             let response = await this.indexerApi.get(`/contract/${address}?full=true&includeAbi=true`);
-            let contract = (response.data?.success) ?
-                this.factory.buildContract(response.data.results[0]) :
-                this.factory.buildEmptyContract(address)
-            ;
-            this.addContractToCache(address, contract);
-            this.processing = this.processing.splice(index, 1);
-            return contract;
+            if(response.data?.success && response.data.results.length > 0){
+                this.addContractToCache(address, response.data.results[0]);
+                contract = this.factory.buildContract(response.data.results[0]);
+            }
         } catch (e) {
-            this.processing = this.processing.splice(index, 1);
             console.error(`Could not retrieve contract ${address}: ${e.message}`);
         }
-
-        let contract = this.factory.buildEmptyContract(address);
-        this.addContractToCache(address, contract);
+        this.processing = this.processing.splice(index, 1);
         return contract;
     }
     async getContractFromAbi(address, abi){

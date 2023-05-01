@@ -26,13 +26,13 @@ export default boot(({ app, store }) => {
 
     // Intercept API answer to set contracts & abi in cache directly
     indexerApi.interceptors.response.use(function (response) {
-        if(response.data.abi){
+        if(response.data?.abi){
             for (const [key, value] of Object.entries(response.data.abi)) {
                 app.config.globalProperties.$contractManager.parser.addFunctionInterface(key, value);
                 app.config.globalProperties.$fragmentParser.addFunctionInterface(key, value);
             }
         }
-        if(response.data.contracts){
+        if(response.data?.contracts){
             app.config.globalProperties.$contractManager.addContractsToCache(response.data.contracts);
         }
         return response;
