@@ -210,14 +210,25 @@ export default {
                             {{ ' #' + transfer.tokenId }}
                         </span>
                     </span>
-                    <span v-if="transfer.token?.imageCache" class="q-ml-xs">
+                    <span
+                        v-if="transfer.metadata?.image?.startsWith('data:image')
+                            || transfer.token?.imageCache
+                        "
+                        class="q-ml-xs"
+                    >
                         <a
                             clickable="clickable"
-                            :href="transfer.token?.imageCache + '/1440.webp'"
+                            :href="(transfer.metadata?.image?.startsWith('data:image'))
+                                ? transfer.metadata.image
+                                : transfer.token?.imageCache + '/1440.webp'
+                            "
                             target="_blank"
                         >
                             <q-img
-                                :src="transfer.token?.imageCache + '/280.webp'"
+                                :src="(transfer.metadata?.image?.startsWith('data:image'))
+                                    ? transfer.metadata.image
+                                    : transfer.token?.imageCache + '/280.webp'
+                                "
                                 class="nft-thumbnail"
                             />
                             <CustomTooltip :content="$t('components.transaction.consult_media')" />
