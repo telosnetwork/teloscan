@@ -198,6 +198,7 @@ export default class ContractManager {
         } catch (e) {
             console.error(`Could not retrieve contract ${address}: ${e.message}`);
         }
+        this.addContractToCache(address, contract);
         this.processing = this.processing.splice(index, 1);
         return contract;
     }

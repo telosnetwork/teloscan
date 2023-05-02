@@ -81,23 +81,11 @@ export default {
                     `${name}`;
                 return;
             }
-            if (!this.address) {
-                return '';
-            }
             // This formats the address for us and handles zero padding we get from log events
             const address = ethers.utils.getAddress(this.address);
             this.displayName = this.truncate > 0 ? `${address.slice(0, this.truncate)}...` : address;
         },
         async loadContract() {
-            this.contract = null;
-            if (!this.isContractTrx) {
-                let contract = await this.$contractManager.getCachedContract(this.address);
-                if (contract) {
-                    this.contract = contract;
-                }
-                return;
-            }
-
             let contract = await this.$contractManager.getContract(this.address);
             if (contract) {
                 this.contract = contract;
