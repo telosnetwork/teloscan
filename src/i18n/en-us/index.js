@@ -368,6 +368,8 @@ export default {
         cancel: 'Cancel',
         ok: 'Ok',
         dismiss: 'Dismiss',
+        empty_block: 'Block is empty',
+        empty_block_description: 'This block has no transactions. Try navigating to a different block',
     },
     layouts: {
         health_status: 'Health Status',

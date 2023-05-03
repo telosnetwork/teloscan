@@ -72,42 +72,50 @@ export default {
                 </div>
             </div>
             <div class="dataCardsContainer">
-                <div class="dataCardItem">
+                <div v-if="blockData && blockData.transactionsCount > 0" class="dataCardItem" >
                     <div class="dataCardTile q-mt-sm">
                         {{ $t('pages.gas_used') }}
                     </div>
-                    <div v-if="blockData" class="dataCardData">
+                    <div class="dataCardData">
                         {{ parseInt(blockData.gasUsed, 16) }}
                     </div>
-                    <div v-else class="dataCardData">0</div>
                 </div>
-                <div class="dataCardItem">
+                <div v-if="blockData && blockData.transactionsCount > 0" class="dataCardItem">
                     <div class="dataCardTile q-mt-sm">
                         {{ $t('pages.transactions') }}
                     </div>
-                    <div v-if="blockData" class="dataCardData">
+                    <div class="dataCardData">
                         {{ blockData.transactionsCount }}
-
                     </div>
-                    <div v-else class="dataCardData">0</div>
                 </div>
                 <div v-if="blockData" class="dataCardItem time-stamp">
                     <DateField :epoch="parseInt(blockData.timestamp / 1000)"/>
                 </div>
-                <div v-else class="dataCardItem time-stamp"></div>
             </div>
         </div>
     </div>
-    <div v-if="!error" class="tableWrapper shadow-2 content-container q-mt-lg">
+    <div
+        v-if="!error && blockData && blockData.transactionsCount > 0"
+        class="tableWrapper shadow-2 content-container q-mt-lg"
+    >
         <TransactionTable :title="block" :filter="`block/${block}`"/>
     </div>
-    <div v-else class="bg-white q-pa-xl rounded-borders">
+    <div v-else-if="error" class="bg-white q-pa-xl rounded-borders">
         <div class="flex">
             <q-icon name="warning" size="md" />
             <span class="q-pl-md text-h5">{{ error }}</span>
         </div>
         <div class="q-pt-md">
             {{ $t('global.async_error_description') }}
+        </div>
+    </div>
+    <div v-else class="bg-white q-pa-xl rounded-borders">
+        <div class="flex">
+            <q-icon name="data_array" size="md" />
+            <span class="q-pl-md text-h5">{{ $t('global.empty_block') }}</span>
+        </div>
+        <div class="q-pt-md">
+            {{ $t('global.empty_block_description') }}
         </div>
     </div>
 </div>

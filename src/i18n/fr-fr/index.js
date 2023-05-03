@@ -254,6 +254,8 @@ export default {
             show_wei: 'Voir en wei',
             value_uint256: 'Valeur (uint256) : ',
             tlos_transfer: 'TLOS Transfer',
+            native_deposit: 'Dépôt de Telos Natif',
+            native_withdraw: 'Transfert à Telos Natif',
             unknown: 'Inconnu',
             contract_deployment: 'Deploiement du contrat',
             no_internal_trxs_found: 'Aucune transaction interne trouvée',
