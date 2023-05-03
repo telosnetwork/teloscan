@@ -242,11 +242,9 @@ export default {
 
             path += `&offset=${(page - 1) * rowsPerPage}`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
-            path += '&includeAbi=1';
+            path += '&includeAbi=1&full=1';
 
-            if (this.total === null) {
-                path += '&includePagination=1';
-            }
+            path += (this.total === null) ? '&includePagination=true' : '';  // We only need the count once
 
             return path;
         },
