@@ -1,7 +1,6 @@
 <script>
 
-import { formatWei } from 'src/lib/utils';
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+import { ZERO_ADDRESSES } from 'src/lib/utils';
 
 export default {
     name: 'MethodField',
@@ -25,27 +24,37 @@ export default {
     },
     data() {
         return {
-            transferAmount: null,
-            transferTo: null,
             expand: false,
+            name: '',
+            fullName: '',
+            icon: false,
+            iconTooltip: false,
         };
     },
-    mounted() {
-        this.setValues();
+    async mounted() {
+        await this.setValues();
     },
     methods: {
         toggle(){
             this.expand = !this.expand;
         },
         async setValues() {
-            if (!this.trx.parsedTransaction) {
-                return;
+            if (
+                !this.trx.parsedTransaction
+                && this.trx.from === ZERO_ADDRESSES
+                && this.trx.value > 0
+            ){
+                this.icon = 'keyboard_double_arrow_down';
+                this.iconTooltip = this.$t('components.native_deposit');
+                this.fullName = 'deposit';
+            } else if (this.trx.parsedTransaction) {
+                this.fullName = this.trx.parsedTransaction.name;
             }
 
-            if (TRANSFER_SIGNATURES.includes(this.trx.parsedTransaction.sighash) && this?.contract?.token?.decimals) {
-                const wei = formatWei(this.trx.parsedTransaction.args[1], this.contract.token.decimals);
-                this.transferAmount = `${wei} ${this.contract.token.symbol}`;
-            }
+            this.name = (this.shortenName && this.fullName.length > 11)
+                ? `${this.fullName.slice(0, 8)}...`
+                : this.fullName
+            ;
         },
     },
 };
@@ -53,24 +62,27 @@ export default {
 
 <template>
 <div>
-    <span v-if="trx.parsedTransaction">
-        <span>
-            {{
-                trx.parsedTransaction.name.length > 11 && shortenName ?
-                    `${trx.parsedTransaction.name.slice(0,8)}...` :
-                    trx.parsedTransaction.name
-            }}
+    <span v-if="name">
+        <span class="flex items-center">
+            <span v-if="icon" class="c-method-icon">
+                <q-icon :name="icon" />
+                <q-tooltip v-if="iconTooltip">
+                    {{ iconTooltip }}
+                </q-tooltip>
+            </span>
+            <span>
+                {{ name }}
+            </span>
         </span>
-        <span v-if="transferAmount"> ({{ transferAmount }})</span>
-        <q-tooltip v-if="shortenName" anchor="center middle" self="center middle">
-            {{ trx.parsedTransaction.name }}
+        <q-tooltip v-if="shortenName && fullName.length > 11" anchor="center middle" self="center middle">
+            {{ fullName }}
         </q-tooltip>
     </span>
-    <span v-else :class="shortenSignature && 'clickable'">
-        <span v-if="!expand" clickable="clickable" v-on:click="shortenSignature && toggle()">
-            {{trx.input.length > 10 && shortenSignature ? `${trx.input.slice(0,10)}` : trx.input}}
+    <span v-else-if="trx.input !== '0x'" :class="shortenSignature && 'clickable'">
+        <span v-if="!expand" class="text-grey" v-on:click="shortenSignature && toggle()">
+            {{trx.input.length > 10 && (shortenSignature || shortenName) ? `${trx.input.slice(0,10)}` : trx.input}}
         </span>
-        <q-tooltip v-if="shortenSignature &amp;&amp; !expand">
+        <q-tooltip v-if="shortenSignature && !expand">
             {{ $t('components.click_to_expand') }}
         </q-tooltip>
         <span
@@ -85,3 +97,20 @@ export default {
     </span>
 </div>
 </template>
+
+<style lang="scss" scoped>
+    .c-method
+    .c-method-icon i {
+        margin-top: -2px;
+    }
+    .c-method-icon {
+        background: $purpleBright;
+        margin-right: 4px;
+        width: 16px;
+        line-height: 16px;
+        height: 16px;
+        text-align: center;
+        border-radius: 100%;
+        color: white;
+    }
+</style>

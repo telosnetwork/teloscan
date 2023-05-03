@@ -3,6 +3,11 @@ import moment from 'moment';
 const createKeccakHash = require('keccak');
 export const REVERT_FUNCTION_SELECTOR = '0x08c379a0';
 export const REVERT_PANIC_SELECTOR = '0x4e487b71';
+export const ZERO_ADDRESSES = '0x0000000000000000000000000000000000000000';
+export const DEAD_ADDRESSES = [
+    ZERO_ADDRESSES,
+    '0x00000000000000000000000000000000000xdead',
+];
 
 export const WEI_PRECISION = 18;
 

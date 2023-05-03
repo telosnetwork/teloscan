@@ -283,7 +283,7 @@ export default {
                 <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
             </q-td>
             <q-td key="method" :props="props">
-                <MethodField v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"/>
+                <MethodField :trx="props.row" :shortenName="true"/>
             </q-td>
             <q-td key="from" :props="props">
                 <AddressField v-if="props.row.from" :address="props.row.from"/>
@@ -300,7 +300,7 @@ export default {
                 <TokenValueField
                     v-if="props.row.value === 0 && props.row.parsedTransaction?.transfers?.length > 0"
                     :value="props.row.parsedTransaction.transfers[0].value.toString(16) || '0.0'"
-                    :address="props.row.parsedTransaction.transfers[0].address"
+                    :address="props.row.to"
                 />
                 <TokenValueField v-else :value="BigInt(props.row.value).toString(10) || '0.0'" />
             </q-td>

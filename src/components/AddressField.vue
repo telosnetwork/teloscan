@@ -68,6 +68,10 @@ export default {
                         this.logo = (token.logoURI);
                     }
                 });
+                this.logo = (this.logo === null && this.contract.getSupportedInterfaces().includes('erc20'))
+                    ? ''
+                    : this.logo
+                ;
                 const name = (this.contract.isToken() && this.contract.getProperties()?.symbol)
                     ? this.contract.getProperties().symbol
                     : this.contract.getName()
@@ -97,18 +101,18 @@ export default {
 </script>
 
 <template>
-<div :key="displayName" class="c-address-field">
+<div class="c-address-field">
     <router-link
         :to="`/address/${address}`"
         :class="highlight ? 'highlighted flex items-center' : 'flex items-center'"
         @click.capture.stop=""
     >
         <q-img
-            v-if="logo"
+            v-if="logo !== null"
             class="q-mr-xs"
             :src="getIcon(logo)"
             width="16px"
-            height="16px"
+            height="auto"
         />
         <span>{{ displayName }}</span>
     </router-link>

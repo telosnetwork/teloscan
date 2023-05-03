@@ -261,11 +261,11 @@ export default {
                 </span>
             </q-td>
             <q-td key="token" :props="props">
-                <q-img v-if="tokenType==='erc20'" class="coin-icon" :src="getIcon(props.row.logoURI)"/>
                 <AddressField
+                    :key="props.row.contract"
                     class="token-name"
                     :address="props.row.address"
-                    :name="props.row.name"
+                    :contract="props.row.contract"
                     :truncate="15"
                 />
             </q-td>
