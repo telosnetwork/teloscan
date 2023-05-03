@@ -56,7 +56,7 @@ export default {
                 this.icon = 'keyboard_double_arrow_up';
                 this.iconTooltip = this.$t('components.transaction.native_withdraw');
                 this.fullName = 'withdraw';
-            } else if (!this.trx.parsedTransaction && this.trx.value > 0) {
+            } else if (!this.trx.parsedTransaction && this.trx.input === '0x' && this.trx.value > 0) {
                 this.fullName = 'TLOS transfer';
             } else if (this.trx.parsedTransaction) {
                 this.fullName = this.trx.parsedTransaction.name;
@@ -111,7 +111,7 @@ export default {
 
 <style lang="scss" scoped>
     .c-method-icon i {
-        margin-top: -2px;
+        margin-top: -1px;
     }
     .c-method-icon {
         background: $purpleBright;

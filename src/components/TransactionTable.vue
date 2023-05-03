@@ -298,7 +298,7 @@ export default {
             </q-td>
             <q-td key='value' :props="props">
                 <TokenValueField
-                    v-if="props.row.value === 0 && props.row.parsedTransaction?.transfers?.length > 0"
+                    v-if="props.row.parsedTransaction?.transfers?.length > 0"
                     :value="props.row.parsedTransaction.transfers[0].value.toString(16) || '0.0'"
                     :address="props.row.to"
                 />

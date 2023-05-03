@@ -70,6 +70,7 @@ export default class ContractManager {
                     return transaction;
                 }
                 transaction.transfers = await this.getTransfers(raw);
+                console.log(raw);
                 return transaction;
             }
         } catch (e) {

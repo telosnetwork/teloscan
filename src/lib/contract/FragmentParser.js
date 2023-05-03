@@ -69,7 +69,6 @@ export default class FragmentParser {
             return await this.getEventInterface(data);
         }
         this.processing.push(data);
-        var index = this.processing.indexOf(data);
 
         try {
             const url = `https://cdn.statically.io/gh/telosnetwork/topic0/main/with_parameter_names/${data.substr(2)}`;
@@ -92,12 +91,11 @@ export default class FragmentParser {
                 this.eventInterfaces[data] = `event ${abiResponse.data.text_signature}`;
                 return new ethers.utils.Interface([this.eventInterfaces[data]]);
             }
-            this.processing = this.processing.splice(index, 1);
         } catch (e) {
-            this.processing = this.processing.splice(index, 1);
             console.error(`Error trying to find event signature for event ${data}: ${e.message}`);
             return false;
         }
+        this.eventInterfaces[data] = '';
         return false;
     }
 
