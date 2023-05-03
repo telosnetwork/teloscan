@@ -99,7 +99,6 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-    .c-method
     .c-method-icon i {
         margin-top: -2px;
     }

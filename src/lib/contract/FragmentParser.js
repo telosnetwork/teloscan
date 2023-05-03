@@ -33,20 +33,28 @@ export default class FragmentParser {
         if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, prefix)) {
             return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
         }
+        if(this.processing.includes(data)){
+            await new Promise(resolve => setTimeout(resolve, 300));
+            let result = await this.getFunctionInterface(data);
+            return result;
+        }
+        this.processing.push(data);
 
         try {
             const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`);
             if (abiResponse) {
                 if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
                     console.error(`Unable to find function signature for sig: ${prefix}`);
-                    return;
+                    this.functionInterfaces[prefix] = '';
+                    return false;
                 }
                 this.functionInterfaces[prefix] = `function ${abiResponse.data.text_signature}`;
                 return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
             }
         } catch (e) {
             console.error(`Error trying to find event signature for function ${prefix}`);
-            return;
+            this.functionInterfaces[prefix] = '';
+            return false;
         }
     }
     async getEventInterface(data) {
