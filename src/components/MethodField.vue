@@ -45,8 +45,19 @@ export default {
                 && this.trx.value > 0
             ){
                 this.icon = 'keyboard_double_arrow_down';
-                this.iconTooltip = this.$t('components.native_deposit');
+                this.iconTooltip = this.$t('components.transaction.native_deposit');
                 this.fullName = 'deposit';
+            } else if(
+                !this.trx.parsedTransaction
+                && this.trx.to === ZERO_ADDRESSES
+                && this.trx.value > 0
+                && parseInt(this.trx.gasPrice) === 0
+            ) {
+                this.icon = 'keyboard_double_arrow_up';
+                this.iconTooltip = this.$t('components.transaction.native_withdraw');
+                this.fullName = 'withdraw';
+            } else if (!this.trx.parsedTransaction && this.trx.value > 0) {
+                this.fullName = 'TLOS transfer';
             } else if (this.trx.parsedTransaction) {
                 this.fullName = this.trx.parsedTransaction.name;
             }

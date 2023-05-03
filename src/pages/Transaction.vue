@@ -380,7 +380,8 @@ export default {
                                     <q-tooltip>{{ $t('pages.click_to_show_in_wei') }}</q-tooltip>
                                 </span>
                             </div>
-                        </div><br>
+                        </div>
+                        <br>
                         <div v-if="trx.logs?.length > 0">
                             <ERCTransferList
                                 :trxFrom="trx.from"
@@ -398,7 +399,7 @@ export default {
                                 :logs="trx.logs"
                             />
                         </div>
-                        <div class="fit row wrap justify-start items-start content-start">
+                        <div class="fit row wrap justify-start items-start content-start q-border-top">
                             <div class="col-3">
                                 <strong>{{ $t('pages.gas_price_charged') }}:&nbsp;</strong>
                             </div>
