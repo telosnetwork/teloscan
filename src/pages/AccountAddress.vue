@@ -252,7 +252,15 @@ export default {
                                 <a :href="getAddressNativeExplorerURL()" target="_blank">{{ telosAccount }}</a>
                             </div>
                         </div>
-                        <div v-if="!!balance" class="dataCardItem balance ">
+                        <div v-else-if="contract && contract.properties?.price" class="dataCardItem balance ">
+                            <div class="dataCardTile">
+                                {{ $t('components.price_usd') }}
+                            </div>
+                            <div class="dataCardData">
+                                {{ parseFloat(contract.properties.price).toFixed(4) }} $
+                            </div>
+                        </div>
+                        <div v-if="!!balance" class="dataCardItem balance">
                             <div class="dataCardTile">
                                 {{ $t('pages.balance') }}
                             </div>
@@ -279,6 +287,14 @@ export default {
                 exact
                 replace
                 :label="$t('pages.transactions')"
+            />
+            <q-route-tab
+                v-if="contract && contract.getNfts()"
+                name="NFTs"
+                :to="{ hash: '#nfts' }"
+                exact
+                replace
+                :label="$t('pages.nfts')"
             />
             <q-route-tab
                 name="int_transactions"

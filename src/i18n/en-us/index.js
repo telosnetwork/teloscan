@@ -187,6 +187,7 @@ export default {
         value: 'Value',
     },
     components: {
+        price_usd: 'Price USD',
         no_balances_found: 'No official erc20 token balance found for this address',
         internal_txns: 'Internal Transactions',
         n_internal_txns: '{ amount } internal transactions',

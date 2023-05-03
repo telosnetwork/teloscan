@@ -111,10 +111,13 @@ export default {
 
 <style lang="scss" scoped>
     .c-method-icon i {
-        margin-top: -1px;
+        margin: auto;
     }
     .c-method-icon {
         background: $purpleBright;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         margin-right: 4px;
         width: 16px;
         line-height: 16px;
