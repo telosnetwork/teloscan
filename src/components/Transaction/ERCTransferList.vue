@@ -151,12 +151,13 @@ export default {
             :key="'erct' + index"
             class="fit row wrap justify-start items-start content-start"
         >
-            <div class="col-4">
+            <div class="col-4 flex">
                 <q-icon class="list-arrow" name="arrow_right"/>
-                <strong>
+                <strong class="q-pr-sm">
                     {{ $t('components.transaction.form_from') }}
                 </strong>
                 <AddressField
+                    :class="q-pl-sm"
                     :highlight="trxFrom.toLowerCase() === transfer.from.toLowerCase() && pTransfers.length > 1"
                     :address="transfer.from"
                     :truncate="15"
@@ -167,12 +168,12 @@ export default {
                     "
                 />
             </div>
-            <div class="col-3">
-                <strong>{{ $t('components.transaction.form_to') }}</strong>
+            <div class="col-4 flex">
+                <strong class="q-pr-sm">{{ $t('components.transaction.form_to') }}</strong>
                 <AddressField
                     :highlight="trxFrom.toLowerCase() === transfer.to.toLowerCase() && pTransfers.length > 1"
                     :address="transfer.to"
-                    :truncate="15"
+                    :truncate="18"
                     copy
                     :name="
                         transfer.contract && transfer.to.toLowerCase() === transfer.contract.address.toLowerCase()
@@ -187,9 +188,6 @@ export default {
                 "
                 class="flex col-4"
             >
-                <strong class="col-2">
-                    {{ $t('components.transaction.form_token') }}
-                </strong>
                 <router-link
                     :if="transfer.contract?.properties?.symbol"
                     class="q-ml-xs q-mr-xs"
@@ -255,8 +253,7 @@ export default {
                     </span>
                 </div>
             </div>
-            <div v-else class="col-5 flex">
-                <strong>{{ $t('components.transaction.form_token') }}</strong>
+            <div v-else class="col-4 flex">
                 <TokenValueField
                     :value="transfer.value"
                     :showWei="true"

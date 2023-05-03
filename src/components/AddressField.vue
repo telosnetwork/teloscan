@@ -14,6 +14,10 @@ export default {
             type: String,
             required: true,
         },
+        class: {
+            type: String,
+            default: '',
+        },
         name: {
             type: String,
             default: '',
@@ -101,7 +105,7 @@ export default {
 </script>
 
 <template>
-<div class="c-address-field">
+<div :class="`c-address-field ${this.class}`">
     <router-link
         :to="`/address/${address}`"
         :class="highlight ? 'highlighted flex items-center' : 'flex items-center'"
@@ -132,6 +136,7 @@ export default {
 }
 .c-address-field {
     display: inline-flex;
+
     align-items: center;
     gap: 4px;
 }
