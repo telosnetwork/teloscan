@@ -229,12 +229,12 @@ export default {
                                 "
                                 class="nft-thumbnail"
                             />
-                            <CustomTooltip :content="$t('components.transaction.consult_media')" />
+                            <CustomTooltip :content="$t('components.nfts.consult_media')" />
                         </a>
                     </span>
                     <span v-if="transfer.contract.supportedInterfaces.includes('erc1155')">
                         <a clickable="clickable" :href="'/address/' + transfer.token.address" target="_blank">
-                            <CustomTooltip :content="$t('components.transaction.consult_collection')" />
+                            <CustomTooltip :content="$t('components.nfts.consult_collection')" />
                         </a>
                     </span>
                     <span>
@@ -248,7 +248,7 @@ export default {
                             <a clickable="clickable" :href="transfer.tokenUri" target="_blank">
                                 <q-icon class="q-pb-sm q-ml-xs" name="description" size="18px"/>
                             </a>
-                            <CustomTooltip :content="$t('components.transaction.consult_metadata')" />
+                            <CustomTooltip :content="$t('components.nfts.consult_metadata')" />
                         </span>
                     </span>
                 </div>

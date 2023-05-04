@@ -7,6 +7,7 @@ import TransactionTable from 'components/TransactionTable';
 import InternalTransactionTable from 'components/InternalTransactionTable';
 import TransferTable from 'components/TransferTable';
 import TokenList from 'components/TokenList';
+import NFTList from 'components/NFTList';
 import ConfirmationDialog from 'components/ConfirmationDialog';
 import ContractTab from 'components/ContractTab/ContractTab';
 import TransactionField from 'components/TransactionField';
@@ -19,6 +20,7 @@ const web3 = new Web3();
 
 const tabs = {
     transactions: '#transactions',
+    nfts: '#nfts',
     int_transactions: '#int_transactions',
     erc20_transfers: '#erc20',
     erc721_transfers: '#erc721',
@@ -34,6 +36,7 @@ export default {
         ConfirmationDialog,
         ContractTab,
         CopyButton,
+        NFTList,
         GenericContractInterface,
         TokenList,
         TransactionField,
@@ -252,20 +255,39 @@ export default {
                                 <a :href="getAddressNativeExplorerURL()" target="_blank">{{ telosAccount }}</a>
                             </div>
                         </div>
-                        <div v-else-if="contract && contract.properties?.price" class="dataCardItem balance ">
+                        <div
+                            v-if="contract && contract.properties && contract.properties.price"
+                            class="dataCardItem balance "
+                        >
                             <div class="dataCardTile">
-                                {{ $t('components.price_usd') }}
+                                {{ $t('components.usd_price') }}
                             </div>
                             <div class="dataCardData">
                                 {{ parseFloat(contract.properties.price).toFixed(4) }} $
                             </div>
+                            <q-tooltip> {{ $t('components.price_sources') }}</q-tooltip>
                         </div>
-                        <div v-if="!!balance" class="dataCardItem balance">
+                        <div
+                            v-if="contract && contract.properties && contract.properties.marketcap"
+                            class="dataCardItem balance "
+                        >
+                            <div class="dataCardTile">
+                                {{ $t('components.usd_marketcap') }}
+                            </div>
+                            <div class="dataCardData">
+                                {{ parseFloat(contract.properties.marketcap).toFixed(4) }} $
+                            </div>
+                            <q-tooltip> {{ $t('components.marketcap_sources') }}</q-tooltip>
+                        </div>
+                        <div
+                            v-if="!contract || !contract.properties || !contract.properties.price"
+                            class="dataCardItem balance"
+                        >
                             <div class="dataCardTile">
                                 {{ $t('pages.balance') }}
                             </div>
                             <div class="dataCardData">
-                                {{balance}}
+                                {{ balance }}
                             </div>
                         </div>
                     </div>
@@ -289,14 +311,15 @@ export default {
                 :label="$t('pages.transactions')"
             />
             <q-route-tab
-                v-if="contract && contract.getNfts()"
-                name="NFTs"
+                v-if="contract && contract.supportedInterfaces.includes('erc721')"
+                name="nfts"
                 :to="{ hash: '#nfts' }"
                 exact
                 replace
                 :label="$t('pages.nfts')"
             />
             <q-route-tab
+                v-else
                 name="int_transactions"
                 :to="{ hash: '#int_transactions' }"
                 exact
@@ -350,6 +373,9 @@ export default {
             >
                 <q-tab-panel name="transactions">
                     <TransactionTable :title="address" :filter="'/address/' + address"/>
+                </q-tab-panel>
+                <q-tab-panel name="nfts">
+                    <NFTList :contract="contract" />
                 </q-tab-panel>
                 <q-tab-panel name="int_transactions">
                     <InternalTransactionTable :title="address" :filter="{address}"/>

@@ -77,6 +77,21 @@ export default class ContractManager {
         }
     }
 
+    async loadNFTs(contract){
+        let address = contract.address.toLowerCase();
+        try {
+            let response = await this.indexerApi.get(`/contract/${address}/nfts`);
+            if(response.data.results?.length > 0){
+                for(var i = 0; i < response.data.results.length; i++){
+                    let nft = response.data.results[i];
+                    this.contracts[address].nfts[nft['tokenId']] = nft;
+                }
+                return response.data.results;
+            }
+        } catch (e) {
+            console.info(`Could load NFTs for ${address} from indexer: ${e.message}`);
+        }
+    }
     async loadNFT(contract, tokenId){
         let address = contract.address.toLowerCase();
         if(!this.contracts[address]) {
