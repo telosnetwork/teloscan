@@ -1,6 +1,5 @@
 <script>
 import AddressField from 'components/AddressField';
-import CustomTooltip from 'components/CustomTooltip';
 export default {
     name: 'NFTList',
     props: {
@@ -11,7 +10,6 @@ export default {
     },
     components: {
         AddressField,
-        CustomTooltip,
     },
 
     async created() {
@@ -174,10 +172,9 @@ export default {
                     <div v-if="props.row.metadata?.attributes" class="flex items-center">
                         <q-icon name="list" size="xs" />
                         <span>{{ props.row.metadata.attributes.length }}</span>
-                        <CustomTooltip
-                            :content="props.row.metadata.attributesStr"
-                            :long="true"
-                        />
+                        <q-tooltip>
+                            <pre>{{ props.row.metadata.attributesStr }}</pre>
+                        </q-tooltip>
                     </div>
                 </q-td>
                 <q-td v-if="props.row.imageCache" key="image" :props="props">
@@ -211,5 +208,4 @@ export default {
 
 <!--eslint-enable-->
 <style scoped lang="sass">
-
 </style>
