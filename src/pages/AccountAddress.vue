@@ -20,7 +20,7 @@ const web3 = new Web3();
 
 const tabs = {
     transactions: '#transactions',
-    nfts: '#nfts',
+    collection: '#collection',
     int_transactions: '#int_transactions',
     erc20_transfers: '#erc20',
     erc721_transfers: '#erc721',
@@ -263,7 +263,8 @@ export default {
                                 {{ $t('components.usd_price') }}
                             </div>
                             <div class="dataCardData">
-                                {{ parseFloat(contract.properties.price).toFixed(4) }} $
+                                <span v-if="contract.properties.price < 0.0001">{{ '< 0.0001 $' }}</span>
+                                <span v-else>{{ parseFloat(contract.properties.price).toFixed(4) }} $</span>
                             </div>
                             <q-tooltip> {{ $t('components.price_sources') }}</q-tooltip>
                         </div>
@@ -312,11 +313,11 @@ export default {
             />
             <q-route-tab
                 v-if="contract && contract.supportedInterfaces.includes('erc721')"
-                name="nfts"
-                :to="{ hash: '#nfts' }"
+                name="collection"
+                :to="{ hash: '#collection' }"
                 exact
                 replace
-                :label="$t('pages.nfts')"
+                :label="$t('components.nfts.collection')"
             />
             <q-route-tab
                 v-else
@@ -374,7 +375,7 @@ export default {
                 <q-tab-panel name="transactions">
                     <TransactionTable :title="address" :filter="'/address/' + address"/>
                 </q-tab-panel>
-                <q-tab-panel name="nfts">
+                <q-tab-panel name="collection">
                     <NFTList :contract="contract" />
                 </q-tab-panel>
                 <q-tab-panel name="int_transactions">

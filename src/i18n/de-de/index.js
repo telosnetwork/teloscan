@@ -188,6 +188,8 @@ export default {
         nfts : {
             id: 'Token ID',
             name: 'Name',
+            collection: 'Collection',
+            nfts: 'NFTs',
             metadata: 'Metadata',
             minter: 'Minter',
             owner: 'Owner',

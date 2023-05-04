@@ -166,28 +166,27 @@ export default {
                     <AddressField :key="props.row.tokenId + 'minter'"  :address="props.row.minter" :truncate="22" />
                 </q-td>
                 <q-td key="name" :props="props">
-                    {{ props.row.metadata?.name }}
+                    <span>{{ props.row.metadata?.name }}</span>
                 </q-td>
                 <q-td key="attributes" :props="props">
                     <div v-if="props.row.metadata?.attributes" class="flex items-center">
-                        <q-icon name="list" size="xs" />
+                        <q-icon name="list" size="xs" class="q-mr-xs" />
                         <span>{{ props.row.metadata.attributes.length }}</span>
                         <q-tooltip>
                             <pre>{{ props.row.metadata.attributesStr }}</pre>
                         </q-tooltip>
                     </div>
                 </q-td>
-                <q-td v-if="props.row.imageCache" key="image" :props="props">
+                <q-td v-if="props.row.imageCache || props.row.metadata?.image" key="image" :props="props">
                     <a
                         clickable="clickable"
-                        :href="props.row.imageCache + '/1440.webp'"
+                        :href="(props.row.imageCache) ? props.row.imageCache + '/1440.webp' : props.row.metadata?.image"
                         target="_blank"
                     >
-                        <q-img :src="props.row.imageCache + '/280.webp'" />
+                        <q-img v-if="props.row.imageCache" :src="props.row.imageCache + '/280.webp'" />
+                        <q-img v-else :src="props.row.metadata?.image" />
                     </a>
-                    <q-tooltip v-if="props.row.metadata.attributes.length">
-                        {{ $t('components.nfts.consult_media') }}
-                    </q-tooltip>
+                    <q-tooltip v-if="props.row.metadata?.description">{{ props.row.metadata.description }}</q-tooltip>
                 </q-td>
                 <q-td key="metadata" :props="props">
                     <a

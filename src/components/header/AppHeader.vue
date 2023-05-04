@@ -261,6 +261,20 @@ export default {
                             />
                             Teloscan {{ isTestnet ? 'Mainnet' : 'Testnet' }}
                         </li>
+                        <li
+                            class="c-header__menu-li"
+                            tabindex="0"
+                            role="link"
+                            :aria-label="$t('components.header.goto_api')"
+                            @click="goTo(isTestnet ? 'https://api.testnet.teloscan.io' : 'https://api.teloscan.io')"
+                        >
+                            <q-icon
+                                name="terminal"
+                                class="c-header__menu-item-icon"
+                                size="sm"
+                            />
+                            Teloscan API
+                        </li>
                     </ul>
                 </div>
             </li>

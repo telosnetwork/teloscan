@@ -190,6 +190,8 @@ export default {
         nfts : {
             id: 'ID Jeton',
             name: 'Nom',
+            collection: 'Collection',
+            nfts: 'NFTs',
             metadata: 'Metadonnées',
             minter: 'Cré par',
             owner: 'Propriétaire',
