@@ -97,21 +97,23 @@ export default {
             if (this.pagination.rowsNumber === 0 && response.data?.total_count) {
                 this.pagination.rowsNumber = response.data.total_count;
             }
-            this.nfts = [];
+            let nfts = [];
             for (const nft of response.data.results) {
                 nft.metadata = (nft.metadata) ? JSON.parse(nft.metadata) : nft.metadata;
                 if(nft.metadata?.attributes){
                     nft.metadata.attributesStr = '';
                     for(let i = 0; i < nft.metadata.attributes.length; i++){
-                        nft.metadata.attributesStr +=
-                            nft.metadata.attributes[i]['trait_type'] + ' : ' +
-                            nft.metadata.attributes[i]['value'] + '\n'
+                        nft.metadata.attributesStr += (typeof nft.metadata.attributes[i]['trait_type'] !== 'undefined')
+                            ? nft.metadata.attributes[i]['trait_type']  + ' : '
+                            : ''
                         ;
+                        nft.metadata.attributesStr += nft.metadata.attributes[i]['value'] + '\n';
                     }
                 }
                 nft.tokenUri = nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/');
-                this.nfts.push(nft);
+                nfts.push(nft);
             }
+            this.nfts = nfts;
             this.loading = false;
         },
         getPath(props) {
@@ -160,10 +162,10 @@ export default {
                     {{ props.row.tokenId }}
                 </q-td>
                 <q-td key="owner" :props="props">
-                    <AddressField :address="props.row.owner" :truncate="22" />
+                    <AddressField :key="props.row.tokenId + 'owner'"  :address="props.row.owner" :truncate="22" />
                 </q-td>
                 <q-td key="minter" :props="props">
-                    <AddressField :address="props.row.minter" :truncate="22" />
+                    <AddressField :key="props.row.tokenId + 'minter'"  :address="props.row.minter" :truncate="22" />
                 </q-td>
                 <q-td key="name" :props="props">
                     {{ props.row.metadata?.name }}

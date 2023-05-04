@@ -16,7 +16,7 @@
   "0x81ed0476a7e785a9e4728fffd679ea97176ca1ac85e1003462558bb5677da57b": "event CreateDecreasePosition( address indexed account, address[] path, address indexToken, uint256 collateralDelta, uint256 sizeDelta, bool isLong, address receiver, uint256 acceptablePrice, uint256 minOut, uint256 executionFee, uint256 index, uint256 queueIndex, uint256 blockNumber, uint256 blockTime)",
   "0x90890809c654f11d6e72a28fa60149770a0d11ec6c92319d6ceb2bb0a4ea1a15": "event Deposit(address indexed user, uint256 indexed pid, uint256 amount)",
   "0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c": "event Deposit(address indexed sender, uint256 value)",
-  "0x4c209b5fc8ad50758f13e2e1088ba56a560dff690a1c6fef26394f4c03821c4f": "event Mint(address indexed sender, uint256 amount0, uint256 amount1)",
+  "0x4c209b5fc8ad50758f13e2e1088ba56a560dff690a1c6fef26394f4c03821c4f": "event Mint(address indexed sender, uint256 indexed amount0, uint256 amount1)",
   "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822": "event Swap(address indexed sender, uint256 amount0In, uint256 amount1In, uint256 amount0Out, uint256 amount1Out, address indexed to)",
   "0xa078c4190abe07940190effc1846be0ccf03ad6007bc9e93f9697d0b460befbb": "event Swapped (address fromAsset, address toAsset, uint256 fromAmount, uint256 receivedAmount)",
   "0xa2c38e2d2fb7e3e1912d937fd1ca11ed6d51864dee4cfa7a7bf02becd7acf092": "event Claim(address indexed account, uint256 amount, bool indexed automatic)",
