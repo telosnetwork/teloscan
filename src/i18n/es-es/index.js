@@ -190,6 +190,7 @@ export default {
             name: 'Name',
             collection: 'Collection',
             nfts: 'NFTs',
+            contract: 'NFT Contract',
             metadata: 'Metadata',
             minter: 'Minter',
             owner: 'Owner',

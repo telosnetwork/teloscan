@@ -20,6 +20,7 @@ const web3 = new Web3();
 
 const tabs = {
     transactions: '#transactions',
+    nfts: '#nfts',
     collection: '#collection',
     int_transactions: '#int_transactions',
     erc20_transfers: '#erc20',
@@ -324,12 +325,27 @@ export default {
                 :label="$t('components.nfts.collection')"
             />
             <q-route-tab
+                v-else-if="!contract"
+                name="nfts"
+                :to="{ hash: '#nfts' }"
+                exact
+                replace
+                :label="$t('components.nfts.nfts')"
+            />
+            <q-route-tab
                 v-else
                 name="int_transactions"
                 :to="{ hash: '#int_transactions' }"
                 exact
                 replace
                 :label="$t('pages.internal_txns')"
+            />
+            <q-route-tab
+                name="tokens"
+                :to="{ hash: '#tokens' }"
+                exact
+                replace
+                :label="$t('pages.tokens')"
             />
             <q-route-tab
                 name="erc20_transfers"
@@ -353,13 +369,6 @@ export default {
                 :label="$t('pages.erc1155_transfers')"
             />
             <q-route-tab
-                name="tokens"
-                :to="{ hash: '#tokens' }"
-                exact
-                replace
-                :label="$t('pages.tokens')"
-            />
-            <q-route-tab
                 v-if="isContract"
                 name="contract"
                 :to="{ hash: '#contract' }"
@@ -379,11 +388,17 @@ export default {
                 <q-tab-panel name="transactions">
                     <TransactionTable :title="address" :filter="'/address/' + address"/>
                 </q-tab-panel>
-                <q-tab-panel name="collection">
+                <q-tab-panel v-if="contract && contract.supportedInterfaces.includes('erc721')" name="collection">
                     <NFTList :address="contract.address" filter="contract" />
                 </q-tab-panel>
-                <q-tab-panel name="int_transactions">
+                <q-tab-panel v-else-if="!contract" name="nfts">
+                    <NFTList :address="address" filter="account" />
+                </q-tab-panel>
+                <q-tab-panel v-else name="int_transactions">
                     <InternalTransactionTable :title="address" :filter="{address}"/>
+                </q-tab-panel>
+                <q-tab-panel name="tokens">
+                    <TokenList :address="address"/>
                 </q-tab-panel>
                 <q-tab-panel name="erc20_transfers">
                     <TransferTable
@@ -408,9 +423,6 @@ export default {
                         :initialPageSize="10"
                         :address="address"
                     />
-                </q-tab-panel>
-                <q-tab-panel name="tokens">
-                    <TokenList :address="address"/>
                 </q-tab-panel>
                 <q-tab-panel v-if="isContract" name="contract">
                     <ContractTab v-if="contract?.isVerified()" :contract="contract"/>

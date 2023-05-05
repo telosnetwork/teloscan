@@ -30,8 +30,9 @@ export default {
                 align: 'left',
             },
             {
-                name: 'owner',
-                label: this.$t('components.nfts.owner'),
+                name: (this.filter === 'account') ? 'contract' : 'owner',
+                label: (this.filter === 'account') ? this.$t('components.nfts.contract')
+                    : this.$t('components.nfts.owner'),
                 align: 'left',
             },
             {
@@ -70,7 +71,7 @@ export default {
             nfts: [],
             allowedFilters: [
                 'contract',
-                'address',
+                'account',
             ],
             filterBy: this.filter,
             pagination: {
@@ -118,7 +119,7 @@ export default {
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
-            if(this.allowedFilters.includes(this.filterBy)){
+            if(!this.allowedFilters.includes(this.filterBy)){
                 this.filterBy = 'contract';
             }
             let path = `/${this.filterBy}/${this.address}/nfts?limit=${
@@ -164,8 +165,11 @@ export default {
                 <q-td key="token_id" :props="props">
                     {{ props.row.tokenId }}
                 </q-td>
-                <q-td key="owner" :props="props">
+                <q-td v-if="this.filter !== 'account'" key="owner" :props="props">
                     <AddressField :key="props.row.tokenId + 'owner'"  :address="props.row.owner" :truncate="22" />
+                </q-td>
+                <q-td v-else key="contract" :props="props">
+                    <AddressField :address="props.row.contract" :truncate="22" />
                 </q-td>
                 <q-td key="minter" :props="props">
                     <AddressField :key="props.row.tokenId + 'minter'"  :address="props.row.minter" :truncate="22" />

@@ -192,6 +192,7 @@ export default {
             name: 'Nom',
             collection: 'Collection',
             nfts: 'NFTs',
+            contract: 'Contrat NFT',
             metadata: 'Metadonnées',
             minter: 'Cré par',
             owner: 'Propriétaire',
