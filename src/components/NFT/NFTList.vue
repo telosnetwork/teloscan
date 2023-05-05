@@ -1,5 +1,6 @@
 <script>
 import AddressField from 'components/AddressField';
+import BlockField from 'components/BlockField';
 export default {
     name: 'NFTList',
     props: {
@@ -15,6 +16,7 @@ export default {
     },
     components: {
         AddressField,
+        BlockField,
     },
 
     async mounted() {
@@ -24,6 +26,12 @@ export default {
     },
     data() {
         const columns = [
+            {
+                name: 'minted',
+                label: this.$t('components.nfts.minted'),
+                align: 'left',
+                sortable: true,
+            },
             {
                 name: 'token_id',
                 label: this.$t('components.token_id'),
@@ -111,7 +119,7 @@ export default {
                         nft.metadata.attributesStr += nft.metadata.attributes[i]['value'] + '\n';
                     }
                 }
-                nft.tokenUri = nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/');
+                nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
                 nfts.push(nft);
             }
             this.nfts = nfts;
@@ -137,7 +145,6 @@ export default {
 <template>
 <div>
     <q-table
-        v-if="nfts.length > 0"
         v-model:pagination="pagination"
         :rows="nfts"
         :loading="loading"
@@ -162,20 +169,37 @@ export default {
         </template>
         <template v-slot:body="props">
             <q-tr :props="props">
+                <q-td key="minted" :props="props">
+                    <BlockField :block="props.row.blockMinted" />
+                </q-td>
                 <q-td key="token_id" :props="props">
-                    {{ props.row.tokenId }}
+                    <span v-if="props.row.tokenId <= 100000000000">{{ props.row.tokenId }}</span>
+                    <span  v-else>
+                        <span>{{ '> 100000000000' }}</span>
+                        <q-tooltip>{{ props.row.tokenId }}</q-tooltip>
+                    </span>
                 </q-td>
                 <q-td v-if="this.filter !== 'account'" key="owner" :props="props">
-                    <AddressField :key="props.row.tokenId + 'owner'"  :address="props.row.owner" :truncate="22" />
+                    <AddressField :key="props.row.tokenId + 'owner'"  :address="props.row.owner" :truncate="16" />
                 </q-td>
                 <q-td v-else key="contract" :props="props">
-                    <AddressField :address="props.row.contract" :truncate="22" />
+                    <AddressField :key="props.row.tokenId + 'contract'" :address="props.row.contract" :truncate="16" />
                 </q-td>
                 <q-td key="minter" :props="props">
-                    <AddressField :key="props.row.tokenId + 'minter'"  :address="props.row.minter" :truncate="22" />
+                    <AddressField :key="props.row.tokenId + 'minter'"  :address="props.row.minter" :truncate="16" />
                 </q-td>
                 <q-td key="name" :props="props">
-                    <span>{{ props.row.metadata?.name }}</span>
+                    <span v-if="props.row.metadata?.name && props.row.metadata?.name.length < 22">
+                        <span :key="props.row.tokenId + 'name'">
+                            {{ props.row.metadata?.name }}
+                        </span>
+                    </span>
+                    <span v-else-if="props.row.metadata?.name">
+                        <span :key="props.row.tokenId + 'name'">
+                            {{ props.row.metadata?.name.substring(0, 22) }}...
+                        </span>
+                        <q-tooltip>{{ props.row.metadata?.name }}</q-tooltip>
+                    </span>
                 </q-td>
                 <q-td key="attributes" :props="props">
                     <div v-if="props.row.metadata?.attributes" class="flex items-center">
@@ -186,8 +210,9 @@ export default {
                         </q-tooltip>
                     </div>
                 </q-td>
-                <q-td v-if="props.row.imageCache || props.row.metadata?.image" key="image" :props="props">
+                <q-td key="image" :props="props">
                     <a
+                        v-if="props.row.imageCache || props.row.metadata?.image"
                         clickable="clickable"
                         :href="(props.row.imageCache) ? props.row.imageCache + '/1440.webp' : props.row.metadata?.image"
                         target="_blank"
@@ -199,7 +224,7 @@ export default {
                 </q-td>
                 <q-td key="metadata" :props="props">
                     <a
-                        v-if="props.row.tokenUri"
+                        v-if="props.row.tokenUri && props.row.tokenUri !== '___MISSING_TOKEN_URI___'"
                         clickable="clickable"
                         :href="props.row.tokenUri"
                         target="_blank"
@@ -216,4 +241,10 @@ export default {
 
 <!--eslint-enable-->
 <style scoped lang="sass">
+.q-img
+    min-width: 120px
+.sortable
+    height: 60px
+    display: flex
+    align-items: center
 </style>

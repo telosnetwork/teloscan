@@ -7,7 +7,7 @@ import TransactionTable from 'components/TransactionTable';
 import InternalTransactionTable from 'components/InternalTransactionTable';
 import TransferTable from 'components/TransferTable';
 import TokenList from 'components/TokenList';
-import NFTList from 'components/NFTList';
+import NFTList from 'components/NFT/NFTList';
 import ConfirmationDialog from 'components/ConfirmationDialog';
 import ContractTab from 'components/ContractTab/ContractTab';
 import TransactionField from 'components/TransactionField';
