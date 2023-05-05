@@ -3,27 +3,20 @@ import AddressField from 'components/AddressField';
 export default {
     name: 'NFTList',
     props: {
-        contract: {
-            type: Object,
+        address: {
+            type: String,
+            required: true,
+        },
+        filter: {
+            type: String,
             required: false,
+            default: 'contract',
         },
     },
     components: {
         AddressField,
     },
 
-    async created() {
-        // initialization of the translated texts
-        this.columns[0].label = this.$t('components.token_id');
-        this.columns[1].label = this.$t('components.nfts.owner');
-        this.columns[2].label = this.$t('components.nfts.minter');
-        this.columns[3].label = this.$t('components.nfts.name');
-        this.columns[4].label = this.$t('components.nfts.attributes')[0].toUpperCase() +
-            this.$t('components.nfts.attributes').slice(1)
-        ;
-        this.columns[5].label = this.$t('components.nfts.image');
-        this.columns[6].label = this.$t('components.nfts.metadata');
-    },
     async mounted() {
         await this.onRequest({
             pagination: this.pagination,
@@ -33,44 +26,53 @@ export default {
         const columns = [
             {
                 name: 'token_id',
-                label: '',
+                label: this.$t('components.token_id'),
                 align: 'left',
             },
             {
                 name: 'owner',
-                label: '',
+                label: this.$t('components.nfts.owner'),
                 align: 'left',
             },
             {
                 name: 'minter',
-                label: '',
+                label: this.$t('components.nfts.minter'),
                 align: 'left',
             },
             {
                 name: 'name',
-                label: '',
+                label: this.$t('components.nfts.name'),
                 align: 'left',
             },
             {
                 name: 'attributes',
-                label: '',
+                label:  this.$t('components.nfts.attributes')[0].toUpperCase() +
+                    this.$t('components.nfts.attributes').slice(1),
                 align: 'left',
             },
             {
                 name: 'image',
-                label: '',
+                label: this.$t('components.nfts.image'),
                 align: 'left',
             },
             {
                 name: 'metadata',
-                label: '',
+                label: this.$t('components.nfts.metadata'),
                 align: 'center',
             },
         ];
+        if(this.filter === 'address'){
+            delete columns[1];
+        }
         return {
             columns: columns,
             loading: true,
             nfts: [],
+            allowedFilters: [
+                'contract',
+                'address',
+            ],
+            filterBy: this.filter,
             pagination: {
                 sortBy: 'token_id',
                 descending: true,
@@ -116,7 +118,10 @@ export default {
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/contract/${this.contract.address}/nfts?limit=${
+            if(this.allowedFilters.includes(this.filterBy)){
+                this.filterBy = 'contract';
+            }
+            let path = `/${this.filterBy}/${this.address}/nfts?limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
             path += `&offset=${(page - 1) * rowsPerPage}`;

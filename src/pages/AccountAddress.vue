@@ -256,7 +256,7 @@ export default {
                             </div>
                         </div>
                         <div
-                            v-if="contract && contract.properties && contract.properties.price"
+                            v-if="contract && contract.properties?.price && parseFloat(contract.properties.price) > 0"
                             class="dataCardItem balance "
                         >
                             <div class="dataCardTile">
@@ -269,14 +269,18 @@ export default {
                             <q-tooltip> {{ $t('components.price_sources') }}</q-tooltip>
                         </div>
                         <div
-                            v-if="contract && contract.properties && contract.properties.marketcap"
+                            v-if="
+                                contract && contract.properties?.marketcap
+                                    && parseFloat(contract.properties.marketcap) > 0
+                            "
                             class="dataCardItem balance "
                         >
                             <div class="dataCardTile">
                                 {{ $t('components.usd_marketcap') }}
                             </div>
                             <div class="dataCardData">
-                                {{ parseFloat(contract.properties.marketcap).toFixed(4) }} $
+                                <span v-if="parseFloat(contract.properties.marketcap)< 0.0001">{{ '< 0.0001 $' }}</span>
+                                <span v-else>{{ parseFloat(contract.properties.marketcap).toFixed(4) }} $</span>
                             </div>
                             <q-tooltip> {{ $t('components.marketcap_sources') }}</q-tooltip>
                         </div>
@@ -376,7 +380,7 @@ export default {
                     <TransactionTable :title="address" :filter="'/address/' + address"/>
                 </q-tab-panel>
                 <q-tab-panel name="collection">
-                    <NFTList :contract="contract" />
+                    <NFTList :address="contract.address" filter="contract" />
                 </q-tab-panel>
                 <q-tab-panel name="int_transactions">
                     <InternalTransactionTable :title="address" :filter="{address}"/>
