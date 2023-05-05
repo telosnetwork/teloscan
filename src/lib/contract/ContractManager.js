@@ -159,12 +159,18 @@ export default class ContractManager {
         const { tokens } = results.data;
         results.data.tokens = (tokens ?? []).filter(({ chainId }) => chainId === +process.env.NETWORK_EVM_CHAIN_ID);
 
-        this.tokenList = results.data;
+        this.tokenList = results.data || false;
     }
 
     async getTokenList() {
         if (!this.tokenList) {
-            await this.loadTokenList();
+            if (!this.processing['tokenlist']) {
+                this.processing['tokenlist'] = true;
+                await this.loadTokenList();
+            } else {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                return await this.getTokenList();
+            }
         }
         return this.tokenList;
     }
