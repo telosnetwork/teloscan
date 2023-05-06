@@ -1,6 +1,7 @@
 <script>
 import AddressField from 'components/AddressField';
 import BlockField from 'components/BlockField';
+//import ALLOWED_EXTENSIONS from '';
 export default {
     name: 'NFTList',
     props: {
@@ -83,7 +84,7 @@ export default {
             ],
             filterBy: this.filter,
             pagination: {
-                sortBy: 'token_id',
+                sortBy: 'minted',
                 descending: true,
                 page: 1,
                 rowsPerPage: 10,
@@ -119,6 +120,20 @@ export default {
                         nft.metadata.attributesStr += nft.metadata.attributes[i]['value'] + '\n';
                     }
                 }
+                if(nft.metadata?.animation_url){
+                    nft.metadata.animation = nft.metadata.animation_url;
+                    let parts = nft.metadata.animation_url.split('.');
+                    nft.metadata.animationExtension = (parts.length > 1) ? parts[parts.length - 1] : 'mp4';
+                } else if(nft.metadata?.image){
+                    if(nft.metadata.image.endsWith('.mp4')){
+                        nft.metadata.animation = nft.metadata.image;
+                        nft.metadata.animationExtension = '.mp4';
+                    }
+                } else if(nft.tokenUri?.endsWith('.mp4')){
+                    nft.metadata = (typeof nft.metadata === 'string') ? {} : nft.metadata;
+                    nft.metadata.animation = nft.tokenUri;
+                    nft.metadata.animationExtension = '.mp4';
+                }
                 nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
                 nfts.push(nft);
             }
@@ -148,7 +163,8 @@ export default {
         v-model:pagination="pagination"
         :rows="nfts"
         :loading="loading"
-        :row-key="row => row.tokenId"
+        :binary-state-sort="true"
+        :row-key="row => row.contract + row.tokenId"
         :columns="columns"
         :rows-per-page-options="[10, 20, 50]"
         flat
@@ -217,31 +233,34 @@ export default {
                 </q-td>
                 <q-td key="image" :props="props">
                     <a
-                        v-if="props.row.imageCache || props.row.metadata?.image"
+                        v-if="props.row.imageCache || props.row.metadata?.image || props.row.metadata?.animation"
                         clickable="clickable"
                         :href="(props.row.imageCache) ? props.row.imageCache + '/1440.webp' : props.row.metadata?.image"
                         target="_blank"
                     >
                         <q-img v-if="props.row.imageCache" :src="props.row.imageCache + '/280.webp'" />
                         <q-media-player
-                            v-else-if="props.row.metadata?.image && props.row.metadata?.image.endsWith('.mp4')"
+                            v-else-if="props.row.metadata?.animation"
                             type="video"
                             loop="loop"
                             :playsinline="true"
                             :autoplay="true"
                             :show-big-play-button="true"
                             muted="muted"
-                            big-play-button-color="purple"
+                            big-play-button-color="purpleBright"
                             :hideVolumeSlider="true"
                             :noControls="true"
                             :hideVolumeBtn="true"
                             :hidePlayBtn="true"
                             :hideSettingsBtn="true"
                             :hideFullscreenBtn="true"
-                            :sources="[{type: 'video/mp4', src: props.row.metadata?.image}]"
+                            :sources="[{
+                                type: 'video/' + props.row.metadata.animationExtension,
+                                src: props.row.metadata.animation,
+                            }]"
                             dense
                         />
-                        <q-img v-else :src="props.row.metadata?.image" />
+                        <q-img v-else-if="props.row.metadata?.image" :src="props.row.metadata?.image" />
                     </a>
                     <q-tooltip v-if="props.row.metadata?.description">{{ props.row.metadata.description }}</q-tooltip>
                 </q-td>
@@ -264,8 +283,9 @@ export default {
 
 <!--eslint-enable-->
 <style scoped lang="sass">
-q-video
+.q-media
     max-width: 220px
+    max-height: 160px
 .q-img
     min-width: 120px
 .sortable

@@ -41,6 +41,7 @@ export default {
                 name: 'block',
                 label: '',
                 align: 'left',
+                sortable: true,
             },
             {
                 name: 'date',
@@ -78,7 +79,7 @@ export default {
             total: null,
             loading: false,
             pagination: {
-                sortBy: 'date',
+                sortBy: 'block',
                 descending: true,
                 page: 1,
                 rowsPerPage: 10,
@@ -103,6 +104,7 @@ export default {
             handler(_pag) {
                 let pag = _pag;
                 let page = 1;
+                let desc = true;
                 let size = this.page_size_options[0];
 
                 // we also allow to pass a single number as the page number
@@ -110,12 +112,13 @@ export default {
                     page = pag;
                 } else if (typeof pag === 'string') {
                     // we also allow to pass a string of two numbers: 'page,rowsPerPage'
-                    const [p, s] = pag.split(',');
+                    const [p, s, d] = pag.split(',');
                     page = p;
                     size = s;
+                    desc = (!d || d.toUpperCase() !== 'ASC');
                 }
 
-                this.setPagination(page, size);
+                this.setPagination(page, size, desc);
             },
             immediate: true,
         },
@@ -130,20 +133,20 @@ export default {
         },
     },
     methods: {
-        setPagination(page, size) {
+        setPagination(page, size, desc) {
             if (page) {
                 this.pagination.page = Number(page);
             }
             if (size) {
                 this.pagination.rowsPerPage = Number(size);
             }
+            this.pagination.descending = Boolean(desc);
             this.onRequest({
                 pagination: this.pagination,
             });
         },
         async onPaginationChange(props) {
-            const { page, rowsPerPage } = props.pagination;
-
+            const { page, rowsPerPage, descending } = props.pagination;
             // we need to change the URL to keep the pagination state by changing the this.$route.query.page
             // with a string like 'page,rowsPerPage'
             this.$router.push({
@@ -151,7 +154,7 @@ export default {
                 hash: window.location.hash,
                 query: {
                     ...this.$route.query,
-                    page: `${page},${rowsPerPage}`,
+                    page: `${page},${rowsPerPage},${(descending) ? 'DESC' : 'ASC'}`,
                 },
             });
         },
@@ -238,6 +241,7 @@ export default {
 <q-table
     v-model:pagination="pagination"
     :rows="rows"
+    :binary-state-sort="true"
     :row-key="row => row.hash"
     :columns="columns"
     :loading="loading"
@@ -308,3 +312,11 @@ export default {
     </template>
 </q-table>
 </template>
+<!--eslint-enable-->
+<style scoped lang="sass">
+    .sortable
+        height: 60px
+        display: flex
+        align-items: center
+</style>
+

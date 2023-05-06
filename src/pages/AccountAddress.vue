@@ -50,6 +50,7 @@ export default {
         return {
             accountLoading: false,
             title: '',
+            fullTitle: null,
             telosAccount: null,
             balance: null,
             nonce: null,
@@ -133,8 +134,11 @@ export default {
                     const response = await this.$indexerApi.get(`/block/${this.contract.getCreationBlock()}`);
                     this.creationDate = response.data.results[0]?.timestamp;
                     if (this.contract.getName()) {
-                        this.title = this.contract.getName();
-                        this.title = (this.title.length > 22) ? this.title.slice(0, 22) + '...' : this.title;
+                        this.fullTitle = this.contract.getName();
+                        this.title = (this.fullTitle.length > 22)
+                            ? this.fullTitle.slice(0, 22) + '..'
+                            : this.fullTitle
+                        ;
                         if(this.contract.properties?.symbol){
                             this.title = this.title + ' (' + this.contract.properties.symbol + ')';
                         }
@@ -185,8 +189,21 @@ export default {
                         class="coin-icon"
                         :src="getIcon(this.contract.logoURI)"
                     />
+                    <q-icon
+                        v-else-if="!contract"
+                        class="q-mr-xs"
+                        name="account_circle"
+                        size="md"
+                    />
+                    <q-icon
+                        v-else
+                        name="source"
+                        class="q-mr-sm"
+                        size="md"
+                    />
                     <div class="text-primary text-h4 q-pr-xs q-pb-md">
-                        {{ title }}
+                        <span>{{ title }}</span>
+                        <q-tooltip v-if="fullTitle">{{ fullTitle }} </q-tooltip>
                     </div>
                     <q-icon
                         v-if="isContract"
@@ -214,7 +231,7 @@ export default {
                         />
                         <template v-if="contract">
                             <div class="text-white">
-                                {{ $t('pages.created_at_trx' )}} &nbsp;
+                                {{ $t('pages.created_at_trx' )}}
                                 <TransactionField :transaction-hash="contract.getCreationTrx()"/>
                             </div>
                             <div class="text-white">{{ $t('pages.by_address') }}
