@@ -170,7 +170,7 @@ export default {
         <template v-slot:body="props">
             <q-tr :props="props">
                 <q-td key="minted" :props="props">
-                    <BlockField :block="props.row.blockMinted" />
+                    <BlockField v-if="props.row.blockMinted" :block="props.row.blockMinted" />
                 </q-td>
                 <q-td key="token_id" :props="props">
                     <span v-if="props.row.tokenId <= 100000000000">{{ props.row.tokenId }}</span>
@@ -186,7 +186,12 @@ export default {
                     <AddressField :key="props.row.tokenId + 'contract'" :address="props.row.contract" :truncate="16" />
                 </q-td>
                 <q-td key="minter" :props="props">
-                    <AddressField :key="props.row.tokenId + 'minter'"  :address="props.row.minter" :truncate="16" />
+                    <AddressField
+                        v-if="props.row.minter"
+                        :key="props.row.tokenId + 'minter'"
+                        :address="props.row.minter"
+                        :truncate="16"
+                    />
                 </q-td>
                 <q-td key="name" :props="props">
                     <span v-if="props.row.metadata?.name && props.row.metadata?.name.length < 22">
@@ -218,6 +223,24 @@ export default {
                         target="_blank"
                     >
                         <q-img v-if="props.row.imageCache" :src="props.row.imageCache + '/280.webp'" />
+                        <q-media-player
+                            v-else-if="props.row.metadata?.image && props.row.metadata?.image.endsWith('.mp4')"
+                            type="video"
+                            loop="loop"
+                            :playsinline="true"
+                            :autoplay="true"
+                            :show-big-play-button="true"
+                            muted="muted"
+                            big-play-button-color="purple"
+                            :hideVolumeSlider="true"
+                            :noControls="true"
+                            :hideVolumeBtn="true"
+                            :hidePlayBtn="true"
+                            :hideSettingsBtn="true"
+                            :hideFullscreenBtn="true"
+                            :sources="[{type: 'video/mp4', src: props.row.metadata?.image}]"
+                            dense
+                        />
                         <q-img v-else :src="props.row.metadata?.image" />
                     </a>
                     <q-tooltip v-if="props.row.metadata?.description">{{ props.row.metadata.description }}</q-tooltip>
@@ -241,6 +264,8 @@ export default {
 
 <!--eslint-enable-->
 <style scoped lang="sass">
+q-video
+    max-width: 220px
 .q-img
     min-width: 120px
 .sortable
