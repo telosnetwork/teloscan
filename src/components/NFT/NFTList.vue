@@ -1,7 +1,8 @@
 <script>
 import AddressField from 'components/AddressField';
 import BlockField from 'components/BlockField';
-//import ALLOWED_EXTENSIONS from '';
+import { ALLOWED_VIDEO_EXTENSIONS } from 'src/lib/utils';
+
 export default {
     name: 'NFTList',
     props: {
@@ -93,6 +94,36 @@ export default {
         };
     },
     methods: {
+        hasVideo(nft){
+            if(
+                !nft.metadata
+                && !nft.metadata?.image
+                && !nft.metadata?.animation_url
+                && (!nft.tokenUri || nft.tokenUri.endsWith('.json'))
+            ){
+                return nft;
+            }
+            let video = (nft.metadata?.animation_url && nft.metadata.animation_url.length > 0)
+                ? nft.metadata.animation_url
+                : nft.metadata?.image
+            ;
+            video = (typeof video !== 'undefined' && video) ? video : nft.tokenUri;
+            if(!video){
+                return nft;
+            }
+            let parts = video.split('.');
+            if(parts.length > 1){
+                let ext = parts[parts.length - 1].split('?')[0];
+                if(!ALLOWED_VIDEO_EXTENSIONS.includes(ext)){
+                    return nft;
+                }
+                nft.metadata = (typeof nft.metadata === 'string') ? {} : nft.metadata;
+                nft.metadata.animation = video;
+                nft.metadata.animationExtension = ext;
+                console.log(nft);
+            }
+            return nft;
+        },
         async onRequest(props) {
             this.loading = true;
 
@@ -108,7 +139,7 @@ export default {
                 this.pagination.rowsNumber = response.data.total_count;
             }
             let nfts = [];
-            for (const nft of response.data.results) {
+            for (let nft of response.data.results) {
                 nft.metadata = (nft.metadata) ? JSON.parse(nft.metadata) : nft.metadata;
                 if(nft.metadata?.attributes){
                     nft.metadata.attributesStr = '';
@@ -120,20 +151,7 @@ export default {
                         nft.metadata.attributesStr += nft.metadata.attributes[i]['value'] + '\n';
                     }
                 }
-                if(nft.metadata?.animation_url){
-                    nft.metadata.animation = nft.metadata.animation_url;
-                    let parts = nft.metadata.animation_url.split('.');
-                    nft.metadata.animationExtension = (parts.length > 1) ? parts[parts.length - 1] : 'mp4';
-                } else if(nft.metadata?.image){
-                    if(nft.metadata.image.endsWith('.mp4')){
-                        nft.metadata.animation = nft.metadata.image;
-                        nft.metadata.animationExtension = '.mp4';
-                    }
-                } else if(nft.tokenUri?.endsWith('.mp4')){
-                    nft.metadata = (typeof nft.metadata === 'string') ? {} : nft.metadata;
-                    nft.metadata.animation = nft.tokenUri;
-                    nft.metadata.animationExtension = '.mp4';
-                }
+                nft = this.hasVideo(nft);
                 nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
                 nfts.push(nft);
             }
@@ -233,14 +251,12 @@ export default {
                 </q-td>
                 <q-td key="image" :props="props">
                     <a
-                        v-if="props.row.imageCache || props.row.metadata?.image || props.row.metadata?.animation"
-                        clickable="clickable"
-                        :href="(props.row.imageCache) ? props.row.imageCache + '/1440.webp' : props.row.metadata?.image"
+                        v-if="props.row.metadata?.animation"
+                        :href="props.row.metadata.animation"
                         target="_blank"
                     >
-                        <q-img v-if="props.row.imageCache" :src="props.row.imageCache + '/280.webp'" />
+                        <div class="overlay"></div>
                         <q-media-player
-                            v-else-if="props.row.metadata?.animation"
                             type="video"
                             loop="loop"
                             :playsinline="true"
@@ -260,7 +276,15 @@ export default {
                             }]"
                             dense
                         />
-                        <q-img v-else-if="props.row.metadata?.image" :src="props.row.metadata?.image" />
+                    </a>
+                    <a
+                        v-else-if="props.row.imageCache || props.row.metadata?.image"
+                        clickable="clickable"
+                        :href="(props.row.imageCache) ? props.row.imageCache + '/1440.webp' : props.row.metadata?.image"
+                        target="_blank"
+                    >
+                        <q-img v-if="props.row.imageCache" :src="props.row.imageCache + '/280.webp'" />
+                        <q-img v-else :src="props.row.metadata?.image" />
                     </a>
                     <q-tooltip v-if="props.row.metadata?.description">{{ props.row.metadata.description }}</q-tooltip>
                 </q-td>
@@ -283,7 +307,13 @@ export default {
 
 <!--eslint-enable-->
 <style scoped lang="sass">
+.overlay
+    position: absolute
+    width: 100%
+    height: 100%
+    z-index: 55
 .q-media
+    z-index: 1
     max-width: 220px
     max-height: 160px
 .q-img

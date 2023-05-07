@@ -5,7 +5,6 @@ export default {
         current_language_name: 'English',
     },
     pages: {
-        nfts: 'nfts',
         staking: {
             note_unstaking_period: 'Please note that there is an unstaking period of {period}',
             claim_tlos: 'Claim TLOS',

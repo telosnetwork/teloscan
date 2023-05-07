@@ -9,6 +9,13 @@ export const DEAD_ADDRESSES = [
     '0x00000000000000000000000000000000000xdead',
 ];
 
+export const ALLOWED_IMAGE_EXTENSIONS = [
+    'svg', 'jpg', 'jpeg', 'gif', 'png', 'webp',
+];
+export const ALLOWED_VIDEO_EXTENSIONS = [
+    'mp4', 'webm', 'ogg',
+];
+
 export const WEI_PRECISION = 18;
 
 export function formatWei(bn, tokenDecimals, displayDecimals) {

@@ -332,7 +332,7 @@ export default {
                                 />
                             </div>
                         </div><br>
-                        <div class="fit row wrap justify-start items-start content-start">
+                        <div v-if="trx.to" class="fit row wrap justify-start items-start content-start">
                             <div class="col-3">
                                 <strong>{{ $t('pages.to') }}:&nbsp;</strong>
                             </div>
@@ -340,6 +340,18 @@ export default {
                                 <AddressField
                                     :address="trx.to"
                                     :is-contract-trx="!!contract"
+                                    :truncate="0"
+                                    copy="copy"
+                                />
+                            </div>
+                        </div>
+                        <div v-else-if="trx.contractAddress" class="fit row justify-start items-start content-start">
+                            <div class="col-3">
+                                <strong>{{ $t('pages.deployed_contract') }}:&nbsp;</strong>
+                            </div>
+                            <div class="col-9 word-break">
+                                <AddressField
+                                    :address="trx.contractAddress"
                                     :truncate="0"
                                     copy="copy"
                                 />
