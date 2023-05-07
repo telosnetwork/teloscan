@@ -33,8 +33,13 @@ export default {
                 sortable: true,
             },
             {
+                name: 'telos_supply_share',
+                label: this.$t('components.holders.telos_share'),
+                align: 'left',
+            },
+            {
                 name: 'supply_share',
-                label: this.$t('components.holders.share'),
+                label: this.$t('components.holders.global_share'),
                 align: 'left',
             },
             {
@@ -127,8 +132,31 @@ export default {
             <q-td key="balance" :props="props">
                 {{ formatWei(props.row.balance, contract.properties?.decimals || 18) }}
             </q-td>
+            <q-td key="telos_supply_share" :props="props">
+                <span v-if="contract.properties?.supply">
+                    <span>
+                        {{ ((props.row.balance / contract.properties.supply) * 100).toFixed(2) + '%'}}
+                    </span>
+                    <q-tooltip>
+                        {{ ((props.row.balance / contract.properties.supply) * 100) + '%'}}
+                    </q-tooltip>
+                </span>
+            </q-td>
             <q-td key="supply_share" :props="props">
-                {{ ((props.row.balance / contract.properties.supply) * 100).toFixed(2) + '%'}}
+                <span v-if="contract.properties?.total_supply_ibc">
+                    <span>
+                        {{ ((
+                            formatWei(props.row.balance, contract.properties.decimals)
+                            / contract.properties.total_supply_ibc
+                        ) * 100).toFixed(2) + '%'}}
+                    </span>
+                    <q-tooltip>
+                        {{ ((
+                            formatWei(props.row.balance, contract.properties.decimals)
+                            / contract.properties.total_supply_ibc
+                        ) * 100) + '%'}}
+                    </q-tooltip>
+                </span>
             </q-td>
             <q-td key="updated" :props="props">
                 <DateField :epoch="props.row.updated / 1000" />
