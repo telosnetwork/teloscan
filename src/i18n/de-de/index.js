@@ -118,6 +118,7 @@ export default {
         go_home: 'Home',
         minted: 'Minted',
         holders: 'Holders',
+        telos_supply: 'Telos EVM supply',
         select_sol_file: 'Bitte .sol Smart Contract Datei für Hochladen auswählen',
         select_json_file: 'Bitte standard JSON Objekt-Datei für Hochladen auswählen',
         paste_contract_contents: 'Sie müssen eine Datei zum Hochladen auswählen oder den Reiter wechseln, um Smart Contract Inhalte direkt einzufügen.',

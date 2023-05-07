@@ -118,6 +118,7 @@ export default {
         go_home: 'Ver Início',
         minted: 'Minted',
         holders: 'Holders',
+        telos_supply: 'Telos EVM supply',
         select_sol_file: 'Selecione o arquivo de contrato .sol para carregar',
         select_json_file: 'Selecione o arquivo de objeto de entrada JSON convencional para carregar',
         paste_contract_contents: 'você deve selecionar um arquivo para carrregar ou alternar a entrada para colar conteúdos do contrato',

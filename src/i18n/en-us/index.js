@@ -117,6 +117,7 @@ export default {
         oops: 'Oops. Nothing here...',
         go_home: 'Go Home',
         minted: 'Minted',
+        telos_supply: 'Telos EVM supply',
         holders: 'Holders',
         select_sol_file: 'Select .sol contract file for upload',
         select_json_file: 'Select standard JSON input object file for upload',

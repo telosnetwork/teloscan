@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-unused-components -->
 <script>
-import { toChecksumAddress } from 'src/lib/utils';
+import { toChecksumAddress, formatWei } from 'src/lib/utils';
 import { getIcon } from 'src/lib/token-utils';
 import Web3 from 'web3';
 import TransactionTable from 'components/TransactionTable';
@@ -181,6 +181,7 @@ export default {
             this.confirmationDialog = false;
         },
         getIcon,
+        formatWei,
     },
 };
 </script>
@@ -311,15 +312,31 @@ export default {
                             <q-tooltip> {{ $t('components.marketcap_sources') }}</q-tooltip>
                         </div>
                         <div
-                            v-if="this.contract && this.contract.properties &&
-                                this.contract.supportedInterfaces.includes('erc721')"
+                            v-if="
+                                this.contract && this.contract.properties?.supply
+                                    && (this.contract.supportedInterfaces.includes('erc721')
+                                        || this.contract.supportedInterfaces.includes('erc20'))
+                            "
                             class="dataCardItem"
                         >
-                            <div class="dataCardTile">
+                            <div v-if="this.contract.supportedInterfaces.includes('erc721')" class="dataCardTile">
                                 {{ $t('pages.minted') }}
                             </div>
+                            <div v-else class="dataCardTile">
+                                {{ $t('pages.telos_supply') }}
+                            </div>
                             <div class="dataCardData">
-                                {{ contract.properties?.supply }}
+                                <span>
+                                    {{
+                                        parseFloat(formatWei(
+                                            contract.properties.supply ,
+                                            contract.properties.decimals
+                                        )).toFixed(4)
+                                    }}
+                                </span>
+                                <q-tooltip>
+                                    {{ formatWei(contract.properties.supply , contract.properties.decimals) }}
+                                </q-tooltip>
                             </div>
                         </div>
                         <div

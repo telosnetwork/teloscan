@@ -118,6 +118,7 @@ export default {
         go_home: 'Accueil',
         minted: 'Frappé(s)',
         holders: 'Détenteurs',
+        telos_supply: 'Réserve Telos EVM',
         select_sol_file: 'Sélectionnez votre fichier .sol pour l\'envoyer',
         select_json_file: 'Sélectionnez un fichier avec un objet JSON standard à envoyer',
         paste_contract_contents: 'vous devez séléctionner un fichier à envoyer ou utiliser le boutton de bascule pour pouvoir coller le contenu de votre contrat',
