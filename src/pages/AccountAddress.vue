@@ -6,7 +6,8 @@ import Web3 from 'web3';
 import TransactionTable from 'components/TransactionTable';
 import InternalTransactionTable from 'components/InternalTransactionTable';
 import TransferTable from 'components/TransferTable';
-import TokenList from 'components/TokenList';
+import TokenList from 'components/Token/TokenList';
+import HolderList from 'components/Token/HolderList';
 import NFTList from 'components/NFT/NFTList';
 import ConfirmationDialog from 'components/ConfirmationDialog';
 import ContractTab from 'components/ContractTab/ContractTab';
@@ -21,6 +22,7 @@ const web3 = new Web3();
 const tabs = {
     transactions: '#transactions',
     nfts: '#nfts',
+    holders: '#holders',
     collection: '#collection',
     int_transactions: '#int_transactions',
     erc20_transfers: '#erc20',
@@ -33,6 +35,7 @@ const tabs = {
 export default {
     name: 'AccountAddress',
     components: {
+        HolderList,
         AddressField,
         ConfirmationDialog,
         ContractTab,
@@ -119,6 +122,7 @@ export default {
             const tokenList = await this.$contractManager.getTokenList();
             const account = await this.$evm.telos.getEthAccount(this.address);
             this.contract = null;
+            this.fullTitle = null;
             this.nonce = account.nonce;
             this.title = this.$t('pages.account');
             if (account.code.length > 0){
@@ -238,7 +242,7 @@ export default {
                                 <TransactionField :transaction-hash="contract.getCreationTrx()"/>
                             </div>
                             <div class="text-white">{{ $t('pages.by_address') }}
-                                <AddressField :address="contract.getCreator()"/>
+                                <AddressField :address="contract.getCreator()" :truncate="22"/>
                             </div>
                             <div class="text-white">
                                 <DateField
@@ -358,6 +362,14 @@ export default {
                 :label="$t('components.nfts.collection')"
             />
             <q-route-tab
+                v-else-if="contract && contract.supportedInterfaces.includes('erc20')"
+                name="holders"
+                :to="{ hash: '#holders' }"
+                exact
+                replace
+                :label="$t('pages.holders')"
+            />
+            <q-route-tab
                 v-else-if="!contract"
                 name="nfts"
                 :to="{ hash: '#nfts' }"
@@ -423,6 +435,9 @@ export default {
                 </q-tab-panel>
                 <q-tab-panel v-if="contract && contract.supportedInterfaces.includes('erc721')" name="collection">
                     <NFTList :address="contract.address" filter="contract" />
+                </q-tab-panel>
+                <q-tab-panel v-else-if="contract && contract.supportedInterfaces.includes('erc20')" name="holders">
+                    <HolderList :contract="contract" />
                 </q-tab-panel>
                 <q-tab-panel v-else-if="!contract" name="nfts">
                     <NFTList :address="address" filter="account" />

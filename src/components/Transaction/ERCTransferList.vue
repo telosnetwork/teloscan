@@ -4,7 +4,7 @@ import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
 import { getIcon } from 'src/lib/token-utils';
 import CustomTooltip  from 'components/CustomTooltip';
-import TokenValueField from 'components/TokenValueField';
+import TokenValueField from 'components/Token/TokenValueField';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 export default {

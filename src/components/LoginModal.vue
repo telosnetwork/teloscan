@@ -146,7 +146,6 @@ export default {
                 try {
                     window.open('https://metamask.app.link/dapp/teloscan.io');
                 } catch {
-
                     this.$q.notify({
                         position: 'top',
                         message: this.$t('components.enable_wallet_extensions'),
@@ -161,6 +160,7 @@ export default {
 
         async injectedWeb3Login() {
             const address = await this.getInjectedAddress();
+
             if (address) {
                 this.setLogin({
                     address,

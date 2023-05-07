@@ -1,5 +1,5 @@
 <script>
-import TokenValueField from 'components/TokenValueField';
+import TokenValueField from 'components/Token/TokenValueField';
 import AddressField from 'components/AddressField';
 import BlockField from 'components/BlockField';
 import DateField from 'components/DateField';
@@ -290,13 +290,14 @@ export default {
                 <MethodField :trx="props.row" :shortenName="true"/>
             </q-td>
             <q-td key="from" :props="props">
-                <AddressField v-if="props.row.from" :address="props.row.from"/>
+                <AddressField v-if="props.row.from" :address="props.row.from" :truncate="18"/>
             </q-td>
             <q-td key="to" :props="props">
                 <AddressField
                     v-if="props.row.to"
                     :key="props.row.to + ((props.row.contract) ? '1' : '0')"
                     :address="props.row.to"
+                    :truncate="18"
                     :isContractTrx="!!(props.row.contract)"
                 />
             </q-td>
