@@ -334,6 +334,18 @@ export default {
                             </div>
                         </div>
                     </div>
+                    <div
+                        v-if="this.contract && this.contract.properties?.holders &&
+                            this.contract.supportedInterfaces.includes('erc20')"
+                        class="dataCardItem"
+                    >
+                        <div class="dataCardTile">
+                            {{ $t('pages.holders') }}
+                        </div>
+                        <div class="dataCardData">
+                            {{ contract.properties?.holders }}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

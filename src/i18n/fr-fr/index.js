@@ -210,6 +210,7 @@ export default {
         holders : {
             holder: 'Détenteur',
             balance: 'Solde',
+            share: 'Parts Telos EVM',
             updated: 'Mis à jour le',
         },
         no_balances_found: 'Aucun jetons trouvés pour cette adresse',

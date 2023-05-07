@@ -159,7 +159,6 @@ export default {
                 }
                 nft = this.hasVideo(nft);
                 nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
-                console.log(nft);
                 nfts.push(nft);
             }
             this.nfts = nfts;

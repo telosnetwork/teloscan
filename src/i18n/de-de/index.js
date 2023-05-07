@@ -208,6 +208,7 @@ export default {
         holders : {
             holder: 'Holder',
             balance: 'Balance',
+            share: 'Telos EVM share',
             updated: 'Last updated on',
         },
         no_balances_found: 'No token balances found for this address',

@@ -33,6 +33,11 @@ export default {
                 sortable: true,
             },
             {
+                name: 'supply_share',
+                label: this.$t('components.holders.share'),
+                align: 'left',
+            },
+            {
                 name: 'updated',
                 label: this.$t('components.holders.updated'),
                 align: 'left',
@@ -121,6 +126,9 @@ export default {
             </q-td>
             <q-td key="balance" :props="props">
                 {{ formatWei(props.row.balance, contract.properties?.decimals || 18) }}
+            </q-td>
+            <q-td key="supply_share" :props="props">
+                {{ ((props.row.balance / contract.properties.supply) * 100).toFixed(2) + '%'}}
             </q-td>
             <q-td key="updated" :props="props">
                 <DateField :epoch="props.row.updated / 1000" />

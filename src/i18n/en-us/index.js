@@ -209,6 +209,7 @@ export default {
         },
         holders : {
             holder: 'Holder',
+            share: 'Telos EVM share',
             balance: 'Balance',
             updated: 'Last updated on',
         },
