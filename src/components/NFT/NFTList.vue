@@ -62,8 +62,8 @@ export default {
                 align: 'left',
             },
             {
-                name: 'image',
-                label: this.$t('components.nfts.image'),
+                name: 'media',
+                label: this.$t('components.nfts.media'),
                 align: 'left',
             },
             {
@@ -118,10 +118,10 @@ export default {
                     return nft;
                 }
                 nft.metadata = (typeof nft.metadata === 'string') ? {} : nft.metadata;
-                nft.metadata.animation = video;
+                nft.metadata.animation = video.replace('ipfs://', 'https://ipfs.io/ipfs/');
                 nft.metadata.animationExtension = ext;
-                console.log(nft);
             }
+            nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
             return nft;
         },
         async onRequest(props) {
@@ -141,6 +141,12 @@ export default {
             let nfts = [];
             for (let nft of response.data.results) {
                 nft.metadata = (nft.metadata) ? JSON.parse(nft.metadata) : nft.metadata;
+                if(nft.metadata?.image){
+                    nft.metadata.image = (nft.metadata.image)
+                        ? nft.metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/')
+                        : false
+                    ;
+                }
                 if(nft.metadata?.attributes){
                     nft.metadata.attributesStr = '';
                     for(let i = 0; i < nft.metadata.attributes.length; i++){
@@ -153,6 +159,7 @@ export default {
                 }
                 nft = this.hasVideo(nft);
                 nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
+                console.log(nft);
                 nfts.push(nft);
             }
             this.nfts = nfts;
@@ -249,7 +256,7 @@ export default {
                         </q-tooltip>
                     </div>
                 </q-td>
-                <q-td key="image" :props="props">
+                <q-td key="media" :props="props">
                     <a
                         v-if="props.row.metadata?.animation"
                         :href="props.row.metadata.animation"

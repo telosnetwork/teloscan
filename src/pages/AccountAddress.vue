@@ -124,12 +124,15 @@ export default {
             if (account.code.length > 0){
                 this.contract = await this.$contractManager.getContract(this.address);
                 if(this.contract){
-                    tokenList.tokens.forEach((token) => {
-                        if(token.address.toLowerCase() ===  this.contract.address.toLowerCase()){
-                            this.contract.logoURI = token.logoURI;
-                            this.contract.setVerified(true);
-                        }
-                    });
+                    if(this.contract.supportedInterfaces.includes('erc20')){
+                        tokenList.tokens.forEach((token) => {
+                            if(token.address.toLowerCase() ===  this.contract.address.toLowerCase()){
+                                this.contract.logoURI = token.logoURI;
+                                this.contract.setVerified(true);
+                            }
+                        });
+                    }
+                    this.title = this.$t('pages.contract');
                     this.isContract = true;
                     const response = await this.$indexerApi.get(`/block/${this.contract.getCreationBlock()}`);
                     this.creationDate = response.data.results[0]?.timestamp;
@@ -179,7 +182,7 @@ export default {
 </script>
 
 <template>
-<div class="pageContainer q-pt-xl">
+<div :key="address + (this.contract?.supportedInterfaces?.length)" class="pageContainer q-pt-xl">
     <div>
         <div class="row tableWrapper justify-between q-mb-lg">
             <div class="homeInfo">
@@ -197,7 +200,7 @@ export default {
                     />
                     <q-icon
                         v-else
-                        name="source"
+                        :name="(contract.supportedInterfaces.includes('erc721')) ? 'perm_media' : 'source'"
                         class="q-mr-sm"
                         size="md"
                     />
@@ -229,7 +232,7 @@ export default {
                             :accompanyingText="address"
                             description="address"
                         />
-                        <template v-if="contract">
+                        <template v-if="this.contract">
                             <div class="text-white">
                                 {{ $t('pages.created_at_trx' )}}
                                 <TransactionField :transaction-hash="contract.getCreationTrx()"/>
@@ -244,7 +247,7 @@ export default {
                                     :force-show-age="false"
                                 />
                             </div>
-                            <div v-if="contract.supportedInterfaces.length > 0" class="q-pt-md">
+                            <div v-if="this.contract.supportedInterfaces.length > 0" class="q-pt-md">
                                 <span>
                                     <span
                                         v-for="intf in contract.supportedInterfaces"
@@ -274,22 +277,23 @@ export default {
                             </div>
                         </div>
                         <div
-                            v-if="contract && contract.properties?.price && parseFloat(contract.properties.price) > 0"
+                            v-if="this.contract && this.contract.properties?.price
+                                && parseFloat(this.contract.properties.price) > 0"
                             class="dataCardItem balance "
                         >
                             <div class="dataCardTile">
                                 {{ $t('components.usd_price') }}
                             </div>
                             <div class="dataCardData">
-                                <span v-if="contract.properties.price < 0.0001">{{ '< 0.0001 $' }}</span>
+                                <span v-if="this.contract.properties.price < 0.0001">{{ '< 0.0001 $' }}</span>
                                 <span v-else>{{ parseFloat(contract.properties.price).toFixed(4) }} $</span>
                             </div>
                             <q-tooltip> {{ $t('components.price_sources') }}</q-tooltip>
                         </div>
                         <div
                             v-if="
-                                contract && contract.properties?.marketcap
-                                    && parseFloat(contract.properties.marketcap) > 0
+                                this.contract && this.contract.properties?.marketcap
+                                    && parseFloat(this.contract.properties.marketcap) > 0
                             "
                             class="dataCardItem balance "
                         >
@@ -303,7 +307,19 @@ export default {
                             <q-tooltip> {{ $t('components.marketcap_sources') }}</q-tooltip>
                         </div>
                         <div
-                            v-if="!contract || !contract.properties || !contract.properties.price"
+                            v-if="this.contract && this.contract.properties &&
+                                this.contract.supportedInterfaces.includes('erc721')"
+                            class="dataCardItem"
+                        >
+                            <div class="dataCardTile">
+                                {{ $t('pages.minted') }}
+                            </div>
+                            <div class="dataCardData">
+                                {{ contract.properties?.supply }}
+                            </div>
+                        </div>
+                        <div
+                            v-else-if="!this.contract && balance != null"
                             class="dataCardItem balance"
                         >
                             <div class="dataCardTile">
