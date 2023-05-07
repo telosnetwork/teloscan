@@ -20,7 +20,7 @@ export default {
         });
     },
     data() {
-        const columns = [
+        let columns = [
             {
                 name: 'holder',
                 label: this.$t('components.holders.holder'),
@@ -48,6 +48,9 @@ export default {
                 align: 'left',
             },
         ];
+        if(!this.contract.properties?.total_supply_ibc){
+            columns.splice(3, 1);
+        }
         return {
             columns: columns,
             holders: [],
@@ -142,8 +145,8 @@ export default {
                     </q-tooltip>
                 </span>
             </q-td>
-            <q-td key="supply_share" :props="props">
-                <span v-if="contract.properties?.total_supply_ibc">
+            <q-td v-if="contract.properties?.total_supply_ibc" key="supply_share" :props="props">
+                <span>
                     <span>
                         {{ ((
                             formatWei(props.row.balance, contract.properties.decimals)
