@@ -319,13 +319,21 @@ export default {
                             "
                             class="dataCardItem"
                         >
-                            <div v-if="this.contract.supportedInterfaces.includes('erc721')" class="dataCardTile">
-                                {{ $t('pages.minted') }}
+                            <div v-if="this.contract.supportedInterfaces.includes('erc721')" >
+                                <div class="dataCardTile">
+                                    {{ $t('pages.minted') }}
+                                </div>
+                                <div class="dataCardData">
+                                    <span>
+                                        {{ contract.properties.supply }}
+                                    </span>
+                                </div>
                             </div>
-                            <div v-else class="dataCardTile">
-                                {{ $t('pages.telos_supply') }}
-                            </div>
-                            <div class="dataCardData">
+                            <div v-else>
+                                <div v-else class="dataCardTile">
+                                    {{ $t('pages.telos_supply') }}
+                                </div>
+                                <div class="dataCardData">
                                 <span>
                                     {{
                                         parseFloat(formatWei(
@@ -334,9 +342,10 @@ export default {
                                         )).toFixed(4)
                                     }}
                                 </span>
-                                <q-tooltip>
-                                    {{ formatWei(contract.properties.supply , contract.properties.decimals) }}
-                                </q-tooltip>
+                                    <q-tooltip>
+                                        {{ formatWei(contract.properties.supply , contract.properties.decimals) }}
+                                    </q-tooltip>
+                                </div>
                             </div>
                         </div>
                         <div
