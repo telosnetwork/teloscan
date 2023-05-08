@@ -146,7 +146,7 @@ export default {
                         ),
                     });
                     success = true;
-                    await new Promise(resolve => setTimeout(resolve, 750));
+                    await new Promise(resolve => setTimeout(resolve, 2500));
                     this.onRequest({
                         pagination: this.pagination,
                     });
