@@ -7,6 +7,7 @@ import TransactionTable from 'components/TransactionTable';
 import InternalTransactionTable from 'components/InternalTransactionTable';
 import TransferTable from 'components/TransferTable';
 import TokenList from 'components/Token/TokenList';
+import ApprovalList from 'components/Token/ApprovalList';
 import HolderList from 'components/Token/HolderList';
 import NFTList from 'components/NFT/NFTList';
 import ConfirmationDialog from 'components/ConfirmationDialog';
@@ -16,6 +17,7 @@ import AddressField from 'components/AddressField';
 import CopyButton from 'components/CopyButton';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
 import DateField from 'components/DateField';
+import { mapGetters } from 'vuex';
 
 const web3 = new Web3();
 
@@ -24,6 +26,7 @@ const tabs = {
     nfts: '#nfts',
     holders: '#holders',
     collection: '#collection',
+    approvals: '#approvals',
     int_transactions: '#int_transactions',
     erc20_transfers: '#erc20',
     erc721_transfers: '#erc721',
@@ -37,6 +40,7 @@ export default {
     components: {
         HolderList,
         AddressField,
+        ApprovalList,
         ConfirmationDialog,
         ContractTab,
         CopyButton,
@@ -67,12 +71,13 @@ export default {
         };
     },
     computed: {
-        address() {
+        accountAddress() {
             return this.$route.params?.address ?? '';
         },
+        ...mapGetters('login', ['address', 'isLoggedIn']),
     },
     watch: {
-        address: {
+        accountAddress: {
             handler(newValue, oldValue) {
                 if (newValue !== oldValue) {
                     const newAsChecksum = toChecksumAddress(newValue);
@@ -116,17 +121,23 @@ export default {
         this.loadAccount();
     },
     methods: {
+        isLoggedIn(){
+            return this.isLoggedIn;
+        },
+        address(){
+            return this.address;
+        },
         async loadAccount() {
             this.accountLoading = true;
             this.isContract = false;
             const tokenList = await this.$contractManager.getTokenList();
-            const account = await this.$evm.telos.getEthAccount(this.address);
+            const account = await this.$evm.telos.getEthAccount(this.accountAddress);
             this.contract = null;
             this.fullTitle = null;
             this.nonce = account.nonce;
             this.title = this.$t('pages.account');
             if (account.code.length > 0){
-                this.contract = await this.$contractManager.getContract(this.address);
+                this.contract = await this.$contractManager.getContract(this.accountAddress);
                 if(this.contract){
                     if(this.contract.supportedInterfaces.includes('erc20')){
                         tokenList.tokens.forEach((token) => {
@@ -187,7 +198,7 @@ export default {
 </script>
 
 <template>
-<div :key="address + (this.contract?.supportedInterfaces?.length)" class="pageContainer q-pt-xl">
+<div :key="accountAddress + (this.contract?.supportedInterfaces?.length)" class="pageContainer q-pt-xl">
     <div>
         <div class="row tableWrapper justify-between q-mb-lg">
             <div class="homeInfo">
@@ -227,14 +238,14 @@ export default {
                         <ConfirmationDialog
                             class="text-secondary"
                             :flag="confirmationDialog"
-                            :address="address"
+                            :address="accountAddress"
                             :status="this.contract?.isVerified()"
                             @dialog="disableConfirmation"
                         />
                         <CopyButton
                             class="text-secondary"
-                            :text="address"
-                            :accompanyingText="address"
+                            :text="accountAddress"
+                            :accompanyingText="accountAddress"
                             description="address"
                         />
                         <template v-if="this.contract">
@@ -360,12 +371,10 @@ export default {
                                     {{ Number(formatWei(
                                         contract.properties.supply ,
                                         contract.properties.decimals
-                                    )).toLocaleString('en-US',
-                                        {
-                                            minimumFractionDigits: 4,
-                                            maximumFractionDigits: contract.properties?.decimals
-                                        }
-                                    )}}
+                                    )).toLocaleString('en-US', {
+                                        minimumFractionDigits: 4,
+                                        maximumFractionDigits: contract.properties?.decimals
+                                    })}}
                                 </q-tooltip>
                             </div>
                         </div>
@@ -439,7 +448,15 @@ export default {
                 :label="$t('components.nfts.nfts')"
             />
             <q-route-tab
-                v-else
+                v-if="!contract && isLoggedIn && this.accountAddress === address"
+                name="approvals"
+                :to="{ hash: '#approvals' }"
+                exact
+                replace
+                :label="$t('pages.approvals')"
+            />
+            <q-route-tab
+                v-else-if="contract && !contract.isToken()"
                 name="int_transactions"
                 :to="{ hash: '#int_transactions' }"
                 exact
@@ -500,11 +517,14 @@ export default {
                 <q-tab-panel v-if="contract && contract.isToken()" name="holders">
                     <HolderList :contract="contract" />
                 </q-tab-panel>
-                <q-tab-panel v-else-if="!contract" name="nfts">
-                    <NFTList :address="address" filter="account" />
-                </q-tab-panel>
                 <q-tab-panel v-else name="int_transactions">
                     <InternalTransactionTable :title="address" :filter="{address}"/>
+                </q-tab-panel>
+                <q-tab-panel v-if="!contract" name="approvals">
+                    <ApprovalList :address="address" />
+                </q-tab-panel>
+                <q-tab-panel v-if="!contract" name="nfts">
+                    <NFTList :address="address" filter="account" />
                 </q-tab-panel>
                 <q-tab-panel name="tokens">
                     <TokenList :address="address"/>

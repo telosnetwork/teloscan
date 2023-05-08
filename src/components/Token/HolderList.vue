@@ -44,7 +44,7 @@ export default {
             },
             {
                 name: 'updated',
-                label: this.$t('components.holders.updated'),
+                label: this.$t('global.updated'),
                 align: 'left',
             },
         ];

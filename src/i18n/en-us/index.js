@@ -108,6 +108,7 @@ export default {
             unstake_stlos_error: 'Failed to unstake sTLOS { message }',
             withdraw_failed: 'Failed to withdraw unlocked TLOS: { message }',
         },
+        approvals: 'Approvals',
         supported_interfaces: 'Supported interface(s)',
         explore_transactions: 'Explore Transactions',
         recent_transactions: 'Recent transactions',
@@ -192,6 +193,10 @@ export default {
         value: 'Value',
     },
     components: {
+        approvals: {
+            spender: 'Spender',
+            amount: 'Amount allowed',
+        },
         nfts : {
             id: 'Token ID',
             name: 'Name',
@@ -215,7 +220,6 @@ export default {
             global_supply: 'Global supply',
             telos_supply: 'Telos EVM supply',
             balance: 'Balance',
-            updated: 'Last updated',
         },
         no_balances_found: 'No official erc20 token balance found for this address',
         internal_txns: 'Internal Transactions',
@@ -397,6 +401,8 @@ export default {
         async_error_description: 'Sorry ! An error occured trying to request resources. Please make sure your internet connection is working and try again. If the error persists, contact us directly on our Telegram channel.',
         language: 'Language',
         cancel: 'Cancel',
+        updated: 'Last updated',
+        action: 'Action',
         ok: 'Ok',
         dismiss: 'Dismiss',
         empty_block: 'Block is empty',
