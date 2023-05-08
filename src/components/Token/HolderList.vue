@@ -133,7 +133,12 @@ export default {
                 <AddressField :key="props.row.address + 'c'" :address="props.row.address" />
             </q-td>
             <q-td key="balance" :props="props">
-                {{ formatWei(props.row.balance, contract.properties?.decimals || 18) }}
+                <span v-if="contract.properties?.decimals">
+                    {{ formatWei(props.row.balance, contract.properties?.decimals || 18) }}
+                </span>
+                <span v-else>
+                    {{ props.row.balance }}
+                </span>
             </q-td>
             <q-td key="telos_supply_share" :props="props">
                 <span v-if="contract.properties?.supply">

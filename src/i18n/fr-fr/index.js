@@ -118,6 +118,7 @@ export default {
         go_home: 'Accueil',
         minted: 'Frappé(s)',
         holders: 'Détenteurs',
+        evm_holders: 'Tout détenteurs sur Telos EVM',
         total_nfts_minted: 'Total des NFTs crés dans cette collection',
         telos_supply: 'Réserve Telos EVM',
         select_sol_file: 'Sélectionnez votre fichier .sol pour l\'envoyer',

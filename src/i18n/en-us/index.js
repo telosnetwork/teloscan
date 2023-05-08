@@ -119,6 +119,7 @@ export default {
         minted: 'Minted',
         telos_supply: 'Telos EVM supply',
         holders: 'Holders',
+        evm_holders: 'All Telos EVM holders',
         total_nfts_minted: 'Total NFTs minted in this collection',
         select_sol_file: 'Select .sol contract file for upload',
         select_json_file: 'Select standard JSON input object file for upload',

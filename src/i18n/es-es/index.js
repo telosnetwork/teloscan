@@ -118,6 +118,7 @@ export default {
         go_home: 'Ir a inicio',
         minted: 'Minted',
         holders: 'Holders',
+        evm_holders: 'All Telos EVM holders',
         total_nfts_minted: 'Total NFTs minted in this collection',
         telos_supply: 'Telos EVM supply',
         select_sol_file: 'Seleccione el archivo de contrato .sol para cargar',

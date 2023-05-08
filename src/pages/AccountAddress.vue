@@ -323,10 +323,10 @@ export default {
                                 v-if="this.contract.supportedInterfaces.includes('erc721')"
                                 :key="contract.properties.supply + contract.address"
                             >
-                                <div class="dataCardTile">
+                                <div class="dataCardTile text-center">
                                     {{ $t('pages.minted') }}
                                 </div>
-                                <div class="dataCardData">
+                                <div class="dataCardData text-center">
                                     <span>
                                         {{ contract.properties.supply }}
                                     </span>
@@ -337,7 +337,7 @@ export default {
                                 <div class="dataCardTile text-center">
                                     {{ $t('pages.telos_supply') }}
                                 </div>
-                                <div class="dataCardData">
+                                <div class="dataCardData text-center">
                                     <span>
                                         {{
                                             parseFloat(formatWei(
@@ -365,7 +365,8 @@ export default {
                         </div>
                         <div
                             v-if="this.contract && this.contract.properties?.holders &&
-                                this.contract.supportedInterfaces.includes('erc20')"
+                                (this.contract.supportedInterfaces.includes('erc20')
+                                    || this.contract.supportedInterfaces.includes('erc721'))"
                             class="dataCardItem"
                         >
                             <div class="dataCardTile">
@@ -374,6 +375,7 @@ export default {
                             <div class="dataCardData">
                                 {{ contract.properties?.holders }}
                             </div>
+                            <q-tooltip>{{ $t('pages.evm_holders')  }}</q-tooltip>
                         </div>
                     </div>
                 </div>
@@ -404,7 +406,7 @@ export default {
                 :label="$t('components.nfts.collection')"
             />
             <q-route-tab
-                v-else-if="contract && contract.supportedInterfaces.includes('erc20')"
+                v-if="contract && contract.isToken()"
                 name="holders"
                 :to="{ hash: '#holders' }"
                 exact
@@ -478,7 +480,7 @@ export default {
                 <q-tab-panel v-if="contract && contract.supportedInterfaces.includes('erc721')" name="collection">
                     <NFTList :address="contract.address" filter="contract" />
                 </q-tab-panel>
-                <q-tab-panel v-else-if="contract && contract.supportedInterfaces.includes('erc20')" name="holders">
+                <q-tab-panel v-if="contract && contract.isToken()" name="holders">
                     <HolderList :contract="contract" />
                 </q-tab-panel>
                 <q-tab-panel v-else-if="!contract" name="nfts">
