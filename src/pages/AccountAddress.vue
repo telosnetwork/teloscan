@@ -509,7 +509,7 @@ export default {
                 keep-alive="keep-alive"
             >
                 <q-tab-panel name="transactions">
-                    <TransactionTable :title="address" :filter="'/address/' + address"/>
+                    <TransactionTable :title="accountAddress" :filter="'/address/' + accountAddress"/>
                 </q-tab-panel>
                 <q-tab-panel v-if="contract && contract.supportedInterfaces.includes('erc721')" name="collection">
                     <NFTList :address="contract.address" filter="contract" />
@@ -518,23 +518,23 @@ export default {
                     <HolderList :contract="contract" />
                 </q-tab-panel>
                 <q-tab-panel v-else name="int_transactions">
-                    <InternalTransactionTable :title="address" :filter="{address}"/>
+                    <InternalTransactionTable :title="accountAddress" :filter="{accountAddress}"/>
                 </q-tab-panel>
                 <q-tab-panel v-if="!contract" name="approvals">
-                    <ApprovalList :address="address" />
+                    <ApprovalList :address="accountAddress" />
                 </q-tab-panel>
                 <q-tab-panel v-if="!contract" name="nfts">
-                    <NFTList :address="address" filter="account" />
+                    <NFTList :address="accountAddress" filter="account" />
                 </q-tab-panel>
                 <q-tab-panel name="tokens">
-                    <TokenList :address="address"/>
+                    <TokenList :address="accountAddress"/>
                 </q-tab-panel>
                 <q-tab-panel name="erc20_transfers">
                     <TransferTable
                         title="ERC-20 Transfers"
                         token-type="erc20"
                         :initialPageSize="10"
-                        :address="address"
+                        :address="accountAddress"
                     />
                 </q-tab-panel>
                 <q-tab-panel name="erc1155_transfers">
@@ -542,7 +542,7 @@ export default {
                         title="ERC-1155 Transfers"
                         token-type="erc1155"
                         :initialPageSize="10"
-                        :address="address"
+                        :address="accountAddress"
                     />
                 </q-tab-panel>
                 <q-tab-panel name="erc721_transfers">
@@ -550,7 +550,7 @@ export default {
                         title="ERC-721 Transfers"
                         token-type="erc721"
                         :initialPageSize="10"
-                        :address="address"
+                        :address="accountAddress"
                     />
                 </q-tab-panel>
                 <q-tab-panel v-if="isContract" name="contract">

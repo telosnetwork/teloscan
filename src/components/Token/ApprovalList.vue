@@ -80,9 +80,7 @@ export default {
             this.pagination.rowsPerPage = rowsPerPage;
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
-            if (this.pagination.rowsNumber === 0 && response.data?.total_count) {
-                this.pagination.rowsNumber = response.data.total_count;
-            }
+            this.pagination.rowsNumber = response.data.total_count;
             let approvals = [];
             for (let approval of response.data.results) {
                 approval.removing = false;
@@ -105,7 +103,7 @@ export default {
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
             path += `&includeAbi=true&offset=${(page - 1) * rowsPerPage}`;
-            path = (this.pagination.rowsNumber === 0) ? path + '&includePagination=true' : path;
+            path += '&includePagination=true';
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             return path;
         },
@@ -139,6 +137,7 @@ export default {
                 let result = await instance.approve(this.removal.spender, 0);
                 if(result?.hash){
                     let approval = true;
+                    let i = 0;
                     while(approval) {
                         await new Promise(resolve => setTimeout(resolve, 2000));
                         await this.onRequest({
@@ -150,7 +149,11 @@ export default {
                         ){
                             approval = false;
                             break;
+                        } else if(i > 9){
+                            approval = false;
+                            break;
                         }
+                        i++;
                     }
                     this.$q.notify({
                         type: 'positive',
@@ -254,7 +257,7 @@ export default {
     <q-dialog v-model="displayConfirmModal">
         <q-card v-if="!removing">
             <q-card-section>
-                <p>
+                <p class="text-h5">
                     {{ $t('components.approvals.removal_confirm') }}
                 </p>
                 <p>

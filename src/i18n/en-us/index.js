@@ -194,6 +194,12 @@ export default {
     },
     components: {
         approvals: {
+            removal_confirm: 'Confirm approval removal',
+            removal_text: 'We will set the approval for the spender to 0 in order to remove it',
+            cancel: 'Cancel',
+            remove_approval: 'Remove it',
+            removal_approval: 'Remove approval',
+            removal_success: 'Approval was successfully removed',
             spender: 'Spender',
             amount: 'Amount allowed',
         },
