@@ -265,9 +265,8 @@ export default {
                         <q-media-player
                             type="video"
                             loop="loop"
-                            :playsinline="true"
                             :autoplay="true"
-                            :show-big-play-button="true"
+                            :show-big-play-button="false"
                             muted="muted"
                             big-play-button-color="purpleBright"
                             :hideVolumeSlider="true"
@@ -280,7 +279,6 @@ export default {
                                 type: 'video/' + props.row.metadata.animationExtension,
                                 src: props.row.metadata.animation,
                             }]"
-                            dense
                         />
                     </a>
                     <a
@@ -319,6 +317,9 @@ export default {
     height: 100%
     z-index: 55
 .q-media
+    justify-content: space-evenly
+    padding: 0
+    margin: 0
     z-index: 1
     max-width: 220px
     max-height: 160px

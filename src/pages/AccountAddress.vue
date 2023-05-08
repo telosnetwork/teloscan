@@ -330,18 +330,18 @@ export default {
                                 </div>
                             </div>
                             <div v-else>
-                                <div v-else class="dataCardTile">
+                                <div class="dataCardTile">
                                     {{ $t('pages.telos_supply') }}
                                 </div>
                                 <div class="dataCardData">
-                                <span>
-                                    {{
-                                        parseFloat(formatWei(
-                                            contract.properties.supply ,
-                                            contract.properties.decimals
-                                        )).toFixed(4)
-                                    }}
-                                </span>
+                                    <span>
+                                        {{
+                                            parseFloat(formatWei(
+                                                contract.properties.supply,
+                                                contract.properties.decimals
+                                            )).toFixed(4)
+                                        }}
+                                    </span>
                                     <q-tooltip>
                                         {{ formatWei(contract.properties.supply , contract.properties.decimals) }}
                                     </q-tooltip>
