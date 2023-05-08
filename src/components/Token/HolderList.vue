@@ -34,12 +34,12 @@ export default {
             },
             {
                 name: 'telos_supply_share',
-                label: this.$t('components.holders.telos_share'),
+                label: '% ' + this.$t('components.holders.telos_supply'),
                 align: 'left',
             },
             {
                 name: 'supply_share',
-                label: this.$t('components.holders.global_share'),
+                label: '% ' + this.$t('components.holders.global_supply'),
                 align: 'left',
             },
             {
@@ -92,7 +92,7 @@ export default {
             let path = `/token/${this.contract.address}/holders?limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
-            path += `&offset=${(page - 1) * rowsPerPage}`;
+            path += `&includeAbi=true&offset=${(page - 1) * rowsPerPage}`;
             path = (this.pagination.rowsNumber === 0) ? path + '&includePagination=true' : path;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             return path;

@@ -319,7 +319,10 @@ export default {
                             "
                             class="dataCardItem"
                         >
-                            <div v-if="this.contract.supportedInterfaces.includes('erc721')" >
+                            <div
+                                v-if="this.contract.supportedInterfaces.includes('erc721')"
+                                :key="contract.properties.supply + contract.address"
+                            >
                                 <div class="dataCardTile">
                                     {{ $t('pages.minted') }}
                                 </div>
@@ -327,10 +330,11 @@ export default {
                                     <span>
                                         {{ contract.properties.supply }}
                                     </span>
+                                    <q-tooltip>{{ $t('pages.total_nfts_minted') }}</q-tooltip>
                                 </div>
                             </div>
                             <div v-else>
-                                <div class="dataCardTile">
+                                <div class="dataCardTile text-center">
                                     {{ $t('pages.telos_supply') }}
                                 </div>
                                 <div class="dataCardData">
@@ -359,17 +363,17 @@ export default {
                                 {{ balance }}
                             </div>
                         </div>
-                    </div>
-                    <div
-                        v-if="this.contract && this.contract.properties?.holders &&
-                            this.contract.supportedInterfaces.includes('erc20')"
-                        class="dataCardItem"
-                    >
-                        <div class="dataCardTile">
-                            {{ $t('pages.holders') }}
-                        </div>
-                        <div class="dataCardData">
-                            {{ contract.properties?.holders }}
+                        <div
+                            v-if="this.contract && this.contract.properties?.holders &&
+                                this.contract.supportedInterfaces.includes('erc20')"
+                            class="dataCardItem"
+                        >
+                            <div class="dataCardTile">
+                                {{ $t('pages.holders') }}
+                            </div>
+                            <div class="dataCardData">
+                                {{ contract.properties?.holders }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -526,7 +530,11 @@ export default {
 
 .dataCardsContainer .dataCardItem
   width: fit-content
+  min-width: auto
   height: 5rem
+
+.dataCardsContainer .dataCardData span
+  font-size: 1.2rem
 
 body.body--dark .supported-interface
   background: #282828 !important
@@ -578,12 +586,19 @@ body.body--dark .supported-interface
   display: inline-block
 
 @media only screen and (max-width: 1200px)
+    .dataCardsContainer .dataCardData span
+        font-size: 1rem
     .pageContainer
         div
             .tableWrapper
                 &:first-child
                     padding: 20px
 @media only screen and (max-width: 768px)
+    .dataCardsContainer .dataCardData span
+        font-size: 1.2rem
+        margin-top: 10px
+        display: block
+        margin-bottom: 7px
     .homeInfo > .flex:nth-child(2)
         display: block
     .homeInfo > .flex

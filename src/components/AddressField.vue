@@ -65,7 +65,7 @@ export default {
             if(!this.address){
                 return;
             }
-            if (this.contract && this.contract.getName()) {
+            if (this.contract && this.contract.getName() && this.contract.getName().length > 0) {
                 const tokenList = await this.$contractManager.getTokenList();
                 tokenList.tokens.forEach((token) => {
                     if(token.address.toLowerCase() === this.contract.address.toLowerCase()){
