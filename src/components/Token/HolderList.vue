@@ -134,7 +134,7 @@ export default {
             </q-td>
             <q-td key="balance" :props="props">
                 <span v-if="contract.properties?.decimals">
-                    {{ formatWei(props.row.balance, contract.properties?.decimals || 18) }}
+                    {{ formatWei(props.row.balance, contract.properties?.decimals) }}
                 </span>
                 <span v-else>
                     {{ props.row.balance }}

@@ -291,7 +291,12 @@ export default {
                             </div>
                             <div class="dataCardData">
                                 <span v-if="this.contract.properties.price < 0.0001">{{ '< 0.0001 $' }}</span>
-                                <span v-else>{{ parseFloat(contract.properties.price).toFixed(4) }} $</span>
+                                <span v-else>
+                                    {{
+                                        Number(parseFloat(contract.properties.price))
+                                            .toLocaleString('en-US', { minimumFractionDigits: 4 })
+                                    }} $
+                                </span>
                             </div>
                             <q-tooltip> {{ $t('components.price_sources') }}</q-tooltip>
                         </div>
@@ -307,7 +312,11 @@ export default {
                             </div>
                             <div class="dataCardData">
                                 <span v-if="parseFloat(contract.properties.marketcap)< 0.0001">{{ '< 0.0001 $' }}</span>
-                                <span v-else>{{ parseFloat(contract.properties.marketcap).toFixed(4) }} $</span>
+                                <span v-else>
+                                    {{ Number(parseFloat(contract.properties.marketcap))
+                                        .toLocaleString('en-US', { minimumFractionDigits: 4 })
+                                    }} $
+                                </span>
                             </div>
                             <q-tooltip> {{ $t('components.marketcap_sources') }}</q-tooltip>
                         </div>
@@ -340,16 +349,24 @@ export default {
                                 <div class="dataCardData text-center">
                                     <span>
                                         {{
-                                            parseFloat(formatWei(
+                                            Number(parseFloat(formatWei(
                                                 contract.properties.supply,
                                                 contract.properties.decimals
-                                            )).toFixed(4)
+                                            ))).toLocaleString('en-US', { minimumFractionDigits: 4 })
                                         }}
                                     </span>
-                                    <q-tooltip>
-                                        {{ formatWei(contract.properties.supply , contract.properties.decimals) }}
-                                    </q-tooltip>
                                 </div>
+                                <q-tooltip>
+                                    {{ Number(formatWei(
+                                        contract.properties.supply ,
+                                        contract.properties.decimals
+                                    )).toLocaleString('en-US',
+                                        {
+                                            minimumFractionDigits: 4,
+                                            maximumFractionDigits: contract.properties?.decimals
+                                        }
+                                    )}}
+                                </q-tooltip>
                             </div>
                         </div>
                         <div
