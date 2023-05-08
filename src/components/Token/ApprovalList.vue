@@ -134,10 +134,24 @@ export default {
             }
             const instance  = await this.$contractManager.getContractInstance(contract, provider);
             let success = false;
+            const removal = this.removal;
             try {
                 let result = await instance.approve(this.removal.spender, 0);
                 if(result?.hash){
-                    this.displayConfirmModal = false;
+                    let approval = true;
+                    while(approval) {
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                        await this.onRequest({
+                            pagination: this.pagination,
+                        });
+                        if(
+                            this.approvals[index].contract !== removal.contract
+                            || this.approvals[index].spender !== removal.spender
+                        ){
+                            approval = false;
+                            break;
+                        }
+                    }
                     this.$q.notify({
                         type: 'positive',
                         message: this.$t(
@@ -146,10 +160,7 @@ export default {
                         ),
                     });
                     success = true;
-                    await new Promise(resolve => setTimeout(resolve, 2500));
-                    this.onRequest({
-                        pagination: this.pagination,
-                    });
+                    this.displayConfirmModal = false;
                 }
             } catch (e) {
                 console.error(`Failed to remove approval: ${e}`);
