@@ -520,7 +520,7 @@ export default {
                 <q-tab-panel v-else name="int_transactions">
                     <InternalTransactionTable :title="accountAddress" :filter="{accountAddress}"/>
                 </q-tab-panel>
-                <q-tab-panel v-if="!contract" name="approvals">
+                <q-tab-panel v-if="!contract && isLoggedIn" name="approvals">
                     <ApprovalList :address="accountAddress" />
                 </q-tab-panel>
                 <q-tab-panel v-if="!contract" name="nfts">

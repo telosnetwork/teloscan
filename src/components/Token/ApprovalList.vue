@@ -3,7 +3,8 @@ import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import { formatWei } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
-
+import { erc721Abi } from 'src/lib/abi';
+import erc20Abi from 'erc-20-abi';
 export default {
     name: 'ApprovalList',
     components: { AddressField, DateField },
@@ -16,6 +17,11 @@ export default {
     data() {
         let columns = [
             {
+                name: 'spender',
+                label: this.$t('components.approvals.spender'),
+                align: 'left',
+            },
+            {
                 name: 'amount',
                 label: this.$t('components.approvals.amount'),
                 align: 'left',
@@ -27,8 +33,8 @@ export default {
                 align: 'left',
             },
             {
-                name: 'spender',
-                label: this.$t('components.approvals.spender'),
+                name: 'type',
+                label: this.$t('components.approvals.type'),
                 align: 'left',
             },
             {
@@ -44,8 +50,12 @@ export default {
         ];
         return {
             columns: columns,
+            confirmModal: null,
             approvals: [],
+            selected: [],
             displayConfirmModal: false,
+            displayUpdateModal: false,
+            modalUpdateValue: false,
             pagination: {
                 sortBy: 'amount',
                 descending: true,
@@ -54,7 +64,6 @@ export default {
                 rowsNumber: 0,
             },
             removing: false,
-            removal : { contract: null, spender: null },
             loading: true,
         };
     },
@@ -62,13 +71,17 @@ export default {
         await this.onRequest({
             pagination: this.pagination,
         });
-
     },
 
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn', 'isNative']),
     },
     methods: {
+        getProvider(){
+            return  this.isLoggedIn && !this.isNative ?
+                this.$providerManager.getEthersProvider().getSigner() :
+                this.$contractManager.getEthersProvider();
+        },
         async onRequest(props){
             this.loading = true;
 
@@ -84,7 +97,10 @@ export default {
             let approvals = [];
             for (let approval of response.data.results) {
                 approval.removing = false;
+                approval.selected = (this.selected.includes(approval.spender + ':' + approval.contract));
+                approval.contract = await this.$contractManager.getContract(approval.contract);
                 if(approval.amount > 0){
+                    approval.amountRaw = approval.amount;
                     approval.amount = formatWei(
                         approval.amount,
                         approval.contract.properties?.decimals || 18,
@@ -107,35 +123,56 @@ export default {
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             return path;
         },
-        async removeApproval() {
-            let index = 0;
-            for(let i = 0; i < this.approvals.length;i++){
-                if(
-                    this.approvals[i].contract === this.removal.contract
-                    && this.approvals[i].spender === this.removal.spender
-                ){
-                    this.approvals[i].removing = true;
-                    index = i;
-                }
-            }
-            if(!this.removal.contract || !this.removal.spender){
+        async updateApproval(spender, contractAddress, amount) {
+            if(!contractAddress || !spender){
                 return;
             }
             this.removing = true;
 
-            const provider = this.isLoggedIn && !this.isNative ?
-                this.$providerManager.getEthersProvider().getSigner() :
-                this.$contractManager.getEthersProvider();
-            const contract  = await this.$contractManager.getContract(this.removal.contract);
+            const contract  = await this.$contractManager.getContract(contractAddress);
             if(!contract){
                 return;
             }
-            const instance  = await this.$contractManager.getContractInstance(contract, provider);
+            const instance  = await this.$contractManager.getContractInstance(
+                { address: contractAddress, abi: (contract.isNonFungible()) ? erc721Abi : erc20Abi },
+                this.getProvider(),
+            );
             let success = false;
-            const removal = this.removal;
             try {
-                let result = await instance.approve(this.removal.spender, 0);
+                let result = await instance.approve(spender, amount);
                 if(result?.hash){
+                    success = true;
+                }
+            } catch (e) {
+                console.error(`Failed to remove approval: ${e}`);
+                this.$q.notify({
+                    type: 'negative',
+                    message: this.$t('components.approvals.removal_failed', { e }),
+                });
+            }
+            this.removing = false;
+            return success;
+        },
+        async handleCtaClick(spender, contract) {
+            if (!this.isLoggedIn) {
+                this.displayLoginModal = true;
+                return;
+            }
+            this.displayConfirmModal = true;
+            const ctx = this;
+            this.confirmModal = async function () {
+                let index = 0;
+                for(let i = 0; i < this.approvals.length;i++){
+                    if(
+                        this.approvals[i].contract.address === contract
+                        && this.approvals[i].spender === spender
+                    ){
+                        this.approvals[i].removing = true;
+                        index = i;
+                    }
+                }
+                this.approvals[index].removing = false;
+                if(await ctx.updateApproval(spender, contract, 0)){
                     let approval = true;
                     let i = 0;
                     while(approval) {
@@ -144,8 +181,8 @@ export default {
                             pagination: this.pagination,
                         });
                         if(
-                            this.approvals[index].contract !== removal.contract
-                            || this.approvals[index].spender !== removal.spender
+                            this.approvals[index].contract.address !== contract
+                            || this.approvals[index].spender !== spender
                         ){
                             approval = false;
                             break;
@@ -159,44 +196,109 @@ export default {
                         type: 'positive',
                         message: this.$t(
                             'components.approvals.removal_success',
-                            { spender: this.removal.spender, contract: this.removal.contract },
+                            { spender: spender, contract: contract },
                         ),
                     });
-                    success = true;
                     this.displayConfirmModal = false;
                 }
-            } catch (e) {
-                console.error(`Failed to remove approval: ${e}`);
-                this.$q.notify({
-                    type: 'negative',
-                    message: this.$t('components.approvals.removal_failed', { e }),
-                });
-            }
-            this.approvals[index].removing = false;
-            this.removing = false;
-            return success;
+            };
         },
-        handleCtaClick(spender, contract) {
+        toggleAll(value){
+            for(let i = 0; i < this.approvals.length; i++){
+                this.toggleSelected(
+                    this.approvals[i].spender + ':' +
+                    (this.approvals[i].contract.address || this.approvals[i].contract),
+                    value,
+                );
+            }
+        },
+        toggleSelected(id, value){
+            let parts = id.split(':');
+            for(let i = 0; i < this.approvals.length; i++){
+                if(parts[0] === this.approvals[i].spender && parts[1] === this.approvals[i].contract.address){
+                    if(this.approvals[i].selected){
+                        console.log(this.approvals[i]);
+                    }
+                    this.approvals[i].selected = value;
+                }
+            }
+
+            let index = this.selected.indexOf(id);
+            if(value && index === -1){
+                this.selected.push(id);
+            } else if (index > - 1 && (this.selected.length === 1 || index === 0)) {
+                this.selected = [];
+            } else if (index > -1) {
+                this.selected = this.selected.slice(index, 1);
+            }
+        },
+        async handleCtaRemoveAll(){
             if (!this.isLoggedIn) {
                 this.displayLoginModal = true;
                 return;
             }
-            this.removal = {
-                contract: contract,
-                spender: spender,
-            };
+            let more = true;
+            let limit = 100;
+            let offset = 0;
+            while(more){
+                let response = await this.$indexerApi.get(
+                    `/account/${this.address}/approvals?limit=${limit}&offset=${offset}&includePagination=true`,
+                );
+                more = response.data?.more || false;
+                offset = offset + limit;
+                if(response.data){
+                    for(let approval of response.data.results){
+                        this.toggleSelected(approval.spender + ':' + approval.contract, true);
+                    }
+                }
+            }
             this.displayConfirmModal = true;
+            const ctx = this;
+            this.confirmModal = async function () {
+                for(let selected in this.selected){
+                    let parts = this.selected[selected].split(':');
+                    await ctx.updateApproval(parts[0], parts[1], 0);
+                }
+                this.selected = [];
+            };
         },
-        formatWei,
+        async handleCtaRemoveSelected(){
+            if (!this.isLoggedIn) {
+                this.displayLoginModal = true;
+                return;
+            }
+            this.displayConfirmModal = true;
+            const ctx = this;
+            this.confirmModal = async function () {
+                for(let selected in ctx.selected){
+                    let parts = ctx.selected[selected].split(':');
+                    if(await ctx.updateApproval(parts[0], parts[1], 0)){
+                        console.log('HE');
+                    }
+                }
+                this.displayConfirmModal = false;
+            };
+        },
+        async handleCtaUpdate(spender, contract, current){
+            this.displayUpdateModal = true;
+            this.modalUpdateValue = current;
+            let ctx = this;
+            this.confirmModalUpdate = async function(){
+                let success = await this.updateApproval(spender, contract, ctx.modalUpdateValue);
+                this.displayUpdateModal = false;
+                return success;
+            };
+        },
         isLoggedIn(){
             return this.isLoggedIn();
         },
+        formatWei,
     },
 };
 </script>
 
 <template>
-<div :key="displayConfirmModal">
+<div>
     <q-table
         v-model:pagination="pagination"
         :rows="approvals"
@@ -223,25 +325,53 @@ export default {
         </template>
         <template v-slot:body="props">
             <q-tr :props="props">
-                <q-td key="amount" :props="props">
-                    <span v-if="parseFloat(props.row.amount) > 100000000" key="amount100M" >
-                        <span>> 100 millions</span>
+                <q-td key="spender" :props="props">
+                    <AddressField :key="props.row.spender + 'c'" :address="props.row.spender" />
+                </q-td>
+                <q-td key="amount" :props="props" class="flex items-center">
+                    <span v-if="parseFloat(props.row.amount) > props.row.contract.properties?.supply" key="amount100M" >
+                        <span>{{ $t('components.approvals.infinite') }}</span>
                         <q-tooltip>{{ props.row.amount }}</q-tooltip>
                     </span>
                     <span v-else :key="props.row.amount">
                         {{ props.row.amount }}
                     </span>
+                    <q-icon
+                        name="build"
+                        size="11px"
+                        class="q-ml-sm clickable"
+                        @click="handleCtaUpdate (props.row.spender, props.row.contract.address, props.row.amountRaw)"
+                    />
                 </q-td>
                 <q-td key="contract" :props="props">
-                    <AddressField :key="props.row.contract + 'c'" :address="props.row.contract" />
+                    <AddressField :key="props.row.contract.address + 'c'" :address="props.row.contract.address" />
                 </q-td>
-                <q-td key="spender" :props="props">
-                    <AddressField :key="props.row.spender + 'c'" :address="props.row.spender" />
+                <q-td key="type" :props="props">
+                    <span
+                        v-if="props.row.contract && props.row.contract.isNonFungible()"
+                        class="label bg-secondary text-white q-pa-sm rounded"
+                    >
+                        ERC721
+                    </span>
+                    <span v-else class="label bg-positive text-white q-px-md q-py-sm rounded-borders">
+                        ERC20
+                    </span>
                 </q-td>
                 <q-td key="updated" :props="props">
                     <DateField :epoch="props.row.updated / 1000" />
                 </q-td>
-                <q-td key="action" :props="props" @click="handleCtaClick(props.row.spender, props.row.contract)">
+                <q-td
+                    key="action"
+                    :props="props"
+                    @click="handleCtaClick(props.row.spender, props.row.contract.address)"
+                >
+                    <q-checkbox
+                        v-model="selected"
+                        :val="props.row.spender + ':' + props.row.contract.address"
+                        :true-val="props.row.spender + ':' + props.row.contract.address"
+                        color="secondary"
+                        size="xs"
+                    />
                     <span v-if="!props.row.removing && isLoggedIn">
                         <q-icon name="delete" size="xs" class="clickable" />
                         <q-tooltip>{{ $t('components.approvals.removal_approval') }}</q-tooltip>
@@ -253,7 +383,79 @@ export default {
                 </q-td>
             </q-tr>
         </template>
+        <template v-slot:bottom-row>
+            <q-tr class="text-right">
+                <q-td colspan="12">
+                    <div class="flex justify-end">
+                        <div v-if="selected.length > 0" class="flex justify-end">
+                            <div>
+                                <q-btn class="items-center q-mr-sm" color="secondary" @click="toggleAll(false)">
+                                    <q-icon
+                                        name="highlight_off"
+                                        class="q-mr-xs"
+                                        size="14px"
+                                    />
+                                    <span>UNSELECT ALL</span>
+                                </q-btn>
+                                <q-tooltip>
+                                    {{ $t('components.approvals.unselect_all_approvals') }}
+                                </q-tooltip>
+                            </div>
+                            <div>
+                                <q-btn class="items-center q-mr-sm" color="negative" @click="handleCtaRemoveSelected">
+                                    <q-icon
+                                        v-if="!removing"
+                                        name="delete"
+                                        class="q-mr-xs"
+                                        size="14px"
+                                    />
+                                    <q-spinner v-else size="14px" />
+                                    <span>DELETE {{ selected.length }}</span>
+                                </q-btn>
+                                <q-tooltip>{{ $t('components.approvals.removal_selected_approvals') }}</q-tooltip>
+                            </div>
+                        </div>
+                        <div v-else>
+                            <q-btn class="items-center q-mr-sm" color="negative" @click="handleCtaRemoveAll">
+                                <q-icon
+                                    v-if="!removing"
+                                    name="delete"
+                                    class="q-mr-xs"
+                                    size="14px"
+                                />
+                                <q-spinner v-else size="14px" />
+                                <span>DELETE ALL</span>
+                            </q-btn>
+                            <q-tooltip>{{ $t('components.approvals.removal_approvals') }}</q-tooltip>
+                        </div>
+                    </div>
+                </q-td>
+            </q-tr>
+        </template>
     </q-table>
+    <q-dialog v-model="displayUpdateModal">
+        <q-card>
+            <q-card-section>
+                <p class="text-h5">{{ $t('components.approvals.update') }}</p>
+                <q-input v-model="modalUpdateValue" type="number" :value="modalUpdateValue" />
+            </q-card-section>
+            <q-card-actions align="right" class="q-pb-md q-px-md">
+                <q-btn
+                    v-close-popup
+                    flat
+                    :label="$t('components.approvals.cancel')"
+                    color="negative"
+                />
+                <q-btn
+                    v-close-popup
+                    :label="$t('components.approvals.update')"
+                    color="secondary"
+                    text-color="black"
+                    @click="confirmModalUpdate()"
+                />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
     <q-dialog v-model="displayConfirmModal">
         <q-card v-if="!removing">
             <q-card-section>
@@ -277,7 +479,7 @@ export default {
                     :label="$t('components.approvals.remove_approval')"
                     color="secondary"
                     text-color="black"
-                    @click="removeApproval()"
+                    @click="confirmModal()"
                 />
             </q-card-actions>
         </q-card>
@@ -286,6 +488,9 @@ export default {
 </template>
 
 <style scoped lang="sass">
+    .body--dark .q-checkbox__bg
+        border-color: lightgray
+
     .sortable
         height: 60px
         display: flex

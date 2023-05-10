@@ -2,6 +2,7 @@
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import { formatWei } from 'src/lib/utils';
+import { BigNumber } from 'ethers';
 export default {
     name: 'HolderList',
     components: {
@@ -98,6 +99,18 @@ export default {
             return path;
         },
         formatWei,
+        displaySupplyShare(balance, supplies, decimals, fixed){
+            let bigBalance = BigNumber.from(balance);
+            let bigSupplies = BigNumber.from(supplies.replace('.', ''));
+            let share = ((parseFloat(bigBalance.toString()) / parseFloat(bigSupplies.toString())) * 100);
+            if(fixed){
+                if(share < 0.01){
+                    return '< 0.01%';
+                }
+                share = share.toFixed(fixed);
+            }
+            return share + '%';
+        },
     },
 };
 </script>
@@ -141,28 +154,42 @@ export default {
                 </span>
             </q-td>
             <q-td key="telos_supply_share" :props="props">
-                <span v-if="contract.properties?.supply">
+                <span v-if="contract?.properties?.supply">
                     <span>
-                        {{ ((props.row.balance / contract.properties.supply) * 100).toFixed(2) + '%'}}
+                        {{ displaySupplyShare(
+                            props.row.balance,
+                            formatWei(contract.properties.supply, contract.properties?.decimals),
+                            contract.properties?.decimals,
+                            2,
+                        )}}
                     </span>
                     <q-tooltip>
-                        {{ ((props.row.balance / contract.properties.supply) * 100) + '%'}}
+                        {{ displaySupplyShare(
+                            props.row.balance,
+                            formatWei(contract.properties.supply, contract.properties?.decimals),
+                            contract.properties?.decimals,
+                            false,
+                        )}}
                     </q-tooltip>
                 </span>
             </q-td>
-            <q-td v-if="contract.properties?.total_supply_ibc" key="supply_share" :props="props">
+            <q-td v-if="contract?.properties?.total_supply_ibc" key="supply_share" :props="props">
                 <span>
                     <span>
-                        {{ ((
-                            formatWei(props.row.balance, contract.properties.decimals)
-                            / contract.properties.total_supply_ibc
-                        ) * 100).toFixed(2) + '%'}}
+                        {{ displaySupplyShare(
+                            props.row.balance,
+                            contract.properties?.total_supply_ibc,
+                            contract.properties?.decimals,
+                            2,
+                        )}}
                     </span>
                     <q-tooltip>
-                        {{ ((
-                            formatWei(props.row.balance, contract.properties.decimals)
-                            / contract.properties.total_supply_ibc
-                        ) * 100) + '%'}}
+                        {{ displaySupplyShare(
+                            props.row.balance,
+                            contract.properties?.total_supply_ibc,
+                            contract.properties?.decimals,
+                            false,
+                        )}}
                     </q-tooltip>
                 </span>
             </q-td>

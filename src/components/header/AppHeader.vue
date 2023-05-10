@@ -27,8 +27,9 @@ export default {
                 timeout: 12000,
                 progress: true,
                 message: this.$t('global.not_synced'),
-                caption: this.$t('global.data_behind_by') + ' ' +
-                    behindBy + '. ' + this.$t('global.try_reloading'),
+                caption: this.$t('global.data_behind_by') + ' <strong>' +
+                    behindBy + '</strong>. <br>' + this.$t('global.try_reloading'),
+                html: true,
             });
         }
     },
