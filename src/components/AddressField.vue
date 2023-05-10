@@ -53,12 +53,9 @@ export default {
     },
     async mounted() {
         this.fullName = this.address;
-        console.log(this.fullName);
         this.tokenList = await this.$contractManager.getTokenList();
         await this.loadContract();
-        console.log(this.fullName);
         await this.getDisplay();
-        console.log(this.fullName);
     },
     methods: {
         getIcon,
