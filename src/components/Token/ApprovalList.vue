@@ -99,6 +99,13 @@ export default {
                 approval.removing = false;
                 approval.selected = (this.selected.includes(approval.spender + ':' + approval.contract));
                 approval.contract = await this.$contractManager.getContract(approval.contract);
+                approval.usd = 0;
+                if(approval.contract.properties?.price){
+                    approval.usd = formatWei(
+                        approval.amount,
+                        approval.contract.properties.decimals,
+                    ) * approval.contract.properties?.price;
+                }
                 if(approval.amount > 0){
                     approval.amountRaw = approval.amount;
                     approval.amount = formatWei(
@@ -338,22 +345,35 @@ export default {
                 <q-td key="spender" :props="props">
                     <AddressField :key="props.row.spender + 'c'" :address="props.row.spender" truncate="18" />
                 </q-td>
-                <q-td key="amount" :props="props" class="flex items-center">
-                    <span v-if="parseFloat(props.row.amount) > props.row.contract.properties?.supply" key="infinite" >
-                        <span>{{ $t('components.approvals.infinite') }}</span>
-                    </span>
-                    <span v-else :key="props.row.amount">
-                        <span>{{ props.row.amount }}</span>
-                        <q-tooltip>
-                            {{ formatWei(props.row.amountRaw, props.row.contract?.properties?.decimals || 18) }}
-                        </q-tooltip>
-                    </span>
-                    <q-icon
-                        name="build"
-                        size="11px"
-                        class="q-ml-sm clickable"
-                        @click="handleCtaUpdate (props.row.spender, props.row.contract.address, props.row.amountRaw)"
-                    />
+                <q-td key="amount" :props="props" >
+                    <div class="flex items-center">
+                        <span v-if="parseFloat(props.row.amount)>props.row.contract.properties?.supply" key="infinite">
+                            <span>{{ $t('components.approvals.infinite') }}</span>
+                        </span>
+                        <span v-else :key="props.row.amount">
+                            <span>{{ props.row.amount }}</span>
+                            <q-tooltip>
+                                {{ formatWei(props.row.amountRaw, props.row.contract?.properties?.decimals || 18) }}
+                            </q-tooltip>
+                        </span>
+                        <q-icon
+                            name="build"
+                            size="11px"
+                            class="q-ml-sm clickable"
+                            @click="handleCtaUpdate(props.row.spender, props.row.contract.address, props.row.amountRaw)"
+                        />
+                    </div>
+                    <div >
+                        <small
+                            v-if="
+                                parseFloat(props.row.amount)<=props.row.contract.properties?.supply
+                                    && props.row.usd > 0
+                            "
+                            class="text-grey"
+                        >
+                            {{ props.row.usd }} $
+                        </small>
+                    </div>
                 </q-td>
                 <q-td key="contract" :props="props">
                     <AddressField

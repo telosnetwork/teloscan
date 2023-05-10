@@ -409,6 +409,7 @@ export default {
         minutes: 'minutes',
         days: 'days',
         and: 'and',
+        unknown: 'Unknown',
         data_behind_by: 'Sorry ! The data shown is behind by',
         not_synced: 'Indexer is not synced to latest block',
         try_reloading: 'You can try reloading the page to fix it, if the problem persist please contact a Telos team member.',
