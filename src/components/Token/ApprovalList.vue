@@ -326,15 +326,17 @@ export default {
         <template v-slot:body="props">
             <q-tr :props="props">
                 <q-td key="spender" :props="props">
-                    <AddressField :key="props.row.spender + 'c'" :address="props.row.spender" />
+                    <AddressField :key="props.row.spender + 'c'" :address="props.row.spender" truncate="18" />
                 </q-td>
                 <q-td key="amount" :props="props" class="flex items-center">
-                    <span v-if="parseFloat(props.row.amount) > props.row.contract.properties?.supply" key="amount100M" >
+                    <span v-if="parseFloat(props.row.amount) > props.row.contract.properties?.supply" key="infinite" >
                         <span>{{ $t('components.approvals.infinite') }}</span>
-                        <q-tooltip>{{ props.row.amount }}</q-tooltip>
                     </span>
                     <span v-else :key="props.row.amount">
-                        {{ props.row.amount }}
+                        <span>{{ props.row.amount }}</span>
+                        <q-tooltip>
+                            {{ formatWei(props.row.amountRaw, props.row.contract?.properties?.decimals || 18) }}
+                        </q-tooltip>
                     </span>
                     <q-icon
                         name="build"
@@ -344,7 +346,11 @@ export default {
                     />
                 </q-td>
                 <q-td key="contract" :props="props">
-                    <AddressField :key="props.row.contract.address + 'c'" :address="props.row.contract.address" />
+                    <AddressField
+                        :key="props.row.contract.address + 'contract'"
+                        :address="props.row.contract.address"
+                        :truncate="18"
+                    />
                 </q-td>
                 <q-td key="type" :props="props">
                     <span
@@ -434,7 +440,7 @@ export default {
         </template>
     </q-table>
     <q-dialog v-model="displayUpdateModal">
-        <q-card>
+        <q-card class="q-pa-xl">
             <q-card-section>
                 <p class="text-h5">{{ $t('components.approvals.update') }}</p>
                 <q-input v-model="modalUpdateValue" type="number" :value="modalUpdateValue" />
@@ -490,7 +496,9 @@ export default {
 <style scoped lang="sass">
     .body--dark .q-checkbox__bg
         border-color: lightgray
-
+    .q-card
+        min-width: 320px
+        flex-grow: 1
     .sortable
         height: 60px
         display: flex

@@ -160,7 +160,7 @@ export default {
                     :class="q-pl-sm"
                     :highlight="trxFrom.toLowerCase() === transfer.from.toLowerCase() && pTransfers.length > 1"
                     :address="transfer.from"
-                    :truncate="15"
+                    :truncate="12"
                     copy
                     :name="
                         transfer.contract && transfer.from.toLowerCase() === transfer.contract.address.toLowerCase()
@@ -173,7 +173,7 @@ export default {
                 <AddressField
                     :highlight="trxFrom.toLowerCase() === transfer.to.toLowerCase() && pTransfers.length > 1"
                     :address="transfer.to"
-                    :truncate="18"
+                    :truncate="12"
                     copy
                     :name="
                         transfer.contract && transfer.to.toLowerCase() === transfer.contract.address.toLowerCase()

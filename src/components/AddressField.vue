@@ -81,7 +81,11 @@ export default {
                     : this.contract.getName()
                 ;
                 if(name[0] === '0' && name[1] === 'x'){
-                    this.displayName = this.truncate > 0 ? `${this.address.slice(0, this.truncate)}...` : this.address;
+                    this.displayName = this.truncate > 0
+                        ? `${this.address.slice(0, (this.truncate / 2))}...${
+                            this.address.slice(this.address.length - (this.truncate / 2), this.address.length)
+                        }`
+                        : this.address;
                     return;
                 }
                 this.displayName = this.truncate > 0 && name.length > this.truncate ?
@@ -91,7 +95,12 @@ export default {
             }
             // This formats the address for us and handles zero padding we get from log events
             const address = ethers.utils.getAddress(this.address);
-            this.displayName = this.truncate > 0 ? `${address.slice(0, this.truncate)}...` : address;
+            this.displayName = this.truncate > 0
+                ? `${address.slice(0, (this.truncate / 2))}...${
+                    address.slice(address.length - (this.truncate / 2), address.length)
+                }`
+                : address
+            ;
         },
         async loadContract() {
             let contract = await this.$contractManager.getContract(this.address);
@@ -119,6 +128,7 @@ export default {
             height="auto"
         />
         <span>{{ displayName }}</span>
+        <q-tooltip>{{ address || name }}</q-tooltip>
     </router-link>
     <CopyButton v-if="copy && address" :text="address" description="address"/>
 </div>
