@@ -266,6 +266,9 @@ export default {
     flat
     @request="onPaginationChange"
 >
+    <template v-slot:loading>
+        <q-inner-loading showing color="secondary" />
+    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">

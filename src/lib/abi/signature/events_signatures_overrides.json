@@ -3,6 +3,8 @@
   "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": "event Approval(address indexed owner, address indexed spender, uint256 value)",
   "0x71bab65ced2e5750775a0613be067df48ef06cf92a496ebf7663ae0660924954": "event Harvest(address indexed sender, uint256 performanceFee, uint256 callFee)",
   "0x884edad9ce6fa2440d8a54cc123490eb96d2768479d49ff9c7366125a9424364": "event Withdraw(address indexed user, uint256 amount)",
+  "0x409e0ad946b19f77602d6cf11d59e1796ddaa4828159a0b4fb7fa2ff6b161b79": "event LogAnySwapOut(address indexed token, address indexed from, string to, uint256 amount, uint256 fromChainID, uint256 toChainID)",
+  "0xaac9ce45fe3adf5143598c4f18a369591a20a3384aedaf1b525d29127e1fcd55": "event LogAnySwapIn(bytes32 indexed txhash, address indexed token, address indexed to, uint256 amount, uint256 fromChainID, uint256 toChainID)",
   "0xf279e6a1f5e320cca91135676d9cb6e44ca8a08c0b88342bcdb1144f6511b568": "event Withdraw(address indexed user, uint256 indexed pid, uint256 amount)",
   "0x976177fbe09a15e5e43f848844963a42b41ef919ef17ff21a17a5421de8f4737": "event IncreasePoolAmount(address token, uint256 amount)",
   "0xe1e812596aac93a06ecc4ca627014d18e30f5c33b825160cc9d5c0ba61e45227": "event DecreaseUsdgAmount(address token, uint256 amount)",

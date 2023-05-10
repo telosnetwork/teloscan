@@ -150,7 +150,6 @@ export default {
                     message: this.$t('components.approvals.removal_failed', { e }),
                 });
             }
-            this.removing = false;
             return success;
         },
         async handleCtaClick(spender, contract) {
@@ -162,27 +161,27 @@ export default {
             const ctx = this;
             this.confirmModal = async function () {
                 let index = 0;
-                for(let i = 0; i < this.approvals.length;i++){
+                for(let i = 0; i < ctx.approvals.length;i++){
                     if(
-                        this.approvals[i].contract.address === contract
-                        && this.approvals[i].spender === spender
+                        ctx.approvals[i].contract.address === contract
+                        && ctx.approvals[i].spender === spender
                     ){
-                        this.approvals[i].removing = true;
+                        ctx.approvals[i].removing = true;
                         index = i;
                     }
                 }
-                this.approvals[index].removing = false;
-                if(await ctx.updateApproval(spender, contract, 0)){
+                const results = await ctx.updateApproval(spender, contract, 0);
+                if(results){
                     let approval = true;
                     let i = 0;
                     while(approval) {
                         await new Promise(resolve => setTimeout(resolve, 2000));
-                        await this.onRequest({
-                            pagination: this.pagination,
+                        await ctx.onRequest({
+                            pagination: ctx.pagination,
                         });
                         if(
-                            this.approvals[index].contract.address !== contract
-                            || this.approvals[index].spender !== spender
+                            ctx.approvals[index].contract.address !== contract
+                            || ctx.approvals[index].spender !== spender
                         ){
                             approval = false;
                             break;
@@ -192,14 +191,16 @@ export default {
                         }
                         i++;
                     }
-                    this.$q.notify({
+                    ctx.$q.notify({
                         type: 'positive',
-                        message: this.$t(
+                        message: ctx.$t(
                             'components.approvals.removal_success',
                             { spender: spender, contract: contract },
                         ),
                     });
-                    this.displayConfirmModal = false;
+                    ctx.displayConfirmModal = false;
+                    ctx.approvals[index].removing = false;
+                    ctx.removing = false;
                 }
             };
         },
@@ -255,10 +256,11 @@ export default {
             this.displayConfirmModal = true;
             const ctx = this;
             this.confirmModal = async function () {
-                for(let selected in this.selected){
-                    let parts = this.selected[selected].split(':');
+                for(let selected in ctx.selected){
+                    let parts = ctx.selected[selected].split(':');
                     await ctx.updateApproval(parts[0], parts[1], 0);
                 }
+                ctx.removing = false;
                 this.selected = [];
             };
         },
@@ -276,6 +278,7 @@ export default {
                         console.log('HE');
                     }
                 }
+                this.removing = false;
                 this.displayConfirmModal = false;
             };
         },
@@ -310,6 +313,9 @@ export default {
         flat
         @request="onRequest"
     >
+        <template v-slot:loading>
+            <q-inner-loading showing color="secondary" />
+        </template>
         <template v-slot:header="props">
             <q-tr :props="props">
                 <q-th
@@ -408,28 +414,36 @@ export default {
                                 </q-tooltip>
                             </div>
                             <div>
-                                <q-btn class="items-center q-mr-sm" color="negative" @click="handleCtaRemoveSelected">
+                                <q-btn
+                                    class="items-center q-mr-sm"
+                                    color="negative"
+                                    @click="!removing && handleCtaRemoveSelected"
+                                >
                                     <q-icon
                                         v-if="!removing"
                                         name="delete"
                                         class="q-mr-xs"
                                         size="14px"
                                     />
-                                    <q-spinner v-else size="14px" />
+                                    <q-spinner v-else size="14px" class="q-mr-xs" />
                                     <span>DELETE {{ selected.length }}</span>
                                 </q-btn>
                                 <q-tooltip>{{ $t('components.approvals.removal_selected_approvals') }}</q-tooltip>
                             </div>
                         </div>
                         <div v-else>
-                            <q-btn class="items-center q-mr-sm" color="negative" @click="handleCtaRemoveAll">
+                            <q-btn
+                                class="items-center q-mr-sm"
+                                color="negative"
+                                @click="!removing && handleCtaRemoveAll"
+                            >
                                 <q-icon
                                     v-if="!removing"
                                     name="delete"
                                     class="q-mr-xs"
                                     size="14px"
                                 />
-                                <q-spinner v-else size="14px" />
+                                <q-spinner v-else size="14px" class="q-mr-xs" />
                                 <span>DELETE ALL</span>
                             </q-btn>
                             <q-tooltip>{{ $t('components.approvals.removal_approvals') }}</q-tooltip>

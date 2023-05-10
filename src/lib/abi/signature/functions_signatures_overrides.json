@@ -7,6 +7,8 @@
   "0x095ea7b3": "function approve(address spender, uint256 amount)",
   "0x7ff36ab5": "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)",
   "0xfb3bdb41": "function swapETHForExactTokens(uint256 amountOut, address[] path, address to, uint256 deadline)",
+  "0xa5e56571": "function anySwapOutNative(address token, address to, uint256 toChainID)",
+  "0x0175b1c4": "function anySwapInAuto(bytes32 txs, address token, address to, uint256 amount, uint256 fromChainID)",
   "0x38ed1739": "function swapExactTokensForTokens(uint256 amountIn, uint256 amountOutMin, address[] path, address to, uint256 deadline)",
   "0x31873e2e": "function handleAction(address asset, uint256 userBalance, uint256 totalSupply)",
   "0xb1bf962d": "function scaledTotalSupply()",

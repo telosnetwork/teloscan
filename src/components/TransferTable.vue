@@ -204,6 +204,9 @@ export default {
     flat
     @request="onRequest"
 >
+    <template v-slot:loading>
+        <q-inner-loading showing color="secondary" />
+    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th

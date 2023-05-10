@@ -56,6 +56,7 @@ export default {
             columns: columns,
             holders: [],
             loading: true,
+            showSystemContracts: true,
             filterBy: this.filter,
             pagination: {
                 sortBy: 'balance',
@@ -95,6 +96,7 @@ export default {
             }`;
             path += `&includeAbi=true&offset=${(page - 1) * rowsPerPage}`;
             path = (this.pagination.rowsNumber === 0) ? path + '&includePagination=true' : path;
+            path = (this.showSystemContracts) ? path + '&not=' : path;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             return path;
         },
@@ -127,6 +129,9 @@ export default {
     flat
     @request="onRequest"
 >
+    <template v-slot:loading>
+        <q-inner-loading showing color="primary" />
+    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th
@@ -143,7 +148,7 @@ export default {
     <template v-slot:body="props">
         <q-tr :props="props">
             <q-td key="holder" :props="props">
-                <AddressField :key="props.row.address + 'c'" :address="props.row.address" />
+                <AddressField :key="props.row.address + 'c'" :address="props.row.address" :truncate="18" />
             </q-td>
             <q-td key="balance" :props="props">
                 <span v-if="contract.properties?.decimals">
@@ -198,12 +203,30 @@ export default {
             </q-td>
         </q-tr>
     </template>
+    <template v-slot:bottom-row>
+        <q-toggle
+            v-model="showSystemContracts"
+            label="Show system contracts"
+            color="secondary"
+            checked-icon="visibility"
+            unchecked-icon="visibility_off"
+        />
+    </template>
 </q-table>
 </template>
 
 <style scoped lang="sass">
+.q-table .q-toggle
+    position: absolute
+    bottom: 4px
+    font-size: 12px
 .sortable
     height: 60px
     display: flex
     align-items: center
+
+@media only screen and (max-width: 764px)
+    .q-table .q-toggle
+        display: none
+
 </style>

@@ -21,7 +21,17 @@ export default {
     async mounted () {
         const health = await this.$indexerApi.get('/health');
         if(health.data?.secondsBehind > 3){
-            const behindBy = moment(health.data.secondsBehind*1000).utc().format('HH:mm:ss');
+            let behindBy = moment(health.data.secondsBehind*1000).utc().format('HH:mm:ss');
+            if(health.data?.secondsBehind > 86400){
+                const behindByHours = Math.round(health.data.secondsBehind / 60 / 60);
+                const behindByDays = Math.floor(health.data.secondsBehind / 60 / 60 / 24);
+                const behindByLeft = behindByHours - (behindByDays * 24);
+                behindBy = (behindByDays > 0)
+                    ? behindByDays + ' ' + this.$t('global.days') + ' ' +
+                    this.$t('global.and') + ' ' + behindByLeft + ' ' + this.$t('global.hours')
+                    : behindByHours + ' ' + this.$t('global.hours')
+                ;
+            }
             this.$q.notify({
                 type: 'negative',
                 timeout: 12000,

@@ -194,6 +194,9 @@ export default {
         flat
         @request="onRequest"
     >
+        <template v-slot:loading>
+            <q-inner-loading showing color="secondary" />
+        </template>
         <template v-slot:header="props">
             <q-tr :props="props">
                 <q-th
@@ -220,17 +223,17 @@ export default {
                     </span>
                 </q-td>
                 <q-td v-if="this.filter !== 'account'" key="owner" :props="props">
-                    <AddressField :key="props.row.tokenId + 'owner'"  :address="props.row.owner" :truncate="16" />
+                    <AddressField :key="props.row.tokenId + 'owner'"  :address="props.row.owner" :truncate="12" />
                 </q-td>
                 <q-td v-else key="contract" :props="props">
-                    <AddressField :key="props.row.tokenId + 'contract'" :address="props.row.contract" :truncate="16" />
+                    <AddressField :key="props.row.tokenId + 'contract'" :address="props.row.contract" :truncate="12" />
                 </q-td>
                 <q-td key="minter" :props="props">
                     <AddressField
                         v-if="props.row.minter"
                         :key="props.row.tokenId + 'minter'"
                         :address="props.row.minter"
-                        :truncate="16"
+                        :truncate="12"
                     />
                 </q-td>
                 <q-td key="name" :props="props">
