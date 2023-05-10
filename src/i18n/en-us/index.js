@@ -202,6 +202,8 @@ export default {
             removal_approval: 'Remove single approval',
             unselect_all_approvals: 'Unselect all approvals',
             infinite: 'Infinite',
+            select: 'Select approval',
+            unselect: 'Unselect approval',
             update: 'Update approval',
             removal_approvals: 'Remove all approvals',
             removal_selected_approvals: 'Remove all selected approvals',

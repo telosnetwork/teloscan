@@ -107,7 +107,11 @@ export default {
                     ) * approval.contract.properties?.price;
                 }
                 if(approval.amount > 0){
-                    approval.amountRaw = approval.amount;
+                    approval.amountRaw = formatWei(
+                        approval.amount,
+                        approval.contract.properties?.decimals || 18,
+                        approval.contract.properties?.decimals || 18,
+                    );
                     approval.amount = formatWei(
                         approval.amount,
                         approval.contract.properties?.decimals || 18,
@@ -352,8 +356,8 @@ export default {
                         </span>
                         <span v-else :key="props.row.amount">
                             <span>{{ props.row.amount }}</span>
-                            <q-tooltip>
-                                {{ formatWei(props.row.amountRaw, props.row.contract?.properties?.decimals || 18) }}
+                            <q-tooltip v-if="parseFloat(props.row.amountRaw) > parseFloat(props.row.amount)">
+                                {{ props.row.amountRaw }}
                             </q-tooltip>
                         </span>
                         <q-icon
@@ -387,10 +391,12 @@ export default {
                         v-if="props.row.contract && props.row.contract.isNonFungible()"
                         class="label bg-secondary text-white q-pa-sm rounded"
                     >
-                        ERC721
+                        <span>ERC721</span>
+                        <q-tooltip>ERC721 Token</q-tooltip>
                     </span>
                     <span v-else class="label bg-positive text-white q-px-md q-py-sm rounded-borders">
-                        ERC20
+                        <span>ERC20</span>
+                        <q-tooltip>ERC20 Token</q-tooltip>
                     </span>
                 </q-td>
                 <q-td key="updated" :props="props">
@@ -401,13 +407,19 @@ export default {
                     :props="props"
                     @click="handleCtaClick(props.row.spender, props.row.contract.address)"
                 >
-                    <q-checkbox
-                        v-model="selected"
-                        :val="props.row.spender + ':' + props.row.contract.address"
-                        :true-val="props.row.spender + ':' + props.row.contract.address"
-                        color="secondary"
-                        size="xs"
-                    />
+                    <span>
+                        <q-checkbox
+                            v-model="selected"
+                            :val="props.row.spender + ':' + props.row.contract.address"
+                            :true-val="props.row.spender + ':' + props.row.contract.address"
+                            color="secondary"
+                            size="xs"
+                        />
+                        <q-tooltip v-if="selected.includes(props.row.spender + ':' + props.row.contract.address)">
+                            {{ $t('components.approvals.unselect') }}
+                        </q-tooltip>
+                        <q-tooltip v-else>{{ $t('components.approvals.select') }}</q-tooltip>
+                    </span>
                     <span v-if="!props.row.removing && isLoggedIn">
                         <q-icon name="delete" size="xs" class="clickable" />
                         <q-tooltip>{{ $t('components.approvals.removal_approval') }}</q-tooltip>
