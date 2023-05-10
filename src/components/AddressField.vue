@@ -71,7 +71,7 @@ export default {
             if (this.name) {
                 this.displayName = this.truncate > 0 && this.name.length > this.truncate
                     ? this.truncateText(this.name)
-                    : `${this.name}`;
+                    : this.name;
                 return;
             }
             if(!this.address){
@@ -79,11 +79,13 @@ export default {
             }
             let address = this.address;
             if (this.contract && this.contract.getName() && this.contract.getName().length > 0) {
-                this.tokenList.tokens.forEach((token) => {
-                    if(token.address.toLowerCase() === this.contract.address.toLowerCase()){
-                        this.logo = (token.logoURI);
-                    }
-                });
+                if(this.tokenList?.tokens){
+                    this.tokenList.tokens.forEach((token) => {
+                        if(token.address.toLowerCase() === this.contract.address.toLowerCase()){
+                            this.logo = (token.logoURI);
+                        }
+                    });
+                }
                 this.logo = (this.logo === null && this.contract.getSupportedInterfaces().includes('erc20'))
                     ? ''
                     : this.logo
@@ -92,15 +94,9 @@ export default {
                     ? this.contract.getProperties().symbol
                     : this.contract.getName()
                 ;
-                if(name[0] === '0' && name[1] === 'x'){
-                    this.displayName = this.truncate > 0
-                        ? this.truncateText(address, true)
-                        : address;
-                    return;
-                }
                 this.displayName = this.truncate > 0 && name.length > this.truncate
-                    ? this.truncateText(this.name)
-                    : `${name}`;
+                    ? this.truncateText(name)
+                    : name;
                 return;
             }
             // This formats the address for us and handles zero padding we get from log events
@@ -113,7 +109,10 @@ export default {
         async loadContract() {
             let contract = await this.$contractManager.getContract(this.address);
             if (contract) {
-                this.fullName = (contract.getName().startsWith('0x') === false) ? contract.getName() : this.fullName;
+                this.fullName = (contract.getName() && contract.getName().startsWith('0x') === false)
+                    ? contract.getName()
+                    : this.fullName
+                ;
                 this.contract = contract;
             }
         },

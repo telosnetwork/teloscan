@@ -24,6 +24,7 @@ export default {
     <router-link :key="$route.path" :to="`/tx/${this.transactionHash}`">
         {{ transactionHash && transactionHash.slice(0,20) }}...
     </router-link>
+    <q-tooltip>{{ transactionHash }}</q-tooltip>
     <CopyButton v-if="copy" :text="transactionHash" accompanying-text="" />
 </div>
 </template>
