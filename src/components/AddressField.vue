@@ -1,6 +1,4 @@
 <script>
-import { ethers } from 'ethers';
-
 import CopyButton from 'components/CopyButton';
 import { getIcon } from 'src/lib/token-utils';
 
@@ -60,6 +58,9 @@ export default {
     methods: {
         getIcon,
         truncateText(text, middle){
+            if(this.truncate === 0 || text.length <= this.truncate){
+                return text;
+            }
             if(middle){
                 return `${text.slice(0, (this.truncate / 2))}...${
                     text.slice(text.length - (this.truncate / 2), text.length)
@@ -69,9 +70,7 @@ export default {
         },
         async getDisplay() {
             if (this.name) {
-                this.displayName = this.truncate > 0 && this.name.length > this.truncate
-                    ? this.truncateText(this.name)
-                    : this.name;
+                this.displayName = this.truncateText(this.name);
                 return;
             }
             if(!this.address){
@@ -94,17 +93,13 @@ export default {
                     ? this.contract.getProperties().symbol
                     : this.contract.getName()
                 ;
-                this.displayName = this.truncate > 0 && name.length > this.truncate
-                    ? this.truncateText(name)
-                    : name;
-                return;
+                if(!name.startsWith('0x')){
+                    this.displayName = this.truncateText(name);
+                    return;
+                }
             }
             // This formats the address for us and handles zero padding we get from log events
-            const addressStr = ethers.utils.getAddress(address);
-            this.displayName = this.truncate > 0
-                ? this.truncateText(addressStr, true)
-                : addressStr
-            ;
+            this.displayName = this.truncateText(address, true);
         },
         async loadContract() {
             let contract = await this.$contractManager.getContract(this.address);
