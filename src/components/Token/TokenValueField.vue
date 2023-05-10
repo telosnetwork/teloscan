@@ -58,6 +58,7 @@ export default {
                 this.valueWei = BigNumber.from(this.value);
                 this.valueShort = this.shorten(this.valueRaw, contract.properties?.decimals);
                 this.valueRaw = formatWei(this.valueRaw, contract.properties?.decimals);
+                this.name = contract.getName() || contract.properties?.name;
                 this.symbol = contract.properties?.symbol;
                 this.logo = await this.getLogo(contract);
                 return;
@@ -74,6 +75,7 @@ export default {
             valueShort: this.valueShort,
             valueRaw: this.valueRaw,
             valueWei: this.valueWei,
+            name: null,
             symbol: this.symbol,
             logo: this.logo,
             displaySwitch: this.displaySwitch,
@@ -99,6 +101,7 @@ export default {
         <router-link v-if="symbol != 'TLOS'" :to="`/address/${address}`">
             <span>{{ symbol.slice(0, 6) }}</span>
             <span v-if="symbol.length > 6">...</span>
+            <q-tooltip>{{ name }}</q-tooltip>
         </router-link>
         <span v-else>TLOS</span>
     </span>

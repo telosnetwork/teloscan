@@ -168,7 +168,7 @@ export default {
                     "
                 />
             </div>
-            <div class="col-4 flex">
+            <div class="col-3 flex">
                 <strong class="q-pr-sm">{{ $t('components.transaction.form_to') }}</strong>
                 <AddressField
                     :highlight="trxFrom.toLowerCase() === transfer.to.toLowerCase() && pTransfers.length > 1"

@@ -42,7 +42,9 @@ export default {
     data: () => ({
         contract: null,
         logo: null,
+        tokenList: null,
         displayName: null,
+        fullName: null,
     }),
     watch: {
         address () {
@@ -50,24 +52,37 @@ export default {
         },
     },
     async mounted() {
+        this.fullName = this.address;
+        console.log(this.fullName);
+        this.tokenList = await this.$contractManager.getTokenList();
         await this.loadContract();
+        console.log(this.fullName);
         await this.getDisplay();
+        console.log(this.fullName);
     },
     methods: {
         getIcon,
+        truncateText(text, middle){
+            if(middle){
+                return `${text.slice(0, (this.truncate / 2))}...${
+                    text.slice(text.length - (this.truncate / 2), text.length)
+                }`;
+            }
+            return `${text.slice(0, this.truncate)}...`;
+        },
         async getDisplay() {
             if (this.name) {
-                this.displayName = this.truncate > 0 && this.name.length > this.truncate ?
-                    `${this.name.slice(0, this.truncate)}...` :
-                    `${this.name}`;
+                this.displayName = this.truncate > 0 && this.name.length > this.truncate
+                    ? this.truncateText(this.name)
+                    : `${this.name}`;
                 return;
             }
             if(!this.address){
                 return;
             }
+            let address = this.address;
             if (this.contract && this.contract.getName() && this.contract.getName().length > 0) {
-                const tokenList = await this.$contractManager.getTokenList();
-                tokenList.tokens.forEach((token) => {
+                this.tokenList.tokens.forEach((token) => {
                     if(token.address.toLowerCase() === this.contract.address.toLowerCase()){
                         this.logo = (token.logoURI);
                     }
@@ -82,29 +97,26 @@ export default {
                 ;
                 if(name[0] === '0' && name[1] === 'x'){
                     this.displayName = this.truncate > 0
-                        ? `${this.address.slice(0, (this.truncate / 2))}...${
-                            this.address.slice(this.address.length - (this.truncate / 2), this.address.length)
-                        }`
-                        : this.address;
+                        ? this.truncateText(address, true)
+                        : address;
                     return;
                 }
-                this.displayName = this.truncate > 0 && name.length > this.truncate ?
-                    `${name.slice(0, this.truncate)}...` :
-                    `${name}`;
+                this.displayName = this.truncate > 0 && name.length > this.truncate
+                    ? this.truncateText(this.name)
+                    : `${name}`;
                 return;
             }
             // This formats the address for us and handles zero padding we get from log events
-            const address = ethers.utils.getAddress(this.address);
+            const addressStr = ethers.utils.getAddress(address);
             this.displayName = this.truncate > 0
-                ? `${address.slice(0, (this.truncate / 2))}...${
-                    address.slice(address.length - (this.truncate / 2), address.length)
-                }`
-                : address
+                ? this.truncateText(addressStr, true)
+                : addressStr
             ;
         },
         async loadContract() {
             let contract = await this.$contractManager.getContract(this.address);
             if (contract) {
+                this.fullName = (contract.getName().startsWith('0x') === false) ? contract.getName() : this.fullName;
                 this.contract = contract;
             }
         },
@@ -128,7 +140,7 @@ export default {
             height="auto"
         />
         <span>{{ displayName }}</span>
-        <q-tooltip>{{ address || name }}</q-tooltip>
+        <q-tooltip v-if="truncate">{{ fullName }}</q-tooltip>
     </router-link>
     <CopyButton v-if="copy && address" :text="address" description="address"/>
 </div>
