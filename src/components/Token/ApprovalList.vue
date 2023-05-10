@@ -256,12 +256,15 @@ export default {
             this.displayConfirmModal = true;
             const ctx = this;
             this.confirmModal = async function () {
-                for(let selected in ctx.selected){
-                    let parts = ctx.selected[selected].split(':');
-                    await ctx.updateApproval(parts[0], parts[1], 0);
-                }
+                let results = await Promise.all(
+                    ctx.selected.map(async (id) => {
+                        let parts = id.split(':');
+                        return await ctx.updateApproval(parts[0], parts[1], 0);
+                    }),
+                );
                 ctx.removing = false;
-                this.selected = [];
+                ctx.selected = [];
+                return results;
             };
         },
         async handleCtaRemoveSelected(){
@@ -272,14 +275,15 @@ export default {
             this.displayConfirmModal = true;
             const ctx = this;
             this.confirmModal = async function () {
-                for(let selected in ctx.selected){
-                    let parts = ctx.selected[selected].split(':');
-                    if(await ctx.updateApproval(parts[0], parts[1], 0)){
-                        console.log('HE');
-                    }
-                }
+                let results = await Promise.all(
+                    ctx.selected.map(async (id) => {
+                        let parts = id.split(':');
+                        return await ctx.updateApproval(parts[0], parts[1], 0);
+                    }),
+                );
                 this.removing = false;
                 this.displayConfirmModal = false;
+                return results;
             };
         },
         async handleCtaUpdate(spender, contract, current){
@@ -417,7 +421,7 @@ export default {
                                 <q-btn
                                     class="items-center q-mr-sm"
                                     color="negative"
-                                    @click="!removing && handleCtaRemoveSelected"
+                                    @click="handleCtaRemoveSelected"
                                 >
                                     <q-icon
                                         v-if="!removing"
@@ -435,7 +439,7 @@ export default {
                             <q-btn
                                 class="items-center q-mr-sm"
                                 color="negative"
-                                @click="!removing && handleCtaRemoveAll"
+                                @click="handleCtaRemoveAll"
                             >
                                 <q-icon
                                     v-if="!removing"
