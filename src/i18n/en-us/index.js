@@ -409,6 +409,7 @@ export default {
     },
     global: {
         hours: 'hours',
+        wallet_response: 'Awaiting response from your wallet provider',
         minutes: 'minutes',
         days: 'days',
         and: 'and',

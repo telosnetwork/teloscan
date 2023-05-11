@@ -6,6 +6,7 @@
   "0x156e29f6": "function mint(address, uint256, uint256)",
   "0x095ea7b3": "function approve(address spender, uint256 amount)",
   "0x7ff36ab5": "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)",
+  "0x269ae6c2": "function createSwapOrder(address[] memory _path, uint256 _amountIn, uint256 _minOut, uint256 _triggerRatio, bool _triggerAboveThreshold, uint256 _executionFee, bool _shouldWrap, bool _shouldUnwrap)",
   "0xfb3bdb41": "function swapETHForExactTokens(uint256 amountOut, address[] path, address to, uint256 deadline)",
   "0xa5e56571": "function anySwapOutNative(address token, address to, uint256 toChainID)",
   "0x0175b1c4": "function anySwapInAuto(bytes32 txs, address token, address to, uint256 amount, uint256 fromChainID)",

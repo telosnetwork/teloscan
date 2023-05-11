@@ -99,7 +99,6 @@ export default {
             this.pagination.rowsNumber = response.data.total_count;
             let approvals = [];
             for (let approval of response.data.results) {
-                approval.removing = false;
                 approval.selected = (this.selected.includes(approval.spender + ':' + approval.contract));
                 approval.contract = await this.$contractManager.getContract(approval.contract);
                 approval.usd = 0;
@@ -190,18 +189,12 @@ export default {
             this.displayConfirmModal = true;
             const ctx = this;
             this.confirmModal = async function () {
-                for(let i = 0; i < ctx.approvals.length;i++){
-                    if(
-                        ctx.approvals[i].contract.address === contract
-                        && ctx.approvals[i].spender === spender
-                    ){
-                        ctx.approvals[i].removing = true;
-                    }
-                }
                 const results = await ctx.updateApproval(spender, contract, 0);
                 if(results){
-                    await this.checkChanges();
+                    await ctx.checkChanges();
                 }
+                ctx.removing = false;
+                ctx.displayConfirmModal = false;
             };
         },
         async checkChanges(){
@@ -285,14 +278,21 @@ export default {
                     ctx.selected.map(async (id) => {
                         parts = id.split(':');
                         let result = await ctx.updateApproval(parts[0], parts[1], 0);
-                        return result;
+                        return (result.hash) ? 1 : 0;
                     }),
                 );
-                ctx.removing = false;
-                ctx.selected = [];
-                if(results){
-                    await this.checkChanges();
+                let changed = false;
+                for(let i = 0; i < results.length; i++){
+                    if(results[i]){
+                        changed = true;
+                    }
                 }
+                ctx.removing = false;
+                if(changed){
+                    await ctx.checkChanges();
+                }
+                ctx.displayConfirmModal = false;
+                ctx.selected = [];
                 return results;
             };
         },
@@ -460,13 +460,9 @@ export default {
                         </q-tooltip>
                         <q-tooltip v-else>{{ $t('components.approvals.select') }}</q-tooltip>
                     </span>
-                    <span v-if="!props.row.removing && isLoggedIn">
+                    <span v-if="isLoggedIn">
                         <q-icon name="delete" size="xs" class="clickable" />
                         <q-tooltip>{{ $t('components.approvals.removal_approval') }}</q-tooltip>
-                    </span>
-                    <span v-else-if="props.row.removing">
-                        <q-spinner size="sm" />
-                        <q-tooltip>{{ $t('components.approvals.removal_in_progress') }}</q-tooltip>
                     </span>
                 </q-td>
             </q-tr>
@@ -551,6 +547,12 @@ export default {
                 />
             </q-card-actions>
         </q-card>
+        <q-card v-else>
+            <q-card-section class="items-center flex justify-center column">
+                <div class="text-h5 text-center">{{ $t('global.wallet_response') }}...</div>
+                <q-spinner size="xl" class="q-mt-lg" />
+            </q-card-section>
+        </q-card>
     </q-dialog>
     <q-dialog v-model="displayConfirmModal" @hide="modalHide">
         <q-card v-if="!removing">
@@ -578,6 +580,12 @@ export default {
                     @click="confirmModal()"
                 />
             </q-card-actions>
+        </q-card>
+        <q-card v-else>
+            <q-card-section class="items-center flex justify-center column">
+                <div class="text-h5 text-center">{{ $t('global.wallet_response') }}...</div>
+                <q-spinner size="xl" class="q-mt-lg" />
+            </q-card-section>
         </q-card>
     </q-dialog>
 </div>
