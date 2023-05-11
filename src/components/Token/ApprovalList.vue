@@ -5,6 +5,7 @@ import { formatWei } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 import { erc721Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
+
 export default {
     name: 'ApprovalList',
     components: { AddressField, DateField },
@@ -71,6 +72,7 @@ export default {
         await this.onRequest({
             pagination: this.pagination,
         });
+
     },
 
     computed: {
@@ -139,7 +141,6 @@ export default {
                 return;
             }
             this.removing = true;
-
             const contract  = await this.$contractManager.getContract(contractAddress);
             if(!contract){
                 return;
@@ -149,18 +150,35 @@ export default {
                 this.getProvider(),
             );
             let success = false;
+            let err = this.$t('components.approvals.update_failed');
             try {
                 let result = await instance.approve(spender, amount);
                 if(result?.hash){
                     success = true;
+                    const spenderContract  = await this.$contractManager.getContract(spender);
+                    this.$q.notify({
+                        type: 'positive',
+                        message: this.$t(
+                            'components.approvals.update_success',
+                            {
+                                spender: spenderContract?.getName() || spender,
+                                contract: contract.getName() || contract.address,
+                            },
+                        ),
+                    });
+                    return success;
                 }
             } catch (e) {
                 console.error(`Failed to remove approval: ${e}`);
-                this.$q.notify({
-                    type: 'negative',
-                    message: this.$t('components.approvals.removal_failed', { e }),
-                });
+                if(e.message){
+                    err = e.message.split('(')[0];
+                    err = err[0].toUpperCase() + err.slice(1, err.length - 1);
+                }
             }
+            this.$q.notify({
+                type: 'negative',
+                message: err,
+            });
             return success;
         },
         async handleCtaClick(spender, contract) {
@@ -171,49 +189,46 @@ export default {
             this.displayConfirmModal = true;
             const ctx = this;
             this.confirmModal = async function () {
-                let index = 0;
                 for(let i = 0; i < ctx.approvals.length;i++){
                     if(
                         ctx.approvals[i].contract.address === contract
                         && ctx.approvals[i].spender === spender
                     ){
                         ctx.approvals[i].removing = true;
-                        index = i;
                     }
                 }
                 const results = await ctx.updateApproval(spender, contract, 0);
                 if(results){
-                    let approval = true;
-                    let i = 0;
-                    while(approval) {
-                        await new Promise(resolve => setTimeout(resolve, 2000));
-                        await ctx.onRequest({
-                            pagination: ctx.pagination,
-                        });
-                        if(
-                            ctx.approvals[index].contract.address !== contract
-                            || ctx.approvals[index].spender !== spender
-                        ){
-                            approval = false;
-                            break;
-                        } else if(i > 9){
-                            approval = false;
-                            break;
-                        }
-                        i++;
-                    }
-                    ctx.$q.notify({
-                        type: 'positive',
-                        message: ctx.$t(
-                            'components.approvals.removal_success',
-                            { spender: spender, contract: contract },
-                        ),
-                    });
-                    ctx.displayConfirmModal = false;
-                    ctx.approvals[index].removing = false;
-                    ctx.removing = false;
+                    await this.checkChanges();
                 }
             };
+        },
+        async checkChanges(){
+            let approval = true;
+            let i = 0;
+            let currentApprovals = this.approvals;
+            while(approval) {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                await this.onRequest({
+                    pagination: this.pagination,
+                });
+                for(let k = 0; k < currentApprovals.length; k++){
+                    if(
+                        currentApprovals[k].amount !== this.approvals[k].amount
+                        || currentApprovals[k].spender !== this.approvals[k].spender
+                        || currentApprovals[k].contract !== this.approvals[k].contract
+                    ){
+                        approval = false;
+                    }
+                }
+                if(i === 9){
+                    approval  = false;
+                }
+                i++;
+            }
+            this.displayConfirmModal = false;
+            this.displayUpdateModal = false;
+            this.removing = false;
         },
         toggleAll(value){
             for(let i = 0; i < this.approvals.length; i++){
@@ -228,9 +243,6 @@ export default {
             let parts = id.split(':');
             for(let i = 0; i < this.approvals.length; i++){
                 if(parts[0] === this.approvals[i].spender && parts[1] === this.approvals[i].contract.address){
-                    if(this.approvals[i].selected){
-                        console.log(this.approvals[i]);
-                    }
                     this.approvals[i].selected = value;
                 }
             }
@@ -267,14 +279,19 @@ export default {
             this.displayConfirmModal = true;
             const ctx = this;
             this.confirmModal = async function () {
+                let parts = [];
                 let results = await Promise.all(
                     ctx.selected.map(async (id) => {
-                        let parts = id.split(':');
-                        return await ctx.updateApproval(parts[0], parts[1], 0);
+                        parts = id.split(':');
+                        let result = await ctx.updateApproval(parts[0], parts[1], 0);
+                        return result;
                     }),
                 );
                 ctx.removing = false;
                 ctx.selected = [];
+                if(results){
+                    await this.checkChanges();
+                }
                 return results;
             };
         },
@@ -289,26 +306,42 @@ export default {
                 let results = await Promise.all(
                     ctx.selected.map(async (id) => {
                         let parts = id.split(':');
-                        return await ctx.updateApproval(parts[0], parts[1], 0);
+                        let result = await ctx.updateApproval(parts[0], parts[1], 0);
+                        return result;
                     }),
                 );
+                if(results){
+                    await this.checkChanges();
+                }
                 this.removing = false;
                 this.displayConfirmModal = false;
                 return results;
             };
         },
-        async handleCtaUpdate(spender, contract, current){
+        async handleCtaUpdate(spender, contractAddress, current){
             this.displayUpdateModal = true;
             this.modalUpdateValue = current;
             let ctx = this;
             this.confirmModalUpdate = async function(){
-                let success = await this.updateApproval(spender, contract, ctx.modalUpdateValue);
+                const contract  = await this.$contractManager.getContract(contractAddress);
+                let success = await this.updateApproval(
+                    spender,
+                    contractAddress,
+                    (ctx.modalUpdateValue * (10 ** contract.properties.decimals)),
+                );
+                if(success){
+                    await this.checkChanges();
+                }
                 this.displayUpdateModal = false;
+                this.removing = false;
                 return success;
             };
         },
         isLoggedIn(){
             return this.isLoggedIn();
+        },
+        modalHide(){
+            this.removing = false;
         },
         formatWei,
     },
@@ -360,12 +393,19 @@ export default {
                                 {{ props.row.amountRaw }}
                             </q-tooltip>
                         </span>
-                        <q-icon
-                            name="build"
-                            size="11px"
-                            class="q-ml-sm clickable"
-                            @click="handleCtaUpdate(props.row.spender, props.row.contract.address, props.row.amountRaw)"
-                        />
+                        <span class="flex items-center">
+                            <q-icon
+                                name="build"
+                                size="11px"
+                                class="q-ml-xs clickable"
+                                @click="handleCtaUpdate(
+                                    props.row.spender,
+                                    props.row.contract.address,
+                                    props.row.amountRaw
+                                )"
+                            />
+                            <q-tooltip>{{ $t('components.approvals.update') }}</q-tooltip>
+                        </span>
                     </div>
                     <div >
                         <small
@@ -489,11 +529,11 @@ export default {
             </q-tr>
         </template>
     </q-table>
-    <q-dialog v-model="displayUpdateModal">
-        <q-card class="q-pa-xl">
+    <q-dialog v-model="displayUpdateModal" @hide="modalHide">
+        <q-card v-if="!removing" class="q-pa-xl">
             <q-card-section>
                 <p class="text-h5">{{ $t('components.approvals.update') }}</p>
-                <q-input v-model="modalUpdateValue" type="number" :value="modalUpdateValue" />
+                <q-input v-model="modalUpdateValue"  type="number" :value="modalUpdateValue" />
             </q-card-section>
             <q-card-actions align="right" class="q-pb-md q-px-md">
                 <q-btn
@@ -512,14 +552,14 @@ export default {
             </q-card-actions>
         </q-card>
     </q-dialog>
-    <q-dialog v-model="displayConfirmModal">
+    <q-dialog v-model="displayConfirmModal" @hide="modalHide">
         <q-card v-if="!removing">
             <q-card-section>
                 <p class="text-h5">
-                    {{ $t('components.approvals.removal_confirm') }}
+                    {{ $t('components.approvals.approval_confirm') }}
                 </p>
                 <p>
-                    {{ $t('components.approvals.removal_text' ) }}
+                    {{ $t('components.approvals.approval_text' ) }}
                 </p>
             </q-card-section>
 
@@ -532,7 +572,7 @@ export default {
                 />
                 <q-btn
                     v-close-popup
-                    :label="$t('components.approvals.remove_approval')"
+                    :label="$t('components.approvals.update')"
                     color="secondary"
                     text-color="black"
                     @click="confirmModal()"

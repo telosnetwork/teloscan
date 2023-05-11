@@ -194,8 +194,8 @@ export default {
     },
     components: {
         approvals: {
-            removal_confirm: 'Confirm approval removal',
-            removal_text: 'We will set the approval for the spender to 0 in order to remove it',
+            approval_confirm: 'Confirm approval update',
+            approval_text: 'We will set the selected approvals\' amount to 0',
             type: 'Type',
             cancel: 'Cancel',
             remove_approval: 'Remove it',
@@ -207,7 +207,8 @@ export default {
             update: 'Update approval',
             removal_approvals: 'Remove all approvals',
             removal_selected_approvals: 'Remove all selected approvals',
-            removal_success: 'Approval was successfully removed',
+            update_failed: 'Failed to update approval',
+            update_success: 'Approval to {spender} for {contract} was successfully updated',
             spender: 'Spender',
             amount: 'Allowance',
         },
