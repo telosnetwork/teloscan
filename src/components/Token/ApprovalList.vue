@@ -5,6 +5,7 @@ import { formatWei } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 import { erc721Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
+import { BigNumber, ethers } from 'ethers';
 
 export default {
     name: 'ApprovalList',
@@ -321,13 +322,12 @@ export default {
         async handleCtaUpdate(spender, contractAddress, current){
             this.displayUpdateModal = true;
             this.modalUpdateValue = current;
-            let ctx = this;
             this.confirmModalUpdate = async function(){
                 const contract  = await this.$contractManager.getContract(contractAddress);
                 let success = await this.updateApproval(
                     spender,
                     contractAddress,
-                    (ctx.modalUpdateValue * (10 ** contract.properties.decimals)),
+                    BigNumber.from(ethers.utils.parseUnits(this.modalUpdateValue, contract.properties.decimals)),
                 );
                 if(success){
                     await this.checkChanges();
