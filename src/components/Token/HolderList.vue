@@ -2,7 +2,6 @@
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import { formatWei } from 'src/lib/utils';
-import { BigNumber } from 'ethers';
 export default {
     name: 'HolderList',
     components: {
@@ -85,7 +84,7 @@ export default {
             this.pagination.rowsPerPage = rowsPerPage;
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
-            if (this.pagination.rowsNumber === 0 && response.data?.total_count) {
+            if (response.data?.total_count && this.pagination.rowsNumber !== response.data?.total_count) {
                 this.pagination.rowsNumber = response.data.total_count;
             }
             let holders = [];
@@ -108,9 +107,7 @@ export default {
         },
         formatWei,
         displaySupplyShare(balance, supplies, decimals, fixed){
-            let bigBalance = BigNumber.from(balance);
-            let bigSupplies = BigNumber.from(supplies.replace('.', ''));
-            let share = ((parseFloat(bigBalance.toString()) / parseFloat(bigSupplies.toString())) * 100);
+            let share = ((parseFloat(balance) / parseFloat(supplies)) * 100);
             if(fixed){
                 if(share < 0.01){
                     return '< 0.01%';
@@ -168,16 +165,32 @@ export default {
                 <span v-if="contract?.properties?.supply">
                     <span>
                         {{ displaySupplyShare(
-                            props.row.balance,
-                            formatWei(contract.properties.supply, contract.properties?.decimals),
+                            formatWei(
+                                props.row.balance,
+                                contract.properties?.decimals,
+                                contract.properties?.decimals
+                            ),
+                            formatWei(
+                                contract.properties.supply,
+                                contract.properties?.decimals,
+                                contract.properties?.decimals
+                            ),
                             contract.properties?.decimals,
                             2,
                         )}}
                     </span>
                     <q-tooltip>
                         {{ displaySupplyShare(
-                            props.row.balance,
-                            formatWei(contract.properties.supply, contract.properties?.decimals),
+                            formatWei(
+                                props.row.balance,
+                                contract.properties?.decimals,
+                                contract.properties?.decimals
+                            ),
+                            formatWei(
+                                contract.properties.supply,
+                                contract.properties?.decimals,
+                                contract.properties?.decimals
+                            ),
                             contract.properties?.decimals,
                             false,
                         )}}
@@ -188,7 +201,11 @@ export default {
                 <span>
                     <span>
                         {{ displaySupplyShare(
-                            props.row.balance,
+                            formatWei(
+                                props.row.balance,
+                                contract.properties?.decimals,
+                                contract.properties?.decimals
+                            ),
                             contract.properties?.total_supply_ibc,
                             contract.properties?.decimals,
                             2,
@@ -196,7 +213,11 @@ export default {
                     </span>
                     <q-tooltip>
                         {{ displaySupplyShare(
-                            props.row.balance,
+                            formatWei(
+                                props.row.balance,
+                                contract.properties?.decimals,
+                                contract.properties?.decimals
+                            ),
                             contract.properties?.total_supply_ibc,
                             contract.properties?.decimals,
                             false,
