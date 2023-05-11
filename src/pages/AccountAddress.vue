@@ -121,22 +121,21 @@ export default {
         this.loadAccount();
     },
     methods: {
-        isLoggedIn(){
-            return this.isLoggedIn;
-        },
-        address(){
-            return this.address;
-        },
         async loadAccount() {
             this.accountLoading = true;
             this.isContract = false;
             const tokenList = await this.$contractManager.getTokenList();
-            const account = await this.$evm.telos.getEthAccount(this.accountAddress);
+            let account;
+            try {
+                account = await this.$evm.telos.getEthAccount(this.accountAddress);
+            } catch (e) {
+                console.log('Account not linked to a Native account');
+            }
             this.contract = null;
             this.fullTitle = null;
-            this.nonce = account.nonce;
+            this.nonce = account?.nonce;
             this.title = this.$t('pages.account');
-            if (account.code.length > 0){
+            if (account?.code?.length > 0){
                 this.contract = await this.$contractManager.getContract(this.accountAddress);
                 if(this.contract){
                     if(this.contract.supportedInterfaces.includes('erc20')){
@@ -521,7 +520,7 @@ export default {
                     <InternalTransactionTable :title="accountAddress" :filter="{accountAddress}"/>
                 </q-tab-panel>
                 <q-tab-panel v-if="!contract && isLoggedIn" name="approvals">
-                    <ApprovalList :address="accountAddress" />
+                    <ApprovalList :accountAddress="accountAddress" />
                 </q-tab-panel>
                 <q-tab-panel v-if="!contract" name="nfts">
                     <NFTList :address="accountAddress" filter="account" />

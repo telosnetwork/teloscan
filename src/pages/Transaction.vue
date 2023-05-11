@@ -268,7 +268,7 @@ export default {
                     animated="animated"
                     keep-alive="keep-alive"
                 >
-                    <q-tab-panel id="transaction-page" name="general"><br><br>
+                    <q-tab-panel v-if="trx !== null" id="transaction-page" name="general"><br><br>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3">
                                 <strong class="wrapStrong">{{ $t('pages.transaction_hash') }}:&nbsp;</strong>
@@ -327,7 +327,7 @@ export default {
                                 <AddressField
                                     :address="trx.from"
                                     :truncate="0"
-                                    :highlight="this.trx.logs?.length > 1"
+                                    :highlight="trx.logs?.length > 1"
                                     copy="copy"
                                 />
                             </div>

@@ -11,7 +11,7 @@ export default {
     name: 'ApprovalList',
     components: { AddressField, DateField },
     props: {
-        address: {
+        accountAddress: {
             type: String,
             required: true,
         },
@@ -73,7 +73,9 @@ export default {
         await this.onRequest({
             pagination: this.pagination,
         });
-
+        if (!this.isLoggedIn) {
+            this.displayLoginModal = true;
+        }
     },
 
     computed: {
@@ -128,7 +130,7 @@ export default {
         },
         getPath(props){
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/account/${this.address}/approvals?limit=${
+            let path = `/account/${this.accountAddress}/approvals?limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
             path += `&includeAbi=true&offset=${(page - 1) * rowsPerPage}`;
@@ -182,7 +184,7 @@ export default {
             return success;
         },
         async handleCtaClick(spender, contract) {
-            if (!this.isLoggedIn) {
+            if (!this.isLoggedInAccount()) {
                 this.displayLoginModal = true;
                 return;
             }
@@ -250,8 +252,14 @@ export default {
                 this.selected = this.selected.slice(index, 1);
             }
         },
+        async isLoggedInAccount(){
+            if(!this.isLoggedIn){
+                return false;
+            }
+            return (this.accountAddress === this.address);
+        },
         async handleCtaRemoveAll(){
-            if (!this.isLoggedIn) {
+            if (!this.isLoggedInAccount()) {
                 this.displayLoginModal = true;
                 return;
             }
@@ -260,7 +268,7 @@ export default {
             let offset = 0;
             while(more){
                 let response = await this.$indexerApi.get(
-                    `/account/${this.address}/approvals?limit=${limit}&offset=${offset}&includePagination=true`,
+                    `/account/${this.accountAddress}/approvals?limit=${limit}&offset=${offset}&includePagination=true`,
                 );
                 more = response.data?.more || false;
                 offset = offset + limit;
@@ -337,9 +345,6 @@ export default {
                 return success;
             };
         },
-        isLoggedIn(){
-            return this.isLoggedIn();
-        },
         modalHide(){
             this.removing = false;
         },
@@ -349,6 +354,9 @@ export default {
 </script>
 
 <template>
+<div v-if="!isLoggedInAccount">
+    <p>{{ $t('components.approvals.login_account') }}</p>
+</div>
 <div>
     <q-table
         v-model:pagination="pagination"
@@ -380,7 +388,7 @@ export default {
         <template v-slot:body="props">
             <q-tr :props="props">
                 <q-td key="spender" :props="props">
-                    <AddressField :key="props.row.spender + 'c'" :address="props.row.spender" truncate="18" />
+                    <AddressField :key="props.row.spender + 'c'" :address="props.row.spender" :truncate="18" />
                 </q-td>
                 <q-td key="amount" :props="props" >
                     <div class="flex items-center">

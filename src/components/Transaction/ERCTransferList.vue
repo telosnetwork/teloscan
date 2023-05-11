@@ -157,7 +157,6 @@ export default {
                     {{ $t('components.transaction.form_from') }}
                 </strong>
                 <AddressField
-                    :class="q-pl-sm"
                     :highlight="trxFrom.toLowerCase() === transfer.from.toLowerCase() && pTransfers.length > 1"
                     :address="transfer.from"
                     :truncate="12"

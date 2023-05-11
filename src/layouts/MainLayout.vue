@@ -12,7 +12,7 @@ export default {
         AppHeader,
         FooterMain,
     },
-    async data() {
+    data() {
         return {
             stlosLogo: stlos,
             mainnet: process.env.NETWORK_EVM_CHAIN_ID === 40,
@@ -56,7 +56,7 @@ export default {
 
 <template>
 <AppHeader />
-<q-layout view="lhh Lpr lFf ">
+<q-layout view="lhh Lpr lFf">
     <q-page-container class="flex flex-center page-container">
         <div :class="`banner ${onHomePage ? 'home' : ''}`" ></div>
         <router-view />
