@@ -5,6 +5,8 @@ import { getTopicHash } from 'src/lib/utils';
 import { ERC1155_TRANSFER_SIGNATURE, TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures.js';
 import { erc721MetadataAbi } from 'src/lib/abi';
 const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
+const systemContractList =
+    'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json';
 
 export default class ContractManager {
     constructor(indexerApi, parser) {
@@ -13,6 +15,8 @@ export default class ContractManager {
         this.parser = parser;
         this.factory = new ContractFactory();
         this.indexerApi = indexerApi;
+        this.systemContractList = false;
+        this.tokenList = false;
         this.ethersProvider = new ethers.providers.JsonRpcProvider(process.env.NETWORK_EVM_RPC);
     }
 
@@ -157,9 +161,28 @@ export default class ContractManager {
     async loadTokenList() {
         const results = await axios.get(tokenList);
         const { tokens } = results.data;
-        results.data.tokens = (tokens ?? []).filter(({ chainId }) => chainId === +process.env.NETWORK_EVM_CHAIN_ID);
+        results.data.tokens = (tokens ?? []).filter(({ chainId }) => chainId === process.env.NETWORK_EVM_CHAIN_ID);
 
         this.tokenList = results.data || false;
+    }
+
+    async getSystemContractsList() {
+        if (!this.systemContractList) {
+            if (!this.processing['systemcontractlist']) {
+                this.processing['systemcontractlist'] = true;
+                const results = await axios.get(systemContractList);
+                const { contracts } = results.data;
+                results.data.contracts = (contracts ?? []).filter(
+                    ({ chainId }) => chainId === process.env.NETWORK_EVM_CHAIN_ID)
+                ;
+                this.systemContractList = results.data || false;
+                this.processing['systemcontractlist'] = false;
+            } else {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                return await this.getSystemContractsList();
+            }
+        }
+        return this.systemContractList;
     }
 
     async getTokenList() {
@@ -167,6 +190,7 @@ export default class ContractManager {
             if (!this.processing['tokenlist']) {
                 this.processing['tokenlist'] = true;
                 await this.loadTokenList();
+                this.processing['tokenlist'] = false;
             } else {
                 await new Promise(resolve => setTimeout(resolve, 300));
                 return await this.getTokenList();

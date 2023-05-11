@@ -16,6 +16,11 @@ export default {
         },
     },
     async mounted() {
+        let list = await this.$contractManager.getSystemContractsList();
+        for(const contract in list.contracts){
+            this.systemContractsList += list.contracts[contract].address + ',';
+        }
+        this.systemContractsList.substr(this.systemContractsList.length -2, this.systemContractsList.length - 1);
         await this.onRequest({
             pagination: this.pagination,
         });
@@ -56,7 +61,8 @@ export default {
             columns: columns,
             holders: [],
             loading: true,
-            showSystemContracts: true,
+            systemContractsList: '',
+            showSystemContracts: false,
             filterBy: this.filter,
             pagination: {
                 sortBy: 'balance',
@@ -95,8 +101,8 @@ export default {
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
             path += `&includeAbi=true&offset=${(page - 1) * rowsPerPage}`;
-            path = (this.pagination.rowsNumber === 0) ? path + '&includePagination=true' : path;
-            path = (this.showSystemContracts) ? path + '&not=' : path;
+            path += '&includePagination=true';
+            path = (!this.showSystemContracts) ? path + '&not=' + this.systemContractsList : path;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             return path;
         },
@@ -210,6 +216,7 @@ export default {
             color="secondary"
             checked-icon="visibility"
             unchecked-icon="visibility_off"
+            @update:model-value="onRequest({pagination: pagination})"
         />
     </template>
 </q-table>
