@@ -2,6 +2,7 @@
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import { formatWei } from 'src/lib/utils';
+import { BigDecimal } from 'src/lib/BigDecimal';
 export default {
     name: 'HolderList',
     components: {
@@ -107,14 +108,17 @@ export default {
         },
         formatWei,
         displaySupplyShare(balance, supplies, decimals, fixed){
-            let share = ((parseFloat(balance) / parseFloat(supplies)) * 100);
+            let share = new BigDecimal(balance).div(new BigDecimal(supplies)).mul(new BigDecimal('100'));
             if(fixed){
-                if(share < 0.01){
+                if(parseFloat(share.toString()) < 0.01){
                     return '< 0.01%';
                 }
-                share = share.toFixed(fixed);
+                share = share.toFixedString(fixed);
             }
-            return share + '%';
+            if(parseFloat(share.toString()) < 0.000000000000000001){
+                return '< 0.000000000000000001%';
+            }
+            return share.toString() + '%';
         },
     },
 };
@@ -206,7 +210,7 @@ export default {
                                 contract.properties?.decimals,
                                 contract.properties?.decimals
                             ),
-                            contract.properties?.total_supply_ibc,
+                            contract.properties?.total_supply_ibc, // Already formatted
                             contract.properties?.decimals,
                             2,
                         )}}
@@ -218,7 +222,7 @@ export default {
                                 contract.properties?.decimals,
                                 contract.properties?.decimals
                             ),
-                            contract.properties?.total_supply_ibc,
+                            contract.properties?.total_supply_ibc, // Already formatted
                             contract.properties?.decimals,
                             false,
                         )}}
