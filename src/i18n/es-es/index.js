@@ -107,7 +107,7 @@ export default {
             convert_stlos_to_tlos_error: 'No se puede convertir sTLOS a TLOS { message }',
             unstake_stlos_error: 'Error al desbloquear sTLOS { message }',
             withdraw_failed: 'Error al retirar TLOS desbloqueado: { message }',
-        }
+        },
         account_not_found: 'We could not find this account',
         approvals: 'Approvals',
         supported_interfaces: 'Supported interface(s)',
