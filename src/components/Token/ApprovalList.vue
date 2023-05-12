@@ -105,10 +105,10 @@ export default {
                 approval.contract = await this.$contractManager.getContract(approval.contract);
                 approval.usd = 0;
                 if(approval.contract.properties?.price){
-                    approval.usd = formatWei(
+                    approval.usd = (formatWei(
                         approval.amount,
                         approval.contract.properties.decimals,
-                    ) * approval.contract.properties?.price;
+                    ) * approval.contract.properties?.price).toFixed(2);
                 }
                 if(approval.amount > 0){
                     approval.amountRaw = formatWei(
@@ -397,7 +397,8 @@ export default {
                             <span>{{ $t('components.approvals.infinite') }}</span>
                         </span>
                         <span v-else :key="props.row.amount">
-                            <span>{{ props.row.amount }}</span>
+                            <span v-if="parseFloat(props.row.amountRaw) > 0.0001" >{{ props.row.amount }}</span>
+                            <span v-else >{{ '< 0.0001' }}</span>
                             <q-tooltip v-if="parseFloat(props.row.amountRaw) > parseFloat(props.row.amount)">
                                 {{ props.row.amountRaw }}
                             </q-tooltip>
