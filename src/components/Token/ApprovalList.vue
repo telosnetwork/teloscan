@@ -195,8 +195,8 @@ export default {
                 if(results){
                     await ctx.checkChanges();
                 }
-                ctx.removing = false;
-                ctx.displayConfirmModal = false;
+                this.removing = false;
+                this.displayConfirmModal = false;
             };
         },
         async checkChanges(){
@@ -219,6 +219,7 @@ export default {
                 }
                 if(i === 9){
                     approval  = false;
+                    return;
                 }
                 i++;
             }

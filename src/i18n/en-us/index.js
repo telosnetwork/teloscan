@@ -195,7 +195,7 @@ export default {
     components: {
         approvals: {
             approval_confirm: 'Confirm approval update',
-            approval_text: 'We will set the selected approvals\' amount to 0',
+            approval_text: 'Confirmation using your wallet is needed to update the selected approvals\' amount to 0.',
             type: 'Type',
             cancel: 'Cancel',
             remove_approval: 'Remove it',
@@ -204,7 +204,7 @@ export default {
             infinite: 'Infinite',
             select: 'Select approval',
             unselect: 'Unselect approval',
-            update: 'Update approval',
+            update: 'Update approval(s)',
             removal_approvals: 'Remove all approvals',
             removal_selected_approvals: 'Remove all selected approvals',
             update_failed: 'Failed to update approval',
@@ -232,9 +232,10 @@ export default {
         },
         holders : {
             holder: 'Holder',
+            balance: 'Balance',
             global_supply: 'Global supply',
             telos_supply: 'Telos EVM supply',
-            balance: 'Balance',
+            updated: 'Last updated',
         },
         no_balances_found: 'No official erc20 token balance found for this address',
         internal_txns: 'Internal Transactions',

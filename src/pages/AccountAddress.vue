@@ -77,6 +77,14 @@ export default {
         ...mapGetters('login', ['address', 'isLoggedIn']),
     },
     watch: {
+        address: {
+            handler(newValue) {
+                if (toChecksumAddress(newValue) === toChecksumAddress(this.accountAddress)) {
+                    // Bring back approvals...
+                }
+            },
+            immediate: true,
+        },
         accountAddress: {
             handler(newValue, oldValue) {
                 if (newValue !== oldValue) {
@@ -117,8 +125,8 @@ export default {
             },
         },
     },
-    created() {
-        this.loadAccount();
+    async created() {
+        await this.loadAccount();
     },
     methods: {
         async loadAccount() {
@@ -192,12 +200,13 @@ export default {
         },
         getIcon,
         formatWei,
+        toChecksumAddress,
     },
 };
 </script>
 
 <template>
-<div :key="accountAddress + (this.contract?.supportedInterfaces?.length)" class="pageContainer q-pt-xl">
+<div :key="accountAddress + this.address" class="pageContainer q-pt-xl">
     <div>
         <div class="row tableWrapper justify-between q-mb-lg">
             <div class="homeInfo">
@@ -447,7 +456,7 @@ export default {
                 :label="$t('components.nfts.nfts')"
             />
             <q-route-tab
-                v-if="!contract && isLoggedIn && this.accountAddress === address"
+                v-if="!contract && isLoggedIn && toChecksumAddress(this.accountAddress) === toChecksumAddress(address)"
                 name="approvals"
                 :to="{ hash: '#approvals' }"
                 exact
@@ -519,8 +528,15 @@ export default {
                 <q-tab-panel v-else name="int_transactions">
                     <InternalTransactionTable :title="accountAddress" :filter="{accountAddress}"/>
                 </q-tab-panel>
-                <q-tab-panel v-if="!contract && isLoggedIn" name="approvals">
-                    <ApprovalList :accountAddress="accountAddress" />
+                <q-tab-panel
+                    v-if="
+                        !contract
+                            && isLoggedIn
+                            && toChecksumAddress(this.accountAddress) === toChecksumAddress(address)
+                    "
+                    name="approvals"
+                >
+                    <ApprovalList  :accountAddress="accountAddress" />
                 </q-tab-panel>
                 <q-tab-panel v-if="!contract" name="nfts">
                     <NFTList :address="accountAddress" filter="account" />
