@@ -317,10 +317,10 @@ export default {
                     ctx.selected.map(async (id) => {
                         let parts = id.split(':');
                         let result = await ctx.updateApproval(parts[0], parts[1], 0);
-                        return result;
+                        return (result.hash);
                     }),
                 );
-                if(results){
+                if(results.includes(1)){
                     await this.checkChanges();
                 }
                 this.removing = false;
@@ -488,10 +488,10 @@ export default {
                                         class="q-mr-xs"
                                         size="14px"
                                     />
-                                    <span>UNSELECT ALL</span>
+                                    <span>{{ $t('components.approvals.unselect_all').toUpperCase() }}</span>
                                 </q-btn>
                                 <q-tooltip>
-                                    {{ $t('components.approvals.unselect_all_approvals') }}
+                                    {{ $t('components.approvals.unselect_all') }}
                                 </q-tooltip>
                             </div>
                             <div>
@@ -507,7 +507,9 @@ export default {
                                         size="14px"
                                     />
                                     <q-spinner v-else size="14px" class="q-mr-xs" />
-                                    <span>DELETE {{ selected.length }}</span>
+                                    <span>
+                                        {{ $t('components.approvals.delete').toUpperCase() }} {{ selected.length }}
+                                    </span>
                                 </q-btn>
                                 <q-tooltip>{{ $t('components.approvals.removal_selected_approvals') }}</q-tooltip>
                             </div>
@@ -525,7 +527,7 @@ export default {
                                     size="14px"
                                 />
                                 <q-spinner v-else size="14px" class="q-mr-xs" />
-                                <span>DELETE ALL</span>
+                                <span>{{ $t('components.approvals.delete_all').toUpperCase() }}</span>
                             </q-btn>
                             <q-tooltip>{{ $t('components.approvals.removal_approvals') }}</q-tooltip>
                         </div>

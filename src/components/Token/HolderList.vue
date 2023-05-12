@@ -230,7 +230,7 @@ export default {
             </q-td>
         </q-tr>
     </template>
-    <template v-slot:bottom-row>
+    <template v-if="holders.length > 0" v-slot:bottom-row>
         <q-toggle
             v-model="showSystemContracts"
             label="Show system contracts"
@@ -245,9 +245,9 @@ export default {
 
 <style scoped lang="sass">
 .q-table .q-toggle
+    font-size: 12px
     position: absolute
     bottom: 4px
-    font-size: 12px
 .sortable
     height: 60px
     display: flex
