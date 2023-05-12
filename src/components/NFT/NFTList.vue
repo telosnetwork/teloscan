@@ -293,7 +293,7 @@ export default {
                         <q-img
                             v-if="props.row.imageCache"
                             :src="props.row.imageCache + '/280.webp'"
-                            :alt="row.metadata?.name"
+                            :alt="props.row.metadata?.name"
                         />
                         <q-img v-else :src="props.row.metadata?.image" :alt="row.metadata?.name" />
                     </a>
