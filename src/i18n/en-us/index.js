@@ -194,8 +194,7 @@ export default {
     },
     components: {
         approvals: {
-            approval_confirm: 'Confirm approval update',
-            approval_text: 'Confirmation using your wallet is needed to update the selected approvals\' amount to 0.',
+            approval_text: 'A signature from your wallet is needed to update the selected approvals\' amount to 0.',
             type: 'Type',
             delete: 'Delete',
             delete_all: 'Delete all',
@@ -207,7 +206,8 @@ export default {
             infinite: 'Infinite',
             select: 'Select approval',
             unselect: 'Unselect approval',
-            update: 'Update approval(s)',
+            update: 'Approval Update',
+            update_description: 'Enter the new amount to allow for the spender. This will require a wallet signature.',
             removal_approvals: 'Remove all approvals',
             removal_selected_approvals: 'Remove all selected approvals',
             update_failed: 'Failed to update approval',
@@ -412,6 +412,7 @@ export default {
         },
     },
     global: {
+        sign: 'Sign',
         hours: 'hours',
         wallet_response: 'Awaiting response from your wallet provider',
         minutes: 'minutes',

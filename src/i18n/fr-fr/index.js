@@ -194,8 +194,7 @@ export default {
     },
     components: {
         approvals: {
-            approval_confirm: 'Confirmation de la mise à jour',
-            approval_text: 'Nous allons définir le montant des permissions séléctionés à 0',
+            approval_text: 'Nous allons définir le montant des permissions séléctionés à 0. Ceci requiert une signature avec votre portefeuille.',
             type: 'Type',
             delete: 'Supprimer',
             delete_all: 'Supprimer tout',
@@ -207,7 +206,8 @@ export default {
             infinite: 'Infini',
             select: 'Selectionnez la permission',
             unselect: 'Déséléctionner la permission',
-            update: 'Mettre à jour la permission',
+            update: 'Mise à jour permission(s)',
+            update_description: 'Saisissez le nouveau montant de la permission. Ceci requiert une signature avec votre portefeuille.',
             removal_approvals: 'Supprimer toutes les permissions',
             removal_selected_approvals: 'Supprimer toutes les permissions séléctionnées',
             update_failed: 'Echec lors de la mise à jour de la ou des permissions',
@@ -412,6 +412,7 @@ export default {
         },
     },
     global: {
+        sign: 'Signer',
         hours: 'heures',
         wallet_response: 'En attente d\'une réponse de votre portefeuille',
         minutes: 'minutes',

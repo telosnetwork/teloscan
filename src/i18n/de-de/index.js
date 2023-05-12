@@ -192,8 +192,7 @@ export default {
     },
     components: {
         approvals: {
-            approval_confirm: 'Confirm approval update',
-            approval_text: 'We will set the selected approvals\' amount to 0',
+            approval_text: 'A signature from your wallet is needed to update the selected approvals\' amount to 0.',
             type: 'Type',
             delete: 'Delete',
             delete_all: 'Delete all',
@@ -205,7 +204,8 @@ export default {
             infinite: 'Infinite',
             select: 'Select approval',
             unselect: 'Unselect approval',
-            update: 'Update approval',
+            update: 'Approval Update',
+            update_description: 'Enter the new amount to allow for the spender. This will require a wallet signature.',
             removal_approvals: 'Remove all approvals',
             removal_selected_approvals: 'Remove all selected approvals',
             update_failed: 'Failed to update approval',
@@ -410,6 +410,7 @@ export default {
         },
     },
     global: {
+        sign: 'Sign',
         data_behind_by: 'The data shown is behind by',
         not_synced: 'Indexer is not synced to latest block',
         try_reloading: 'You can try reloading the page to fix it',

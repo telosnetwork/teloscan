@@ -540,6 +540,7 @@ export default {
         <q-card v-if="!removing" class="q-pa-xl">
             <q-card-section>
                 <p class="text-h5">{{ $t('components.approvals.update') }}</p>
+                <p class="text-grey">{{ $t('components.approvals.update_description') }}</p>
                 <q-input v-model="modalUpdateValue"  type="number" :value="modalUpdateValue" />
             </q-card-section>
             <q-card-actions align="right" class="q-pb-md q-px-md">
@@ -551,7 +552,7 @@ export default {
                 />
                 <q-btn
                     v-close-popup
-                    :label="$t('components.approvals.update')"
+                    :label="$t('global.sign')"
                     color="secondary"
                     text-color="black"
                     @click="confirmModalUpdate()"
@@ -569,7 +570,7 @@ export default {
         <q-card v-if="!removing">
             <q-card-section>
                 <p class="text-h5">
-                    {{ $t('components.approvals.approval_confirm') }}
+                    {{ $t('components.approvals.update') }}
                 </p>
                 <p>
                     {{ $t('components.approvals.approval_text' ) }}
@@ -585,7 +586,7 @@ export default {
                 />
                 <q-btn
                     v-close-popup
-                    :label="$t('components.approvals.update')"
+                    :label="$t('global.sign')"
                     color="secondary"
                     text-color="black"
                     @click="confirmModal()"
