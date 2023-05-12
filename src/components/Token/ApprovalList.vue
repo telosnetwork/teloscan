@@ -279,31 +279,7 @@ export default {
                     }
                 }
             }
-            this.displayConfirmModal = true;
-            const ctx = this;
-            this.confirmModal = async function () {
-                let parts = [];
-                let results = await Promise.all(
-                    ctx.selected.map(async (id) => {
-                        parts = id.split(':');
-                        let result = await ctx.updateApproval(parts[0], parts[1], 0);
-                        return (result.hash) ? 1 : 0;
-                    }),
-                );
-                let changed = false;
-                for(let i = 0; i < results.length; i++){
-                    if(results[i]){
-                        changed = true;
-                    }
-                }
-                ctx.removing = false;
-                if(changed){
-                    await ctx.checkChanges();
-                }
-                ctx.displayConfirmModal = false;
-                ctx.selected = [];
-                return results;
-            };
+            this.handleCtaRemoveSelected();
         },
         async handleCtaRemoveSelected(){
             if (!this.isLoggedIn) {
@@ -425,7 +401,7 @@ export default {
                             "
                             class="text-grey"
                         >
-                            {{ props.row.usd }} $
+                            ~{{ props.row.usd }} $
                         </small>
                     </div>
                 </q-td>
