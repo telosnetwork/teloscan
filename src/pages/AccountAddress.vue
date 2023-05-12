@@ -62,6 +62,7 @@ export default {
             balance: null,
             nonce: null,
             isContract: false,
+            found: true,
             contract: null,
             verificationDate: '',
             creationDate: 0,
@@ -137,7 +138,8 @@ export default {
             try {
                 account = await this.$evm.telos.getEthAccount(this.accountAddress);
             } catch (e) {
-                console.log('Account not linked to a Native account');
+                this.found = false;
+                console.log('Account not found on Native');
             }
             this.contract = null;
             this.fullTitle = null;
@@ -173,8 +175,8 @@ export default {
                 }
             }
 
-            this.balance = this.getBalanceDisplay(account.balance);
-            this.telosAccount = account.account;
+            this.balance = this.getBalanceDisplay(account?.balance);
+            this.telosAccount = account?.account;
             this.accountLoading = false;
         },
         getBalanceDisplay(balance) {
@@ -214,6 +216,7 @@ export default {
                     <q-img
                         v-if="this.contract?.supportedInterfaces.includes('erc20')"
                         class="coin-icon"
+                        :alt="this.contract.getName() + ' ERC20 token'"
                         :src="getIcon(this.contract.logoURI)"
                     />
                     <q-icon
@@ -508,7 +511,13 @@ export default {
                 :label="$t('pages.contract')"
             />
         </q-tabs>
-        <div class="q-mb-md tableWrapper">
+        <div v-if="!found" class="bg-white q-pa-lg">
+            <div class="text-h5 flex items-center justify-center">
+                <q-icon name="warning" size="32px" class="q-mr-sm q-mt-sm" />
+                <div>We could not find this account</div>
+            </div>
+        </div>
+        <div v-else class="q-mb-md tableWrapper">
             <q-tab-panels
                 :key="address"
                 v-model="tab"

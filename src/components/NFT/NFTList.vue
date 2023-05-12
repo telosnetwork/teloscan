@@ -290,8 +290,12 @@ export default {
                         :href="(props.row.imageCache) ? props.row.imageCache + '/1440.webp' : props.row.metadata?.image"
                         target="_blank"
                     >
-                        <q-img v-if="props.row.imageCache" :src="props.row.imageCache + '/280.webp'" />
-                        <q-img v-else :src="props.row.metadata?.image" />
+                        <q-img
+                            v-if="props.row.imageCache"
+                            :src="props.row.imageCache + '/280.webp'"
+                            :alt="row.metadata?.name"
+                        />
+                        <q-img v-else :src="props.row.metadata?.image" :alt="row.metadata?.name" />
                     </a>
                     <q-tooltip v-if="props.row.metadata?.description">{{ props.row.metadata.description }}</q-tooltip>
                 </q-td>
