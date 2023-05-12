@@ -26,6 +26,7 @@
   "0x93d75d64d1f84fc6f430a64fc578bdd4c1e090e90ea2d51773e626d19de56d30": "event DecreasePosition(bytes32 key, address account, address collateralToken, address indexToken, uint256 collateralDelta, uint256 sizeDelta, bool isLong, uint256 price, uint256 fee)",
   "0x73af1d417d82c240fdb6d319b34ad884487c6bf2845d98980cc52ad9171cb455": "event ClosePosition(bytes32 key, uint256 size, uint256 collateral, uint256 averagePrice, uint256 entryFundingRate, uint256 reserveAmount, int256 realisedPnl)",
   "0xe24c39186e9137521953beaa8446e71f55b8f12296984f9d4273ceb1af728d90": "event UpdateGov(address gov)",
+  "0xd6137be44db128ffcf1ea1821dbe8f889f67f949be7656c2d8acba2a4a891a02": "event GlobalShortDataUpdated(address indexed token, uint256 globalShortSize, uint256 globalShortAveragePrice)",
   "0x0874b2d545cb271cdbda4e093020c452328b24af12382ed62c4d00f5c26709db": "event Swap(address account, address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut, uint256 amountOutAfterFees, uint256 feeBasisPoints)",
   "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65": "event Withdrawal(address indexed src, uint256 wad)",
   "0xae32d569b058895b9620d6552b09aaffedc9a6f396be4d595a224ad09f8b2139": "event CreateISetMaxGlobalSizes(address[] tokens, uint256[] longSizes, uint256[] shortSizes)",

@@ -57,7 +57,8 @@ export default {
                 name: 'value',
                 label: '',
                 align: 'left',
-            }, {
+            },
+            {
                 name: 'token',
                 label: '',
                 align: 'left',
@@ -90,16 +91,18 @@ export default {
         this.columns[1].label = this.$t('components.date');
         this.columns[2].label = this.$t('components.from');
         this.columns[3].label = this.$t('components.to');
-        this.columns[4].label = this.$t('components.value');
         this.columns[5].label = this.$t('components.token');
     },
     mounted() {
         switch (this.tokenType) {
         case 'erc20':
+            this.columns[4].label = this.$t('components.value');
             break;
         case 'erc721':
+            this.columns[4].label = this.$t('components.nfts.id');
             break;
         case 'erc1155':
+            this.columns[4].label = this.$t('components.nfts.amount');
             break;
         default:
             throw new Error(this.$t('components.unsupported_token_type', { tokenType: this.tokenType }));
@@ -142,6 +145,8 @@ export default {
                     if(contract){
                         transfer.token = await this.$contractManager.loadNFT(contract, transfer.id);
                     }
+                } else if (this.tokenType === 'erc1155') {
+                    valueDisplay = transfer.amount.toString();
                 } else if(transfer.id) {
                     valueDisplay = '#' + transfer.id.toString();
                 }
@@ -154,6 +159,7 @@ export default {
                     hash: transfer.transaction,
                     timestamp: transfer.timestamp / 1000,
                     count: 1,
+                    id: transfer.id,
                     token: transfer.token,
                     value: valueDisplay,
                     contract: contract,
@@ -263,7 +269,7 @@ export default {
                     {{ props.row.value }}
                 </span>
             </q-td>
-            <q-td key="token" :props="props">
+            <q-td key="token" :props="props" class="flex items-center">
                 <AddressField
                     :key="props.row.contract"
                     class="token-name"
@@ -271,6 +277,7 @@ export default {
                     :contract="props.row.contract"
                     :truncate="15"
                 />
+                <span v-if="tokenType === 'erc1155'" class="q-pl-xs" >#{{ props.row.id}}</span>
             </q-td>
         </q-tr>
     </template>

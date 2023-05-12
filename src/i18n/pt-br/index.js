@@ -411,6 +411,8 @@ export default {
         },
     },
     global: {
+        erc20_token: 'ERC20 Token',
+        erc721_token: 'ERC721 Token',
         sign: 'Sign',
         data_behind_by: 'The data shown is behind by',
         not_synced: 'Indexer is not synced to latest block',

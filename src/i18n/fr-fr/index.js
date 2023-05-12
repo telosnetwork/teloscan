@@ -413,6 +413,8 @@ export default {
         },
     },
     global: {
+        erc20_token: 'Jeton ERC20',
+        erc721_token: 'Jeton ERC721',
         sign: 'Signer',
         hours: 'heures',
         wallet_response: 'En attente d\'une réponse de votre portefeuille',

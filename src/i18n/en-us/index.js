@@ -218,6 +218,7 @@ export default {
         },
         nfts : {
             id: 'Token ID',
+            amount: 'Amount',
             name: 'Name',
             collection: 'Collection',
             nfts: 'NFTs',
@@ -413,6 +414,8 @@ export default {
         },
     },
     global: {
+        erc20_token: 'ERC20 Token',
+        erc721_token: 'ERC721 Token',
         sign: 'Sign',
         hours: 'hours',
         wallet_response: 'Awaiting response from your wallet provider',

@@ -65,7 +65,7 @@ export default {
                 rowsPerPage: 10,
                 rowsNumber: 0,
             },
-            removing: false,
+            signing: false,
             loading: true,
         };
     },
@@ -142,7 +142,7 @@ export default {
             if(!contractAddress || !spender){
                 return;
             }
-            this.removing = true;
+            this.signing = true;
             const contract  = await this.$contractManager.getContract(contractAddress);
             if(!contract){
                 return;
@@ -195,7 +195,7 @@ export default {
                 if(results){
                     await ctx.checkChanges();
                 }
-                this.removing = false;
+                this.signing = false;
                 this.displayConfirmModal = false;
             };
         },
@@ -217,15 +217,15 @@ export default {
                         approval = false;
                     }
                 }
-                if(i === 9){
+                if(i === 5){
                     approval  = false;
-                    return;
+                    break;
                 }
                 i++;
             }
             this.displayConfirmModal = false;
             this.displayUpdateModal = false;
-            this.removing = false;
+            this.signing = false;
         },
         toggleAll(value){
             for(let i = 0; i < this.approvals.length; i++){
@@ -299,7 +299,7 @@ export default {
                 if(results.includes(1)){
                     await this.checkChanges();
                 }
-                this.removing = false;
+                this.signing = false;
                 this.displayConfirmModal = false;
                 return results;
             };
@@ -318,12 +318,14 @@ export default {
                     await this.checkChanges();
                 }
                 this.displayUpdateModal = false;
-                this.removing = false;
+                this.signing = false;
                 return success;
             };
         },
         modalHide(){
-            this.removing = false;
+            this.signing = false;
+            this.displayConfirmModal = false;
+            this.displayUpdateModal = false;
         },
         formatWei,
     },
@@ -418,11 +420,11 @@ export default {
                         class="label bg-secondary text-white q-pa-sm rounded"
                     >
                         <span>ERC721</span>
-                        <q-tooltip>ERC721 Token</q-tooltip>
+                        <q-tooltip>ERC721 {{ $t('components.token') }}</q-tooltip>
                     </span>
                     <span v-else class="label bg-positive text-white q-px-md q-py-sm rounded-borders">
                         <span>ERC20</span>
-                        <q-tooltip>ERC20 Token</q-tooltip>
+                        <q-tooltip>ERC20 {{ $t('components.token') }}</q-tooltip>
                     </span>
                 </q-td>
                 <q-td key="updated" :props="props">
@@ -478,7 +480,7 @@ export default {
                                     @click="handleCtaRemoveSelected"
                                 >
                                     <q-icon
-                                        v-if="!removing"
+                                        v-if="!signing"
                                         name="delete"
                                         class="q-mr-xs"
                                         size="14px"
@@ -498,7 +500,7 @@ export default {
                                 @click="handleCtaRemoveAll"
                             >
                                 <q-icon
-                                    v-if="!removing"
+                                    v-if="!signing"
                                     name="delete"
                                     class="q-mr-xs"
                                     size="14px"
@@ -514,7 +516,7 @@ export default {
         </template>
     </q-table>
     <q-dialog v-model="displayUpdateModal" @hide="modalHide">
-        <q-card v-if="!removing" class="q-pa-xl">
+        <q-card v-if="!signing" class="q-pa-xl">
             <q-card-section>
                 <p class="text-h5">{{ $t('components.approvals.update') }}</p>
                 <p class="text-grey">{{ $t('components.approvals.update_description') }}</p>
@@ -544,7 +546,7 @@ export default {
         </q-card>
     </q-dialog>
     <q-dialog v-model="displayConfirmModal" @hide="modalHide">
-        <q-card v-if="!removing">
+        <q-card v-if="!signing">
             <q-card-section>
                 <p class="text-h5">
                     {{ $t('components.approvals.update') }}
