@@ -514,7 +514,7 @@ export default {
         <div v-if="!found" class="bg-white q-pa-lg">
             <div class="text-h5 flex items-center justify-center">
                 <q-icon name="warning" size="32px" class="q-mr-sm q-mt-sm" />
-                <div>We could not find this account</div>
+                <div>{{ $t('pages.account_not_found') }}</div>
             </div>
         </div>
         <div v-else class="q-mb-md tableWrapper">

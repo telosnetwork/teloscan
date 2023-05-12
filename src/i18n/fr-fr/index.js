@@ -108,6 +108,7 @@ export default {
             unstake_stlos_error: 'Échec lors de l\'unstake de sTLOS { message }',
             withdraw_failed: 'Échec du retrait des TLOS déverrouillés: { message }',
         },
+        account_not_found: 'Nous n\'avons pas pu trouver ce compte',
         approvals: 'Permissions',
         supported_interfaces: 'Interface(s) supporté(s)',
         explore_transactions: 'Explorer les transactions',

@@ -108,6 +108,7 @@ export default {
             unstake_stlos_error: 'Failed to unstake sTLOS { message }',
             withdraw_failed: 'Failed to withdraw unlocked TLOS: { message }',
         },
+        account_not_found: 'We could not find this account',
         approvals: 'Approvals',
         supported_interfaces: 'Supported interface(s)',
         explore_transactions: 'Explore Transactions',

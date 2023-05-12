@@ -108,6 +108,7 @@ export default {
             unstake_stlos_error: 'sTLOS konnte nicht abgehoben werden: { message }',
             withdraw_failed: 'TLOS Position konnte nicht ausgezahlt werden: { message }',
         },
+        account_not_found: 'We could not find this account',
         approvals: 'Approvals',
         supported_interfaces: 'Supported interface(s)',
         explore_transactions: 'Transaktionen prüfen',
