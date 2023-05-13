@@ -413,6 +413,7 @@ export default {
         },
     },
     global: {
+        max_decimals_reached: 'Veuillez utiliser au maximum { max } décimales',
         erc20_token: 'Jeton ERC20',
         erc721_token: 'Jeton ERC721',
         sign: 'Signer',

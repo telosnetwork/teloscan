@@ -414,6 +414,7 @@ export default {
         },
     },
     global: {
+        max_decimals_reached: 'Please use { max } decimal places maximum',
         erc20_token: 'ERC20 Token',
         erc721_token: 'ERC721 Token',
         sign: 'Sign',

@@ -58,6 +58,7 @@ export default {
             displayConfirmModal: false,
             displayUpdateModal: false,
             modalUpdateValue: false,
+            mask: '##################',
             pagination: {
                 sortBy: 'amount',
                 descending: true,
@@ -296,6 +297,7 @@ export default {
                         return (result.hash);
                     }),
                 );
+                console.log(results);
                 if(results.includes(1)){
                     await this.checkChanges();
                 }
@@ -307,8 +309,9 @@ export default {
         async handleCtaUpdate(spender, contractAddress, current){
             this.displayUpdateModal = true;
             this.modalUpdateValue = current;
+            const contract  = await this.$contractManager.getContract(contractAddress);
+            this.mask = '#'.repeat(contract.properties?.decimals || 18);
             this.confirmModalUpdate = async function(){
-                const contract  = await this.$contractManager.getContract(contractAddress);
                 let success = await this.updateApproval(
                     spender,
                     contractAddress,
@@ -520,7 +523,16 @@ export default {
             <q-card-section>
                 <p class="text-h5">{{ $t('components.approvals.update') }}</p>
                 <p class="text-grey">{{ $t('components.approvals.update_description') }}</p>
-                <q-input v-model="modalUpdateValue"  type="number" :value="modalUpdateValue" />
+                <q-input
+                    v-model="modalUpdateValue"
+                    type="number"
+                    :mask="'#.' + mask"
+                    :value="modalUpdateValue"
+                    :rules="[
+                        val => val.split('.')[1].length <= mask.length
+                            || $t('global.max_decimals_reached', {max: mask.length})
+                    ]"
+                />
             </q-card-section>
             <q-card-actions align="right" class="q-pb-md q-px-md">
                 <q-btn
