@@ -284,10 +284,10 @@ export default {
         },
         async handleCtaRemoveSelected(){
             if (!this.isLoggedIn) {
-                this.displayConfirmModal = true;
                 this.displayLoginModal = true;
                 return;
             }
+            this.displayConfirmModal = true;
             const ctx = this;
             this.confirmModal = async function () {
                 let results = await Promise.all(
