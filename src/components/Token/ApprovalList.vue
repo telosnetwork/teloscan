@@ -284,10 +284,10 @@ export default {
         },
         async handleCtaRemoveSelected(){
             if (!this.isLoggedIn) {
+                this.displayConfirmModal = true;
                 this.displayLoginModal = true;
                 return;
             }
-            this.displayConfirmModal = true;
             const ctx = this;
             this.confirmModal = async function () {
                 let results = await Promise.all(
@@ -524,8 +524,10 @@ export default {
                 <p class="text-h5">{{ $t('components.approvals.update') }}</p>
                 <p class="text-grey">{{ $t('components.approvals.update_description') }}</p>
                 <q-input
+                    ref="input"
                     v-model="modalUpdateValue"
                     type="number"
+                    for="updateBtn"
                     :mask="'#.' + mask"
                     :value="modalUpdateValue"
                     :rules="[
@@ -542,11 +544,12 @@ export default {
                     color="negative"
                 />
                 <q-btn
-                    v-close-popup
+                    id="updateBtn"
+                    :disabled="!modalUpdateValue"
                     :label="$t('global.sign')"
                     color="secondary"
                     text-color="black"
-                    @click="confirmModalUpdate()"
+                    @click="this.$refs.input.validate() && confirmModalUpdate()"
                 />
             </q-card-actions>
         </q-card>
