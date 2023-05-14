@@ -192,8 +192,8 @@ export default {
             this.displayConfirmModal = true;
             const ctx = this;
             this.confirmModal = async function () {
-                const results = await ctx.updateApproval(spender, contract, 0);
-                if(results){
+                const result = await ctx.updateApproval(spender, contract, 0);
+                if(result){
                     await ctx.checkChanges();
                 }
                 this.signing = false;
@@ -290,20 +290,21 @@ export default {
             this.displayConfirmModal = true;
             const ctx = this;
             this.confirmModal = async function () {
-                let results = await Promise.all(
+                let results = [];
+                await Promise.all(
                     ctx.selected.map(async (id) => {
                         let parts = id.split(':');
                         let result = await ctx.updateApproval(parts[0], parts[1], 0);
-                        return (result.hash);
+                        if(result){
+                            results.push(true);
+                        }
                     }),
                 );
-                console.log(results);
-                if(results.includes(1)){
-                    await this.checkChanges();
+                if(results.includes(true)){
+                    await ctx.checkChanges();
                 }
                 this.signing = false;
                 this.displayConfirmModal = false;
-                return results;
             };
         },
         async handleCtaUpdate(spender, contractAddress, current){
@@ -344,6 +345,7 @@ export default {
         v-model:pagination="pagination"
         :rows="approvals"
         :loading="loading"
+        :rows-per-page-label="$t('global.records_per_page')"
         :binary-state-sort="true"
         :row-key="row => row.address"
         :columns="columns"
@@ -423,11 +425,11 @@ export default {
                         class="label bg-secondary text-white q-pa-sm rounded"
                     >
                         <span>ERC721</span>
-                        <q-tooltip>ERC721 {{ $t('components.token') }}</q-tooltip>
+                        <q-tooltip>{{ $t('global.erc721_token') }}</q-tooltip>
                     </span>
                     <span v-else class="label bg-positive text-white q-px-md q-py-sm rounded-borders">
                         <span>ERC20</span>
-                        <q-tooltip>ERC20 {{ $t('components.token') }}</q-tooltip>
+                        <q-tooltip>{{ $t('global.erc20_token') }}</q-tooltip>
                     </span>
                 </q-td>
                 <q-td key="updated" :props="props">

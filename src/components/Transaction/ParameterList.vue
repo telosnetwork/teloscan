@@ -71,7 +71,6 @@ export default {
                         :highlight="trxFrom === value.toLowerCase()"
                         :address="value"
                         copy
-                        :name="value.toLowerCase() === contract.address && contract.name ?  contract.name : null"
                     />
                 </div>
                 <div v-else-if="param.arrayChildren === 'uint128' || param.arrayChildren === 'uint256'">

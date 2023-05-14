@@ -129,6 +129,7 @@ export default {
     v-model:pagination="pagination"
     :rows="holders"
     :loading="loading"
+    :rows-per-page-label="$t('global.records_per_page')"
     :binary-state-sort="true"
     :row-key="row => row.address"
     :columns="columns"

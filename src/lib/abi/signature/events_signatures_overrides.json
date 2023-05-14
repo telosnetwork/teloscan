@@ -1,5 +1,6 @@
 {
   "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": "event Transfer(address indexed from, address indexed to, uint256 value)",
+  "0x44bd20a79e993bdcc7cbedf54a3b4d19fb78490124b6b90d04fe3242eea579e8": "event Burn(address indexed user, uint256 amount, uint256 currentBalance, uint256 balanceIncrease, uint256 avgStableRate, uint256 newTotalSupply)",
   "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": "event Approval(address indexed owner, address indexed spender, uint256 value)",
   "0x71bab65ced2e5750775a0613be067df48ef06cf92a496ebf7663ae0660924954": "event Harvest(address indexed sender, uint256 performanceFee, uint256 callFee)",
   "0x884edad9ce6fa2440d8a54cc123490eb96d2768479d49ff9c7366125a9424364": "event Withdraw(address indexed user, uint256 amount)",
@@ -28,6 +29,7 @@
   "0xe24c39186e9137521953beaa8446e71f55b8f12296984f9d4273ceb1af728d90": "event UpdateGov(address gov)",
   "0xd6137be44db128ffcf1ea1821dbe8f889f67f949be7656c2d8acba2a4a891a02": "event GlobalShortDataUpdated(address indexed token, uint256 globalShortSize, uint256 globalShortAveragePrice)",
   "0x0874b2d545cb271cdbda4e093020c452328b24af12382ed62c4d00f5c26709db": "event Swap(address account, address tokenIn, address tokenOut, uint256 amountIn, uint256 amountOut, uint256 amountOutAfterFees, uint256 feeBasisPoints)",
+  "0x47cee97cb7acd717b3c0aa1435d004cd5b3c8c57d70dbceb4e4458bbd60e39d4": "event Claim(address receiver, uint256 amount)",
   "0x7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65": "event Withdrawal(address indexed src, uint256 wad)",
   "0xae32d569b058895b9620d6552b09aaffedc9a6f396be4d595a224ad09f8b2139": "event CreateISetMaxGlobalSizes(address[] tokens, uint256[] longSizes, uint256[] shortSizes)",
   "0x52a8358457e20bbb36e4086b83fb0749599f1893fe4c35a876c46dc4886d12db": "event SetMinExecutionFee(uint256 _minExecutionFee)",
@@ -43,7 +45,7 @@
   "0xd500f34e0ec655b7614ae42e1d9c666d5e4dde909a1297829f8c5ecf00805d32": "event CancelIncreaseOrder(address indexed account, uint256 orderIndex, address purchaseToken, uint256 purchaseTokenAmount, address collateralToken, address indexToken, uint256 sizeDelta, bool isLong, uint256 triggerPrice, bool triggerAboveThreshold, uint256 executionFee)",
   "0x0a0360dd5c354235bbf8d386ba3b24ef8134088e0785677de1504df219d9149a": "event UpdateIncreaseOrder(address indexed account, uint256 orderIndex, address collateralToken, address indexToken, bool isLong, uint256 sizeDelta, uint256 triggerPrice, bool triggerAboveThreshold)",
   "0x75781255bc71c83f89f29e5a2599f2c174a562d2cd8f2e818a47f132e7280498": "event UpdateDecreaseOrder (address indexed account, uint256 orderIndex, address collateralToken, uint256 collateralDelta, address indexToken, uint256 sizeDelta, bool isLong, uint256 triggerPrice, bool triggerAboveThreshold)",
-  "0x4c209b5fc8ad50758f13e2e1088ba56a560dff690a1c6fef26394f4c03821c4f": "event Mint(address indexed sender, uint256 indexed amount0, uint256 amount1)",
+  "0x4c209b5fc8ad50758f13e2e1088ba56a560dff690a1c6fef26394f4c03821c4f": "event Mint(address indexed sender, uint256 value, uint256 index)",
   "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822": "event Swap(address indexed sender, uint256 amount0In, uint256 amount1In, uint256 amount0Out, uint256 amount1Out, address indexed to)",
   "0xa078c4190abe07940190effc1846be0ccf03ad6007bc9e93f9697d0b460befbb": "event Swapped (address fromAsset, address toAsset, uint256 fromAmount, uint256 receivedAmount)",
   "0xa2c38e2d2fb7e3e1912d937fd1ca11ed6d51864dee4cfa7a7bf02becd7acf092": "event Claim(address indexed account, uint256 amount, bool indexed automatic)",

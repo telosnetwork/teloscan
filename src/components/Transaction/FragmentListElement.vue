@@ -158,15 +158,18 @@ export default {
                                 @click="showWei = !showWei"
                             >
                                 <span v-if="!showWei">
-                                    <span> {{
-                                        formatWei(fragment.args[index],
-                                                  fragment.contract.properties.decimals)
-                                    }}</span>
-                                    <q-tooltip>Show wei</q-tooltip>
+                                    <span>
+                                        <span> {{
+                                            formatWei(fragment.args[index],
+                                                      fragment.contract.properties.decimals)
+                                        }}</span>
+                                        <q-tooltip>Show wei</q-tooltip>
+                                    </span>
                                     <AddressField
                                         :address="fragment.contract.address"
                                         :truncate="0"
                                         :name="fragment.contract.properties.symbol"
+                                        :copy="true"
                                         class="word-break q-ml-xs"
                                     />
                                 </span>
@@ -180,6 +183,7 @@ export default {
                                     :address="fragment.contract.address"
                                     :truncate="0"
                                     :name="fragment.contract.properties.symbol"
+                                    :copy="true"
                                     class="word-break"
                                 />
                                 <span v-if="index === 3 && fragment.contract.properties.symbol"> #</span>
@@ -191,6 +195,7 @@ export default {
                                     :address="fragment.contract.address"
                                     :truncate="0"
                                     :name="fragment.contract.properties.symbol"
+                                    :copy="true"
                                     class="word-break"
                                 />
                                 <span v-if="fragment.contract.properties.symbol"> #</span>

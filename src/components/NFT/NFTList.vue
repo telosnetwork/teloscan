@@ -187,6 +187,7 @@ export default {
         v-model:pagination="pagination"
         :rows="nfts"
         :loading="loading"
+        :rows-per-page-label="$t('global.records_per_page')"
         :binary-state-sort="true"
         :row-key="row => row.contract + row.tokenId"
         :columns="columns"
@@ -295,9 +296,9 @@ export default {
                             :src="props.row.imageCache + '/280.webp'"
                             :alt="props.row.metadata?.name"
                         />
-                        <q-img v-else :src="props.row.metadata?.image" :alt="row.metadata?.name" />
+                        <q-img v-else :src="props.row.metadata?.image" />
                     </a>
-                    <q-tooltip v-if="props.row.metadata?.description">{{ props.row.metadata.description }}</q-tooltip>
+                    <q-tooltip v-if="props.row?.metadata?.description">{{ props.row.metadata.description }}</q-tooltip>
                 </q-td>
                 <q-td key="metadata" :props="props">
                     <a
@@ -307,8 +308,8 @@ export default {
                         target="_blank"
                     >
                         <q-icon name="download" size="sm" />
+                        <q-tooltip v-if="props.row.tokenUri">{{ $t('components.nfts.ipfs') }}</q-tooltip>
                     </a>
-                    <q-tooltip v-if="props.row.tokenUri">{{ $t('components.nfts.ipfs') }}</q-tooltip>
                 </q-td>
             </q-tr>
         </template>

@@ -195,6 +195,7 @@ export default {
     },
     components: {
         approvals: {
+            login_account: 'Please log into this account using your wallet to be able to see its approvals.',
             approval_text: 'A signature from your wallet is needed to update the selected approvals\' amount to 0.',
             type: 'Type',
             delete: 'Delete',
@@ -414,11 +415,14 @@ export default {
         },
     },
     global: {
+        records_per_page: 'Records per page:',
         max_decimals_reached: 'Please use { max } decimal places maximum',
         erc20_token: 'ERC20 Token',
         erc721_token: 'ERC721 Token',
         sign: 'Sign',
         hours: 'hours',
+        updated: 'Last updated',
+        action: 'Action',
         wallet_response: 'Awaiting response from your wallet provider',
         minutes: 'minutes',
         days: 'days',
@@ -432,8 +436,6 @@ export default {
         async_error_description: 'Sorry ! An error occured trying to request resources. Please make sure your internet connection is working and try again. If the error persists, contact us directly on our Telegram channel.',
         language: 'Language',
         cancel: 'Cancel',
-        updated: 'Last updated',
-        action: 'Action',
         ok: 'Ok',
         dismiss: 'Dismiss',
         empty_block: 'Block is empty',

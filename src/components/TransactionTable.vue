@@ -242,6 +242,7 @@ export default {
     v-model:pagination="pagination"
     :rows="rows"
     :binary-state-sort="true"
+    :rows-per-page-label="$t('global.records_per_page')"
     :row-key="row => row.hash"
     :columns="columns"
     :loading="loading"

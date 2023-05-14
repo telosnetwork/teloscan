@@ -195,6 +195,7 @@ export default {
     },
     components: {
         approvals: {
+            login_account: 'Veuillez vous connecter à cette addresse à l\'aide de votre portefeuille afin de consulter ses permissions.',
             approval_text: 'Nous allons définir le montant des permissions séléctionés à 0. Ceci requiert une signature avec votre portefeuille.',
             type: 'Type',
             delete: 'Supprimer',
@@ -413,6 +414,7 @@ export default {
         },
     },
     global: {
+        records_per_page: 'Entrées par page:',
         max_decimals_reached: 'Veuillez utiliser au maximum { max } décimales',
         erc20_token: 'Jeton ERC20',
         erc721_token: 'Jeton ERC721',

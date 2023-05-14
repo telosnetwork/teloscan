@@ -131,7 +131,7 @@ export default {
             height="auto"
         />
         <span>{{ displayName }}</span>
-        <q-tooltip v-if="truncate">{{ fullName }}</q-tooltip>
+        <q-tooltip v-if="fullName !== displayName">{{ fullName }}</q-tooltip>
     </router-link>
     <CopyButton v-if="copy && address" :text="address" description="address"/>
 </div>

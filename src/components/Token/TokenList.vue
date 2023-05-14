@@ -32,14 +32,14 @@ export default {
         },
         checkTokenList(address, tokenList){
             return tokenList.tokens.filter((token) => {
-                if(address === token.address.toLowerCase()){
+                if(address.toLowerCase() === token.address.toLowerCase()){
                     return token;
                 }
             })[0];
         },
         async loadTokens() {
             const tokenList = await this.$contractManager.getTokenList();
-            const response = await this.$indexerApi.get(`/account/${this.address}/balances?limit=250`);
+            const response = await this.$indexerApi.get(`/account/${this.address}/balances?limit=1000`);
             if(response.data?.contracts){
                 this.$contractManager.addContractsToCache(response.data.contracts);
             }
