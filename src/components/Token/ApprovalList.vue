@@ -533,7 +533,7 @@ export default {
                     :mask="'#.' + mask"
                     :value="modalUpdateValue"
                     :rules="[
-                        val => val.split('.')[1].length <= mask.length
+                        val => (val.split('.')[1]?.length <= mask.length) || val.indexOf('.') === -1
                             || $t('global.max_decimals_reached', {max: mask.length})
                     ]"
                 />

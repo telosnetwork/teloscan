@@ -16,6 +16,7 @@ export default {
     data() {
         return {
             tokens: null,
+            processing: false,
         };
     },
     computed: {
@@ -23,8 +24,8 @@ export default {
             return window?.ethereum?.isMetaMask === true;
         },
     },
-    mounted() {
-        this.loadTokens();
+    async mounted() {
+        await this.loadTokens();
     },
     methods: {
         promptAddToMetamask(address, symbol, logoURI, type, decimals) {
@@ -38,7 +39,12 @@ export default {
             })[0];
         },
         async loadTokens() {
+            if(this.processing || this.tokens !== null ||this.address === null){
+                return;
+            }
+            this.processing = true;
             const tokenList = await this.$contractManager.getTokenList();
+            console.log('hey');
             const response = await this.$indexerApi.get(`/account/${this.address}/balances?limit=1000`);
             if(response.data?.contracts){
                 this.$contractManager.addContractsToCache(response.data.contracts);
