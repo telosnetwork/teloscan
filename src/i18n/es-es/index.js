@@ -217,6 +217,7 @@ export default {
             amount: 'Cantidad',
         },
         nfts : {
+            show_without_metadata: 'Show NFT with no metadata',
             id: 'Simbólico ID',
             name: 'Nombre',
             collection: 'Recopilación',
@@ -235,6 +236,7 @@ export default {
             consult_collection: 'Consultar recopilación',
         },
         holders : {
+            show_system_contracts: 'Show system contracts',
             holder: 'Poseedor',
             balance: 'Balance',
             global_supply: 'Suministro mundial',

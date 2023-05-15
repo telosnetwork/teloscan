@@ -218,6 +218,7 @@ export default {
             amount: 'Allowance',
         },
         nfts : {
+            show_without_metadata: 'Show NFT with no metadata',
             id: 'Token ID',
             amount: 'Amount',
             name: 'Name',
@@ -237,6 +238,7 @@ export default {
             consult_collection: 'Consult collection',
         },
         holders : {
+            show_system_contracts: 'Show system contracts',
             holder: 'Holder',
             balance: 'Balance',
             global_supply: 'Global supply',

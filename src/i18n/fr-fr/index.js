@@ -218,6 +218,7 @@ export default {
             amount: 'Montant',
         },
         nfts : {
+            show_without_metadata: 'Voir les NFTs sans metadata',
             id: 'ID Jeton',
             name: 'Nom',
             collection: 'Collection',
@@ -236,6 +237,7 @@ export default {
             consult_media: 'Consultez le media',
         },
         holders : {
+            show_system_contracts: 'Voir les contrats systèmes',
             holder: 'Détenteur',
             balance: 'Solde',
             telos_supply: 'Parts Telos EVM',

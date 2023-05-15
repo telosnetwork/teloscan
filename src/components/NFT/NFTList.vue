@@ -78,6 +78,7 @@ export default {
         return {
             columns: columns,
             loading: true,
+            showWithoutMetadata: false,
             nfts: [],
             allowedFilters: [
                 'contract',
@@ -175,6 +176,7 @@ export default {
             path += `&offset=${(page - 1) * rowsPerPage}`;
             path = (this.pagination.rowsNumber === 0) ? path + '&includePagination=true' : path;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
+            path += `&forceMetadata=${this.showWithoutMetadata ? '0' : '1'}`;
             return path;
         },
     },
@@ -313,12 +315,26 @@ export default {
                 </q-td>
             </q-tr>
         </template>
+        <template v-if="nfts.length > 0" v-slot:bottom-row>
+            <q-toggle
+                v-model="showWithoutMetadata"
+                :label="$t('components.nfts.show_without_metadata')"
+                color="secondary"
+                checked-icon="visibility"
+                unchecked-icon="visibility_off"
+                @update:model-value="onRequest({pagination: pagination})"
+            />
+        </template>
     </q-table>
 </div>
 </template>
 
 <!--eslint-enable-->
 <style scoped lang="sass">
+.q-table .q-toggle
+    font-size: 12px
+    position: absolute
+    bottom: 4px
 .overlay
     position: absolute
     width: 100%

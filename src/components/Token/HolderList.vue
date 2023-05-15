@@ -238,7 +238,7 @@ export default {
     <template v-if="holders.length > 0" v-slot:bottom-row>
         <q-toggle
             v-model="showSystemContracts"
-            label="Show system contracts"
+            :label="$t('components.holders.show_system_contracts')"
             color="secondary"
             checked-icon="visibility"
             unchecked-icon="visibility_off"
