@@ -217,7 +217,7 @@ export default {
             amount: 'Allowance',
         },
         nfts : {
-            show_without_metadata: 'Show NFT with no metadata',
+            show_without_metadata: 'Show NFTs with no metadata',
             id: 'Token ID',
             name: 'Name',
             collection: 'Collection',

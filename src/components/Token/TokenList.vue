@@ -48,6 +48,7 @@ export default {
                 if(result.balance !== '0'){
                     let token = this.checkTokenList(result.contract.toLowerCase(), tokenList);
                     if(token && !tokens.includes(token)){
+                        token.balance = result.balance;
                         tokens.push(token);
                     }
                 }
@@ -68,17 +69,13 @@ export default {
                 if(!contract.abi){
                     contract.abi = erc20Abi;
                 }
-                const contractInstance = this.$contractManager.getContractInstance(contract);
 
-                try {
-                    const balance = await contractInstance.balanceOf(this.address);
+                const balance = token.balance;
+                if(balance === 0){
+                    tokens.remove(token);
+                } else {
                     token.balance = `${formatWei(balance, token.decimals, 4)}`;
                     token.fullBalance = `${formatWei(balance, token.decimals)}`;
-                    if(balance === 0){
-                        tokens.remove(token);
-                    }
-                } catch (e) {
-                    throw `Failed to fetch balance:\n${e}`;
                 }
             }));
             this.tokens = tokens;

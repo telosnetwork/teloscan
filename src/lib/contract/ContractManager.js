@@ -237,7 +237,6 @@ export default class ContractManager {
         try {
             let response = await this.indexerApi.get(`/contract/${address}?full=true&includeAbi=true`);
             if(response.data?.success && response.data.results.length > 0){
-                this.addContractToCache(address, response.data.results[0]);
                 contract = this.factory.buildContract(response.data.results[0]);
             }
         } catch (e) {

@@ -177,7 +177,7 @@ export default {
                 this.transactions.length,
                 ...response.data.results,
             );
-
+            this.rows = this.transactions;
             for (const transaction of this.transactions) {
                 try {
                     if (transaction.input === '0x') {
@@ -299,10 +299,8 @@ export default {
             <q-td key="to" :props="props">
                 <AddressField
                     v-if="props.row.to"
-                    :key="props.row.to + ((props.row.contract) ? '1' : '0')"
                     :address="props.row.to"
                     :truncate="18"
-                    :isContractTrx="!!(props.row.contract)"
                 />
             </q-td>
             <q-td key='value' :props="props">

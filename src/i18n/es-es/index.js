@@ -217,7 +217,7 @@ export default {
             amount: 'Cantidad',
         },
         nfts : {
-            show_without_metadata: 'Show NFT with no metadata',
+            show_without_metadata: 'Show NFTs with no metadata',
             id: 'Simbólico ID',
             name: 'Nombre',
             collection: 'Recopilación',
