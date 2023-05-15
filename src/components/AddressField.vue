@@ -117,9 +117,8 @@ export default {
 </script>
 
 <template>
-<div :class="`c-address-field ${this.class}`">
+<div :key="displayName" :class="`c-address-field ${this.class}`">
     <router-link
-        :key="displayName"
         :to="`/address/${address}`"
         :class="highlight ? 'highlighted flex items-center' : 'flex items-center'"
         @click.capture.stop=""

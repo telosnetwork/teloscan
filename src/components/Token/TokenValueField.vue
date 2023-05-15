@@ -59,7 +59,7 @@ export default {
                 this.valueShort = this.shorten(this.valueRaw, contract.properties?.decimals);
                 this.valueRaw = formatWei(this.valueRaw, contract.properties?.decimals);
                 this.name = contract.getName() || contract.properties?.name;
-                this.symbol = contract.properties?.symbol;
+                this.symbol = contract.properties?.symbol || this.name || this.address;
                 this.logo = await this.getLogo(contract);
                 return;
             }

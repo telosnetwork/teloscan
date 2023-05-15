@@ -44,7 +44,6 @@ export default {
             }
             this.processing = true;
             const tokenList = await this.$contractManager.getTokenList();
-            console.log('hey');
             const response = await this.$indexerApi.get(`/account/${this.address}/balances?limit=1000`);
             if(response.data?.contracts){
                 this.$contractManager.addContractsToCache(response.data.contracts);
