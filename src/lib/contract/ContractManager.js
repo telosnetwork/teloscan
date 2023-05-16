@@ -233,19 +233,18 @@ export default class ContractManager {
         }
         this.processing.push(addressLower);
         let index = this.processing.indexOf(addressLower);
-        let contract = this.factory.buildEmptyContract(address);
+        let contract = { address: address };
         try {
             let response = await this.indexerApi.get(`/contract/${address}?full=true&includeAbi=true`);
             if(response.data?.success && response.data.results.length > 0){
-                this.addContractToCache(address, response.data.results[0]);
-                contract = this.factory.buildContract(response.data.results[0]);
+                contract = response.data.results[0];
             }
         } catch (e) {
             console.error(`Could not retrieve contract ${address}: ${e.message}`);
         }
         this.addContractToCache(address, contract);
         this.processing = this.processing.splice(index, 1);
-        return contract;
+        return this.factory.buildContract(contract);
     }
     async getContractFromAbi(address, abi){
         return new ethers.Contract(address, abi, this.getEthersProvider());

@@ -139,7 +139,7 @@ export default {
                 account = await this.$evm.telos.getEthAccount(this.accountAddress);
             } catch (e) {
                 this.found = false;
-                console.log('Account not found on Native');
+                console.info('Account not found on Native');
             }
             this.contract = null;
             this.fullTitle = null;

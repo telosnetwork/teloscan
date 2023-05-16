@@ -291,7 +291,7 @@ export default {
                 common: this.$evm.chainConfig,
             });
 
-            this.hash = `0x${tx.hash().toString('hex')}`;
+            this.hash = `0x${tx?.hash().toString('hex')}`;
             this.endLoading();
         },
         async runEVM(opts) {
