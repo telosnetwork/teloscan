@@ -1,4 +1,5 @@
 <script>
+import { toRaw } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
@@ -90,6 +91,9 @@ export default {
             'isNative',
             'nativeAccount',
         ]),
+        functionABI(){
+            return `${this.abi.name}(${this.abi.inputs.map(i => i.type).join(',')})`;
+        },
         inputComponents() {
             if (!Array.isArray(this.abi?.inputs)) {
                 return [];
@@ -212,12 +216,9 @@ export default {
 
             this.endLoading();
         },
-        getFunctionAbi() {
-            return `${this.abi.name}(${this.abi.inputs.map(i => i.type).join(',')})`;
-        },
         async getEthersFunction(provider) {
             const contractInstance = await this.contract.getContractInstance(provider);
-            return contractInstance[this.getFunctionAbi()];
+            return contractInstance[this.functionABI];
         },
         runRead() {
             return this.getEthersFunction()
@@ -233,9 +234,9 @@ export default {
                 );
         },
         async runNative(opts) {
-            const contractInstance = await this.contract.getContractInstance();
-            const func = contractInstance.populateTransaction[this.getFunctionAbi()];
-            const gasEstimater = contractInstance.estimateGas[this.getFunctionAbi()];
+            const contractInstance = toRaw(await this.contract.getContractInstance());
+            const func = contractInstance.populateTransaction[this.functionABI];
+            const gasEstimater = contractInstance.estimateGas[this.functionABI];
             const gasLimit = await gasEstimater(...this.params, Object.assign({ from: this.address }, opts));
             const unsignedTrx = await func(...this.params, opts);
             const nonce = parseInt(await this.$evm.telos.getNonce(this.address), 16);
@@ -245,7 +246,7 @@ export default {
             unsignedTrx.gasPrice = gasPrice;
 
             // DO NOT INCLUDE CHAINID, EIP155 is only for replay attacks and you cannot replay a Telos native signed trx
-            // this can however break stuff that trys to decode this trx
+            // this can however break stuff that tries to decode this trx
             //unsignedTrx.chainId = this.$evm.chainId;
 
             if (opts.value) {
