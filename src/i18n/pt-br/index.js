@@ -305,6 +305,8 @@ export default {
         from: 'De',
         to: 'Para',
         transaction: {
+            in: 'in',
+            out: 'out',
             form_from: 'De : ',
             form_to: 'Para : ',
             form_token: 'Token : ',

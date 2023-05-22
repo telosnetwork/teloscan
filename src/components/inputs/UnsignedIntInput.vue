@@ -1,5 +1,5 @@
 <script>
-import { integerSizeValidator, parseUintString } from 'components/ContractTab/function-interface-utils';
+import { integerSizeValidator, parseUintString } from 'src/lib/function-interface-utils';
 import { BigNumber } from 'ethers';
 
 import BaseTextInput from 'components/inputs/BaseTextInput';

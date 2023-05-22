@@ -307,6 +307,8 @@ export default {
         from: 'From',
         to: 'To',
         transaction: {
+            in: 'in',
+            out: 'out',
             form_from: 'From : ',
             form_to: 'To : ',
             form_token: 'Token : ',

@@ -1,12 +1,9 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
-
 import ContractFactory from 'src/lib/contract/ContractFactory';
 import { erc721Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
-
 import { sortAbiFunctionsByName } from 'src/lib/utils';
-
 import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
 
 export default {

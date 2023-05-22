@@ -14,10 +14,9 @@ import {
     parameterTypeIsBoolean,
     parameterTypeIsSignedIntArray,
     parameterTypeIsUnsignedIntArray,
-} from 'components/ContractTab/function-interface-utils';
+} from 'src/lib/function-interface-utils';
 
 import TransactionField from 'components/TransactionField';
-
 
 export default {
     name: 'FunctionInterface',

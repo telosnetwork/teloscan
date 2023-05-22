@@ -14,10 +14,10 @@ export default boot(({ app }) => {
     if(!Object.keys(messages).includes(lastChosenLanguage)) {
         lastChosenLanguage = 'en-us';
     }
-
     // Create the i18n instance
     const i18n = createI18n({
         locale: lastChosenLanguage,
+        fallbackLocale: 'en-us',
         globalInjection: true,
         messages,
     });
@@ -28,16 +28,10 @@ export default boot(({ app }) => {
 
     // Listen for language-changed event
     const setLocale = (newLanguage) => {
-        const currentLanguage = localStorage.getItem('language');
-
-        if (newLanguage !== currentLanguage) {
-            localStorage.setItem('language', newLanguage);
-            window.location.reload();
-        }
         // TODO: investigate if there is a better way to change the language not reloading the page
-        // i18n.locale = newLanguage;
-        // i18n.global.setLocaleMessage(newLanguage, messages[newLanguage]);
-        // app.use(i18n);
+        i18n.locale = newLanguage;
+        i18n.global.setLocaleMessage(newLanguage, messages[newLanguage]);
+        app.config.globalProperties.$i18n.locale = newLanguage;
     };
 
     // Set setLocale and i18n reference available for global access

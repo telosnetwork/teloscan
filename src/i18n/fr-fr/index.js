@@ -306,6 +306,8 @@ export default {
         from: 'De',
         to: 'À',
         transaction: {
+            in: 'dépot',
+            out: 'envoi',
             form_from: 'De : ',
             form_to: 'À : ',
             form_token: 'Jeton : ',

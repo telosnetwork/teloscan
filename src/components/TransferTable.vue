@@ -2,7 +2,7 @@
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
-import { formatWei } from 'src/lib/utils';
+import { formatWei, toChecksumAddress } from 'src/lib/utils';
 import { getIcon } from 'src/lib/token-utils';
 
 export default {
@@ -31,36 +31,40 @@ export default {
         },
     },
     data() {
-        // TODO: Add icon column and render it
         const columns = [
             {
                 name: 'hash',
-                label: '',
+                label: this.$t('components.tx_hash'),
                 align: 'left',
             },
             {
                 name: 'date',
+                label: this.$t('components.date'),
+                align: 'left',
+            },
+            {
+                name: 'direction',
                 label: '',
                 align: 'left',
             },
             {
                 name: 'from',
-                label: '',
+                label: this.$t('components.from'),
                 align: 'left',
             },
             {
                 name: 'to',
-                label: '',
+                label: this.$t('components.to'),
                 align: 'left',
             },
             {
                 name: 'value',
-                label: '',
+                label: this.$t('components.value'),
                 align: 'left',
             },
             {
                 name: 'token',
-                label: '',
+                label: this.$t('components.token'),
                 align: 'left',
             },
         ];
@@ -85,24 +89,16 @@ export default {
             tokenList: {},
         };
     },
-    async created() {
-        // initialization of the translated texts
-        this.columns[0].label = this.$t('components.tx_hash');
-        this.columns[1].label = this.$t('components.date');
-        this.columns[2].label = this.$t('components.from');
-        this.columns[3].label = this.$t('components.to');
-        this.columns[5].label = this.$t('components.token');
-    },
     mounted() {
         switch (this.tokenType) {
         case 'erc20':
-            this.columns[4].label = this.$t('components.value');
+            this.columns[5].label = this.$t('components.value');
             break;
         case 'erc721':
-            this.columns[4].label = this.$t('components.nfts.id');
+            this.columns[5].label = this.$t('components.nfts.id');
             break;
         case 'erc1155':
-            this.columns[4].label = this.$t('components.nfts.amount');
+            this.columns[5].label = this.$t('components.nfts.amount');
             break;
         default:
             throw new Error(this.$t('components.unsupported_token_type', { tokenType: this.tokenType }));
@@ -195,6 +191,7 @@ export default {
             this.showDateAge = !this.showDateAge;
         },
         getIcon,
+        toChecksumAddress,
     },
 };
 </script>
@@ -247,6 +244,14 @@ export default {
             <q-td key="date" :props="props">
                 <DateField :epoch="props.row.timestamp" :force-show-age="showDateAge" />
             </q-td>
+            <q-td key="direction" :props="props">
+                <span v-if="toChecksumAddress(address) === toChecksumAddress(props.row.from)" class="direction out">
+                    {{ $t('components.transaction.out ').toUpperCase() }}
+                </span>
+                <span v-else-if="toChecksumAddress(address) === toChecksumAddress(props.row.to)" class="direction in">
+                    {{ $t('components.transaction.in ').toUpperCase() }}
+                </span>
+            </q-td>
             <q-td key="from" :props="props">
                 <AddressField :address="props.row.from" :truncate="18"/>
             </q-td>
@@ -285,6 +290,19 @@ export default {
 </template>
 
 <style lang='sass' scoped>
+.direction
+    user-select: none
+    padding: 3px 6px
+    border-radius: 5px
+    font-size: 0.9em
+.direction.in
+    color: rgb(0,161,134)
+    background: rgba(0,161,134,0.1)
+    border: 1px solid rgb(0,161,134)
+.direction.out
+    color: #cc9a06!important
+    background: rgba(255,193,7,0.1)
+    border: 1px solid #cc9a06!important
 .nft-icon
     width: 32px
     height: 32px

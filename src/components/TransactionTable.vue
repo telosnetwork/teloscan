@@ -307,8 +307,12 @@ export default {
                 <MethodField :trx="props.row" :shortenName="true"/>
             </q-td>
             <q-td v-if="address" key="direction" :props="props">
-                <span v-if="address === props.row.from" class="direction out">OUT</span>
-                <span v-else-if="address === props.row.to" class="direction in">IN</span>
+                <span v-if="address === props.row.from" class="direction out">
+                    {{ $t('components.transaction.out ').toUpperCase() }}
+                </span>
+                <span v-else-if="address === props.row.to" class="direction in">
+                    {{ $t('components.transaction.in ').toUpperCase() }}
+                </span>
             </q-td>
             <q-td key="from" :props="props">
                 <AddressField v-if="props.row.from" :address="props.row.from" :truncate="18"/>
@@ -336,6 +340,9 @@ export default {
 <style scoped lang="sass">
     .direction
         user-select: none
+        padding: 3px 6px
+        border-radius: 5px
+        font-size: 0.9em
     .direction.in
         color: rgb(0,161,134)
         background: rgba(0,161,134,0.1)
@@ -344,10 +351,6 @@ export default {
         color: #cc9a06!important
         background: rgba(255,193,7,0.1)
         border: 1px solid #cc9a06!important
-    .direction
-        padding: 3px 6px
-        border-radius: 5px
-        font-size: 0.9em
     .sortable
         height: 60px
         display: flex
