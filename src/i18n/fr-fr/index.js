@@ -244,6 +244,8 @@ export default {
             global_supply: 'Parts globales',
             updated: 'Mis à jour',
         },
+        known_tokens: 'Jetons connus',
+        other_tokens: 'Jetons inconnus',
         no_balances_found: 'Aucun jetons erc20 trouvés pour cette adresse',
         internal_txns: 'Transactions Internes',
         n_internal_txns: '{ amount } transactions internes',

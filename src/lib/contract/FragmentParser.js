@@ -108,6 +108,7 @@ export default class FragmentParser {
         parsedLog.address = log.address;
         parsedLog.logIndex = log.logIndex;
         parsedLog.contract = contract;
+        parsedLog.value = log.action?.value;
         parsedLog.name = parsedLog.signature;
         return parsedLog;
     }

@@ -134,7 +134,7 @@ export default {
                     depth: itx.traceAddress.length,
                     to: itx.action?.to,
                     contract: contract,
-                    value: (itx.type !== 'create' && (!fnsig || fnsig === '0x') && itx.action.value)
+                    value: (itx.type !== 'create' && itx.action?.value !== '0')
                         ? formatWei(itx.action.value, WEI_PRECISION)
                         : 0,
                 });

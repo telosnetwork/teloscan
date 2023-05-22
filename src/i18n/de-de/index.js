@@ -243,6 +243,8 @@ export default {
             telos_supply: 'Telos EVM supply',
             updated: 'Last updated',
         },
+        known_tokens: 'Known tokens',
+        other_tokens: 'Unknown tokens',
         no_balances_found: 'No erc20 token balance was found for this address',
         internal_txns: 'Interne Transaktionen',
         n_internal_txns: '{ amount } Interne Transaktionen',

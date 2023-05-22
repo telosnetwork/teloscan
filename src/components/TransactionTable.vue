@@ -334,6 +334,8 @@ export default {
 </template>
 <!--eslint-enable-->
 <style scoped lang="sass">
+    .direction
+        user-select: none
     .direction.in
         color: rgb(0,161,134)
         background: rgba(0,161,134,0.1)

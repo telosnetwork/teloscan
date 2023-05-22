@@ -246,7 +246,7 @@ export default {
             updated: 'Last updated',
         },
         known_tokens: 'Known tokens',
-        other_tokens: 'Other tokens',
+        other_tokens: 'Unknown tokens',
         no_balances_found: 'No erc20 token balance was found for this address',
         internal_txns: 'Internal Transactions',
         n_internal_txns: '{ amount } internal transactions',
