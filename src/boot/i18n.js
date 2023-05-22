@@ -28,10 +28,16 @@ export default boot(({ app }) => {
 
     // Listen for language-changed event
     const setLocale = (newLanguage) => {
+        const currentLanguage = localStorage.getItem('language');
+
+        if (newLanguage !== currentLanguage) {
+            localStorage.setItem('language', newLanguage);
+            window.location.reload();
+        }
         // TODO: investigate if there is a better way to change the language not reloading the page
-        i18n.locale = newLanguage;
-        i18n.global.setLocaleMessage(newLanguage, messages[newLanguage]);
-        app.config.globalProperties.$i18n.locale = newLanguage;
+        // i18n.locale = newLanguage;
+        // i18n.global.setLocaleMessage(newLanguage, messages[newLanguage]);
+        // app.use(i18n);
     };
 
     // Set setLocale and i18n reference available for global access
