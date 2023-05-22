@@ -308,10 +308,10 @@ export default {
             </q-td>
             <q-td v-if="address" key="direction" :props="props">
                 <span v-if="address === props.row.from" class="direction out">
-                    {{ $t('components.transaction.out ').toUpperCase() }}
+                    {{ $t('components.transaction.out').toUpperCase() }}
                 </span>
                 <span v-else-if="address === props.row.to" class="direction in">
-                    {{ $t('components.transaction.in ').toUpperCase() }}
+                    {{ $t('components.transaction.in').toUpperCase() }}
                 </span>
             </q-td>
             <q-td key="from" :props="props">
