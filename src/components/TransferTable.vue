@@ -253,10 +253,10 @@ export default {
                 </span>
             </q-td>
             <q-td key="from" :props="props">
-                <AddressField :address="props.row.from" :truncate="18"/>
+                <AddressField :address="props.row.from" :truncate="16"/>
             </q-td>
             <q-td key="to" :props="props">
-                <AddressField :address="props.row.to" :truncate="18"/>
+                <AddressField :address="props.row.to" :truncate="16"/>
             </q-td>
             <q-td key="value" :props="props">
                 <span v-if="tokenType==='erc721' && props.row.token?.imageCache">

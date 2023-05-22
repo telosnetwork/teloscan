@@ -9,11 +9,13 @@ export default class Contract {
     this.name = name || properties?.name;
     this.nfts = {};
     this.abi = abi;
-    const index = supportedInterfaces.indexOf('none');
-    this.supportedInterfaces = [];
-    for(let i = 0; i < supportedInterfaces.length; i++){
-      if(i !== index){
-        this.supportedInterfaces.push(supportedInterfaces[i])
+    if(supportedInterfaces?.length > 0){
+      const index = supportedInterfaces?.indexOf('none');
+      this.supportedInterfaces = [];
+      for(let i = 0; i < supportedInterfaces.length; i++){
+        if(i !== index){
+          this.supportedInterfaces.push(supportedInterfaces[i])
+        }
       }
     }
     this.properties = properties;
