@@ -6,6 +6,7 @@ export default {
     },
     pages: {
         staking: {
+            sign_in: 'Please sign in first to be able to interact with our staking interface',
             note_unstaking_period: 'Lembre-se que há um período de retirada de {period}',
             claim_tlos: 'Resgatar TLOS',
             add_stlos_to_metamask: 'Iniciar interação com o MetaMask para adicionar sTLOS',
@@ -318,6 +319,7 @@ export default {
             native_deposit: 'Deposit from Native Telos',
             native_withdraw: 'Withdraw to Native Telos',
             unknown: 'Desconhecido',
+            contract_deployed: 'Contract Deployed',
             contract_deployment: 'Implantação de contrato',
             no_internal_trxs_found: 'Nenhuma transação interna encontrada',
             human_readable: 'Legível por humanos',

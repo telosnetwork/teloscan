@@ -203,6 +203,7 @@ export default {
     :row-key="row => row.hash"
     :columns="columns"
     :loading="loading"
+    :rows-per-page-label="$t('global.records_per_page')"
     :rows-per-page-options="[10, 20, 50]"
     flat
     @request="onRequest"

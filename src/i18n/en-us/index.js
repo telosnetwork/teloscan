@@ -7,6 +7,7 @@ export default {
     pages: {
         staking: {
             note_unstaking_period: 'Please note that there is an unstaking period of {period}',
+            sign_in: 'Please sign in first to be able to interact with our staking interface',
             claim_tlos: 'Claim TLOS',
             add_stlos_to_metamask: 'Launch MetaMask dialog to add sTLOS',
             metamask_fox_logo: 'MetaMask fox logo',
@@ -317,7 +318,7 @@ export default {
             show_wei: 'Show wei',
             value_uint256: 'Value (uint256) : ',
             tlos_transfer: 'TLOS Transfer',
-            contract_creation: 'Contract Creation',
+            contract_deployed: 'Contract Deployed',
             native_deposit: 'Deposit from Native Telos',
             native_withdraw: 'Withdraw to Native Telos',
             unknown: 'Unknown',

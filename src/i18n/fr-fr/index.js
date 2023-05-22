@@ -6,6 +6,7 @@ export default {
     },
     pages: {
         staking: {
+            sign_in: 'Veuillez vous connecter à l\'aide de votre portefeuille afin de pouvoir intéragir avec notre interface de staking',
             note_unstaking_period: 'Veuillez noter qu\'il y a une période d\'unstacking de {period}',
             claim_tlos: 'Réclamer votre TLOS',
             add_stlos_to_metamask: 'Ouvrez le dialogue MetaMask pour ajouter sTLOS',
@@ -316,6 +317,7 @@ export default {
             show_wei: 'Voir en wei',
             value_uint256: 'Valeur (uint256) : ',
             tlos_transfer: 'TLOS Transfer',
+            contract_deployed: 'Contrat Deployé',
             native_deposit: 'Dépôt de Telos Natif',
             native_withdraw: 'Transfert à Telos Natif',
             unknown: 'Inconnu',

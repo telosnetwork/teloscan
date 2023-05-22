@@ -60,7 +60,7 @@ export default {
             } else if (!this.trx.parsedTransaction && this.trx.input === '0x' && this.trx.value > 0) {
                 this.fullName = this.$t('components.transaction.tlos_transfer');
             } else if (!this.trx.parsedTransaction && this.trx.to === null && this.trx.data !== null) {
-                this.fullName = this.$t('components.transaction.contract_creation');
+                this.fullName = this.$t('components.transaction.contract_deployment');
             } else if (this.trx.parsedTransaction) {
                 this.fullName = this.trx.parsedTransaction.name;
             }

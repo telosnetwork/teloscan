@@ -59,6 +59,12 @@ export default {
     async created() {
         await this.fetchContracts();
         await this.fetchContractInstances();
+        if(!this.isLoggedIn){
+            this.$q.notify({
+                type: 'info',
+                message: this.$t('pages.staking.sign_in'),
+            });
+        }
     },
     methods: {
         async fetchBalances() {
@@ -82,7 +88,7 @@ export default {
                     console.error(`Failed to fetch account: ${message}`);
                     this.$q.notify({
                         type: 'negative',
-                        message: this.$t('page.staking.fetch_balance_error', { message }),
+                        message: this.$t('pages.staking.fetch_balance_error', { message }),
                     });
                     this.tlosBalance = null;
                 });
@@ -272,12 +278,6 @@ export default {
                 :total-unstaked-tlos-balance="totalUnstakedTlosBalance"
                 :unstake-period-seconds="unstakePeriodSeconds"
             />
-        </div>
-    </div>
-    <div v-if="!isLoggedIn" class="row q-mb-sm">
-        <div class="flex bg-secondary text-white items-center">
-            <q-icon name="info" />
-            <span>Please sign in first to be able to interact with our staking interface</span>
         </div>
     </div>
     <div class="row">

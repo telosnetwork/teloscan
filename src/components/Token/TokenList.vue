@@ -43,7 +43,7 @@ export default {
             }
             let tokens = [];
             let tokensOfficial = [];
-            response.data.results.forEach(async (result) => {
+            await Promise.all(response.data.results.map(async (result) => {
                 if(result.balance !== '0'){
                     let found = false;
                     let token = this.checkTokenList(result.contract.toLowerCase(), tokenList);
@@ -54,6 +54,7 @@ export default {
                     }
                     if(!found && !tokens.includes(result) && result.contract !== '___NATIVE_CURRENCY___'){
                         let contract = await this.$contractManager.getContract(result.contract);
+                        result.address = contract.address;
                         result.name = contract.name;
                         result.symbol = contract.properties?.symbol;
                         result.decimals = contract.properties?.decimals;
@@ -64,7 +65,7 @@ export default {
                         tokens.push(result);
                     }
                 }
-            });
+            }));
             tokensOfficial = this.sortTokens(tokensOfficial);
             await Promise.all(tokensOfficial.map(async (token) => {
                 if (token.logoURI && token.logoURI.startsWith('ipfs://')) {

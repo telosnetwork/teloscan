@@ -232,7 +232,6 @@ export default class ContractManager {
             return await this.getContract(address);
         }
         this.processing.push(addressLower);
-        let index = this.processing.indexOf(addressLower);
         let contract = { address: address };
         try {
             let response = await this.indexerApi.get(`/contract/${address}?full=true&includeAbi=true`);
@@ -243,7 +242,10 @@ export default class ContractManager {
             console.error(`Could not retrieve contract ${address}: ${e.message}`);
         }
         this.addContractToCache(address, contract);
-        this.processing = this.processing.splice(index, 1);
+        let index = this.processing.indexOf(addressLower);
+        if(index > -1){
+            this.processing.splice(index, 1);
+        }
         return this.factory.buildContract(contract);
     }
     async getContractFromAbi(address, abi){
