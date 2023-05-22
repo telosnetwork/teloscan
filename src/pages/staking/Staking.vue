@@ -274,6 +274,12 @@ export default {
             />
         </div>
     </div>
+    <div v-if="!isLoggedIn" class="row q-mb-sm">
+        <div class="flex bg-secondary text-white items-center">
+            <q-icon name="info" />
+            <span>Please sign in first to be able to interact with our staking interface</span>
+        </div>
+    </div>
     <div class="row">
         <div class="col-12">
             <div>

@@ -109,7 +109,7 @@ export default {
             {{ $t('global.async_error_description') }}
         </div>
     </div>
-    <div v-else class="bg-white q-pa-xl rounded-borders">
+    <div v-else class="q-pa-xl rounded-borders">
         <div class="flex">
             <q-icon name="data_array" size="md" />
             <span class="q-pl-md text-h5">{{ $t('global.empty_block') }}</span>
@@ -122,6 +122,8 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.body--dark .bg-white
+    background: $dark
 .dataCardData
     height: 40px
 

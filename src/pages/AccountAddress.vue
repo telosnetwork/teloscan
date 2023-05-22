@@ -260,14 +260,14 @@ export default {
                             description="address"
                         />
                         <template v-if="this.contract">
-                            <div class="text-white">
+                            <div v-if="contract.getCreationTrx()" class="text-white">
                                 {{ $t('pages.created_at_trx' )}}
                                 <TransactionField :transaction-hash="contract.getCreationTrx()"/>
                             </div>
-                            <div class="text-white">{{ $t('pages.by_address') }}
+                            <div v-if="contract.getCreator()" class="text-white">{{ $t('pages.by_address') }}
                                 <AddressField :address="contract.getCreator()" :truncate="22"/>
                             </div>
-                            <div class="text-white">
+                            <div v-if="creationDate > 0" class="text-white">
                                 <DateField
                                     :epoch="creationDate / 1000"
                                     :default-to-age="false"
@@ -526,7 +526,11 @@ export default {
                 keep-alive="keep-alive"
             >
                 <q-tab-panel name="transactions">
-                    <TransactionTable :title="accountAddress" :filter="'/address/' + accountAddress"/>
+                    <TransactionTable
+                        :title="accountAddress"
+                        :filter="'/address/' + accountAddress"
+                        :address="accountAddress"
+                    />
                 </q-tab-panel>
                 <q-tab-panel v-if="contract && contract.supportedInterfaces.includes('erc721')" name="collection">
                     <NFTList :address="contract.address" filter="contract" />

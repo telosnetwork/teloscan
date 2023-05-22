@@ -25,10 +25,12 @@ export default {
             if(health.data?.secondsBehind > 86400){
                 const behindByHours = Math.round(health.data.secondsBehind / 60 / 60);
                 const behindByDays = Math.floor(health.data.secondsBehind / 60 / 60 / 24);
-                const behindByLeft = behindByHours - (behindByDays * 24);
+                let behindByLeft = behindByHours - (behindByDays * 24);
+                behindByLeft = (behindByLeft === 0)
+                    ? ''
+                    :  this.$t('global.and') +  ' ' + behindByLeft + ' ' + this.$t('global.hours');
                 behindBy = (behindByDays > 0)
-                    ? behindByDays + ' ' + this.$t('global.days') + ' ' +
-                    this.$t('global.and') + ' ' + behindByLeft + ' ' + this.$t('global.hours')
+                    ? behindByDays + ' ' + this.$t('global.days') + ' ' + behindByLeft
                     : behindByHours + ' ' + this.$t('global.hours')
                 ;
             }

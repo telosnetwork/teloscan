@@ -39,7 +39,7 @@ export default class ContractManager {
                         'index': log.logIndex,
                         'address': contract.address,
                         'value': log.data,
-                        'decimal': contract.properties?.decimal,
+                        'decimal': contract.properties?.decimals,
                         'to': getTopicHash(log.topics[1]),
                         'from': getTopicHash(log.topics[2]),
                         'symbol': contract.properties?.symbol,

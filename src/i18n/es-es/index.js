@@ -243,7 +243,7 @@ export default {
             telos_supply: 'Suministro Telos EVM',
             updated: 'Ultima actualización',
         },
-        no_balances_found: 'No se encontraron saldos de tokens para esta cuenta',
+        no_balances_found: 'No se encontraron saldos de tokens erc20 para esta cuenta',
         internal_txns: 'Transacciones internas',
         n_internal_txns: '{ amount } transacciones internas',
         none: 'Ninguno',

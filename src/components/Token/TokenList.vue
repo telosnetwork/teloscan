@@ -140,6 +140,9 @@ export default {
 </div>
 <div v-else>
     <div v-if="tokensOfficial.length > 0" class="c-token-list-container">
+        <div class="col-12 flex q-mt-md q-pl-lg">
+            <h5 class="text-left"> {{ $t('components.known_tokens') }}</h5>
+        </div>
         <div class="c-token-list">
             <TokenListElement
                 v-for="token in tokensOfficial"

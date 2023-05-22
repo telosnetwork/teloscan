@@ -43,6 +43,7 @@ export default {
                 !this.trx.parsedTransaction
                 && this.trx.from === ZERO_ADDRESSES
                 && this.trx.value > 0
+                && parseInt(this.trx.gasPrice) === 0
             ){
                 this.icon = 'keyboard_double_arrow_down';
                 this.iconTooltip = this.$t('components.transaction.native_deposit');

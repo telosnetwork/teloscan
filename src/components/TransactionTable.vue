@@ -25,6 +25,10 @@ export default {
             type: String,
             default: '',
         },
+        address: {
+            type: String,
+            required: false,
+        },
         initialPageSize: {
             type: Number,
             default: 1,
@@ -34,41 +38,48 @@ export default {
         const columns = [
             {
                 name: 'hash',
-                label: '',
+                label: this.$t('components.tx_hash'),
                 align: 'left',
             },
             {
                 name: 'block',
-                label: '',
+                label: this.$t('components.block'),
                 align: 'left',
                 sortable: true,
             },
             {
                 name: 'date',
-                label: '',
+                label: this.$t('components.date'),
                 align: 'left',
             },
             {
                 name: 'method',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'from',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'to',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'value',
-                label: '',
+                label: this.$t('components.method'),
                 align: 'left',
             },
         ];
+        if(this.address){
+            columns.push({
+                name: 'direction',
+                label: '',
+                align: 'left',
+            });
+        }
+        columns.push({
+            name: 'from',
+            label: this.$t('components.from'),
+            align: 'left',
+        });
+        columns.push({
+            name: 'to',
+            label: this.$t('components.to_interacted_with'),
+            align: 'left',
+        });
+        columns.push({
+            name: 'value',
+            label: this.$t('components.value_transfer'),
+            align: 'left',
+        });
 
         return {
             rows: [],
@@ -88,16 +99,6 @@ export default {
             page_size_options: [10, 20, 50],
             showDateAge: true,
         };
-    },
-    async created() {
-        // initialization of the translated texts
-        this.columns[0].label = this.$t('components.tx_hash');
-        this.columns[1].label = this.$t('components.block');
-        this.columns[2].label = this.$t('components.date');
-        this.columns[3].label = this.$t('components.method');
-        this.columns[4].label = this.$t('components.from');
-        this.columns[5].label = this.$t('components.to_interacted_with');
-        this.columns[6].label = this.$t('components.value_transfer');
     },
     watch: {
         '$route.query.page': {
@@ -282,7 +283,19 @@ export default {
     <template v-slot:body="props">
         <q-tr :key="props.row.hash + props.row.parsedTransaction?.transfers?.length" :props="props">
             <q-td key="hash" :props="props">
-                <TransactionField :transaction-hash="props.row.hash"/>
+                <div class="flex items-center">
+                    <q-icon
+                        v-if="props.row.status !== '0x1'"
+                        class="q-mr-xs"
+                        name="warning"
+                        color="negative"
+                    />
+                    <TransactionField
+                        :color="(props.row.status !== '0x1') ? 'negative' : 'secondary'"
+                        :transaction-hash="props.row.hash"
+                        :truncate="(props.row.status !== '0x1') ? 18 : 20"
+                    />
+                </div>
             </q-td>
             <q-td key="block" :props="props">
                 <BlockField :block="props.row.blockNumber"/>
@@ -292,6 +305,10 @@ export default {
             </q-td>
             <q-td key="method" :props="props">
                 <MethodField :trx="props.row" :shortenName="true"/>
+            </q-td>
+            <q-td v-if="address" key="direction" :props="props">
+                <span v-if="address === props.row.from" class="direction out">OUT</span>
+                <span v-else-if="address === props.row.to" class="direction in">IN</span>
             </q-td>
             <q-td key="from" :props="props">
                 <AddressField v-if="props.row.from" :address="props.row.from" :truncate="18"/>
@@ -317,6 +334,18 @@ export default {
 </template>
 <!--eslint-enable-->
 <style scoped lang="sass">
+    .direction.in
+        color: rgb(0,161,134)
+        background: rgba(0,161,134,0.1)
+        border: 1px solid rgb(0,161,134)
+    .direction.out
+        color: #cc9a06!important
+        background: rgba(255,193,7,0.1)
+        border: 1px solid #cc9a06!important
+    .direction
+        padding: 3px 6px
+        border-radius: 5px
+        font-size: 0.9em
     .sortable
         height: 60px
         display: flex

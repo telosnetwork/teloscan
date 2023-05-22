@@ -460,7 +460,7 @@ export default {
                 </q-td>
             </q-tr>
         </template>
-        <template v-slot:bottom-row>
+        <template v-if="approvals.length > 0" v-slot:bottom-row>
             <q-tr class="text-right">
                 <q-td colspan="12">
                     <div class="flex justify-end">
