@@ -26,7 +26,7 @@ import {
     parseStringArrayString,
     parseUintArrayString,
     parseUintString,
-} from 'components/ContractTab/function-interface-utils';
+} from 'src/lib/function-interface-utils';
 import { BigNumber } from 'ethers';
 
 describe('function-interface-utils', () => {
