@@ -1,10 +1,10 @@
 <script>
 import AddressField from 'components/AddressField';
-import { promptAddToMetamask } from 'src/lib/token-utils';
+import AddToMetamask from 'src/components/AddToMetamask';
 
 export default {
-    name: 'TokenListElement',
-    components: { AddressField },
+    name: 'TokenGridElement',
+    components: { AddressField, AddToMetamask },
     props: {
         token: {
             type: Object,
@@ -16,21 +16,11 @@ export default {
             symbol: (this.token.symbol.length > 12) ? this.token.symbol.slice(0, 12).trim() + '...' : this.token.symbol,
         };
     },
-    computed: {
-        showMetamaskPrompt() {
-            return window?.ethereum?.isMetaMask === true;
-        },
-    },
-    methods: {
-        promptAddToMetamask(address, symbol, logoURI, type, decimals) {
-            promptAddToMetamask(this.$q, address, symbol, logoURI, type, decimals);
-        },
-    },
 };
 </script>
 
 <template>
-<div class="c-token-list__token-card">
+<div v-if="token.balance" class="c-token-list__token-card">
     <q-card >
         <q-card-section class="flex">
             <q-avatar class="q-mr-md">
@@ -50,7 +40,7 @@ export default {
                     <span class="q-pr-xs">
                         {{ $t('components.balance') }}
                     </span>
-                    <span v-if="token.balance === '0.0000'">
+                    <span v-if="token.balance === '0.0000' && token.fullBalance > 0">
                         {{ '< 0.0001 ' + symbol }}
                     </span>
                     <span v-else>
@@ -60,15 +50,11 @@ export default {
                         {{ token.fullBalance + ' ' + symbol || $t('components.error_fetching_balance') }}
                     </q-tooltip>
                 </div>
-                <span
-                    v-if="showMetamaskPrompt"
-                    class="c-token-list__metamask-prompt"
-                    tabindex="0"
-                    :aria-label="$t('components.launch_metamask_dialog_to_add', { symbol: token.symbol })"
-                    @click="promptAddToMetamask(token.address, token.symbol, token.logoURI, token.type, token.decimals)"
-                >
-                    {{ $t('components.add_to_metamask', { symbol: symbol }) }}
-                </span>
+                <AddToMetamask
+                    :token="token"
+                    :icon="false"
+                    :label="$t('components.add_to_metamask', { symbol: symbol })"
+                />
             </div>
         </q-card-section>
     </q-card>
@@ -89,11 +75,6 @@ export default {
     &__token-info-container {
         overflow: hidden;
         white-space: nowrap;
-    }
-
-    &__metamask-prompt {
-        color: $secondary;
-        cursor: pointer ;
     }
 }
 </style>

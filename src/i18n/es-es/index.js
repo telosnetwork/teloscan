@@ -271,6 +271,7 @@ export default {
         marketcap_sources: 'Data obtained from Coingecko or CoinMarketCap',
         usd_marketcap: 'Capitalización de mercado USD',
         usd_price: 'Precio USD',
+        usd_value: 'USD Value',
         tlos_price: 'Precio TLOS',
         gas_price: 'Precio del gas',
         click_to_expand: 'Haga clic para expandir la firma de la función',
@@ -421,6 +422,10 @@ export default {
         },
     },
     global: {
+        name: 'Name',
+        symbol: 'Symbol',
+        show_table: 'Show table',
+        show_grid: 'Show grid',
         records_per_page: 'Registros por página:',
         expand: 'Ver más',
         max_decimals_reached: 'Utilice { max } decimales como máximo',

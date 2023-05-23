@@ -2,7 +2,8 @@
 import { formatWei } from 'src/lib/utils';
 import erc20Abi from 'erc-20-abi';
 import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
-import TokenListElement from 'src/components/Token/TokenListElement';
+import TokenGridElement from 'src/components/Token/TokenGridElement';
+import TokenTable from 'src/components/Token/TokenTable';
 
 export default {
     name: 'TokenList',
@@ -12,12 +13,13 @@ export default {
             required: true,
         },
     },
-    components: { TokenListElement },
+    components: { TokenGridElement, TokenTable },
     data() {
         return {
             tokensOfficial: null,
             tokens: null,
             processing: false,
+            showGrid: true,
         };
     },
     async mounted() {
@@ -31,8 +33,8 @@ export default {
                 }
             })[0];
         },
-        async loadTokens() {
-            if(this.processing || this.tokens !== null ||this.address === null){
+        async loadTokens(force) {
+            if(this.processing || this.tokens !== null && !force ||this.address === null){
                 return;
             }
             this.processing = true;
@@ -59,6 +61,7 @@ export default {
                         result.symbol = contract.properties?.symbol;
                         result.decimals = contract.properties?.decimals;
                         result.contract = await this.$contractManager.getContract(result.contract);
+                        result.price = contract.properties?.price || 0;
                         result.logoURI = DEFAULT_TOKEN_LOGO;
                         result.fullBalance = `${formatWei(result.balance, result.contract.properties?.decimals)}`;
                         result.balance = `${formatWei(result.balance, result.contract.properties?.decimals, 4)}`;
@@ -79,6 +82,7 @@ export default {
                 if(!contract.supportedInterfaces.includes('erc20')){
                     return;
                 }
+                token.price = contract.properties?.price ||  0;
                 if(!contract.abi){
                     contract.abi = erc20Abi;
                 }
@@ -93,6 +97,7 @@ export default {
             }));
             this.tokensOfficial = tokensOfficial;
             this.tokens = tokens;
+            this.processing = false;
         },
         sortTokens(tokens) {
             return tokens.sort((a, b) => {
@@ -140,28 +145,43 @@ export default {
     </div>
 </div>
 <div v-else>
-    <div v-if="tokensOfficial.length > 0" class="c-token-list-container">
+    <div class="flex q-px-md q-mt-sm">
+        <q-toggle
+            v-model="showGrid"
+            :label="(showGrid) ? $t('global.show_table') : $t('global.show_grid')"
+            checked-icon="table_rows"
+            unchecked-icon="apps"
+            color="secondary"
+        />
+    </div>
+    <div v-if="tokensOfficial.length > 0" :key="'otokenslist' + showGrid" class="c-token-list-container">
         <div class="col-12 flex q-mt-md q-pl-lg">
             <h5 class="text-left"> {{ $t('components.known_tokens') }}</h5>
         </div>
-        <div class="c-token-list">
-            <TokenListElement
+        <div v-if="showGrid" class="c-token-grid">
+            <TokenGridElement
                 v-for="token in tokensOfficial"
                 :key="token.address"
                 :token="token"
             />
         </div>
+        <div v-else class="c-token-table">
+            <TokenTable :tokens="tokensOfficial" />
+        </div>
     </div>
-    <div v-if="tokens.length > 0" class="c-token-list-container">
+    <div v-if="tokens.length > 0" :key="'tokenslist' + showGrid" class="c-token-list-container">
         <div class="col-12 flex q-mt-md q-pl-lg">
             <h5 class="text-left"> {{ $t('components.other_tokens') }}</h5>
         </div>
-        <div class="c-token-list">
-            <TokenListElement
+        <div v-if="showGrid" class="c-token-grid" >
+            <TokenGridElement
                 v-for="token in tokens"
                 :key="token.address"
                 :token="token"
             />
+        </div>
+        <div v-else class="c-token-table">
+            <TokenTable :tokens="tokens" />
         </div>
     </div>
 </div>
@@ -171,7 +191,7 @@ export default {
 .c-token-list-container h5 {
     margin: 0;
 }
-.c-token-list {
+.c-token-grid {
     display: grid;
     gap: 12px;
     grid-template-columns: repeat(1, 1fr);

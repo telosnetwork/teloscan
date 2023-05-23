@@ -273,6 +273,7 @@ export default {
         marketcap_sources: 'Data obtained from Coingecko or CoinMarketCap',
         usd_marketcap: 'USD Marketcap',
         usd_price: 'USD Price',
+        usd_value: 'USD Value',
         tlos_price: 'TLOS Price',
         gas_price: 'Gas Price',
         click_to_expand: 'Click to expand the function signature',
@@ -423,6 +424,10 @@ export default {
         },
     },
     global: {
+        name: 'Name',
+        symbol: 'Symbol',
+        show_table: 'Show table',
+        show_grid: 'Show grid',
         records_per_page: 'Records per page:',
         max_decimals_reached: 'Please use { max } decimal places maximum',
         erc20_token: 'ERC20 Token',
