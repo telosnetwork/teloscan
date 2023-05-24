@@ -101,32 +101,12 @@ export default {
         },
         sortTokens(tokens) {
             return tokens.sort((a, b) => {
-                if (a.symbol === 'WTLOS') {
-                    return -1;
-                }
-
-                if (b.symbol === 'WTLOS') {
-                    return 1;
-                }
-
-                if (a.tags?.includes('stablecoin') && !b.tags?.includes('stablecoin')) {
-                    return -1;
-                }
-
-                if (!a.tags?.includes('stablecoin') && b.tags?.includes('stablecoin')) {
-                    return 1;
-                }
-
-                if (a.tags?.includes('telosevm') && !b.tags?.includes('telosevm')) {
-                    return 1;
-                }
-
-                if (!a.tags?.includes('telosevm') && b.tags?.includes('telosevm')) {
-                    return -1;
-                }
-
                 let balanceA = a.fullBalance.toString().split('.')[0];
                 let balanceB = b.fullBalance.toString().split('.')[0];
+                if(balanceA === '0' && balanceB === '0'){
+                    balanceA = a.fullBalance.toString().split('.')[1];
+                    balanceB = b.fullBalance.toString().split('.')[1];
+                }
                 return (
                     BigNumber.from(balanceA).lt(BigNumber.from(balanceB))
                         ? 1 : -1
