@@ -163,7 +163,7 @@ export default {
             <q-btn
                 :disabled="withdrawDisabled"
                 color="secondary"
-                text-color="black"
+                text-color="white"
                 @click="withdrawUnlocked"
             >
                 {{ $t('pages.staking.withdraw_tlos') }}

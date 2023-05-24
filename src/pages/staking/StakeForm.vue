@@ -352,8 +352,13 @@ export default {
         />
     </div>
     <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
-        {{ $t('pages.staking.stake_tlos_success') }}
-        <TransactionField :transaction-hash="resultHash" />
+        <div class="bg-positive text-white q-py-xs q-px-sm flex items-center">
+            <q-icon name="check_circle" class="q-mr-xs" />
+            {{ $t('pages.staking.stake_tlos_success')  }}
+            <span class="q-ml-xs">
+                <TransactionField :transaction-hash="resultHash" />
+            </span>
+        </div>
     </div>
     <q-dialog v-model="displayConfirmModal">
         <q-card>
@@ -407,6 +412,9 @@ export default {
 </template>
 
 <style lang="scss">
+.c-stake-form .bg-positive {
+    border-radius: 4px;
+}
 .c-stake-form {
     &__metamask-prompt {
         color: $secondary;

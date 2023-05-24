@@ -4,6 +4,7 @@ import erc20Abi from 'erc-20-abi';
 import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
 import TokenGridElement from 'src/components/Token/TokenGridElement';
 import TokenTable from 'src/components/Token/TokenTable';
+import { BigNumber } from 'ethers';
 
 export default {
     name: 'TokenList',
@@ -47,14 +48,11 @@ export default {
             let tokensOfficial = [];
             await Promise.all(response.data.results.map(async (result) => {
                 if(result.balance !== '0'){
-                    let found = false;
                     let token = this.checkTokenList(result.contract.toLowerCase(), tokenList);
                     if(token && !tokensOfficial.includes(token)){
                         token.balance = result.balance;
                         tokensOfficial.push(token);
-                        found = true;
-                    }
-                    if(!found && !tokens.includes(result) && result.contract !== '___NATIVE_CURRENCY___'){
+                    } else if(!tokens.includes(result) && result.contract !== '___NATIVE_CURRENCY___'){
                         let contract = await this.$contractManager.getContract(result.contract);
                         result.address = contract.address;
                         result.name = contract.name;
@@ -69,8 +67,8 @@ export default {
                     }
                 }
             }));
-            tokensOfficial = this.sortTokens(tokensOfficial);
-            await Promise.all(tokensOfficial.map(async (token) => {
+            tokens = this.sortTokens(tokens);
+            tokensOfficial = await Promise.all(tokensOfficial.map(async (token) => {
                 if (token.logoURI && token.logoURI.startsWith('ipfs://')) {
                     token.logoURI = `https://ipfs.io/ipfs/${token.logoURI.replace(/ipfs:\/\//, '')}`;
                 } else if (!token.logoURI) {
@@ -94,7 +92,9 @@ export default {
                     token.balance = `${formatWei(balance, token.decimals, 4)}`;
                     token.fullBalance = `${formatWei(balance, token.decimals)}`;
                 }
+                return token;
             }));
+            tokensOfficial = this.sortTokens(tokensOfficial);
             this.tokensOfficial = tokensOfficial;
             this.tokens = tokens;
             this.processing = false;
@@ -109,23 +109,28 @@ export default {
                     return 1;
                 }
 
-                if (a.tags.includes('stablecoin') && !b.tags.includes('stablecoin')) {
+                if (a.tags?.includes('stablecoin') && !b.tags?.includes('stablecoin')) {
                     return -1;
                 }
 
-                if (!a.tags.includes('stablecoin') && b.tags.includes('stablecoin')) {
+                if (!a.tags?.includes('stablecoin') && b.tags?.includes('stablecoin')) {
                     return 1;
                 }
 
-                if (a.tags.includes('telosevm') && !b.tags.includes('telosevm')) {
+                if (a.tags?.includes('telosevm') && !b.tags?.includes('telosevm')) {
                     return 1;
                 }
 
-                if (!a.tags.includes('telosevm') && b.tags.includes('telosevm')) {
+                if (!a.tags?.includes('telosevm') && b.tags?.includes('telosevm')) {
                     return -1;
                 }
 
-                return a.symbol > b.symbol ? 1 : -1;
+                let balanceA = a.fullBalance.toString().split('.')[0];
+                let balanceB = b.fullBalance.toString().split('.')[0];
+                return (
+                    BigNumber.from(balanceA).lt(BigNumber.from(balanceB))
+                        ? 1 : -1
+                );
             });
         },
     },

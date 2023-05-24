@@ -168,7 +168,7 @@ export default {
                     <q-btn
                         :disabled="ctaDisabled"
                         color="secondary"
-                        text-color="black"
+                        text-color="white"
                         @click="handleCtaClick"
                     >
                         {{ ctaText }}

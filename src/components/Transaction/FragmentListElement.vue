@@ -56,7 +56,7 @@ export default {
             if(typeof this.fragment.depth === 'undefined') {
                 return;
             }
-            return { marginLeft: ((this.fragment.depth * 20)  + 20) + 'px' };
+            return { marginLeft: (this.fragment.depth * 20)  + 'px' };
         },
         inputs(){
             return this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
@@ -86,18 +86,22 @@ export default {
 <template>
 <div v-if="fragment" class="c-fragment-list-element" :style="depthStyle"  >
     <div :class="fragmentClass" @click="expanded = !expanded">
-        <span class="row items-center">
-            <q-icon
-                v-if="isExpandable"
-                :name="arrowIcon"
-                size="sm"
-            />
-            <strong v-if="fragment?.name">
-                {{ fragment.name }}
-            </strong>
-            <strong v-else>
-                {{ $t('components.transaction.unknown') }} ({{ fragment.function_signature }})
-            </strong>
+        <span class="row text-left">
+            <div>
+                <q-icon
+                    v-if="isExpandable"
+                    :name="arrowIcon"
+                    size="sm"
+                />
+            </div>
+            <div>
+                <strong v-if="fragment?.name">
+                    {{ fragment.name }}
+                </strong>
+                <strong v-else>
+                    {{ $t('components.transaction.unknown') }} ({{ fragment.function_signature }})
+                </strong>
+            </div>
             <q-icon
                 v-if="fragment.error"
                 name="warning"
@@ -346,6 +350,13 @@ body.body--dark .c-fragment-list-element  .negative {
         @at-root .body--dark & {
             background: rgba(0, 0, 0, 0.25);
         }
+        .row {
+            flex-flow: nowrap;
+            max-width: 70%;
+        }
+        .q-icon {
+            margin-top: -3px;
+        }
     }
 
     &__fragment {
@@ -363,12 +374,21 @@ body.body--dark .c-fragment-list-element  .negative {
         &__head {
             display: block;
             text-align: center;
+            padding: 15px;
             .c-address-field {
                 border-top: 1px solid rgba(255, 255, 255, 0.3);
                 padding-top: 10px;
                 width: 100%;
-                display: block;
+                display: flex;
                 margin-top: 15px;
+            }
+            .q-icon {
+                margin-left: -7px;
+                font-size: 20px;
+            }
+            .row {
+                flex-flow: nowrap;
+                max-width: 100%;
             }
         }
     }
