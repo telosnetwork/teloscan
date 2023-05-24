@@ -175,7 +175,7 @@ export default {
                 }
             }
 
-            this.balance = this.getBalanceDisplay(account?.balance);
+            this.balance = this.getBalanceDisplay(account?.balance?.toString() || '0');
             this.telosAccount = account?.account;
             this.accountLoading = false;
         },

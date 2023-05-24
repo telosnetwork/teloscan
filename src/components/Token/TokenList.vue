@@ -20,7 +20,7 @@ export default {
             tokensOfficial: null,
             tokens: null,
             processing: false,
-            showGrid: true,
+            showGrid: false,
         };
     },
     async mounted() {
@@ -139,35 +139,34 @@ export default {
             color="secondary"
         />
     </div>
-    <div v-if="tokensOfficial.length > 0" :key="'otokenslist' + showGrid" class="c-token-list-container">
-        <div class="col-12 flex q-mt-md q-pl-lg">
-            <h5 class="text-left"> {{ $t('components.known_tokens') }}</h5>
+    <div v-if="showGrid">
+        <div v-if="tokensOfficial.length > 0" :key="'otokenslist' + showGrid" class="c-token-list-container">
+            <div class="col-12 flex q-mt-md q-pl-lg">
+                <h5 class="text-left"> {{ $t('components.known_tokens') }}</h5>
+            </div>
+            <div v-if="showGrid" class="c-token-grid">
+                <TokenGridElement
+                    v-for="token in tokensOfficial"
+                    :key="token.address"
+                    :token="token"
+                />
+            </div>
         </div>
-        <div v-if="showGrid" class="c-token-grid">
-            <TokenGridElement
-                v-for="token in tokensOfficial"
-                :key="token.address"
-                :token="token"
-            />
-        </div>
-        <div v-else class="c-token-table">
-            <TokenTable :tokens="tokensOfficial" />
+        <div v-if="tokens.length > 0" :key="'tokenslist' + showGrid" class="c-token-list-container">
+            <div class="col-12 flex q-mt-md q-pl-lg">
+                <h5 class="text-left"> {{ $t('components.other_tokens') }}</h5>
+            </div>
+            <div v-if="showGrid" class="c-token-grid" >
+                <TokenGridElement
+                    v-for="token in tokens"
+                    :key="token.address"
+                    :token="token"
+                />
+            </div>
         </div>
     </div>
-    <div v-if="tokens.length > 0" :key="'tokenslist' + showGrid" class="c-token-list-container">
-        <div class="col-12 flex q-mt-md q-pl-lg">
-            <h5 class="text-left"> {{ $t('components.other_tokens') }}</h5>
-        </div>
-        <div v-if="showGrid" class="c-token-grid" >
-            <TokenGridElement
-                v-for="token in tokens"
-                :key="token.address"
-                :token="token"
-            />
-        </div>
-        <div v-else class="c-token-table">
-            <TokenTable :tokens="tokens" />
-        </div>
+    <div v-else class="c-token-table">
+        <TokenTable :tokens="tokensOfficial.concat(tokens)" />
     </div>
 </div>
 </template>
