@@ -671,7 +671,7 @@ body.body--dark .supported-interface
     .homeInfo > .flex
         align-items: center
         flex-wrap: inherit
-        justify-content: space-evenly
+        justify-content: center
     .coin-icon
         margin-bottom: 8px
         flex-shrink: 0
@@ -696,8 +696,18 @@ body.body--dark .supported-interface
             width: 100%
             word-break: break-word
         .text-h4
-            margin-bottom: 10px
+            margin-bottom: 0px
+            margin-top: 3px
             word-break: break-word
             line-height: 1.3em
             font-size: 2.4em
+@media only screen and (max-width: 380px)
+    .homeInfo
+        .q-icon.text-positive
+            font-size: 0.9rem !important
+            margin-top: -7px
+        .q-icon
+            font-size: 1.25rem !important
+        .text-h4
+            font-size: 2em
 </style>
