@@ -249,15 +249,18 @@ export default {
                 <span v-if="toChecksumAddress(address) === toChecksumAddress(props.row.from)" class="direction out">
                     {{ $t('components.transaction.out').toUpperCase() }}
                 </span>
-                <span v-else-if="toChecksumAddress(address) === toChecksumAddress(props.row.to)" class="direction in">
+                <span
+                    v-else-if="toChecksumAddress(address) === toChecksumAddress(props.row.to)"
+                    class="direction in"
+                >
                     {{ $t('components.transaction.in').toUpperCase() }}
                 </span>
             </q-td>
             <q-td key="from" :props="props">
-                <AddressField :address="props.row.from" :truncate="16"/>
+                <AddressField :key="props.row.from" :address="props.row.from" :truncate="16"/>
             </q-td>
             <q-td key="to" :props="props">
-                <AddressField :address="props.row.to" :truncate="16"/>
+                <AddressField :key="props.row.to" :address="props.row.to" :truncate="16"/>
             </q-td>
             <q-td key="value" :props="props">
                 <span v-if="tokenType==='erc721' && props.row.token?.imageCache">

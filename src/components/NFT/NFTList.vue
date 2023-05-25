@@ -219,9 +219,9 @@ export default {
                     <BlockField v-if="props.row.blockMinted" :block="props.row.blockMinted" />
                 </q-td>
                 <q-td key="token_id" :props="props">
-                    <span v-if="props.row.tokenId <= 100000000000">{{ props.row.tokenId }}</span>
+                    <span v-if="props.row.tokenId.toString().length < 8">{{ props.row.tokenId }}</span>
                     <span  v-else>
-                        <span>{{ '> 100000000000' }}</span>
+                        <span>{{ props.row.tokenId.substr(0, 8) + '...' }}</span>
                         <q-tooltip>{{ props.row.tokenId }}</q-tooltip>
                     </span>
                 </q-td>

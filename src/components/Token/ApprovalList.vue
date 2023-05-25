@@ -159,16 +159,19 @@ export default {
                 if(result?.hash){
                     success = true;
                     const spenderContract  = await this.$contractManager.getContract(spender);
-                    this.$q.notify({
-                        type: 'positive',
-                        message: this.$t(
-                            'components.approvals.update_success',
-                            {
-                                spender: spenderContract?.getName() || spender,
-                                contract: contract.getName() || contract.address,
-                            },
-                        ),
-                    });
+                    let ctx = this;
+                    setTimeout(function () {
+                        ctx.$q.notify({
+                            type: 'positive',
+                            message: ctx.$t(
+                                'components.approvals.update_success',
+                                {
+                                    spender: spenderContract?.getName() || spender,
+                                    contract: contract.getName() || contract.address,
+                                },
+                            ),
+                        });
+                    }, 2000);
                     return success;
                 }
             } catch (e) {
@@ -204,24 +207,27 @@ export default {
             let approval = true;
             let i = 0;
             let currentApprovals = this.approvals;
+            await new Promise(resolve => setTimeout(resolve, 2000));
             while(approval) {
-                await new Promise(resolve => setTimeout(resolve, 2000));
                 await this.onRequest({
                     pagination: this.pagination,
                 });
                 for(let k = 0; k < currentApprovals.length; k++){
                     if(
-                        currentApprovals[k].amount !== this.approvals[k].amount
+                        !this.approvals[k]
+                        || currentApprovals[k].amount !== this.approvals[k].amount
                         || currentApprovals[k].spender !== this.approvals[k].spender
                         || currentApprovals[k].contract !== this.approvals[k].contract
                     ){
                         approval = false;
+                        break;
                     }
                 }
                 if(i === 5){
                     approval  = false;
                     break;
                 }
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 i++;
             }
             this.displayConfirmModal = false;

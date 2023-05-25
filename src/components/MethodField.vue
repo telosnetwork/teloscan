@@ -128,5 +128,8 @@ export default {
         text-align: center;
         border-radius: 100%;
         color: white;
+        .q-icon {
+            margin-top: 2px;
+        }
     }
 </style>
