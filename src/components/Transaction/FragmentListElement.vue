@@ -1,5 +1,6 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
+import ParameterList from 'components/ParameterList';
 import AddressField from 'components/AddressField';
 import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
@@ -9,6 +10,7 @@ export default {
     components: {
         AddressField,
         JsonViewer,
+        ParameterList,
     },
     props: {
         fragment: {
@@ -60,6 +62,19 @@ export default {
         },
         inputs(){
             return this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
+        },
+        params(){
+            let args = [];
+            let inputs = this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
+            inputs.forEach((input, i) => {
+                args.push({
+                    name: input.name,
+                    type: input.type,
+                    arrayChildren: (input.arrayChildren !== null) ? input.arrayChildren.type : false,
+                    value:  this.fragment.args[i],
+                });
+            });
+            return args;
         },
         fragmentClass(){
             let fragmentClass = 'c-fragment-list-element__head justify-between items-center';
@@ -132,155 +147,7 @@ export default {
             <span class="text-negative">{{ fragment.error }}</span>
         </div>
         <div v-if="fragment?.name" :key="fragment.name">
-            <div
-                v-for="(param, index) in inputs"
-                :key="`fragment-${index}`"
-                class="fit row justify-start items-start content-start"
-            >
-                <div class="col-4">
-                    <template v-if="param.name">
-                        {{ param.name }} ({{ param.type }}):
-                    </template>
-
-                    <template v-else>
-                        {{ param.type }}:
-                    </template>
-                </div>
-
-                <div class="col-8">
-                    <AddressField
-                        v-if="param.type === 'address'"
-                        :address="fragment.args[index]"
-                        :truncate="0"
-                        class="word-break"
-                        :copy="true"
-                    />
-                    <div v-else-if="param.type === 'uint256' || param.type === 'uint128'"  class="word-break">
-                        <div v-if="fragment.isTransfer && fragment.contract && fragment.contract.isToken()">
-                            <div
-                                v-if="fragment.contract.supportedInterfaces.includes('erc20')"
-                                class="clickable"
-                                @click="showWei = !showWei"
-                            >
-                                <span v-if="!showWei">
-                                    <span>
-                                        <span> {{
-                                            formatWei(fragment.args[index],
-                                                      fragment.contract.properties.decimals)
-                                        }}</span>
-                                        <q-tooltip>Show wei</q-tooltip>
-                                    </span>
-                                    <AddressField
-                                        :address="fragment.contract.address"
-                                        :truncate="0"
-                                        :name="fragment.contract.properties.symbol"
-                                        :copy="true"
-                                        class="word-break q-ml-xs"
-                                    />
-                                </span>
-                                <span v-else>
-                                    {{ fragment.args[index] }}
-                                </span>
-                            </div>
-                            <div v-else-if="fragment.contract.supportedInterfaces.includes('erc1155')">
-                                <AddressField
-                                    v-if="index === 3 && fragment.contract.properties.symbol"
-                                    :address="fragment.contract.address"
-                                    :truncate="0"
-                                    :name="fragment.contract.properties.symbol"
-                                    :copy="true"
-                                    class="word-break"
-                                />
-                                <span v-if="index === 3 && fragment.contract.properties.symbol"> #</span>
-                                <span> {{ fragment.args[index] }}</span>
-                            </div>
-                            <div v-else>
-                                <AddressField
-                                    v-if="fragment.contract.properties.symbol"
-                                    :address="fragment.contract.address"
-                                    :truncate="0"
-                                    :name="fragment.contract.properties.symbol"
-                                    :copy="true"
-                                    class="word-break"
-                                />
-                                <span v-if="fragment.contract.properties.symbol"> #</span>
-                                <span> {{ fragment.args[index] }}</span>
-                            </div>
-                        </div>
-                        <div v-else class="word-break">
-                            {{ fragment.args[index] }}
-                        </div>
-                    </div>
-                    <div v-else-if="param.type === 'tuple'" v-on:click.stop="toggle(index, 'expanded')">
-                        <div>[ </div>
-                        <div
-                            v-for="(i) in fragment.args[index].length - 1"
-                            :key="param.type + i"
-                            :class="
-                                (expanded_parameters[index]['expanded']) ?
-                                    'q-pl-lg word-break' :
-                                    'q-pl-lg word-break hidden'
-                            "
-                        >
-                            <span v-if="typeof fragment.args[index][i] === 'object'">
-                                <pre>{{ fragment.args[index][i] }},</pre>
-                            </span>
-                            <span v-else>{{ fragment.args[index][i] }},</span>
-                        </div>
-                        <div
-                            v-if="!expanded_parameters[index]['expanded']"
-                            class="q-px-sm ellipsis-label q-mb-xs"
-                        >...</div>
-                        <div>]</div>
-                    </div>
-                    <div
-                        v-else-if="param.arrayChildren && fragment.args[index] && fragment.args[index].length > 0"
-                        v-on:click.stop="toggle(index, 'expanded')"
-                    >
-                        <div>[ </div>
-                        <div
-                            v-for="i in fragment.args[index].length"
-                            :key="param.type + i"
-                            :class="
-                                (expanded_parameters[index]['expanded']) ?
-                                    'q-pl-xl word-break' :
-                                    'q-pl-xl word-break hidden'
-                            "
-                        >
-                            <div v-if="param.arrayChildren.type === 'address'">
-                                <AddressField
-                                    :address="fragment.args[index][i  - 1]"
-                                    :truncate="0"
-                                    class="word-break"
-                                    :copy="true"
-                                />
-                            </div>
-                            <div v-else-if="param.arrayChildren.type === 'address[]'">
-                                <div
-                                    v-for="arg in fragment.args[index][i  - 1]"
-                                    :key="`address-${index}-${arg}`"
-                                >
-                                    <AddressField
-                                        :address="arg"
-                                        :truncate="0"
-                                        class="word-break"
-                                        :copy="true"
-                                    />,
-                                </div>
-                            </div>
-                            <span v-else class="word-break">{{ fragment.args[index][i  - 1] }},</span>
-                        </div>
-                        <div
-                            v-if="!expanded_parameters[index]['expanded']"
-                            class="q-px-sm ellipsis-label q-mb-xs"
-                        >...</div>
-                        <div>]</div>
-                    </div>
-                    <div v-else class="word-break">
-                        {{ fragment.args[index] }}
-                    </div>
-                </div>
-            </div>
+            <ParameterList :params="params" :trxFrom="fragment.from" :contract="fragment.contract" />
             <div v-if="fragment.value && fragment.value !== 0">
                 <div v-if="fragment.isTransferETH" >
                     <div class="fit row justify-start items-start content-start">

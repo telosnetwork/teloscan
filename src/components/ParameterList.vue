@@ -11,7 +11,6 @@ export default {
             this.expanded[param][value] = !this.expanded[param][value];
         },
         isAddress(address){
-            console.log(address + 'is address : ' + ethers.utils.isAddress(address));
             return ethers.utils.isAddress(address);
         },
     },
