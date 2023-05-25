@@ -96,7 +96,8 @@ export default {
             </div>
             <div>
                 <strong v-if="fragment?.name">
-                    {{ fragment.name }}
+                    <span v-if="fragment.name.length > 190">{{ fragment.name.substring(0, 190) }}...</span>
+                    <span v-else>{{ fragment.name }}</span>
                 </strong>
                 <strong v-else>
                     {{ $t('components.transaction.unknown') }} ({{ fragment.function_signature }})
@@ -217,11 +218,14 @@ export default {
                             :key="param.type + i"
                             :class="
                                 (expanded_parameters[index]['expanded']) ?
-                                    'q-pl-xl word-break' :
-                                    'q-pl-xl word-break hidden'
+                                    'q-pl-lg word-break' :
+                                    'q-pl-lg word-break hidden'
                             "
                         >
-                            {{ i }},
+                            <span v-if="typeof fragment.args[index][i] === 'object'">
+                                <pre>{{ fragment.args[index][i] }},</pre>
+                            </span>
+                            <span v-else>{{ fragment.args[index][i] }},</span>
                         </div>
                         <div
                             v-if="!expanded_parameters[index]['expanded']"
@@ -357,6 +361,11 @@ body.body--dark .c-fragment-list-element  .negative {
         .q-icon {
             margin-top: -3px;
         }
+    }
+    pre {
+        font-family: inherit;
+        font-size: inherit;
+        margin: auto;
     }
 
     &__fragment {
