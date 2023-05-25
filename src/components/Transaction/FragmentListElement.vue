@@ -152,7 +152,8 @@ export default {
                 <div v-if="fragment.isTransferETH" >
                     <div class="fit row justify-start items-start content-start">
                         <div class="col-4">
-                            {{ $t('pages.from').toLowerCase() }}
+                            <q-icon class="list-arrow" name="arrow_right"/>
+                            <span>{{ $t('pages.from').toLowerCase() }}</span>
                         </div>
                         <div class="col-8">
                             <AddressField
@@ -165,7 +166,8 @@ export default {
                     </div>
                     <div class="fit row justify-start items-start content-start">
                         <div class="col-4">
-                            {{ $t('pages.to').toLowerCase() }}
+                            <q-icon class="list-arrow" name="arrow_right"/>
+                            <span>{{ $t('pages.to').toLowerCase() }}</span>
                         </div>
                         <div class="col-8">
                             <AddressField
@@ -179,7 +181,8 @@ export default {
                 </div>
                 <div class="fit row justify-start items-start content-start">
                     <div class="col-4">
-                        {{ $t('components.transaction.value_uint256').toLowerCase() }}
+                        <q-icon class="list-arrow" name="arrow_right"/>
+                        <span>{{ $t('components.transaction.value_uint256').toLowerCase() }}</span>
                     </div>
                     <div class="col-8">
                         {{ fragment.value }} TLOS
