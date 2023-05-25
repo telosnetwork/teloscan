@@ -66,7 +66,7 @@ export default {
         params(){
             let args = [];
             let inputs = this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
-            inputs.forEach((input, i) => {
+            inputs?.forEach((input, i) => {
                 args.push({
                     name: input.name,
                     type: input.type,
