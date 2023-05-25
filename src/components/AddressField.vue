@@ -102,7 +102,7 @@ export default {
             this.displayName = this.truncateText(address, true);
         },
         async loadContract() {
-            let contract = await this.$contractManager.getContract(this.address);
+            let contract = await this.$contractManager.getContract(this.address, true);
             if (contract) {
                 this.fullName = (contract.getName() && contract.getName().startsWith('0x') === false)
                     ? contract.getName()
@@ -117,7 +117,7 @@ export default {
 </script>
 
 <template>
-<div :key="displayName" :class="`c-address-field ${this.class}`">
+<div :key="displayName + address" :class="`c-address-field ${this.class}`">
     <router-link
         :to="`/address/${address}`"
         :class="highlight ? 'highlighted flex items-center' : 'flex items-center'"

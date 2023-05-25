@@ -49,15 +49,19 @@ const getAccount = async function (accountName) {
     return await rpc.get_account(accountName);
 };
 
-export default boot(async ({ store }) => {
-    const rpc = new JsonRpc(
-        `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}:${process.env.NETWORK_PORT}`,
-    );
-    store['$defaultApi'] = new Api({
-        rpc,
-        textDecoder: new TextDecoder(),
-        textEncoder: new TextEncoder(),
-    });
+export default boot(async ({ app, store }) => {
+    app['$isAntelopeCapable'] = false;
+    if(process.env.NETWORK_PROTOCOL && process.env.NETWORK_HOST){
+        const rpc = new JsonRpc(
+            `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}:${process.env.NETWORK_PORT}`,
+        );
+        store['$defaultApi'] = new Api({
+            rpc,
+            textDecoder: new TextDecoder(),
+            textEncoder: new TextEncoder(),
+        });
+        app['$isAntelopeCapable'] = true;
+    }
     store['$antelopeApi'] = {
         signTransaction: signTransaction.bind(store),
         getTableRows: getTableRows.bind(store),

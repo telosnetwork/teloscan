@@ -315,7 +315,12 @@ export default {
                 </span>
             </q-td>
             <q-td key="from" :props="props">
-                <AddressField v-if="props.row.from" :address="props.row.from" :truncate="18"/>
+                <AddressField
+                    v-if="props.row.from"
+                    :key="props.row.from"
+                    :address="props.row.from"
+                    :truncate="18"
+                />
             </q-td>
             <q-td key="to" :props="props">
                 <AddressField

@@ -16,17 +16,11 @@ export async function doRPC(_, { method, params }) {
 
 export const fetchTlosPrice = async function({ commit }) {
     try {
-        const response = await this.$antelopeApi.getTableRows({
-            code: 'delphioracle',
-            limit: '1000',
-            scope: 'tlosusd',
-            table: 'datapoints',
-        });
-
-        const tlosPrice = response.rows[0].median / 10000;
+        const response = await this.$indexerApi.get('/tokens/marketdata?tokens=TLOS&vs=usd');
+        const tlosPrice = parseFloat(response.data?.results[0].price).toFixed(4);
         commit('setTlosPrice', tlosPrice);
     } catch (error) {
-        console.error('fetchTlosPrice');
+        console.error('fetchTlosPrice: ', error.message);
         commit('general/setErrorMsg', error.message || error, { root: true });
     }
 };

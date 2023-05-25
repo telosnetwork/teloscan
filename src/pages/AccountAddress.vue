@@ -1,8 +1,8 @@
 <!-- eslint-disable vue/no-unused-components -->
 <script>
-import { toChecksumAddress, formatWei } from 'src/lib/utils';
+import { toChecksumAddress, formatWei, WEI_PRECISION } from 'src/lib/utils';
 import { getIcon } from 'src/lib/token-utils';
-import Web3 from 'web3';
+import { BigNumber } from 'ethers';
 import TransactionTable from 'components/TransactionTable';
 import InternalTransactionTable from 'components/InternalTransactionTable';
 import TransferTable from 'components/TransferTable';
@@ -18,8 +18,6 @@ import CopyButton from 'components/CopyButton';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
 import DateField from 'components/DateField';
 import { mapGetters } from 'vuex';
-
-const web3 = new Web3();
 
 const tabs = {
     transactions: '#transactions',
@@ -62,7 +60,6 @@ export default {
             balance: null,
             nonce: null,
             isContract: false,
-            found: true,
             contract: null,
             verificationDate: '',
             creationDate: 0,
@@ -131,63 +128,78 @@ export default {
     },
     methods: {
         async loadAccount() {
+            if(!this.accountAddress){
+                return;
+            }
             this.accountLoading = true;
             this.isContract = false;
             const tokenList = await this.$contractManager.getTokenList();
-            let account;
+            let account = {};
             try {
-                account = await this.$evm.telos.getEthAccount(this.accountAddress);
+                const response = await this.$indexerApi.get(
+                    `/account/${this.accountAddress}/balances?contract=___NATIVE_CURRENCY___`,
+                );
+                account.balance = (response.data?.results?.length > 0) ? response.data.results[0].balance : '0';
             } catch (e) {
-                this.found = false;
-                console.info('Account not found on Native');
+                console.error('Could not get balance: ', e);
             }
             this.contract = null;
             this.fullTitle = null;
-            this.nonce = account?.nonce;
+            this.nonce = 0;
             this.title = this.$t('pages.account');
-            if (account?.code?.length > 0){
-                this.contract = await this.$contractManager.getContract(this.accountAddress);
-                if(this.contract){
-                    if(this.contract.supportedInterfaces.includes('erc20')){
-                        tokenList.tokens.forEach((token) => {
-                            if(token.address.toLowerCase() ===  this.contract.address.toLowerCase()){
-                                this.contract.logoURI = token.logoURI;
-                                this.contract.setVerified(true);
-                            }
-                        });
-                    }
-                    this.title = this.$t('pages.contract');
-                    this.isContract = true;
-                    const response = await this.$indexerApi.get(`/block/${this.contract.getCreationBlock()}`);
-                    this.creationDate = response.data.results[0]?.timestamp;
-                    if (this.contract.getName()) {
-                        this.fullTitle = this.contract.getName();
-                        this.title = (this.fullTitle.length > 22)
-                            ? this.fullTitle.slice(0, 22) + '..'
-                            : this.fullTitle
-                        ;
-                        if(this.contract.properties?.symbol){
-                            this.title = this.title + ' (' + this.contract.properties.symbol + ')';
+            const contract = await this.$contractManager.getContract(this.accountAddress);
+            if (contract?.creationInfo?.transaction){
+                this.contract = contract;
+                if(this.contract.supportedInterfaces?.includes('erc20')){
+                    tokenList.tokens.forEach((token) => {
+                        if(token.address.toLowerCase() ===  this.contract.address.toLowerCase()){
+                            this.contract.logoURI = token.logoURI;
+                            this.contract.setVerified(true);
                         }
-                    } else {
-                        this.title = this.$t('pages.contract');
+                    });
+                }
+                this.title = this.$t('pages.contract');
+                this.isContract = true;
+                const response = await this.$indexerApi.get(`/block/${this.contract.getCreationBlock()}`);
+                this.creationDate = response.data.results[0]?.timestamp;
+                if (this.contract.getName()) {
+                    this.fullTitle = this.contract.getName();
+                    this.title = (this.fullTitle.length > 22)
+                        ? this.fullTitle.slice(0, 22) + '..'
+                        : this.fullTitle
+                    ;
+                    if(this.contract.properties?.symbol){
+                        this.title = this.title + ' (' + this.contract.properties.symbol + ')';
                     }
+                } else {
+                    this.title = this.$t('pages.contract');
+                }
+            } else {
+                this.$contractManager.addContractToCache(this.accountAddress, { address: this.accountAddress });
+                if(this.$isAntelopeCapable){
+                    try {
+                        const account = await this.$evm.telos.getEthAccount(this.accountAddress);
+                        this.telosAccount = account?.account;
+                        this.nonce = account?.nonce;
+                    } catch (e) {
+                        console.info(e);
+                    }
+                } else {
+                    const result = await this.$evmEndpoint.post('/evm', {
+                        jsonrpc: '2.0',
+                        id: 1,
+                        method: 'eth_getTransactionCount',
+                        params: [this.accountAddress],
+                    });
+                    this.nonce = BigNumber.from(result.data?.result).toString();
                 }
             }
 
             this.balance = this.getBalanceDisplay(account?.balance?.toString() || '0');
-            this.telosAccount = account?.account;
             this.accountLoading = false;
         },
         getBalanceDisplay(balance) {
-            let strBalance = web3.utils.fromWei(balance);
-            const decimalIndex = strBalance.indexOf('.');
-            if (decimalIndex > 0) {
-                strBalance = `${strBalance.substring(
-                    0,
-                    decimalIndex + 5,
-                )}`;
-            }
+            let strBalance = formatWei(balance, WEI_PRECISION, 4);
             return this.$t('pages.tlos_balance', { balance: strBalance });
         },
         getAddressNativeExplorerURL() {
@@ -249,14 +261,14 @@ export default {
                         <ConfirmationDialog
                             class="text-secondary"
                             :flag="confirmationDialog"
-                            :address="accountAddress"
+                            :address="this.accountAddress"
                             :status="this.contract?.isVerified()"
                             @dialog="disableConfirmation"
                         />
                         <CopyButton
                             class="text-secondary"
-                            :text="accountAddress"
-                            :accompanyingText="accountAddress"
+                            :text="this.accountAddress"
+                            :accompanyingText="this.accountAddress"
                             description="address"
                         />
                         <template v-if="this.contract">
@@ -264,8 +276,12 @@ export default {
                                 {{ $t('pages.created_at_trx' )}}
                                 <TransactionField :transaction-hash="contract.getCreationTrx()"/>
                             </div>
-                            <div v-if="contract.getCreator()" class="text-white">{{ $t('pages.by_address') }}
-                                <AddressField :address="contract.getCreator()" :truncate="22"/>
+                            <div v-if="contract.getCreator()" :key="contract.getCreator()" class="text-white">
+                                {{ $t('pages.by_address') }}
+                                <AddressField
+                                    :address="contract.getCreator()"
+                                    :truncate="22"
+                                />
                             </div>
                             <div v-if="creationDate > 0" class="text-white">
                                 <DateField
@@ -511,13 +527,7 @@ export default {
                 :label="$t('pages.contract')"
             />
         </q-tabs>
-        <div v-if="!found" class="bg-white q-pa-lg">
-            <div class="text-h5 flex items-center justify-center">
-                <q-icon name="warning" size="32px" class="q-mr-sm q-mt-sm" />
-                <div>{{ $t('pages.account_not_found') }}</div>
-            </div>
-        </div>
-        <div v-else class="q-mb-md tableWrapper">
+        <div class="q-mb-md tableWrapper">
             <q-tab-panels
                 :key="address"
                 v-model="tab"

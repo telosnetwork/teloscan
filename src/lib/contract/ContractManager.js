@@ -77,7 +77,7 @@ export default class ContractManager {
                 return transaction;
             }
         } catch (e) {
-            console.error(`Failed to parse transaction data ${data} using abi for ${contract.address}: ${e}`);
+            console.info(`Failed to parse transaction data using abi for ${contract.address}: ${e}`);
         }
     }
 
@@ -217,7 +217,7 @@ export default class ContractManager {
         }
         return null;
     }
-    async getContract(address) {
+    async getContract(address, cacheEmpty) {
         if (address === null || typeof address !== 'string') {
             return;
         }
@@ -232,7 +232,7 @@ export default class ContractManager {
             return await this.getContract(address);
         }
         this.processing.push(addressLower);
-        let contract = { address: address };
+        let contract = (cacheEmpty) ? { address : address } : null;
         try {
             let response = await this.indexerApi.get(`/contract/${address}?full=true&includeAbi=true`);
             if(response.data?.success && response.data.results.length > 0){
@@ -240,6 +240,9 @@ export default class ContractManager {
             }
         } catch (e) {
             console.error(`Could not retrieve contract ${address}: ${e.message}`);
+        }
+        if(contract === null){
+            return;
         }
         this.addContractToCache(address, contract);
         let index = this.processing.indexOf(addressLower);

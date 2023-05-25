@@ -23,7 +23,7 @@ export default boot(({ app, store }) => {
     app.config.globalProperties.$indexerApi = indexerApi;
     app.config.globalProperties.$fragmentParser = fragmentParser;
     store.$contractManager = app.config.globalProperties.$contractManager = markRaw(contractManager);
-
+    store.$indexerApi = indexerApi;
     // Intercept API answer to set contracts & abi in cache directly
     indexerApi.interceptors.response.use(function (response) {
         if(response.data?.abi){

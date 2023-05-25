@@ -55,6 +55,7 @@ export default {
             tab: '#general',
             isContract: false,
             contract: null,
+            loading: true,
             parsedTransaction: null,
             methodTrx: null,
             showAge: true,
@@ -117,6 +118,7 @@ export default {
             this.trx.value = BigNumber.from(this.trx.value.toLocaleString('fullwide', { useGrouping:false }));
             await this.loadContract();
             this.setErrorMessage();
+            this.loading = false;
         },
         async loadErrorMessage() {
             if(this.trx.output && REVERT_SELECTORS.includes(this.trx.output.slice(0, 10))){
@@ -221,7 +223,10 @@ export default {
     </div>
     <div class="row tableWrapper">
         <div class="col-12 q-py-lg">
-            <div v-if="trx" :key="isContract" class="content-container">
+            <div v-if="loading" class="content-container bg-white q-pa-sm text-center">
+                <q-spinner size="lg" />
+            </div>
+            <div v-else-if="trx" :key="isContract" class="content-container">
                 <q-tabs
                     v-model="tab"
                     class="text-white topRounded"
