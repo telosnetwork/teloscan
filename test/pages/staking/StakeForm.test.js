@@ -35,6 +35,7 @@ describe('StakeForm.vue', () => {
             }),
         ],
         stubs: {
+            'q-icon': true,
             'q-btn': true,
             'q-banner': stubWithSlot('q-banner', ['action']),
             'q-card': stubWithSlot('q-card'),
