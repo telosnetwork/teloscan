@@ -311,6 +311,7 @@ export default {
         transaction: {
             in: 'in',
             out: 'out',
+            load_error: 'Could not load transactions',
             form_from: 'From : ',
             form_to: 'To : ',
             form_token: 'Token : ',

@@ -312,6 +312,7 @@ export default {
             out: 'envoi',
             form_from: 'De : ',
             form_to: 'À : ',
+            load_error: 'Erreur de chargement des transactions',
             form_token: 'Jeton : ',
             show_short: 'Voir format court',
             show_total: 'Voir le total',

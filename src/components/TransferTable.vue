@@ -159,8 +159,8 @@ export default {
                     token: transfer.token,
                     value: valueDisplay,
                     contract: contract,
-                    from: transfer.from,
-                    to: transfer.to,
+                    from: toChecksumAddress(transfer.from),
+                    to: toChecksumAddress(transfer.to),
                     ...contract,
                 };
 

@@ -311,6 +311,7 @@ export default {
             out: 'out',
             form_from: 'Von : ',
             form_to: 'An : ',
+            load_error: 'Could not load transactions',
             form_token: 'Token : ',
             show_short: 'Show short',
             show_total: 'Summe anzeigen',

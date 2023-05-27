@@ -1,6 +1,7 @@
 <script>
 import CopyButton from 'components/CopyButton';
 import { getIcon } from 'src/lib/token-utils';
+import { toChecksumAddress } from 'src/lib/utils';
 
 export default {
     name: 'AddressField',
@@ -76,7 +77,7 @@ export default {
             if(!this.address){
                 return;
             }
-            let address = this.address;
+            let address = toChecksumAddress(this.address);
             if (this.contract && this.contract.getName() && this.contract.getName().length > 0) {
                 if(this.tokenList?.tokens){
                     this.tokenList.tokens.forEach((token) => {

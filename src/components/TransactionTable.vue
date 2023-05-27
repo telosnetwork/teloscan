@@ -161,63 +161,71 @@ export default {
         },
         async onRequest(props) {
             this.loading = true;
-
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
-            let response = await this.$indexerApi.get(this.getPath(props));
-            if (this.pagination.rowsNumber === 0) {
-                this.pagination.rowsNumber = response.data?.total_count;
-            }
 
-            this.pagination.page = page;
-            this.pagination.rowsPerPage = rowsPerPage;
-            this.pagination.sortBy = sortBy;
-            this.pagination.descending = descending;
-
-            this.transactions.splice(
-                0,
-                this.transactions.length,
-                ...response.data.results,
-            );
-            this.rows = this.transactions;
-            for (const transaction of this.transactions) {
-                try {
-                    if (transaction.input === '0x') {
-                        continue;
-                    }
-                    if(!transaction.to) {
-                        continue;
-                    }
-
-                    const contract = await this.$contractManager.getContract(
-                        transaction.to,
-                    );
-
-                    if (!contract) {
-                        continue;
-                    }
-
-                    const parsedTransaction = await this.$contractManager.parseContractTransaction(
-                        transaction, transaction.input, contract, true,
-                    );
-                    if (parsedTransaction) {
-                        transaction.parsedTransaction = parsedTransaction;
-                    }
-                    transaction.contract = contract;
-                } catch (e) {
-                    console.error(
-                        `Failed to parse data for transaction, error was: ${e.message}`,
-                    );
-                    // notifiy user
-                    this.$q.notify({
-                        message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
-                        color: 'negative',
-                        position: 'top',
-                        timeout: 5000,
-                    });
+            try {
+                let response = await this.$indexerApi.get(this.getPath(props));
+                if (this.pagination.rowsNumber === 0) {
+                    this.pagination.rowsNumber = response.data?.total_count;
                 }
+
+                this.pagination.page = page;
+                this.pagination.rowsPerPage = rowsPerPage;
+                this.pagination.sortBy = sortBy;
+                this.pagination.descending = descending;
+
+                this.transactions.splice(
+                    0,
+                    this.transactions.length,
+                    ...response.data.results,
+                );
+                this.rows = this.transactions;
+                for (const transaction of this.transactions) {
+                    try {
+                        if (transaction.input === '0x') {
+                            continue;
+                        }
+                        if(!transaction.to) {
+                            continue;
+                        }
+
+                        const contract = await this.$contractManager.getContract(
+                            transaction.to,
+                        );
+
+                        if (!contract) {
+                            continue;
+                        }
+
+                        const parsedTransaction = await this.$contractManager.parseContractTransaction(
+                            transaction, transaction.input, contract, true,
+                        );
+                        if (parsedTransaction) {
+                            transaction.parsedTransaction = parsedTransaction;
+                        }
+                        transaction.contract = contract;
+                    } catch (e) {
+                        console.error(
+                            `Failed to parse data for transaction, error was: ${e.message}`,
+                        );
+                        this.$q.notify({
+                            message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
+                            color: 'negative',
+                            position: 'top',
+                            timeout: 5000,
+                        });
+                    }
+                }
+                this.rows = this.transactions;
+            } catch (e) {
+                this.$q.notify({
+                    type: 'negative',
+                    message: this.$t('components.transaction.load_error'),
+                    caption: e.message,
+                });
+            } finally {
+                this.loading = false;
             }
-            this.rows = this.transactions;
-            this.loading = false;
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;

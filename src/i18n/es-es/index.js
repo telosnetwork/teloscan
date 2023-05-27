@@ -311,6 +311,7 @@ export default {
             out: 'out',
             form_from: 'De : ',
             form_to: 'A : ',
+            load_error: 'Could not load transactions',
             form_token: 'Token : ',
             show_short: 'Mostrar corta',
             show_total: 'Mostrar total',
