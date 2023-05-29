@@ -1,7 +1,6 @@
 <script>
 import AddressField from 'src/components/AddressField';
 import AddToMetamask from 'src/components/AddToMetamask';
-import { BigDecimal } from 'src/lib/BigDecimal';
 
 export default {
     name: 'TokenTable',
@@ -10,11 +9,6 @@ export default {
         tokens: {
             type: Array,
             required: true,
-        },
-    },
-    methods: {
-        mul(numA, numB){
-            return new BigDecimal(numA.toString()).mul(new BigDecimal(numB.toString())).toString();
         },
     },
     data() {
@@ -52,7 +46,7 @@ export default {
         ];
 
         return {
-            rows: this.tokens,
+            rows: [... this.tokens],
             columns,
         };
     },
@@ -102,13 +96,13 @@ export default {
             <q-td key="usd" :props="props">
                 <span v-if="props.row.price > 0">
                     <span v-if="props.row.fullBalance > 0.0001">
-                        {{ Math.round((props.row.price * props.row.fullBalance) * 10000) / 10000 }} $
+                        {{ props.row.valueUSD }}$
                     </span>
                     <span v-else>
                         {{ '< 0.0001 $' }}
                     </span>
                     <q-tooltip>
-                        {{ mul(props.row.price, props.row.fullBalance) }} $
+                        {{ props.row.fullValueUSD }}$
                     </q-tooltip>
                 </span>
                 <span v-else>-</span>

@@ -90,6 +90,7 @@
   "0x9cdcf2f7714cca3508c7f0110b04a90a80a3a8dd0e35de99689db74d28c5383e": "event Claimed(address indexed recipient, uint256 amount, uint256 claimEpoch, uint256 maxEpoch)",
   "0xdccd412f0b1252819cb1fd330b93224ca42612892bb3f4f789976e6d81936496": "event Burn(address indexed sender, uint256 amount0, uint256 amount1, address indexed to)",
   "0x367be65505e5aff90e7e646744b5f75280ec6d79a0e78690f6020b875a03bc12": "event RemoveCollateral(address from, address to, uint256 amount)",
+  "0xfac41e7685ab9cb815cdf1647bba235f2a16546a068670f12d3a7cc650723099": "event ItemGroupCreated(uint256 itemGroupId, uint256 itemGroupSize, address indexed creator)",
   "0x4a39dc06d4c0dbc64b70af90fd698a233a518aa5d07e595d983b8c0526c8f7fb": "event TransferBatch(address indexed operator, address indexed from, address indexed to, uint256[] ids,uint256[] amounts)",
   "0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62": "event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 amount)",
   "0x89d57e873af45054d40b801ca64ca06a1627c5682ab9be494a9f2846ef157d8a": "event ClaimRewardsPairNft(address indexed user, uint256 amount, uint256 mainTypePoolId, uint256 mainTokenId, uint256 bakcTokenId)",

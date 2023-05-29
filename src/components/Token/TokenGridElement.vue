@@ -1,7 +1,6 @@
 <script>
 import AddressField from 'src/components/AddressField';
 import AddToMetamask from 'src/components/AddToMetamask';
-import { BigDecimal } from 'src/lib/BigDecimal';
 
 export default {
     name: 'TokenGridElement',
@@ -13,15 +12,8 @@ export default {
         },
     },
     data() {
-        let element = this.token;
-        element.valueUSD = false;
-        if(this.token.price){
-            let valueUSD = new BigDecimal(this.token.balance.toString())
-                .mul(new BigDecimal(this.token.price.toString())).toFixedString(4);
-            element.valueUSD = (valueUSD === '0.') ? '< 0.0001' : valueUSD;
-        }
         return {
-            element: element,
+            element: { ...this.token },
             symbol: (this.token.symbol.length > 12) ? this.token.symbol.slice(0, 12).trim() + '...' : this.token.symbol,
         };
     },
@@ -29,7 +21,7 @@ export default {
 </script>
 
 <template>
-<div v-if="element.balance" class="c-token-list__token-card">
+<div v-if="element?.balance" class="c-token-list__token-card">
     <q-card >
         <q-card-section class="flex">
             <q-avatar class="q-mr-md">
@@ -37,11 +29,11 @@ export default {
             </q-avatar>
             <div class="c-token-list__token-info-container">
                 <div class="text-h6 c-token-list__token-name" :title="element.name">
-                    <span v-if="element.name.length < 17">{{ element.name }}</span>
+                    <span v-if="element.name.length < 17">{{ this.token.name }}</span>
                     <span v-else>
-                        <span>{{ element.name.slice(0, 17) }}</span>
+                        <span>{{ this.token.name.slice(0, 17) }}</span>
                         <span>...</span>
-                        <q-tooltip>{{ element.name }}</q-tooltip>
+                        <q-tooltip>{{ this.token.name }}</q-tooltip>
                     </span>
                 </div>
                 <AddressField :address="element.address" :name="symbol" class="q-mb-sm"/>
@@ -53,7 +45,7 @@ export default {
                         <span v-else>
                             {{ element.balance + ' ' + symbol || $t('components.error_fetching_balance') }}
                         </span>
-                        <q-tooltip v-if="fullBalance > balance">
+                        <q-tooltip v-if="element.fullBalance > element.balance">
                             {{ element.fullBalance + ' ' + symbol || $t('components.error_fetching_balance') }}
                         </q-tooltip>
                     </div>

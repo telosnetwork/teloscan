@@ -51,7 +51,7 @@ export default {
         },
     },
     async mounted() {
-        this.fullName = this.address;
+        this.fullName = toChecksumAddress(this.address);
         this.tokenList = await this.$contractManager.getTokenList();
         await this.loadContract();
         await this.getDisplay();
