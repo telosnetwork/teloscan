@@ -217,14 +217,14 @@ export default {
                     }
                 }
                 this.rows = this.transactions;
-                this.loading = false;
             } catch (e) {
-                this.loading = false;
                 this.$q.notify({
                     type: 'negative',
                     message: this.$t('components.transaction.load_error'),
                     caption: e.message,
                 });
+            } finally {
+                this.loading = false;
             }
         },
         getPath(props) {
@@ -325,7 +325,7 @@ export default {
             <q-td key="from" :props="props">
                 <AddressField
                     v-if="props.row.from"
-                    :key="props.row.from"
+                    :key="'trxt'+ props.row.from"
                     :address="props.row.from"
                     :truncate="18"
                 />
@@ -333,6 +333,7 @@ export default {
             <q-td key="to" :props="props">
                 <AddressField
                     v-if="props.row.to"
+                    :key="'trxt'+ props.row.to"
                     :address="props.row.to"
                     :truncate="18"
                 />

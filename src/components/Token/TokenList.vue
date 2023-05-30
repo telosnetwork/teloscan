@@ -56,8 +56,10 @@ export default {
                     token.fullBalance = `${formatWei(result.balance, token.decimals)}`;
                     if(token.price && parseFloat(token.price) > 0){
                         token.valueUSD = `${Math.round((token.price * token.fullBalance) * 10000) / 10000}`;
-                        token.fullValueUSD = new BigDecimal(token.price)
-                            .multiply(new BigDecimal(token.fullBalance)).getValue();
+                        token.fullValueUSD = (token.valueUSD !== '0.0')
+                            ? new BigDecimal(token.price).multiply(new BigDecimal(token.fullBalance)).getValue()
+                            : '0'
+                        ;
                     }
                     if (token.logoURI && token.logoURI.startsWith('ipfs://')) {
                         token.logoURI = `https://ipfs.io/ipfs/${token.logoURI.replace(/ipfs:\/\//, '')}`;
