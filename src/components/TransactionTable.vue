@@ -217,14 +217,14 @@ export default {
                     }
                 }
                 this.rows = this.transactions;
+                this.loading = false;
             } catch (e) {
+                this.loading = false;
                 this.$q.notify({
                     type: 'negative',
                     message: this.$t('components.transaction.load_error'),
                     caption: e.message,
                 });
-            } finally {
-                this.loading = false;
             }
         },
         getPath(props) {
