@@ -5,8 +5,7 @@ import erc20Abi from 'erc-20-abi';
 import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
 import TokenGridElement from 'src/components/Token/TokenGridElement';
 import TokenTable from 'src/components/Token/TokenTable';
-import { BigNumber } from 'ethers';
-import { BigDecimal } from 'src/lib/BigDecimal';
+import BigDecimal from 'js-big-decimal';
 
 export default {
     name: 'TokenList',
@@ -58,7 +57,7 @@ export default {
                     if(token.price && parseFloat(token.price) > 0){
                         token.valueUSD = `${Math.round((token.price * token.fullBalance) * 10000) / 10000}`;
                         token.fullValueUSD = new BigDecimal(token.price)
-                            .mul(new BigDecimal(token.fullBalance)).toString();
+                            .multiply(new BigDecimal(token.fullBalance)).getValue();
                     }
                     if (token.logoURI && token.logoURI.startsWith('ipfs://')) {
                         token.logoURI = `https://ipfs.io/ipfs/${token.logoURI.replace(/ipfs:\/\//, '')}`;
@@ -89,27 +88,17 @@ export default {
             this.tokens = this.sortTokens(tokens, 'balance');
             this.processing = false;
         },
-        sortToken(a, b){
-            let valueA = a?.split('.')[0] || '0';
-            let valueB = b?.split('.')[0] || '0';
-            if(valueA === '0' && valueB === '0'){
-                valueA = a?.split('.')[1] || '0';
-                valueB = b?.split('.')[1] || '0';
-            }
-            return (
-                BigNumber.from(valueA).lt(BigNumber.from(valueB))
-                    ? 1 : -1
-            );
-        },
         sortTokens(tokens, key) {
             if(key === 'balance'){
-                return tokens.sort((a, b) => this.sortToken(a.fullBalance, b.fullBalance));
+                return tokens.sort((a, b) => new BigDecimal(b.fullBalance)
+                    .compareTo(new BigDecimal(a.fullBalance)));
             } else {
                 return tokens.sort((a, b) => {
                     if(!a.fullValueUSD && !b.fullValueUSD){
-                        return this.sortToken(a.fullBalance, b.fullBalance);
+                        return new BigDecimal(b.fullBalance).compareTo(new BigDecimal(a.fullBalance));
                     }
-                    return this.sortToken(a.fullValueUSD, b.fullValueUSD);
+                    return new BigDecimal(b.fullValueUSD || '0')
+                        .compareTo(new BigDecimal(a.fullValueUSD || '0'));
                 });
             }
         },

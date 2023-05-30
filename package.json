@@ -33,6 +33,7 @@
     "fs": "^0.0.1-security",
     "highlight.js": "10",
     "highlightjs-solidity": "^2.0.3",
+    "js-big-decimal": "^1.4.1",
     "moment": "^2.29.4",
     "quasar": "2",
     "ual-anchor": "^1.0.0",

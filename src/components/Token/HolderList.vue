@@ -2,7 +2,7 @@
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import { formatWei } from 'src/lib/utils';
-import { BigDecimal } from 'src/lib/BigDecimal';
+import BigDecimal from 'js-big-decimal';
 export default {
     name: 'HolderList',
     components: {
@@ -108,17 +108,17 @@ export default {
         },
         formatWei,
         displaySupplyShare(balance, supplies, decimals, fixed){
-            let share = new BigDecimal(balance).div(new BigDecimal(supplies)).mul(new BigDecimal('100'));
+            let share = new BigDecimal(balance).divide(new BigDecimal(supplies)).multiply(new BigDecimal('100'));
             if(fixed){
-                if(parseFloat(share.toString()) < 0.01){
+                if(share.compareTo(new BigDecimal('0.01')) ===  -1){
                     return '< 0.01%';
                 }
-                share = share.toFixedString(fixed);
+                share = share.round(fixed);
             }
-            if(parseFloat(share.toString()) < 0.000000000000000001){
+            if(share.compareTo(new BigDecimal('0.000000000000000001')) === -1){
                 return '< 0.000000000000000001%';
             }
-            return share.toString() + '%';
+            return share.getValue() + '%';
         },
     },
 };
