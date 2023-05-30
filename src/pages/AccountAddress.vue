@@ -148,7 +148,7 @@ export default {
             this.nonce = 0;
             this.title = this.$t('pages.account');
             const contract = await this.$contractManager.getContract(this.accountAddress);
-            if (contract?.creationInfo?.transaction){
+            if (contract?.creationInfo?.transaction || contract?.supportedInterfaces.length > 0){
                 this.contract = contract;
                 if(this.contract.supportedInterfaces?.includes('erc20')){
                     tokenList.tokens.forEach((token) => {
@@ -160,8 +160,10 @@ export default {
                 }
                 this.title = this.$t('pages.contract');
                 this.isContract = true;
-                const response = await this.$indexerApi.get(`/block/${this.contract.getCreationBlock()}`);
-                this.creationDate = response.data.results[0]?.timestamp;
+                if(this.contract.getCreationBlock()){
+                    const response = await this.$indexerApi.get(`/block/${this.contract.getCreationBlock()}`);
+                    this.creationDate = response.data.results[0]?.timestamp;
+                }
                 if (this.contract.getName()) {
                     this.fullTitle = this.contract.getName();
                     this.title = (this.fullTitle.length > 22)

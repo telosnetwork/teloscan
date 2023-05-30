@@ -267,7 +267,7 @@ export default {
         text3_or_to_recover_assets: 'oder zur Wiedererlangung von Werten, die an eine Telos Native Adresse gesendet wurden',
         copy_to_clipboard: '{ text } in die Zwischenablage kopieren',
         latest_block: 'Letzter Block',
-        price_sources: 'Data obtained from Coingecko, CoinMarketCap or from decentralized exchanges on Telos EVM',
+        price_sources: 'Data obtained from Coingecko, CoinMarketCap or if unavailable from decentralized exchanges on Telos EVM',
         marketcap_sources: 'Data obtained from Coingecko or CoinMarketCap',
         usd_marketcap: 'USD Marketcap',
         usd_price: 'USD Preis',

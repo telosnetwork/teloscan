@@ -267,7 +267,7 @@ export default {
         text3_or_to_recover_assets: 'ou para recuperar ativos enviados a um endereço nativo vinculado',
         copy_to_clipboard: 'Copiar { text } para a Área de Transferência',
         latest_block: 'Último bloqueio',
-        price_sources: 'Data obtained from Coingecko, CoinMarketCap or from decentralized exchanges on Telos EVM',
+        price_sources: 'Data obtained from Coingecko, CoinMarketCap or if unavailable from decentralized exchanges on Telos EVM',
         marketcap_sources: 'Data obtained from Coingecko or CoinMarketCap',
         usd_marketcap: 'USD Marketcap',
         usd_price: 'Preço da USD',

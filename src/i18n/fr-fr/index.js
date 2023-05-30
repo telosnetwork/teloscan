@@ -268,7 +268,7 @@ export default {
         text3_or_to_recover_assets: 'ou pour récuperer des jetons envoyés à une adresse EVM lié à un compte natif',
         copy_to_clipboard: 'Copiez { text } dans le presse-papiers',
         latest_block: 'Dernier Bloc',
-        price_sources: 'Données obtenues de Coingecko, CoinMarketCap ou des échanges décentralisés présents sur Telos EVM',
+        price_sources: 'Données obtenues de Coingecko, CoinMarketCap si disponible sinon des échanges décentralisés présents sur Telos EVM',
         marketcap_sources: 'Données obtenues de Coingecko ou CoinMarketCap',
         usd_marketcap: 'Capitalisation USD',
         usd_price: 'Prix USD',
