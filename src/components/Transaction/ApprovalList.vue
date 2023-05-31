@@ -57,7 +57,7 @@ export default {
                             });
                         } else if(contract.supportedInterfaces.includes('erc721')){
                             approvals.push({
-                                tokenId: log.topics[3],
+                                tokenId: BigNumber.from(log.topics[3]).toString(),
                                 token: contract,
                                 spender: spender,
                             });
@@ -105,11 +105,11 @@ export default {
         >
             <div class="col-4 flex">
                 <q-icon class="list-arrow" name="arrow_right" />
-                <strong class="q-pr-sm">{{ $t('components.approvals.spender') }}</strong>
+                <strong class="q-pr-sm">{{ $t('components.approvals.spender') }} :</strong>
                 <AddressField :address="approval.spender" :truncate="18" />
             </div>
-            <div v-if="approval.amount && !approval.infinite" class="col-3 flex">
-                <strong class="q-pr-sm">{{ $t('components.approvals.amount') }}</strong>
+            <div v-if="approval.amount && !approval.infinite" class="col-6 flex">
+                <strong class="q-pr-sm">{{ $t('components.approvals.amount') }} :</strong>
                 <TokenValueField
                     :value="approval.amount"
                     :showWei="true"
@@ -117,24 +117,25 @@ export default {
                     :truncate="6"
                 />
             </div>
-            <div v-else-if="approval.amount && approval.infinite" class="col-4 flex items-center">
-                <strong class="q-pr-sm">{{ $t('components.approvals.amount') }} </strong>
+            <div v-else-if="approval.amount && approval.infinite" class="col-6 flex items-center">
+                <strong class="q-pr-sm">{{ $t('components.approvals.amount') }} : </strong>
                 <q-icon name="all_inclusive" class="q-mr-xs" />
                 <span class="q-mr-xs">{{ $t('components.approvals.infinite') }} </span>
                 <span><AddressField :address="approval.token.address" :truncate="18" /></span>
             </div>
-            <div v-else-if="approval.tokenId" class="col-3 flex">
-                <strong class="q-pr-sm">{{ $t('components.token') }}</strong>
-                <span>#{{ approval.tokenId }}</span>
+            <div v-else-if="approval.tokenId" class="col-6 flex">
+                <strong class="q-pr-sm">{{ $t('components.token') }} :</strong>
                 <AddressField :address="approval.token.address" :truncate="16" />
+                <span class="q-pl-xs">#{{ approval.tokenId }}</span>
             </div>
-            <div v-else class="col-3 flex">
-                <strong class="q-pr-sm">{{ $t('components.token') }}</strong>
+            <div v-else class="col-6 flex items-center">
+                <strong class="q-pr-sm">{{ $t('components.token') }} :</strong>
+                <q-icon name="all_inclusive" class="q-mr-xs" />
                 <AddressField :address="approval.token.address" :truncate="16" />
-                <small>(ALL)</small>
             </div>
         </div>
     </div>
+    <br><br>
 </div>
 <div v-if="isLoading" class="fit row wrap justify-center items-center q-mt-sm">
     <div class="col-3"></div>
@@ -142,8 +143,8 @@ export default {
         <q-spinner size="1.5em" class="q-mr-xs"/>
         <span>{{ $t('pages.loading_approvals') }}</span>
     </div>
+    <br>
 </div>
-<br>
 </template>
 
 <!--eslint-enable-->

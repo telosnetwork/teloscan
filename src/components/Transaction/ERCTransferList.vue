@@ -253,6 +253,9 @@ export default {
                 </div>
             </div>
             <div v-else class="col-4 flex">
+                <strong class="q-pr-sm">
+                    {{ $t('pages.value') }} :
+                </strong>
                 <TokenValueField
                     :value="transfer.value"
                     :showWei="true"
@@ -269,6 +272,7 @@ export default {
             </div>
         </div>
     </div>
+    <br><br>
 </div>
 <div v-if="isLoading" class="fit row wrap justify-center items-center q-mt-sm">
     <div class="col-3"></div>
@@ -276,8 +280,8 @@ export default {
         <q-spinner size="1.5em" class="q-mr-xs"/>
         <span>{{ $t('pages.loading_transfers') }}</span>
     </div>
+    <br>
 </div>
-<br>
 </template>
 
 <!--eslint-enable-->
