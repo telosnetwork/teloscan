@@ -8,6 +8,7 @@ import InternalTxns from 'components/Transaction/InternalTxns';
 import CopyButton from 'components/CopyButton';
 import MethodField from 'components/MethodField';
 import ERCTransferList from 'components/Transaction/ERCTransferList';
+import ApprovalList from 'components/Transaction/ApprovalList';
 import ParameterList from 'components/ParameterList';
 
 import { BigNumber } from 'ethers';
@@ -42,6 +43,7 @@ export default {
         DateField,
         MethodField,
         ERCTransferList,
+        ApprovalList,
         ParameterList,
     },
     data() {
@@ -355,11 +357,7 @@ export default {
                                 <strong>{{ $t('pages.deployed_contract') }}:&nbsp;</strong>
                             </div>
                             <div class="col-9 word-break">
-                                <AddressField
-                                    :address="trx.contractAddress"
-                                    :truncate="0"
-                                    copy="copy"
-                                />
+                                <AddressField :address="trx.contractAddress" :truncate="0" copy="copy" />
                             </div>
                         </div><br>
                         <div v-if="isContract" class="fit row wrap justify-start items-start content-start">
@@ -400,21 +398,10 @@ export default {
                         </div>
                         <br>
                         <div v-if="trx.logs?.length > 0">
-                            <ERCTransferList
-                                :trxFrom="trx.from"
-                                type="erc20"
-                                :logs="trx.logs"
-                            />
-                            <ERCTransferList
-                                :trxFrom="trx.from"
-                                type="erc721"
-                                :logs="trx.logs"
-                            />
-                            <ERCTransferList
-                                :trxFrom="trx.from"
-                                type="erc1155"
-                                :logs="trx.logs"
-                            />
+                            <ApprovalList :logs="trx.logs" />
+                            <ERCTransferList :trxFrom="trx.from" type="erc20" :logs="trx.logs" />
+                            <ERCTransferList :trxFrom="trx.from" type="erc721" :logs="trx.logs" />
+                            <ERCTransferList :trxFrom="trx.from" type="erc1155" :logs="trx.logs" />
                         </div>
                         <div class="fit row wrap justify-start items-start content-start q-border-top">
                             <div class="col-3">

@@ -20,6 +20,7 @@ export default {
             tab:'sources',
             contracts: [],
             json: [],
+            loading: true,
             sources: false,
         };
     },
@@ -37,6 +38,7 @@ export default {
             this.sources = sources;
             this.sortFiles(sources.data.files);
         }
+        this.loading = false;
     },
     methods: {
         sortFiles(files){
@@ -67,7 +69,8 @@ export default {
 
 <template>
 <div class="contract-source">
-    <div v-if="!sources" class="q-pt-md q-pb-xl">
+    <div v-if="loading"><q-spinner size="md" /></div>
+    <div v-else-if="!sources" class="q-pt-md q-pb-xl">
         <p class="text-h5 flex">
             <q-icon
                 name="warning"

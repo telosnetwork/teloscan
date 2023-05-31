@@ -148,7 +148,7 @@ export default {
             this.nonce = 0;
             this.title = this.$t('pages.account');
             const contract = await this.$contractManager.getContract(this.accountAddress);
-            if (contract?.creationInfo?.transaction || contract?.supportedInterfaces.length > 0){
+            if (contract?.creationInfo?.transaction || contract?.supportedInterfaces?.length > 0){
                 this.contract = contract;
                 if(this.contract.supportedInterfaces?.includes('erc20')){
                     tokenList.tokens.forEach((token) => {
