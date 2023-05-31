@@ -149,7 +149,7 @@ export default {
         transactions: 'Transactions',
         account: 'Account',
         contract: 'Contract',
-        transfers_title: '{ type } Transfers',
+        transfers_title: '{ type } Transfers:',
         loading_transfers: 'Loading transfers',
         erc20_transfers: 'ERC20 Transfers',
         erc721_transfers: 'ERC721 Transfers',
@@ -258,7 +258,7 @@ export default {
         from: 'From',
         to: 'To',
         approvals: {
-            approvals_granted_title: 'Approvals granted',
+            approvals_granted_title: 'ERC Approvals:',
             login_account: 'Please log into this account using your wallet to be able to see its approvals.',
             approval_text: 'A signature from your wallet is needed to update the selected approvals\' amount to 0.',
             type: 'Type',

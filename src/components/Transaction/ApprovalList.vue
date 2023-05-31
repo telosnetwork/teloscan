@@ -99,9 +99,10 @@ export default {
             :key="'erca' + index"
             class="fit row wrap justify-start items-start content-start"
         >
-            <div class="col-3 flex">
+            <div class="col-4 flex">
+                <q-icon class="list-arrow" name="arrow_right" />
                 <strong class="q-pr-sm">{{ $t('components.approvals.spender') }}</strong>
-                <AddressField :address="approval.spender" :truncate="16" />
+                <AddressField :address="approval.spender" :truncate="18" />
             </div>
             <div v-if="approval.amount" class="col-3 flex">
                 <strong class="q-pr-sm">{{ $t('components.approvals.amount') }}</strong>
@@ -120,12 +121,58 @@ export default {
             <div v-else class="col-3 flex">
                 <strong class="q-pr-sm">{{ $t('components.token') }}</strong>
                 <AddressField :address="approval.token.address" :truncate="16" />
+                <small>(ALL)</small>
             </div>
         </div>
     </div>
 </div>
+<div v-if="isLoading" class="fit row wrap justify-center items-center q-mt-sm">
+    <div class="col-3"></div>
+    <div class="col-9 justify-center flex">
+        <q-spinner size="1.5em" class="q-mr-xs"/>
+        <span>{{ $t('pages.loading_transfers') }}</span>
+    </div>
+</div>
+<br>
 </template>
 
 <!--eslint-enable-->
 <style scoped lang="sass">
+.body--dark .expand-btn
+    color: rgba(255, 255, 255, 0.6)
+.expand-btn
+    position: relative
+    margin-top: 4px
+    cursor: pointer
+    color: rgba(0, 0, 0, 0.6)
+.body--dark .expand-btn .flex
+    background: var(--q-dark)
+.expand-btn .flex
+    background: white
+    padding-right: 5px
+    z-index: 2
+.erc-approvals
+    .row
+        .col-5
+            strong
+                margin-right: 3px
+
+@media (max-width: 1024px)
+    .row
+        .col-3
+            width: 100%
+    .erc-approvals
+        .row
+            .col-3, .col-9, .col-5
+                width: 100%
+                padding-left: 0px
+            .col-5
+                padding-top: 2px
+            .col-3, .col-5
+                padding-left: 15px
+            .col-4
+                padding-top: 10px
+                width: 100%
+            .col-9
+                padding-left: 10px
 </style>

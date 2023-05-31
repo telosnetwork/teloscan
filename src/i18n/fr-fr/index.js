@@ -149,7 +149,7 @@ export default {
         transactions: 'Transactions',
         account: 'Compte',
         contract: 'Contrat',
-        transfers_title: 'Transferts { type }',
+        transfers_title: 'Transferts { type }:',
         loading_transfers: 'Chargement des transferts',
         erc20_transfers: 'Transferts ERC20',
         erc721_transfers: 'Transferts ERC721',
@@ -258,7 +258,7 @@ export default {
         from: 'De',
         to: 'À',
         approvals: {
-            approvals_granted_title: 'Permissions accordées',
+            approvals_granted_title: 'Permissions ERC:',
             login_account: 'Veuillez vous connecter à cette addresse à l\'aide de votre portefeuille afin de consulter ses permissions.',
             approval_text: 'Nous allons définir le montant des permissions séléctionés à 0. Ceci requiert une signature avec votre portefeuille.',
             type: 'Type',
