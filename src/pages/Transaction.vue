@@ -398,7 +398,7 @@ export default {
                         </div>
                         <br>
                         <div v-if="trx.logs?.length > 0">
-                            <ApprovalList :logs="trx.logs" />
+                            <ApprovalList :trxFrom="trx.from" :logs="trx.logs" />
                             <ERCTransferList :trxFrom="trx.from" type="erc20" :logs="trx.logs" />
                             <ERCTransferList :trxFrom="trx.from" type="erc721" :logs="trx.logs" />
                             <ERCTransferList :trxFrom="trx.from" type="erc1155" :logs="trx.logs" />
