@@ -3,10 +3,11 @@ import AddressField from 'components/AddressField';
 import TokenValueField from 'components/Token/TokenValueField';
 import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
+import BigDecimal from 'js-big-decimal';
 import { getIcon } from 'src/lib/token-utils';
 import { APPROVAL_SIGNATURES, ERC_APPROVAL_SIGNATURE } from 'src/lib/abi/signature/approval_signatures';
 
-const INFINITE = BigNumber.from('115792089237316195423570985008687907853269984665640564039451964907916451577029');
+const INFINITE = BigNumber.from('115792089237316195423570985008687907853269984665640560039451964907916451577029');
 
 export default {
     name: 'ApprovalList',
@@ -32,6 +33,18 @@ export default {
             this.isExpanded = true;
             this.pApprovals = await this.loadApprovals();
         },
+        isInfiniteApproval(log, contract){
+            let amount = BigNumber.from(log.data);
+            let infinite = (amount.gte(INFINITE));
+            if(!infinite && contract.properties?.supply){
+                let fAmount = new BigDecimal(
+                    formatWei(amount, contract.properties.decimals, contract.properties.decimals),
+                );
+                let supply = new BigDecimal(contract.properties.supply);
+                infinite = (fAmount.compareTo(supply) > -1);
+            }
+            return infinite;
+        },
         async loadApprovals() {
             let approvals = [];
             for (const log of this.logs) {
@@ -48,10 +61,10 @@ export default {
                     let spender = '0x' + log.topics[2].substr(log.topics[2].length - 40, 40);
                     if (sig === ERC_APPROVAL_SIGNATURE) {
                         if(contract.supportedInterfaces.includes('erc20')){
-                            let amount = BigNumber.from(log.data);
+                            let infinite = this.isInfiniteApproval(log, contract);
                             approvals.push({
-                                amount: amount.toString(),
-                                infinite: (amount.gte(INFINITE)),
+                                amount: BigNumber.from(log.data).toString(),
+                                infinite: infinite,
                                 token: contract,
                                 spender: spender,
                             });
@@ -71,6 +84,7 @@ export default {
                 }
 
             }
+
             this.isLoading = false;
             return approvals;
         },
@@ -91,7 +105,7 @@ export default {
 </script>
 
 <template>
-<div v-if="pApprovals?.length > 0" class="fit row wrap justify-start items-start content-start">
+<div v-if="pApprovals?.length > 0" class="fit row wrap justify-start items-start content-start q-pb-md q-mb-xs">
     <div  class="col-3">
         <strong>
             <span>{{ $t('components.approvals.approvals_granted_title') }}</span>
@@ -135,15 +149,13 @@ export default {
             </div>
         </div>
     </div>
-    <br><br>
 </div>
-<div v-if="isLoading" class="fit row wrap justify-center items-center q-mt-sm">
+<div v-else-if="isLoading" class="fit row wrap justify-center items-center q-mt-sm q-pb-md q-mb-xs">
     <div class="col-3"></div>
     <div class="col-9 justify-center flex">
         <q-spinner size="1.5em" class="q-mr-xs"/>
         <span>{{ $t('pages.loading_approvals') }}</span>
     </div>
-    <br>
 </div>
 </template>
 

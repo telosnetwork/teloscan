@@ -139,7 +139,7 @@ export default {
 </script>
 
 <template>
-<div v-if="pTransfers.length > 0" class="fit row wrap justify-start items-start content-start">
+<div v-if="pTransfers.length > 0" class="fit row wrap justify-start items-start content-start q-pb-md q-mb-xs">
     <div  class="col-3">
         <strong>
             <span>{{ $t('pages.transfers_title', {'type': type.toUpperCase() }) }}</span>
@@ -272,15 +272,13 @@ export default {
             </div>
         </div>
     </div>
-    <br><br>
 </div>
-<div v-if="isLoading" class="fit row wrap justify-center items-center q-mt-sm">
+<div v-else-if="isLoading" class="fit row wrap justify-center items-center q-mt-sm q-pb-md q-mb-xs">
     <div class="col-3"></div>
     <div class="col-9 justify-center flex">
         <q-spinner size="1.5em" class="q-mr-xs"/>
         <span>{{ $t('pages.loading_transfers') }}</span>
     </div>
-    <br>
 </div>
 </template>
 
