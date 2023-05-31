@@ -151,6 +151,7 @@ export default {
         contract: 'Contrat',
         transfers_title: 'Transferts { type }:',
         loading_transfers: 'Chargement des transferts',
+        loading_approvals: 'Chargement des permissions',
         erc20_transfers: 'Transferts ERC20',
         erc721_transfers: 'Transferts ERC721',
         erc1155_transfers: 'Transferts ERC1155',

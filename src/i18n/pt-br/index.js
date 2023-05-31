@@ -150,6 +150,8 @@ export default {
         account: 'Conta',
         contract: 'Contrato',
         transfers_title: 'Transferências { type }',
+        loading_transfers: 'Loading transfers',
+        loading_approvals: 'Loading approvals',
         erc20_transfers: 'Transferências ERC20',
         erc721_transfers: 'Transferências ERC721',
         erc1155_transfers: 'Transferências ERC1155',

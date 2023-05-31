@@ -6,6 +6,8 @@ import { BigNumber } from 'ethers';
 import { getIcon } from 'src/lib/token-utils';
 import { APPROVAL_SIGNATURES, ERC_APPROVAL_SIGNATURE } from 'src/lib/abi/signature/approval_signatures';
 
+const INFINITE = BigNumber.from('115792089237316195423570985008687907853269984665640564039451964907916451577029');
+
 export default {
     name: 'ApprovalList',
     components: {
@@ -46,8 +48,10 @@ export default {
                     let spender = '0x' + log.topics[2].substr(log.topics[2].length - 40, 40);
                     if (sig === ERC_APPROVAL_SIGNATURE) {
                         if(contract.supportedInterfaces.includes('erc20')){
+                            let amount = BigNumber.from(log.data);
                             approvals.push({
-                                amount: BigNumber.from(log.data).toString(),
+                                amount: amount.toString(),
+                                infinite: (amount.gte(INFINITE)),
                                 token: contract,
                                 spender: spender,
                             });
@@ -104,7 +108,7 @@ export default {
                 <strong class="q-pr-sm">{{ $t('components.approvals.spender') }}</strong>
                 <AddressField :address="approval.spender" :truncate="18" />
             </div>
-            <div v-if="approval.amount" class="col-3 flex">
+            <div v-if="approval.amount && !approval.infinite" class="col-3 flex">
                 <strong class="q-pr-sm">{{ $t('components.approvals.amount') }}</strong>
                 <TokenValueField
                     :value="approval.amount"
@@ -112,6 +116,12 @@ export default {
                     :address="approval.token.address"
                     :truncate="6"
                 />
+            </div>
+            <div v-else-if="approval.amount && approval.infinite" class="col-4 flex items-center">
+                <strong class="q-pr-sm">{{ $t('components.approvals.amount') }} </strong>
+                <q-icon name="all_inclusive" class="q-mr-xs" />
+                <span class="q-mr-xs">{{ $t('components.approvals.infinite') }} </span>
+                <span><AddressField :address="approval.token.address" :truncate="18" /></span>
             </div>
             <div v-else-if="approval.tokenId" class="col-3 flex">
                 <strong class="q-pr-sm">{{ $t('components.token') }}</strong>
@@ -130,7 +140,7 @@ export default {
     <div class="col-3"></div>
     <div class="col-9 justify-center flex">
         <q-spinner size="1.5em" class="q-mr-xs"/>
-        <span>{{ $t('pages.loading_transfers') }}</span>
+        <span>{{ $t('pages.loading_approvals') }}</span>
     </div>
 </div>
 <br>

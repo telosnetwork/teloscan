@@ -150,6 +150,8 @@ export default {
         account: 'Konto',
         contract: 'Smart Contract',
         transfers_title: '{ type } Transfers',
+        loading_transfers: 'Loading transfers',
+        loading_approvals: 'Loading approvals',
         erc20_transfers: 'ERC20 Transfers',
         erc721_transfers: 'ERC721 Transfers',
         erc1155_transfers: 'ERC1155 Transfers',
