@@ -142,10 +142,12 @@ export default {
         class="col-8 word-break"
     >
         <AddressField
-            :highlight="trxFrom.toLowerCase() === param.value.toLowerCase()"
+            :highlight="trxFrom?.toLowerCase() === param.value?.toLowerCase()"
             :address="param.value"
             copy
-            :name="param.value.toLowerCase() === contract.address && contract.name ?  contract.name : null"
+            :name="
+                param.value?.toLowerCase() === contract.address?.toLowerCase() && contract.name ?  contract.name : null
+            "
         />
     </div>
     <div v-else class="col-8 word-break">{{ param.value }}</div>
