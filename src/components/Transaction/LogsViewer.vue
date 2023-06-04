@@ -113,6 +113,7 @@ export default {
                 v-if="human_readable"
                 :fragments="rawLogs"
                 :parsedFragments="parsedLogs"
+                :transactionFrom="trx.from"
             />
             <JsonViewer
                 v-else
