@@ -1,6 +1,6 @@
 <script>
 import JsonViewer from 'vue-json-viewer';
-import ParameterList from 'components/ParameterList';
+import ParameterList from 'components/Transaction/ParameterList';
 import AddressField from 'components/AddressField';
 import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
@@ -20,6 +20,10 @@ export default {
         rawFragment: {
             type: Object,
             required: true,
+        },
+        transactionFrom: {
+            type: String,
+            required: false,
         },
     },
     data(){
@@ -132,6 +136,7 @@ export default {
                 :truncate="15"
                 class="word-break"
                 :name="fragment.contract?.name"
+                :highlight="transactionFrom && fragment.contract?.address === transactionFrom"
                 :copy="true"
             />
         </small>
@@ -147,7 +152,7 @@ export default {
             <span class="text-negative">{{ fragment.error }}</span>
         </div>
         <div v-if="fragment?.name" :key="fragment.name">
-            <ParameterList :params="params" :trxFrom="fragment.from" :contract="fragment.contract" />
+            <ParameterList :params="params" :trxFrom="transactionFrom" :contract="fragment.contract" />
             <div v-if="fragment.value && fragment.value !== 0">
                 <div v-if="fragment.isTransferETH" >
                     <div class="fit row justify-start items-start content-start">
@@ -160,6 +165,10 @@ export default {
                                 :address="fragment.from"
                                 :truncate="0"
                                 :copy="true"
+                                :highlight="
+                                    transactionFrom
+                                        && fragment.from.toLowerCase() === transactionFrom.toLowerCase()
+                                "
                                 class="word-break"
                             />
                         </div>
@@ -174,6 +183,10 @@ export default {
                                 :address="fragment.to"
                                 :truncate="0"
                                 :copy="true"
+                                :highlight="
+                                    transactionFrom
+                                        && fragment.to.toLowerCase() === transactionFrom.toLowerCase()
+                                "
                                 class="word-break"
                             />
                         </div>

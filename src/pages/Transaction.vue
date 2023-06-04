@@ -9,7 +9,7 @@ import CopyButton from 'components/CopyButton';
 import MethodField from 'components/MethodField';
 import ERCTransferList from 'components/Transaction/ERCTransferList';
 import ApprovalList from 'components/Transaction/ApprovalList';
-import ParameterList from 'components/ParameterList';
+import ParameterList from 'components/Transaction/ParameterList';
 
 import { BigNumber } from 'ethers';
 import {
