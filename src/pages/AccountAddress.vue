@@ -137,7 +137,7 @@ export default {
             let account = {};
             try {
                 const response = await this.$indexerApi.get(
-                    `/account/${this.accountAddress}/balances?contract=___NATIVE_CURRENCY___`,
+                    `/account/${this.accountAddress}/balances?contract=___NATIVE_CURRENCY___&includeAbi=true`,
                 );
                 account.balance = (response.data?.results?.length > 0) ? response.data.results[0].balance : '0';
             } catch (e) {
@@ -147,7 +147,9 @@ export default {
             this.fullTitle = null;
             this.nonce = 0;
             this.title = this.$t('pages.account');
+            console.log(this.accountAddress);
             const contract = await this.$contractManager.getContract(this.accountAddress);
+            console.log(contract);
             if (contract?.creationInfo?.transaction || contract?.supportedInterfaces?.length > 0){
                 this.contract = contract;
                 if(this.contract.supportedInterfaces?.includes('erc20')){

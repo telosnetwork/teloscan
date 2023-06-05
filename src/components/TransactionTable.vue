@@ -161,7 +161,6 @@ export default {
         },
         async onRequest(props) {
             if(this.loading){
-                console.log('HEY');
                 return;
             }
             this.loading = true;
@@ -192,6 +191,8 @@ export default {
                         if(!transaction.to) {
                             continue;
                         }
+
+                        this.addEmptyToCache(response.data.contracts, transaction);
 
                         const contract = await this.$contractManager.getContract(
                             transaction.to,
@@ -229,6 +230,25 @@ export default {
                     caption: e.message,
                 });
                 this.loading = false;
+            }
+        },
+        addEmptyToCache(contracts, transaction){
+            let found_to = 0;
+            let found_from = 0;
+            for(const contract in contracts){
+                if(contract.toLowerCase() === transaction.to.toLowerCase()) {
+                    found_to++;
+                }
+                if(contract.toLowerCase() === transaction.from.toLowerCase()) {
+                    found_from++;
+                }
+            }
+            if(found_from === 0){
+                console.log(transaction.from);
+                this.$contractManager.addContractToCache(transaction.from, { 'address': transaction.from });
+            }
+            if(found_to === 0){
+                this.$contractManager.addContractToCache(transaction.to, { 'address': transaction.to });
             }
         },
         getPath(props) {

@@ -1,10 +1,10 @@
 <script>
 import AddressField from 'src/components/AddressField';
-import AddToMetamask from 'src/components/AddToMetamask';
+import AddToWallet from 'src/components/AddToWallet';
 
 export default {
     name: 'TokenTable',
-    components: { AddressField, AddToMetamask },
+    components: { AddressField, AddToWallet },
     props: {
         tokens: {
             type: Array,
@@ -108,7 +108,7 @@ export default {
                 <span v-else>-</span>
             </q-td>
             <q-td key="action" :props="props">
-                <AddToMetamask
+                <AddToWallet
                     :token="props.row"
                     :icon="true"
                     :label="$t('components.add_to_metamask', { symbol : props.row.symbol })"

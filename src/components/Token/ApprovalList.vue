@@ -383,7 +383,9 @@ export default {
                 <q-td key="amount" :props="props" >
                     <div class="flex items-center">
                         <span v-if="parseFloat(props.row.amount)>props.row.contract.properties?.supply" key="infinite">
+                            <q-icon name="all_inclusive" class="q-mr-xs" />
                             <span>{{ $t('components.approvals.infinite') }}</span>
+                            <q-tooltip>{{ $t('components.approvals.infinite_tooltip') }}</q-tooltip>
                         </span>
                         <span v-else :key="props.row.amount">
                             <span v-if="parseFloat(props.row.amountRaw) > 0.0001" >{{ props.row.amount }}</span>

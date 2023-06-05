@@ -1,10 +1,10 @@
 <script>
 import AddressField from 'src/components/AddressField';
-import AddToMetamask from 'src/components/AddToMetamask';
+import AddToWallet from 'src/components/AddToWallet';
 
 export default {
     name: 'TokenGridElement',
-    components: { AddressField, AddToMetamask },
+    components: { AddressField, AddToWallet },
     props: {
         token: {
             type: Object,
@@ -54,7 +54,7 @@ export default {
                         <span v-else>-</span>
                     </div>
                 </div>
-                <AddToMetamask
+                <AddToWallet
                     :token="element"
                     :icon="false"
                     :label="$t('components.add_to_metamask', { symbol: symbol })"
