@@ -160,6 +160,10 @@ export default {
             });
         },
         async onRequest(props) {
+            if(this.loading){
+                console.log('HEY');
+                return;
+            }
             this.loading = true;
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
@@ -216,6 +220,7 @@ export default {
                         });
                     }
                 }
+                this.loading = false;
                 this.rows = this.transactions;
             } catch (e) {
                 this.$q.notify({
@@ -223,7 +228,6 @@ export default {
                     message: this.$t('components.transaction.load_error'),
                     caption: e.message,
                 });
-            } finally {
                 this.loading = false;
             }
         },

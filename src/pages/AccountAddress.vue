@@ -128,7 +128,7 @@ export default {
     },
     methods: {
         async loadAccount() {
-            if(!this.accountAddress){
+            if(!this.accountAddress || this.accountLoading){
                 return;
             }
             this.accountLoading = true;
@@ -224,7 +224,7 @@ export default {
 </script>
 
 <template>
-<div :key="accountAddress" class="pageContainer q-pt-xl">
+<div v-if="accountAddress && !accountLoading" :key="accountAddress" class="pageContainer q-pt-xl">
     <div>
         <div class="row tableWrapper justify-between q-mb-lg">
             <div class="homeInfo">
@@ -547,6 +547,7 @@ export default {
             >
                 <q-tab-panel name="transactions">
                     <TransactionTable
+                        v-if="accountAddress"
                         :title="accountAddress"
                         :filter="'/address/' + accountAddress"
                         :address="accountAddress"
