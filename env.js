@@ -8,6 +8,7 @@ const sharedEnv = {
     NETWORK_PROTOCOL: 'https',
     NETWORK_PORT: 443,
     NETWORK_EVM_CONTRACT: 'eosio.evm',
+    PROJECT_ID: '14ec76c44bae7d461fa0f5fd5f8a9da1',
 };
 
 const TESTNET = {

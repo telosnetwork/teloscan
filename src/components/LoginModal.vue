@@ -1,12 +1,18 @@
+<!-- eslint-disable no-unused-vars -->
 <script>
 import MetamaskLogo from 'src/assets/metamask-fox.svg';
 import WombatLogo from 'src/assets/wombat-logo.png';
 import BraveBrowserLogo from 'src/assets/brave_lion.svg';
+import WalletConnectLogo from 'src/assets/wallet_connect.svg';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { mapGetters, mapMutations } from 'vuex';
 import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
+import { Web3Modal } from '@web3modal/html';
+import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
+import { telos, telosTestnet } from '@wagmi/core/chains';
+import { configureChains, createClient, getAccount,  prepareSendTransaction, sendTransaction } from '@wagmi/core';
 
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
@@ -25,10 +31,12 @@ export default {
         showLogin: false,
         metamaskLogo: MetamaskLogo,
         braveBrowserLogo: BraveBrowserLogo,
+        walletConnectLogo: WalletConnectLogo,
         isMobile: false,
         browserSupportsMetaMask: true,
         isBraveBrowser: false,
         isIOSMobile: false,
+        web3Modal: null,
     }),
     emits: ['hide'],
     computed: {
@@ -79,6 +87,7 @@ export default {
         ]),
 
         async detectProvider() {
+            await this.injectedWeb3Login();
             const provider = await detectEthereumProvider({ mustBeMetaMask: true });
             this.browserSupportsMetaMask = provider?.isMetaMask;
             this.isBraveBrowser = navigator.brave && await navigator.brave.isBrave();
@@ -93,31 +102,32 @@ export default {
             this.isIOSMobile = (/iPhone|iPad|iPod/i).test(navigator.userAgent);
         },
 
+        async setWalletConnectAccount() {
+            const { address } = getAccount(); //wagmi
+            if (address){
+                this.setLogin({
+                    address,
+                });
+                // mobile testing
+                const receipt = await prepareSendTransaction({
+                    request: {
+                        to: '0xD478589b68e162B1D5B3e57323d0b280A96896Bf',
+                        value: 1, // amount to transfer, in wei
+                    },
+                });
+                const { hash } = await sendTransaction(receipt);
+                alert(hash);
+            }
+        },
+
         getLoginDisplay() {
             return this.isNative ? this.nativeAccount : `0x...${this.address.slice(this.address.length - 4)}`;
         },
-        connect() {
-            this.showLogin = true;
-        },
-        disconnect() {
-            if (this.isNative) {
-                const loginData = localStorage.getItem('loginData');
-                if (!loginData) {
-                    return;
-                }
 
-                const loginObj = JSON.parse(loginData);
-                const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
-                wallet.logout();
-            }
-
-            this.setLogin({});
-            localStorage.removeItem('loginData');
-            this.$providerManager.setProvider(null);
-        },
         goToAddress() {
             this.$router.push(`/address/${this.address}`);
         },
+
         async connectBraveWallet(){
             // Brave Wallet is not set as default and/or has other extensions enabled
             if (!window.ethereum.isBraveWallet){
@@ -188,6 +198,31 @@ export default {
             }
             this.$emit('hide');
         },
+
+        async connectWalletConnect() {
+            const chains = [telos, telosTestnet];
+            const { provider } = configureChains(chains, [w3mProvider({ projectId: process.env.PROJECT_ID })]);
+
+            const wagmi = createClient({
+                autoConnect: false,
+                connectors: w3mConnectors({ projectId: process.env.PROJECT_ID, version: 1, chains }),
+                provider,
+            });
+
+            const wagmiClient = new EthereumClient(wagmi, chains);
+            this.web3modal = new Web3Modal({ projectId: process.env.PROJECT_ID }, wagmiClient);
+
+            await this.web3modal.openModal();
+
+            this.$emit('hide'); //hide general login modal
+
+            this.web3modal.subscribeModal(async (newState) => {
+                if (newState.open === false) {
+                    await this.setWalletConnectAccount();
+                }
+            });
+        },
+
         async ualLogin(wallet, account) {
             await wallet.init();
             const users = await wallet.login(account);
@@ -215,6 +250,7 @@ export default {
             }
             this.$emit('hide');
         },
+
         async getInjectedAddress() {
             const provider = this.getInjectedProvider();
             let checkProvider = new ethers.providers.Web3Provider(provider);
@@ -237,6 +273,7 @@ export default {
                 return accessGranted[0];
             }
         },
+
         async ensureCorrectChain(checkProvider) {
             const { chainId } = await checkProvider.getNetwork();
             if (chainId !== process.env.NETWORK_EVM_CHAIN_ID) {
@@ -245,6 +282,7 @@ export default {
                 return new ethers.providers.Web3Provider(provider);
             }
         },
+
         getInjectedProvider() {
             // window.ethereum.isMetaMask includes Brave Wallet
             const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
@@ -259,6 +297,7 @@ export default {
             }
             return provider;
         },
+
         async switchChainInjected() {
             const provider = this.getInjectedProvider();
 
@@ -305,6 +344,7 @@ export default {
                 return false;
             }
         },
+
         getIconForWallet(wallet) {
             if (wallet.getName() === 'wombat') {
                 // Wombat UAL logo is 32x32px; substitute for higher res
@@ -347,6 +387,14 @@ export default {
                             width="50px"
                         />
                         <p> Brave Wallet </p>
+                    </q-card>
+                    <q-card class="c-login-modal__image-container" @click="connectWalletConnect()">
+                        <q-img
+                            :src="walletConnectLogo"
+                            height="64px"
+                            width="64px"
+                        />
+                        <p> WalletConnect </p>
                     </q-card>
                 </q-tab-panel>
                 <q-tab-panel name="native">

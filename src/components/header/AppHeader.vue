@@ -75,6 +75,10 @@ export default {
                 const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
                 wallet.logout();
             }
+            if(localStorage.getItem('wagmi.connected')){
+                localStorage.removeItem('wagmi.wallet');
+                localStorage.setItem('wagmi.connected', false);
+            }
             this.setLogin({});
             localStorage.removeItem('loginData');
             this.$providerManager.setProvider(null);

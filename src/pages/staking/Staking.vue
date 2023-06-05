@@ -3,6 +3,9 @@ import { defineAsyncComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { formatWei, getRouteWatcherForTabs, WEI_PRECISION } from 'src/lib/utils';
+// eslint-disable-next-line no-unused-vars
+import { getAccount, readContract, fetchSigner } from '@wagmi/core';
+
 
 import StakeForm from 'pages/staking/StakeForm';
 import StakingStats from 'pages/staking/StakingStats';
@@ -209,9 +212,11 @@ export default {
             if (!this.stlosContract || !this.escrowContract) {
                 await this.fetchContracts();
             }
-
+            console.log(this.$wagmiClient);
             const provider = this.isLoggedIn && !this.isNative ?
-                this.$providerManager.getEthersProvider().getSigner() :
+                fetchSigner() //wagmi
+                // this.$providerManager.getEthersProvider().getSigner()
+                :
                 this.$contractManager.getEthersProvider();
 
             this.stlosContractInstance  = this.stlosContract.getContractInstance(provider, true);
