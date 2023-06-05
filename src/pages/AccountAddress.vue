@@ -153,6 +153,8 @@ export default {
                 if(this.contract.supportedInterfaces?.includes('erc20')){
                     tokenList.tokens.forEach((token) => {
                         if(token.address.toLowerCase() ===  this.contract.address.toLowerCase()){
+                            this.contract.issuer = token.issuer;
+                            this.contract.issuer_link = token.issuer_link;
                             this.contract.logoURI = token.logoURI;
                             this.contract.setVerified(true);
                         }
@@ -284,6 +286,12 @@ export default {
                                     :address="contract.getCreator()"
                                     :truncate="22"
                                 />
+                            </div>
+                            <div v-if="contract.issuer" class="text-white">
+                                {{ $t('pages.issuer') }}
+                                <a :href="this.contract.issuer_link" target="_blank">
+                                    {{ this.contract.issuer }}
+                                </a>
                             </div>
                             <div v-if="creationDate > 0" class="text-white">
                                 <DateField

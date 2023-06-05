@@ -133,8 +133,11 @@ export default {
             </div>
             <div v-else-if="approval.amount && approval.infinite" class="col-6 flex items-center">
                 <strong class="q-pr-sm">{{ $t('components.approvals.amount') }} : </strong>
-                <q-icon name="all_inclusive" class="q-mr-xs" />
-                <span class="q-mr-xs">{{ $t('components.approvals.infinite') }} </span>
+                <span>
+                    <q-icon name="all_inclusive" class="q-mr-xs" />
+                    <span class="q-mr-xs">{{ $t('components.approvals.infinite') }} </span>
+                </span>
+                <q-tooltip>{{ $t('components.approvals.infinite_tooltip') }}</q-tooltip>
                 <span><AddressField :address="approval.token.address" :truncate="18" /></span>
             </div>
             <div v-else-if="approval.tokenId" class="col-6 flex">
