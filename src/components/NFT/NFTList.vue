@@ -132,6 +132,11 @@ export default {
 
             let response = await this.$indexerApi.get(this.getPath(props));
 
+            if(response.data.total_count === 0){
+                this.showWithoutMetadata = true;
+                response = await this.$indexerApi.get(this.getPath(props));
+            }
+
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
             this.pagination.sortBy = sortBy;
@@ -315,10 +320,11 @@ export default {
                 </q-td>
             </q-tr>
         </template>
-        <template v-if="nfts.length > 0" v-slot:bottom-row>
+        <template v-slot:bottom-row>
             <q-toggle
                 v-model="showWithoutMetadata"
                 :label="$t('components.nfts.show_without_metadata')"
+                :class="(nfts.length > 0) ? '' : 'right'"
                 color="secondary"
                 checked-icon="visibility"
                 unchecked-icon="visibility_off"
@@ -331,6 +337,8 @@ export default {
 
 <!--eslint-enable-->
 <style scoped lang="sass">
+.q-table .q-toggle.right
+    right: 20px
 .q-table .q-toggle
     font-size: 12px
     position: absolute
