@@ -37,6 +37,10 @@ function isTouchDevice() {
 }
 // more info on params: https://v2.quasar.dev/quasar-cli/boot-files
 export default boot((/* { app, router, ... } */) => {
+    // Metamask quick fix (redirects assets info to /token instead of /address), to replace with real 301 once SSR
+    if(window.location.href.includes('token')){
+        window.location.href = window.location.href.replace('token', 'address');
+    }
     // https://github.com/quasarframework/quasar/discussions/8761#discussioncomment-1042529
     // This addresses an issue with q-tooltip where the tooltip disappears almost instantly on mobile,
     // while behaving as expected on desktop. Adding the hide-delay prop fixes mobile, but makes tooltips
