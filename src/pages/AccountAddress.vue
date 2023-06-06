@@ -147,9 +147,7 @@ export default {
             this.fullTitle = null;
             this.nonce = 0;
             this.title = this.$t('pages.account');
-            console.log(this.accountAddress);
             const contract = await this.$contractManager.getContract(this.accountAddress);
-            console.log(contract);
             if (contract?.creationInfo?.transaction || contract?.supportedInterfaces?.length > 0){
                 this.contract = contract;
                 if(this.contract.supportedInterfaces?.includes('erc20')){

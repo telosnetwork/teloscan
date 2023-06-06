@@ -69,8 +69,7 @@ export default {
         },
         params(){
             let args = [];
-            let inputs = this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
-            inputs?.forEach((input, i) => {
+            this.inputs?.forEach((input, i) => {
                 args.push({
                     name: input.name,
                     type: input.type,
@@ -87,6 +86,7 @@ export default {
         isExpandable(){
             return (
                 this.fragment.error ||
+                !this.fragment?.inputs && !this.fragment?.isTransferETH ||
                 this.fragment.inputs && this.fragment.inputs.length > 0 ||
                 this.fragment.value && this.fragment.value !== '0.0' ||
                 !this.fragment.name
@@ -142,16 +142,16 @@ export default {
         </small>
     </div>
     <div v-if="expanded" class="q-pl-md q-pr-md">
-        <div v-if="fragment.error" class="negative q-pa-md flex align-center q-mb-sm rounded-borders">
+        <div v-if="this.fragment?.error" class="negative q-pa-md flex align-center q-mb-sm rounded-borders">
             <q-icon
                 name="warning"
                 color="negative"
                 class="q-mr-xs"
                 size="1.4em"
             />
-            <span class="text-negative">{{ fragment.error }}</span>
+            <span class="text-negative">{{ fragment?.error }}</span>
         </div>
-        <div v-if="fragment?.name" :key="fragment.name">
+        <div v-if="this.fragment?.inputs?.length > 0 || this.fragment?.isTransferETH" :key="this.fragment.name">
             <ParameterList :params="params" :trxFrom="transactionFrom" :contract="fragment.contract" />
             <div v-if="fragment.value && fragment.value !== 0">
                 <div v-if="fragment.isTransferETH" >
