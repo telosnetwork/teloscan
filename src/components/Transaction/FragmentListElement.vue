@@ -86,7 +86,6 @@ export default {
         isExpandable(){
             return (
                 this.fragment.error ||
-                !this.fragment?.inputs && !this.fragment?.isTransferETH ||
                 this.fragment.inputs && this.fragment.inputs.length > 0 ||
                 this.fragment.value && this.fragment.value !== '0.0' ||
                 !this.fragment.name
@@ -119,7 +118,7 @@ export default {
                     <span v-else>{{ fragment.name }}</span>
                 </strong>
                 <strong v-else>
-                    {{ $t('components.transaction.unknown') }} ({{ fragment.function_signature }})
+                    {{ $t('components.transaction.unknown') }} ({{ fragment?.sig }})
                 </strong>
             </div>
             <q-icon
@@ -151,7 +150,7 @@ export default {
             />
             <span class="text-negative">{{ fragment?.error }}</span>
         </div>
-        <div v-if="this.fragment?.inputs?.length > 0 || this.fragment?.isTransferETH" :key="this.fragment.name">
+        <div v-if="this.fragment?.name" :key="this.fragment.name">
             <ParameterList :params="params" :trxFrom="transactionFrom" :contract="fragment.contract" />
             <div v-if="fragment.value && fragment.value !== 0">
                 <div v-if="fragment.isTransferETH" >
