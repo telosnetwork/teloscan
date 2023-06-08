@@ -325,7 +325,7 @@ export default {
                     <TransactionField
                         :color="(props.row.status !== '0x1') ? 'negative' : 'secondary'"
                         :transaction-hash="props.row.hash"
-                        :truncate="(props.row.status !== '0x1') ? 18 : 20"
+                        :truncate="(props.row.status !== '0x1') ? 15 : 18"
                     />
                 </div>
             </q-td>
@@ -351,7 +351,7 @@ export default {
                     v-if="props.row.from"
                     :key="'trxt'+ props.row.from"
                     :address="props.row.from"
-                    :truncate="18"
+                    :truncate="14"
                 />
             </q-td>
             <q-td key="to" :props="props">
@@ -359,7 +359,7 @@ export default {
                     v-if="props.row.to"
                     :key="'trxt'+ props.row.to"
                     :address="props.row.to"
-                    :truncate="18"
+                    :truncate="14"
                 />
             </q-td>
             <q-td key='value' :props="props">

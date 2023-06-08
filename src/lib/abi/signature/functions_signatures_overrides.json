@@ -16,6 +16,7 @@
   "0x8206a4d1": "function setFeeProtocol(uint8 feeProtocol0, uint8 feeProtocol1)",
   "0x9870d7fe": "function addOperator(address operator)",
   "0x724cf5b8": "function setRate(string eventCode, uint256, uint256)",
+  "0xfbfded6d": "function updateCumulativeFundingRate(address _token, address _token)",
   "0xd112625a": "function addDBTokenReference(address token, string eventCode, string teamName)",
   "0x7078a424": "function buyTokens(string eventCode, string teamName, uint256 amount)",
   "0x16114acd": "function recoverTokens(address tokenAddress)",

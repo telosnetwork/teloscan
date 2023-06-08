@@ -101,9 +101,6 @@ export default {
                     <span v-else>
                         {{ '< 0.0001 $' }}
                     </span>
-                    <q-tooltip>
-                        {{ props.row.fullValueUSD }}$
-                    </q-tooltip>
                 </span>
                 <span v-else>-</span>
             </q-td>
