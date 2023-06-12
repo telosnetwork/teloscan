@@ -1,5 +1,6 @@
 <script>
-import JsonViewer from 'vue-json-viewer';
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
 import FragmentList from 'components/Transaction/FragmentList.vue';
 import { WEI_PRECISION, formatWei, parseErrorMessage  } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
@@ -7,7 +8,7 @@ import { BigNumber } from 'ethers';
 export default {
     name: 'InternalTxns',
     components: {
-        JsonViewer,
+        VueJsonPretty,
         FragmentList,
     },
     props: {
@@ -183,11 +184,12 @@ export default {
                 :parsedFragments="parsedItxs"
                 :transactionFrom="transaction.from"
             />
-            <JsonViewer
+            <VueJsonPretty
                 v-else
-                :value="itxs"
-                theme="custom-theme"
-                class="q-mb-md"
+                :data="itxs"
+                :deep="2"
+                :showLine="false"
+                class="q-mb-md q-pl-md"
             />
         </div>
     </div>

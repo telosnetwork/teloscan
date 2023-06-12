@@ -1,11 +1,13 @@
 <script lang="javascript">
 import axios from 'axios';
-import JsonViewer from 'vue-json-viewer';
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
 import hljs from 'highlight.js/lib/core';
 import hljsDefineSolidity from 'highlightjs-solidity';
 import 'highlight.js/styles/default.css';
 import json from 'highlight.js/lib/languages/json';
 import { toChecksumAddress } from 'src/lib/utils';
+import CopyButton from 'src/components/CopyButton';
 
 hljs.registerLanguage('json', json);
 hljsDefineSolidity(hljs);
@@ -13,7 +15,8 @@ hljsDefineSolidity(hljs);
 export default {
     name: 'ContractSource',
     components: {
-        JsonViewer,
+        VueJsonPretty,
+        CopyButton,
     },
     data() {
         return {
@@ -41,9 +44,14 @@ export default {
         this.loading = false;
     },
     methods: {
+        arrowIcon(file) {
+            return file.expanded ? 'arrow_drop_down' : 'arrow_right';
+        },
         sortFiles(files){
             for (let file of files){
+                file.expanded = true;
                 if (this.isContract(file.name)){
+                    file.raw = file.content;
                     file.content =
             hljs.highlight(file.content, { language: 'solidity' }).value;
                     this.contracts.unshift(file);
@@ -88,19 +96,28 @@ export default {
     </div>
     <div v-else>
         <div v-for="(item, index) in json" :key="`viewer-${index}`">
-            <p class="file-label">{{ item.name }}</p>
-            <JsonViewer
+            <p class="file-label flex justify-between">
+                <span class="flex items-center clickable"  @click="item.expanded = !item.expanded">
+                    <q-icon :name="arrowIcon(item)" size="sm"  /> {{ item.name }}
+                </span>
+                <span class="right"><CopyButton :text="JSON.stringify(item.content, null, 2)" /></span>
+            </p>
+            <VueJsonPretty
+                v-if="item.expanded"
                 class="source-container"
-                :value="item.content"
-                copyable="copyable"
-                expanded="expanded"
-                :expand-depth="1"
-                theme="custom-theme"
+                :data="item.content"
+                :showLine="false"
+                :virtual="true"
             />
         </div>
         <div v-for="(item, index) in contracts" :key="`contract-${index}`">
-            <p class="file-label">{{ item.name }}</p>
-            <pre class="source-container q-pa-md" v-html="item.content"></pre>
+            <p class="file-label flex justify-between">
+                <span class="flex items-center clickable"  @click="item.expanded = !item.expanded">
+                    <q-icon :name="arrowIcon(item)" size="sm"  /> {{ item.name }}
+                </span>
+                <span class="right"><CopyButton :text="item.raw" /></span>
+            </p>
+            <pre v-if="item.expanded" class="source-container q-pa-md" v-html="item.content"></pre>
         </div>
     </div>
 </div>

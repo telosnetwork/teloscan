@@ -52,6 +52,17 @@ const routes = [
         }],
     },
     {
+        path: '/holders',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'holders',
+                component: () => import('pages/Holders.vue'),
+            },
+        ],
+    },
+    {
         path: '/transactions',
         component: () => import('layouts/MainLayout.vue'),
         children: [

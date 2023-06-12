@@ -1,5 +1,6 @@
 <script>
-import JsonViewer from 'vue-json-viewer';
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
 import ContractFactory from 'src/lib/contract/ContractFactory';
 import { erc721Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
@@ -10,7 +11,7 @@ export default {
     name: 'GenericContractInterface',
     components: {
         FunctionInterface,
-        JsonViewer,
+        VueJsonPretty,
     },
     props: {
         contract: {
@@ -248,11 +249,10 @@ export default {
                     <p class="q-mb-sm">
                         {{ $t('components.contract_tab.abi_json_preview') }}
                     </p>
-                    <JsonViewer
-                        :value="JSON.parse(customAbiDefinition)"
-                        :expand-depth="1"
+                    <VueJsonPretty
+                        :data="JSON.parse(customAbiDefinition)"
+                        :depth="1"
                         expanded
-                        theme="custom-theme"
                     />
                     <p
                         v-if="!showAbiFunctions"

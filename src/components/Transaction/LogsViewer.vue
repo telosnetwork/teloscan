@@ -1,12 +1,13 @@
 <script>
-import JsonViewer from 'vue-json-viewer';
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
 import FragmentList from 'components/Transaction/FragmentList';
 import { BigNumber } from 'ethers';
 
 export default {
     name: 'LogsViewer',
     components: {
-        JsonViewer,
+        VueJsonPretty,
         FragmentList,
     },
     methods: {
@@ -68,7 +69,6 @@ export default {
                     position: 'top',
                 });
             }
-
         }
         this.parsedLogs.sort((a, b) => BigNumber.from(a.logIndex).sub(BigNumber.from(b.logIndex)).toNumber());
         this.allVerified = (verified === this.logs?.length);
@@ -115,11 +115,12 @@ export default {
                 :parsedFragments="parsedLogs"
                 :transactionFrom="trx.from"
             />
-            <JsonViewer
+            <VueJsonPretty
                 v-else
-                :value="rawLogs"
-                theme="custom-theme"
-                class="q-mb-md"
+                :data="rawLogs"
+                :showLine="false"
+                :deep="2"
+                class="q-pl-md"
             />
         </div>
     </div>

@@ -1,5 +1,6 @@
 <script>
-import JsonViewer from 'vue-json-viewer';
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
 import ParameterList from 'components/Transaction/ParameterList';
 import AddressField from 'components/AddressField';
 import { formatWei } from 'src/lib/utils';
@@ -9,7 +10,7 @@ export default {
     name: 'FragmentListElement',
     components: {
         AddressField,
-        JsonViewer,
+        VueJsonPretty,
         ParameterList,
     },
     props: {
@@ -202,11 +203,12 @@ export default {
                 </div>
             </div>
         </div>
-        <JsonViewer
+        <VueJsonPretty
             v-else
-            :value="rawFragment"
-            theme="custom-theme"
-            class="q-mb-md"
+            :data="rawFragment"
+            :showLine="false"
+            :deep="1"
+            class="q-mb-md q-pl-md"
         />
     </div>
 </div>

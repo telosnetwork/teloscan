@@ -83,6 +83,9 @@ body.body--light
 body.body--dark
   color: $white
 
+  .vjs-tree-node.is-highlight, .vjs-tree-node:hover
+    background-color: #494f52
+
   .bgNormal
     background: #1a1a1a
     background-size: cover
@@ -201,6 +204,22 @@ body.body--dark
 
 .tableWrapper
   max-width: 100vw
+
+.vjs-tree.source-container
+    padding: 20px
+
+.hljs-built_in, .hljs-bullet, .hljs-code, .hljs-addition
+  color: inherit !important
+.vjs-value-boolean, .hljs-title, .hljs-section
+  color: $orange !important
+.vjs-value-string, .hljs-string, .hljs-meta
+  color: $green !important
+.vjs-value-number, .hljs-keyword
+  color: $secondary !important
+.vjs-value-null, .vjs-value-undefined, .hljs-number
+  color: $red !important
+.vjs-tree-list
+  height: auto !important
 
 @media screen and (max-width: 650px)
   body
