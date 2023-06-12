@@ -109,6 +109,9 @@ body.body--dark
 .info-icon
     margin-left: 4px
 
+.q-layout
+  min-height: auto !important
+
 .ellipsis-label
   color: #999
   background-color: #eee
@@ -205,6 +208,15 @@ body.body--dark
 .tableWrapper
   max-width: 100vw
 
+.source-container.fullscreen .vjs-tree-list
+  height: 100% !important
+
+.source-container.fullscreen
+  height: 100% !important
+  max-height: 100% !important
+  top: 50px
+  z-index: 222
+
 .vjs-tree.source-container
     padding: 20px
 
@@ -220,6 +232,10 @@ body.body--dark
   color: $red !important
 .vjs-tree-list
   height: auto !important
+
+@media screen and (max-width: 1440px)
+  .source-container.fullscreen
+    top: 0px
 
 @media screen and (max-width: 650px)
   body

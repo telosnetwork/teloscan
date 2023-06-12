@@ -244,7 +244,6 @@ export default {
                 }
             }
             if(found_from === 0){
-                console.log(transaction.from);
                 this.$contractManager.addContractToCache(transaction.from, { 'address': transaction.from });
             }
             if(found_to === 0){
