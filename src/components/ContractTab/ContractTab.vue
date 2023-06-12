@@ -88,6 +88,8 @@ export default {
 </template>
 
 <style lang='sass'>
+.contract-tab .vjs-tree-list-holder-inner
+    padding-bottom: 20px
 .contract-tab
     margin-left: 2rem
     margin-right: 2rem

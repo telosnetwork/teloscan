@@ -132,7 +132,7 @@ export default {
                 class="exit flex items-center justify-center"
                 @click="toggleFullscreen(item)"
             >
-                <q-icon name="fullscreen_exit" size="md" />
+                <q-icon name="close_fullscreen" size="md" />
                 <span>{{ $t('global.close') }}</span>
             </div>
         </div>
@@ -164,7 +164,7 @@ export default {
                 class="exit flex items-center justify-center"
                 @click="toggleFullscreen(item)"
             >
-                <q-icon name="fullscreen_exit" size="sm" />
+                <q-icon name="close_fullscreen" size="sm" />
                 <span>{{ $t('global.close') }} </span>
             </div>
         </div>
@@ -192,6 +192,7 @@ export default {
   padding-top: 80px
   padding-bottom: 120px
 .source-container
+  height: auto
   max-height: 20rem
   overflow-y: auto
   margin-bottom: 2rem

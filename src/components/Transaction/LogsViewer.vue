@@ -78,6 +78,7 @@ export default {
             human_readable: true,
             parsedLogs: [],
             rawLogs: [],
+            depth: 2,
             allVerified: false,
         });
     },
@@ -93,20 +94,35 @@ export default {
         </div>
     </div>
     <div v-else class="row">
-        <div class="col-12 u-flex--center-y">
-            <q-toggle
-                v-model="human_readable"
-                icon="visibility"
-                color="secondary"
-                size="lg"
-            />
-            {{ $t('components.transaction.human_readable') }}
-            <small v-if="!allVerified">
-                <q-icon name="info" class="q-mb-xs q-ml-xs" size="14px"/>
-                <q-tooltip>
-                    {{ $t('components.transaction.verify_related_contract') }}
-                </q-tooltip>
-            </small>
+        <div class="col-12 u-flex--center-y justify-between">
+            <div>
+                <q-toggle
+                        v-model="human_readable"
+                        icon="visibility"
+                        color="secondary"
+                        size="lg"
+                />
+                {{ $t('components.transaction.human_readable') }}
+                <small>
+                    <q-icon name="info" class="q-mb-xs q-ml-xs" size="14px"/>
+                    <q-tooltip>
+                        {{ $t('components.transaction.verify_related_contract') }}
+                    </q-tooltip>
+                </small>
+            </div>
+            <div v-if="!human_readable">
+                <q-toggle
+                        v-model="depth"
+                        :true-value="2"
+                        :false-value="1"
+                        checked-icon="unfold_more"
+                        unchecked-icon="unfold_less"
+                        color="secondary"
+                        size="lg"
+                />
+                <span v-if="depth === 2">{{ $t('components.click_to_fold') }}</span>
+                <span v-else>{{ $t('components.click_to_expand') }}</span>
+            </div>
         </div>
         <div class="col-12">
             <FragmentList
@@ -119,7 +135,7 @@ export default {
                 v-else
                 :data="rawLogs"
                 :showLine="false"
-                :deep="2"
+                :deep="depth"
                 class="q-pl-md"
             />
         </div>
