@@ -429,6 +429,8 @@ export default {
         },
     },
     global: {
+        close: 'Fermer',
+        toggle_fullscreen: 'Passer en mode plein écran',
         name: 'Nom',
         symbol: 'Symbole',
         show_table: 'Version tableau',

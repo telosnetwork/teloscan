@@ -429,6 +429,8 @@ export default {
         },
     },
     global: {
+        close: 'Close',
+        toggle_fullscreen: 'Toggle fullscreen mode',
         name: 'Name',
         symbol: 'Symbol',
         show_table: 'Show table',

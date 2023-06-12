@@ -52,34 +52,32 @@ export default {
 
 <template>
 <div v-if="abi" :key="contract.address + abi.length" class="contract-tab">
-    <CopyButton
-        :text="abi"
-        :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
-        class="q-mb-md"
-    />
-    <br>
-
-    <q-btn-group >
-        <q-btn
-            :outline="codeSeleted"
-            :label="$t('components.contract_tab.code')"
-            push
-            @click="source = true; write = false"
+    <div class="flex justify-between items-center">
+        <q-btn-group >
+            <q-btn
+                :outline="codeSeleted"
+                :label="$t('components.contract_tab.code')"
+                push
+                @click="source = true; write = false"
+            />
+            <q-btn
+                :outline="readSelected"
+                :label="$t('components.contract_tab.read')"
+                push
+                @click="source = false; write = false"
+            />
+            <q-btn
+                :outline="writeSelected"
+                :label="$t('components.contract_tab.write')"
+                push
+                @click="source = false; write = true"
+            />
+        </q-btn-group>
+        <CopyButton
+            :text="abi"
+            :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
         />
-        <q-btn
-            :outline="readSelected"
-            :label="$t('components.contract_tab.read')"
-            push
-            @click="source = false; write = false"
-        />
-        <q-btn
-            :outline="writeSelected"
-            :label="$t('components.contract_tab.write')"
-            push
-            @click="source = false; write = true"
-        />
-    </q-btn-group>
-
+    </div>
     <ContractSource v-if="source" />
     <ContractInterface
         v-else
@@ -94,4 +92,12 @@ export default {
     margin-left: 2rem
     margin-right: 2rem
     padding-top: 1rem
+
+@media screen and (max-width: 764px)
+    .contract-tab > .items-center .c-copy-button
+        margin-top: 12px
+
+    .contract-tab > .items-center
+        display: block
+
 </style>

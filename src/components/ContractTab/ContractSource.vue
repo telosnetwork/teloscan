@@ -103,22 +103,25 @@ export default {
     </div>
     <div v-else>
         <div v-for="(item, index) in json" :key="`viewer-${index}`">
-            <p class="file-label flex justify-between">
+            <p class="file-label flex justify-between shadow-2 q-px-sm q-py-md">
                 <span class="flex items-center clickable"  @click="item.expanded = !item.expanded">
                     <q-icon :name="arrowIcon(item)" size="sm"  /> {{ item.name }}
                 </span>
                 <span class="right flex items-center">
                     <CopyButton :text="JSON.stringify(item.content, null, 2)" />
-                    <q-icon
-                        name="fullscreen"
-                        size="sm"
-                        class="clickable"
-                        @click="toggleFullscreen(item)"
-                    />
+                    <span>
+                        <q-icon
+                            name="fullscreen"
+                            size="sm"
+                            class="clickable"
+                            @click="toggleFullscreen(item)"
+                        />
+                        <q-tooltip>{{ $t('global.toggle_fullscreen') }}</q-tooltip>
+                    </span>
                 </span>
             </p>
             <VueJsonPretty
-                v-if="item.expanded"
+                v-if="item.expanded || item.fullscreen"
                 :class="(item.fullscreen) ? 'source-container fullscreen' : 'source-container'"
                 :data="item.content"
                 :showLine="false"
@@ -130,26 +133,29 @@ export default {
                 @click="toggleFullscreen(item)"
             >
                 <q-icon name="fullscreen_exit" size="md" />
-                <span>CLOSE</span>
+                <span>{{ $t('global.close') }}</span>
             </div>
         </div>
         <div v-for="(item, index) in contracts" :key="`contract-${index}`">
-            <p class="file-label flex justify-between">
+            <p class="file-label flex justify-between shadow-2 q-px-sm q-py-md">
                 <span class="flex items-center clickable"  @click="item.expanded = !item.expanded">
                     <q-icon :name="arrowIcon(item)" size="sm"  /> {{ item.name }}
                 </span>
                 <span class="right flex items-center">
                     <CopyButton :text="item.raw" />
-                    <q-icon
-                        name="fullscreen"
-                        size="sm"
-                        class="clickable"
-                        @click="toggleFullscreen(item)"
-                    />
+                    <span>
+                        <q-icon
+                            name="fullscreen"
+                            size="sm"
+                            class="clickable"
+                            @click="toggleFullscreen(item)"
+                        />
+                        <q-tooltip>{{ $t('global.toggle_fullscreen') }}</q-tooltip>
+                    </span>
                 </span>
             </p>
             <pre
-                v-if="item.expanded"
+                v-if="item.expanded || item.fullscreen"
                 :class="(item.fullscreen) ? 'source-container fullscreen q-pa-md' : 'source-container q-pa-md'"
                 v-html="item.content"
             ></pre>
@@ -159,7 +165,7 @@ export default {
                 @click="toggleFullscreen(item)"
             >
                 <q-icon name="fullscreen_exit" size="sm" />
-                <span>CLOSE</span>
+                <span>{{ $t('global.close') }} </span>
             </div>
         </div>
     </div>
