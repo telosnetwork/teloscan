@@ -193,6 +193,7 @@ pre
 .fullscreen .source-container
     max-height: none
     height: 100%
+    padding-bottom: 80px !important
 .contract-source .q-expansion-item .q-item > .flex
     width: 100%
 .contract-source .q-expansion-item .q-card__section
