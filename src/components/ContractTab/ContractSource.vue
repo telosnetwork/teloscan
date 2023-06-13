@@ -51,7 +51,7 @@ export default {
             item.fullscreen = !item.fullscreen;
         },
         arrowIcon(file) {
-            return file.expanded ? 'arrow_drop_down' : 'arrow_right';
+            return file.expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right';
         },
         sortFiles(files){
             for (let file of files){
@@ -102,12 +102,12 @@ export default {
         </p>
     </div>
     <div v-else>
-        <div v-for="(item, index) in json" :key="`viewer-${index}`">
-            <p class="file-label flex justify-between shadow-2 q-px-sm q-py-md">
+        <div v-for="(item, index) in json" :key="`viewer-${index}`" class="q-item shadow-2">
+            <div class="flex justify-between q-px-sm q-py-md">
                 <span class="flex items-center clickable"  @click="item.expanded = !item.expanded">
                     <q-icon :name="arrowIcon(item)" size="sm"  /> {{ item.name }}
                 </span>
-                <span class="right flex items-center">
+                <span class="q-item__section flex q-item__section--side items-center cursor-pointer">
                     <CopyButton :text="JSON.stringify(item.content, null, 2)" />
                     <span>
                         <q-icon
@@ -119,7 +119,7 @@ export default {
                         <q-tooltip>{{ $t('global.toggle_fullscreen') }}</q-tooltip>
                     </span>
                 </span>
-            </p>
+            </div>
             <VueJsonPretty
                 v-if="item.expanded || item.fullscreen"
                 :class="(item.fullscreen) ? 'source-container fullscreen' : 'source-container'"
@@ -136,12 +136,12 @@ export default {
                 <span>{{ $t('global.close') }}</span>
             </div>
         </div>
-        <div v-for="(item, index) in contracts" :key="`contract-${index}`">
-            <p class="file-label flex justify-between shadow-2 q-px-sm q-py-md">
+        <div v-for="(item, index) in contracts" :key="`contract-${index}`" class="q-item shadow-2">
+            <div class="flex justify-between q-px-sm q-py-md">
                 <span class="flex items-center clickable"  @click="item.expanded = !item.expanded">
                     <q-icon :name="arrowIcon(item)" size="sm"  /> {{ item.name }}
                 </span>
-                <span class="right flex items-center">
+                <span class="q-item__section flex q-item__section--side items-center cursor-pointer">
                     <CopyButton :text="item.raw" />
                     <span>
                         <q-icon
@@ -153,7 +153,7 @@ export default {
                         <q-tooltip>{{ $t('global.toggle_fullscreen') }}</q-tooltip>
                     </span>
                 </span>
-            </p>
+            </div>
             <pre
                 v-if="item.expanded || item.fullscreen"
                 :class="(item.fullscreen) ? 'source-container fullscreen q-pa-md' : 'source-container q-pa-md'"
@@ -172,8 +172,15 @@ export default {
 </div>
 </template>
 <style lang='sass' scoped>
+pre
+    margin-top: 0
+.body--dark .q-item__section--side:not(.q-item__section--avatar)
+    color: rgba(255, 255, 255, 0.7)
 .contract-source.abs
     height: 0px
+.contract-source .q-item
+  padding: 0px
+  margin-bottom: 10px
 .contract-source .c-copy-button
   margin-top: 0px
 .contract-source
