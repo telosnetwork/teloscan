@@ -190,6 +190,8 @@ pre
     background: $primary
     cursor: pointer
     line-height: 50px
+.contract-source .q-expansion-item  .fullscreen .q-card__section
+    overflow-x: auto
 .fullscreen .source-container
     max-height: none
     height: 100%
@@ -206,9 +208,14 @@ pre
     display: none
 .contract-source .q-card__section
     padding: 0
+.body.body--dark .q-card
+    border-radius: 0
 .source-container
   height: auto
   max-height: 20rem
   overflow-y: auto
   margin-bottom: 2rem
+@media screen and (max-width: 1440px)
+    .fullscreen
+        top: 48px
 </style>

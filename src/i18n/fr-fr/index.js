@@ -391,9 +391,9 @@ export default {
             value: 'Valeur',
             custom_decimals: 'Decimales personalisés',
             custom: 'Personalisé',
-            unverified_contract_source: 'Ce contrat n\'a pas été vérifié.',
+            unverified_contract_source: 'Le code de ce contrat n\'a pas été soumis.',
             click_here: 'Cliquez ici',
-            upload_source_files: 'pour envoyer le fichier source et vérifier votre contrat.  ' +
+            upload_source_files: 'pour envoyer le fichier source et ainsi vérifier votre contrat.  ' +
                 'Alternativement, vous pouvez intéragir avec le contrat en utilisant soit l\'ABI détécté soit, si inconnu, un ABI de votre choix:',
             use_erc20_abi: 'Utiliser l\'ABI ERC20',
             use_erc721_abi: 'Utiliser l\'ABI ERC721',

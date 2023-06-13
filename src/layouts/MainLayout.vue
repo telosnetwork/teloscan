@@ -74,15 +74,16 @@ export default {
 
 .separator
   border-bottom: 1px solid lightgrey
-
+.body--dark .banner
+    background: linear-gradient(180deg,#31387e,#172547 55%,#0000 99%)
 .banner
   z-index: -1
-  height: 40vh
+  height: 55vh
   position: absolute
   left: 0
   right: 0
   top: 0
-  background: linear-gradient(180deg, rgb(37,42,94) 0%, rgba(45,70,132) 60%, transparent 99%)
+  background: linear-gradient(180deg, rgb(37,42,94) 0%, rgba(45,70,132) 60%, transparent 100%)
   &.home
     height: 50vh
 
