@@ -34,7 +34,7 @@ export default {
             sources = await axios.get(
                 `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com/${checkSumAddress}/source.json`,
             );
-        }catch(e){
+        } catch(e){
             console.log(e);
         }
         if(sources){
@@ -131,10 +131,9 @@ export default {
                     class="source-container"
                 >
                     <VueJsonPretty
-                        class="source-container"
+                        class="q-pa-md"
                         :data="item.content"
                         :showLine="false"
-                        :virtual="(!item.fullscreen)"
                     />
                 </q-card-section>
                 <q-card-section v-else class="source-container">
@@ -196,6 +195,8 @@ pre
     height: 100%
 .contract-source .q-expansion-item .q-item > .flex
     width: 100%
+.contract-source .q-expansion-item .q-card__section
+    overflow-x: hidden
 .contract-source .q-expansion-item .q-item
     width: 100%
     display: flex
