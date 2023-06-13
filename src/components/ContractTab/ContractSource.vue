@@ -60,12 +60,12 @@ export default {
                     file.contract = true;
                     file.raw = file.content;
                     file.content = hljs.highlight(file.content, { language: 'solidity' }).value;
-                    this.files.unshift(file);
+                    this.files.push(file);
                 }else{
                     if (this.isJson(file.name)){
                         file.content = JSON.parse(file.content);
                     }
-                    this.files.push(file);
+                    this.files.unshift(file);
                 }
             }
         },
@@ -125,9 +125,11 @@ export default {
                 </div>
             </template>
             <q-card :class="(item.fullscreen) ? 'fullscreen' : ''">
-                <q-card-section v-if="!item.contract">
+                <q-card-section
+                    v-if="!item.contract"
+                    :class="(item.fullscreen) ? 'source-container fullscreen' : 'source-container'"
+                >
                     <VueJsonPretty
-                        v-if="item.contract"
                         class="source-container"
                         :data="item.content"
                         :showLine="false"
@@ -159,6 +161,8 @@ export default {
         padding: 0
 </style>
 <style lang='sass' scoped>
+.fullscreen pre
+    padding-bottom: 120px
 pre
     margin-top: 0
 .body--dark .q-item__section--side:not(.q-item__section--avatar)
@@ -184,9 +188,8 @@ pre
     background: $primary
     cursor: pointer
     line-height: 50px
-.source-container.fullscreen
-  padding-top: 80px
-  padding-bottom: 120px
+.fullscreen .source-container
+    max-height: none
 .contract-source .q-expansion-item .q-item > .flex
     width: 100%
 .contract-source .q-expansion-item .q-item
