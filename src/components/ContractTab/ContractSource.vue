@@ -104,6 +104,7 @@ export default {
         <q-expansion-item
             v-for="(item, index) in files"
             :key="`viewer-${index}`"
+            :modelValue="item.fullscreen"
             :default-opened="true"
             class="shadow-2 q-mb-md"
         >
