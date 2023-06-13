@@ -21,8 +21,7 @@ export default {
     data() {
         return {
             tab:'sources',
-            contracts: [],
-            json: [],
+            files: [],
             fullscreen: false,
             loading: true,
             sources: false,
@@ -51,22 +50,22 @@ export default {
             item.fullscreen = !item.fullscreen;
         },
         arrowIcon(file) {
-            return file.expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_right';
+            return file.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
         },
         sortFiles(files){
             for (let file of files){
                 file.expanded = true;
                 file.fullscreen = false;
                 if (this.isContract(file.name)){
+                    file.contract = true;
                     file.raw = file.content;
-                    file.content =
-            hljs.highlight(file.content, { language: 'solidity' }).value;
-                    this.contracts.unshift(file);
+                    file.content = hljs.highlight(file.content, { language: 'solidity' }).value;
+                    this.files.unshift(file);
                 }else{
                     if (this.isJson(file.name)){
                         file.content = JSON.parse(file.content);
                     }
-                    this.json.push(file);
+                    this.files.push(file);
                 }
             }
         },
@@ -84,7 +83,7 @@ export default {
 
 <template>
 <div :class="(fullscreen) ? 'contract-source abs' : 'contract-source'">
-    <div v-if="loading"><q-spinner size="md" /></div>
+    <div v-if="loading" class="q-pa-lg justify-center"><q-spinner size="md" /></div>
     <div v-else-if="!sources" class="q-pt-md q-pb-xl">
         <p class="text-h5 flex">
             <q-icon
@@ -102,75 +101,63 @@ export default {
         </p>
     </div>
     <div v-else>
-        <div v-for="(item, index) in json" :key="`viewer-${index}`" class="q-item shadow-2">
-            <div class="flex justify-between q-px-sm q-py-md">
-                <span class="flex items-center clickable"  @click="item.expanded = !item.expanded">
-                    <q-icon :name="arrowIcon(item)" size="sm"  /> {{ item.name }}
-                </span>
-                <span class="q-item__section flex q-item__section--side items-center cursor-pointer">
-                    <CopyButton :text="JSON.stringify(item.content, null, 2)" />
-                    <span>
-                        <q-icon
-                            name="fullscreen"
-                            size="sm"
-                            class="clickable"
-                            @click="toggleFullscreen(item)"
-                        />
-                        <q-tooltip>{{ $t('global.toggle_fullscreen') }}</q-tooltip>
+        <q-expansion-item
+            v-for="(item, index) in files"
+            :key="`viewer-${index}`"
+            :default-opened="true"
+            class="shadow-2 q-mb-md"
+        >
+            <template v-slot:header>
+                <div class="flex items-center justify-between">
+                    <span>{{ item.name }}</span>
+                    <span class="q-item__section flex q-item__section--side items-center cursor-pointer">
+                        <span>
+                            <q-icon
+                                name="fullscreen"
+                                size="sm"
+                                class="clickable"
+                                @click.stop="toggleFullscreen(item)"
+                            />
+                            <q-tooltip>{{ $t('global.toggle_fullscreen') }}</q-tooltip>
+                        </span>
+                        <CopyButton :text="item.raw" />
                     </span>
-                </span>
-            </div>
-            <VueJsonPretty
-                v-if="item.expanded || item.fullscreen"
-                :class="(item.fullscreen) ? 'source-container fullscreen' : 'source-container'"
-                :data="item.content"
-                :showLine="false"
-                :virtual="(!item.fullscreen)"
-            />
-            <div
-                v-if="item.fullscreen"
-                class="exit flex items-center justify-center"
-                @click="toggleFullscreen(item)"
-            >
-                <q-icon name="close_fullscreen" size="xs" class="q-mr-xs" />
-                <span>{{ $t('global.close') }}</span>
-            </div>
-        </div>
-        <div v-for="(item, index) in contracts" :key="`contract-${index}`" class="q-item shadow-2">
-            <div class="flex justify-between q-px-sm q-py-md">
-                <span class="flex items-center clickable"  @click="item.expanded = !item.expanded">
-                    <q-icon :name="arrowIcon(item)" size="sm"  /> {{ item.name }}
-                </span>
-                <span class="q-item__section flex q-item__section--side items-center cursor-pointer">
-                    <CopyButton :text="item.raw" />
-                    <span>
-                        <q-icon
-                            name="fullscreen"
-                            size="sm"
-                            class="clickable"
-                            @click="toggleFullscreen(item)"
-                        />
-                        <q-tooltip>{{ $t('global.toggle_fullscreen') }}</q-tooltip>
-                    </span>
-                </span>
-            </div>
-            <pre
-                v-if="item.expanded || item.fullscreen"
-                :class="(item.fullscreen) ? 'source-container fullscreen q-pa-md' : 'source-container q-pa-md'"
-                v-html="item.content"
-            ></pre>
-            <div
-                v-if="item.fullscreen"
-                class="exit flex items-center justify-center"
-                @click="toggleFullscreen(item)"
-            >
-                <q-icon name="close_fullscreen" size="xs" class="q-mr-xs" />
-                <span>{{ $t('global.close') }} </span>
-            </div>
-        </div>
+                </div>
+            </template>
+            <q-card :class="(item.fullscreen) ? 'fullscreen' : ''">
+                <q-card-section v-if="!item.contract">
+                    <VueJsonPretty
+                        v-if="item.contract"
+                        class="source-container"
+                        :data="item.content"
+                        :showLine="false"
+                        :virtual="(!item.fullscreen)"
+                    />
+                </q-card-section>
+                <q-card-section v-else :class="(item.fullscreen) ? 'source-container fullscreen' : 'source-container'">
+                    <pre
+                        v-if="item.expanded || item.fullscreen"
+                        class="q-pa-md"
+                        v-html="item.content"
+                    ></pre>
+                </q-card-section>
+                <q-card-section
+                    v-if="item.fullscreen"
+                    class="exit flex items-center justify-center"
+                    @click="toggleFullscreen(item)"
+                >
+                    <q-icon name="close_fullscreen" size="xs" class="q-mr-xs" />
+                    <span>{{ $t('global.close') }} </span>
+                </q-card-section>
+            </q-card>
+        </q-expansion-item>
     </div>
 </div>
 </template>
+<style lang='sass'>
+.contract-source .q-item__section--side
+        padding: 0
+</style>
 <style lang='sass' scoped>
 pre
     margin-top: 0
@@ -200,6 +187,16 @@ pre
 .source-container.fullscreen
   padding-top: 80px
   padding-bottom: 120px
+.contract-source .q-expansion-item .q-item > .flex
+    width: 100%
+.contract-source .q-expansion-item .q-item
+    width: 100%
+    display: flex
+    justify-content: space-between
+.contract-source .q-focus-helper
+    display: none
+.contract-source .q-card__section
+    padding: 0
 .source-container
   height: auto
   max-height: 20rem
