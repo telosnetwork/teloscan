@@ -127,7 +127,7 @@ export default {
             <q-card :class="(item.fullscreen) ? 'fullscreen' : ''">
                 <q-card-section
                     v-if="!item.contract"
-                    :class="(item.fullscreen) ? 'source-container fullscreen' : 'source-container'"
+                    class="source-container"
                 >
                     <VueJsonPretty
                         class="source-container"
@@ -136,7 +136,7 @@ export default {
                         :virtual="(!item.fullscreen)"
                     />
                 </q-card-section>
-                <q-card-section v-else :class="(item.fullscreen) ? 'source-container fullscreen' : 'source-container'">
+                <q-card-section v-else class="source-container">
                     <pre
                         v-if="item.expanded || item.fullscreen"
                         class="q-pa-md"
@@ -161,6 +161,8 @@ export default {
         padding: 0
 </style>
 <style lang='sass' scoped>
+.fullscreen
+    top: 110px
 .fullscreen pre
     padding-bottom: 120px
 pre
@@ -190,6 +192,7 @@ pre
     line-height: 50px
 .fullscreen .source-container
     max-height: none
+    height: 100%
 .contract-source .q-expansion-item .q-item > .flex
     width: 100%
 .contract-source .q-expansion-item .q-item
