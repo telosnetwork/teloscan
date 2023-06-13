@@ -42,7 +42,7 @@ export default {
 </script>
 
 <template>
-<div class="q-pa-md">
+<div class="q-pt-md">
     <q-list>
         <q-expansion-item
             v-for="func in (write ? functions.write : functions.read)"

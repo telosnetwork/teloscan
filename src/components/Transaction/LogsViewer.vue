@@ -97,10 +97,10 @@ export default {
         <div class="col-12 u-flex--center-y justify-between">
             <div>
                 <q-toggle
-                        v-model="human_readable"
-                        icon="visibility"
-                        color="secondary"
-                        size="lg"
+                    v-model="human_readable"
+                    icon="visibility"
+                    color="secondary"
+                    size="lg"
                 />
                 {{ $t('components.transaction.human_readable') }}
                 <small>
@@ -112,13 +112,13 @@ export default {
             </div>
             <div v-if="!human_readable">
                 <q-toggle
-                        v-model="depth"
-                        :true-value="2"
-                        :false-value="1"
-                        checked-icon="unfold_more"
-                        unchecked-icon="unfold_less"
-                        color="secondary"
-                        size="lg"
+                    v-model="depth"
+                    :true-value="2"
+                    :false-value="1"
+                    checked-icon="unfold_more"
+                    unchecked-icon="unfold_less"
+                    color="secondary"
+                    size="lg"
                 />
                 <span v-if="depth === 2">{{ $t('components.click_to_fold') }}</span>
                 <span v-else>{{ $t('components.click_to_expand') }}</span>

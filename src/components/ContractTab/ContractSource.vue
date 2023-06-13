@@ -132,7 +132,7 @@ export default {
                 class="exit flex items-center justify-center"
                 @click="toggleFullscreen(item)"
             >
-                <q-icon name="close_fullscreen" size="md" />
+                <q-icon name="close_fullscreen" size="xs" class="q-mr-xs" />
                 <span>{{ $t('global.close') }}</span>
             </div>
         </div>
@@ -164,7 +164,7 @@ export default {
                 class="exit flex items-center justify-center"
                 @click="toggleFullscreen(item)"
             >
-                <q-icon name="close_fullscreen" size="sm" />
+                <q-icon name="close_fullscreen" size="xs" class="q-mr-xs" />
                 <span>{{ $t('global.close') }} </span>
             </div>
         </div>
@@ -174,6 +174,8 @@ export default {
 <style lang='sass' scoped>
 .contract-source.abs
     height: 0px
+.contract-source .c-copy-button
+  margin-top: 0px
 .contract-source
   margin-top: 1rem
 .body--dark .exit
