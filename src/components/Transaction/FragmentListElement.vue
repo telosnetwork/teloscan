@@ -31,7 +31,6 @@ export default {
         return {
             showWei: false,
             address: null,
-            expanded: false,
             expanded_parameters: [],
         };
     },
@@ -80,10 +79,6 @@ export default {
             });
             return args;
         },
-        fragmentClass(){
-            let fragmentClass = 'c-fragment-list-element__head justify-between items-center';
-            return (this.isExpandable) ? fragmentClass + ' clickable' : fragmentClass;
-        },
         isExpandable(){
             return (
                 this.fragment.error ||
@@ -92,134 +87,144 @@ export default {
                 !this.fragment.name
             );
         },
-        arrowIcon() {
-            if(!this.isExpandable) {
-                return '';
-            }
-            return this.expanded ? 'arrow_drop_down' : 'arrow_right';
-        },
     },
 };
 </script>
 
 <template>
 <div v-if="fragment" class="c-fragment-list-element" :style="depthStyle"  >
-    <div :class="fragmentClass" @click="expanded = !expanded">
-        <span class="row text-left">
-            <div>
+    <q-expansion-item
+        :disable="!isExpandable"
+        class="shadow-2 q-mb-md hoverable"
+    >
+        <template v-slot:header>
+            <div class="flex items-center justify-between">
+                <div>
+                    <strong v-if="fragment?.name">
+                        <span v-if="fragment.name.length > 190">{{ fragment.name.substring(0, 190) }}...</span>
+                        <span v-else>{{ fragment.name }}</span>
+                    </strong>
+                    <strong v-else>
+                        {{ $t('components.transaction.unknown') }} ({{ fragment?.sig }})
+                    </strong>
+                    <q-icon
+                        v-if="fragment.error"
+                        name="warning"
+                        color="negative"
+                        class="q-ml-xs"
+                    />
+                </div>
+                <div>
+                    <small>
+                        <AddressField
+                            v-if="address"
+                            :address="address"
+                            :truncate="15"
+                            class="word-break"
+                            :name="fragment.contract?.name"
+                            :highlight="transactionFrom && fragment.contract?.address === transactionFrom"
+                        />
+                    </small>
+                </div>
+            </div>
+        </template>
+        <q-card class="q-pl-md q-pr-md">
+            <q-card-section
+                v-if="this.fragment?.error"
+                class="negative q-pa-md flex align-center q-mb-sm rounded-borders"
+            >
                 <q-icon
-                    v-if="isExpandable"
-                    :name="arrowIcon"
-                    size="sm"
+                    name="warning"
+                    color="negative"
+                    class="q-mr-xs"
+                    size="1.4em"
                 />
-            </div>
-            <div>
-                <strong v-if="fragment?.name">
-                    <span v-if="fragment.name.length > 190">{{ fragment.name.substring(0, 190) }}...</span>
-                    <span v-else>{{ fragment.name }}</span>
-                </strong>
-                <strong v-else>
-                    {{ $t('components.transaction.unknown') }} ({{ fragment?.sig }})
-                </strong>
-            </div>
-            <q-icon
-                v-if="fragment.error"
-                name="warning"
-                color="negative"
-                class="q-ml-xs"
-            />
-        </span>
-        <small>
-            <AddressField
-                v-if="address"
-                :address="address"
-                :truncate="15"
-                class="word-break"
-                :name="fragment.contract?.name"
-                :highlight="transactionFrom && fragment.contract?.address === transactionFrom"
-                :copy="true"
-            />
-        </small>
-    </div>
-    <div v-if="expanded" class="q-pl-md q-pr-md">
-        <div v-if="this.fragment?.error" class="negative q-pa-md flex align-center q-mb-sm rounded-borders">
-            <q-icon
-                name="warning"
-                color="negative"
-                class="q-mr-xs"
-                size="1.4em"
-            />
-            <span class="text-negative">{{ fragment?.error }}</span>
-        </div>
-        <div v-if="this.fragment?.name" :key="this.fragment.name">
-            <ParameterList :params="params" :trxFrom="transactionFrom" :contract="fragment.contract" />
-            <div v-if="fragment.value && fragment.value !== 0">
-                <div v-if="fragment.isTransferETH" >
-                    <div class="fit row justify-start items-start content-start">
-                        <div class="col-4">
-                            <q-icon class="list-arrow" name="arrow_right"/>
-                            <span>{{ $t('pages.from').toLowerCase() }}</span>
+                <span class="text-negative">{{ fragment?.error }}</span>
+            </q-card-section>
+            <q-card-section v-if="this.fragment?.name" :key="this.fragment.name">
+                <ParameterList :params="params" :trxFrom="transactionFrom" :contract="fragment.contract" />
+                <div v-if="fragment.value && fragment.value !== 0">
+                    <div v-if="fragment.isTransferETH" >
+                        <div class="fit row justify-start items-start content-start">
+                            <div class="col-4">
+                                <q-icon class="list-arrow" name="arrow_right"/>
+                                <span>{{ $t('pages.from').toLowerCase() }}</span>
+                            </div>
+                            <div class="col-8">
+                                <AddressField
+                                    :address="fragment.from"
+                                    :truncate="0"
+                                    :copy="true"
+                                    :highlight="
+                                        transactionFrom
+                                            && fragment.from.toLowerCase() === transactionFrom.toLowerCase()
+                                    "
+                                    class="word-break"
+                                />
+                            </div>
                         </div>
-                        <div class="col-8">
-                            <AddressField
-                                :address="fragment.from"
-                                :truncate="0"
-                                :copy="true"
-                                :highlight="
-                                    transactionFrom
-                                        && fragment.from.toLowerCase() === transactionFrom.toLowerCase()
-                                "
-                                class="word-break"
-                            />
+                        <div class="fit row justify-start items-start content-start">
+                            <div class="col-4">
+                                <q-icon class="list-arrow" name="arrow_right"/>
+                                <span>{{ $t('pages.to').toLowerCase() }}</span>
+                            </div>
+                            <div class="col-8">
+                                <AddressField
+                                    :address="fragment.to"
+                                    :truncate="0"
+                                    :copy="true"
+                                    :highlight="
+                                        transactionFrom
+                                            && fragment.to.toLowerCase() === transactionFrom.toLowerCase()
+                                    "
+                                    class="word-break"
+                                />
+                            </div>
                         </div>
                     </div>
                     <div class="fit row justify-start items-start content-start">
                         <div class="col-4">
                             <q-icon class="list-arrow" name="arrow_right"/>
-                            <span>{{ $t('pages.to').toLowerCase() }}</span>
+                            <span>{{ $t('components.transaction.value_uint256').toLowerCase() }}</span>
                         </div>
                         <div class="col-8">
-                            <AddressField
-                                :address="fragment.to"
-                                :truncate="0"
-                                :copy="true"
-                                :highlight="
-                                    transactionFrom
-                                        && fragment.to.toLowerCase() === transactionFrom.toLowerCase()
-                                "
-                                class="word-break"
-                            />
+                            {{ fragment.value }} TLOS
                         </div>
                     </div>
                 </div>
-                <div class="fit row justify-start items-start content-start">
-                    <div class="col-4">
-                        <q-icon class="list-arrow" name="arrow_right"/>
-                        <span>{{ $t('components.transaction.value_uint256').toLowerCase() }}</span>
-                    </div>
-                    <div class="col-8">
-                        {{ fragment.value }} TLOS
-                    </div>
-                </div>
-            </div>
-        </div>
-        <VueJsonPretty
-            v-else
-            :data="rawFragment"
-            :showLine="false"
-            :deep="1"
-            class="q-mb-md q-pl-md"
-        />
-    </div>
+            </q-card-section>
+            <q-card-section v-else>
+                <VueJsonPretty
+                        :data="rawFragment"
+                        :showLine="false"
+                        :deep="1"
+                        class="q-mb-md q-pl-md"
+                />
+            </q-card-section>
+        </q-card>
+    </q-expansion-item>
+
 </div>
 </template>
 
+<style lang="scss">
+    .q-expansion-item__container .q-item__section--side  {
+        padding: 0 !important;
+    }
+    .q-expansion-item__container .q-item.disabled, .q-expansion-item__container .q-item.disabled * {
+        opacity: 1 !important;
+        cursor: initial !important;
+    }
+</style>
 <style lang="scss" scoped>
 body.body--dark .c-fragment-list-element  .negative {
     background: $negative;
     span, .q-icon {
         color: white !important;
     }
+}
+.q-expansion-item__container > .q-item > .flex {
+    width: 100%;
 }
 .c-fragment-list-element {
     margin-bottom: 24px;

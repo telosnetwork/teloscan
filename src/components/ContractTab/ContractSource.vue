@@ -215,6 +215,8 @@ pre
   max-height: 20rem
   overflow-y: auto
   margin-bottom: 2rem
+body.body--dark .q-card
+  border-radius: 0
 @media screen and (max-width: 1440px)
     .fullscreen
         top: 48px
