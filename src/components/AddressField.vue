@@ -122,7 +122,6 @@ export default {
     <router-link
         :to="`/address/${address}`"
         :class="highlight ? 'highlighted flex items-center' : 'flex items-center'"
-        @click.capture.stop=""
     >
         <q-img
             v-if="logo !== null"
