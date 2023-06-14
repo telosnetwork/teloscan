@@ -95,7 +95,7 @@ export default {
 <div v-if="fragment" class="c-fragment-list-element" :style="depthStyle"  >
     <q-expansion-item
         :disable="!isExpandable"
-        class="shadow-2 q-mb-md hoverable"
+        class="shadow-2 q-mb-md"
     >
         <template v-slot:header>
             <div class="flex items-center justify-between">
@@ -195,10 +195,10 @@ export default {
             </q-card-section>
             <q-card-section v-else>
                 <VueJsonPretty
-                        :data="rawFragment"
-                        :showLine="false"
-                        :deep="1"
-                        class="q-mb-md q-pl-md"
+                    :data="rawFragment"
+                    :showLine="false"
+                    :deep="1"
+                    class="q-mb-md q-pl-md"
                 />
             </q-card-section>
         </q-card>
@@ -207,15 +207,6 @@ export default {
 </div>
 </template>
 
-<style lang="scss">
-    .q-expansion-item__container .q-item__section--side  {
-        padding: 0 !important;
-    }
-    .q-expansion-item__container .q-item.disabled, .q-expansion-item__container .q-item.disabled * {
-        opacity: 1 !important;
-        cursor: initial !important;
-    }
-</style>
 <style lang="scss" scoped>
 body.body--dark .c-fragment-list-element  .negative {
     background: $negative;

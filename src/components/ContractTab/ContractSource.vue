@@ -161,6 +161,8 @@ export default {
         padding: 0
 </style>
 <style lang='sass' scoped>
+body.body--light .source-container
+    background-color: #f5f5f58f
 .fullscreen
     top: 110px
 .fullscreen pre
