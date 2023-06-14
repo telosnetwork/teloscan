@@ -17,7 +17,7 @@ const TESTNET = {
     NETWORK_CHAIN_ID:
       '1eaa0824707c8c16bd25145493bf062aecddfeb56c736f6ba6397f3195f33c9f',
     NETWORK_EVM_RPC: 'https://testnet.telos.net/evm',
-    NETWORK_EVM_ENDPOINT: 'https://testnet.telos.caleos.io',
+    NETWORK_EVM_ENDPOINT: 'https://testnet.telos.net',
     NETWORK_EVM_CHAIN_ID: 41,
     HYPERION_ENDPOINT: 'https://testnet.telos.net',
     NETWORK_EXPLORER: 'https://explorer-test.telos.net',
