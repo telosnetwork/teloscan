@@ -39,7 +39,6 @@ export default {
         if(!this.fragment) {
             return;
         }
-        this.sig = (this.fragment.sig) ? this.fragment.sig : this.fragment.topics[0].substr(0, 10);
         this.address = (this.fragment.contract) ? this.fragment.contract.address : this.fragment.address;
         if(this.address){
             this.address = (this.address.startsWith('0x')) ? this.address : '0x' + this.address;

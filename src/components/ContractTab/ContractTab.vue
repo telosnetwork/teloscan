@@ -79,7 +79,7 @@ export default {
             />
         </q-btn-group>
         <CopyButton
-            v-if="verified"
+            v-if="verified && !contract?.autoloadedAbi"
             :text="abi"
             :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
         />

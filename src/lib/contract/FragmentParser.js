@@ -115,8 +115,9 @@ export default class FragmentParser {
 
     async parseLog(log, contract) {
         log.transactionHash = log.transaction_hash;
+        let parsedLog = {};
+        parsedLog.sig = log.topics[0].substr(0, 10);
         if (contract.getInterface()) {
-            let parsedLog;
             try {
                 parsedLog = contract.getInterface().parseLog(log);
             } catch (e) {
@@ -129,7 +130,7 @@ export default class FragmentParser {
             return parsedLog;
         }
 
-        let parsedLog = await this.parseEvent(contract, log);
+        parsedLog = await this.parseEvent(contract, log);
         parsedLog = this.formatLog(contract, log, parsedLog);
         if(parsedLog.name && parsedLog.eventFragment?.inputs){
             parsedLog.inputs = parsedLog.eventFragment.inputs;

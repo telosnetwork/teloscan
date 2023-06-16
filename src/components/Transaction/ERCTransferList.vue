@@ -187,16 +187,16 @@ export default {
                 "
                 class="flex col-4"
             >
-                <span :v-if="transfer.amount > 0">{{ transfer.amount }} x</span>
+                <span v-if="transfer.amount > 0">{{ transfer.amount }} x</span>
                 <router-link
                     class="q-ml-xs q-mr-xs"
                     :to="'/address/' + transfer.contract.address"
                 >
-                    <span :v-if="transfer.contract?.properties?.symbol?.length > 0">
+                    <span v-if="transfer.contract?.properties?.symbol?.length > 0">
                         <span>{{ transfer.contract?.properties?.symbol?.slice(0, 6) }}</span>
                         <span v-if="transfer.contract?.properties?.symbol?.length > 6">...</span>
                     </span>
-                    <span :v-else-if="transfer.contract?.properties?.name">
+                    <span v-else-if="transfer.contract?.properties?.name">
                         <span>{{ transfer.contract?.properties?.name?.slice(0, 12) }}</span>
                         <span v-if="transfer.contract?.properties?.name?.length > 12">...</span>
                     </span>
