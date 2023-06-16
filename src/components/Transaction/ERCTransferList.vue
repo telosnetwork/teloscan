@@ -97,7 +97,7 @@ export default {
                             token = contract;
                         }
                         transfers.push({
-                            'amount': BigNumber.from(log.data).toString(),
+                            'amount': BigNumber.from('0x' + log.data.substr(66, log.data.length)).toString(),
                             'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
                             'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
                             'tokenId': tokenId,
@@ -187,13 +187,19 @@ export default {
                 "
                 class="flex col-4"
             >
+                <span :v-if="transfer.amount > 0">{{ transfer.amount }} x</span>
                 <router-link
-                    :if="transfer.contract?.properties?.symbol"
                     class="q-ml-xs q-mr-xs"
                     :to="'/address/' + transfer.contract.address"
                 >
-                    <span>{{ transfer.contract?.properties?.symbol.slice(0, 6) }}</span>
-                    <span v-if="transfer.contract?.properties?.symbol.length > 6">...</span>
+                    <span :v-if="transfer.contract?.properties?.symbol?.length > 0">
+                        <span>{{ transfer.contract?.properties?.symbol?.slice(0, 6) }}</span>
+                        <span v-if="transfer.contract?.properties?.symbol?.length > 6">...</span>
+                    </span>
+                    <span :v-else-if="transfer.contract?.properties?.name">
+                        <span>{{ transfer.contract?.properties?.name?.slice(0, 12) }}</span>
+                        <span v-if="transfer.contract?.properties?.name?.length > 12">...</span>
+                    </span>
                 </router-link>
                 <div class="col">
                     <span v-if="transfer.tokenId.length > 15">

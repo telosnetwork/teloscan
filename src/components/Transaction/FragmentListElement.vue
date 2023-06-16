@@ -123,6 +123,7 @@ export default {
                             class="word-break"
                             :name="fragment.contract?.name"
                             :highlight="transactionFrom && fragment.contract?.address === transactionFrom"
+                            @click.stop=""
                         />
                     </small>
                 </div>
