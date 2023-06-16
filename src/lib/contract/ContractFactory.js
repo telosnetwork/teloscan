@@ -14,17 +14,18 @@ export default class ContractFactory {
             let metadata = JSON.parse(data.metadata);
             data.abi = metadata.output.abi;
         }
-        if(data.abi && !data.loaded){
+        if(data.abi && !data.autoloadedAbi){
             verified = true;
+            data.autoloadedAbi = false;
         } else if(data.supportedInterfaces && data.supportedInterfaces.includes('erc20')) {
             data.abi = erc20Abi;
-            data.loaded = true;
+            data.autoloadedAbi = true;
         } else if(data.supportedInterfaces && data.supportedInterfaces.includes('erc721')) {
             data.abi = erc721Abi;
-            data.loaded = true;
+            data.autoloadedAbi = true;
         } else if(data.supportedInterfaces && data.supportedInterfaces.includes('erc1155')) {
             data.abi = erc1155Abi;
-            data.loaded = true;
+            data.autoloadedAbi = true;
         }
         let properties = (data.calldata) ? JSON.parse(data.calldata) : {};
         if(!data.name){
@@ -50,6 +51,7 @@ export default class ContractFactory {
             properties: properties,
             nfts: {},
             abi: data.abi,
+            autoloadedAbi: data.autoloadedAbi,
         });
     }
     buildEmptyContract(address) {

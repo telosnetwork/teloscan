@@ -184,6 +184,12 @@ export default {
                 </a>
                 {{ $t('components.contract_tab.upload_source_files') }}
             </p>
+            <p v-if="this.contract?.autoloadedAbi">
+                {{ $t('components.contract_tab.abi_autoloaded') }}
+            </p>
+            <p v-else>
+                {{ $t('components.contract_tab.choose_abi') }}
+            </p>
         </div>
     </div>
 

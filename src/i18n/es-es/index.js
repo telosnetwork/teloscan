@@ -378,6 +378,7 @@ export default {
             click_to_change_format: 'Haga clic para cambiar el formato',
         },
         contract_tab: {
+            abi_loaded_from_interface: 'This generic ABI was loaded using IEP-165\'s supportsInterface(). Verify your contract to see the full ABI.',
             copy_abi_to_clipboard: 'Copiar el JSON del ABI del contrato al portapapeles',
             enter_amount: 'Seleccione el número de decimales y escriba una cantidad, esto se ingresará para usted en el parámetro de función como uint256',
             result: 'Resultado',
@@ -391,8 +392,9 @@ export default {
             custom: 'Personalizado',
             unverified_contract_source: 'El código fuente de este contrato no ha sido verificado.',
             click_here: 'Haga clic aquí',
-            upload_source_files: 'para cargar archivos de código fuente y verificar este contrato. ' +
-                'Alternativamente, puede interactuar con el contrato usando un ABI arbitrario:',
+            upload_source_files: 'para cargar archivos de código fuente y verificar este contrato. ',
+            abi_autoloaded: 'In the meantime, you can interact with the contract using our automatically loaded preset ABI.',
+            choose_abi: 'Alternatively, you can interact with the contract either using one of our preset ABIs or a custom JSON one:',
             use_erc20_abi: 'Usar ABI ERC20',
             use_erc721_abi: 'Usar ABI ERC721',
             use_erc1155_abi: 'Usar ABI ERC1155',

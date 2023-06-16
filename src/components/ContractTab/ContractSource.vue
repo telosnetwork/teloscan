@@ -18,6 +18,11 @@ export default {
         VueJsonPretty,
         CopyButton,
     },
+    props: {
+        contract: {
+            type: Object,
+        },
+    },
     data() {
         return {
             tab:'sources',
@@ -56,9 +61,9 @@ export default {
             for (let file of files){
                 file.expanded = true;
                 file.fullscreen = false;
+                file.raw = file.content;
                 if (this.isContract(file.name)){
                     file.contract = true;
-                    file.raw = file.content;
                     file.content = hljs.highlight(file.content, { language: 'solidity' }).value;
                     this.files.push(file);
                 }else{
@@ -98,6 +103,12 @@ export default {
                 {{ $t('components.contract_tab.click_here') }}
             </a>
             {{ $t('components.contract_tab.upload_source_files') }}
+        </p>
+        <p v-if="this.contract?.autoloadedAbi">
+            {{ $t('components.contract_tab.abi_autoloaded') }}
+        </p>
+        <p v-else>
+            {{ $t('components.contract_tab.choose_abi') }}
         </p>
     </div>
     <div v-else>

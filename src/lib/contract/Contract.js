@@ -4,7 +4,8 @@ import {markRaw} from "vue";
 
 export default class Contract {
 
-  constructor({address, creationInfo, name, abi, manager, supportedInterfaces = [], properties = {}, verified = false, nfts = {}}) {
+  constructor({address, creationInfo, name, abi, manager, supportedInterfaces = [], properties = {}, verified = false, nfts = {}, autoloadedAbi }) {
+    this.autoloadedAbi = autoloadedAbi;
     this.address = address;
     this.name = name || properties?.name;
     this.nfts = {};
@@ -49,6 +50,10 @@ export default class Contract {
         this.supportedInterfaces.includes('erc1155') ||
         this.supportedInterfaces.includes('erc20')
     );
+  }
+
+  isAutoloadedAbi() {
+    return this.autoloadedAbi;
   }
 
   getNfts() {

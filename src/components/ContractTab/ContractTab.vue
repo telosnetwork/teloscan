@@ -29,6 +29,10 @@ export default {
         });
     },
     computed: {
+        verified() {
+            console.log(this.contract.verified);
+            return this.contract.verified;
+        },
         abi() {
             const abi  = this.contract.abi;
 
@@ -75,11 +79,12 @@ export default {
             />
         </q-btn-group>
         <CopyButton
+            v-if="verified"
             :text="abi"
             :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
         />
     </div>
-    <ContractSource v-if="source" />
+    <ContractSource v-if="source" :contract="contract" />
     <ContractInterface
         v-else
         :write="write"

@@ -15,12 +15,16 @@ export default {
             type: Object,
         },
     },
-    data: () => ({
-        functions: [],
-    }),
+    data(props) {
+        return ({
+            functions: [],
+            verified: props.contract.verified,
+        });
+    },
     async mounted() {
         let read = [];
         let write = [];
+        this.verified = this.contract.verified;
         this.contract.abi.forEach((a) => {
             if (a.type !== 'function') {
                 return;
@@ -42,7 +46,7 @@ export default {
 </script>
 
 <template>
-<div class="q-pt-md">
+<div :key="'vc' + verified" class="q-pt-md">
     <q-list>
         <q-expansion-item
             v-for="func in (write ? functions.write : functions.read)"
@@ -63,5 +67,9 @@ export default {
 
         </q-expansion-item>
     </q-list>
+    <small v-if="verified === false" class="row q-pb-md items-center flex text-grey">
+        <q-icon name="info" size="12px" class="q-mr-sm" />
+        <span>{{ $t('components.contract_tab.abi_loaded_from_interface') }}</span>
+    </small>
 </div>
 </template>

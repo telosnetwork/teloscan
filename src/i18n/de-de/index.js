@@ -378,6 +378,7 @@ export default {
             click_to_change_format: 'Zum Ändern des Formats anklicken',
         },
         contract_tab: {
+            abi_loaded_from_interface: 'This generic ABI was loaded using IEP-165\'s supportsInterface(). Verify your contract to see the full ABI.',
             copy_abi_to_clipboard: 'ABI JSON des Smart Contracts in die Zwischenablage kopieren',
             enter_amount: 'Wählen Sie Anzahl der Dezimalstellen und geben Sie einen Betrag ein, dieser wird als Funktionsparameter als uint256 erfasst',
             result: 'Ergebnis',
@@ -391,8 +392,9 @@ export default {
             custom: 'Benutzerdefiniert',
             unverified_contract_source: 'Dieser Smart Contract wurde nicht verifiziert...',
             click_here: 'Klicken Sie hier, ',
-            upload_source_files: 'um Quelldateien hochzuladen und diesen Smart Contract zu verifizieren. ' +
-                'Alternativ können Sie mit dem Smart Contract interagieren, indem Sie ein beliebiges ABI verwenden:',
+            upload_source_files: 'um Quelldateien hochzuladen und diesen Smart Contract zu verifizieren. ',
+            abi_autoloaded: 'In the meantime, you can interact with the contract using our automatically loaded preset ABI.',
+            choose_abi: 'Alternatively, you can interact with the contract either using one of our preset ABIs or a custom JSON one:',
             use_erc20_abi: 'ERC20 ABI nutzen',
             use_erc721_abi: 'ERC721 ABI nutzen',
             use_erc1155_abi: 'ERC1155 ABI nutzen',
