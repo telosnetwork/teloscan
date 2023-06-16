@@ -10,18 +10,21 @@ export default class ContractFactory {
         let verified = false;
         if(typeof data.abi !== 'undefined' && data.abi.length > 0) {
             data.abi = (typeof data.abi === 'string') ? JSON.parse(data.abi) : data.abi;
-        } else if(typeof data.metadata !== 'undefined' && data.metadata?.length > 0) {
+        } else if(typeof data.metadata !== 'undefined' && data.metadata !== null && data.metadata?.length > 0) {
             let metadata = JSON.parse(data.metadata);
             data.abi = metadata.output.abi;
         }
-        if(data.abi){
+        if(data.abi && !data.loaded){
             verified = true;
         } else if(data.supportedInterfaces && data.supportedInterfaces.includes('erc20')) {
             data.abi = erc20Abi;
+            data.loaded = true;
         } else if(data.supportedInterfaces && data.supportedInterfaces.includes('erc721')) {
             data.abi = erc721Abi;
+            data.loaded = true;
         } else if(data.supportedInterfaces && data.supportedInterfaces.includes('erc1155')) {
             data.abi = erc1155Abi;
+            data.loaded = true;
         }
         let properties = (data.calldata) ? JSON.parse(data.calldata) : {};
         if(!data.name){

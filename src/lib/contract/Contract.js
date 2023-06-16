@@ -36,7 +36,6 @@ export default class Contract {
     return this;
   }
 
-
   isNonFungible() {
     return (
         this.supportedInterfaces.includes('erc721')

@@ -104,6 +104,7 @@ export default class ContractManager {
             return this.contracts[address].nfts[tokenId];
         }
         try {
+            // TODO: change endpoint based on contract interfaces
             let response = await this.indexerApi.get(`/contract/${address}/nfts?tokenId=${tokenId}`);
             if(response.data.results?.length > 0){
                 this.contracts[address].nfts[tokenId] = response.data.results[0];
@@ -231,6 +232,7 @@ export default class ContractManager {
             await new Promise(resolve => setTimeout(resolve, 300));
             return await this.getContract(address);
         }
+
         this.processing.push(addressLower);
         let contract = (cacheEmpty) ? { address : address } : null;
         try {
