@@ -16,17 +16,18 @@ export default {
             default: () => ({}),
         },
     },
-    methods: {
-        mounted: () => {
-            if(this.abi() !== ''){
-                this.source = true;
-            }
-        },
+    data() {
+        if(this.contract.abi?.length > 0){
+            return ({
+                source: true,
+                write: false,
+            });
+        }
+        return ({
+            source: false,
+            write: false,
+        });
     },
-    data: () => ({
-        source: false,
-        write: false,
-    }),
     computed: {
         abi() {
             const abi  = this.contract.abi;

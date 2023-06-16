@@ -603,7 +603,7 @@ export default {
                     />
                 </q-tab-panel>
                 <q-tab-panel v-if="isContract" name="contract">
-                    <ContractTab v-if="contract?.isVerified()" :contract="contract"/>
+                    <ContractTab v-if="contract?.abi?.length > 0" :contract="contract"/>
                     <GenericContractInterface v-else  :contract="contract" />
                 </q-tab-panel>
             </q-tab-panels>

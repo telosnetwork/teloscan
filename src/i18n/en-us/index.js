@@ -397,6 +397,7 @@ export default {
                 'Alternatively, you can interact with the contract either using the automatically detected ABI or using an arbitrary ABI if detection fails:',
             use_erc20_abi: 'Use ERC20 ABI',
             use_erc721_abi: 'Use ERC721 ABI',
+            use_erc1155_abi: 'Use ERC155 ABI',
             abi_from_json: 'ABI from JSON',
             paste_abi_json_here: 'Paste ABI JSON here',
             abi_json_preview: 'ABI JSON preview',
