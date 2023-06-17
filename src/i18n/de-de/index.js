@@ -378,7 +378,7 @@ export default {
             click_to_change_format: 'Zum Ändern des Formats anklicken',
         },
         contract_tab: {
-            abi_loaded_from_interface: 'This generic ABI was loaded using IEP-165\'s supportsInterface(). Verify your contract to see the full ABI.',
+            abi_loaded_from_interface: 'This generic ABI was loaded using IEP-165\'s supportsInterface() and may not be exhaustive. Some of the functions displayed may not be implemented. Verify your contract to be able to interact with the contract using its full ABI.',
             copy_abi_to_clipboard: 'ABI JSON des Smart Contracts in die Zwischenablage kopieren',
             enter_amount: 'Wählen Sie Anzahl der Dezimalstellen und geben Sie einen Betrag ein, dieser wird als Funktionsparameter als uint256 erfasst',
             result: 'Ergebnis',
@@ -406,6 +406,7 @@ export default {
             read_functions: 'Lese-Funktionen',
             write_functions: 'Schreib-Funktionen',
             unverified_contract: 'Ungeprüfter Smart Contract',
+            verified_contract: 'Verified contract',
         },
         header: {
             sign_in: 'Anmelden',

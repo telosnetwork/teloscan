@@ -380,7 +380,7 @@ export default {
             click_to_change_format: 'Cliquer pour changer de format',
         },
         contract_tab: {
-            abi_loaded_from_interface: 'Cet ABI générique a été chargé à l\'aide de supportsInterface() de l\'IEP-165. Vérifiez le contrat pour voir l\'ABI complet.',
+            abi_loaded_from_interface: 'Cet ABI générique a été chargé à l\'aide de supportsInterface() de l\'IEP-165. Certaines fonctions listées peuvent donc ne pas être implémentés. Vérifiez le contrat pour intégagir avec en utilisant l\'ABI complet.',
             copy_abi_to_clipboard: 'Copier l\'ABI du contrat dans le presse-papiers',
             enter_amount: 'Séléctionnez un nombre de décimales et saisissez un montant qui sera injecté pour vous dans la fonction en tant que uint256',
             result: 'Résultat',
@@ -396,7 +396,7 @@ export default {
             click_here: 'Cliquez ici',
             upload_source_files: 'pour envoyer le fichier source et ainsi vérifier votre contrat.  ' +
                 'Alternativement, vous pouvez intéragir avec le contrat en utilisant soit l\'ABI détécté soit, si inconnu, un ABI de votre choix:',
-            abi_autoloaded: 'En attendant, vous pouvez intéragir avec le contrat en utilisant botre ABI générique chargé automatiquement.',
+            abi_autoloaded: 'En attendant, vous pouvez intéragir avec le contrat en utilisant notre ABI générique chargé automatiquement.',
             choose_abi: 'Alternativement, vous pouvez intéragir avec le contrat en utilisant soit un de nos ABIs génériques ou bien un ABI JSON personalisé:',
             use_erc20_abi: 'Utiliser l\'ABI ERC20',
             use_erc721_abi: 'Utiliser l\'ABI ERC721',
@@ -409,6 +409,7 @@ export default {
             read_functions: 'Fonctions de lecture',
             write_functions: 'Fonctions de d\'écriture',
             unverified_contract: 'Contract non verifié',
+            verified_contract: 'Contract Verifié',
         },
         header: {
             sign_in: 'Connexion',

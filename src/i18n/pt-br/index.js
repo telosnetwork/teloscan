@@ -378,7 +378,7 @@ export default {
             click_to_change_format: 'Clique para alterar o formato',
         },
         contract_tab: {
-            abi_loaded_from_interface: 'This generic ABI was loaded using IEP-165\'s supportsInterface(). Verify your contract to see the full ABI.',
+            abi_loaded_from_interface: 'This generic ABI was loaded using IEP-165\'s supportsInterface() and may not be exhaustive. Some of the functions displayed may not be implemented. Verify your contract to be able to interact with the contract using its full ABI.',
             copy_abi_to_clipboard: 'Copiar ABI JSON do contrato para a área de transferência',
             enter_amount: 'Selecione o número de decimais e insira um valor, este será inserido para você no parâmetro da função como uint256',
             result: 'Resultado',
@@ -406,6 +406,7 @@ export default {
             read_functions: 'Funções de leitura',
             write_functions: 'Funções de escrita',
             unverified_contract: 'Contrato não verificado',
+            verified_contract: 'Contrato verificado',
         },
         header: {
             sign_in: 'Entrar',

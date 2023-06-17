@@ -46,7 +46,7 @@ export default {
 </script>
 
 <template>
-<div :key="'vc' + verified" class="q-pt-md">
+<div class="q-pt-md">
     <q-list>
         <q-expansion-item
             v-for="func in (write ? functions.write : functions.read)"
@@ -64,11 +64,10 @@ export default {
                     />
                 </div>
             </q-card>
-
         </q-expansion-item>
     </q-list>
-    <small v-if="verified === false" class="row q-pb-md items-center flex text-grey">
-        <q-icon name="info" size="12px" class="q-mr-sm" />
+    <small v-if="contract.autoloadedAbi" class="row q-pb-md items-start flex text-grey no-wrap">
+        <q-icon name="info" size="12px" class="q-mr-xs q-mt-xs" />
         <span>{{ $t('components.contract_tab.abi_loaded_from_interface') }}</span>
     </small>
 </div>

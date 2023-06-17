@@ -84,13 +84,13 @@ export default {
             immediate: true,
         },
         accountAddress: {
-            handler(newValue, oldValue) {
+            async handler(newValue, oldValue) {
                 if (newValue !== oldValue) {
                     const newAsChecksum = toChecksumAddress(newValue);
                     if (newAsChecksum !== newValue) {
                         this.$router.replace({ params: { address: newAsChecksum } });
                     }
-                    this.loadAccount();
+                    await this.loadAccount();
                 }
             },
             immediate: true,
@@ -251,14 +251,19 @@ export default {
                         <span>{{ title }}</span>
                         <q-tooltip v-if="fullTitle">{{ fullTitle }} </q-tooltip>
                     </div>
-                    <q-icon
-                        v-if="isContract"
-                        class="cursor"
-                        :name="this.contract?.isVerified() ? 'verified' : 'warning'"
-                        :class="this.contract?.isVerified() ? 'text-positive' : 'text-negative'"
-                        size="1.25rem"
-                        @click="confirmationDialog = true"
-                    />
+                    <div v-if="isContract">
+                        <q-icon
+                            class="cursor"
+                            :name="this.contract?.isVerified() ? 'verified' : 'warning'"
+                            :class="this.contract?.isVerified() ? 'text-positive' : 'text-negative'"
+                            size="1.25rem"
+                            @click="confirmationDialog = true"
+                        />
+                        <q-tooltip v-if="this.contract?.isVerified()">
+                            {{ $t('components.contract_tab.verified_contract') }}
+                        </q-tooltip>
+                        <q-tooltip v-else>{{ $t('components.contract_tab.unverified_contract') }} </q-tooltip>
+                    </div>
                 </div>
                 <div class="flex">
                     <div>
