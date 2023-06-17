@@ -18,6 +18,8 @@ export default {
             mainnet: process.env.NETWORK_EVM_CHAIN_ID === 40,
             accountConnected: false,
             drawer: false,
+            scTimer: 0,
+            scY: 0,
         };
     },
     computed: {
@@ -33,11 +35,28 @@ export default {
     },
     async mounted(){
         this.removeOldAngularCache();
+        window.addEventListener('scroll', this.handleScroll);
     },
     created() {
         this.$q.dark.set(localStorage.getItem('darkModeEnabled') !== 'false');
     },
     methods: {
+        handleScroll: function () {
+            if (this.scTimer){
+                return;
+            }
+            this.scTimer = setTimeout(() => {
+                this.scY = window.scrollY;
+                clearTimeout(this.scTimer);
+                this.scTimer = 0;
+            }, 100);
+        },
+        toTop: function () {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth',
+            });
+        },
         removeOldAngularCache() {
             // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own,
             // this should remove it
@@ -62,6 +81,28 @@ export default {
         <router-view />
     </q-page-container>
     <FooterMain />
+    <transition name="fade">
+        <div
+            v-show="scY > 300"
+            id="pagetop"
+            class="fixed fixed-bottom-right clickable"
+            @click="toTop"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#8294b4"
+                stroke-width="1"
+                stroke-linecap="square"
+                stroke-linejoin="arcs"
+            >
+                <path d="M18 15l-6-6-6 6"/>
+            </svg>
+        </div>
+    </transition>
 </q-layout>
 </template>
 
