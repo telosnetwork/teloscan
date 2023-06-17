@@ -81,7 +81,11 @@ export default {
         <router-view />
     </q-page-container>
     <FooterMain />
-    <transition name="fade">
+    <transition
+        appear
+        enter-active-class="animated fadeIn"
+        leave-active-class="animated fadeOut"
+    >
         <div
             v-show="scY > 300"
             id="pagetop"

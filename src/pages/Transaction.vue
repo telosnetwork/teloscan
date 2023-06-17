@@ -225,7 +225,7 @@ export default {
     </div>
     <div class="row tableWrapper">
         <div class="col-12 q-py-lg">
-            <div v-if="loading" class="content-container bg-white q-pa-sm text-center">
+            <div v-if="loading" class="content-container q-pa-md text-center">
                 <q-spinner size="lg" />
             </div>
             <div v-else-if="trx" :key="isContract" class="content-container">
@@ -486,6 +486,8 @@ export default {
 </style>
 
 <style lang="sass" scoped>
+.content-container
+    background: $primary
 .shadow-2
     box-shadow: none !important
 
@@ -500,6 +502,8 @@ span
     display: inline-block
 
 body.body--dark
+    .content-container
+        background: $dark
     .col-9 .positive
         background: $positive
         span, .q-icon
@@ -531,3 +535,4 @@ body.body--dark
     .q-tab__label
         font-size: 11px
 </style>
+
