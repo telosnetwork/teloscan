@@ -112,7 +112,7 @@ export default {
         issuer: 'Émetteur',
         account_not_found: 'Nous n\'avons pas pu trouver ce compte',
         approvals: 'Permissions',
-        supported_interfaces: 'Interface(s) supporté(s)',
+        supported_interfaces: 'Interface(s) supporté(s) connue(s)',
         explore_transactions: 'Explorer les transactions',
         recent_transactions: 'Transactions récentes',
         telos_evm_explorer: 'Exploreur Telos EVM',

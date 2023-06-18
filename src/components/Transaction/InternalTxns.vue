@@ -87,10 +87,6 @@ export default {
                     isTransferETH = true;
                 }
 
-                if(itx.error !== null){
-                    name = name + ' - ' + this.$t('global.error');
-                }
-
                 if (itx.action.input) {
                     const parsedTransaction = await this.$contractManager.parseContractTransaction(
                         itx,

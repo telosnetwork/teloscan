@@ -112,7 +112,7 @@ export default {
         issuer: 'Issuer',
         account_not_found: 'We could not find this account',
         approvals: 'Approvals',
-        supported_interfaces: 'Supported interface(s)',
+        supported_interfaces: 'Known supported interface(s)',
         explore_transactions: 'Transaktionen prüfen',
         recent_transactions: 'Neueste Transaktionen',
         telos_evm_explorer: 'Telos EVM Explorer',
@@ -378,7 +378,7 @@ export default {
             click_to_change_format: 'Zum Ändern des Formats anklicken',
         },
         contract_tab: {
-            abi_loaded_from_interface: 'This generic ABI was loaded using IEP-165\'s supportsInterface() and may not be exhaustive. Some of the functions displayed may not be implemented. Verify your contract to be able to interact with the contract using its full ABI.',
+            abi_loaded_from_interface: 'This generic ABI was loaded using IEP-165\'s supportsInterface() and may not be exhaustive. Some of the functions displayed may not be implemented. Verify the contract to be able to interact with it using its full ABI.',
             copy_abi_to_clipboard: 'ABI JSON des Smart Contracts in die Zwischenablage kopieren',
             enter_amount: 'Wählen Sie Anzahl der Dezimalstellen und geben Sie einen Betrag ein, dieser wird als Funktionsparameter als uint256 erfasst',
             result: 'Ergebnis',

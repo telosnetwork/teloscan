@@ -31,7 +31,7 @@ export default {
         return {
             showWei: false,
             address: null,
-            sig: false,
+            name: null,
             expanded_parameters: [],
         };
     },
@@ -100,13 +100,16 @@ export default {
     >
         <template v-slot:header>
             <div class="flex items-center justify-between">
-                <div>
-                    <strong v-if="fragment?.name">
+                <div class="flex items-center">
+                    <strong v-if="fragment.name">
                         <span v-if="fragment.name.length > 190">{{ fragment.name.substring(0, 190) }}...</span>
                         <span v-else>{{ fragment.name }}</span>
                     </strong>
                     <strong v-else>
                         {{ $t('components.transaction.unknown') }} ({{ fragment?.sig }})
+                    </strong>
+                    <strong v-if="fragment.error" class="q-ml-xs">
+                        {{ ' - ' + $t('global.error') }}
                     </strong>
                     <q-icon
                         v-if="fragment.error"
@@ -133,17 +136,19 @@ export default {
         <q-card class="q-pl-md q-pr-md">
             <q-card-section
                 v-if="this.fragment?.error"
-                class="negative q-pa-md flex align-center q-mb-sm rounded-borders"
+                class="q-pa-sm"
             >
-                <q-icon
-                    name="warning"
-                    color="negative"
-                    class="q-mr-xs"
-                    size="1.4em"
-                />
-                <span class="text-negative">{{ fragment?.error }}</span>
+                <div class="negative q-pa-md flex align-center q-mb-sm rounded-borders q-mt-sm">
+                    <q-icon
+                        name="warning"
+                        color="negative"
+                        class="q-mr-xs"
+                        size="1.4em"
+                    />
+                    <span class="text-negative">{{ fragment?.error }}</span>
+                </div>
             </q-card-section>
-            <q-card-section v-if="this.fragment?.name" :key="this.fragment.name">
+            <q-card-section v-if="fragment.name" :key="this.fragment.name">
                 <ParameterList :params="params" :trxFrom="transactionFrom" :contract="fragment.contract" />
                 <div v-if="fragment.value && fragment.value !== 0">
                     <div v-if="fragment.isTransferETH" >

@@ -112,7 +112,7 @@ export default {
         issuer: 'Issuer',
         account_not_found: 'We could not find this account',
         approvals: 'Approvals',
-        supported_interfaces: 'Supported interface(s)',
+        supported_interfaces: 'Known supported interface(s)',
         explore_transactions: 'Explore Transactions',
         recent_transactions: 'Recent transactions',
         telos_evm_explorer: 'Telos EVM Explorer',
@@ -380,7 +380,7 @@ export default {
             click_to_change_format: 'Click to change format',
         },
         contract_tab: {
-            abi_loaded_from_interface: 'This generic ABI was loaded using IEP-165\'s supportsInterface() and may not be exhaustive. Some of the functions displayed may not be implemented. Verify your contract to be able to interact with the contract using its full ABI.',
+            abi_loaded_from_interface: 'This generic ABI was loaded using IEP-165\'s supportsInterface() and may not be exhaustive. Some of the functions displayed may not be implemented. Verify the contract to be able to interact with it using its full ABI.',
             copy_abi_to_clipboard: 'Copy contract ABI JSON to clipboard',
             enter_amount: 'Select number of decimals and enter an amount, this will be entered for you into the function parameter as uint256',
             result: 'Result',

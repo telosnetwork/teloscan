@@ -133,7 +133,7 @@ export default {
             </div>
             <div v-else-if="approval.amount && approval.infinite" class="col-6 flex items-center">
                 <strong class="q-pr-sm">{{ $t('components.approvals.amount') }} : </strong>
-                <span>
+                <span class="flex items-center">
                     <q-icon name="all_inclusive" class="q-mr-xs" />
                     <span class="q-mr-xs">{{ $t('components.approvals.infinite') }} </span>
                 </span>
