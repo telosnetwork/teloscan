@@ -39,6 +39,8 @@ export default {
         if(!this.fragment) {
             return;
         }
+        console.log(this.fragment);
+        console.log(this.rawFragment);
         this.address = (this.fragment.contract) ? this.fragment.contract.address : this.fragment.address;
         if(this.address){
             this.address = (this.address.startsWith('0x')) ? this.address : '0x' + this.address;
@@ -100,7 +102,7 @@ export default {
     >
         <template v-slot:header>
             <div class="flex items-center justify-between">
-                <div class="flex items-center">
+                <div class="flex items-center col-shrink">
                     <strong v-if="fragment.name">
                         <span v-if="fragment.name.length > 190">{{ fragment.name.substring(0, 190) }}...</span>
                         <span v-else>{{ fragment.name }}</span>
@@ -226,7 +228,10 @@ body.body--dark .c-fragment-list-element  .negative {
 }
 .c-fragment-list-element {
     margin-bottom: 24px;
-
+    .col-shrink {
+        max-width: 90%;
+        word-break: break-all;
+    }
     &__head {
         background: rgba(0, 0, 0, 0.1);
         padding: 10px 20px;

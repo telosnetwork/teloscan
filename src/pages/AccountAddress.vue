@@ -254,12 +254,12 @@ export default {
                     <div v-if="isContract">
                         <q-icon
                             class="cursor"
-                            :name="this.contract?.isVerified() ? 'verified' : 'warning'"
-                            :class="this.contract?.isVerified() ? 'text-positive' : 'text-negative'"
+                            :name="contract.isVerified() ? 'verified' : 'warning'"
+                            :class="contract.isVerified() ? 'text-positive' : 'text-negative'"
                             size="1.25rem"
                             @click="confirmationDialog = true"
                         />
-                        <q-tooltip v-if="this.contract?.isVerified()">
+                        <q-tooltip v-if="contract.isVerified()">
                             {{ $t('components.contract_tab.verified_contract') }}
                         </q-tooltip>
                         <q-tooltip v-else>{{ $t('components.contract_tab.unverified_contract') }} </q-tooltip>
