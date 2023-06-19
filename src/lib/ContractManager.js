@@ -2,7 +2,7 @@ import Contract from 'src/lib/Contract';
 import { ethers } from 'ethers';
 import functions_overrides from 'src/lib/abi/signature/functions_signatures_overrides.json';
 import events_overrides from 'src/lib/abi/signature/events_signatures_overrides.json';
-import Web3 from 'web3';
+import { Web3 } from 'web3';
 import axios from 'axios';
 import erc20Abi from 'erc-20-abi';
 import { erc721Abi, erc1155Abi, erc721MetadataAbi, supportsInterfaceAbi } from 'src/lib/abi';
