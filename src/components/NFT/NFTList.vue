@@ -175,7 +175,7 @@ export default {
             if(!this.allowedFilters.includes(this.filterBy)){
                 this.filterBy = 'contract';
             }
-            let path = `/${this.filterBy}/${this.address}/nfts?limit=${
+            let path = `/${this.filterBy}/${this.address}/nfts?includeAbi=true&limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
             path += `&offset=${(page - 1) * rowsPerPage}`;

@@ -16,16 +16,19 @@ export default class ContractFactory {
         }
         if(data.abi && !data.autoloadedAbi){
             verified = true;
-            data.autoloadedAbi = false;
-        } else if(data.supportedInterfaces && data.supportedInterfaces.includes('erc20')) {
-            data.abi = erc20Abi;
-            data.autoloadedAbi = true;
-        } else if(data.supportedInterfaces && data.supportedInterfaces.includes('erc721')) {
-            data.abi = erc721Abi;
-            data.autoloadedAbi = true;
-        } else if(data.supportedInterfaces && data.supportedInterfaces.includes('erc1155')) {
-            data.abi = erc1155Abi;
-            data.autoloadedAbi = true;
+        }
+        data.autoloadedAbi = false;
+        if(!data.abi && !verified && data.supportedInterfaces?.length > 0) {
+            if(data.supportedInterfaces.includes('erc20')){
+                data.abi = erc20Abi;
+                data.autoloadedAbi = true;
+            } else if (data.supportedInterfaces.includes('erc721')) {
+                data.abi = erc721Abi;
+                data.autoloadedAbi = true;
+            } else if (data.supportedInterfaces.includes('erc1155')) {
+                data.abi = erc1155Abi;
+                data.autoloadedAbi = true;
+            }
         }
         let properties = (data.calldata) ? JSON.parse(data.calldata) : {};
         if(!data.name){

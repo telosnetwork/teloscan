@@ -39,8 +39,6 @@ export default {
         if(!this.fragment) {
             return;
         }
-        console.log(this.fragment);
-        console.log(this.rawFragment);
         this.address = (this.fragment.contract) ? this.fragment.contract.address : this.fragment.address;
         if(this.address){
             this.address = (this.address.startsWith('0x')) ? this.address : '0x' + this.address;
