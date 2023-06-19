@@ -174,9 +174,9 @@ export default {
                 {{ $t('components.contract_tab.unverified_contract_source') }}
             </p>
             <p>
-                <router-link :key="$route.path" :to="{ name: 'sourcify' }">
+                <a href="https://sourcify.dev" target="_blank">
                     {{ $t('components.contract_tab.click_here') }}
-                </router-link>
+                </a>
                 {{ $t('components.contract_tab.upload_source_files') }}
             </p>
         </div>
