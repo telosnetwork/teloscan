@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/no-unused-components -->
 <script>
 import { toChecksumAddress } from 'src/lib/utils';
-import Web3 from 'web3';
+import { Web3 } from 'web3';
 import TransactionTable from 'components/TransactionTable';
 import InternalTransactionTable from 'components/InternalTransactionTable';
 import TransferTable from 'components/TransferTable';
@@ -141,7 +141,7 @@ export default {
             this.accountLoading = false;
         },
         getBalanceDisplay(balance) {
-            let strBalance = web3.utils.fromWei(balance);
+            let strBalance = web3.utils.fromWei(balance, 'ether');
             const decimalIndex = strBalance.indexOf('.');
             if (decimalIndex > 0) {
                 strBalance = `${strBalance.substring(
