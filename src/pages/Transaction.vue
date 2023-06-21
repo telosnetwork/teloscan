@@ -223,7 +223,7 @@ export default {
             </div>
         </div>
     </div>
-    <div class="row tableWrapper">
+    <div v-if="!trxNotFound" class="row tableWrapper">
         <div class="col-12 q-py-lg">
             <div v-if="loading" class="content-container q-pa-md text-center">
                 <q-spinner size="lg" />
