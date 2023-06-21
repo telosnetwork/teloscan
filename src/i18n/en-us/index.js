@@ -378,6 +378,10 @@ export default {
             category: 'Category',
             block_height: 'Block Height',
             latency: 'Latency',
+            success: 'Success',
+            info: 'Info',
+            alert: 'Alert',
+            error: 'Error',
             click_to_change_format: 'Click to change format',
         },
         contract_tab: {

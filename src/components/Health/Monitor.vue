@@ -111,6 +111,24 @@ export default {
                 console.error(e);
             }
         },
+        getType(id){
+            let type = '';
+            switch (id) {
+            case(1):
+                type = this.$t('components.health.success');
+                break;
+            case(2):
+                type = this.$t('components.health.info');
+                break;
+            case(3):
+                type = this.$t('components.health.alert');
+                break;
+            case(4):
+                type = this.$t('components.health.error');
+                break;
+            }
+            return type;
+        },
         getCategory(id){
             for(let i in this.categories){
                 if(this.categories[i].id === id){
@@ -174,13 +192,16 @@ export default {
                         color="positive"
                         size="1.15em"
                     />
+                    <q-tooltip>{{ getType(props.row.type) }} </q-tooltip>
                 </q-td>
                 <q-td key="checked_at" :props="props">{{ props.row.checked_at }}</q-td>
                 <q-td key="category" :props="props" class="text-capitalize">
                     {{ getCategory(props.row.task.category) }}
                 </q-td>
                 <q-td key="task" :props="props">{{ props.row.task.name }}</q-td>
-                <q-td key="message" :props="props">{{ props.row.message }}</q-td>
+                <q-td key="message" :props="props" :class="(props.row.type === 4) ? 'text-negative' : ''">
+                    {{ props.row.message }}
+                </q-td>
             </q-tr>
         </template>
     </q-table>
