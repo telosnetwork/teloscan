@@ -372,7 +372,8 @@ export default {
             status: 'Estado',
             checked_at: 'Verificado en',
             task: 'Tarea',
-            message: 'Mensaje',
+            message: 'Mensaje'
+            category: 'Category',
             block_height: 'Altura del bloque',
             latency: 'Latencia',
             click_to_change_format: 'Haga clic para cambiar el formato',

@@ -375,6 +375,7 @@ export default {
             checked_at: 'Vérifié à',
             task: 'Tâche',
             message: 'Message',
+            category: 'Catégorie',
             block_height: 'Bloc',
             latency: 'Latence',
             click_to_change_format: 'Cliquer pour changer de format',

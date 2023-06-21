@@ -373,6 +373,7 @@ export default {
             checked_at: 'Geprüft am',
             task: 'Aufgabe',
             message: 'Nachricht',
+            category: 'Category',
             block_height: 'Block Nummer',
             latency: 'Latenz',
             click_to_change_format: 'Zum Ändern des Formats anklicken',
