@@ -1,11 +1,11 @@
 <script>
 import AddressField from 'components/AddressField';
 import { formatWei } from 'src/lib/utils';
-import { BigNumber } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { getIcon } from 'src/lib/token-utils';
 import CustomTooltip  from 'components/CustomTooltip';
 import TokenValueField from 'components/Token/TokenValueField';
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+import { TRANSFER_SIGNATURES, ERC1155_BATCH_TRANSFER_SIGNATURE } from 'src/lib/abi/signature/transfer_signatures';
 
 export default {
     name: 'ERCTransfersList',
@@ -90,20 +90,43 @@ export default {
                             'tokenUri': tokenUri,
                         });
                     } else if (this.type === 'erc1155' && contract.supportedInterfaces.includes('erc1155')) {
-                        let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
                         this.isLoading = true;
-                        let token = this.$contractManager.loadNFT(contract, tokenId.toString());
-                        if(!token){
-                            token = contract;
+                        if(sig === ERC1155_BATCH_TRANSFER_SIGNATURE){
+                            const decoded = ethers.utils.defaultAbiCoder.decode(
+                                ['uint256[]', 'uint256[]'],
+                                log.data,
+                            );
+                            const tokenIds = decoded[0];
+                            const tokenAmounts = decoded[1];
+                            for(let i = 0; i < tokenIds.length; i++){
+                                let token = this.$contractManager.loadNFT(contract, tokenIds[i].toString());
+                                if(!token){
+                                    token = contract;
+                                }
+                                transfers.push({
+                                    'amount': tokenAmounts[i],
+                                    'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
+                                    'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
+                                    'tokenId': tokenIds[i],
+                                    'token' : token,
+                                    'contract' : contract,
+                                });
+                            }
+                        } else {
+                            const tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
+                            let token = this.$contractManager.loadNFT(contract, tokenId.toString());
+                            if(!token){
+                                token = contract;
+                            }
+                            transfers.push({
+                                'amount': BigNumber.from('0x' + log.data.substr(66, log.data.length)).toString(),
+                                'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
+                                'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
+                                'tokenId': tokenId,
+                                'token' : token,
+                                'contract' : contract,
+                            });
                         }
-                        transfers.push({
-                            'amount': BigNumber.from('0x' + log.data.substr(66, log.data.length)).toString(),
-                            'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
-                            'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                            'tokenId': tokenId,
-                            'token' : token,
-                            'contract' : contract,
-                        });
                     } else if (this.type === 'erc20' && contract.supportedInterfaces.includes('erc20')) {
                         transfers.push({
                             'value': log.data,
@@ -199,6 +222,11 @@ export default {
                     <span v-else-if="transfer.contract?.properties?.name">
                         <span>{{ transfer.contract?.properties?.name?.slice(0, 12) }}</span>
                         <span v-if="transfer.contract?.properties?.name?.length > 12">...</span>
+                    </span>
+                    <span v-else>
+                        <span>
+                            {{ transfer.contract.address.slice(0, 6) + '...' + transfer.contract.address.slice(36, 40)}}
+                        </span>
                     </span>
                 </router-link>
                 <div class="col">
