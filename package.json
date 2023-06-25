@@ -46,7 +46,7 @@
     "vue-router": "4",
     "vue3-click-away": "^1.2.4",
     "vuex": "4",
-    "web3": "^1.8.1"
+    "web3": "^4.0.1"
   },
   "devDependencies": {
     "@babel/core": "7.19.3",
