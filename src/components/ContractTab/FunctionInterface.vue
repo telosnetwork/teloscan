@@ -1,4 +1,5 @@
 <script>
+import { toRaw } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
@@ -89,6 +90,9 @@ export default {
             'isNative',
             'nativeAccount',
         ]),
+        functionABI(){
+            return `${this.abi.name}(${this.abi.inputs.map(i => i.type).join(',')})`;
+        },
         inputComponents() {
             if (!Array.isArray(this.abi?.inputs)) {
                 return [];
@@ -211,9 +215,6 @@ export default {
 
             this.endLoading();
         },
-        getFunctionAbi() {
-            return `${this.abi.name}(${this.abi.inputs.map(i => i.type).join(',')})`;
-        },
         async getEthersFunction(provider) {
             const contractInstance = await this.$contractManager.getContractInstance(this.contract, provider);
             return contractInstance[this.getFunctionAbi()];
@@ -244,7 +245,7 @@ export default {
             unsignedTrx.gasPrice = gasPrice;
 
             // DO NOT INCLUDE CHAINID, EIP155 is only for replay attacks and you cannot replay a Telos native signed trx
-            // this can however break stuff that trys to decode this trx
+            // this can however break stuff that tries to decode this trx
             //unsignedTrx.chainId = this.$evm.chainId;
 
             if (opts.value) {

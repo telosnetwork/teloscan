@@ -3,6 +3,7 @@
 import { toChecksumAddress, formatWei, WEI_PRECISION } from 'src/lib/utils';
 import { getIcon } from 'src/lib/token-utils';
 import { BigNumber } from 'ethers';
+import { Web3 } from 'web3';
 import TransactionTable from 'components/TransactionTable';
 import InternalTransactionTable from 'components/InternalTransactionTable';
 import TransferTable from 'components/TransferTable';
