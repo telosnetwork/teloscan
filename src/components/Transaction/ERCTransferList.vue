@@ -67,7 +67,8 @@ export default {
                             this.type === 'erc1155' && contract.supportedInterfaces.includes('erc1155') ||
                             this.type === 'erc20' && contract.supportedInterfaces.includes('erc20')
                         ) {
-                            this.more = true;
+                            this.more++;
+                            continue;
                         }
                         break;
                     }
@@ -99,6 +100,10 @@ export default {
                             const tokenIds = decoded[0];
                             const tokenAmounts = decoded[1];
                             for(let i = 0; i < tokenIds.length; i++){
+                                if(transfers.length >= 10 && this.isExpanded === false){
+                                    this.more++;
+                                    continue;
+                                }
                                 let token = this.$contractManager.loadNFT(contract, tokenIds[i].toString());
                                 if(!token){
                                     token = contract;
@@ -302,7 +307,7 @@ export default {
             <div class="separator"></div>
             <div class="flex items-center">
                 <q-icon name="add_circle_outline" class="q-mr-xs" />
-                <span>{{ $t('global.expand') }}</span>
+                <span>{{ $t('global.expand', {more: more}) }}</span>
             </div>
         </div>
     </div>
