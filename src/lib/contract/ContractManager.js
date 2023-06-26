@@ -63,7 +63,7 @@ export default class ContractManager {
                 transaction.transfers = await this.getTransfers(raw);
                 return transaction;
             } catch (e) {
-                console.log(`Failed to parse transaction data ${data} using abi for ${contract.address}: ${e}`);
+                console.error(`Failed to parse transaction data ${data} using abi for ${contract.address}: ${e}`);
             }
         }
         try {

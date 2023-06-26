@@ -32,7 +32,7 @@ export const login = async function(
       e.message ||
       e.reason;
         commit('general/setErrorMsg', error, { root: true });
-        console.log('Login error: ', error);
+        console.error('Login error: ', error);
     } finally {
         commit('setLoadingWallet');
     }
@@ -68,7 +68,7 @@ export const logout = async function({ getters }) {
         try {
             authenticator && (await authenticator.logout());
         } catch (error) {
-            console.log('Authenticator logout error', error);
+            console.error('Authenticator logout error', error);
         }
 
         localStorage.removeItem('autoLogin');

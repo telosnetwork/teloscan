@@ -40,7 +40,7 @@ export default {
                 `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com/${checkSumAddress}/source.json`,
             );
         } catch(e){
-            console.log(e);
+            console.error(e);
         }
         if(sources){
             this.sources = sources;
