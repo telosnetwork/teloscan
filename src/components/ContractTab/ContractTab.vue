@@ -30,7 +30,6 @@ export default {
     },
     computed: {
         verified() {
-            console.log(this.contract.verified);
             return this.contract.verified;
         },
         abi() {

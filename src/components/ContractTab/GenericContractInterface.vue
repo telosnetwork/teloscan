@@ -56,7 +56,6 @@ export default {
             }
         },
         customAbiDefinition(newValue, oldValue) {
-            console.log('Watching customAbiDefinition:', [newValue, oldValue]);
             if (oldValue !== newValue && this.customAbiIsValidJSON) {
                 this.formatAbiFunctionLists();
                 this.displayWriteFunctions = false;
