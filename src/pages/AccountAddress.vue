@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-unused-components -->
 <script>
 import { toChecksumAddress, formatWei, WEI_PRECISION } from 'src/lib/utils';
 import { getIcon } from 'src/lib/token-utils';
@@ -9,7 +8,7 @@ import TransferTable from 'components/TransferTable';
 import TokenList from 'components/Token/TokenList';
 import ApprovalList from 'components/Token/ApprovalList';
 import HolderList from 'components/Token/HolderList';
-import NFTList from 'components/NFT/NFTList';
+import NFTList from 'components/Token/NFTList';
 import ConfirmationDialog from 'components/ConfirmationDialog';
 import ContractTab from 'components/ContractTab/ContractTab';
 import TransactionField from 'components/TransactionField';
@@ -21,17 +20,27 @@ import { mapGetters } from 'vuex';
 
 const tabs = {
     transactions: '#transactions',
-    nfts: '#nfts',
     holders: '#holders',
     collection: '#collection',
-    approvals: '#approvals',
     int_transactions: '#int_transactions',
-    erc20_transfers: '#erc20',
-    erc721_transfers: '#erc721',
-    erc1155_transfers: '#erc1155',
     tokens: '#tokens',
     contract: '#contract',
+    transfers: '#transfers',
+    approvals: '#approvals',
+    nfts: '#nfts',
 };
+
+const subtabs = {
+    erc1155_nfts: '#erc1155_nfts',
+    erc721_nfts: '#erc721_nfts',
+    erc20_approvals: '#erc20_approvals',
+    erc721_approvals: '#erc721_approvals',
+    erc1155_approvals: '#erc1155_approvals',
+    erc20_transfers: '#erc20_transfers',
+    erc721_transfers: '#erc721_transfers',
+    erc1155_transfers: '#erc1155_transfers',
+};
+
 
 export default {
     name: 'AccountAddress',
@@ -61,9 +70,21 @@ export default {
             nonce: null,
             isContract: false,
             contract: null,
+            hash: null,
+            indicators: {
+                'approvals': false,
+                'nfts': false,
+                'transfers': false,
+            },
+            menus: {
+                'approvals': false,
+                'nfts': false,
+                'transfers': false,
+            },
             verificationDate: '',
             creationDate: 0,
             tab: '#transactions',
+            subtab: '#transactions',
             tokens: null,
             confirmationDialog: false,
         };
@@ -75,14 +96,6 @@ export default {
         ...mapGetters('login', ['address', 'isLoggedIn']),
     },
     watch: {
-        address: {
-            handler(newValue) {
-                if (toChecksumAddress(newValue) === toChecksumAddress(this.accountAddress)) {
-                    // Bring back approvals...
-                }
-            },
-            immediate: true,
-        },
         accountAddress: {
             async handler(newValue, oldValue) {
                 if (newValue !== oldValue) {
@@ -101,7 +114,7 @@ export default {
             async handler(newRoute, oldRoute = {}) {
                 if (newRoute !== oldRoute) {
                     const { hash: newHash } = newRoute;
-
+                    this.hash = newHash;
                     if (newRoute.name !== 'address' || !newHash) {
                         return;
                     }
@@ -112,8 +125,21 @@ export default {
                     }
 
                     const tabHashes = Object.values(tabs);
+                    const subtabHashes = Object.values(subtabs);
+
+                    if(subtabHashes.includes(newHash)){
+                        this.subtab = newHash;
+                        this.tab = newHash.split('_')[1];
+                        this.toggleMenus(this.tab);
+                    } else {
+                        if(newHash === '#transfers' || newHash === '#approvals'){
+                            this.subtab = '#erc20_' + newHash.pop();
+                        } else if (newHash === '#nfts'){
+                            this.subtab = '#erc721_' + newHash.pop();
+                        }
+                    }
                     const newHashIsInvalid =
-                        !tabHashes.includes(newHash) ||
+                        !tabHashes.includes(newHash) && !subtabHashes.includes(newHash) ||
                         (newHash === tabs.contract && !this.isContract);
 
                     if (newHashIsInvalid) {
@@ -212,6 +238,23 @@ export default {
             }
 
             return this.$t('pages.account_url', { domain: process.env.NETWORK_EXPLORER, account: this.telosAccount });
+        },
+        tabClass(active){
+            if(active){
+                return 'q-tab active relative-position self-stretch flex flex-center text-center';
+            }
+            return 'q-tab relative-position self-stretch flex flex-center text-center';
+        },
+        toggleMenus(menu){
+            for(let i in this.menus){
+                this.menus[i] = false;
+                this.indicators[i] = false;
+            }
+            if(menu){
+                this.menus[menu] = true;
+                this.indicators[menu] = true;
+                this.$refs.panels.goTo(this.subtab);
+            }
         },
         disableConfirmation(){
             this.confirmationDialog = false;
@@ -470,6 +513,7 @@ export default {
                 exact
                 replace
                 :label="$t('pages.transactions')"
+                @click.stop="this.toggleMenus(false)"
             />
             <q-route-tab
                 v-if="contract && contract.supportedInterfaces.includes('erc721')"
@@ -478,6 +522,7 @@ export default {
                 exact
                 replace
                 :label="$t('components.nfts.collection')"
+                @click.stop="this.toggleMenus(false)"
             />
             <q-route-tab
                 v-if="contract && contract.isToken()"
@@ -486,30 +531,16 @@ export default {
                 exact
                 replace
                 :label="$t('pages.holders')"
+                @click.stop="this.toggleMenus(false)"
             />
             <q-route-tab
-                v-else-if="!contract"
-                name="nfts"
-                :to="{ hash: '#nfts' }"
-                exact
-                replace
-                :label="$t('components.nfts.nfts')"
-            />
-            <q-route-tab
-                v-if="!contract && isLoggedIn && toChecksumAddress(this.accountAddress) === toChecksumAddress(address)"
-                name="approvals"
-                :to="{ hash: '#approvals' }"
-                exact
-                replace
-                :label="$t('pages.approvals')"
-            />
-            <q-route-tab
-                v-else-if="contract && !contract.isToken()"
+                v-if="contract && !contract.isToken()"
                 name="int_transactions"
                 :to="{ hash: '#int_transactions' }"
                 exact
                 replace
                 :label="$t('pages.internal_txns')"
+                @click.stop="this.toggleMenus(false)"
             />
             <q-route-tab
                 name="tokens"
@@ -517,30 +548,134 @@ export default {
                 exact
                 replace
                 :label="$t('pages.tokens')"
+                @click.stop="this.toggleMenus(false)"
             />
-            <q-route-tab
-                name="erc20_transfers"
-                :to="{ hash: '#erc20' }"
-                exact
+            <q-tab
+                v-if="!contract"
+                name="nfts"
+                :class="tabClass(indicators.nfts)"
+                :v-model="tab"
+                @click.stop="this.toggleMenus('nfts')"
+            >
+                <q-btn-dropdown
+                    v-model="menus.nfts"
+                    label="NFTs"
+                    class="q-tab"
+                    :autoclose="false"
+                >
+                    <q-list>
+                        <q-route-tab
+                            clickable
+                            name="erc721_nfts"
+                            :to="{ hash: '#erc721_nfts' }"
+                            exact
+                            replace
+                            label="erc721"
+                        />
+                        <q-route-tab
+                            clickable
+                            name="erc1155_nfts"
+                            :to="{ hash: '#erc1155_nfts' }"
+                            exact
+                            replace
+                            label="erc1155"
+                        />
+                    </q-list>
+                </q-btn-dropdown>
+                <div class="q-tab__indicator absolute-bottom"></div>
+            </q-tab>
+            <q-tab
+                v-if="
+                    !contract
+                        && isLoggedIn
+                        && toChecksumAddress(this.accountAddress) === toChecksumAddress(address)
+                "
+                v-model="tab"
+                name="approvals"
+                :class="tabClass(indicators.approvals)"
+                @click="this.toggleMenus('approvals')"
+            >
+                <q-btn-dropdown
+                    v-model="menus.approvals"
+                    :label="$t('pages.approvals')"
+                    :autoclose="true"
+                    class="q-tab"
+                >
+                    <q-list>
+                        <q-route-tab
+                            clickable
+                            name="erc20_approvals"
+                            :to="{ hash: '#erc20_approvals' }"
+                            exact
+                            replace
+                            label="erc20"
+                        />
+                        <q-route-tab
+                            clickable
+                            name="erc721_approvals"
+                            :to="{ hash: '#erc721_approvals' }"
+                            exact
+                            replace
+                            label="erc721"
+                        />
+                        <q-route-tab
+                            clickable
+                            name="erc1155_approvals"
+                            :to="{ hash: '#erc1155_approvals' }"
+                            exact
+                            replace
+                            label="erc1155"
+                        />
+                    </q-list>
+                </q-btn-dropdown>
+                <div class="q-tab__indicator absolute-bottom"></div>
+            </q-tab>
+            <q-tab
+                v-model="tab"
+                :to="{ hash: '#transfers' }"
                 replace
-                :label="$t('pages.erc20_transfers')"
-            />
-            <q-route-tab
-                name="erc721_transfers"
-                :to="{ hash: '#erc721' }"
                 exact
-                replace
-                :label="$t('pages.erc721_transfers')"
-            />
+                :class="tabClass(indicators.transfers)"
+                name="transfers"
+                @click="this.toggleMenus('transfers')"
+            >
+                <q-btn-dropdown
+                    v-model="menus.transfers"
+                    label="Transfers"
+                    class="q-tab"
+                    :autoclose="true"
+                >
+                    <q-list>
+                        <q-route-tab
+                            clickable
+                            name="erc20_transfers"
+                            :to="{ hash: '#erc20_transfers' }"
+                            exact
+                            replace
+                            label="erc20"
+                        />
+                        <q-route-tab
+                            clickable
+                            name="erc721_transfers"
+                            :to="{ hash: '#erc721_transfers' }"
+                            exact
+                            replace
+                            label="erc721"
+                        />
+                        <q-route-tab
+                            clickable
+                            name="erc1155_transfers"
+                            :to="{ hash: '#erc1155_transfers' }"
+                            exact
+                            replace
+                            label="erc1155"
+                        />
+                    </q-list>
+                </q-btn-dropdown>
+                <div class="q-tab__indicator absolute-bottom"></div>
+            </q-tab>
             <q-route-tab
-                name="erc1155_transfers"
-                :to="{ hash: '#erc1155' }"
-                exact
-                replace
-                :label="$t('pages.erc1155_transfers')"
-            />
-            <q-route-tab
-                v-if="isContract"
+                v-if="contract"
                 name="contract"
                 :to="{ hash: '#contract' }"
                 exact
@@ -550,9 +685,9 @@ export default {
         </q-tabs>
         <div class="q-mb-md tableWrapper">
             <q-tab-panels
+                ref="panels"
                 :key="address"
                 v-model="tab"
-                class="shadow-2"
                 animated
                 keep-alive="keep-alive"
             >
@@ -564,7 +699,10 @@ export default {
                         :address="accountAddress"
                     />
                 </q-tab-panel>
-                <q-tab-panel v-if="contract && contract.supportedInterfaces.includes('erc721')" name="collection">
+                <q-tab-panel
+                    v-if="contract && contract.supportedInterfaces.includes('erc721')"
+                    name="collection"
+                >
                     <NFTList :address="contract.address" filter="contract" />
                 </q-tab-panel>
                 <q-tab-panel v-if="contract && contract.isToken()" name="holders">
@@ -579,17 +717,43 @@ export default {
                             && isLoggedIn
                             && toChecksumAddress(this.accountAddress) === toChecksumAddress(address)
                     "
-                    name="approvals"
+                    v-model="subtab"
+                    name="erc20_approvals"
                 >
-                    <ApprovalList  :accountAddress="accountAddress" />
+                    <ApprovalList type="erc20" :accountAddress="accountAddress" />
                 </q-tab-panel>
-                <q-tab-panel v-if="!contract" name="nfts">
-                    <NFTList :address="accountAddress" filter="account" />
+                <q-tab-panel
+                    v-if="
+                        !contract
+                            && isLoggedIn
+                            && toChecksumAddress(this.accountAddress) === toChecksumAddress(address)
+                    "
+                    v-model="subtab"
+                    name="erc721_approvals"
+                >
+                    <ApprovalList type="721" :accountAddress="accountAddress" />
+                </q-tab-panel>
+                <q-tab-panel
+                    v-if="
+                        !contract
+                            && isLoggedIn
+                            && toChecksumAddress(this.accountAddress) === toChecksumAddress(address)
+                    "
+                    v-model="subtab"
+                    name="erc1155_approvals"
+                >
+                    <ApprovalList type="erc1155" :accountAddress="accountAddress" />
+                </q-tab-panel>
+                <q-tab-panel v-if="!contract" v-model="subtab" name="erc721_nfts">
+                    <NFTList type="erc721" :address="accountAddress" filter="account" />
+                </q-tab-panel>
+                <q-tab-panel v-if="!contract" v-model="subtab" name="erc1155_nfts" >
+                    <NFTList type="erc1155" :address="accountAddress" filter="account" />
                 </q-tab-panel>
                 <q-tab-panel name="tokens">
                     <TokenList :address="accountAddress"/>
                 </q-tab-panel>
-                <q-tab-panel name="erc20_transfers">
+                <q-tab-panel v-model="subtab" name="erc20_transfers">
                     <TransferTable
                         title="ERC-20 Transfers"
                         token-type="erc20"
@@ -597,7 +761,7 @@ export default {
                         :address="accountAddress"
                     />
                 </q-tab-panel>
-                <q-tab-panel name="erc1155_transfers">
+                <q-tab-panel :v-model="subtab" name="erc1155_transfers">
                     <TransferTable
                         title="ERC-1155 Transfers"
                         token-type="erc1155"
@@ -605,7 +769,7 @@ export default {
                         :address="accountAddress"
                     />
                 </q-tab-panel>
-                <q-tab-panel name="erc721_transfers">
+                <q-tab-panel :v-model="subtab" name="erc721_transfers">
                     <TransferTable
                         title="ERC-721 Transfers"
                         token-type="erc721"
@@ -624,9 +788,6 @@ export default {
 </template>
 
 <style scoped lang="sass">
-.shadow-2
-    box-shadow: none !important
-
 .dataCardsContainer .dataCardItem
   width: fit-content
   min-width: auto
@@ -645,6 +806,16 @@ body.body--dark .supported-interface
   font-size: 0.8em
   margin-right: 3px
   line-height: initial
+
+body.desktop .q-focusable:focus .q-focus-helper
+  background: inherit
+  opacity: 0 !important
+body.ios .q-hoverable:active .q-focus-helper
+  background: inherit
+  opacity: 0
+.q-focus-helper
+  opacity: 0
+  transition: unset
 
 .homeInfo > .flex:nth-child(2)
   align-content: stretch
@@ -674,6 +845,25 @@ body.body--dark .supported-interface
   margin-right: 7px
   margin-bottom: 5px
 
+.q-tab:hover
+    color: $secondary
+.q-tab.active .q-tab__indicator
+    opacity: 1
+    color: $secondary
+.tabs-header .q-btn
+    display: block
+    height: 100%
+    padding: 16px 0px
+.tabs-header .q-btn.active
+
+.tabs-header .q-btn
+  background: transparent !important
+.tabs-header .q-btn:hover
+  color: $secondary
+  background: transparent !important
+.tabs-header .q-btn:before, .tabs-header .q-btn:focus
+  box-shadow: none
+  background: transparent !important
 .tabs-header
   background: white
   color: black !important

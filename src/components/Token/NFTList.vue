@@ -6,6 +6,11 @@ import { ALLOWED_VIDEO_EXTENSIONS } from 'src/lib/utils';
 export default {
     name: 'NFTList',
     props: {
+        type: {
+            type: String,
+            required: false,
+            default: 'erc721',
+        },
         address: {
             type: String,
             required: true,
@@ -72,8 +77,9 @@ export default {
                 align: 'center',
             },
         ];
-        if(this.filter === 'address'){
-            delete columns[1];
+        if(this.type === 'erc1155'){
+            columns.shift();
+            columns.splice(2, 1);
         }
         return {
             columns: columns,
@@ -175,7 +181,7 @@ export default {
             if(!this.allowedFilters.includes(this.filterBy)){
                 this.filterBy = 'contract';
             }
-            let path = `/${this.filterBy}/${this.address}/nfts?includeAbi=true&limit=${
+            let path = `/${this.filterBy}/${this.address}/nfts?type=${this.type}&includeAbi=true&limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
             path += `&offset=${(page - 1) * rowsPerPage}`;
@@ -189,7 +195,7 @@ export default {
 </script>
 
 <template>
-<div>
+<div :key="this.type">
     <q-table
         v-model:pagination="pagination"
         :rows="nfts"
@@ -220,7 +226,7 @@ export default {
         </template>
         <template v-slot:body="props">
             <q-tr :props="props">
-                <q-td key="minted" :props="props">
+                <q-td v-if="type === 'erc721'" key="minted" :props="props">
                     <BlockField v-if="props.row.blockMinted" :block="props.row.blockMinted" />
                 </q-td>
                 <q-td key="token_id" :props="props">
@@ -236,7 +242,7 @@ export default {
                 <q-td v-else key="contract" :props="props">
                     <AddressField :key="props.row.tokenId + 'contract'" :address="props.row.contract" :truncate="12" />
                 </q-td>
-                <q-td key="minter" :props="props">
+                <q-td v-if="type === 'erc721'" key="minter" :props="props">
                     <AddressField
                         v-if="props.row.minter"
                         :key="props.row.tokenId + 'minter'"

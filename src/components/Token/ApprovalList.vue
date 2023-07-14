@@ -11,6 +11,11 @@ export default {
     name: 'ApprovalList',
     components: { AddressField, DateField },
     props: {
+        type: {
+            type: String,
+            required: false,
+            default: 'erc20',
+        },
         accountAddress: {
             type: String,
             required: true,
@@ -131,7 +136,7 @@ export default {
         },
         getPath(props){
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/account/${this.accountAddress}/approvals?limit=${
+            let path = `/account/${this.accountAddress}/approvals?type=${this.type}&limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
             path += `&includeAbi=true&offset=${(page - 1) * rowsPerPage}`;

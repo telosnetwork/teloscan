@@ -362,12 +362,15 @@ export default {
                 />
             </q-td>
             <q-td key='value' :props="props">
-                <TokenValueField
-                    v-if="props.row.parsedTransaction?.transfers?.length > 0"
-                    :value="props.row.parsedTransaction.transfers[0].value.toString(16) || '0.0'"
-                    :address="props.row.to"
-                />
-                <TokenValueField v-else :value="BigInt(props.row.value).toString(10) || '0.0'" />
+                <TokenValueField v-if="props.row.value > 0" :value="BigInt(props.row.value).toString(10) || '0.0'" />
+                <span v-else-if="props.row.parsedTransaction?.transfers?.length > 0">
+                    <TokenValueField
+                        v-if="props.row.parsedTransaction?.transfers?.length > 0"
+                        :value="props.row.parsedTransaction.transfers[0].value.toString(16) || '0.0'"
+                        :address="props.row.parsedTransaction.transfers[0].address"
+                    />
+                </span>
+                <TokenValueField v-else :value="'0.0'" />
             </q-td>
         </q-tr>
     </template>
