@@ -570,7 +570,7 @@ export default {
                 v-if="!contract"
                 name="nfts"
                 :class="tabClass(indicators.nfts)"
-                @click.stop="this.toggleMenus('nfts')"
+                @click="this.toggleMenus('nfts')"
             >
                 <q-btn-dropdown
                     v-model="menus.nfts"
