@@ -127,16 +127,19 @@ export default {
                     const tabHashes = Object.values(tabs);
                     const subtabHashes = Object.values(subtabs);
 
+                    let hash = newHash.slice(1);
                     if(subtabHashes.includes(newHash)){
-                        this.subtab = newHash;
-                        this.tab = newHash.split('_')[1];
+                        this.subtab = hash;
+                        this.tab = hash.split('_')[1];
                         this.toggleMenus(this.tab);
-                    } else {
-                        if(newHash === '#transfers' || newHash === '#approvals'){
-                            this.subtab = '#erc20_' + newHash.pop();
-                        } else if (newHash === '#nfts'){
-                            this.subtab = '#erc721_' + newHash.pop();
+                    } else if (['transfers', 'nfts', 'approvals'].includes(hash)) {
+                        if(hash === 'transfers' || hash === 'approvals'){
+                            this.subtab = 'erc20_' + hash;
+                        } else if (hash === 'nfts'){
+                            this.subtab = 'erc721_nfts';
                         }
+                        this.tab = hash;
+                        this.toggleMenus(this.tab);
                     }
                     const newHashIsInvalid =
                         !tabHashes.includes(newHash) && !subtabHashes.includes(newHash) ||
@@ -245,12 +248,25 @@ export default {
             }
             return 'q-tab relative-position self-stretch flex flex-center text-center';
         },
+        cancelHide(evt){
+            if(!evt) {
+                return;
+            }
+            this.tab = this.subtab.split('_')[1];
+            evt.preventDefault();
+            evt.stopPropagation();
+            this.$refs.panels.goTo(this.subtab);
+        },
         toggleMenus(menu){
             for(let i in this.menus){
                 this.menus[i] = false;
                 this.indicators[i] = false;
             }
             if(menu){
+                if(!this.subtab || !this.subtab.includes(menu)){
+                    this.subtab = (menu === 'nfts') ? 'erc721_nfts' : 'erc20_' + menu;
+                }
+                this.hash = this.subtab;
                 this.menus[menu] = true;
                 this.indicators[menu] = true;
                 this.$refs.panels.goTo(this.subtab);
@@ -554,14 +570,14 @@ export default {
                 v-if="!contract"
                 name="nfts"
                 :class="tabClass(indicators.nfts)"
-                :v-model="tab"
                 @click.stop="this.toggleMenus('nfts')"
             >
                 <q-btn-dropdown
                     v-model="menus.nfts"
                     label="NFTs"
                     class="q-tab"
-                    :autoclose="false"
+                    :autoclose="true"
+                    @hide="cancelHide"
                 >
                     <q-list>
                         <q-route-tab
@@ -600,6 +616,7 @@ export default {
                     :label="$t('pages.approvals')"
                     :autoclose="true"
                     class="q-tab"
+                    @hide="cancelHide"
                 >
                     <q-list>
                         <q-route-tab
@@ -631,10 +648,6 @@ export default {
                 <div class="q-tab__indicator absolute-bottom"></div>
             </q-tab>
             <q-tab
-                v-model="tab"
-                :to="{ hash: '#transfers' }"
-                replace
-                exact
                 :class="tabClass(indicators.transfers)"
                 name="transfers"
                 @click="this.toggleMenus('transfers')"
@@ -644,6 +657,7 @@ export default {
                     label="Transfers"
                     class="q-tab"
                     :autoclose="true"
+                    @hide="cancelHide"
                 >
                     <q-list>
                         <q-route-tab
@@ -689,7 +703,7 @@ export default {
                 :key="address"
                 v-model="tab"
                 animated
-                keep-alive="keep-alive"
+                keep-alive
             >
                 <q-tab-panel name="transactions">
                     <TransactionTable
@@ -744,10 +758,10 @@ export default {
                 >
                     <ApprovalList type="erc1155" :accountAddress="accountAddress" />
                 </q-tab-panel>
-                <q-tab-panel v-if="!contract" v-model="subtab" name="erc721_nfts">
+                <q-tab-panel v-model="subtab" name="erc721_nfts">
                     <NFTList type="erc721" :address="accountAddress" filter="account" />
                 </q-tab-panel>
-                <q-tab-panel v-if="!contract" v-model="subtab" name="erc1155_nfts" >
+                <q-tab-panel v-model="subtab" name="erc1155_nfts">
                     <NFTList type="erc1155" :address="accountAddress" filter="account" />
                 </q-tab-panel>
                 <q-tab-panel name="tokens">
@@ -759,6 +773,7 @@ export default {
                         token-type="erc20"
                         :initialPageSize="10"
                         :address="accountAddress"
+                        @before-hide="cancelHide"
                     />
                 </q-tab-panel>
                 <q-tab-panel :v-model="subtab" name="erc1155_transfers">
@@ -767,6 +782,7 @@ export default {
                         token-type="erc1155"
                         :initialPageSize="10"
                         :address="accountAddress"
+                        @before-hide="cancelHide"
                     />
                 </q-tab-panel>
                 <q-tab-panel :v-model="subtab" name="erc721_transfers">
@@ -775,6 +791,7 @@ export default {
                         token-type="erc721"
                         :initialPageSize="10"
                         :address="accountAddress"
+                        @before-hide="cancelHide"
                     />
                 </q-tab-panel>
                 <q-tab-panel v-if="isContract" name="contract">

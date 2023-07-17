@@ -40,11 +40,6 @@ export default {
                 align: 'left',
             },
             {
-                name: 'type',
-                label: this.$t('components.approvals.type'),
-                align: 'left',
-            },
-            {
                 name: 'updated',
                 label: this.$t('global.updated'),
                 align: 'left',
@@ -435,19 +430,6 @@ export default {
                         :address="props.row.contract.address"
                         :truncate="18"
                     />
-                </q-td>
-                <q-td key="type" :props="props">
-                    <span
-                        v-if="props.row.contract && props.row.contract.isNonFungible()"
-                        class="label bg-secondary text-white q-pa-sm rounded"
-                    >
-                        <span>ERC721</span>
-                        <q-tooltip>{{ $t('global.erc721_token') }}</q-tooltip>
-                    </span>
-                    <span v-else class="label bg-positive text-white q-px-md q-py-sm rounded-borders">
-                        <span>ERC20</span>
-                        <q-tooltip>{{ $t('global.erc20_token') }}</q-tooltip>
-                    </span>
                 </q-td>
                 <q-td key="updated" :props="props">
                     <DateField :epoch="props.row.updated / 1000" />
