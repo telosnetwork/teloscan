@@ -1,4 +1,5 @@
 <script>
+import ContractByteCode from 'components/ContractTab/ContractByteCode';
 import ContractSource from 'components/ContractTab/ContractSource';
 import ContractInterface from 'components/ContractTab/ContractInterface';
 import CopyButton from 'components/CopyButton.vue';
@@ -6,6 +7,7 @@ import CopyButton from 'components/CopyButton.vue';
 export default {
     name: 'ContractTab',
     components: {
+        ContractByteCode,
         ContractSource,
         ContractInterface,
         CopyButton,
@@ -26,6 +28,7 @@ export default {
         return ({
             source: false,
             write: false,
+            byte: false,
         });
     },
     computed: {
@@ -41,8 +44,11 @@ export default {
 
             return JSON.stringify(this.contract.abi);
         },
-        codeSeleted() {
-            return this.source === true;
+        codeSelected() {
+            return (this.source === true && this.byte === false);
+        },
+        byteCodeSelected() {
+            return (this.source === true && this.byte === true);
         },
         readSelected() {
             return this.source === false && this.write === false;
@@ -59,22 +65,28 @@ export default {
     <div class="flex justify-between items-center">
         <q-btn-group >
             <q-btn
-                :outline="codeSeleted"
+                :outline="codeSelected"
                 :label="$t('components.contract_tab.code')"
                 push
-                @click="source = true; write = false"
+                @click="source = true; byte = false; write = false"
+            />
+            <q-btn
+                :outline="byteCodeSelected"
+                :label="$t('components.contract_tab.bytecode')"
+                push
+                @click="source = true; byte = true; write = false"
             />
             <q-btn
                 :outline="readSelected"
                 :label="$t('components.contract_tab.read')"
                 push
-                @click="source = false; write = false"
+                @click="source = false; byte = false; write = false"
             />
             <q-btn
                 :outline="writeSelected"
                 :label="$t('components.contract_tab.write')"
                 push
-                @click="source = false; write = true"
+                @click="source = false; byte = false; write = true"
             />
         </q-btn-group>
         <CopyButton
@@ -83,7 +95,8 @@ export default {
             :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
         />
     </div>
-    <ContractSource v-if="source" :contract="contract" />
+    <ContractSource v-if="source && !byte" :contract="contract" />
+    <ContractByteCode v-else-if="source && byte" :contract="contract" />
     <ContractInterface
         v-else
         :write="write"

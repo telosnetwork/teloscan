@@ -391,6 +391,7 @@ export default {
             result: 'Résultat',
             view_transaction: 'Voir la transaction',
             code: 'Code',
+            bytecode: 'Bytecode',
             read: 'Lire',
             write: 'Ecrire',
             amount: 'Montant',

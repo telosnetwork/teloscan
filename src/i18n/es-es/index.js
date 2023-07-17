@@ -389,6 +389,7 @@ export default {
             result: 'Resultado',
             view_transaction: 'Ver transacción',
             code: 'Código',
+            bytecode: 'Código de bytes',
             read: 'Leer',
             write: 'Escribir',
             amount: 'Cantidad',
