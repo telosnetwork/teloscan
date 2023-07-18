@@ -261,6 +261,7 @@ export default {
         from: 'De',
         to: 'À',
         approvals: {
+            approved: 'Approuvé',
             approvals_granted_title: 'Permissions ERC:',
             login_account: 'Veuillez vous connecter à cette addresse à l\'aide de votre portefeuille afin de consulter ses permissions.',
             approval_text: 'Nous allons définir le montant des permissions séléctionés à 0. Ceci requiert une signature avec votre portefeuille.',
@@ -441,6 +442,8 @@ export default {
         },
     },
     global: {
+        true: 'oui',
+        false: 'non',
         close: 'Fermer',
         toggle_fullscreen: 'Passer en mode plein écran',
         name: 'Nom',

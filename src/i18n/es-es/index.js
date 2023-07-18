@@ -198,6 +198,7 @@ export default {
     },
     components: {
         approvals: {
+            approved: 'Approved',
             login_account: 'Inicie sesión en esta cuenta usando su billetera para poder ver sus aprobaciones.',
             approval_text: 'Se necesita una firma de su billetera para actualizar el monto de las aprobaciones seleccionadas a 0.',
             type: 'Tipo',
@@ -438,6 +439,8 @@ export default {
         },
     },
     global: {
+        true: 'true',
+        false: 'false',
         close: 'Close',
         toggle_fullscreen: 'Toggle fullscreen mode',
         name: 'Name',

@@ -3,7 +3,7 @@ import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import { formatWei } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
-import { erc721Abi } from 'src/lib/abi';
+import { erc721Abi, erc1155Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
 import { BigNumber, ethers } from 'ethers';
 
@@ -30,9 +30,11 @@ export default {
             },
             {
                 name: 'amount',
-                label: this.$t('components.approvals.amount'),
+                label: (this.type === 'erc20') ?
+                    this.$t('components.approvals.amount') :
+                    this.$t('components.approvals.approved'),
                 align: 'left',
-                sortable: true,
+                sortable: !this.isNFT(),
             },
             {
                 name: 'contract',
@@ -43,6 +45,7 @@ export default {
                 name: 'updated',
                 label: this.$t('global.updated'),
                 align: 'left',
+                sortable: this.isNFT(),
             },
             {
                 name: 'action',
@@ -53,6 +56,7 @@ export default {
         return {
             columns: columns,
             confirmModal: null,
+            approved: false,
             approvals: [],
             selected: [],
             displayConfirmModal: false,
@@ -60,7 +64,7 @@ export default {
             modalUpdateValue: false,
             mask: '##################',
             pagination: {
-                sortBy: 'amount',
+                sortBy: (this.isNFT()) ? 'updated' : 'amount',
                 descending: true,
                 page: 1,
                 rowsPerPage: 10,
@@ -104,30 +108,39 @@ export default {
             for (let approval of response.data.results) {
                 approval.selected = (this.selected.includes(approval.spender + ':' + approval.contract));
                 approval.contract = await this.$contractManager.getContract(approval.contract);
-                approval.usd = 0;
-                if(approval.contract.properties?.price){
-                    approval.usd = (formatWei(
-                        approval.amount,
-                        approval.contract.properties.decimals,
-                    ) * approval.contract.properties?.price).toFixed(2);
-                }
-                if(approval.amount > 0){
-                    approval.amountRaw = formatWei(
-                        approval.amount,
-                        approval.contract.properties?.decimals || 18,
-                        approval.contract.properties?.decimals || 18,
-                    );
-                    approval.amount = formatWei(
-                        approval.amount,
-                        approval.contract.properties?.decimals || 18,
-                        4,
-                    ).toString();
+                if(this.isNFT() === false){
+                    approval.usd = 0;
+                    if(approval.contract.properties?.price){
+                        approval.usd = (formatWei(
+                            approval.amount,
+                            approval.contract.properties.decimals,
+                        ) * approval.contract.properties?.price).toFixed(2);
+                    }
+                    if(approval.amount > 0){
+                        approval.amountRaw = formatWei(
+                            approval.amount,
+                            approval.contract.properties?.decimals || 18,
+                            approval.contract.properties?.decimals || 18,
+                        );
+                        approval.amount = formatWei(
+                            approval.amount,
+                            approval.contract.properties?.decimals || 18,
+                            4,
+                        ).toString();
+                    }
+                } else {
+                    approval.amountRaw = approval.approved;
+                    approval.amount = approval.approved;
+                    approval.spender = approval.operator;
                 }
                 approvals.push(approval);
             }
             this.approvals = approvals;
             this.loading = false;
 
+        },
+        isNFT(){
+            return (this.type !== 'erc20');
         },
         getPath(props){
             const { page, rowsPerPage, descending } = props.pagination;
@@ -139,7 +152,24 @@ export default {
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             return path;
         },
-        async updateApproval(spender, contractAddress, amount) {
+        async getApprovalFunction(instance, spender, param2){
+            if(this.isNFT()){
+                if(this.type === 'erc1155'){
+                    try {
+                        return await instance.setApprovalForAll(spender, false);
+                    } catch (e) {
+                        console.error(e);
+                    }
+                } else {
+                    // TODO: ERC721 has both approve & setApprovalForAll..
+                    //  Find in approvals if there is a token ID, if not use setApprovalForAll
+                    return await instance.approve(spender, param2);
+                }
+            } else {
+                return  await instance.approve(spender, param2);
+            }
+        },
+        async updateApproval(spender, contractAddress, param2) {
             if(!contractAddress || !spender){
                 return;
             }
@@ -148,14 +178,23 @@ export default {
             if(!contract){
                 return;
             }
+            let abi = erc20Abi;
+            switch (this.type) {
+            case('erc721'):
+                abi = erc721Abi;
+                break;
+            case('erc1155'):
+                abi = erc1155Abi;
+                break;
+            }
             const instance  = await this.$contractManager.getContractInstance(
-                { address: contractAddress, abi: (contract.isNonFungible()) ? erc721Abi : erc20Abi },
+                { address: contractAddress, abi: abi },
                 this.getProvider(),
             );
             let success = false;
             let err = this.$t('components.approvals.update_failed');
             try {
-                let result = await instance.approve(spender, amount);
+                let result = await this.getApprovalFunction(instance, spender, param2);
                 if(result?.hash){
                     success = true;
                     const spenderContract  = await this.$contractManager.getContract(spender);
@@ -381,47 +420,54 @@ export default {
                     <AddressField :key="props.row.spender + 'c'" :address="props.row.spender" :truncate="18" />
                 </q-td>
                 <q-td key="amount" :props="props" >
-                    <div class="flex items-center">
-                        <span
-                            v-if="parseFloat(props.row.amount)>props.row.contract.properties?.supply"
-                            key="infinite"
-                            class="flex items-center"
-                        >
-                            <q-icon name="all_inclusive" class="q-mr-xs" />
-                            <span>{{ $t('components.approvals.infinite') }}</span>
-                            <q-tooltip>{{ $t('components.approvals.infinite_tooltip') }}</q-tooltip>
-                        </span>
-                        <span v-else :key="props.row.amount">
-                            <span v-if="parseFloat(props.row.amountRaw) > 0.0001" >{{ props.row.amount }}</span>
-                            <span v-else >{{ '< 0.0001' }}</span>
-                            <q-tooltip v-if="parseFloat(props.row.amountRaw) > parseFloat(props.row.amount)">
-                                {{ props.row.amountRaw }}
-                            </q-tooltip>
-                        </span>
-                        <span class="flex items-center">
-                            <q-icon
-                                name="build"
-                                size="11px"
-                                class="q-ml-xs clickable"
-                                @click="handleCtaUpdate(
-                                    props.row.spender,
-                                    props.row.contract.address,
-                                    props.row.amountRaw
-                                )"
-                            />
-                            <q-tooltip>{{ $t('components.approvals.update') }}</q-tooltip>
-                        </span>
+                    <div v-if="!this.isNFT()">
+                        <div class="flex items-center">
+                            <span
+                                v-if="parseFloat(props.row.amount)>props.row.contract.properties?.supply"
+                                key="infinite"
+                                class="flex items-center"
+                            >
+                                <q-icon name="all_inclusive" class="q-mr-xs" />
+                                <span>{{ $t('components.approvals.infinite') }}</span>
+                                <q-tooltip>{{ $t('components.approvals.infinite_tooltip') }}</q-tooltip>
+                            </span>
+                            <span v-else :key="props.row.amount">
+                                <span v-if="parseFloat(props.row.amountRaw) > 0.0001" >{{ props.row.amount }}</span>
+                                <span v-else >{{ '< 0.0001' }}</span>
+                                <q-tooltip v-if="parseFloat(props.row.amountRaw) > parseFloat(props.row.amount)">
+                                    {{ props.row.amountRaw }}
+                                </q-tooltip>
+                            </span>
+                            <span class="flex items-center">
+                                <q-icon
+                                    name="build"
+                                    size="11px"
+                                    class="q-ml-xs clickable"
+                                    @click="handleCtaUpdate(
+                                        props.row.spender,
+                                        props.row.contract.address,
+                                        props.row.amountRaw
+                                    )"
+                                />
+                                <q-tooltip>{{ $t('components.approvals.update') }}</q-tooltip>
+                            </span>
+                        </div>
+                        <div >
+                            <small
+                                v-if="
+                                    parseFloat(props.row.amount)<=props.row.contract.properties?.supply
+                                        && props.row.usd > 0
+                                "
+                                class="text-grey"
+                            >
+                                ~{{ props.row.usd }} $
+                            </small>
+                        </div>
                     </div>
-                    <div >
-                        <small
-                            v-if="
-                                parseFloat(props.row.amount)<=props.row.contract.properties?.supply
-                                    && props.row.usd > 0
-                            "
-                            class="text-grey"
-                        >
-                            ~{{ props.row.usd }} $
-                        </small>
+                    <div v-else class="flex items-center">
+                        <span>
+                            {{ $t('global.true') }}
+                        </span>
                     </div>
                 </q-td>
                 <q-td key="contract" :props="props">
@@ -525,6 +571,7 @@ export default {
                 <p class="text-h5">{{ $t('components.approvals.update') }}</p>
                 <p class="text-grey">{{ $t('components.approvals.update_description') }}</p>
                 <q-input
+                    v-if="!isNFT"
                     ref="input"
                     v-model="modalUpdateValue"
                     type="number"
@@ -535,6 +582,12 @@ export default {
                         val => (val.split('.')[1]?.length <= mask.length) || val.indexOf('.') === -1
                             || $t('global.max_decimals_reached', {max: mask.length})
                     ]"
+                />
+                <q-select
+                    v-else
+                    v-model="approved"
+                    :options="[true, false]"
+                    label="Filled"
                 />
             </q-card-section>
             <q-card-actions align="right" class="q-pb-md q-px-md">

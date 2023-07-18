@@ -198,6 +198,7 @@ export default {
     },
     components: {
         approvals: {
+            approved: 'Approved',
             login_account: 'Please log into this account using your wallet to be able to see its approvals.',
             approval_text: 'A signature from your wallet is needed to update the selected approvals\' amount to 0.',
             type: 'Type',
@@ -438,6 +439,8 @@ export default {
         },
     },
     global: {
+        true: 'true',
+        false: 'false',
         close: 'Close',
         toggle_fullscreen: 'Toggle fullscreen mode',
         name: 'Name',

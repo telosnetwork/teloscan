@@ -46,6 +46,30 @@ export default {
             this.sources = sources;
             this.sortFiles(sources.data.files);
         }
+
+        if(this.files['bytecode']){
+            this.loading = false;
+        }
+        try{
+            let bytecode = await this.$evmEndpoint.post('/evm', {
+                jsonrpc: '2.0',
+                id: 1,
+                method: 'eth_getCode',
+                params: [this.contract.address],
+            });
+            if(bytecode.data?.result){
+                this.files.unshift({
+                    content: bytecode.data.result,
+                    name : 'bytecode',
+                    expanded: false,
+                    fullscreen: false,
+                    raw: bytecode.data.result,
+                    contract: false,
+                });
+            }
+        } catch(e){
+            console.error(e);
+        }
         this.loading = false;
     },
     methods: {
