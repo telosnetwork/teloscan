@@ -51,12 +51,10 @@ jobs:
           body-includes: '<!-- pr-ci-comment -->'
           comment-author: 'github-actions[bot]'
           body: | # can be a single value or you can compose text with multi-line values
-            markdown: kramdown
             <!-- pr-ci-comment -->
             # <span aria-hidden="true">✅</span> Pull Request Deploy Preview Details
 
             **<span aria-hidden="true">🔨</span> Built from SHA**: ${{ github.sha }}
             **<span aria-hidden="true">🔍</span> Mainnet Deploy URL**: https://pr-${{ github.event.number }}.teloscan-mainnet.pages.dev
             **<span aria-hidden="true">🔍</span> Testnet Deploy URL**: https://pr-${{ github.event.number }}.teloscan-testnet.pages.dev
-            [test new tab](https://google.com){:target="_blank"}
           edit-mode: replace
