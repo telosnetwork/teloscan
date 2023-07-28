@@ -57,5 +57,5 @@ jobs:
             **<span aria-hidden="true">🔨</span> Built from SHA**: ${{ github.sha }}
             **<span aria-hidden="true">🔍</span> Mainnet Deploy URL**: https://pr-${{ github.event.number }}.teloscan-mainnet.pages.dev
             **<span aria-hidden="true">🔍</span> Testnet Deploy URL**: https://pr-${{ github.event.number }}.teloscan-testnet.pages.dev
-            [test](https://google.com)
+            [test new tab](https://google.com){:target="_blank"}
           edit-mode: replace
