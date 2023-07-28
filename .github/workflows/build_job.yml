@@ -1,0 +1,135 @@
+on:
+  workflow_call:
+    inputs:
+      network:
+        required: true
+        type: string
+      test:
+        required: true
+        type: boolean
+      account_id:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
+      project:
+        required: true
+        type: string
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NETWORK: ${{ inputs.network }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: build
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.17.0'
+      - run: yarn global add @quasar/cli
+      - run: yarn install
+      - run: quasar build
+      - run: mkdir dist/spa/functions && cp -a functions/* dist/spa/functions/
+      - name: upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.network }}-build
+          path: dist/spa
+  test:
+      name: test
+      runs-on: ubuntu-latest
+      needs:
+        - build
+      if: inputs.test
+      steps:
+        - name: checkout
+          uses: actions/checkout@v3
+        - name: test
+          uses: actions/setup-node@v3
+        - run: yarn install
+        - run: yarn test
+        - run: yarn lint
+
+        - name: Passed ✅
+          if: ${{ success() }}
+          run: |
+            curl --request POST \
+            --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+            --header 'content-type: application/json' \
+            --data '{
+              "context": "tests",
+              "state": "success",
+              "description": "passed ✅",
+              "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }'
+
+        - name: Failed 🚨
+          if: ${{ failure() }}
+          run: |
+            curl --request POST \
+            --url https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+            --header 'content-type: application/json' \
+            --data '{
+              "context": "tests",
+              "state": "failure",
+              "description": "failed 🚨",
+              "target_url": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }'
+  publish-tested:
+    name: publish-tested
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    if: ${{ inputs.test }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.network }}-build
+          path: dist/spa
+      - run: cp -a dist/spa/functions .
+      - name: publish
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ inputs.account_id }}
+          projectName: ${{ inputs.project }}
+          directory: dist/spa
+          # Optional: Enable this if you want to have GitHub Deployments triggered
+          # gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          # the branch is used for the URL, it does not need to equal the current branch so we can
+          #    use it to set the name in the deployment URL
+          branch: ${{ inputs.branch }}
+  publish:
+    name: publish
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    if: ${{ !inputs.test }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.network }}-build
+          path: dist/spa
+      - run: cp -a dist/spa/functions .
+      - name: publish
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ inputs.account_id }}
+          projectName: ${{ inputs.project }}
+          directory: dist/spa
+          # Optional: Enable this if you want to have GitHub Deployments triggered
+          # gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          # the branch is used for the URL, it does not need to equal the current branch so we can
+          #    use it to set the name in the deployment URL
+          branch: ${{ inputs.branch }}
+
+
+
+
