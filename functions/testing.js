@@ -2,7 +2,10 @@
 //   - add the functions directory to the tsconfig so it gets compiled
 //   - change the CI workflow so it copies only the .js files
 
+
 export function onRequest(context) {
+    const env = require('../env')(context);
     console.dir(context);
-    return new Response(`Hello, ${context.env.NETWORK} world!!!!!!!!`);
+    const apiEndpoint = env.NETWORK_EVM_RPC;
+    return new Response(`Hello, ${context.env.NETWORK} world!!!!!!!!\n\nNetwork RPC is: ${apiEndpoint}`);
 }
