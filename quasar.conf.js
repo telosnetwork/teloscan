@@ -8,7 +8,7 @@
 /* eslint-env node */
 
 require('dotenv').config();
-const env = require('./env')(process);
+const env = require('./public/env')(process);
 const ESLintPlugin = require('eslint-webpack-plugin');
 const nodePolyfillWebpackPlugin = require('node-polyfill-webpack-plugin');
 
