@@ -1,5 +1,5 @@
 <script>
-import TransactionTable from 'components/TransactionTable';
+import TransactionTable from 'components/TransactionTable.vue';
 import HomeInfo from 'components/HomeInfo.vue';
 export default {
     name: 'IndexPage',

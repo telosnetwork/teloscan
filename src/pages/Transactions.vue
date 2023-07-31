@@ -1,5 +1,5 @@
 <script>
-import TransactionTable from 'components/TransactionTable';
+import TransactionTable from 'components/TransactionTable.vue';
 export default {
     name: 'TransactionsPage',
     components: {

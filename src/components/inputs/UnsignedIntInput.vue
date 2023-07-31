@@ -2,7 +2,7 @@
 import { integerSizeValidator, parseUintString } from 'components/ContractTab/function-interface-utils';
 import { BigNumber } from 'ethers';
 
-import BaseTextInput from 'components/inputs/BaseTextInput';
+import BaseTextInput from 'components/inputs/BaseTextInput.vue';
 
 export default {
     name: 'UnsignedIntInput',

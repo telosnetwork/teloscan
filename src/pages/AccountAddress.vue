@@ -2,15 +2,15 @@
 <script>
 import { toChecksumAddress } from 'src/lib/utils';
 import { Web3 } from 'web3';
-import TransactionTable from 'components/TransactionTable';
-import InternalTransactionTable from 'components/InternalTransactionTable';
-import TransferTable from 'components/TransferTable';
-import TokenList from 'components/TokenList';
-import ConfirmationDialog from 'components/ConfirmationDialog';
-import ContractTab from 'components/ContractTab/ContractTab';
-import TransactionField from 'components/TransactionField';
-import AddressField from 'components/AddressField';
-import CopyButton from 'components/CopyButton';
+import TransactionTable from 'components/TransactionTable.vue';
+import InternalTransactionTable from 'components/InternalTransactionTable.vue';
+import TransferTable from 'components/TransferTable.vue';
+import TokenList from 'components/TokenList.vue';
+import ConfirmationDialog from 'components/ConfirmationDialog.vue';
+import ContractTab from 'components/ContractTab/ContractTab.vue';
+import TransactionField from 'components/TransactionField.vue';
+import AddressField from 'components/AddressField.vue';
+import CopyButton from 'components/CopyButton.vue';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
 
 const web3 = new Web3();

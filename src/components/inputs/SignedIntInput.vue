@@ -3,7 +3,7 @@ import { BigNumber } from 'ethers';
 
 import { integerSizeValidator, parseSignedIntString } from 'components/ContractTab/function-interface-utils';
 
-import BaseTextInput from 'components/inputs/BaseTextInput';
+import BaseTextInput from 'components/inputs/BaseTextInput.vue';
 
 export default {
     name: 'SignedIntInput',

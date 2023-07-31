@@ -1,14 +1,14 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import DateField from 'components/DateField';
-import BlockField from 'components/BlockField';
-import AddressField from 'components/AddressField';
-import LogsViewer from 'components/Transaction/LogsViewer';
-import InternalTxns from 'components/Transaction/InternalTxns';
-import CopyButton from 'components/CopyButton';
-import MethodField from 'components/MethodField';
-import ERCTransferList from 'components/Transaction/ERCTransferList';
-import ParameterList from 'components/Transaction/ParameterList';
+import DateField from 'components/DateField.vue';
+import BlockField from 'components/BlockField.vue';
+import AddressField from 'components/AddressField.vue';
+import LogsViewer from 'components/Transaction/LogsViewer.vue';
+import InternalTxns from 'components/Transaction/InternalTxns.vue';
+import CopyButton from 'components/CopyButton.vue';
+import MethodField from 'components/MethodField.vue';
+import ERCTransferList from 'components/Transaction/ERCTransferList.vue';
+import ParameterList from 'components/Transaction/ParameterList.vue';
 
 import { BigNumber } from 'ethers';
 import { WEI_PRECISION, formatWei, parseErrorMessage, getRouteWatcherForTabs } from 'src/lib/utils';

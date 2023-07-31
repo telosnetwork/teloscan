@@ -1,5 +1,5 @@
 <script lang="javascript">
-import FunctionInterface from 'components/ContractTab/FunctionInterface';
+import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
 
 import { sortAbiFunctionsByName } from 'src/lib/utils';
 

@@ -2,7 +2,7 @@
 import { mapActions } from 'vuex';
 import { ethers } from 'ethers';
 
-import CopyButton from 'components/CopyButton';
+import CopyButton from 'components/CopyButton.vue';
 
 export default {
     name: 'AddressField',

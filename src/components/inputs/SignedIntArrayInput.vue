@@ -1,7 +1,7 @@
 <script>
 import { integerSizeValidator, parseSignedIntArrayString } from 'components/ContractTab/function-interface-utils';
 
-import BaseTextInput from 'components/inputs/BaseTextInput';
+import BaseTextInput from 'components/inputs/BaseTextInput.vue';
 import { BigNumber } from 'ethers';
 
 export default {

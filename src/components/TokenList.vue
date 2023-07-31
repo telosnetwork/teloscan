@@ -1,5 +1,5 @@
 <script>
-import AddressField from 'components/AddressField';
+import AddressField from 'components/AddressField.vue';
 import { promptAddToMetamask } from 'src/lib/token-utils';
 import { formatWei } from 'src/lib/utils';
 

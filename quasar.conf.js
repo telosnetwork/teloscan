@@ -8,9 +8,8 @@
 /* eslint-env node */
 
 require('dotenv').config();
+const { nodePolyfills } = require('vite-plugin-node-polyfills');
 const env = require('./public/env')(process);
-const ESLintPlugin = require('eslint-webpack-plugin');
-const nodePolyfillWebpackPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = function(/* ctx */) {
     return {
@@ -53,33 +52,48 @@ module.exports = function(/* ctx */) {
         build: {
             vueRouterMode: 'history', // available values: 'hash', 'history'
             env,
-            chainWebpack (chain) {
-                chain.plugin('eslint-webpack-plugin')
-                    .use(ESLintPlugin, [{ extensions: ['js', 'vue'] }]);
-                chain.plugin('node-polyfill').use(nodePolyfillWebpackPlugin);
-            },
+            vitePlugins: [
+                nodePolyfills({
+                    // To exclude specific polyfills, add them to this list.
+                    exclude: [
+                        'fs', // Excludes the polyfill for `fs` and `node:fs`.
+                    ],
+                    // Whether to polyfill specific globals.
+                    globals: {
+                        Buffer: true, // can also be 'build', 'dev', or false
+                        global: true,
+                        process: true,
+                    },
+                    // Whether to polyfill `node:` protocol imports.
+                    protocolImports: true,
+                }),
+            ],
+            // vueRouterBase,
+            // vueDevtools,
+            // vueOptionsAPI: false,
 
-            // transpile: false,
+            // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 
-            // Add dependencies for transpiling with Babel (Array of string/regex)
-            // (from node_modules, which are by default not transpiled).
-            // Applies only if "transpile" is set to true.
-            // transpileDependencies: [],
-
-            // rtl: false, // https://quasar.dev/options/rtl-support
-            // preloadChunks: true,
-            // showProgress: false,
-            // gzip: true,
+            // publicPath: '/',
             // analyze: true,
+            // env: {},
+            // rawDefine: {}
+            // ignorePublicFolder: true,
+            // minify: false,
+            // polyfillModulePreload: true,
+            // distDir
 
-            // Options below are automatically set depending on the env, set them if you want to override
-            // extractCSS: false,
+            // extendViteConf (viteConf) {},
+            // viteVuePluginOptions: {},
+
+            // vitePlugins: [
+            //   [ 'package-name', { ..options.. } ]
+            // ]
         },
 
         // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-devServer
         devServer: {
             https: false,
-            port: 8080,
             open: false, // opens browser window automatically
         },
 
@@ -116,8 +130,7 @@ module.exports = function(/* ctx */) {
 
         // https://quasar.dev/quasar-cli/developing-pwa/configuring-pwa
         pwa: {
-            workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
-            workboxOptions: {}, // only for GenerateSW
+            workboxMode: 'generateSW', // or 'injectManifest'
             manifest: {
                 name: 'Teloscan',
                 short_name: 'Teloscan',
