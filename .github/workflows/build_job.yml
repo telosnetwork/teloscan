@@ -31,7 +31,7 @@ jobs:
       - run: yarn global add @quasar/cli
       - run: yarn install
       - run: quasar build
-      - run: mkdir dist/spa/functions && cp -a functions/* dist/spa/functions/
+      # - run: mkdir dist/spa/functions && cp -a functions/* dist/spa/functions/
       - name: upload
         uses: actions/upload-artifact@v3
         with:
@@ -91,7 +91,7 @@ jobs:
         with:
           name: ${{ inputs.network }}-build
           path: dist/spa
-      - run: cp -a dist/spa/functions .
+      # - run: cp -a dist/spa/functions .
       - name: publish
         uses: cloudflare/pages-action@v1
         with:
@@ -116,7 +116,7 @@ jobs:
         with:
           name: ${{ inputs.network }}-build
           path: dist/spa
-      - run: cp -a dist/spa/functions .
+      # - run: cp -a dist/spa/functions .
       - name: publish
         uses: cloudflare/pages-action@v1
         with:

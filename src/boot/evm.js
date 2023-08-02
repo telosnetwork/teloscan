@@ -46,6 +46,7 @@ const contractManager = new ContractManager(hyperion);
 contractManager.init();
 
 export default boot(({ app, store }) => {
+    debugger;
     store.$providerManager = app.config.globalProperties.$providerManager = new ProviderManager();
     store.$evm = app.config.globalProperties.$evm = evm;
     store.$evmEndpoint = app.config.globalProperties.$evmEndpoint = hyperion;
