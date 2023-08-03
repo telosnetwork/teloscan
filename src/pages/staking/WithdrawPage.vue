@@ -1,6 +1,6 @@
 <script>
-import DateField from 'components/DateField';
-import TransactionField from 'components/TransactionField';
+import DateField from 'components/DateField.vue';
+import TransactionField from 'components/TransactionField.vue';
 import { BigNumber } from 'ethers';
 
 import { formatWei, WEI_PRECISION } from 'src/lib/utils';

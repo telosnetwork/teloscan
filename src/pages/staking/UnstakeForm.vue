@@ -6,8 +6,8 @@ import { debounce } from 'lodash';
 
 import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 
-import BaseStakingForm from 'pages/staking/BaseStakingForm';
-import TransactionField from 'components/TransactionField';
+import BaseStakingForm from 'pages/staking/BaseStakingForm.vue';
+import TransactionField from 'components/TransactionField.vue';
 
 import LoginModal from 'components/LoginModal.vue';
 

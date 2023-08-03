@@ -1,7 +1,7 @@
 <script>
 import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 
-import StakingFormInput from 'pages/staking/StakingFormInput';
+import StakingFormInput from 'pages/staking/StakingFormInput.vue';
 
 const genericMaxWei = '999999999999000000000000000000';
 

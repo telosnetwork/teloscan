@@ -17,7 +17,7 @@ import {
     parameterTypeIsUnsignedIntArray,
 } from 'components/ContractTab/function-interface-utils';
 
-import TransactionField from 'components/TransactionField';
+import TransactionField from 'components/TransactionField.vue';
 
 
 export default {

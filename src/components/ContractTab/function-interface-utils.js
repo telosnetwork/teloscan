@@ -2,17 +2,17 @@ import { BigNumber, ethers } from 'ethers';
 import { defineAsyncComponent } from 'vue';
 
 const asyncInputComponents = {
-    AddressInput: defineAsyncComponent(() => import('components/inputs/AddressInput')),
-    AddressArrayInput: defineAsyncComponent(() => import('components/inputs/AddressArrayInput')),
-    BooleanArrayInput: defineAsyncComponent(() => import('components/inputs/BooleanArrayInput')),
-    BooleanInput: defineAsyncComponent(() => import('components/inputs/BooleanInput')),
-    BytesArrayInput: defineAsyncComponent(() => import('components/inputs/BytesArrayInput')),
-    SignedIntInput: defineAsyncComponent(() => import('components/inputs/SignedIntInput')),
-    StringArrayInput: defineAsyncComponent(() => import('components/inputs/StringArrayInput')),
-    StringInput: defineAsyncComponent(() => import('components/inputs/StringInput')),
-    UnsignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntArrayInput')),
-    UnsignedIntInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntInput')),
-    SignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/SignedIntArrayInput')),
+    AddressInput: defineAsyncComponent(() => import('components/inputs/AddressInput.vue')),
+    AddressArrayInput: defineAsyncComponent(() => import('components/inputs/AddressArrayInput.vue')),
+    BooleanArrayInput: defineAsyncComponent(() => import('components/inputs/BooleanArrayInput.vue')),
+    BooleanInput: defineAsyncComponent(() => import('components/inputs/BooleanInput.vue')),
+    BytesArrayInput: defineAsyncComponent(() => import('components/inputs/BytesArrayInput.vue')),
+    SignedIntInput: defineAsyncComponent(() => import('components/inputs/SignedIntInput.vue')),
+    StringArrayInput: defineAsyncComponent(() => import('components/inputs/StringArrayInput.vue')),
+    StringInput: defineAsyncComponent(() => import('components/inputs/StringInput.vue')),
+    UnsignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntArrayInput.vue')),
+    UnsignedIntInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntInput.vue')),
+    SignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/SignedIntArrayInput.vue')),
 };
 
 /**
