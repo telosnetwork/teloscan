@@ -30,7 +30,17 @@ module.exports = function(/* ctx */) {
         // app boot file (/src/boot)
         // --> boot files are part of "main.js"
         // https://quasar.dev/quasar-cli/boot-files
-        boot: ['ssr', 'ual', 'hyperion', 'i18n', 'api', 'telosApi', 'evm', 'q-component-defaults'],
+        boot: [
+            { path: 'ssr', client: false }, // this boot file gets embedded only on client-side
+            { path: 'ual', server: false }, // this boot file gets embedded only on client-side
+            'hyperion',
+            'i18n',
+            'api',
+            'telosApi',
+            'evm',
+            'hyperion',
+            'q-component-defaults'
+        ],
 
         // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
         css: ['fonts/silka/silka.css', 'app.sass'],
@@ -124,7 +134,7 @@ module.exports = function(/* ctx */) {
             // directives: [],
 
             // Quasar plugins
-            plugins: ['Notify'],
+            plugins: ['Meta', 'Notify'],
         },
 
         // animations: 'all', // --- includes all animations

@@ -11,7 +11,7 @@
  */
 import { Hono } from 'hono';
 import express from 'express';
-import { serve } from '@hono/node-server'
+import { serve } from '@hono/node-server';
 import { compress } from 'hono/compress';
 import { handle } from 'hono/cloudflare-pages';
 

@@ -36,6 +36,7 @@
     "highlight.js": "10",
     "highlightjs-solidity": "^2.0.3",
     "hono": "^3.3.4",
+    "isomorphic-fetch": "^3.0.0",
     "keccak": "^3.0.3",
     "localstorage-polyfill": "^1.0.1",
     "moment": "^2.29.4",

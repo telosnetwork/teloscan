@@ -162,7 +162,7 @@ export default class ContractManager {
             let responseData = (await contractsBucket.get(`${checksumAddress}/metadata.json`)).data;
             return JSON.parse(responseData.content);
         } catch (e) {
-            console.log(e);
+            //console.log(e);
             return false;
         }
     }

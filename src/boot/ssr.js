@@ -4,7 +4,9 @@ export default boot(async({ ssrContext }) => {
     if (!ssrContext)
         return;
 
-    const env = require('../env.js');
     await import('localstorage-polyfill')
+    await import('isomorphic-fetch')
+
+    const env = require('../env.js');
     Object.assign(process.env, env);
 });

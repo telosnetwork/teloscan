@@ -1,7 +1,6 @@
 import { boot } from 'quasar/wrappers';
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 import ContractManager from 'src/lib/ContractManager';
-import fetch from 'node-fetch';
 import axios from 'axios';
 import { ethers } from 'ethers';
 import { markRaw } from 'vue';
@@ -12,9 +11,9 @@ const evm = new TelosEvmApi({
     ethPrivateKeys: [],
     telosContract: process.env.NETWORK_EVM_CONTRACT,
     telosPrivateKeys: [],
-    fetch,
 });
 
+console.log("In evm boot!!!!")
 // This is kinda bad, but if you try to store a web3 provider in the store, it has a call stack size exception,
 //    and if you freeze the provider before putting in the store so the call stack error goes away, you break
 //    the provider. so, this is a workaround until some better solution is needed and/or available
@@ -38,15 +37,14 @@ class ProviderManager {
     }
 }
 
-const hyperion = axios.create({
-    baseURL: process.env.NETWORK_EVM_ENDPOINT,
-});
-
-const contractManager = new ContractManager(hyperion);
-contractManager.init();
-
 export default boot(({ app, store }) => {
-    debugger;
+    const hyperion = axios.create({
+        baseURL: process.env.NETWORK_EVM_ENDPOINT,
+    });
+
+    const contractManager = new ContractManager(hyperion);
+    contractManager.init();
+
     store.$providerManager = app.config.globalProperties.$providerManager = new ProviderManager();
     store.$evm = app.config.globalProperties.$evm = evm;
     store.$evmEndpoint = app.config.globalProperties.$evmEndpoint = hyperion;
