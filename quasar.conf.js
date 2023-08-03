@@ -8,8 +8,9 @@
 /* eslint-env node */
 
 require('dotenv').config();
+const env = require('./src/env.js');
 const { nodePolyfills } = require('vite-plugin-node-polyfills');
-const env = require('./public/env')(process);
+const { viteCommonjs } = require('@originjs/vite-plugin-commonjs');
 
 module.exports = function(/* ctx */) {
     return {
@@ -29,7 +30,17 @@ module.exports = function(/* ctx */) {
         // app boot file (/src/boot)
         // --> boot files are part of "main.js"
         // https://quasar.dev/quasar-cli/boot-files
-        boot: ['ual', 'hyperion', 'i18n', 'api', 'telosApi', 'evm', 'q-component-defaults'],
+        boot: [
+            { path: 'ssr', client: false }, // this boot file gets embedded only on client-side
+            { path: 'ual', server: false }, // this boot file gets embedded only on client-side
+            'hyperion',
+            'i18n',
+            'api',
+            'telosApi',
+            'evm',
+            'hyperion',
+            'q-component-defaults'
+        ],
 
         // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
         css: ['fonts/silka/silka.css', 'app.sass'],
@@ -52,7 +63,14 @@ module.exports = function(/* ctx */) {
         build: {
             vueRouterMode: 'history', // available values: 'hash', 'history'
             env,
+            extendViteConf(viteConf, { isServer, isClient }) {
+                if (!viteConf.build.commonjsOptions)
+                    viteConf.build.commonjsOptions = {}
+
+                viteConf.build.commonjsOptions.transformMixedEsModules = true
+            },
             vitePlugins: [
+                viteCommonjs(),
                 nodePolyfills({
                     // To exclude specific polyfills, add them to this list.
                     exclude: [
@@ -116,7 +134,7 @@ module.exports = function(/* ctx */) {
             // directives: [],
 
             // Quasar plugins
-            plugins: ['Notify'],
+            plugins: ['Meta', 'Notify'],
         },
 
         // animations: 'all', // --- includes all animations
@@ -126,6 +144,9 @@ module.exports = function(/* ctx */) {
         // https://quasar.dev/quasar-cli/developing-ssr/configuring-ssr
         ssr: {
             pwa: false,
+            middlewares: [
+                'render' // keep this as last one
+            ]
         },
 
         // https://quasar.dev/quasar-cli/developing-pwa/configuring-pwa

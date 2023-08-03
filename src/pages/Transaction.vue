@@ -13,6 +13,7 @@ import ParameterList from 'components/Transaction/ParameterList.vue';
 import { BigNumber } from 'ethers';
 import { WEI_PRECISION, formatWei, parseErrorMessage, getRouteWatcherForTabs } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+import {useMeta} from "quasar";
 
 const tabs = {
     general: '#general',
@@ -35,6 +36,21 @@ export default {
         MethodField,
         ERCTransferList,
         ParameterList,
+    },
+    setup() {
+        const title = `Teloscan`;
+        //const description = `Transaction ${this.$route.params.hash}`;
+        useMeta(() => {
+            return {
+                title,
+                meta: {
+                    description: { name: 'description', content: description },
+                    keywords: { name: 'keywords', content: description },
+                    ogTitle: { name: 'og:title', content: title },
+                    ogImage: { name: 'og:image', content: "./assets/evm_logo.png" },
+                }
+            }
+        })
     },
     data() {
         return {
@@ -508,28 +524,28 @@ export default {
 </template>
 
 <style scoped lang="sass">
-    @media screen and (max-width: 650px)
-        #function-parameters
+@media screen and (max-width: 650px)
+    #function-parameters
+        width: 100%
+        flex: auto
+        margin-top: 20px
+
+    #transaction-page
+        .col-3
             width: 100%
-            flex: auto
-            margin-top: 20px
+        .col-9
+            width: 100%
 
-        #transaction-page
-            .col-3
+@media only screen and (max-width: 900px)
+    #function-parameters
+        .row
+            .col-4
                 width: 100%
-            .col-9
+                padding-left: 15px
+            .col-8
+                padding-bottom: 10px
+                padding-left: 30px
                 width: 100%
-
-    @media only screen and (max-width: 900px)
-        #function-parameters
-            .row
-                .col-4
-                    width: 100%
-                    padding-left: 15px
-                .col-8
-                    padding-bottom: 10px
-                    padding-left: 30px
-                    width: 100%
 </style>
 
 <style lang="sass" scoped>
@@ -561,8 +577,8 @@ span
     margin-bottom: -1px
 
 @media only screen and (max-width: 550px)
-    .q-tab
-        padding: 0px 5px
-    .q-tab__label
-        font-size: 11px
+.q-tab
+    padding: 0px 5px
+.q-tab__label
+    font-size: 11px
 </style>

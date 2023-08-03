@@ -32,7 +32,7 @@ export const fetchTlosPrice = async function({ commit }) {
         const tlosPrice = response.rows[0].median / 10000;
         commit('setTlosPrice', tlosPrice);
     } catch (error) {
-        console.error('fetchTlosPrice');
+        console.error('fetchTlosPrice', error);
         commit('general/setErrorMsg', error.message || error, { root: true });
     }
 };
