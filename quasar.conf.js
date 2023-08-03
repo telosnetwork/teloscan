@@ -9,7 +9,12 @@
 
 require('dotenv').config();
 const { nodePolyfills } = require('vite-plugin-node-polyfills');
+//const { viteCommonjs } = require('@originjs/vite-plugin-commonjs');
+//import esmodule from "vite-plugin-esmodule";
+//const esmodule = require('vite-plugin-esmodule');
+const commonjs = require('vite-plugin-commonjs');
 const env = require('./public/env')(process);
+
 
 module.exports = function(/* ctx */) {
     return {
@@ -52,7 +57,22 @@ module.exports = function(/* ctx */) {
         build: {
             vueRouterMode: 'history', // available values: 'hash', 'history'
             env,
+            extendViteConf(viteConf) {
+                if (!viteConf.build.commonjsOptions) {
+                    viteConf.build.commonjsOptions = {};
+                }
+
+                viteConf.optimizeDeps = {
+                    disabled: false,
+                };
+
+                viteConf.build.commonjsOptions.include = [];
+                viteConf.build.commonjsOptions.transformMixedEsModules = true;
+            },
             vitePlugins: [
+                //viteCommonjs(),
+                //esmodule([]),
+                commonjs(),
                 nodePolyfills({
                     // To exclude specific polyfills, add them to this list.
                     exclude: [
