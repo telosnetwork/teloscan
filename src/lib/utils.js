@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from 'ethers';
 import moment from 'moment';
-const createKeccakHash = require('keccak');
+import createKeccakHash from 'keccak';
 const REVERT_FUNCTION_SELECTOR = '0x08c379a0';
 const REVERT_PANIC_SELECTOR = '0x4e487b71';
 
@@ -138,7 +138,7 @@ export function getRouteWatcherForTabs(routeName, tabs, defaultTab) {
             if (newRoute !== oldRoute) {
                 const { hash: newHash } = newRoute;
 
-                if (newRoute.name !== routeName || !newHash) {
+                if (newRoute.name !== routeName) {
                     return;
                 }
 

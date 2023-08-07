@@ -1,16 +1,16 @@
 <script>
-import AddressInput from 'components/inputs/AddressInput';
-import AddressArrayInput from 'components/inputs/AddressArrayInput';
-import BaseTextInput from 'components/inputs/BaseTextInput';
-import BooleanArrayInput from 'components/inputs/BooleanArrayInput';
-import BooleanInput from 'components/inputs/BooleanInput';
-import BytesArrayInput from 'components/inputs/BytesArrayInput';
-import SignedIntInput from 'components/inputs/SignedIntInput';
-import StringArrayInput from 'components/inputs/StringArrayInput';
-import StringInput from 'components/inputs/StringInput';
-import UnsignedIntArrayInput from 'components/inputs/UnsignedIntArrayInput';
-import UnsignedIntInput from 'components/inputs/UnsignedIntInput';
-import SignedIntArrayInput from 'components/inputs/SignedIntArrayInput';
+import AddressInput from 'components/inputs/AddressInput.vue';
+import AddressArrayInput from 'components/inputs/AddressArrayInput.vue';
+import BaseTextInput from 'components/inputs/BaseTextInput.vue';
+import BooleanArrayInput from 'components/inputs/BooleanArrayInput.vue';
+import BooleanInput from 'components/inputs/BooleanInput.vue';
+import BytesArrayInput from 'components/inputs/BytesArrayInput.vue';
+import SignedIntInput from 'components/inputs/SignedIntInput.vue';
+import StringArrayInput from 'components/inputs/StringArrayInput.vue';
+import StringInput from 'components/inputs/StringInput.vue';
+import UnsignedIntArrayInput from 'components/inputs/UnsignedIntArrayInput.vue';
+import UnsignedIntInput from 'components/inputs/UnsignedIntInput.vue';
+import SignedIntArrayInput from 'components/inputs/SignedIntArrayInput.vue';
 
 export default {
     name: 'InputDemo',

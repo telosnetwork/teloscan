@@ -1,5 +1,5 @@
 <script>
-import CopyButton from 'components/CopyButton';
+import CopyButton from 'components/CopyButton.vue';
 
 export default {
     name: 'TransactionField',

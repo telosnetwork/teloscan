@@ -1,7 +1,7 @@
 <script>
 import { parseAddressString } from 'components/ContractTab/function-interface-utils';
 
-import BaseTextInput from 'components/inputs/BaseTextInput';
+import BaseTextInput from 'components/inputs/BaseTextInput.vue';
 
 export default {
     name: 'AddressInput',

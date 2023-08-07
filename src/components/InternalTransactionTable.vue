@@ -1,11 +1,11 @@
 <script>
-import BlockField from 'components/BlockField';
-import DateField from 'components/DateField';
-import TransactionField from 'components/TransactionField';
-import MethodField from 'components/MethodField';
+import BlockField from 'components/BlockField.vue';
+import DateField from 'components/DateField.vue';
+import TransactionField from 'components/TransactionField.vue';
+import MethodField from 'components/MethodField.vue';
 import { formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
-import InternalTxns from 'components/Transaction/InternalTxns';
+import InternalTxns from 'components/Transaction/InternalTxns.vue';
 
 export default {
     name: 'InternalTransactionTable',

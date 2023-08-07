@@ -1,5 +1,5 @@
 <script>
-import AddressField from 'components/AddressField';
+import AddressField from 'components/AddressField.vue';
 export default {
     name: 'ParameterList',
     components: {

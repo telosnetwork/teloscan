@@ -1,6 +1,6 @@
 <script>
-import TransactionTable from 'components/TransactionTable';
-import DateField from 'components/DateField';
+import TransactionTable from 'components/TransactionTable.vue';
+import DateField from 'components/DateField.vue';
 import { mapActions } from 'vuex';
 
 export default {

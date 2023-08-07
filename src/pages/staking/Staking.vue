@@ -4,8 +4,8 @@ import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { formatWei, getRouteWatcherForTabs, WEI_PRECISION } from 'src/lib/utils';
 
-import StakeForm from 'pages/staking/StakeForm';
-import StakingStats from 'pages/staking/StakingStats';
+import StakeForm from 'pages/staking/StakeForm.vue';
+import StakingStats from 'pages/staking/StakingStats.vue';
 
 const oneEth = ethers.utils.parseEther('1').toString();
 
@@ -21,7 +21,7 @@ export default {
         WithdrawPage: defineAsyncComponent(() => import('pages/staking/WithdrawPage.vue')),
         StakeForm,
         StakingStats,
-        UnstakeForm: defineAsyncComponent(() => import('pages/staking/UnstakeForm')),
+        UnstakeForm: defineAsyncComponent(() => import('pages/staking/UnstakeForm.vue')),
     },
     data: () => ({
         selectedTab: '#stake',

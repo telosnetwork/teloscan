@@ -1,7 +1,7 @@
 <script>
-import AddressField from 'components/AddressField';
-import DateField from 'components/DateField';
-import TransactionField from 'components/TransactionField';
+import AddressField from 'components/AddressField.vue';
+import DateField from 'components/DateField.vue';
+import TransactionField from 'components/TransactionField.vue';
 import { ethers, BigNumber } from 'ethers';
 import { formatWei, getTopicHash } from 'src/lib/utils';
 import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';

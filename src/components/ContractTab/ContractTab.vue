@@ -1,6 +1,6 @@
 <script>
-import ContractSource from 'components/ContractTab/ContractSource';
-import ContractInterface from 'components/ContractTab/ContractInterface';
+import ContractSource from 'components/ContractTab/ContractSource.vue';
+import ContractInterface from 'components/ContractTab/ContractInterface.vue';
 import CopyButton from 'components/CopyButton.vue';
 
 export default {
