@@ -1,19 +1,18 @@
 import { RenderError } from '@quasar/app-webpack';
 import { ssrMiddleware } from 'quasar/wrappers';
-import { SsrMiddlewareParams } from '@quasar/app-webpack/types/ssrmiddleware';
 
 // This middleware should execute as last one
 // since it captures everything and tries to
 // render the page with Vue
 
-export default ssrMiddleware(({ app, resolve, render, serve }: SsrMiddlewareParams) => {
+export default ssrMiddleware(({ app, resolve, render, serve }) => {
     // we capture any other Express route and hand it
     // over to Vue and Vue Router to render our page
-    app.get(resolve.urlPath('*'), (req: any, res: any) => {
+    app.get(resolve.urlPath('*'), (req, res) => {
         res.setHeader('Content-Type', 'text/html');
 
         render(/* the ssrContext: */ { req, res })
-            .then((html: any) => {
+            .then((html) => {
                 // now let's send the rendered html to the client
                 res.send(html);
             })
