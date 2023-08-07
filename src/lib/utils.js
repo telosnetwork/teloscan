@@ -138,7 +138,7 @@ export function getRouteWatcherForTabs(routeName, tabs, defaultTab) {
             if (newRoute !== oldRoute) {
                 const { hash: newHash } = newRoute;
 
-                if (newRoute.name !== routeName || !newHash) {
+                if (newRoute.name !== routeName) {
                     return;
                 }
 

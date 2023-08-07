@@ -12,7 +12,7 @@ const { nodePolyfills } = require('vite-plugin-node-polyfills');
 //const { viteCommonjs } = require('@originjs/vite-plugin-commonjs');
 //import esmodule from "vite-plugin-esmodule";
 //const esmodule = require('vite-plugin-esmodule');
-const commonjs = require('vite-plugin-commonjs');
+// const commonjs = require('vite-plugin-commonjs');
 const env = require('./public/env')(process);
 
 
@@ -72,7 +72,7 @@ module.exports = function(/* ctx */) {
             vitePlugins: [
                 //viteCommonjs(),
                 //esmodule([]),
-                commonjs(),
+                // commonjs(),
                 nodePolyfills({
                     // To exclude specific polyfills, add them to this list.
                     exclude: [
