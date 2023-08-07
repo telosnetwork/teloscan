@@ -50,7 +50,9 @@
   "devDependencies": {
     "@babel/core": "7.19.3",
     "@babel/eslint-parser": "^7.13.14",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "7.19.3",
+    "@babel/regjsgen": "^0.8.0",
     "@quasar/app-webpack": "3.6.2",
     "@types/jest": "29.1.1",
     "@types/lodash": "^4.14.182",
