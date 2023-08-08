@@ -32,9 +32,6 @@ jobs:
       - run: yarn install
       - run: quasar build -m spa
       - run: quasar build -m ssr
-      - run: cd dist/ssr && yarn install
-      - run: echo "RUNNING pwd after cd dist/ssr" && pwd
-      - run: cd ../..
       - run: cp -a dist/ssr functions/ssr
       - run: cp -a functions dist/spa/functions
       - name: upload
@@ -97,10 +94,7 @@ jobs:
           name: ${{ inputs.network }}-build
           path: dist/spa
       - run: cp -a dist/spa/functions .
-      - run: echo "RUNNING ls -la" && ls -la
-      - run: echo "RUNNING ls -la dist/spa" && ls -la dist/spa
-      - run: echo "RUNNING ls -la functions" && ls -la functions
-      - run: echo "RUNNING pwd" && pwd
+      - run: cd dist/spa/functions/ssr && yarn install && cd -
       - name: publish
         uses: cloudflare/pages-action@v1
         with:
