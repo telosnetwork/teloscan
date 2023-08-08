@@ -93,8 +93,8 @@ jobs:
         with:
           name: ${{ inputs.network }}-build
           path: dist/spa
-      - run: cp -a dist/spa/functions .
-      - run: cd dist/spa/functions/ssr && yarn add compression && yarn add path express && cd -
+      # - run: cp -a dist/spa/functions .
+      # - run: cd dist/spa/functions/ssr && yarn install && cd -
       - name: publish
         uses: cloudflare/pages-action@v1
         with:
@@ -120,6 +120,7 @@ jobs:
           name: ${{ inputs.network }}-build
           path: dist/spa
       - run: cp -a dist/spa/functions .
+      - run: cd dist/spa/functions/ssr && yarn install && cd -
       - name: publish
         uses: cloudflare/pages-action@v1
         with:
