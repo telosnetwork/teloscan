@@ -1,7 +1,7 @@
 {
-  "name": "telos-template",
+  "name": "teloscan",
   "version": "1.4.4",
-  "description": "Teloscan block explorer",
+  "description": "Telos EVM block explorer",
   "productName": "Teloscan",
   "author": "Jesse Schulman <jesse@caleos.io>",
   "private": true,
