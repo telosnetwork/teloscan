@@ -94,6 +94,8 @@ jobs:
           name: ${{ inputs.network }}-build
           path: dist/spa
       - run: cp -a dist/spa/functions .
+      - run: echo "RUNNING ls -la" && ls -la
+      - run: echo "RUNNING ls -la dist/spa" && ls -la dist/spa
       - name: publish
         uses: cloudflare/pages-action@v1
         with:
@@ -119,8 +121,6 @@ jobs:
           name: ${{ inputs.network }}-build
           path: dist/spa
       - run: cp -a dist/spa/functions .
-      - run: echo "RUNNING ls -la" && ls -la
-      - run: echo "RUNNING ls -la dist/spa" && ls -la dist/spa
       - name: publish
         uses: cloudflare/pages-action@v1
         with:
