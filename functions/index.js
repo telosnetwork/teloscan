@@ -1,3 +1,3 @@
-const r = require('./ssr/index.js');
+const onRequest = require('./ssr/index.js');
 
-module.exports = r;
+export default onRequest;
