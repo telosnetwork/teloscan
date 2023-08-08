@@ -14,6 +14,7 @@ const sharedEnv = {
 
 const TESTNET = {
     ...sharedEnv,
+    NETWORK: 'testnet',
     APP_NAME: 'Teloscan (testnet)',
     NETWORK_HOST: 'testnet.telos.net',
     NETWORK_CHAIN_ID:
@@ -31,6 +32,7 @@ const TESTNET = {
 
 const MAINNET = {
     ...sharedEnv,
+    NETWORK: 'mainnet',
     APP_NAME: 'Teloscan',
     NETWORK_HOST: 'mainnet.telos.net',
     NETWORK_CHAIN_ID:
@@ -47,4 +49,4 @@ const MAINNET = {
 };
 
 
-module.exports = process.env === 'mainnet' ? MAINNET : TESTNET;
+module.exports = process.env.NETWORK === 'mainnet' ? MAINNET : TESTNET;
