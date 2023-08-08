@@ -32,6 +32,7 @@ jobs:
       - run: yarn install
       - run: quasar build
       - run: mkdir dist/spa/functions && cp -a functions/* dist/spa/functions/
+      - run: cp -a dist/ssr dist/spa/ssr
       - name: upload
         uses: actions/upload-artifact@v3
         with:
