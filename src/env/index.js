@@ -47,4 +47,4 @@ const MAINNET = {
 };
 
 
-module.exports = processOrContext => processOrContext === 'mainnet' ? MAINNET : TESTNET;
+module.exports = process.env === 'mainnet' ? MAINNET : TESTNET;

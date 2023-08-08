@@ -1,11 +1,26 @@
 <script>
 import TransactionTable from 'components/TransactionTable';
 import HomeInfo from 'components/HomeInfo.vue';
+import { useMeta } from 'quasar';
 export default {
     name: 'IndexPage',
     components: {
         HomeInfo,
         TransactionTable,
+    },
+    setup() {
+        const title = 'Teloscan';
+        const description = `TelosEVM ${process.env.NETWORK} explorer ${Date.now()}`;
+        useMeta(() => ({
+            title,
+            meta: {
+                description: { name: 'description', content: description },
+                keywords: { name: 'keywords', content: description },
+                ogTitle: { name: 'og:title', content: title },
+                // eslint-disable-next-line max-len
+                ogImage: { name: 'og:image', content: 'https://assets-global.website-files.com/60abb689ce5c94972a5f808a/649971b39fc28e4d6d988c84_Telos_Max%20tps_7b-p-800.jpg' },
+            },
+        }));
     },
 };
 </script>

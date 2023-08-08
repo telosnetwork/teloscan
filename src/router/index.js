@@ -1,5 +1,5 @@
 import { route } from 'quasar/wrappers';
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, createMemoryHistory } from 'vue-router';
 import routes from 'src/router/routes';
 
 /*
@@ -11,8 +11,8 @@ import routes from 'src/router/routes';
  * with the Router instance.
  */
 
-export default route(function (/* { store, ssrContext } */) {
-    const createHistory = createWebHistory;
+export default route(function ({ client }) {
+    const createHistory = client ? createWebHistory : createMemoryHistory;
 
     const Router = createRouter({
         scrollBehavior: () => ({ left: 0, top: 0 }),

@@ -2,13 +2,17 @@ import { boot } from 'quasar/wrappers';
 import { createI18n } from 'vue-i18n';
 import messages from 'src/i18n';
 
-export default boot(({ app }) => {
-    // Get user's last chosen language from local storage
-    let lastChosenLanguage = localStorage.getItem('language');
+export default boot(({ app, ssrContext }) => {
+    let lastChosenLanguage;
 
-    //if not present in local storage then check user browser language
-    if(!lastChosenLanguage) {
-        lastChosenLanguage = navigator.language.toLowerCase().split(/[_-]+/)[0];
+    if (!ssrContext) {
+        // Get user's last chosen language from local storage
+        lastChosenLanguage = localStorage.getItem('language');
+
+        //if not present in local storage then check user browser language
+        if (!lastChosenLanguage) {
+            lastChosenLanguage = navigator.language.toLowerCase().split(/[_-]+/)[0];
+        }
     }
     // Check if the browser language is supported, if not, fall back to 'en-us'
     if(!Object.keys(messages).includes(lastChosenLanguage)) {
@@ -28,6 +32,10 @@ export default boot(({ app }) => {
 
     // Listen for language-changed event
     const setLocale = (newLanguage) => {
+        if (ssrContext) {
+            return;
+        }
+
         const currentLanguage = localStorage.getItem('language');
 
         if (newLanguage !== currentLanguage) {

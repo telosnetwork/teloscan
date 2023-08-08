@@ -4,7 +4,8 @@
 
 
 export function onRequest(context) {
-    const env = require('../public/env')(context);
+    //const env = require('src/env')(context);
+    const env = import('src/env');
     console.dir(context);
     const apiEndpoint = env.NETWORK_EVM_RPC;
     return new Response(`Hello, ${context.env.NETWORK} world!!!!!!!!\n\nNetwork RPC is: ${apiEndpoint}`);
