@@ -26,12 +26,16 @@ export default {
         menuHiddenDesktop: false,
         searchHiddenMobile: true,
         isTestnet: process.env.NETWORK_EVM_CHAIN_ID !== 40,
+        isMounted: false,
     }),
     computed: {
         ...mapGetters('login', [
             'isLoggedIn',
             'isNative',
         ]),
+    },
+    mounted() {
+        this.isMounted = true;
     },
     methods: {
         ...mapMutations('login', [
@@ -301,6 +305,7 @@ export default {
             <q-separator class="c-header__menu-separator"/>
 
             <li
+                v-if="isMounted"
                 class="c-header__menu-li"
                 tabindex="0"
                 aria-label="enable dark theme"
