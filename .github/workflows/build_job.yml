@@ -30,7 +30,7 @@ jobs:
           node-version: '16.17.0'
       - run: yarn global add @quasar/cli
       - run: yarn install
-      - run: quasar build
+      - run: quasar build -m ssr
       - run: mkdir dist/spa/functions && cp -a functions/* dist/spa/functions/
       - run: cp -a dist/ssr dist/spa/ssr
       - name: upload
