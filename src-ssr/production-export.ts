@@ -9,4 +9,4 @@
 
 import { ssrProductionExport } from 'quasar/wrappers';
 
-export default ssrProductionExport(async ({ ssrHandler }: { ssrHandler: (() => void) }) => ({ onRequest: ssrHandler }));
+export default ssrProductionExport(async ({ ssrHandler }: { ssrHandler: unknown }) => ({ onRequest: ssrHandler }));
