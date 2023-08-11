@@ -9,9 +9,4 @@
 
 import { ssrProductionExport } from 'quasar/wrappers';
 
-export default ssrProductionExport(async ({ app, port, isReady }) => {
-    await isReady();
-    return app.listen(port, () => {
-        console.log('Server listening at port ' + port);
-    });
-});
+export default ssrProductionExport(async ({ ssrHandler }: { ssrHandler: (() => void) }) => ({ onRequest: ssrHandler }));
