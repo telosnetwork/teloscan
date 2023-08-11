@@ -33,7 +33,7 @@ jobs:
       - run: quasar build -m spa
       - run: quasar build -m ssr
       - run: cp -a dist/ssr functions/ssr
-      - run: cp -a functions dist/spa
+      - run: cp -a functions dist/spa/functions
       - name: upload
         uses: actions/upload-artifact@v3
         with:
