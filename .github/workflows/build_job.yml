@@ -91,6 +91,7 @@ jobs:
         with:
           name: ${{ inputs.network }}-build
           path: dist/ssr
+      - run: echo $(ls -l)
       # - run: cp -a dist/spa/functions .
       # - run: cd dist/spa/functions/ssr && yarn install && cd -
       - name: publish
