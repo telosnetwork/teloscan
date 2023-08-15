@@ -29,8 +29,10 @@ jobs:
         with:
           node-version: '16.17.0'
       - run: yarn global add @quasar/cli
-      - run: yarn install
       - run: quasar build -m ssr -d
+      - run: yarn install
+      - run: mkdir functions
+      - run: cp index.js functions
       - run: ls -l dist/ssr
       - name: upload
         uses: actions/upload-artifact@v3
@@ -92,7 +94,7 @@ jobs:
           name: ${{ inputs.network }}-build
           path: dist/ssr
       # - run: echo $(ls -l)
-      - run: cp -a dist/ssr/functions .
+      # - run: cp -a dist/ssr/functions .
       # - run: cd dist/spa/functions/ssr && yarn install && cd -
       - name: publish
         uses: cloudflare/pages-action@v1
