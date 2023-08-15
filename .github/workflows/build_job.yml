@@ -30,16 +30,12 @@ jobs:
           node-version: '16.17.0'
       - run: yarn global add @quasar/cli
       - run: yarn install
-      - run: quasar build -m spa -d
       - run: quasar build -m ssr -d
-      - run: cp -a dist/ssr functions/ssr
-      - run: cp -a functions dist/spa/functions
-      - run: echo $(ls -la functions)
       - name: upload
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.network }}-build
-          path: dist/spa
+          path: dist/ssr
   test:
       name: test
       runs-on: ubuntu-latest
@@ -93,7 +89,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.network }}-build
-          path: dist/spa
+          path: dist/ssr
       # - run: cp -a dist/spa/functions .
       # - run: cd dist/spa/functions/ssr && yarn install && cd -
       - name: publish
@@ -119,9 +115,9 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.network }}-build
-          path: dist/spa
-      - run: cp -a dist/spa/functions .
-      - run: cd dist/spa/functions/ssr && yarn install && cd -
+          path: dist/ssr
+      - run: cp -a dist/ssr/functions .
+      - run: cd dist/ssr/functions && yarn install && cd -
       - name: publish
         uses: cloudflare/pages-action@v1
         with:
