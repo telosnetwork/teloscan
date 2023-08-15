@@ -31,6 +31,7 @@ jobs:
       - run: yarn global add @quasar/cli
       - run: yarn install
       - run: quasar build -m ssr -d
+      - run: echo $(ls -l)
       - name: upload
         uses: actions/upload-artifact@v3
         with:
