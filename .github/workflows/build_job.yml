@@ -98,7 +98,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ inputs.account_id }}
           projectName: ${{ inputs.project }}
-          directory: dist/spa
+          directory: dist/ssr
           # Optional: Enable this if you want to have GitHub Deployments triggered
           # gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           # the branch is used for the URL, it does not need to equal the current branch so we can
@@ -124,7 +124,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ inputs.account_id }}
           projectName: ${{ inputs.project }}
-          directory: dist/spa
+          directory: dist/ssr
           # Optional: Enable this if you want to have GitHub Deployments triggered
           # gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           # the branch is used for the URL, it does not need to equal the current branch so we can

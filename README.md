@@ -63,7 +63,7 @@ yarn lint
 ### Build the app for production
 ```bash
 yarn build
-cd dist/spa
+cd dist/ss
 quasar serve
 ```
 
