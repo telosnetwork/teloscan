@@ -32,12 +32,9 @@ jobs:
       - run: yarn install
       - run: quasar build -m spa -d
       - run: quasar build -m ssr -d
-      - run: echo $(pwd)
-      - run: echo $(ls -la)
       - run: cp -a dist/ssr functions/ssr
-      - run: echo $(ls -la)
       - run: cp -a functions dist/spa/functions
-      - run: echo $(ls -la)
+      - run: echo $(ls -la functions)
       - name: upload
         uses: actions/upload-artifact@v3
         with:
