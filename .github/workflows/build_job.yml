@@ -32,6 +32,8 @@ jobs:
       - run: yarn install
       - run: quasar build -m ssr -d
       - run: echo $(ls -l)
+      - run: mkdir dist/ssr/functions
+      - run: cp -a dist/ssr/index.js dist/ssr/functions
       # - run: ls -l dist/ssr
       - name: upload
         uses: actions/upload-artifact@v3
