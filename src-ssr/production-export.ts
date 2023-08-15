@@ -7,6 +7,6 @@
  * This file is used ONLY on production.
  */
 
-export function onRequest() {
-    return new Response('Hello, world!');
-}
+import { ssrProductionExport } from 'quasar/wrappers';
+
+export default ssrProductionExport(async ({ ssrHandler }: { ssrHandler: unknown }) => ({ onRequest: ssrHandler }));
