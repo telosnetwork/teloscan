@@ -29,8 +29,8 @@ jobs:
         with:
           node-version: '16.17.0'
       - run: yarn global add @quasar/cli
-      - run: quasar build -m ssr -d
       - run: yarn install
+      - run: quasar build -m ssr -d
       - run: mkdir functions
       - run: cp index.js functions
       - run: ls -l dist/ssr
