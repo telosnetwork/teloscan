@@ -31,7 +31,7 @@ jobs:
       - run: yarn global add @quasar/cli
       - run: yarn install
       - run: quasar build -m ssr -d
-      - run: echo $(ls -l)
+      - run: ls -l dist/ssr
       - name: upload
         uses: actions/upload-artifact@v3
         with:
@@ -91,8 +91,8 @@ jobs:
         with:
           name: ${{ inputs.network }}-build
           path: dist/ssr
-      - run: echo $(ls -l)
-      # - run: cp -a dist/spa/functions .
+      # - run: echo $(ls -l)
+      - run: cp -a dist/ssr/functions .
       # - run: cd dist/spa/functions/ssr && yarn install && cd -
       - name: publish
         uses: cloudflare/pages-action@v1
