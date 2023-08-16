@@ -322,7 +322,7 @@ export default {
                     flat
                     color="black"
                     :label="$t('pages.staking.claim_tlos')"
-                    @click="$router.push({ hash: '#claim' })"
+                    @click="$router.push({ hash: '#withdraw' })"
                 />
             </template>
         </q-banner>
