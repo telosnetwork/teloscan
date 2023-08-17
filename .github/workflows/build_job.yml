@@ -31,7 +31,7 @@ jobs:
       - run: yarn global add @quasar/cli
       - run: yarn install
       - run: quasar build -m ssr -d
-      - run: mkdir dist/ssr/www/functions
+      - run: mkdir dist/ssr/functions
       - run: echo "export async function onRequest(context) { return new Response('Hello, world!') }" > dist/ssr/functions/hello.js
       - run: echo "<html><body>hi</body></html>" > dist/ssr/index.html
       # - run: ls -l dist/ssr
