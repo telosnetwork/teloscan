@@ -33,7 +33,7 @@ jobs:
       - run: quasar build -m ssr -d
       - run: echo $(ls -l)
       - run: mkdir dist/ssr/functions
-      - run: echo "export function onRequest(context) { return new Response('Hello, world!') }" > dist/ssr/functions/index.js
+      - run: echo "export function onRequest(context) { return new Response('Hello, world!') }" > dist/ssr/functions/hello.js
       # - run: ls -l dist/ssr
       - name: upload
         uses: actions/upload-artifact@v3
