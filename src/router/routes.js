@@ -72,8 +72,14 @@ const routes = [
     },
     {
         path: '/health',
+        name: 'health',
         component: () => import('layouts/MainLayout.vue'),
-        children: [{ path: '', component: () => import('pages/Health.vue') }],
+        children: [{ path: '', component: () => import('pages/HealthPage.vue') }],
+    },
+    {
+        path: '/endpoints',
+        // eslint-disable-next-line no-unused-vars
+        redirect: to => ({ path: '/health' }),
     },
     {
         path: '/:catchAll(.*)*',
