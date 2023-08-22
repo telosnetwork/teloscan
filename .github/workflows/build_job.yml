@@ -35,6 +35,7 @@ jobs:
       - run: echo "export async function onRequest(context) { return new Response('Hello, world!') }" > dist/ssr/functions/hello.js
       - run: echo "<html><body>hi</body></html>" > dist/ssr/index.html
       - run: cp -a dist/ssr/functions .
+      - run: ls -la functions
       - name: upload
         uses: actions/upload-artifact@v3
         with:
