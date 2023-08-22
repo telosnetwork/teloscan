@@ -34,8 +34,6 @@ jobs:
       - run: mkdir dist/ssr/functions
       - run: echo "export async function onRequest(context) { return new Response('Hello, world!') }" > dist/ssr/functions/hello.js
       - run: echo "<html><body>hi</body></html>" > dist/ssr/index.html
-      - run: cp -a dist/ssr/functions .
-      - run: ls -la functions
       - name: upload
         uses: actions/upload-artifact@v3
         with:
@@ -96,7 +94,8 @@ jobs:
           name: ${{ inputs.network }}-build
           path: dist/ssr
       # - run: echo $(ls -l)
-      # - run: cp -a dist/ssr/functions .
+      - run: cp -a dist/ssr/functions .
+      - run: ls -la functions
       # - run: cd dist/spa/functions/ssr && yarn install && cd -
       - name: publish
         uses: cloudflare/pages-action@v1
