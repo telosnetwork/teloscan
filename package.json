@@ -1,7 +1,7 @@
 {
-  "name": "telos-template",
+  "name": "teloscan",
   "version": "1.4.4",
-  "description": "Teloscan block explorer",
+  "description": "Telos EVM block explorer",
   "productName": "Teloscan",
   "author": "Jesse Schulman <jesse@caleos.io>",
   "private": true,
@@ -33,6 +33,8 @@
     "fs": "^0.0.1-security",
     "highlight.js": "10",
     "highlightjs-solidity": "^2.0.3",
+    "isomorphic-fetch": "^3.0.0",
+    "localstorage-polyfill": "^1.0.1",
     "moment": "^2.29.4",
     "quasar": "2",
     "ual-anchor": "^1.0.0",
@@ -50,7 +52,9 @@
   "devDependencies": {
     "@babel/core": "7.19.3",
     "@babel/eslint-parser": "^7.13.14",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "7.19.3",
+    "@babel/regjsgen": "^0.8.0",
     "@quasar/app-webpack": "3.6.2",
     "@types/jest": "29.1.1",
     "@types/lodash": "^4.14.182",

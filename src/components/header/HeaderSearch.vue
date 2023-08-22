@@ -13,7 +13,11 @@ export default {
             searchTerm: null,
             searchHintIndex: 0,
             TIME_DELAY: 6000,
+            isMounted: false,
         };
+    },
+    mounted() {
+        this.isMounted = true;
     },
     watch: {
         inputHiddenMobile(newValue, oldValue) {
@@ -80,6 +84,7 @@ export default {
 <template>
 <div v-clickaway="() => inputHiddenMobile = true" class="c-search">
     <q-icon
+        v-if="isMounted"
         v-show="$q.screen.lt.lg && inputHiddenMobile"
         name="search"
         size="24px"
@@ -92,6 +97,7 @@ export default {
         @click="iconClicked"
     />
     <q-input
+        v-if="isMounted"
         v-show="!$q.screen.lt.lg || !inputHiddenMobile"
         ref="input"
         v-model="searchTerm"
