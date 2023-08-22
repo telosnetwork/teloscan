@@ -30,15 +30,14 @@ jobs:
           node-version: '16.17.0'
       - run: yarn global add @quasar/cli
       - run: yarn install
-      - run: quasar build -m ssr -d
-      - run: mkdir dist/ssr/functions
-      - run: echo "export async function onRequest(context) { return new Response('Hello, world!') }" > dist/ssr/functions/hello.js
-      - run: echo "<html><body>hi</body></html>" > dist/ssr/index.html
+      - run: quasar build -m ssr
+      - run: quasar build -m spa
+      - run: mv dist/ssr dist/spa/ssr
       - name: upload
         uses: actions/upload-artifact@v3
         with:
           name: ${{ inputs.network }}-build
-          path: dist/ssr
+          path: dist/spa
   test:
       name: test
       runs-on: ubuntu-latest
@@ -92,18 +91,17 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.network }}-build
-          path: dist/ssr
-      # - run: echo $(ls -l)
-      - run: cp -a dist/ssr/functions .
+          path: dist/spa
+      - run: mv dist/spa/ssr functions
+      - run: cd functions && yarn install && cd -
       - run: ls -la functions
-      # - run: cd dist/spa/functions/ssr && yarn install && cd -
       - name: publish
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ inputs.account_id }}
           projectName: ${{ inputs.project }}
-          directory: dist/ssr
+          directory: dist/spa
           # Optional: Enable this if you want to have GitHub Deployments triggered
           # gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           # the branch is used for the URL, it does not need to equal the current branch so we can
