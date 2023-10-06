@@ -245,6 +245,16 @@ export default {
             unsignedTrx.gasLimit = gasLimit;
             unsignedTrx.gasPrice = gasPrice;
 
+            // FIXME: remove console log
+            console.log('runNative() contractInstance: ', [contractInstance]);  // Contract
+            console.log('runNative() func: ', [func]);                          // Function
+            console.log('runNative() gasEstimater: ', [gasEstimater]);          // Function
+            console.log('runNative() gasLimit: ', [gasLimit]);                  // BigNumber
+            console.log('runNative() unsignedTrx: ', [unsignedTrx]);            // { "data": string }
+            console.log('runNative() nonce: ', [nonce]);                        // number
+            console.log('runNative() gasPrice: ', [gasPrice]);                  // BigNumber
+            console.log('runNative() this.functionABI: ', [this.functionABI]);  // string ie:"transfer(address,uint256)"
+
             // DO NOT INCLUDE CHAINID, EIP155 is only for replay attacks and you cannot replay a Telos native signed trx
             // this can however break stuff that tries to decode this trx
             //unsignedTrx.chainId = this.$evm.chainId;
@@ -297,6 +307,11 @@ export default {
         },
         async runEVM(opts) {
             const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
+
+            // FIXME: remove console log
+            console.log('runEVM() func: ', [func]);             // ContractInstance created function
+            console.log('runEVM() params: ', [...this.params]); // ["0xa3...657a", BigNumber]
+            console.log('runEVM() opts: ', [opts]);             // {}, {value:string}
 
             const result = await func(...this.params, opts);
             this.hash = result.hash;

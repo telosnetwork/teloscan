@@ -28,6 +28,8 @@ class ProviderManager {
     }
 
     getEthersProvider() {
+        // FIXME: remove console log
+        console.log('ProviderManager.getEthersProvider()', [providerContainer.provider]);
         return new ethers.providers.Web3Provider(
             providerContainer.provider, parseInt(process.env.NETWORK_EVM_CHAIN_ID, 10),
         );

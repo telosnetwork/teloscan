@@ -214,6 +214,14 @@ export default {
                 this.$providerManager.getEthersProvider().getSigner() :
                 this.$contractManager.getEthersProvider();
 
+            // FIXME: remove console log
+            console.log('Staking.fetchContractInstances() provider:',
+                this.isLoggedIn && !this.isNative,
+                this.isLoggedIn,
+                this.isNative,
+                [provider],
+            );
+
             this.stlosContractInstance  = this.stlosContract.getContractInstance(provider, true);
             this.escrowContractInstance = this.escrowContract.getContractInstance(provider, true);
 
