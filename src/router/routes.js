@@ -79,7 +79,7 @@ const routes = [
     {
         path: '/endpoints',
         // eslint-disable-next-line no-unused-vars
-        redirect: to => ({ path: '/health' }),
+        redirect: () => ({ path: '/health' }),
     },
     {
         path: '/:catchAll(.*)*',
