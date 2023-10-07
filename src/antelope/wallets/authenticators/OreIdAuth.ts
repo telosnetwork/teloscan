@@ -168,6 +168,11 @@ export class OreIdAuth extends EVMAuthenticator {
         this.trace('login', 'userChainAccount', this.userChainAccount);
         trackSuccessfulLogin();
 
+        // now we set autoLogin to this.getName() and rawAddress to the address
+        // to avoid the auto-login to be triggered again
+        localStorage.setItem('autoLogin', this.getName());
+        localStorage.setItem('rawAddress', address);
+
         useFeedbackStore().unsetLoading(`${this.getName()}.login`);
         return address;
     }

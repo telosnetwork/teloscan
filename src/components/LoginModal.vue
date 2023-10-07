@@ -6,15 +6,10 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import { defineComponent } from 'vue';
 import { mapGetters, mapMutations } from 'vuex';
 import { ethers } from 'ethers';
-import { WEI_PRECISION } from 'src/lib/utils';
+import { WEI_PRECISION, LOGIN_EVM, LOGIN_NATIVE, PROVIDER_WEB3_INJECTED, PROVIDER_TELOS_CLOUD } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
 import { CURRENT_CONTEXT, getAntelope, useAccountStore, useChainStore } from 'src/antelope/mocks/index';
 import { Authenticator } from 'universal-authenticator-library';
-
-const LOGIN_EVM = 'evm';
-const LOGIN_NATIVE = 'native';
-const PROVIDER_WEB3_INJECTED = 'injectedWeb3';
-const PROVIDER_TELOS_CLOUD = 'OreId';
 
 export default defineComponent({
     name: 'LoginModal',

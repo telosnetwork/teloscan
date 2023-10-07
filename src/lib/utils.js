@@ -5,6 +5,10 @@ const REVERT_FUNCTION_SELECTOR = '0x08c379a0';
 const REVERT_PANIC_SELECTOR = '0x4e487b71';
 
 export const WEI_PRECISION = 18;
+export const LOGIN_EVM = 'evm';
+export const LOGIN_NATIVE = 'native';
+export const PROVIDER_WEB3_INJECTED = 'injectedWeb3';
+export const PROVIDER_TELOS_CLOUD = 'OreId';
 
 export function formatWei(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);

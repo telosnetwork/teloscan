@@ -3,6 +3,8 @@ import { toRaw } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
+import { PROVIDER_WEB3_INJECTED, PROVIDER_TELOS_CLOUD } from 'src/lib/utils';
+
 
 import {
     asyncInputComponents,
@@ -194,8 +196,9 @@ export default {
         },
         async run() {
             this.loading = true;
-
             try {
+                const loginData = localStorage.getItem('loginData');
+                const loginObj = JSON.parse(loginData);
                 const opts = {};
                 if (this.abi.stateMutability === 'payable') {
                     opts.value = this.value;
@@ -209,7 +212,15 @@ export default {
                     return await this.runNative(opts);
                 }
 
-                return await this.runEVM(opts);
+                switch(loginObj?.provider) {
+                case PROVIDER_WEB3_INJECTED:
+                    return await this.runEVM(opts);
+                case PROVIDER_TELOS_CLOUD:
+                    return await this.runTelosCloud(opts);
+                default:
+                    console.error('Provider not supported', loginObj);
+                    this.result = this.$t('global.internal_error');
+                }
             } catch (e) {
                 this.result = e.message;
             }
@@ -316,6 +327,16 @@ export default {
             const result = await func(...this.params, opts);
             this.hash = result.hash;
             this.endLoading();
+        },
+        async runTelosCloud(opts) {
+            // const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
+            // // FIXME: remove console log
+            // console.log('runTelosCloud() func: ', [func]);             // ContractInstance created function
+            console.log('runTelosCloud() params: ', [...this.params]); // ["0xa3...657a", BigNumber]
+            console.log('runTelosCloud() opts: ', [opts]);             // {}, {value:string}
+            // const result = await func(...this.params, opts);
+            // this.hash = result.hash;
+            // this.endLoading();
         },
         endLoading() {
             this.loading = false;

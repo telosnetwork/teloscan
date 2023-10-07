@@ -356,6 +356,7 @@ export default {
         cancel: 'Cancel',
         ok: 'Ok',
         dismiss: 'Dismiss',
+        internal_error: 'Internal Error',
     },
     layouts: {
         health_status: 'Health Status',
