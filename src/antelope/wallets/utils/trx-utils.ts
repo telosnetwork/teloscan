@@ -1,6 +1,6 @@
 import { usePlatformStore } from 'src/antelope';
 import { ethers } from 'ethers';
-import { AccountModel } from 'src/antelope/mocks';
+import { AccountModel } from 'src/antelope/mocks/index';
 import { AntelopeError, TransactionResponse } from 'src/antelope/wallets/types';
 import { EVMAuthenticator } from 'src/antelope/wallets';
 

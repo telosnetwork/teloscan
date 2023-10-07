@@ -1,3 +1,4 @@
+// FIXME: the following exports do not work
 export * from 'src/antelope/mocks/AccountStore';
 export * from 'src/antelope/mocks/AntelopeConfig';
 export * from 'src/antelope/mocks/ChainStore';

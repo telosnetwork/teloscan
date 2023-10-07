@@ -4,12 +4,13 @@
 
 import { SendTransactionResult, WriteContractResult } from '@wagmi/core';
 import { BigNumber, ethers } from 'ethers';
-import { CURRENT_CONTEXT, getAntelope, useAccountStore } from 'src/antelope/mocks';
-import { EVMChainSettings } from 'src/antelope/mocks';
-import { useChainStore } from 'src/antelope/mocks';
-import { useEVMStore } from 'src/antelope/mocks';
-import { createTraceFunction, isTracingAll, useFeedbackStore } from 'src/antelope/mocks';
-import { usePlatformStore } from 'src/antelope/mocks';
+import { createTraceFunction } from 'src/antelope/mocks/FeedbackStore';
+import { CURRENT_CONTEXT, getAntelope, useAccountStore } from 'src/antelope/mocks/index';
+import { EVMChainSettings } from 'src/antelope/mocks/index';
+import { useChainStore } from 'src/antelope/mocks/index';
+import { useEVMStore } from 'src/antelope/mocks/index';
+import { isTracingAll, useFeedbackStore } from 'src/antelope/mocks/FeedbackStore';
+import { usePlatformStore } from 'src/antelope/mocks/index';
 import { AntelopeError, EvmABI, EvmFunctionParam, EvmTransactionResponse, ExceptionError, TokenClass, addressString } from 'src/antelope/wallets/types';
 
 export abstract class EVMAuthenticator {

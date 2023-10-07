@@ -1,18 +1,22 @@
-<script>
-import MetamaskLogo from 'src/assets/metamask-fox.svg';
-import WombatLogo from 'src/assets/wombat-logo.png';
-import BraveBrowserLogo from 'src/assets/brave_lion.svg';
+<!-- eslint-disable max-len -->
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+<!-- eslint-disable no-unused-vars -->
+<script lang="ts">
 import detectEthereumProvider from '@metamask/detect-provider';
+import { defineComponent } from 'vue';
 import { mapGetters, mapMutations } from 'vuex';
 import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
+import { CURRENT_CONTEXT, getAntelope, useAccountStore, useChainStore } from 'src/antelope/mocks/index';
+import { Authenticator } from 'universal-authenticator-library';
 
 const LOGIN_EVM = 'evm';
 const LOGIN_NATIVE = 'native';
 const PROVIDER_WEB3_INJECTED = 'injectedWeb3';
+const PROVIDER_TELOS_CLOUD = 'OreId';
 
-export default {
+export default defineComponent({
     name: 'LoginModal',
     props: {
         show: {
@@ -23,8 +27,9 @@ export default {
     data: () => ({
         tab: 'web3',
         showLogin: false,
-        metamaskLogo: MetamaskLogo,
-        braveBrowserLogo: BraveBrowserLogo,
+        // metamaskLogo: MetamaskLogo,
+        // braveBrowserLogo: BraveBrowserLogo,
+        // telosCloudLogo: TelosCloudLogo,
         isMobile: false,
         browserSupportsMetaMask: true,
         isBraveBrowser: false,
@@ -38,6 +43,9 @@ export default {
             'address',
             'nativeAccount',
         ]),
+        authenticators(): Authenticator[] {
+            return this.$ual.getAuthenticators().availableAuthenticators;
+        },
     },
     async mounted() {
         await this.detectProvider();
@@ -50,27 +58,52 @@ export default {
 
         const loginObj = JSON.parse(loginData);
         if (loginObj.type === LOGIN_EVM) {
-            const provider = this.getInjectedProvider();
-            let checkProvider = new ethers.providers.Web3Provider(provider);
-            const { chainId } = await checkProvider.getNetwork();
-            if(loginObj.chain === chainId){
-                switch (loginObj.provider) {
-                case PROVIDER_WEB3_INJECTED:
-                    this.injectedWeb3Login();
-                    break;
-                default:
-                    console.error(`Unknown web3 login type: ${loginObj.provider}`);
-                    this.$q.notify({
-                        position: 'top',
-                        message: this.$t('components.unknown_web3_login_type', { provider: loginObj.provider }),
-                        timeout: 6000,
-                    });
-                    break;
+            switch(loginObj.provider){
+            case PROVIDER_WEB3_INJECTED: {
+                const provider = this.getInjectedProvider();
+                let checkProvider = new ethers.providers.Web3Provider(provider);
+                const { chainId } = await checkProvider.getNetwork();
+                if(loginObj.chain === chainId){
+                    switch (loginObj.provider) {
+                    case PROVIDER_WEB3_INJECTED:
+                        this.injectedWeb3Login();
+                        break;
+                    default:
+                        console.error(`Unknown web3 login type: ${loginObj.provider}`);
+                        this.$q.notify({
+                            position: 'top',
+                            message: this.$t('components.unknown_web3_login_type', { provider: loginObj.provider }),
+                            timeout: 6000,
+                        });
+                        break;
+                    }
                 }
+                break;
+            }
+            case PROVIDER_TELOS_CLOUD:
+                this.connectTelosCloud();
+                break;
+            default:
+                console.error(`Unknown login type: ${loginObj.type}`);
+                this.$q.notify({
+                    position: 'top',
+                    message: this.$t('components.unknown_evm_login_provider', { provider: loginObj.provider }),
+                    timeout: 6000,
+                });
+                break;
             }
         } else if (loginObj.type === LOGIN_NATIVE) {
-            const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
-            this.ualLogin(wallet);
+            const wallet = this.authenticators.find((a: { getName: () => any; }) => a.getName() === loginObj.provider);
+            if (wallet) {
+                this.ualLogin(wallet);
+            } else {
+                console.error(`Unknown login type: ${loginObj.type}`);
+                this.$q.notify({
+                    position: 'top',
+                    message: this.$t('components.unknown_native_login_provider', { provider: loginObj.provider }),
+                    timeout: 6000,
+                });
+            }
         }
     },
     methods: {
@@ -80,8 +113,8 @@ export default {
 
         async detectProvider() {
             const provider = await detectEthereumProvider({ mustBeMetaMask: true });
-            this.browserSupportsMetaMask = provider?.isMetaMask;
-            this.isBraveBrowser = navigator.brave && await navigator.brave.isBrave();
+            this.browserSupportsMetaMask = provider?.isMetaMask || false;
+            this.isBraveBrowser = navigator.brave && await navigator.brave.isBrave() || false;
         },
 
         detectMobile() {
@@ -107,8 +140,8 @@ export default {
                 }
 
                 const loginObj = JSON.parse(loginData);
-                const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
-                wallet.logout();
+                const wallet = this.authenticators.find((a: { getName: () => any; }) => a.getName() === loginObj.provider);
+                wallet?.logout();
             }
 
             this.setLogin({});
@@ -159,6 +192,30 @@ export default {
             await this.injectedWeb3Login();
         },
 
+        async connectTelosCloud() {
+            console.log('connectTelosCloud()');
+            const name = 'OreId';
+            const label = CURRENT_CONTEXT;
+            const auth = getAntelope().wallets.getAuthenticator(name);
+            if (!auth) {
+                console.error(`${name} authenticator not found`);
+                return;
+            }
+            const authenticator = auth.newInstance(label);
+            const network = useChainStore().currentChain.settings.getNetwork();
+            useAccountStore().loginEVM({ authenticator, network }).then(() => {
+                const address = useAccountStore().getAccount(label).account;
+                this.setLogin({ address });
+                localStorage.setItem('loginData', JSON.stringify({
+                    type: LOGIN_EVM,
+                    provider: PROVIDER_TELOS_CLOUD,
+                }));
+                // FIXME: remove this console.log
+                console.log('Logged as', address);
+            });
+            this.$emit('hide');
+        },
+
         async injectedWeb3Login() {
             const address = await this.getInjectedAddress();
             if (address) {
@@ -174,13 +231,13 @@ export default {
                     provider: PROVIDER_WEB3_INJECTED,
                     chain: chainId,
                 }));
-                provider.on('chainChanged', (newNetwork) => {
+                provider.on('chainChanged', (newNetwork: number) => {
                     if(newNetwork !== chainId){
                         this.setLogin({});
                         this.$providerManager.setProvider(null);
                     }
                 });
-                provider.on('accountsChanged', (accounts) => {
+                provider.on('accountsChanged', (accounts: any[]) => {
                     this.setLogin({
                         address: accounts[0],
                     });
@@ -188,7 +245,7 @@ export default {
             }
             this.$emit('hide');
         },
-        async ualLogin(wallet, account) {
+        async ualLogin(wallet: Authenticator, account?: string) {
             await wallet.init();
             const users = await wallet.login(account);
             if (users.length) {
@@ -217,7 +274,7 @@ export default {
         },
         async getInjectedAddress() {
             const provider = this.getInjectedProvider();
-            let checkProvider = new ethers.providers.Web3Provider(provider);
+            let checkProvider: ethers.providers.Web3Provider | undefined = new ethers.providers.Web3Provider(provider);
 
             const newProviderInstance = await this.ensureCorrectChain(checkProvider);
             if(newProviderInstance){
@@ -237,9 +294,9 @@ export default {
                 return accessGranted[0];
             }
         },
-        async ensureCorrectChain(checkProvider) {
+        async ensureCorrectChain(checkProvider: ethers.providers.Web3Provider) {
             const { chainId } = await checkProvider.getNetwork();
-            if (chainId !== process.env.NETWORK_EVM_CHAIN_ID) {
+            if (+chainId !== +(process.env.NETWORK_EVM_CHAIN_ID ?? '40')) {
                 await this.switchChainInjected();
                 const provider = this.getInjectedProvider();
                 return new ethers.providers.Web3Provider(provider);
@@ -263,7 +320,7 @@ export default {
             const provider = this.getInjectedProvider();
 
             if (provider) {
-                const chainId = parseInt(process.env.NETWORK_EVM_CHAIN_ID, 10);
+                const chainId = parseInt(process.env.NETWORK_EVM_CHAIN_ID || '40', 10);
                 const chainIdParam = `0x${chainId.toString(16)}`;
                 const mainnet = chainId === 40;
                 try {
@@ -278,7 +335,7 @@ export default {
                         -32603, // https://github.com/MetaMask/metamask-mobile/issues/2944
                     ];
 
-                    if (chainNotAddedCodes.includes(e.code)) {  // 'Chain <hex chain id> hasn't been added'
+                    if (chainNotAddedCodes.includes((e as {code:number}).code)) {  // 'Chain <hex chain id> hasn't been added'
                         try {
                             await provider.request({
                                 method: 'wallet_addEthereumChain',
@@ -305,16 +362,16 @@ export default {
                 return false;
             }
         },
-        getIconForWallet(wallet) {
+        getIconForWallet(wallet: { getName: () => string; getStyle: () => { icon: string; }; }) {
             if (wallet.getName() === 'wombat') {
                 // Wombat UAL logo is 32x32px; substitute for higher res
-                return WombatLogo;
+                return '/assets/wombat-logo.png';
             }
 
             return wallet.getStyle().icon;
         },
     },
-};
+});
 </script>
 <template>
 <div class="c-login-modal">
@@ -329,7 +386,7 @@ export default {
                 <q-tab-panel name="web3">
                     <q-card class="c-login-modal__image-container" @click="connectMetaMask()">
                         <q-img
-                            :src="metamaskLogo"
+                            :src="require('src/assets/metamask-fox.svg')"
                             height="64px"
                             width="64px"
                         />
@@ -343,10 +400,22 @@ export default {
                         @click="connectBraveWallet()"
                     >
                         <q-img
-                            :src="braveBrowserLogo"
+                            :src="require('src/assets/brave_lion.svg')"
                             width="50px"
                         />
                         <p> Brave Wallet </p>
+                    </q-card>
+                    <q-card
+                        class="c-login-modal__image-container"
+                        @click="connectTelosCloud()"
+                    >
+                        <q-img
+                            :src="require('src/assets/logo--telos-cloud-wallet.svg')"
+                            height="64px"
+                            width="64px"
+                            fit="contain"
+                        />
+                        <p> Telos Cloud </p>
                     </q-card>
                 </q-tab-panel>
                 <q-tab-panel name="native">
@@ -359,7 +428,7 @@ export default {
                     </p>
                     <div class="u-flex--center">
                         <q-card
-                            v-for="wallet in $ual.authenticators"
+                            v-for="wallet in authenticators"
                             :key="wallet.getStyle().text"
                             class="c-login-modal__image-container"
                             @click="ualLogin(wallet)"

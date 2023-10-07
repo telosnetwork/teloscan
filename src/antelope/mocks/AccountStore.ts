@@ -3,7 +3,6 @@
 import { EVMAuthenticator } from 'src/antelope/wallets';
 import { addressString } from 'src/antelope/wallets/types';
 import { CURRENT_CONTEXT } from 'src/antelope/mocks';
-import loginStore from 'src/store/login';
 
 export interface AccountModel {
     label: typeof CURRENT_CONTEXT;
@@ -13,6 +12,7 @@ export interface AccountModel {
 }
 
 let currentAuthenticator = {} as EVMAuthenticator;
+let currentAccount = null as addressString | null;
 
 interface LoginEVMActionData {
     authenticator: EVMAuthenticator
@@ -24,14 +24,13 @@ const AccountStore = {
         label,
         isNative: false,
         authenticator: currentAuthenticator,
-        account: loginStore.getters.address(),
+        account: currentAccount,
     } as AccountModel),
     async loginEVM({ authenticator, network }: LoginEVMActionData): Promise<boolean> {
-        // FIXME: remove the console.log
-        console.log('AccountStore.loginEVM', authenticator, network);
         currentAuthenticator = authenticator;
-        authenticator.login(network);
+        currentAccount = await authenticator.login(network);
         return true;
     },
 };
 export const useAccountStore = () => AccountStore;
+

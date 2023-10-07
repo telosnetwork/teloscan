@@ -20,4 +20,4 @@ export class AntelopeWallets {
 
 export * from 'src/antelope/wallets/authenticators/EVMAuthenticator';
 export * from 'src/antelope/wallets/authenticators/OreIdAuth';
-export * from 'src/antelope/mocks';
+export * from 'src/antelope/mocks/index';
