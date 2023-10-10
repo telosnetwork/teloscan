@@ -1,12 +1,16 @@
-<script>
-import DateField from 'components/DateField';
-import TransactionField from 'components/TransactionField';
+<!-- eslint-disable max-len -->
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+<!-- eslint-disable no-unused-vars -->
+<script lang="ts">
+import { defineComponent } from 'vue';
+import DateField from 'components/DateField.vue';
+import TransactionField from 'components/TransactionField.vue';
 import { BigNumber } from 'ethers';
 
 import { formatWei, WEI_PRECISION } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 
-export default {
+export default defineComponent({
     name: 'WithdrawPage',
     components: {
         DateField,
@@ -32,7 +36,7 @@ export default {
     },
     emits: ['balance-changed'],
     data: () => ({
-        resultHash: null,
+        resultHash: null as null | string,
         columns: [
             {
                 name: 'amount',
@@ -72,11 +76,11 @@ export default {
     methods: {
         withdrawUnlocked() {
             return this.escrowContractInstance.withdraw()
-                .then((result) => {
+                .then((result: { hash: null | string; }) => {
                     this.resultHash = result.hash;
                     this.$emit('balance-changed');
                 })
-                .catch(({ message }) => {
+                .catch(({ message }: Error) => {
                     console.error(`Failed to withdraw unlocked TLOS: ${message}`);
                     this.$q.notify({
                         type: 'negative',
@@ -85,7 +89,7 @@ export default {
                     this.resultHash = null;
                 });
         },
-        formatAmount(val) {
+        formatAmount(val: string | BigNumber | null) {
             if (val === null) {
                 return '0.0';
             }
@@ -93,7 +97,7 @@ export default {
             return formatWei(val, WEI_PRECISION, 2);
         },
     },
-};
+});
 </script>
 
 <template>
@@ -113,30 +117,32 @@ export default {
                 :no-data-label="$t('pages.staking.no_withdrawable_positions')"
                 flat
             >
-                <q-tr :props="props" :no-hover="false">
-                    <q-th
-                        v-for="col in props.cols"
-                        :key="col.name"
-                        :props="props"
-                        :auto-width="true"
-                    >
-                        <template v-if="col.name==='time'">
-                            {{ col.label }}
-                            <q-icon
-                                name="fas fa-info-circle"
-                                class="info-icon"
-                                @click="showAge=!showAge"
-                            >
-                                <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
-                                    {{ $t('pages.staking.click_to_change_time_format') }}
-                                </q-tooltip>
-                            </q-icon>
-                        </template>
-                        <template v-else>
-                            {{ col.label }}
-                        </template>
-                    </q-th>
-                </q-tr>
+                <template v-slot:header="props">
+                    <q-tr :props="props" :no-hover="false">
+                        <q-th
+                            v-for="col in props.cols"
+                            :key="col.name"
+                            :props="props"
+                            :auto-width="true"
+                        >
+                            <template v-if="col.name==='time'">
+                                {{ col.label }}
+                                <q-icon
+                                    name="fas fa-info-circle"
+                                    class="info-icon"
+                                    @click="showAge=!showAge"
+                                >
+                                    <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                                        {{ $t('pages.staking.click_to_change_time_format') }}
+                                    </q-tooltip>
+                                </q-icon>
+                            </template>
+                            <template v-else>
+                                {{ col.label }}
+                            </template>
+                        </q-th>
+                    </q-tr>
+                </template>
                 <template v-slot:body="props">
                     <q-tr :props="props">
                         <q-td key="amount" align="left" class="left-column">

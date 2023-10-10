@@ -6,7 +6,7 @@ import { defineComponent, toRaw } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
-import { PROVIDER_WEB3_INJECTED, PROVIDER_TELOS_CLOUD } from 'src/lib/utils';
+import { PROVIDER_WEB3_INJECTED, PROVIDER_TELOS_CLOUD, LOGIN_DATA_KEY } from 'src/lib/utils';
 
 
 import {
@@ -213,7 +213,7 @@ export default defineComponent({
             this.loading = true;
             this.result = null;
             try {
-                const loginData = localStorage.getItem('loginData');
+                const loginData = localStorage.getItem(LOGIN_DATA_KEY);
                 if (!loginData) {
                     console.error('No login data found');
                     this.errorMessage = this.$t('global.internal_error');

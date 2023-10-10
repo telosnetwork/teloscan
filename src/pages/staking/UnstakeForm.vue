@@ -1,17 +1,21 @@
-<script>
+<!-- eslint-disable max-len -->
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+<!-- eslint-disable no-unused-vars -->
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { getClientIsApple } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
-import { debounce } from 'lodash';
+import { debounce, DebouncedFunc } from 'lodash';
 
 import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 
-import BaseStakingForm from 'pages/staking/BaseStakingForm';
-import TransactionField from 'components/TransactionField';
+import BaseStakingForm from 'pages/staking/BaseStakingForm.vue';
+import TransactionField from 'components/TransactionField.vue';
 
 import LoginModal from 'components/LoginModal.vue';
 
-export default {
+export default defineComponent({
     name: 'UnstakeForm',
     components: {
         BaseStakingForm,
@@ -63,23 +67,23 @@ export default {
         bottomInputLabel: '',
         bottomInputAmount: '0',
         ctaIsLoading: false,
-        debouncedTopInputHandler: null,
-        debouncedBottomInputHandler: null,
+        debouncedTopInputHandler: (() => void 0) as DebouncedFunc<() => void>,
+        debouncedBottomInputHandler: (() => void 0) as DebouncedFunc<() => void>,
         columns: [{
             name: 'amount',
             label: '',
             align: 'left',
             field: 'amount',
-            format: val => ethers.utils.formatEther(val.toString()),
+            format: (val: ethers.BigNumber) => ethers.utils.formatEther(val.toString()),
         }, {
             name: 'time',
             label: '',
             align: 'left',
             field: 'until',
-            format: val => val.toString(),
+            format: (val: ethers.BigNumber) => val.toString(),
         }],
         loading: false,
-        maxDeposits: null,
+        maxDeposits: 0,
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn', 'isNative']),
@@ -115,7 +119,7 @@ export default {
         },
         topInputErrorText() {
             if(this.isLoggedIn && !this.isNative) {
-                return;
+                return null;
             }
             return this.isNative ?
                 this.$t('pages.staking.login_using_evm_wallet') :
@@ -164,7 +168,7 @@ export default {
                 message: this.$t('pages.staking.fetch_max_deposits_error', { message: error }),
             });
 
-            this.maxDeposits = null;
+            this.maxDeposits = 0;
         }
 
         const debounceWaitMs = 250;
@@ -172,10 +176,10 @@ export default {
         this.debouncedTopInputHandler = debounce(
             () => {
                 this.stlosContractInstance.previewRedeem(this.topInputAmount)
-                    .then((amountBigNum) => {
+                    .then((amountBigNum: ethers.BigNumber) => {
                         this.bottomInputAmount = amountBigNum.toString();
                     })
-                    .catch((err) => {
+                    .catch((err: any) => {
                         this.bottomInputAmount = '';
                         console.error(`Unable to convert TLOS to STLOS: ${err}`);
                         this.$q.notify({
@@ -204,10 +208,10 @@ export default {
         this.debouncedBottomInputHandler = debounce(
             () => {
                 this.stlosContractInstance.previewDeposit(this.bottomInputAmount)
-                    .then((amountBigNum) => {
+                    .then((amountBigNum: { toString: () => string; }) => {
                         this.topInputAmount = amountBigNum.toString();
                     })
-                    .catch((err) => {
+                    .catch((err: any) => {
                         this.topInputAmount = '';
                         console.error(`Unable to convert STLOS to TLOS: ${err}`);
                         this.$q.notify({
@@ -278,11 +282,11 @@ export default {
             const value = BigNumber.from(this.bottomInputAmount);
 
             this.stlosContractInstance.withdraw(value, this.address, this.address)
-                .then((result) => {
+                .then((result: { hash: null; }) => {
                     this.resultHash = result.hash;
                     this.$emit('balance-changed');
                 })
-                .catch(({ message }) => {
+                .catch(({ message }: Error) => {
                     console.error(`Failed to unstake sTLOS: ${message}`);
                     this.$q.notify({
                         position: 'top',
@@ -295,7 +299,7 @@ export default {
                 });
         },
     },
-};
+});
 </script>
 
 <template>

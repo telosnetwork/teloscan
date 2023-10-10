@@ -9,6 +9,7 @@ export const LOGIN_EVM = 'evm';
 export const LOGIN_NATIVE = 'native';
 export const PROVIDER_WEB3_INJECTED = 'injectedWeb3';
 export const PROVIDER_TELOS_CLOUD = 'OreId';
+export const LOGIN_DATA_KEY = 'loginData';
 
 export function formatWei(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);

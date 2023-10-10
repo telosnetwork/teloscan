@@ -2,7 +2,15 @@
 import { defineAsyncComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
-import { formatWei, getRouteWatcherForTabs, WEI_PRECISION } from 'src/lib/utils';
+import {
+    formatWei,
+    getRouteWatcherForTabs,
+    LOGIN_DATA_KEY,
+    PROVIDER_WEB3_INJECTED,
+    // LOGIN_DATA_KEY,
+    // PROVIDER_WEB3_INJECTED,
+    WEI_PRECISION,
+} from 'src/lib/utils';
 
 import StakeForm from 'pages/staking/StakeForm';
 import StakingStats from 'pages/staking/StakingStats';
@@ -48,7 +56,7 @@ export default {
         address: {
             immediate: true,
             async handler(address, oldAddress) {
-                if (address !== oldAddress) {
+                if (address && address !== oldAddress) {
                     await this.fetchContractInstances();
                     await this.fetchBalances();
                 }
@@ -57,6 +65,7 @@ export default {
         $route: getRouteWatcherForTabs('staking', tabs, tabs.stake),
     },
     async created() {
+        console.log('Staking.created()');
         await this.fetchContracts();
         await this.fetchContractInstances();
     },
@@ -74,7 +83,7 @@ export default {
                 return;
             }
 
-            const tlosPromise = this.$providerManager.getEthersProvider().getBalance(this.address)
+            const tlosPromise = this.$contractManager.getEthersProvider().getBalance(this.address)
                 .then((balanceBn) => {
                     this.tlosBalance = balanceBn.toString();
                 })
@@ -177,6 +186,8 @@ export default {
             ]);
         },
         async fetchContracts() {
+            // FIXME: remove console log
+            console.log('Staking.fetchContracts()');
             const stlosPromise = this.$contractManager.getContract(process.env.STAKED_TLOS_CONTRACT_ADDRESS)
                 .then((contract) => {
                     this.stlosContract = contract;
@@ -206,13 +217,42 @@ export default {
             return Promise.all([stlosPromise, escrowPromise]);
         },
         async fetchContractInstances() {
+            // FIXME: remove console log
+            console.log('Staking.fetchContractInstances()');
             if (!this.stlosContract || !this.escrowContract) {
                 await this.fetchContracts();
             }
 
+            /*
             const provider = this.isLoggedIn && !this.isNative ?
                 this.$providerManager.getEthersProvider().getSigner() :
                 this.$contractManager.getEthersProvider();
+
+            /*/
+            let provider;
+            const loginData = localStorage.getItem(LOGIN_DATA_KEY);
+            if (!loginData) {
+                console.error('No login data found');
+                this.$q.notify({
+                    type: 'negative',
+                    message: this.$t('global.internal_error'),
+                });
+                return;
+            }
+            const loginObj = JSON.parse(loginData);
+
+            if (this.isNative) {
+                provider = this.$contractManager.getEthersProvider();
+            } else {
+                switch(loginObj?.provider) {
+                case PROVIDER_WEB3_INJECTED:
+                    provider = this.$providerManager.getEthersProvider().getSigner();
+                    break;
+                default:
+                    provider = this.$contractManager.getEthersProvider();
+                }
+            }
+            //*/
 
             // FIXME: remove console log
             console.log('Staking.fetchContractInstances() provider:',

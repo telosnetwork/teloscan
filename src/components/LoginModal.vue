@@ -6,7 +6,14 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import { defineComponent } from 'vue';
 import { mapGetters, mapMutations } from 'vuex';
 import { ethers } from 'ethers';
-import { WEI_PRECISION, LOGIN_EVM, LOGIN_NATIVE, PROVIDER_WEB3_INJECTED, PROVIDER_TELOS_CLOUD } from 'src/lib/utils';
+import {
+    WEI_PRECISION,
+    LOGIN_EVM,
+    LOGIN_NATIVE,
+    PROVIDER_WEB3_INJECTED,
+    PROVIDER_TELOS_CLOUD,
+    LOGIN_DATA_KEY,
+} from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
 import { CURRENT_CONTEXT, getAntelope, useAccountStore, useChainStore } from 'src/antelope/mocks/index';
 import { Authenticator } from 'universal-authenticator-library';
@@ -46,7 +53,7 @@ export default defineComponent({
         await this.detectProvider();
         this.detectMobile();
 
-        const loginData = localStorage.getItem('loginData');
+        const loginData = localStorage.getItem(LOGIN_DATA_KEY);
         if (!loginData) {
             return;
         }
@@ -129,7 +136,7 @@ export default defineComponent({
         },
         disconnect() {
             if (this.isNative) {
-                const loginData = localStorage.getItem('loginData');
+                const loginData = localStorage.getItem(LOGIN_DATA_KEY);
                 if (!loginData) {
                     return;
                 }
@@ -140,7 +147,7 @@ export default defineComponent({
             }
 
             this.setLogin({});
-            localStorage.removeItem('loginData');
+            localStorage.removeItem(LOGIN_DATA_KEY);
             this.$providerManager.setProvider(null);
         },
         goToAddress() {
@@ -201,7 +208,7 @@ export default defineComponent({
             useAccountStore().loginEVM({ authenticator, network }).then(() => {
                 const address = useAccountStore().getAccount(label).account;
                 this.setLogin({ address });
-                localStorage.setItem('loginData', JSON.stringify({
+                localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
                     type: LOGIN_EVM,
                     provider: PROVIDER_TELOS_CLOUD,
                 }));
@@ -221,7 +228,7 @@ export default defineComponent({
                 let checkProvider = new ethers.providers.Web3Provider(provider);
                 this.$providerManager.setProvider(provider);
                 const { chainId } = await checkProvider.getNetwork();
-                localStorage.setItem('loginData', JSON.stringify({
+                localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
                     type: LOGIN_EVM,
                     provider: PROVIDER_WEB3_INJECTED,
                     chain: chainId,
@@ -263,7 +270,7 @@ export default defineComponent({
                     nativeAccount: accountName,
                 });
                 this.$providerManager.setProvider(account);
-                localStorage.setItem('loginData', JSON.stringify({ type: LOGIN_NATIVE, provider: wallet.getName() }));
+                localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({ type: LOGIN_NATIVE, provider: wallet.getName() }));
             }
             this.$emit('hide');
         },
