@@ -32,7 +32,10 @@ export default {
             required: true,
         },
         topInputMaxValue: {
-            type: String,
+            validator: {
+                type: [String, null],
+                default: null,
+            },
             default: null,
         },
         topInputErrorText: {
@@ -56,7 +59,10 @@ export default {
             required: true,
         },
         bottomInputMaxValue: {
-            type: String,
+            validator: {
+                type: [String, null],
+                default: null,
+            },
             default: null,
         },
         bottomInputIsLoading: {

@@ -1,22 +1,25 @@
-<script>
+<!-- eslint-disable max-len -->
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+<!-- eslint-disable no-unused-vars -->
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
-import { debounce } from 'lodash';
-import MetaMaskLogo from 'src/assets/metamask-fox.svg';
+import { debounce, DebouncedFunc } from 'lodash';
 import { stlos } from 'src/lib/logos';
 
 
 import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 import { promptAddToMetamask } from 'src/lib/token-utils';
-import { getClientIsApple, WEI_PRECISION } from 'src/lib/utils';
+import { getClientIsApple, LOGIN_DATA_KEY, PROVIDER_TELOS_CLOUD, PROVIDER_WEB3_INJECTED, WEI_PRECISION } from 'src/lib/utils';
 
-import BaseStakingForm from 'pages/staking/BaseStakingForm';
-import TransactionField from 'components/TransactionField';
+import BaseStakingForm from 'pages/staking/BaseStakingForm.vue';
+import TransactionField from 'components/TransactionField.vue';
 import LoginModal from 'components/LoginModal.vue';
 
 const reservedForGasBn = BigNumber.from('10').pow(WEI_PRECISION);
 
-export default {
+export default defineComponent({
     name: 'StakeForm',
     components: {
         BaseStakingForm,
@@ -47,10 +50,9 @@ export default {
     },
     emits: ['balance-changed'],
     data: () => ({
-        MetaMaskLogo,
         displayConfirmModal: false,
         displayLoginModal: false,
-        resultHash: null,
+        resultHash: null as null | string,
         header: '',
         subheader: '',
         topInputLabel: '',
@@ -61,8 +63,8 @@ export default {
         bottomInputLabel: '',
         bottomInputAmount: '0',
         ctaIsLoading: false,
-        debouncedTopInputHandler: null,
-        debouncedBottomInputHandler: null,
+        debouncedTopInputHandler: (() => void 0) as DebouncedFunc<() => void>,
+        debouncedBottomInputHandler: (() => void 0) as DebouncedFunc<() => void>,
         userDismissedBanner: false,
     }),
     computed: {
@@ -165,10 +167,10 @@ export default {
         this.debouncedTopInputHandler = debounce(
             () => {
                 this.stlosContractInstance.previewDeposit(this.topInputAmount)
-                    .then((amountBigNum) => {
+                    .then((amountBigNum: ethers.BigNumber) => {
                         this.bottomInputAmount = amountBigNum.toString();
                     })
-                    .catch((err) => {
+                    .catch((err: any) => {
                         this.bottomInputAmount = '';
                         console.error(`Unable to convert TLOS to STLOS: ${err}`);
                         this.$q.notify({
@@ -197,10 +199,10 @@ export default {
         this.debouncedBottomInputHandler = debounce(
             () => {
                 this.stlosContractInstance.previewRedeem(this.bottomInputAmount)
-                    .then((amountBigNum) => {
+                    .then((amountBigNum: { toString: () => string; }) => {
                         this.topInputAmount = amountBigNum.toString();
                     })
-                    .catch((err) => {
+                    .catch((err: any) => {
                         this.topInputAmount = '';
                         console.error(`Unable to convert STLOS to TLOS: ${err}`);
                         this.$q.notify({
@@ -230,7 +232,7 @@ export default {
         promptAddToMetamask() {
             return promptAddToMetamask(
                 this.$q,
-                process.env.STAKED_TLOS_CONTRACT_ADDRESS,
+                process.env.STAKED_TLOS_CONTRACT_ADDRESS as string,
                 'STLOS',
                 stlos,
                 'ERC20',
@@ -273,31 +275,70 @@ export default {
             this.displayConfirmModal = true;
         },
         initiateDeposit() {
+            console.log('initiateDeposit()');
             this.ctaIsLoading = true;
             const value = BigNumber.from(this.topInputAmount);
 
-            this.stlosContractInstance['depositTLOS()']({ value })
-                .then((result) => {
+            let waitTheTransaction: Promise<{hash: string | null}> = Promise.resolve({ hash: null });
+            try {
+                const loginData = localStorage.getItem(LOGIN_DATA_KEY);
+                if (loginData) {
+                    const loginObj = JSON.parse(loginData);
+                    switch(loginObj?.provider) {
+                    case PROVIDER_WEB3_INJECTED:
+                        waitTheTransaction = this.continueDeposit(value);
+                        break;
+                    case PROVIDER_TELOS_CLOUD:
+                        waitTheTransaction = this.continueDemositLegacy(value);
+                        break;
+                    default:
+                        waitTheTransaction = this.continueDemositLegacy(value);
+                    }
+                }
+
+                waitTheTransaction.then((result) => {
                     this.resultHash = result.hash;
                     this.$emit('balance-changed');
-                })
-                .catch(({ message }) => {
+                }).catch(({ message }: Error) => {
                     console.error(`Failed to deposit TLOS: ${message}`);
                     this.$q.notify({
                         type: 'negative',
                         message: this.$t('pages.staking.deposit_failed', { message }),
                     });
                     this.resultHash = null;
-                })
-                .finally(() => {
+                }).finally(() => {
                     this.ctaIsLoading = false;
                 });
+
+
+            } catch (e) {
+                console.error('Failed to deposit TLOS', e);
+            } finally {
+                this.ctaIsLoading = false;
+            }
+        },
+        continueDeposit(value: BigNumber) {
+            // const authenticator = useAccountStore().getAccount(CURRENT_CONTEXT).authenticator;
+            console.log('value.toString(): ', value.toString());
+            console.log('this.stlosContractInstance: ', this.stlosContractInstance);
+            console.log('this.stlosContractInstance.address: ', this.stlosContractInstance.address);
+            return Promise.resolve({ hash: null });
+
+            // return authenticator.signCustomTransaction(
+            //     this.stlosContractInstance.address,
+            //     [this.abi] as EvmABI,
+            //     [],
+            //     value,
+            // );
+        },
+        continueDemositLegacy(value: BigNumber) {
+            return this.stlosContractInstance['depositTLOS()']({ value }) as Promise<{ hash: null | string; }>;
         },
         hideClaimBanner() {
             this.userDismissedBanner = true;
         },
     },
-};
+});
 </script>
 
 <template>
@@ -379,7 +420,7 @@ export default {
                 >
                     {{ $t('pages.staking.add_stlos_to_metamask') }}
                     <img
-                        :src="MetaMaskLogo"
+                        :src="require('src/assets/metamask-fox.svg')"
                         class="q-ml-xs"
                         height="24"
                         width="24"

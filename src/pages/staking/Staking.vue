@@ -177,6 +177,8 @@ export default {
             ]);
         },
         async fetchContracts() {
+            // FIXME: remove console log
+            console.log('Staking.fetchContracts()');
             const stlosPromise = this.$contractManager.getContract(process.env.STAKED_TLOS_CONTRACT_ADDRESS)
                 .then((contract) => {
                     this.stlosContract = contract;
@@ -206,6 +208,8 @@ export default {
             return Promise.all([stlosPromise, escrowPromise]);
         },
         async fetchContractInstances() {
+            // FIXME: remove console log
+            console.log('Staking.fetchContractInstances()');
             if (!this.stlosContract || !this.escrowContract) {
                 await this.fetchContracts();
             }
