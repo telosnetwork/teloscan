@@ -35,8 +35,6 @@ export default class ContractManager {
     }
 
     getEthersProvider() {
-        // FIXME: remove console log
-        console.log('ContractManager.getEthersProvider() this.ethersProvider:', [this.ethersProvider]);
         return this.ethersProvider;
     }
     async getFunctionIface(data) {

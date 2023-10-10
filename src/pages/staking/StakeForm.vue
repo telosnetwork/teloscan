@@ -11,7 +11,12 @@ import { stlos } from 'src/lib/logos';
 
 import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 import { promptAddToMetamask } from 'src/lib/token-utils';
-import { getClientIsApple, LOGIN_DATA_KEY, PROVIDER_TELOS_CLOUD, PROVIDER_WEB3_INJECTED, WEI_PRECISION } from 'src/lib/utils';
+import {
+    getClientIsApple,
+    LOGIN_DATA_KEY,
+    PROVIDER_TELOS_CLOUD,
+    WEI_PRECISION,
+} from 'src/lib/utils';
 
 import BaseStakingForm from 'pages/staking/BaseStakingForm.vue';
 import TransactionField from 'components/TransactionField.vue';
@@ -291,9 +296,6 @@ export default defineComponent({
                 if (loginData) {
                     const loginObj = JSON.parse(loginData);
                     switch(loginObj?.provider) {
-                    case PROVIDER_WEB3_INJECTED:
-                        waitTheTransaction = this.continueDemositLegacy(value);
-                        break;
                     case PROVIDER_TELOS_CLOUD:
                         waitTheTransaction = this.continueDeposit(value);
                         break;
@@ -325,10 +327,6 @@ export default defineComponent({
         },
         continueDeposit(value: BigNumber) {
             const authenticator = useAccountStore().getAccount(CURRENT_CONTEXT).authenticator;
-            // FIXME: remove this logs
-            console.log('value.toString(): ', value.toString());
-            console.log('this.stlosContractInstance.address: ', this.stlosContractInstance.address);
-            console.log('this.abi: ', this.abi);
 
             return authenticator.signCustomTransaction(
                 this.stlosContractInstance.address,

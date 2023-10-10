@@ -3,7 +3,11 @@
 <!-- eslint-disable no-unused-vars -->
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { getClientIsApple } from 'src/lib/utils';
+import {
+    LOGIN_DATA_KEY,
+    PROVIDER_TELOS_CLOUD,
+    getClientIsApple,
+} from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { debounce, DebouncedFunc } from 'lodash';
@@ -14,6 +18,9 @@ import BaseStakingForm from 'pages/staking/BaseStakingForm.vue';
 import TransactionField from 'components/TransactionField.vue';
 
 import LoginModal from 'components/LoginModal.vue';
+import { EvmABI, stlosAbiWithdraw } from 'src/antelope/wallets/types';
+import { useAccountStore } from 'src/antelope';
+import { CURRENT_CONTEXT } from 'src/antelope/mocks';
 
 export default defineComponent({
     name: 'UnstakeForm',
@@ -56,13 +63,13 @@ export default defineComponent({
     data: () => ({
         displayConfirmModal: false,
         displayLoginModal: false,
-        resultHash: null,
+        resultHash: null as null | string,
         header: '',
         subheader: '',
         topInputLabel: '',
         topInputAmount: '0',
         topInputIsLoading: false,
-        bottomInputMaxValue: null,
+        bottomInputMaxValue: '',
         bottomInputIsLoading: false,
         bottomInputLabel: '',
         bottomInputAmount: '0',
@@ -91,7 +98,7 @@ export default defineComponent({
             return formatUnstakePeriod(this.unstakePeriodSeconds, this.$t);
         },
         topInputMaxValue() {
-            return this.isLoggedIn ? this.stakedBalance : null;
+            return this.isLoggedIn ? this.stakedBalance : '';
         },
         topInputTooltip() {
             const prettyBalance = ethers.utils.formatEther(this.stakedBalance).toString();
@@ -119,7 +126,7 @@ export default defineComponent({
         },
         topInputErrorText() {
             if(this.isLoggedIn && !this.isNative) {
-                return null;
+                return '';
             }
             return this.isNative ?
                 this.$t('pages.staking.login_using_evm_wallet') :
@@ -148,6 +155,9 @@ export default defineComponent({
         },
         remainingDeposits() {
             return (this.maxDeposits ?? 0) - this.deposits.length;
+        },
+        abi(): EvmABI {
+            return stlosAbiWithdraw;
         },
     },
     async created() {
@@ -281,22 +291,53 @@ export default defineComponent({
             this.ctaIsLoading = true;
             const value = BigNumber.from(this.bottomInputAmount);
 
-            this.stlosContractInstance.withdraw(value, this.address, this.address)
-                .then((result: { hash: null; }) => {
+            let waitTheTransaction: Promise<{hash: string | null}> = Promise.resolve({ hash: null });
+            try {
+                const loginData = localStorage.getItem(LOGIN_DATA_KEY);
+                if (loginData) {
+                    const loginObj = JSON.parse(loginData);
+                    switch(loginObj?.provider) {
+                    case PROVIDER_TELOS_CLOUD:
+                        waitTheTransaction = this.continueUnstake(value);
+                        break;
+                    default:
+                        waitTheTransaction = this.continueUnstakeLegacy(value);
+                    }
+                }
+
+                waitTheTransaction.then((result) => {
                     this.resultHash = result.hash;
                     this.$emit('balance-changed');
-                })
-                .catch(({ message }: Error) => {
+                }).catch(({ message }: Error) => {
                     console.error(`Failed to unstake sTLOS: ${message}`);
                     this.$q.notify({
                         position: 'top',
                         message: this.$t('pages.staking.unstake_stlos_error', { message }),
                     });
                     this.resultHash = null;
-                })
-                .finally(() => {
+                }).finally(() => {
                     this.ctaIsLoading = false;
                 });
+
+            } catch (e) {
+                console.error('Failed to unstake sTLOS', e);
+            } finally {
+                this.ctaIsLoading = false;
+            }
+        },
+        continueUnstake(value: BigNumber) {
+            const logged = useAccountStore().getAccount(CURRENT_CONTEXT);
+            const authenticator = logged.authenticator;
+
+            return authenticator.signCustomTransaction(
+                this.stlosContractInstance.address,
+                this.abi,
+                [value, logged.account, logged.account],
+            );
+
+        },
+        continueUnstakeLegacy(value: BigNumber) {
+            return this.stlosContractInstance.withdraw(value, this.address, this.address) as Promise<{ hash: null | string; }>;
         },
     },
 });

@@ -18,7 +18,9 @@ describe('StakeForm.vue', () => {
     let isLoggedInMock = jest.fn(() => true);
     const globalMock = {
         directives: {
-            'close-popup': () => {},
+            'close-popup': () => {
+                // do nothing
+            },
         },
         plugins: [
             createStore({

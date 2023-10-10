@@ -49,11 +49,6 @@ export default class Contract {
   }
 
   getContractInstance(provider, createNew=false) {
-    // FIXME: remove console log
-    console.log('Contract.getContractInstance()', [provider], ' -> ', [provider ? provider : this.manager.getEthersProvider()]);
-    // rprovider can be:
-    // - JsonRpcSigner (Metamask)
-    // - JsonRpcProvider (for native)
     if (!this.abi){
       console.log("Cannot create contract instance without ABI!");
       return;

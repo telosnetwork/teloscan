@@ -186,8 +186,6 @@ export default {
             ]);
         },
         async fetchContracts() {
-            // FIXME: remove console log
-            console.log('Staking.fetchContracts()');
             const stlosPromise = this.$contractManager.getContract(process.env.STAKED_TLOS_CONTRACT_ADDRESS)
                 .then((contract) => {
                     this.stlosContract = contract;
@@ -217,18 +215,10 @@ export default {
             return Promise.all([stlosPromise, escrowPromise]);
         },
         async fetchContractInstances() {
-            // FIXME: remove console log
-            console.log('Staking.fetchContractInstances()');
             if (!this.stlosContract || !this.escrowContract) {
                 await this.fetchContracts();
             }
 
-            /*
-            const provider = this.isLoggedIn && !this.isNative ?
-                this.$providerManager.getEthersProvider().getSigner() :
-                this.$contractManager.getEthersProvider();
-
-            /*/
             let provider;
             const loginData = localStorage.getItem(LOGIN_DATA_KEY);
             if (!loginData) {
@@ -252,15 +242,6 @@ export default {
                     provider = this.$contractManager.getEthersProvider();
                 }
             }
-            //*/
-
-            // FIXME: remove console log
-            console.log('Staking.fetchContractInstances() provider:',
-                this.isLoggedIn && !this.isNative,
-                this.isLoggedIn,
-                this.isNative,
-                [provider],
-            );
 
             this.stlosContractInstance  = this.stlosContract.getContractInstance(provider, true);
             this.escrowContractInstance = this.escrowContract.getContractInstance(provider, true);

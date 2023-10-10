@@ -278,21 +278,6 @@ export default defineComponent({
             unsignedTrx.gasLimit = gasLimit;
             unsignedTrx.gasPrice = gasPrice;
 
-            // FIXME: remove console log
-            console.log('runNative() contractInstance: ', [contractInstance]);  // Contract
-            console.log('runNative() func: ', [func]);                          // Function
-            console.log('runNative() gasEstimater: ', [gasEstimater]);          // Function
-            console.log('runNative() gasLimit: ', [gasLimit]);                  // BigNumber
-            console.log('runNative() unsignedTrx: ', [unsignedTrx]);            // { "data": string }
-            console.log('runNative() nonce: ', [nonce]);                        // number
-            console.log('runNative() gasPrice: ', [gasPrice]);                  // BigNumber
-            console.log('runNative() this.abi: ', [this.abi]);                  //
-            console.log('runNative() this.functionABI: ', [this.functionABI]);  // string ie:"transfer(address,uint256)"
-
-            // DO NOT INCLUDE CHAINID, EIP155 is only for replay attacks and you cannot replay a Telos native signed trx
-            // this can however break stuff that tries to decode this trx
-            //unsignedTrx.chainId = this.$evm.chainId;
-
             if (opts.value) {
                 unsignedTrx.value = opts.value;
             }
@@ -302,9 +287,6 @@ export default defineComponent({
             let user = this.$providerManager.getProvider() as {
                 signTransaction: (tx: never, opts: never) => Promise<void>;
             } | undefined;
-
-            // FIXME: remove console log
-            console.log('runNative() EL TYPE??? user --> ', [user]);
 
             await user?.signTransaction(
                 {
@@ -331,11 +313,6 @@ export default defineComponent({
                 } as never,
             );
 
-            // This doesn't produce the right hash... but would be nice to use ethers here instead of ethereumjs/tx
-            //  maybe just need to have signed transaction with an empty signature?
-            //  What is etherumjs/tx doing differently?
-            //this.hash = ethers.utils.keccak256(raw);
-
             const trxBuffer = Buffer.from(raw.replace(/^0x/, ''), 'hex');
 
             const tx = Transaction.fromSerializedTx(trxBuffer, {
@@ -348,26 +325,13 @@ export default defineComponent({
         async runEVM(opts: Opts) {
             const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
 
-            // FIXME: remove console log
-            console.log('runEVM() func: ', [func]);             // ContractInstance created function
-            console.log('runEVM() params: ', [...this.params]); // ["0xa3...657a", BigNumber]
-            console.log('runEVM() opts: ', [opts]);             // {}, {value:string}
-
             const result = await func(...this.params, opts);
             this.hash = result.hash;
             this.endLoading();
         },
         async runTelosCloud(opts: Opts) {
-            // // FIXME: remove console log
-            console.log('runTelosCloud() params: ', [...this.params]);              // ["0xa3...657a", BigNumber]
-            console.log('runTelosCloud() opts: ', [opts]);                          // {}, {value:string}
-            console.log('runTelosCloud() this.functionABI: ', [this.functionABI]);  // string ie:"transfer(address,uint256)"
-            console.log('runTelosCloud() this.contract: ', [this.contract]);
-            console.log('runTelosCloud() this.contract.address: ', [this.contract.address]);
-            console.log('runTelosCloud() this.abi: ', this.abi);
-
             // opts.value es una string que contiene un número entero que debe ser convertido BigNumber
-            //  para que sea aceptado por el método signCustomTransaction
+            // para que sea aceptado por el método signCustomTransaction
             const value = opts.value ? BigNumber.from(opts.value) : undefined;
 
             const authenticator = useAccountStore().getAccount(CURRENT_CONTEXT).authenticator;

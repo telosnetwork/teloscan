@@ -12,7 +12,7 @@ module.exports = {
         '^store(.*)$': '<rootDir>/src/store$1',
         '^test(.*)$': '<rootDir>/test$1',
     },
-    moduleFileExtensions: ['js', 'vue'],
+    moduleFileExtensions: ['js', 'ts', 'vue'],
     transform: {
         '^.+\\.js$': 'babel-jest',
         '^.+\\.vue$': '@vue/vue3-jest',

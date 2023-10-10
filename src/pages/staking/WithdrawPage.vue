@@ -7,8 +7,15 @@ import DateField from 'components/DateField.vue';
 import TransactionField from 'components/TransactionField.vue';
 import { BigNumber } from 'ethers';
 
-import { formatWei, WEI_PRECISION } from 'src/lib/utils';
+import {
+    formatWei,
+    LOGIN_DATA_KEY,
+    PROVIDER_TELOS_CLOUD,
+    WEI_PRECISION,
+} from 'src/lib/utils';
 import { mapGetters } from 'vuex';
+import { CURRENT_CONTEXT, useAccountStore } from 'src/antelope/mocks';
+import { escrowAbiWithdraw, EvmABI } from 'src/antelope/wallets/types';
 
 export default defineComponent({
     name: 'WithdrawPage',
@@ -36,6 +43,7 @@ export default defineComponent({
     },
     emits: ['balance-changed'],
     data: () => ({
+        ctaIsLoading: false,
         resultHash: null as null | string,
         columns: [
             {
@@ -72,22 +80,60 @@ export default defineComponent({
         unlockedBalance(){
             return this.formatAmount(this.unlockedTlosBalance);
         },
+        abi(): EvmABI {
+            return escrowAbiWithdraw;
+        },
     },
     methods: {
+
         withdrawUnlocked() {
-            return this.escrowContractInstance.withdraw()
-                .then((result: { hash: null | string; }) => {
+            let waitTheTransaction: Promise<{hash: string | null}> = Promise.resolve({ hash: null });
+            this.ctaIsLoading = true;
+            try {
+                const loginData = localStorage.getItem(LOGIN_DATA_KEY);
+                if (loginData) {
+                    const loginObj = JSON.parse(loginData);
+                    switch(loginObj?.provider) {
+                    case PROVIDER_TELOS_CLOUD:
+                        waitTheTransaction = this.continueWithdraw();
+                        break;
+                    default:
+                        waitTheTransaction = this.continueWithdrawLegacy();
+                    }
+                }
+
+                waitTheTransaction.then((result: { hash: null | string; }) => {
                     this.resultHash = result.hash;
                     this.$emit('balance-changed');
-                })
-                .catch(({ message }: Error) => {
+                }).catch(({ message }: Error) => {
                     console.error(`Failed to withdraw unlocked TLOS: ${message}`);
                     this.$q.notify({
                         type: 'negative',
                         message: this.$t('pages.staking.withdraw_failed', { message }),
                     });
                     this.resultHash = null;
+                }).finally(() => {
+                    this.ctaIsLoading = false;
                 });
+
+            } catch (e) {
+                console.error('Failed to unstake sTLOS', e);
+            } finally {
+                this.ctaIsLoading = false;
+            }
+        },
+        continueWithdraw() {
+            const logged = useAccountStore().getAccount(CURRENT_CONTEXT);
+            const authenticator = logged.authenticator;
+
+            return authenticator.signCustomTransaction(
+                this.escrowContractInstance.address,
+                this.abi,
+                [],
+            );
+        },
+        continueWithdrawLegacy() {
+            return this.escrowContractInstance.withdraw() as Promise<{ hash: null | string; }>;
         },
         formatAmount(val: string | BigNumber | null) {
             if (val === null) {

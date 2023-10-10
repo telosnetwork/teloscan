@@ -15,7 +15,7 @@ import {
     LOGIN_DATA_KEY,
 } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
-import { CURRENT_CONTEXT, getAntelope, useAccountStore, useChainStore } from 'src/antelope/mocks/index';
+import { CURRENT_CONTEXT, getAntelope, useAccountStore, useChainStore } from 'src/antelope/mocks';
 import { Authenticator } from 'universal-authenticator-library';
 
 export default defineComponent({
@@ -195,7 +195,6 @@ export default defineComponent({
         },
 
         async connectTelosCloud() {
-            console.log('connectTelosCloud()');
             const name = 'OreId';
             const label = CURRENT_CONTEXT;
             const auth = getAntelope().wallets.getAuthenticator(name);
@@ -212,8 +211,6 @@ export default defineComponent({
                     type: LOGIN_EVM,
                     provider: PROVIDER_TELOS_CLOUD,
                 }));
-                // FIXME: remove this console.log
-                console.log('Logged as', address);
             });
             this.$emit('hide');
         },
