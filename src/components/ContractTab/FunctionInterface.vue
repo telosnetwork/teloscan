@@ -250,7 +250,6 @@ export default defineComponent({
         },
         async getEthersFunction(provider?: ethers.providers.JsonRpcSigner | ethers.providers.JsonRpcProvider) {
             const contractInstance = await this.contract.getContractInstance(provider);
-            console.log('contractInstance -> ', contractInstance);
             return contractInstance[this.functionABI];
         },
         runRead() {
@@ -330,8 +329,6 @@ export default defineComponent({
             this.endLoading();
         },
         async runTelosCloud(opts: Opts) {
-            // opts.value es una string que contiene un número entero que debe ser convertido BigNumber
-            // para que sea aceptado por el método signCustomTransaction
             const value = opts.value ? BigNumber.from(opts.value) : undefined;
 
             const authenticator = useAccountStore().getAccount(CURRENT_CONTEXT).authenticator;

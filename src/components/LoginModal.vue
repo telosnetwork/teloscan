@@ -29,9 +29,6 @@ export default defineComponent({
     data: () => ({
         tab: 'web3',
         showLogin: false,
-        // metamaskLogo: MetamaskLogo,
-        // braveBrowserLogo: BraveBrowserLogo,
-        // telosCloudLogo: TelosCloudLogo,
         isMobile: false,
         browserSupportsMetaMask: true,
         isBraveBrowser: false,

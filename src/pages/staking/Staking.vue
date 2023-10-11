@@ -65,7 +65,6 @@ export default {
         $route: getRouteWatcherForTabs('staking', tabs, tabs.stake),
     },
     async created() {
-        console.log('Staking.created()');
         await this.fetchContracts();
         await this.fetchContractInstances();
     },

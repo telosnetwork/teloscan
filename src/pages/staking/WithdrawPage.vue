@@ -212,6 +212,7 @@ export default defineComponent({
         <div class="col-xs-12 u-flex--center withdraw-button-container">
             <q-btn
                 :disabled="withdrawDisabled"
+                :loading="ctaIsLoading"
                 color="secondary"
                 text-color="black"
                 @click="withdrawUnlocked"
