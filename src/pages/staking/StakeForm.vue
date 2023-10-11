@@ -21,8 +21,7 @@ import {
 import BaseStakingForm from 'pages/staking/BaseStakingForm.vue';
 import TransactionField from 'components/TransactionField.vue';
 import LoginModal from 'components/LoginModal.vue';
-import { useAccountStore } from 'src/antelope';
-import { CURRENT_CONTEXT } from 'src/antelope/mocks';
+import { useAccountStore, CURRENT_CONTEXT } from 'src/antelope/mocks';
 import { EvmABI, stlosAbiDeposit } from 'src/antelope/wallets/types';
 
 const reservedForGasBn = BigNumber.from('10').pow(WEI_PRECISION);
@@ -293,6 +292,7 @@ export default defineComponent({
             let waitTheTransaction: Promise<{hash: string | null}> = Promise.resolve({ hash: null });
             try {
                 const loginData = localStorage.getItem(LOGIN_DATA_KEY);
+                console.log('initiateDeposit() loginData: ', loginData);
                 if (loginData) {
                     const loginObj = JSON.parse(loginData);
                     switch(loginObj?.provider) {

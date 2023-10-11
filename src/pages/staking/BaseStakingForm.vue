@@ -1,7 +1,7 @@
-<script>
+<script lang="ts">
 import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 
-import StakingFormInput from 'pages/staking/StakingFormInput';
+import StakingFormInput from 'pages/staking/StakingFormInput.vue';
 
 const genericMaxWei = '999999999999000000000000000000';
 
@@ -99,20 +99,20 @@ export default {
                 infoText:    this.topInputInfoText,
                 errorText:   this.topInputErrorText,
                 tooltip:     this.topInputTooltip,
-                maxValue:    this.topInputMaxValue || genericMaxWei,
+                maxValue:    this.topInputMaxValue ?? genericMaxWei,
                 isLoading:   this.topInputIsLoading,
             }, {
                 label:       this.bottomInputLabel,
                 errorText:   '',
-                maxValue:    this.bottomInputMaxValue || null,
+                maxValue:    this.bottomInputMaxValue,
                 isLoading:   this.bottomInputIsLoading,
             }];
         },
     },
     methods: {
-        handleInput(event, index) {
-            const eventName = 'input-'.concat(index === 0 ? 'top' : 'bottom');
-
+        handleInput(event: never, index: number) {
+            type EventName = 'input-top' | 'input-bottom';
+            const eventName = 'input-'.concat(index === 0 ? 'top' : 'bottom') as EventName;
             this.$emit(eventName, event);
         },
         handleCtaClick() {
@@ -142,7 +142,7 @@ export default {
                     <StakingFormInput
                         :model-value="topInputAmount"
                         v-bind="inputs[0]"
-                        @update:modelValue="handleInput($event, 0)"
+                        @update:modelValue="handleInput($event as never, 0)"
                     />
                 </div>
 
@@ -154,7 +154,7 @@ export default {
                     <StakingFormInput
                         :model-value="bottomInputAmount"
                         v-bind="inputs[1]"
-                        @update:modelValue="handleInput($event, 1)"
+                        @update:modelValue="handleInput($event as never, 1)"
                     />
                 </div>
 
