@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /*
  * This file runs in a Node context (it's NOT transpiled by Babel), so use only
  * the ES6 features that are supported by your Node version. https://node.green/
@@ -7,11 +8,10 @@
 // https://quasar.dev/quasar-cli/quasar-conf-js
 /* eslint-env node */
 
-import dotenv from 'dotenv';
-dotenv.config();
-import env from '/env';
-import ESLintPlugin from 'eslint-webpack-plugin';
-import nodePolyfillWebpackPlugin from 'node-polyfill-webpack-plugin';
+require('dotenv').config();
+const env = require('./env');
+const ESLintPlugin = require('eslint-webpack-plugin');
+const nodePolyfillWebpackPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = function(/* ctx */) {
     return {
