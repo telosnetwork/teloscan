@@ -7,10 +7,11 @@
 // https://quasar.dev/quasar-cli/quasar-conf-js
 /* eslint-env node */
 
-require('dotenv').config();
-const env = require('./env');
-const ESLintPlugin = require('eslint-webpack-plugin');
-const nodePolyfillWebpackPlugin = require('node-polyfill-webpack-plugin');
+import dotenv from 'dotenv';
+dotenv.config();
+import env from '/env';
+import ESLintPlugin from 'eslint-webpack-plugin';
+import nodePolyfillWebpackPlugin from 'node-polyfill-webpack-plugin';
 
 module.exports = function(/* ctx */) {
     return {
