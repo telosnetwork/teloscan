@@ -10,6 +10,7 @@ export const LOGIN_NATIVE = 'native';
 export const PROVIDER_WEB3_INJECTED = 'injectedWeb3';
 export const PROVIDER_TELOS_CLOUD = 'OreId';
 export const LOGIN_DATA_KEY = 'loginData';
+export const DEFAULT_CHAIN_ID = '40'; // Telos Mainnet
 
 export function formatWei(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);

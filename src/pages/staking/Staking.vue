@@ -7,8 +7,6 @@ import {
     getRouteWatcherForTabs,
     LOGIN_DATA_KEY,
     PROVIDER_WEB3_INJECTED,
-    // LOGIN_DATA_KEY,
-    // PROVIDER_WEB3_INJECTED,
     WEI_PRECISION,
 } from 'src/lib/utils';
 

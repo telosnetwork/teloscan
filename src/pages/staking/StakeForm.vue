@@ -285,7 +285,6 @@ export default defineComponent({
             this.displayConfirmModal = true;
         },
         initiateDeposit() {
-            console.log('initiateDeposit()');
             this.ctaIsLoading = true;
             const value = BigNumber.from(this.topInputAmount);
 

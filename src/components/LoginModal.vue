@@ -12,6 +12,7 @@ import {
     LOGIN_NATIVE,
     PROVIDER_WEB3_INJECTED,
     PROVIDER_TELOS_CLOUD,
+    DEFAULT_CHAIN_ID,
     LOGIN_DATA_KEY,
 } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
@@ -292,7 +293,7 @@ export default defineComponent({
         },
         async ensureCorrectChain(checkProvider: ethers.providers.Web3Provider) {
             const { chainId } = await checkProvider.getNetwork();
-            if (+chainId !== +(process.env.NETWORK_EVM_CHAIN_ID ?? '40')) {
+            if (+chainId !== +(process.env.NETWORK_EVM_CHAIN_ID ?? DEFAULT_CHAIN_ID)) {
                 await this.switchChainInjected();
                 const provider = this.getInjectedProvider();
                 return new ethers.providers.Web3Provider(provider);
@@ -316,7 +317,7 @@ export default defineComponent({
             const provider = this.getInjectedProvider();
 
             if (provider) {
-                const chainId = parseInt(process.env.NETWORK_EVM_CHAIN_ID || '40', 10);
+                const chainId = parseInt(process.env.NETWORK_EVM_CHAIN_ID || DEFAULT_CHAIN_ID, 10);
                 const chainIdParam = `0x${chainId.toString(16)}`;
                 const mainnet = chainId === 40;
                 try {
