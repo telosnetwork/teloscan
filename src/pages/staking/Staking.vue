@@ -216,29 +216,27 @@ export default {
                 await this.fetchContracts();
             }
 
-            let provider;
-            const loginData = localStorage.getItem(LOGIN_DATA_KEY);
-            if (!loginData) {
-                console.error('No login data found');
-                this.$q.notify({
-                    type: 'negative',
-                    message: this.$t('global.internal_error'),
-                });
-                return;
-            }
-            const loginObj = JSON.parse(loginData);
+            // default provider is the ContractManager ethers provider (JsonRpcProvider)
+            let provider = this.$contractManager.getEthersProvider();
 
-            if (this.isNative) {
-                provider = this.$contractManager.getEthersProvider();
-            } else {
-                switch(loginObj?.provider) {
-                case PROVIDER_WEB3_INJECTED:
+            if (this.isLoggedIn && !this.isNative) {
+                // only if the user is logged with a non-native wallet, we may change the provider
+                const loginData = localStorage.getItem(LOGIN_DATA_KEY);
+                if (loginData) {
+                    // If the user is authenticated using any Antelope.wallet.authenticators
+                    const loginObj = JSON.parse(loginData);
+                    switch(loginObj?.provider) {
+                    case PROVIDER_WEB3_INJECTED:
+                        provider = this.$providerManager.getEthersProvider().getSigner();
+                        break;
+                    }
+                } else {
+                    // legacy fallback
                     provider = this.$providerManager.getEthersProvider().getSigner();
-                    break;
-                default:
-                    provider = this.$contractManager.getEthersProvider();
                 }
             }
+
+            console.log('provider', provider);
 
             this.stlosContractInstance  = this.stlosContract.getContractInstance(provider, true);
             this.escrowContractInstance = this.escrowContract.getContractInstance(provider, true);
