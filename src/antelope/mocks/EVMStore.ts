@@ -3,7 +3,9 @@
 // Mocking EVMStore -----------------------------------
 import { ethers } from 'ethers';
 import { EVMAuthenticator, InjectedProviderAuth } from 'src/antelope/wallets';
-import { EVMChainSettings, useChainStore, useFeedbackStore, createTraceFunction, getAntelope, useAccountStore } from 'src/antelope/mocks';
+import { createTraceFunction } from 'src/antelope/mocks/FeedbackStore';
+import { getAntelope } from 'src/antelope/mocks/AntelopeConfig';
+import { EVMChainSettings, useChainStore, useFeedbackStore, useAccountStore } from 'src/antelope/mocks';
 import { AntelopeError, EthereumProvider, ExceptionError } from 'src/antelope/wallets/types';
 import { RpcEndpoint } from 'universal-authenticator-library';
 

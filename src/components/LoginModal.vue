@@ -17,6 +17,7 @@ import {
     // PROVIDER_SAFEPAL,
     DEFAULT_CHAIN_ID,
     LOGIN_DATA_KEY,
+    PROVIDER_METAMASK,
 } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
 import { CURRENT_CONTEXT, getAntelope, useAccountStore, useChainStore } from 'src/antelope/mocks';
@@ -148,8 +149,8 @@ export default defineComponent({
 
             await this.injectedWeb3Login();
         },
-
-        async connectMetaMask(){
+        async connectMetaMaskLegacy(){
+            // FIXME: remove this code
             if (this.isBraveBrowser && window.ethereum.isBraveWallet && !this.isMobile){
                 this.$q.notify({
                     position: 'top',
@@ -175,35 +176,6 @@ export default defineComponent({
 
             await this.injectedWeb3Login();
         },
-
-        async loginWithAntelope(name:string) {
-            const label = CURRENT_CONTEXT;
-            const auth = getAntelope().wallets.getAuthenticator(name);
-            if (!auth) {
-                console.error(`${name} authenticator not found`);
-                return;
-            }
-            const authenticator = auth.newInstance(label);
-            const network = useChainStore().currentChain.settings.getNetwork();
-            useAccountStore().loginEVM({ authenticator, network }).then(() => {
-                const address = useAccountStore().getAccount(label).account;
-                this.setLogin({ address });
-                localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
-                    type: LOGIN_EVM,
-                    provider: name,
-                }));
-            });
-            this.$emit('hide');
-        },
-
-        async connectTelosCloud() {
-            this.loginWithAntelope(PROVIDER_TELOS_CLOUD);
-        },
-
-        connectWalletConnect() {
-            this.loginWithAntelope(PROVIDER_WALLET_CONNECT);
-        },
-
         async injectedWeb3Login() {
             const address = await this.getInjectedAddress();
             if (address) {
@@ -357,6 +329,34 @@ export default defineComponent({
             }
 
             return wallet.getStyle().icon;
+        },
+        async loginWithAntelope(name:string) {
+            const label = CURRENT_CONTEXT;
+            const auth = getAntelope().wallets.getAuthenticator(name);
+            if (!auth) {
+                console.error(`${name} authenticator not found`);
+                return;
+            }
+            const authenticator = auth.newInstance(label);
+            const network = useChainStore().currentChain.settings.getNetwork();
+            useAccountStore().loginEVM({ authenticator, network }).then(() => {
+                const address = useAccountStore().getAccount(label).account;
+                this.setLogin({ address });
+                localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
+                    type: LOGIN_EVM,
+                    provider: name,
+                }));
+            });
+            this.$emit('hide');
+        },
+        async connectMetaMask() {
+            this.loginWithAntelope(PROVIDER_METAMASK);
+        },
+        async connectTelosCloud() {
+            this.loginWithAntelope(PROVIDER_TELOS_CLOUD);
+        },
+        connectWalletConnect() {
+            this.loginWithAntelope(PROVIDER_WALLET_CONNECT);
         },
     },
 });
