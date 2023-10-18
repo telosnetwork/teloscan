@@ -298,7 +298,8 @@ export default defineComponent({
                     const loginObj = JSON.parse(loginData);
                     switch(loginObj?.provider) {
                     case PROVIDER_WEB3_INJECTED:
-                        // FIXME: remove legacy code
+                        // TODO: remove legacy code
+                        // https://github.com/telosnetwork/teloscan/issues/462
                         waitTheTransaction = this.continueUnstakeLegacy(value);
                         break;
                     default:

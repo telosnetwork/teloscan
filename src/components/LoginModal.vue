@@ -64,7 +64,8 @@ export default defineComponent({
         if (loginObj.type === LOGIN_EVM) {
             switch(loginObj.provider){
             case PROVIDER_WEB3_INJECTED: {
-                // FIXME: remove legacy code
+                // TODO: remove legacy code
+                // https://github.com/telosnetwork/teloscan/issues/462
                 const provider = this.getInjectedProvider();
                 let checkProvider = new ethers.providers.Web3Provider(provider);
                 const { chainId } = await checkProvider.getNetwork();
@@ -150,7 +151,8 @@ export default defineComponent({
             await this.injectedWeb3Login();
         },
         async connectMetaMaskLegacy(){
-            // FIXME: remove this code
+            // TODO: remove legacy code
+            // https://github.com/telosnetwork/teloscan/issues/462
             if (this.isBraveBrowser && window.ethereum.isBraveWallet && !this.isMobile){
                 this.$q.notify({
                     position: 'top',
