@@ -14,7 +14,7 @@ import { promptAddToMetamask } from 'src/lib/token-utils';
 import {
     getClientIsApple,
     LOGIN_DATA_KEY,
-    PROVIDER_TELOS_CLOUD,
+    PROVIDER_WEB3_INJECTED,
     WEI_PRECISION,
 } from 'src/lib/utils';
 
@@ -295,11 +295,12 @@ export default defineComponent({
                 if (loginData) {
                     const loginObj = JSON.parse(loginData);
                     switch(loginObj?.provider) {
-                    case PROVIDER_TELOS_CLOUD:
-                        waitTheTransaction = this.continueDeposit(value);
+                    case PROVIDER_WEB3_INJECTED:
+                        // FIXME: remove legacy code
+                        waitTheTransaction = this.continueDepositLegacy(value);
                         break;
                     default:
-                        waitTheTransaction = this.continueDemositLegacy(value);
+                        waitTheTransaction = this.continueDeposit(value);
                     }
                 }
 
@@ -334,7 +335,7 @@ export default defineComponent({
                 value,
             );
         },
-        continueDemositLegacy(value: BigNumber) {
+        continueDepositLegacy(value: BigNumber) {
             return this.stlosContractInstance['depositTLOS()']({ value }) as Promise<{ hash: null | string; }>;
         },
         hideClaimBanner() {

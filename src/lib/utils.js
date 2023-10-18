@@ -9,6 +9,9 @@ export const LOGIN_EVM = 'evm';
 export const LOGIN_NATIVE = 'native';
 export const PROVIDER_WEB3_INJECTED = 'injectedWeb3';
 export const PROVIDER_TELOS_CLOUD = 'OreId';
+export const PROVIDER_WALLET_CONNECT = 'WalletConnect';
+export const PROVIDER_METAMASK = 'Metamask';
+export const PROVIDER_SAFEPAL = 'SafePal';
 export const LOGIN_DATA_KEY = 'loginData';
 export const DEFAULT_CHAIN_ID = '40'; // Telos Mainnet
 

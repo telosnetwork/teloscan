@@ -10,7 +10,7 @@ import { BigNumber } from 'ethers';
 import {
     formatWei,
     LOGIN_DATA_KEY,
-    PROVIDER_TELOS_CLOUD,
+    PROVIDER_WEB3_INJECTED,
     WEI_PRECISION,
 } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
@@ -94,11 +94,12 @@ export default defineComponent({
                 if (loginData) {
                     const loginObj = JSON.parse(loginData);
                     switch(loginObj?.provider) {
-                    case PROVIDER_TELOS_CLOUD:
-                        waitTheTransaction = this.continueWithdraw();
+                    case PROVIDER_WEB3_INJECTED:
+                        // FIXME: remove legacy code
+                        waitTheTransaction = this.continueWithdrawLegacy();
                         break;
                     default:
-                        waitTheTransaction = this.continueWithdrawLegacy();
+                        waitTheTransaction = this.continueWithdraw();
                     }
                 }
 

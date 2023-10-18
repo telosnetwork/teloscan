@@ -3805,6 +3805,36 @@
     "@walletconnect/window-getters" "^1.0.1"
     tslib "1.14.1"
 
+"@web3modal/core@2.7.0":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/core/-/core-2.7.0.tgz#ca791cc07f02affc2598edf0f55d4f967464a0e0"
+  integrity sha512-8P4gNHrUjLBelLiAGCrfxYv4Cgg2+1WBSbdi7yT/8KJzI8t8U2A1eQYz049I2FV6GxJVMXWV1Uy0OAH4zH5XKg==
+  dependencies:
+    valtio "1.10.7"
+
+"@web3modal/ethereum@2.7.0":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/ethereum/-/ethereum-2.7.0.tgz#6275e1eb5a1eee76290143027663b9e35200b712"
+  integrity sha512-JudpjRjpt5ZGIxmdzG2abi4SDkQqu0HFXa7CtQ2KYjTrXRB4GI+5WDxsjCtl4G8K84Tx23G4YPr0CiX+LdL8gQ==
+
+"@web3modal/html@2.7.0":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/html/-/html-2.7.0.tgz#9268c078cb37740d18222cb02cbf51ff527b087b"
+  integrity sha512-/tPW4suHHVXDHN/SC4o13hqr+2777ay8o6DZEfaEXeD0Aerc+Y7xo/2vandZc8pAf9v7iD9ShXR+ZjJ8VBNK8w==
+  dependencies:
+    "@web3modal/core" "2.7.0"
+    "@web3modal/ui" "2.7.0"
+
+"@web3modal/ui@2.7.0":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@web3modal/ui/-/ui-2.7.0.tgz#3c5372a7b554cd7447043321c7badee5b498f9cc"
+  integrity sha512-Cn0Ddidcl9vJpV7WQP5chcH91+wtLhf9gy10gsN+CzDz97a6B1JoEZZ3ZuT4NqCrS/fC06pC0E2DvAiG446dRA==
+  dependencies:
+    "@web3modal/core" "2.7.0"
+    lit "2.7.6"
+    motion "10.16.2"
+    qrcode "1.5.3"
+
 "@webassemblyjs/ast@1.11.6", "@webassemblyjs/ast@^1.11.5":
   version "1.11.6"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.11.6.tgz#db046555d3c413f8966ca50a95176a0e2c642e24"
@@ -8545,12 +8575,21 @@ lit-element@^3.3.0:
     "@lit/reactive-element" "^1.3.0"
     lit-html "^2.8.0"
 
-lit-html@^2.8.0:
+lit-html@^2.7.0, lit-html@^2.8.0:
   version "2.8.0"
   resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-2.8.0.tgz#96456a4bb4ee717b9a7d2f94562a16509d39bffa"
   integrity sha512-o9t+MQM3P4y7M7yNzqAyjp7z+mQGa4NS4CxiyLqFPyFWyc4O+nodLrkrxSaCTrla6M5YOLaT3RpbbqjszB5g3Q==
   dependencies:
     "@types/trusted-types" "^2.0.2"
+
+lit@2.7.6:
+  version "2.7.6"
+  resolved "https://registry.yarnpkg.com/lit/-/lit-2.7.6.tgz#810007b876ed43e0c70124de91831921598b1665"
+  integrity sha512-1amFHA7t4VaaDe+vdQejSVBklwtH9svGoG6/dZi9JhxtJBBlqY5D1RV7iLUYY0trCqQc4NfhYYZilZiVHt7Hxg==
+  dependencies:
+    "@lit/reactive-element" "^1.6.0"
+    lit-element "^3.3.0"
+    lit-html "^2.7.0"
 
 lit@2.8.0:
   version "2.8.0"
@@ -11472,6 +11511,14 @@ v8-to-istanbul@^9.0.1:
     "@jridgewell/trace-mapping" "^0.3.12"
     "@types/istanbul-lib-coverage" "^2.0.1"
     convert-source-map "^2.0.0"
+
+valtio@1.10.7:
+  version "1.10.7"
+  resolved "https://registry.yarnpkg.com/valtio/-/valtio-1.10.7.tgz#0843b8bc8382060b3e6a0d31be645c3ef9a7f7dc"
+  integrity sha512-XUwXJ9twXqwfVhXlcbYlCcRUUSOmp8RcJODVAxPrUZc2jh3com13B49MOL/cbgcTOX+5yf7wdMqbFGR7ba2sPg==
+  dependencies:
+    proxy-compare "2.5.1"
+    use-sync-external-store "1.2.0"
 
 valtio@1.11.2:
   version "1.11.2"

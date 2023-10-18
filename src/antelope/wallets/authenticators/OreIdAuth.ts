@@ -96,7 +96,7 @@ export class OreIdAuth extends EVMAuthenticator {
     }
 
     async login(network: string): Promise<addressString | null> {
-        this.trace('login', network);
+        console.log('login', network);
         const chainSettings = this.getChainSettings();
         const trackSuccessfulLogin = () => {
             this.trace('login', 'trackAnalyticsEvent -> generic login succeeded', TELOS_ANALYTICS_EVENT_IDS.loginSuccessful);
@@ -182,6 +182,8 @@ export class OreIdAuth extends EVMAuthenticator {
         if (oreId) {
             await oreId.logout();
         }
+        localStorage.removeItem('autoLogin');
+        localStorage.removeItem('rawAddress');
         return Promise.resolve();
     }
 
@@ -269,12 +271,10 @@ export class OreIdAuth extends EVMAuthenticator {
         const from = this.getAccountAddress();
         const method = abi[0].name;
 
-        // if the developer is passing more than one function in the abi
-        // we must warn we asume the first one is the one to be called
         if (abi.length > 1) {
             console.warn(
                 `signCustomTransaction: abi contains more than one function,
-                we asume the first one (${method}) is the one to be called`,
+                we assume the first one (${method}) is the one to be called`,
             );
         }
 

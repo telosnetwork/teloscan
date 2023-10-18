@@ -12,6 +12,9 @@ import {
     LOGIN_NATIVE,
     PROVIDER_WEB3_INJECTED,
     PROVIDER_TELOS_CLOUD,
+    PROVIDER_WALLET_CONNECT,
+    // PROVIDER_METAMASK,
+    // PROVIDER_SAFEPAL,
     DEFAULT_CHAIN_ID,
     LOGIN_DATA_KEY,
 } from 'src/lib/utils';
@@ -60,36 +63,17 @@ export default defineComponent({
         if (loginObj.type === LOGIN_EVM) {
             switch(loginObj.provider){
             case PROVIDER_WEB3_INJECTED: {
+                // FIXME: remove legacy code
                 const provider = this.getInjectedProvider();
                 let checkProvider = new ethers.providers.Web3Provider(provider);
                 const { chainId } = await checkProvider.getNetwork();
                 if(loginObj.chain === chainId){
-                    switch (loginObj.provider) {
-                    case PROVIDER_WEB3_INJECTED:
-                        this.injectedWeb3Login();
-                        break;
-                    default:
-                        console.error(`Unknown web3 login type: ${loginObj.provider}`);
-                        this.$q.notify({
-                            position: 'top',
-                            message: this.$t('components.unknown_web3_login_type', { provider: loginObj.provider }),
-                            timeout: 6000,
-                        });
-                        break;
-                    }
+                    this.injectedWeb3Login();
                 }
                 break;
             }
-            case PROVIDER_TELOS_CLOUD:
-                this.connectTelosCloud();
-                break;
             default:
-                console.error(`Unknown login type: ${loginObj.type}`);
-                this.$q.notify({
-                    position: 'top',
-                    message: this.$t('components.unknown_evm_login_provider', { provider: loginObj.provider }),
-                    timeout: 6000,
-                });
+                this.loginWithAntelope(loginObj.provider);
                 break;
             }
         } else if (loginObj.type === LOGIN_NATIVE) {
@@ -192,8 +176,7 @@ export default defineComponent({
             await this.injectedWeb3Login();
         },
 
-        async connectTelosCloud() {
-            const name = 'OreId';
+        async loginWithAntelope(name:string) {
             const label = CURRENT_CONTEXT;
             const auth = getAntelope().wallets.getAuthenticator(name);
             if (!auth) {
@@ -207,10 +190,18 @@ export default defineComponent({
                 this.setLogin({ address });
                 localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
                     type: LOGIN_EVM,
-                    provider: PROVIDER_TELOS_CLOUD,
+                    provider: name,
                 }));
             });
             this.$emit('hide');
+        },
+
+        async connectTelosCloud() {
+            this.loginWithAntelope(PROVIDER_TELOS_CLOUD);
+        },
+
+        connectWalletConnect() {
+            this.loginWithAntelope(PROVIDER_WALLET_CONNECT);
         },
 
         async injectedWeb3Login() {
@@ -387,9 +378,9 @@ export default defineComponent({
                             height="64px"
                             width="64px"
                         />
-                        <p>
+                        <span>
                             {{ isMobile && (!browserSupportsMetaMask || isBraveBrowser) ?
-                                $t('components.continue_on_metamask') : 'Metamask' }}</p>
+                                $t('components.continue_on_metamask') : 'Metamask' }}</span>
                     </q-card>
                     <q-card
                         v-if="isBraveBrowser && !isIOSMobile"
@@ -400,7 +391,7 @@ export default defineComponent({
                             :src="require('src/assets/brave_lion.svg')"
                             width="50px"
                         />
-                        <p> Brave Wallet </p>
+                        <span> Brave Wallet </span>
                     </q-card>
                     <q-card
                         class="c-login-modal__image-container"
@@ -412,7 +403,19 @@ export default defineComponent({
                             width="64px"
                             fit="contain"
                         />
-                        <p> Telos Cloud </p>
+                        <span> Telos Cloud </span>
+                    </q-card>
+                    <q-card
+                        class="c-login-modal__image-container"
+                        @click="connectWalletConnect()"
+                    >
+                        <q-img
+                            :src="require('src/assets/logo--wallet-connect.svg')"
+                            height="64px"
+                            width="64px"
+                            fit="contain"
+                        />
+                        <span> Wallet Connect </span>
                     </q-card>
                 </q-tab-panel>
                 <q-tab-panel name="native">
@@ -455,12 +458,12 @@ export default defineComponent({
     &__image-container {
         height: 128px;
         width: 128px;
-        padding: 12px;
+        padding: 12px 6px;
         margin: 8px;
 
         display: inline-flex;
         align-items: center;
-        justify-content: center;
+        justify-content: space-evenly;
         flex-direction: column;
 
         cursor: pointer;

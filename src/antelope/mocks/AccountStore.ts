@@ -26,11 +26,27 @@ const AccountStore = {
         authenticator: currentAuthenticator,
         account: currentAccount,
     } as AccountModel),
+
     async loginEVM({ authenticator, network }: LoginEVMActionData): Promise<boolean> {
         currentAuthenticator = authenticator;
         currentAccount = await authenticator.login(network);
         return true;
     },
-};
-export const useAccountStore = () => AccountStore;
 
+    logout() {
+        console.log('AccountStore.logout()');
+        currentAuthenticator.logout();
+        currentAuthenticator = {} as EVMAuthenticator;
+        currentAccount = null;
+    },
+
+    get loggedAccount() {
+        return this.getAccount(CURRENT_CONTEXT);
+    },
+
+    get currentAccount() {
+        return this.getAccount(CURRENT_CONTEXT);
+    },
+};
+
+export const useAccountStore = () => AccountStore;

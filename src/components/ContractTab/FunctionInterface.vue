@@ -6,7 +6,7 @@ import { defineComponent, toRaw } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
-import { PROVIDER_WEB3_INJECTED, PROVIDER_TELOS_CLOUD, LOGIN_DATA_KEY } from 'src/lib/utils';
+import { PROVIDER_WEB3_INJECTED, LOGIN_DATA_KEY } from 'src/lib/utils';
 
 
 import {
@@ -235,12 +235,10 @@ export default defineComponent({
 
                 switch(loginObj?.provider) {
                 case PROVIDER_WEB3_INJECTED:
-                    return await this.runEVM(opts);
-                case PROVIDER_TELOS_CLOUD:
-                    return await this.runTelosCloud(opts);
+                    // FIXME: remove legacy code
+                    return await this.runEVM_legacy(opts);
                 default:
-                    console.error('Provider not supported', loginObj);
-                    this.errorMessage = this.$t('global.internal_error');
+                    return await this.runEVM(opts);
                 }
             } catch (e) {
                 this.result = (e as Error).message;
@@ -321,14 +319,14 @@ export default defineComponent({
             this.hash = `0x${tx.hash().toString('hex')}`;
             this.endLoading();
         },
-        async runEVM(opts: Opts) {
+        async runEVM_legacy(opts: Opts) {
             const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
 
             const result = await func(...this.params, opts);
             this.hash = result.hash;
             this.endLoading();
         },
-        async runTelosCloud(opts: Opts) {
+        async runEVM(opts: Opts) {
             const value = opts.value ? BigNumber.from(opts.value) : undefined;
 
             const authenticator = useAccountStore().getAccount(CURRENT_CONTEXT).authenticator;

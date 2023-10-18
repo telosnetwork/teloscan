@@ -5,7 +5,7 @@
 import { defineComponent } from 'vue';
 import {
     LOGIN_DATA_KEY,
-    PROVIDER_TELOS_CLOUD,
+    PROVIDER_WEB3_INJECTED,
     getClientIsApple,
 } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
@@ -297,11 +297,12 @@ export default defineComponent({
                 if (loginData) {
                     const loginObj = JSON.parse(loginData);
                     switch(loginObj?.provider) {
-                    case PROVIDER_TELOS_CLOUD:
-                        waitTheTransaction = this.continueUnstake(value);
+                    case PROVIDER_WEB3_INJECTED:
+                        // FIXME: remove legacy code
+                        waitTheTransaction = this.continueUnstakeLegacy(value);
                         break;
                     default:
-                        waitTheTransaction = this.continueUnstakeLegacy(value);
+                        waitTheTransaction = this.continueUnstake(value);
                     }
                 }
 
