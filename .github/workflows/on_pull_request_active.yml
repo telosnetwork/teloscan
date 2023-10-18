@@ -1,0 +1,60 @@
+name: "PR: Build, test and deploy previews"
+
+on:
+  pull_request:
+
+jobs:
+  checkout:
+    name: "Checkout"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Test var ${{ env.ACCOUNT_ID }}"
+        run: "echo $ACCOUNT_ID"
+      - uses: actions/checkout@v3
+  mainnet-build:
+    name: "Mainnet"
+    needs:
+      - checkout
+    uses: ./.github/workflows/build_job.yml
+    with:
+      network: mainnet
+      test: true
+      account_id: f9b27b4c956187dbae0553f52fd4df64
+      branch: pr-${{ github.event.number }}
+      project: teloscan-mainnet
+    secrets: inherit
+  testnet-build:
+    name: "Testnet"
+    needs:
+      - checkout
+    uses: ./.github/workflows/build_job.yml
+    with:
+      network: testnet
+      test: true
+      account_id: f9b27b4c956187dbae0553f52fd4df64
+      branch: pr-${{ github.event.number }}
+      project: teloscan-testnet
+    secrets: inherit
+  comment:
+    name: "Comment Pull Request"
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    needs:
+      - mainnet-build
+      - testnet-build
+    steps:
+      - name: Comment
+        uses: edumserrano/find-create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.number }}
+          body-includes: '<!-- pr-ci-comment -->'
+          comment-author: 'github-actions[bot]'
+          body: | # can be a single value or you can compose text with multi-line values
+            <!-- pr-ci-comment -->
+            # <span aria-hidden="true">✅</span> Pull Request Deploy Preview Details
+
+            **<span aria-hidden="true">🔨</span> Built from SHA**: ${{ github.sha }}
+            **<span aria-hidden="true">🔍</span> Mainnet Deploy URL**: https://pr-${{ github.event.number }}.teloscan-mainnet.pages.dev
+            **<span aria-hidden="true">🔍</span> Testnet Deploy URL**: https://pr-${{ github.event.number }}.teloscan-testnet.pages.dev
+          edit-mode: replace

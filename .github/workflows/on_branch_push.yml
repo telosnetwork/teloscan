@@ -1,0 +1,38 @@
+name: "Push to dev or master: Build, test and deploy"
+
+on:
+  push:
+    branches:
+      - master
+      - dev
+
+jobs:
+  checkout:
+    name: "Checkout"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+  mainnet-build:
+    name: "Mainnet"
+    needs:
+      - checkout
+    uses: ./.github/workflows/build_job.yml
+    with:
+      network: mainnet
+      test: false
+      account_id: f9b27b4c956187dbae0553f52fd4df64
+      branch: ${{ github.ref_name == 'master' && 'production' || github.ref_name }}
+      project: teloscan-mainnet
+    secrets: inherit
+  testnet-build:
+    name: "Testnet"
+    needs:
+      - checkout
+    uses: ./.github/workflows/build_job.yml
+    with:
+      network: testnet
+      test: false
+      account_id: f9b27b4c956187dbae0553f52fd4df64
+      branch: ${{ github.ref_name == 'master' && 'production' || github.ref_name }}
+      project: teloscan-testnet
+    secrets: inherit

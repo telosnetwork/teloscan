@@ -4,6 +4,8 @@ The environment variables ares set based on the single variable `MAINNET=true`
 `quasar.config.js`.
 */
 
+// eslint-disable-next-line no-undef
+
 const sharedEnv = {
     NETWORK_PROTOCOL: 'https',
     NETWORK_PORT: 443,
@@ -44,6 +46,5 @@ const MAINNET = {
     TELOS_ESCROW_CONTRACT_ADDRESS: '0x95F5713A1422Aa3FBD3DCB8D553945C128ee3855',
 };
 
-const env = process.env.NETWORK === 'mainnet' ? MAINNET : TESTNET;
 
-module.exports = env;
+module.exports = processOrContext => processOrContext === 'mainnet' ? MAINNET : TESTNET;
