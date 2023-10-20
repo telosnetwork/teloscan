@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 // NFT interfaces ---------------
 
-import { IndexerNftContract, IndexerNftItemAttribute, IndexerNftItemResult } from 'src/antelope/wallets/types';
+import { IndexerNftContract, IndexerNftItemAttribute, IndexerNftItemResult } from 'src/antelope/types';
 
 export interface NftAttribute {
     label: string;

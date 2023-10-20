@@ -4,8 +4,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
-    LOGIN_DATA_KEY,
-    PROVIDER_WEB3_INJECTED,
     getClientIsApple,
 } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
@@ -18,7 +16,7 @@ import BaseStakingForm from 'pages/staking/BaseStakingForm.vue';
 import TransactionField from 'components/TransactionField.vue';
 
 import LoginModal from 'components/LoginModal.vue';
-import { EvmABI, stlosAbiWithdraw } from 'src/antelope/wallets/types';
+import { EvmABI, stlosAbiWithdraw } from 'src/antelope/types';
 import { useAccountStore } from 'src/antelope';
 import { CURRENT_CONTEXT } from 'src/antelope/mocks';
 
@@ -291,23 +289,8 @@ export default defineComponent({
             this.ctaIsLoading = true;
             const value = BigNumber.from(this.bottomInputAmount);
 
-            let waitTheTransaction: Promise<{hash: string | null}> = Promise.resolve({ hash: null });
             try {
-                const loginData = localStorage.getItem(LOGIN_DATA_KEY);
-                if (loginData) {
-                    const loginObj = JSON.parse(loginData);
-                    switch(loginObj?.provider) {
-                    case PROVIDER_WEB3_INJECTED:
-                        // TODO: remove legacy code
-                        // https://github.com/telosnetwork/teloscan/issues/462
-                        waitTheTransaction = this.continueUnstakeLegacy(value);
-                        break;
-                    default:
-                        waitTheTransaction = this.continueUnstake(value);
-                    }
-                }
-
-                waitTheTransaction.then((result) => {
+                this.continueUnstake(value).then((result) => {
                     this.resultHash = result.hash;
                     this.$emit('balance-changed');
                 }).catch(({ message }: Error) => {
@@ -337,9 +320,6 @@ export default defineComponent({
                 [value, logged.account, logged.account],
             );
 
-        },
-        continueUnstakeLegacy(value: BigNumber) {
-            return this.stlosContractInstance.withdraw(value, this.address, this.address) as Promise<{ hash: null | string; }>;
         },
     },
 });

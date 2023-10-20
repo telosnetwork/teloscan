@@ -13,11 +13,10 @@ import {
     PROVIDER_WEB3_INJECTED,
     PROVIDER_TELOS_CLOUD,
     PROVIDER_WALLET_CONNECT,
-    // PROVIDER_METAMASK,
-    // PROVIDER_SAFEPAL,
+    PROVIDER_BRAVE,
+    PROVIDER_METAMASK,
     DEFAULT_CHAIN_ID,
     LOGIN_DATA_KEY,
-    PROVIDER_METAMASK,
 } from 'src/lib/utils';
 import { tlos } from 'src/lib/logos';
 import { CURRENT_CONTEXT, getAntelope, useAccountStore, useChainStore } from 'src/antelope/mocks';
@@ -62,22 +61,7 @@ export default defineComponent({
 
         const loginObj = JSON.parse(loginData);
         if (loginObj.type === LOGIN_EVM) {
-            switch(loginObj.provider){
-            case PROVIDER_WEB3_INJECTED: {
-                // TODO: remove legacy code
-                // https://github.com/telosnetwork/teloscan/issues/462
-                const provider = this.getInjectedProvider();
-                let checkProvider = new ethers.providers.Web3Provider(provider);
-                const { chainId } = await checkProvider.getNetwork();
-                if(loginObj.chain === chainId){
-                    this.injectedWeb3Login();
-                }
-                break;
-            }
-            default:
-                this.loginWithAntelope(loginObj.provider);
-                break;
-            }
+            this.loginWithAntelope(loginObj.provider);
         } else if (loginObj.type === LOGIN_NATIVE) {
             const wallet = this.authenticators.find((a: { getName: () => any; }) => a.getName() === loginObj.provider);
             if (wallet) {
@@ -136,47 +120,6 @@ export default defineComponent({
         },
         goToAddress() {
             this.$router.push(`/address/${this.address}`);
-        },
-        async connectBraveWallet(){
-            // Brave Wallet is not set as default and/or has other extensions enabled
-            if (!window.ethereum.isBraveWallet){
-                this.$q.notify({
-                    position: 'top',
-                    message: this.$t('components.disable_wallet_extensions'),
-                    timeout: 6000,
-                });
-                return;
-            }
-
-            await this.injectedWeb3Login();
-        },
-        async connectMetaMaskLegacy(){
-            // TODO: remove legacy code
-            // https://github.com/telosnetwork/teloscan/issues/462
-            if (this.isBraveBrowser && window.ethereum.isBraveWallet && !this.isMobile){
-                this.$q.notify({
-                    position: 'top',
-                    message: this.$t('components.enable_wallet_extensions'),
-                    timeout: 6000,
-                });
-                return;
-            }
-
-            if (!this.browserSupportsMetaMask || !window.ethereum || (this.isMobile && this.isBraveBrowser)){
-                try {
-                    window.open('https://metamask.app.link/dapp/teloscan.io');
-                } catch {
-
-                    this.$q.notify({
-                        position: 'top',
-                        message: this.$t('components.enable_wallet_extensions'),
-                        timeout: 6000,
-                    });
-                }
-                return;
-            }
-
-            await this.injectedWeb3Login();
         },
         async injectedWeb3Login() {
             const address = await this.getInjectedAddress();
@@ -352,10 +295,45 @@ export default defineComponent({
             this.$emit('hide');
         },
         async connectMetaMask() {
+            if (this.isBraveBrowser && window.ethereum.isBraveWallet && !this.isMobile){
+                this.$q.notify({
+                    position: 'top',
+                    message: this.$t('components.enable_wallet_extensions'),
+                    timeout: 6000,
+                });
+                return;
+            }
+
+            if (!this.browserSupportsMetaMask || !window.ethereum || (this.isMobile && this.isBraveBrowser)){
+                try {
+                    window.open('https://metamask.app.link/dapp/teloscan.io');
+                } catch {
+
+                    this.$q.notify({
+                        position: 'top',
+                        message: this.$t('components.enable_wallet_extensions'),
+                        timeout: 6000,
+                    });
+                }
+                return;
+            }
+
             this.loginWithAntelope(PROVIDER_METAMASK);
         },
         async connectTelosCloud() {
             this.loginWithAntelope(PROVIDER_TELOS_CLOUD);
+        },
+        async connectBraveWallet() {
+            // Brave Wallet is not set as default and/or has other extensions enabled
+            if (!window.ethereum.isBraveWallet){
+                this.$q.notify({
+                    position: 'top',
+                    message: this.$t('components.disable_wallet_extensions'),
+                    timeout: 6000,
+                });
+                return;
+            }
+            this.loginWithAntelope(PROVIDER_BRAVE);
         },
         connectWalletConnect() {
             this.loginWithAntelope(PROVIDER_WALLET_CONNECT);

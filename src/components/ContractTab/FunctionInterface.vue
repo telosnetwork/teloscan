@@ -6,7 +6,7 @@ import { defineComponent, toRaw } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
-import { PROVIDER_WEB3_INJECTED, LOGIN_DATA_KEY } from 'src/lib/utils';
+import { LOGIN_DATA_KEY } from 'src/lib/utils';
 
 
 import {
@@ -25,7 +25,7 @@ import {
 import TransactionField from 'src/components/TransactionField.vue';
 import { useAccountStore } from 'src/antelope';
 import { CURRENT_CONTEXT } from 'src/antelope/wallets';
-import { EvmABI, EvmFunctionParam } from 'src/antelope/wallets/types';
+import { EvmABI, EvmFunctionParam } from 'src/antelope/types';
 
 
 interface Opts {
@@ -219,7 +219,6 @@ export default defineComponent({
                     this.errorMessage = this.$t('global.internal_error');
                     return;
                 }
-                const loginObj = JSON.parse(loginData);
                 const opts: Opts = {};
                 if (this.abi.stateMutability === 'payable') {
                     opts.value = this.value;
@@ -233,14 +232,7 @@ export default defineComponent({
                     return await this.runNative(opts);
                 }
 
-                switch(loginObj?.provider) {
-                case PROVIDER_WEB3_INJECTED:
-                    // TODO: remove legacy code
-                    // https://github.com/telosnetwork/teloscan/issues/462
-                    return await this.runEVM_legacy(opts);
-                default:
-                    return await this.runEVM(opts);
-                }
+                return await this.runEVM(opts);
             } catch (e) {
                 this.result = (e as Error).message;
             }
@@ -318,13 +310,6 @@ export default defineComponent({
             });
 
             this.hash = `0x${tx.hash().toString('hex')}`;
-            this.endLoading();
-        },
-        async runEVM_legacy(opts: Opts) {
-            const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
-
-            const result = await func(...this.params, opts);
-            this.hash = result.hash;
             this.endLoading();
         },
         async runEVM(opts: Opts) {

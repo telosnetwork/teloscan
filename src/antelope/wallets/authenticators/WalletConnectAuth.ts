@@ -38,7 +38,7 @@ import {
     stlosAbiWithdraw,
     wtlosAbiDeposit,
     wtlosAbiWithdraw,
-} from 'src/antelope/wallets/types';
+} from 'src/antelope/types';
 import { EVMAuthenticator } from 'src/antelope/wallets';
 import { RpcEndpoint } from 'universal-authenticator-library';
 import { toRaw } from 'vue';
@@ -172,11 +172,9 @@ export class WalletConnectAuth extends EVMAuthenticator {
         } else {
             return new Promise((resolve) => {
                 this.trace('login', 'web3Modal.openModal()');
-                console.log('login', 'web3Modal.openModal()'); // FIXME:
 
                 this.unsubscribeWeb3Modal = this.web3Modal.subscribeModal(async (newState: {open:boolean}) => {
                     this.trace('login', 'web3Modal.subscribeModal ', toRaw(newState), wagmiConnected);
-                    console.log('login', 'web3Modal.subscribeModal ', toRaw(newState), wagmiConnected);  // FIXME:
 
                     if (newState.open === true) {
                         this.trace(

@@ -1,4 +1,4 @@
-import { EthereumProvider } from 'src/antelope/wallets/types';
+import { EthereumProvider } from 'src/antelope/types';
 import { EVMAuthenticator, InjectedProviderAuth } from 'src/antelope/wallets';
 
 const name = 'SafePal';

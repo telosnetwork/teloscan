@@ -3,7 +3,7 @@
 // Mocking ChainStore -----------------------------------
 
 import { RpcEndpoint } from 'universal-authenticator-library';
-import { NativeCurrencyAddress, TokenClass } from 'src/antelope/wallets/types';
+import { NativeCurrencyAddress, TokenClass } from 'src/antelope/types';
 
 export interface EVMChainSettings {
     getStakedSystemToken(): TokenClass;

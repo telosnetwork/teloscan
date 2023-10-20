@@ -11,14 +11,14 @@ import {
     stlosAbiWithdraw,
     wtlosAbiDeposit,
     wtlosAbiWithdraw,
-} from 'src/antelope/wallets/types';
+} from 'src/antelope/types';
 import { EVMAuthenticator } from 'src/antelope/wallets';
 import {
     AntelopeError,
     TokenClass,
     addressString,
     EvmTransactionResponse,
-} from 'src/antelope/wallets/types';
+} from 'src/antelope/types';
 import { useFeedbackStore } from 'src/antelope';
 import { useChainStore } from 'src/antelope';
 import { RpcEndpoint } from 'universal-authenticator-library';

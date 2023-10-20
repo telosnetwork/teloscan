@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 import { erc1155Abi, erc20Abi, erc721Abi } from 'src/antelope/wallets/utils/abi';
 import EvmContract from 'src/antelope/wallets/utils/contracts/EvmContract';
-import { AntelopeError, EvmContractCalldata, EvmContractMetadata, EvmContractFactoryData } from 'src/antelope/wallets/types';
+import { AntelopeError, EvmContractCalldata, EvmContractMetadata, EvmContractFactoryData } from 'src/antelope/types';
 
 export default class EvmContractFactory {
     buildContract(data: EvmContractFactoryData): EvmContract {

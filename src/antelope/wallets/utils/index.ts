@@ -2,7 +2,7 @@
 export * from 'src/antelope/wallets/utils/abi/signature';
 import { BigNumber, ethers } from 'ethers';
 import { formatUnits } from '@ethersproject/units';
-import { EvmABIEntry } from 'src/antelope/wallets/types';
+import { EvmABIEntry } from 'src/antelope/types';
 import { fromUnixTime, format } from 'date-fns';
 import { toStringNumber } from 'src/antelope/wallets/utils/currency-utils';
 import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';

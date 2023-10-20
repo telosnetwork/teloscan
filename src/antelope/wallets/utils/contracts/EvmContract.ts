@@ -12,7 +12,7 @@ import {
     EvmLogs,
     TokenSourceInfo,
     TRANSFER_SIGNATURES,
-} from 'src/antelope/wallets/types';
+} from 'src/antelope/types';
 import { Interface } from 'ethers/lib/utils';
 
 

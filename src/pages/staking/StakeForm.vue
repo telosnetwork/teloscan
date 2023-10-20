@@ -13,8 +13,6 @@ import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 import { promptAddToMetamask } from 'src/lib/token-utils';
 import {
     getClientIsApple,
-    LOGIN_DATA_KEY,
-    PROVIDER_WEB3_INJECTED,
     WEI_PRECISION,
 } from 'src/lib/utils';
 
@@ -22,7 +20,7 @@ import BaseStakingForm from 'pages/staking/BaseStakingForm.vue';
 import TransactionField from 'components/TransactionField.vue';
 import LoginModal from 'components/LoginModal.vue';
 import { useAccountStore, CURRENT_CONTEXT } from 'src/antelope/mocks';
-import { EvmABI, stlosAbiDeposit } from 'src/antelope/wallets/types';
+import { EvmABI, stlosAbiDeposit } from 'src/antelope/types';
 
 const reservedForGasBn = BigNumber.from('10').pow(WEI_PRECISION);
 
@@ -288,24 +286,8 @@ export default defineComponent({
             this.ctaIsLoading = true;
             const value = BigNumber.from(this.topInputAmount);
 
-            let waitTheTransaction: Promise<{hash: string | null}> = Promise.resolve({ hash: null });
             try {
-                const loginData = localStorage.getItem(LOGIN_DATA_KEY);
-                console.log('initiateDeposit() loginData: ', loginData);
-                if (loginData) {
-                    const loginObj = JSON.parse(loginData);
-                    switch(loginObj?.provider) {
-                    case PROVIDER_WEB3_INJECTED:
-                        // TODO: remove legacy code
-                        // https://github.com/telosnetwork/teloscan/issues/462
-                        waitTheTransaction = this.continueDepositLegacy(value);
-                        break;
-                    default:
-                        waitTheTransaction = this.continueDeposit(value);
-                    }
-                }
-
-                waitTheTransaction.then((result) => {
+                this.continueDeposit(value).then((result) => {
                     this.resultHash = result.hash;
                     this.$emit('balance-changed');
                 }).catch(({ message }: Error) => {
@@ -335,9 +317,6 @@ export default defineComponent({
                 [],
                 value,
             );
-        },
-        continueDepositLegacy(value: BigNumber) {
-            return this.stlosContractInstance['depositTLOS()']({ value }) as Promise<{ hash: null | string; }>;
         },
         hideClaimBanner() {
             this.userDismissedBanner = true;

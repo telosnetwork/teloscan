@@ -9,13 +9,11 @@ import { BigNumber } from 'ethers';
 
 import {
     formatWei,
-    LOGIN_DATA_KEY,
-    PROVIDER_WEB3_INJECTED,
     WEI_PRECISION,
 } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 import { CURRENT_CONTEXT, useAccountStore } from 'src/antelope/mocks';
-import { escrowAbiWithdraw, EvmABI } from 'src/antelope/wallets/types';
+import { escrowAbiWithdraw, EvmABI } from 'src/antelope/types';
 
 export default defineComponent({
     name: 'WithdrawPage',
@@ -87,24 +85,9 @@ export default defineComponent({
     methods: {
 
         withdrawUnlocked() {
-            let waitTheTransaction: Promise<{hash: string | null}> = Promise.resolve({ hash: null });
             this.ctaIsLoading = true;
             try {
-                const loginData = localStorage.getItem(LOGIN_DATA_KEY);
-                if (loginData) {
-                    const loginObj = JSON.parse(loginData);
-                    switch(loginObj?.provider) {
-                    case PROVIDER_WEB3_INJECTED:
-                        // TODO: remove legacy code
-                        // https://github.com/telosnetwork/teloscan/issues/462
-                        waitTheTransaction = this.continueWithdrawLegacy();
-                        break;
-                    default:
-                        waitTheTransaction = this.continueWithdraw();
-                    }
-                }
-
-                waitTheTransaction.then((result: { hash: null | string; }) => {
+                this.continueWithdraw().then((result: { hash: null | string; }) => {
                     this.resultHash = result.hash;
                     this.$emit('balance-changed');
                 }).catch(({ message }: Error) => {
@@ -133,9 +116,6 @@ export default defineComponent({
                 this.abi,
                 [],
             );
-        },
-        continueWithdrawLegacy() {
-            return this.escrowContractInstance.withdraw() as Promise<{ hash: null | string; }>;
         },
         formatAmount(val: string | BigNumber | null) {
             if (val === null) {

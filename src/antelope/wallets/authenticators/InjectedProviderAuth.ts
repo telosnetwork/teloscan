@@ -19,7 +19,7 @@ import {
     stlosAbiWithdraw,
     wtlosAbiDeposit,
     wtlosAbiWithdraw,
-} from 'src/antelope/wallets/types';
+} from 'src/antelope/types';
 import { EVMAuthenticator } from 'src/antelope/wallets';
 import { MetamaskAuthName, SafePalAuthName } from 'src/antelope/wallets';
 import { TELOS_ANALYTICS_EVENT_IDS, TELOS_NETWORK_NAMES } from 'src/antelope/mocks/chain-constants';

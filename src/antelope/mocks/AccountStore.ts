@@ -1,7 +1,7 @@
 // Mocking AccountStore -----------------------------------
 // useAccountStore().getAccount(this.label).account as addressString;
 import { EVMAuthenticator } from 'src/antelope/wallets';
-import { addressString } from 'src/antelope/wallets/types';
+import { addressString } from 'src/antelope/types';
 import { CURRENT_CONTEXT } from 'src/antelope/mocks';
 
 export interface AccountModel {

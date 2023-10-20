@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { TokenSourceInfo } from 'src/antelope/wallets/types';
+import { TokenSourceInfo } from 'src/antelope/types';
 
 export interface EvmLog {
     address: string;

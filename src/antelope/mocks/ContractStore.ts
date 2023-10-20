@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 
-import { EvmABI, erc1155Abi, erc20Abi, erc721Abi } from 'src/antelope/wallets/types';
+import { EvmABI, erc1155Abi, erc20Abi, erc721Abi } from 'src/antelope/types';
 
 // Mocking ContractStore -----------------------------------
 const ContractStore = {

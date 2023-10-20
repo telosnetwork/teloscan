@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { ApiClient } from 'src/antelope/wallets/types/Api';
+import { ApiClient } from 'src/antelope/types/Api';
 import { ProviderManager } from 'src/boot/evm.js';
 import { UAL, User } from 'universal-authenticator-library';
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';

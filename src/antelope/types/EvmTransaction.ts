@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { NftTokenInterface } from 'src/antelope/wallets/types';
+import { NftTokenInterface } from 'src/antelope/types';
 
 export type EvmTransactionTopic = string[];
 

@@ -25,7 +25,7 @@ import {
     Get_actions,
     HyperionActionsFilter,
     TokenSourceInfo,
-} from 'src/antelope/wallets/types';
+} from 'src/antelope/types';
 
 export const NativeCurrencyAddress = '___NATIVE_CURRENCY___';
 

@@ -11,7 +11,7 @@ import { useChainStore } from 'src/antelope/mocks';
 import { useEVMStore } from 'src/antelope/mocks';
 import { isTracingAll, useFeedbackStore } from 'src/antelope/mocks/FeedbackStore';
 import { usePlatformStore } from 'src/antelope/mocks';
-import { AntelopeError, EvmABI, EvmFunctionParam, EvmTransactionResponse, ExceptionError, TokenClass, addressString } from 'src/antelope/wallets/types';
+import { AntelopeError, EvmABI, EvmFunctionParam, EvmTransactionResponse, ExceptionError, TokenClass, addressString } from 'src/antelope/types';
 
 export abstract class EVMAuthenticator {
 
