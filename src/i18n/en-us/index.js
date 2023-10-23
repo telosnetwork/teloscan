@@ -191,6 +191,8 @@ export default {
         verify_contract: 'Verify Contract',
         search_evm_address_failed: 'Search for EVM address linked to { accountName } native account failed. You can create one at wallet.telos.net',
         unknown_web3_login_type: 'Unknown web3 login type: { provider }',
+        unknown_evm_login_provider: 'Unknown EVM login provider: { provider }',
+        unknown_native_login_provider: 'Unknown native login provider: { provider }',
         connect_wallet: 'Connect Wallet',
         view_address: 'View Address',
         disconnect: 'Disconnect',
@@ -354,6 +356,7 @@ export default {
         cancel: 'Cancel',
         ok: 'Ok',
         dismiss: 'Dismiss',
+        internal_error: 'Internal Error',
     },
     layouts: {
         health_status: 'Health Status',

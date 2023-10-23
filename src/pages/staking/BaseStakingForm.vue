@@ -99,12 +99,12 @@ export default {
                 infoText:    this.topInputInfoText,
                 errorText:   this.topInputErrorText,
                 tooltip:     this.topInputTooltip,
-                maxValue:    this.topInputMaxValue ?? genericMaxWei,
+                maxValue:    this.topInputMaxValue || genericMaxWei,
                 isLoading:   this.topInputIsLoading,
             }, {
                 label:       this.bottomInputLabel,
                 errorText:   '',
-                maxValue:    this.bottomInputMaxValue,
+                maxValue:    this.bottomInputMaxValue || null,
                 isLoading:   this.bottomInputIsLoading,
             }];
         },

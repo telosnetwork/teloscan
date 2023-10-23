@@ -2,7 +2,13 @@
 import { defineAsyncComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
-import { formatWei, getRouteWatcherForTabs, WEI_PRECISION } from 'src/lib/utils';
+import {
+    formatWei,
+    getRouteWatcherForTabs,
+    LOGIN_DATA_KEY,
+    PROVIDER_WEB3_INJECTED,
+    WEI_PRECISION,
+} from 'src/lib/utils';
 
 import StakeForm from 'pages/staking/StakeForm';
 import StakingStats from 'pages/staking/StakingStats';
@@ -48,7 +54,7 @@ export default {
         address: {
             immediate: true,
             async handler(address, oldAddress) {
-                if (address !== oldAddress) {
+                if (address && address !== oldAddress) {
                     await this.fetchContractInstances();
                     await this.fetchBalances();
                 }
@@ -74,7 +80,7 @@ export default {
                 return;
             }
 
-            const tlosPromise = this.$providerManager.getEthersProvider().getBalance(this.address)
+            const tlosPromise = this.$contractManager.getEthersProvider().getBalance(this.address)
                 .then((balanceBn) => {
                     this.tlosBalance = balanceBn.toString();
                 })
@@ -210,9 +216,27 @@ export default {
                 await this.fetchContracts();
             }
 
-            const provider = this.isLoggedIn && !this.isNative ?
-                this.$providerManager.getEthersProvider().getSigner() :
-                this.$contractManager.getEthersProvider();
+            // default provider is the ContractManager ethers provider (JsonRpcProvider)
+            let provider = this.$contractManager.getEthersProvider();
+
+            if (this.isLoggedIn && !this.isNative) {
+                // only if the user is logged with a non-native wallet, we may change the provider
+                const loginData = localStorage.getItem(LOGIN_DATA_KEY);
+                if (loginData) {
+                    // If the user is authenticated using any Antelope.wallet.authenticators
+                    const loginObj = JSON.parse(loginData);
+                    switch(loginObj?.provider) {
+                    case PROVIDER_WEB3_INJECTED:
+                        provider = this.$providerManager.getEthersProvider().getSigner();
+                        break;
+                    }
+                } else {
+                    // legacy fallback
+                    provider = this.$providerManager.getEthersProvider().getSigner();
+                }
+            }
+
+            console.log('provider', provider);
 
             this.stlosContractInstance  = this.stlosContract.getContractInstance(provider, true);
             this.escrowContractInstance = this.escrowContract.getContractInstance(provider, true);

@@ -1,10 +1,20 @@
 import { BigNumber, ethers } from 'ethers';
 import moment from 'moment';
-const createKeccakHash = require('keccak');
+import keccak from 'keccak';
 const REVERT_FUNCTION_SELECTOR = '0x08c379a0';
 const REVERT_PANIC_SELECTOR = '0x4e487b71';
 
 export const WEI_PRECISION = 18;
+export const LOGIN_EVM = 'evm';
+export const LOGIN_NATIVE = 'native';
+export const PROVIDER_WEB3_INJECTED = 'injectedWeb3';
+export const PROVIDER_TELOS_CLOUD = 'OreId';
+export const PROVIDER_WALLET_CONNECT = 'WalletConnect';
+export const PROVIDER_METAMASK = 'Metamask';
+export const PROVIDER_BRAVE = 'Brave';
+export const PROVIDER_SAFEPAL = 'SafePal';
+export const LOGIN_DATA_KEY = 'loginData';
+export const DEFAULT_CHAIN_ID = '40'; // Telos Mainnet
 
 export function formatWei(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);
@@ -40,7 +50,7 @@ export function toChecksumAddress(address) {
         addy = addy.padStart(40, '0');
     }
 
-    let hash = createKeccakHash('keccak256').update(addy).digest('hex');
+    let hash = keccak('keccak256').update(addy).digest('hex');
     let ret = '0x';
 
     for (let i = 0; i < addy.length; i++) {

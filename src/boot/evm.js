@@ -21,7 +21,7 @@ const evm = new TelosEvmApi({
 const providerContainer = {
     provider: null,
 };
-
+// providerContainer.provider type is: ethers.providers.ExternalProvider | ethers.providers.JsonRpcFetchFunc | null
 class ProviderManager {
     setProvider(provider) {
         providerContainer.provider = provider;

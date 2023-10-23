@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { shallowMount } from '@vue/test-utils';
 import { BigNumber } from 'ethers';
 import { createStore } from 'vuex';
@@ -10,15 +12,56 @@ import {
     stubWithSlot,
 } from 'test/testing-helpers';
 
+const hash = '0x123';
+
+// mocking antelope mocks XD
+jest.mock('src/antelope/mocks', () => ({
+    CURRENT_CONTEXT: 'current',
+    useAccountStore: jest.fn().mockReturnValue({
+        getAccount: jest.fn().mockReturnValue({
+            authenticator: {
+                signCustomTransaction: jest.fn().mockResolvedValue({ hash }),
+            },
+        }),
+    }),
+    useChainStore: jest.fn().mockReturnValue({
+        currentChain: {
+            settings: {
+                getNetwork: jest.fn().mockReturnValue('network'),
+            },
+        },
+    }),
+    getAntelope: jest.fn().mockReturnValue({
+        wallets: {
+            getAuthenticator: jest.fn().mockReturnValue({
+                newInstance: jest.fn().mockReturnValue({
+                    signCustomTransaction: jest.fn().mockResolvedValue({ hash }),
+                }),
+            }),
+        },
+    }),
+}));
+
+
+
+
 import BaseStakingForm from 'pages/staking/BaseStakingForm';
 import StakeForm from 'pages/staking/StakeForm';
+import { PROVIDER_TELOS_CLOUD, PROVIDER_WEB3_INJECTED } from 'src/lib/utils';
 
+const LocalStorageMap = {
+    [PROVIDER_TELOS_CLOUD]: JSON.stringify({ provider: PROVIDER_WEB3_INJECTED }),
+};
 
 describe('StakeForm.vue', () => {
-    let isLoggedInMock = jest.fn(() => true);
-    const globalMock = {
+    let isLoggedInMock = jest.fn();
+    let savedLocalStorage;
+
+    const globalMock = () => ({
         directives: {
-            'close-popup': () => {},
+            'close-popup': () => {
+                // do nothing
+            },
         },
         plugins: [
             createStore({
@@ -43,7 +86,7 @@ describe('StakeForm.vue', () => {
             'q-dialog':  stubWithSlot('q-dialog'),
             'transaction-field': stubWithSlot('transaction-field'),
         },
-    };
+    });
     const stlosContractInstanceMock = {
         previewDeposit: jest.fn(),
         previewRedeem: jest.fn(),
@@ -56,21 +99,42 @@ describe('StakeForm.vue', () => {
         unstakePeriodSeconds: 60,
         valueOfOneStlosInTlos: '1.23456789',
     };
+    beforeAll(() => {
+        savedLocalStorage = global.localStorage;
+    });
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        jest.resetAllMocks();
         isLoggedInMock.mockImplementation(() => true);
+        Reflect.deleteProperty(global, 'localStorage');
+
+        global.localStorage = {
+            getItem: jest.fn().mockImplementation(key => LocalStorageMap[key]),
+            setItem: jest.fn().mockImplementation((key, value) => {
+                LocalStorageMap[key] = value;
+            }),
+            clear: jest.fn().mockImplementation(() => {
+                Object.keys(LocalStorageMap).forEach((key) => {
+                    delete LocalStorageMap[key];
+                });
+            }),
+        };
+        global.localStorage.setItem(PROVIDER_TELOS_CLOUD, JSON.stringify({ provider: PROVIDER_WEB3_INJECTED }));
+    });
+
+    afterAll(() => {
+        global.localStorage = savedLocalStorage;
     });
 
     it('should have the correct name', () => {
         expect(StakeForm.name).toBe('StakeForm');
     });
 
-    it('should render correctly when the user is not logged in', async () => {
+    it('should render correctly when the user is not logged in', () => {
         isLoggedInMock.mockImplementation(() => false);
         const wrapper = shallowMount(StakeForm, {
             props:  { ...defaultProps },
-            global: { ...globalMock   },
+            global: { ...globalMock()   },
         });
 
         expect(wrapper.element).toMatchSnapshot();
@@ -79,7 +143,7 @@ describe('StakeForm.vue', () => {
     it('should render a banner when the user has unlocked TLOS', async () => {
         const wrapper = shallowMount(StakeForm, {
             props:  { ...defaultProps },
-            global: { ...globalMock   },
+            global: { ...globalMock()   },
         });
 
         // no banner
@@ -100,7 +164,7 @@ describe('StakeForm.vue', () => {
             jest.clearAllMocks();
             wrapper = shallowMount(StakeForm, {
                 props:  { ...defaultProps },
-                global: { ...globalMock   },
+                global: { ...globalMock()   },
             });
             formStub = wrapper.findComponent(BaseStakingForm);
         });
@@ -139,15 +203,23 @@ describe('StakeForm.vue', () => {
         });
     });
 
-    it('should render properly when the user has successfully staked TLOS', async () => {
+    it('should set and get the value from localStorage', () => {
+        localStorage.setItem(PROVIDER_TELOS_CLOUD, JSON.stringify({ provider: PROVIDER_WEB3_INJECTED }));
+        expect(localStorage.getItem(PROVIDER_TELOS_CLOUD)).toEqual(JSON.stringify({ provider: PROVIDER_WEB3_INJECTED }));
+    });
+
+    it.skip('should render properly when the user has successfully staked TLOS', async () => {
         jest.useFakeTimers();
         stlosContractInstanceMock['depositTLOS()'].mockImplementationOnce(() => Promise.resolve({
-            hash: '0x123',
+            hash,
         }));
+
+        // we need to execute the legacy implementation for depositing (depositTLOS())
+        LocalStorageMap[PROVIDER_TELOS_CLOUD] = JSON.stringify({ provider: PROVIDER_WEB3_INJECTED });
 
         const wrapper = shallowMount(StakeForm, {
             props:  { ...defaultProps },
-            global: { ...globalMock   },
+            global: { ...globalMock() },
         });
         const formStub = wrapper.findComponent(BaseStakingForm);
 

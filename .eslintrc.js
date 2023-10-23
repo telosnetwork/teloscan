@@ -1,22 +1,26 @@
 module.exports = {
     root: true,
+    parser: 'vue-eslint-parser',
     parserOptions: {
-        parser: '@babel/eslint-parser',
-        ecmaVersion: 2018,
+        extraFileExtensions: ['.vue'],
+        parser: '@typescript-eslint/parser',
         sourceType: 'module',
     },
     env: {
         'browser': true,
+        'es2021': true,
         'amd': true,
         'node': true,
         'vue/setup-compiler-macros': true,
         'jest/globals': true,
     },
     extends: [
-        'eslint:recommended',
+        'plugin:@typescript-eslint/recommended',
         'plugin:vue/vue3-essential',
+        'eslint:recommended',
     ],
     plugins: [
+        '@typescript-eslint',
         'vue',
         'jest',
     ],
@@ -105,27 +109,4 @@ module.exports = {
         'vue/component-definition-name-casing': ['error', 'PascalCase'],
         'vue/component-name-in-template-casing': ['error', 'PascalCase'],
     },
-    overrides:[
-        {
-            'files': ['**/*.ts', '**/*.tsx', '**/*/.vue'],
-            'env': { 'browser': true, 'es6': true, 'node': true },
-            'extends': [
-                'eslint:recommended',
-                'plugin:@typescript-eslint/eslint-recommended',
-                'plugin:@typescript-eslint/recommended',
-                'plugin:vue/vue3-essential',
-            ],
-            'parser': '@typescript-eslint/parser',
-            'parserOptions': {
-                'ecmaFeatures': { 'jsx': true },
-                'ecmaVersion': 2018,
-                'sourceType': 'module',
-                'project': './tsconfig.json',
-            },
-            'plugins': ['vue', '@typescript-eslint'],
-            'rules': {
-                '@typescript-eslint/no-explicit-any': 1,
-            },
-        },
-    ],
 };
