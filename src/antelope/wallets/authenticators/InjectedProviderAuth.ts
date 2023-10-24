@@ -310,6 +310,7 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
 
     async isConnectedTo(chainId: string): Promise<boolean> {
         this.trace('isConnectedTo', chainId);
+        console.log('isConnectedTo', chainId); // FIXME: remove
         return useEVMStore().isProviderOnTheCorrectChain(await this.web3Provider(), chainId);
     }
 

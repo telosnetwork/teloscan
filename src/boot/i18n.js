@@ -44,4 +44,5 @@ export default boot(({ app }) => {
     // Set setLocale and i18n reference available for global access
     app.config.globalProperties.$setLocale = setLocale;
     app.config.globalProperties.$i18n = i18n;
+    app.config.globalProperties.$t = i18n.global.t;
 });

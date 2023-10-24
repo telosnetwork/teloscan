@@ -236,8 +236,6 @@ export default {
                 }
             }
 
-            console.log('provider', provider);
-
             this.stlosContractInstance  = this.stlosContract.getContractInstance(provider, true);
             this.escrowContractInstance = this.escrowContract.getContractInstance(provider, true);
 
