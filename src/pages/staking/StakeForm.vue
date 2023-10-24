@@ -19,8 +19,9 @@ import {
 import BaseStakingForm from 'pages/staking/BaseStakingForm.vue';
 import TransactionField from 'components/TransactionField.vue';
 import LoginModal from 'components/LoginModal.vue';
-import { useAccountStore, CURRENT_CONTEXT } from 'src/antelope/mocks';
+import { CURRENT_CONTEXT, useAccountStore } from 'src/antelope/mocks';
 import { EvmABI, stlosAbiDeposit } from 'src/antelope/types';
+import { formatWei } from 'src/antelope/wallets/utils';
 
 const reservedForGasBn = BigNumber.from('10').pow(WEI_PRECISION);
 
@@ -282,25 +283,21 @@ export default defineComponent({
 
             this.displayConfirmModal = true;
         },
-        initiateDeposit() {
+        async initiateDeposit() {
             this.ctaIsLoading = true;
             const value = BigNumber.from(this.topInputAmount);
 
             try {
+
                 this.continueDeposit(value).then((result) => {
                     this.resultHash = result.hash;
                     this.$emit('balance-changed');
                 }).catch(({ message }: Error) => {
                     console.error(`Failed to deposit TLOS: ${message}`);
-                    this.$q.notify({
-                        type: 'negative',
-                        message: this.$t('pages.staking.deposit_failed', { message }),
-                    });
                     this.resultHash = null;
                 }).finally(() => {
                     this.ctaIsLoading = false;
                 });
-
 
             } catch (e) {
                 console.error('Failed to deposit TLOS', e);
@@ -309,9 +306,13 @@ export default defineComponent({
             }
         },
         continueDeposit(value: BigNumber) {
-            const authenticator = useAccountStore().getAccount(CURRENT_CONTEXT).authenticator;
+            const symbol = 'STLOS';
+            const quantity = `${formatWei(value, WEI_PRECISION, WEI_PRECISION)}`;
+            const message = this.$t('notification.neutral_message_staking', { quantity, symbol });
 
-            return authenticator.signCustomTransaction(
+            return useAccountStore().signCustomTransaction(
+                CURRENT_CONTEXT,
+                message,
                 this.stlosContractInstance.address,
                 this.abi,
                 [],
