@@ -96,9 +96,13 @@ export abstract class EVMAuthenticator {
             // we don't have tools to check the chain on mobile
             return useEVMStore().ensureCorrectChain(this);
         } else {
+            console.log('CHECKPONT 1');
             const showSwitchNotification = !(await this.isConnectedToCorrectChain());
+            console.log('CHECKPONT 2');
             return useEVMStore().ensureCorrectChain(this).then((result) => {
+                console.log('CHECKPONT 3');
                 if (showSwitchNotification) {
+                    console.log('CHECKPONT 4');
                     const ant = getAntelope();
                     const networkName = useChainStore().getChain(this.label).settings.getDisplay();
                     ant.config.notifyNeutralMessageHandler(
@@ -111,6 +115,7 @@ export abstract class EVMAuthenticator {
     }
 
     isConnectedToCorrectChain(): Promise<boolean> {
+        console.log('isConnectedToCorrectChain()'); // FIXME: remove
         const correctChainId = useChainStore().getChain(this.label).settings.getChainId();
         return this.isConnectedTo(correctChainId);
     }

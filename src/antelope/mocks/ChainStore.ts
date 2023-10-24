@@ -71,9 +71,14 @@ const loggedChain = {
     settings,
 };
 
+const loggedEvmChain = {
+    settings,
+};
+
 const ChainStore = {
     currentChain,
     loggedChain,
+    loggedEvmChain,
     getNetworkSettings: (network: string) => settings,
     getChain: (label: string) => currentChain,
     setChain: (context: string, network: string) => void 0,

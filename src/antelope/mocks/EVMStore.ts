@@ -181,8 +181,9 @@ class EVMStore {
 
     async isProviderOnTheCorrectChain(provider: ethers.providers.Web3Provider, correctChainId: string): Promise<boolean> {
         const { chainId } = await provider.getNetwork();
-        const response = Number(chainId).toString() === correctChainId;
+        const response = +chainId === +correctChainId;
         this.trace('isProviderOnTheCorrectChain', provider, ' -> ', response);
+        console.log('isProviderOnTheCorrectChain', provider, ' -> ', response); // FIXME: remove
         return response;
     }
 
@@ -198,6 +199,7 @@ class EVMStore {
         }
         return response;
     }
+
 }
 
 export const useEVMStore = () => new EVMStore();

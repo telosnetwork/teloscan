@@ -7,11 +7,13 @@ import { MetamaskAuth, OreIdAuth, SafePalAuth, WalletConnectAuth, BraveAuth } fr
 import { configureChains, createConfig } from '@wagmi/core';
 import { telos, telosTestnet } from '@wagmi/core/chains';
 import { getAntelope } from 'src/antelope/mocks/AntelopeConfig';
+import { App } from 'vue';
+import { AntelopeError } from 'src/antelope/types';
 
 /**
  * This function is used to register the EVMAuthenticators that will be used by the app.
  */
-export function initAntelope() {
+export function initAntelope(app: App) {
     const oreIdOptions: OreIdOptions = {
         appName: process.env.APP_NAME,
         appId: process.env.OREID_APP_ID as string,
@@ -43,9 +45,45 @@ export function initAntelope() {
     const wagmiOptions: Web3ModalConfig = { projectId, explorerRecommendedWalletIds, explorerExcludedWalletIds };
 
     const ant = getAntelope();
+    ant.config.init(app);
+
+    // settting notification handlers --
+    ant.config.setNotifySuccessfulTrxHandler(app.config.globalProperties.$notifySuccessTransaction);
+    ant.config.setNotifySuccessMessageHandler(app.config.globalProperties.$notifySuccessMessage);
+    ant.config.setNotifySuccessCopyHandler(app.config.globalProperties.$notifySuccessCopy);
+    ant.config.setNotifyFailureMessage(app.config.globalProperties.$notifyFailure);
+    ant.config.setNotifyFailureWithAction(app.config.globalProperties.$notifyFailureWithAction);
+    ant.config.setNotifyDisconnectedHandler(app.config.globalProperties.$notifyDisconnected);
+    ant.config.setNotifyNeutralMessageHandler(app.config.globalProperties.$notifyNeutralMessage);
+
+
+    // setting authenticators getter --
+    ant.config.setAuthenticatorsGetter(
+        () => app.config.globalProperties.$ual.getAuthenticators().availableAuthenticators);
+
+    // setting translation handler --
+    ant.config.setLocalizationHandler(
+        (key:string, payload?: Record<string, unknown>) => app.config.globalProperties.$t(key, payload ? payload : {}));
+
+    // setting transaction error handler --
+    ant.config.setTransactionErrorHandler((err: object) => {
+        if (err instanceof AntelopeError) {
+            const evmErr = err as AntelopeError;
+            if (evmErr.message === 'antelope.evm.error_transaction_canceled') {
+                ant.config.notifyNeutralMessageHandler(ant.config.localizationHandler(evmErr.message));
+            } else {
+                ant.config.notifyFailureMessage(ant.config.localizationHandler(evmErr.message), evmErr.payload);
+            }
+        } else {
+            ant.config.notifyFailureMessage(ant.config.localizationHandler('evm_wallet.general_error'));
+        }
+    });
+
+    // set evm authenticators --
     ant.wallets.addEVMAuthenticator(new WalletConnectAuth(wagmiOptions, wagmiClient));
     ant.wallets.addEVMAuthenticator(new OreIdAuth(oreIdOptions));
     ant.wallets.addEVMAuthenticator(new MetamaskAuth());
     ant.wallets.addEVMAuthenticator(new SafePalAuth());
     ant.wallets.addEVMAuthenticator(new BraveAuth());
+
 }
