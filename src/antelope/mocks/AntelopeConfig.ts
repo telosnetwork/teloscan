@@ -20,7 +20,6 @@ export class AntelopeWallets {
 }
 
 export class AntelopeConfig {
-    // @TODO rename this method, it's used for token and NFT transfers as well
     transactionError(description: string, error: unknown): AntelopeError {
         if (error instanceof AntelopeError) {
             return error as AntelopeError;
