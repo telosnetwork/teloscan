@@ -21,7 +21,7 @@ export class AntelopeWallets {
 
 export class AntelopeConfig {
     // @TODO rename this method, it's used for token and NFT transfers as well
-    wrapError(description: string, error: unknown): AntelopeError {
+    transactionError(description: string, error: unknown): AntelopeError {
         if (error instanceof AntelopeError) {
             return error as AntelopeError;
         }
@@ -265,16 +265,6 @@ export class AntelopeConfig {
 }
 
 const config = new AntelopeConfig();
-
-
-
-// const config = {
-//     notifyNeutralMessageHandler: (message: string) => void 0,
-//     localizationHandler: (message: string, params?: Record<string, string>) => message,
-//     notifyFailureWithActionHandler: (message: string, action: () => void) => void 0,
-//     notifyFailureWithAction: (message: string, params?: { label: string; handler: () => void; }) => void 0,
-// };
-
 const wallets = new AntelopeWallets();
 const Antelope = {
     config,
