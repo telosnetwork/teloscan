@@ -8,6 +8,7 @@ import TransactionField from 'components/TransactionField.vue';
 import { BigNumber } from 'ethers';
 
 import {
+    DISPLAY_DECIMALS,
     formatWei,
     WEI_PRECISION,
 } from 'src/lib/utils';
@@ -92,10 +93,6 @@ export default defineComponent({
                     this.$emit('balance-changed');
                 }).catch(({ message }: Error) => {
                     console.error(`Failed to withdraw unlocked TLOS: ${message}`);
-                    this.$q.notify({
-                        type: 'negative',
-                        message: this.$t('pages.staking.withdraw_failed', { message }),
-                    });
                     this.resultHash = null;
                 }).finally(() => {
                     this.ctaIsLoading = false;
@@ -103,15 +100,19 @@ export default defineComponent({
 
             } catch (e) {
                 console.error('Failed to unstake sTLOS', e);
-            } finally {
                 this.ctaIsLoading = false;
             }
         },
         continueWithdraw() {
-            const logged = useAccountStore().getAccount(CURRENT_CONTEXT);
-            const authenticator = logged.authenticator;
+            const symbol = 'TLOS';
+            const quantity = `${formatWei(this.unlockedTlosBalance, WEI_PRECISION, DISPLAY_DECIMALS)}`;
+            const message = this.$t('notification.neutral_message_withdrawing', { quantity, symbol });
+            const error = this.$t('notification.error_message_withdrawing', { quantity, symbol });
 
-            return authenticator.signCustomTransaction(
+            return useAccountStore().signCustomTransaction(
+                CURRENT_CONTEXT,
+                message,
+                error,
                 this.escrowContractInstance.address,
                 this.abi,
                 [],
