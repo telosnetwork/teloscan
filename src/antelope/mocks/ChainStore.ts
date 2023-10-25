@@ -58,7 +58,7 @@ const settings = {
         symbol: 'TLOS',
     } as TokenClass),
     getNetwork: () => process.env.NETWORK_EVM_NAME,
-    getExplorerUrl: () => process.env.NETWORK_EXPLORER,
+    getExplorerUrl: () => window.location.origin,
     getSmallLogoPath: () => 'small-icon-url',
     getLargeLogoPath: () => 'large-icon-url',
 } as EVMChainSettings;

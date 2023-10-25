@@ -384,5 +384,22 @@ export default {
         neutral_message_wrapping: 'Wrapping <b>{quantity} {symbol}</b>',
         neutral_message_unwrapping: 'Unwrapping <b>{quantity} {symbol}</b>',
         neutral_message_withdrawing: 'Withdrawing <b>{quantity} {symbol}</b>',
+        error_message_sending: 'An error occurred while sending <b>{quantity}</b> to <b>{address}</b>',
+        error_message_staking: 'An error occurred while staking <b>{quantity} {symbol}</b>',
+        error_message_unstaking: 'An error occurred while unstaking <b>{quantity} {symbol}</b>',
+        error_message_revoking: 'An error occurred while revoking <b>{symbol}</b> allowance for <b>{address}</b>',
+        error_message_wrapping: 'An error occurred while wrapping <b>{quantity} {symbol}</b>',
+        error_message_unwrapping: 'An error occurred while unwrapping <b>{quantity} {symbol}</b>',
+        error_message_withdrawing: 'An error occurred while withdrawing <b>{quantity} {symbol}</b>',
+        error_message_custom_call: 'An error occurred while calling <b>{name}</b> with <b>{params} parameters</b>',
+        error_message_custom_call_send: 'An error occurred while calling <b>{name}</b> with <b>{params} parameters</b>, sending <b>{quantity} {symbol}</b>',
+        neutral_message_custom_call: 'calling <b>{name}</b> with <b>{params} parameters</b>',
+        neutral_message_custom_call_send: 'calling <b>{name}</b> with <b>{params} parameters</b>, sending <b>{quantity} {symbol}</b></b>',
+    },
+    antelope: {
+        evm: {
+            error_unpredictable_gas_limit: 'The gas limit for this transaction couldn\'t be estimated',
+            error_transaction_canceled: 'You canceled the action',
+        },
     },
 };

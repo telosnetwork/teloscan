@@ -183,7 +183,6 @@ class EVMStore {
         const { chainId } = await provider.getNetwork();
         const response = +chainId === +correctChainId;
         this.trace('isProviderOnTheCorrectChain', provider, ' -> ', response);
-        console.log('isProviderOnTheCorrectChain', provider, ' -> ', response); // FIXME: remove
         return response;
     }
 

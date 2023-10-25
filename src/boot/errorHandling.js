@@ -71,7 +71,7 @@ const discoIcon = require('src/assets/icon--disconnected.svg');
 const html = `
     <div class="c-notify__container c-notify__container--{type} c-notify__container--{random}">
         <div class="c-notify__header"></div>
-        <div class="c-notify__title">
+        <div class="c-notify__title c-notify__title--{type}">
             <img src='{svg}' class="c-notify__icon" />
             <span>{title}</span>
         </div>
@@ -161,8 +161,7 @@ const notifyMessage = function(type, icon, title, message, payload) {
         ).join('');
     }
 
-    let timeout = 0;
-    // let timeout = 4000; // FIXME: uncomment this line to enable auto-dismiss
+    let timeout = 4000;
     if (type === 'error') {
         timeout = 0;
     }
@@ -174,15 +173,30 @@ const notifyMessage = function(type, icon, title, message, payload) {
 
     let random = Math.floor(Math.random() * 1000000);
 
+
+    function replaceAllOccurrences(html, replacements) {
+        let modifiedHtml = html;
+        for (let [key, value] of Object.entries(replacements)) {
+            const regex = new RegExp(key.replace(/[-\\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g');
+            modifiedHtml = modifiedHtml.replace(regex, value);
+        }
+        return modifiedHtml;
+    }
+
+    const replacements = {
+        '{svg}': icon,
+        '{type}': type,
+        '{title}': title,
+        '{random}': random,
+        '{message}': final_message,
+    };
+
+    const finalHtml = replaceAllOccurrences(html, replacements);
+
     return Notify.create({
         timeout,
         position,
-        message: html
-            .replace('{svg}', icon)
-            .replace('{type}', type)
-            .replace('{title}', title)
-            .replace('{random}', random)
-            .replace('{message}', final_message),
+        message: finalHtml,
         html: true,
         classes: 'c-notify',
         actions,

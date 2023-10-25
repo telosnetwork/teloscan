@@ -4,6 +4,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
+    DISPLAY_DECIMALS,
     getClientIsApple,
 } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
@@ -19,6 +20,7 @@ import LoginModal from 'components/LoginModal.vue';
 import { EvmABI, stlosAbiWithdraw } from 'src/antelope/types';
 import { useAccountStore } from 'src/antelope';
 import { CURRENT_CONTEXT } from 'src/antelope/mocks';
+import { WEI_PRECISION, formatWei } from 'src/antelope/wallets/utils';
 
 export default defineComponent({
     name: 'UnstakeForm',
@@ -295,10 +297,6 @@ export default defineComponent({
                     this.$emit('balance-changed');
                 }).catch(({ message }: Error) => {
                     console.error(`Failed to unstake sTLOS: ${message}`);
-                    this.$q.notify({
-                        position: 'top',
-                        message: this.$t('pages.staking.unstake_stlos_error', { message }),
-                    });
                     this.resultHash = null;
                 }).finally(() => {
                     this.ctaIsLoading = false;
@@ -306,20 +304,24 @@ export default defineComponent({
 
             } catch (e) {
                 console.error('Failed to unstake sTLOS', e);
-            } finally {
                 this.ctaIsLoading = false;
             }
         },
         continueUnstake(value: BigNumber) {
             const logged = useAccountStore().getAccount(CURRENT_CONTEXT);
-            const authenticator = logged.authenticator;
+            const symbol = 'TLOS';
+            const quantity = `${formatWei(value, WEI_PRECISION, DISPLAY_DECIMALS)}`;
+            const message = this.$t('notification.neutral_message_unstaking', { quantity, symbol });
+            const error = this.$t('notification.error_message_unstaking', { quantity, symbol });
 
-            return authenticator.signCustomTransaction(
+            return useAccountStore().signCustomTransaction(
+                CURRENT_CONTEXT,
+                message,
+                error,
                 this.stlosContractInstance.address,
                 this.abi,
                 [value, logged.account, logged.account],
             );
-
         },
     },
 });
@@ -344,6 +346,7 @@ export default defineComponent({
             :bottom-input-is-loading="bottomInputIsLoading"
             :cta-text="ctaText"
             :cta-disabled="ctaIsDisabled"
+            :cta-loading="ctaIsLoading"
             :unstake-period-seconds="unstakePeriodSeconds"
             :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
             @input-top="handleInputTop"
