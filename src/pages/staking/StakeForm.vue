@@ -12,6 +12,7 @@ import { stlos } from 'src/lib/logos';
 import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 import { promptAddToMetamask } from 'src/lib/token-utils';
 import {
+    DISPLAY_DECIMALS,
     getClientIsApple,
     WEI_PRECISION,
 } from 'src/lib/utils';
@@ -301,18 +302,19 @@ export default defineComponent({
 
             } catch (e) {
                 console.error('Failed to deposit TLOS', e);
-            } finally {
                 this.ctaIsLoading = false;
             }
         },
         continueDeposit(value: BigNumber) {
             const symbol = 'STLOS';
-            const quantity = `${formatWei(value, WEI_PRECISION, WEI_PRECISION)}`;
+            const quantity = `${formatWei(value, WEI_PRECISION, DISPLAY_DECIMALS)}`;
             const message = this.$t('notification.neutral_message_staking', { quantity, symbol });
+            const error = this.$t('notification.error_message_staking', { quantity, symbol });
 
             return useAccountStore().signCustomTransaction(
                 CURRENT_CONTEXT,
                 message,
+                error,
                 this.stlosContractInstance.address,
                 this.abi,
                 [],
@@ -370,6 +372,7 @@ export default defineComponent({
             :bottom-input-is-loading="bottomInputIsLoading"
             :cta-text="ctaText"
             :cta-disabled="ctaIsDisabled"
+            :cta-loading="ctaIsLoading"
             :unstake-period-seconds="unstakePeriodSeconds"
             :value-of-one-stlos-in-tlos="valueOfOneStlosInTlos"
             @input-top="handleInputTop"

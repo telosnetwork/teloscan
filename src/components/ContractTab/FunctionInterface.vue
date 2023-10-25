@@ -26,6 +26,7 @@ import TransactionField from 'src/components/TransactionField.vue';
 import { useAccountStore } from 'src/antelope';
 import { CURRENT_CONTEXT } from 'src/antelope/wallets';
 import { EvmABI, EvmFunctionParam } from 'src/antelope/types';
+import { WEI_PRECISION } from 'src/antelope/wallets/utils';
 
 
 interface Opts {
@@ -315,8 +316,26 @@ export default defineComponent({
         async runEVM(opts: Opts) {
             const value = opts.value ? BigNumber.from(opts.value) : undefined;
 
-            const authenticator = useAccountStore().getAccount(CURRENT_CONTEXT).authenticator;
-            authenticator.signCustomTransaction(
+            // Preparing the mesage to show while waiting for confirmation.
+            const name = this.abi.name;
+            const params = this.abi.inputs.length;
+            let keyMsg = 'notification.neutral_message_custom_call';
+            let keyErr = 'notification.error_message_custom_call';
+            let message = this.$t(keyMsg, { name, params });
+            let error = this.$t(keyErr, { name, params });
+            if (value) {
+                keyMsg = 'notification.neutral_message_custom_call_send';
+                keyErr = 'notification.error_message_custom_call_send';
+                const quantity = ethers.utils.formatUnits(value, WEI_PRECISION);
+                const symbol = 'TLOS';
+                message = this.$t(keyMsg, { name, params, quantity, symbol });
+                error = this.$t(keyErr, { name, params, quantity, symbol });
+            }
+
+            useAccountStore().signCustomTransaction(
+                CURRENT_CONTEXT,
+                message,
+                error,
                 this.contract.address,
                 [this.abi] as EvmABI,
                 this.params,
@@ -325,7 +344,7 @@ export default defineComponent({
                 this.hash = result.hash;
                 this.endLoading();
             }).catch((error) => {
-                this.result = error.message;
+                this.result = this.$t(error.message);
                 this.endLoading();
             });
         },

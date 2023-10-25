@@ -85,6 +85,7 @@ class AccountStore {
     async signCustomTransaction(
         label: Label,
         actionMessage: string,
+        actionError: string,
         contract: string,
         abi: EvmABI,
         parameters: EvmFunctionParam[],
@@ -100,11 +101,11 @@ class AccountStore {
             const authenticator = this.loggedAccount.authenticator as EVMAuthenticator;
             const chainSettings = useChainStore().loggedChain.settings as unknown as EVMChainSettings;
 
-            // we create tne neutral notification
-            const dismiss = ant.config.notifyNeutralMessageHandler(actionMessage);
-
             const tx = await authenticator.signCustomTransaction(contract, abi, parameters, value)
                 .then(r => this.subscribeForTransactionReceipt(account, r as TransactionResponse));
+
+            // we create tne neutral notification
+            const dismiss = ant.config.notifyNeutralMessageHandler(actionMessage);
 
             tx.wait().then(() => {
                 ant.config.notifySuccessfulTrxHandler(
@@ -118,7 +119,7 @@ class AccountStore {
 
             return tx;
         } catch (error) {
-            const trxError = ant.config.wrapError('antelope.evm.error_transfer_nft', error);
+            const trxError = ant.config.wrapError(actionError, error);
             ant.config.transactionErrorHandler(trxError, funcname);
             throw trxError;
         } finally {
@@ -131,25 +132,3 @@ class AccountStore {
 const accountStore = new AccountStore();
 
 export const useAccountStore = () => accountStore;
-
-/*
-try {
-    const displayDecimals = 4;
-    const tx = await useRexStore().unstakeEVMSystemTokens(label, outputModelValue.value);
-    const formattedAmount = formatWei(outputModelValue.value, systemTokenDecimals, displayDecimals);
-
-    const dismiss = ant.config.notifyNeutralMessageHandler(actionMessage);
-
-    tx.wait().then(() => {
-        ant.config.notifySuccessfulTrxHandler(
-            `${chainSettings.getExplorerUrl()}/tx/${tx.hash}`,
-        );
-    }).catch((err) => {
-        console.error(err);
-    }).finally(() => {
-        dismiss();
-    });
-} catch (err) {
-    console.error(err);
-}
-*/

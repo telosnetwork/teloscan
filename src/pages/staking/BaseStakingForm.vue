@@ -71,6 +71,10 @@ export default {
             type: Boolean,
             required: true,
         },
+        ctaLoading: {
+            type: Boolean,
+            required: true,
+        },
         unstakePeriodSeconds: {
             type: Number,
             default: null,
@@ -167,6 +171,7 @@ export default {
                 <div class="col-xs-12 col-sm-4 u-flex--right">
                     <q-btn
                         :disabled="ctaDisabled"
+                        :loading="ctaLoading"
                         color="secondary"
                         text-color="black"
                         @click="handleCtaClick"
