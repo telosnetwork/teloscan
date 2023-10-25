@@ -119,7 +119,7 @@ class AccountStore {
 
             return tx;
         } catch (error) {
-            const trxError = ant.config.wrapError(actionError, error);
+            const trxError = ant.config.transactionError(actionError, error);
             ant.config.transactionErrorHandler(trxError, funcname);
             throw trxError;
         } finally {
