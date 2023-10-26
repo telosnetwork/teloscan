@@ -1,6 +1,6 @@
 {
   "name": "teloscan",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "Teloscan block explorer",
   "productName": "Teloscan",
   "author": "Jesse Schulman <jesse@caleos.io>",
