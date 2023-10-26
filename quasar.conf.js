@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /*
  * This file runs in a Node context (it's NOT transpiled by Babel), so use only
  * the ES6 features that are supported by your Node version. https://node.green/
@@ -30,7 +31,7 @@ module.exports = function(/* ctx */) {
         // app boot file (/src/boot)
         // --> boot files are part of "main.js"
         // https://quasar.dev/quasar-cli/boot-files
-        boot: ['ual', 'hyperion', 'i18n', 'api', 'telosApi', 'evm', 'q-component-defaults'],
+        boot: ['ual', 'hyperion', 'i18n', 'api', 'telosApi', 'evm', 'q-component-defaults', 'antelope'],
 
         // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
         css: ['fonts/silka/silka.css', 'app.sass'],

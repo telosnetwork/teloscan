@@ -191,6 +191,8 @@ export default {
         verify_contract: 'Verificar contrato',
         search_evm_address_failed: 'La búsqueda de la dirección EVM vinculada a la cuenta nativa { accountName } falló. Puede crear una en wallet.telos.net',
         unknown_web3_login_type: 'Tipo de inicio de sesión web3 desconocido: { provider }',
+        unknown_evm_login_provider: 'Proveedor de inicio de sesión EVM desconocido: { provider }',
+        unknown_native_login_provider: 'Proveedor de inicio de sesión nativo desconocido: { provider }',
         connect_wallet: 'Conectar billetera',
         view_address: 'Ver dirección',
         disconnect: 'Desconectar',
@@ -354,6 +356,7 @@ export default {
         ok: 'Ok',
         cancel: 'Cancelar',
         dismiss: 'Descartar',
+        internal_error: 'Error interno',
     },
     layouts: {
         health_status: 'Estado de la salud',

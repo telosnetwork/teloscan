@@ -1,0 +1,26 @@
+/* eslint-disable max-len */
+export const events_signatures = {
+    '0xddf252ad': 'event Transfer(address indexed from, address indexed to, uint256 value)',
+    '0x8c5be1e5': 'event Approval(address indexed owner, address indexed spender, uint256 value)',
+    '0x71bab65c': 'event Harvest(address indexed sender, uint256 performanceFee, uint256 callFee)',
+    '0x884edad9': 'event Withdraw(address indexed user, uint256 amount)',
+    '0xf279e6a1': 'event Withdraw(address indexed user, uint256 indexed pid, uint256 amount)',
+    '0x90890809': 'event Deposit(address indexed user, uint256 indexed pid, uint256 amount)',
+    '0xe1fffcc4': 'event Deposit(address indexed sender, uint256 value)',
+    '0x4c209b5f': 'event Mint(address indexed sender, uint256 amount0, uint256 amount1)',
+    '0xd78ad95f': 'event Swap(address indexed sender, uint256 amount0In, uint256 amount1In, uint256 amount0Out, uint256 amount1Out, address indexed to)',
+    '0xa2c38e2d': 'event Claim(address indexed account, uint256 amount, bool indexed automatic)',
+    '0xee503bee': 'event DividendWithdrawn(address indexed to, uint256 weiAmount)',
+    '0x38567aa9': 'event NewTransmission(uint32 indexed aggregatorRoundId, int192 answer, address transmitter, uint32 observationsTimestamp)',
+    '0x0109fc6f': 'event NewRound(uint256 indexed roundId, address indexed startedBy, uint256 startedAt)',
+    '0x0559884f': 'event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 updatedAt)',
+    '0x1c411e9a': 'event Sync(uint112 reserve0, uint112 reserve1)',
+    '0x5beea7b3': 'event EvInventoryUpdate(uint256 indexed id, tuple(address,address,address,uint256,uint256,uint256,uint8,uint8) inventory)',
+    '0x8be0079c': 'event OwnershipTransferred(address previousOwner, address newOwner)',
+    '0x34fcbac0': 'event Claim(address indexed user, uint256 indexed pid, uint256 amount)',
+    '0xda919360': 'event BorrowAllowanceDelegated(address indexed fromUser, address indexed toUser, address asset, uint256 amount)',
+    '0xdccd412f': 'event Burn(address indexed sender, uint256 amount0, uint256 amount1, address indexed to)',
+    '0x4a39dc06': 'event TransferBatch(address indexed operator, address indexed from, address indexed to, uint256[] ids,uint256[] amounts)',
+    '0xc3d58168': 'event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 amount)',
+} as { [prefix: string]: string };
+

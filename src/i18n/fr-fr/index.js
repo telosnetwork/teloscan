@@ -191,6 +191,8 @@ export default {
         verify_contract: 'Verifiez le contrat',
         search_evm_address_failed: 'La recherche d\'une addresse EVM lié au compte natif { accountName } a échouée. Vous pouvez en créer une en vous connectant sur wallet.telos.net',
         unknown_web3_login_type: 'Type de login web3 inconnu: { provider }',
+        unknown_evm_login_provider: 'Fournisseur de login EVM inconnu: { provider }',
+        unknown_native_login_provider: 'Fournisseur de login natif inconnu: { provider }',
         connect_wallet: 'Connectez votre portefeuille',
         view_address: 'Voir l\'adresse',
         disconnect: 'Déconnexion',
@@ -354,6 +356,7 @@ export default {
         cancel: 'Annuler',
         ok: 'Ok',
         dismiss: 'Rejeter',
+        internal_error: 'Erreur interne',
     },
     layouts: {
         health_status: 'Statut santé',

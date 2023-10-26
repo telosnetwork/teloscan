@@ -8,6 +8,7 @@ const sharedEnv = {
     NETWORK_PROTOCOL: 'https',
     NETWORK_PORT: 443,
     NETWORK_EVM_CONTRACT: 'eosio.evm',
+    PROJECT_ID: '14ec76c44bae7d461fa0f5fd5f8a9da1',
 };
 
 const TESTNET = {
@@ -19,12 +20,16 @@ const TESTNET = {
     NETWORK_EVM_RPC: 'https://testnet.telos.net/evm',
     NETWORK_EVM_ENDPOINT: 'https://testnet.telos.net',
     NETWORK_EVM_CHAIN_ID: 41,
+    NETWORK_EVM_DISPLAY: 'Telos Testnet',
+    NETWORK_EVM_NAME: 'telos-evm-testnet',
     HYPERION_ENDPOINT: 'https://testnet.telos.net',
     NETWORK_EXPLORER: 'https://explorer-test.telos.net',
     TELOS_API_ENDPOINT: 'https://api-dev.telos.net/v1', //'http://localhost:9999/v1', //for local instance of api
     VERIFIED_CONTRACTS_BUCKET: 'verified-evm-contracts-testnet',
     STAKED_TLOS_CONTRACT_ADDRESS: '0xa9991E4daA44922D00a78B6D986cDf628d46C4DD',
     TELOS_ESCROW_CONTRACT_ADDRESS: '0x7E9cF9fBc881652B05BB8F26298fFAB538163b6f',
+    OREID_APP_ID: 't_1e0417d2456e401893ec106e5e4c6314',
+    OREID_APP_ID_NATIVE: 't_a61e9926d5204387a9ac113dfce7cbc5',
 };
 
 const MAINNET = {
@@ -36,12 +41,16 @@ const MAINNET = {
     NETWORK_EVM_RPC: 'https://mainnet.telos.net/evm',
     NETWORK_EVM_ENDPOINT: 'https://mainnet.telos.net',
     NETWORK_EVM_CHAIN_ID: 40,
+    NETWORK_EVM_DISPLAY: 'Telos',
+    NETWORK_EVM_NAME: 'telos-evm',
     HYPERION_ENDPOINT: 'https://mainnet.telos.net',
     NETWORK_EXPLORER: 'https://explorer.telos.net',
     TELOS_API_ENDPOINT: 'https://api.telos.net/v1', //'http://localhost:9999/v1', //for local instance of api
     VERIFIED_CONTRACTS_BUCKET: 'verified-evm-contracts',
     STAKED_TLOS_CONTRACT_ADDRESS: '0xB4B01216a5Bc8F1C8A33CD990A1239030E60C905',
     TELOS_ESCROW_CONTRACT_ADDRESS: '0x95F5713A1422Aa3FBD3DCB8D553945C128ee3855',
+    OREID_APP_ID: 'p_b5cfbadeb17a44bdaf01e73b3120d202',
+    OREID_APP_ID_NATIVE: 'p_751f87258d5b40998b55c626d612fd4e',
 };
 
 const env = process.env.NETWORK === 'mainnet' ? MAINNET : TESTNET;

@@ -191,6 +191,8 @@ export default {
         verify_contract: 'Smart Contract verifizieren',
         search_evm_address_failed: 'Suche nach EVM-Adresse zu Telos Native Konto { accountName } fehlgeschlagen. Sie können auf wallet.telos.net eine EVM-Adresse erstellen.',
         unknown_web3_login_type: 'Unbekannter web3 Login Typ: { provider }',
+        unknown_evm_login_provider: 'Anbieter der EVM-Anmeldung deaktiviert: { provider }',
+        unknown_native_login_provider: 'Anbieter der Native-Anmeldung deaktiviert: { provider }',
         connect_wallet: 'Wallet verbinden',
         view_address: 'Adresse ansehen',
         disconnect: 'Verbindung trennen',
@@ -353,6 +355,7 @@ export default {
         cancel: 'Abbrechen',
         ok: 'Ok',
         dismiss: 'Ablehnen',
+        internal_error: 'Interner Fehler',
     },
     layouts: {
         health_status: 'Health Status',

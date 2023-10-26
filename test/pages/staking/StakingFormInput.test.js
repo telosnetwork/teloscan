@@ -73,7 +73,9 @@ describe('StakingFormInput.vue', () => {
 
 
         it('should warn when passed an invalid modelValue', () => {
-            const consoleWarnMock = jest.spyOn(console, 'warn').mockImplementation(() => {});
+            const consoleWarnMock = jest.spyOn(console, 'warn').mockImplementation(() => {
+                // do nothing
+            });
             const invalidValues = [
                 undefined,
                 null,

@@ -106,6 +106,9 @@ export default {
     },
     methods: {
         async loadAccount() {
+            if (!this.address) {
+                return;
+            }
             this.accountLoading = true;
 
             const account = await this.$evm.telos.getEthAccount(this.address);
