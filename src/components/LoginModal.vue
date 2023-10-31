@@ -21,9 +21,13 @@ import {
 import { tlos } from 'src/lib/logos';
 import { CURRENT_CONTEXT, getAntelope, useAccountStore, useChainStore } from 'src/antelope/mocks';
 import { Authenticator } from 'universal-authenticator-library';
+import InlineSvg from 'vue-inline-svg';
 
 export default defineComponent({
     name: 'LoginModal',
+    components: {
+        InlineSvg,
+    },
     props: {
         show: {
             type: Boolean,
@@ -48,6 +52,9 @@ export default defineComponent({
         ]),
         authenticators(): Authenticator[] {
             return this.$ual.getAuthenticators().availableAuthenticators;
+        },
+        darkModeEnabled(): boolean {
+            return localStorage.getItem('darkModeEnabled') === 'true';
         },
     },
     async mounted() {
@@ -377,11 +384,10 @@ export default defineComponent({
                         class="c-login-modal__image-container"
                         @click="connectTelosCloud()"
                     >
-                        <q-img
+                        <InlineSvg
                             :src="require('src/assets/logo--telos-cloud-wallet.svg')"
                             height="64px"
                             width="64px"
-                            fit="contain"
                         />
                         <span> Telos Cloud </span>
                     </q-card>
@@ -447,6 +453,12 @@ export default defineComponent({
         flex-direction: column;
 
         cursor: pointer;
+
+        &.q-dark{
+            svg path{
+                fill: white;
+            }
+        }
     }
 }
 
