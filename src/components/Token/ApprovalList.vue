@@ -262,10 +262,11 @@ export default {
                         || currentApprovals[k].contract !== this.approvals[k].contract
                     ){
                         approval = false;
+                        this.selected = [];
                         break;
                     }
                 }
-                if(i === 5){
+                if(i === 10){
                     approval  = false;
                     break;
                 }
@@ -280,7 +281,9 @@ export default {
             for(let i = 0; i < this.approvals.length; i++){
                 this.toggleSelected(
                     this.approvals[i].spender + ':' +
-                    (this.approvals[i].contract.address || this.approvals[i].contract),
+                    (this.approvals[i].contract.address || this.approvals[i].contract) + ':' +
+                    this.approvals[i].single + ':' +
+                    this.approvals[i].tokenId,
                     value,
                 );
             }
@@ -289,7 +292,13 @@ export default {
             let parts = id.split(':');
             for(let i = 0; i < this.approvals.length; i++){
                 if(parts[0] === this.approvals[i].spender && parts[1] === this.approvals[i].contract.address){
-                    this.approvals[i].selected = value;
+                    if(this.approvals[i].tokenId){
+                        if(parts[3] === this.approvals[i].tokenId){
+                            this.approvals[i].selected = value;
+                        }
+                    } else {
+                        this.approvals[i].selected = value;
+                    }
                 }
             }
 
@@ -324,7 +333,10 @@ export default {
                 offset = offset + limit;
                 if(response.data){
                     for(let approval of response.data.results){
-                        this.toggleSelected(approval.spender + ':' + approval.contract, true);
+                        this.toggleSelected(
+                            approval.spender + ':' + approval.contract + ':' + approval.single + ':' + approval.tokenId,
+                            true,
+                        );
                     }
                 }
             }
