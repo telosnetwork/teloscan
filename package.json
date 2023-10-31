@@ -47,6 +47,7 @@
     "universal-authenticator-library": "^0.3.0",
     "vue": "3",
     "vue-i18n": "^9.0.0",
+    "vue-inline-svg": "^3.1.2",
     "vue-json-viewer": "3",
     "vue-router": "4",
     "vue3-click-away": "^1.2.4",
