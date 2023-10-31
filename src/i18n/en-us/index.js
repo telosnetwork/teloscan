@@ -261,6 +261,7 @@ export default {
         from: 'From',
         to: 'To',
         approvals: {
+            token_id: 'Token ID',
             approved: 'Approved',
             approvals_granted_title: 'ERC Approvals:',
             login_account: 'Please log into this account using your wallet to be able to see its approvals.',
@@ -406,7 +407,7 @@ export default {
             choose_abi: 'Alternatively, you can interact with the contract either using one of our preset ABIs or a custom JSON one:',
             use_erc20_abi: 'Use ERC20 ABI',
             use_erc721_abi: 'Use ERC721 ABI',
-            use_erc1155_abi: 'Use ERC155 ABI',
+            use_erc1155_abi: 'Use ERC1155 ABI',
             abi_from_json: 'ABI from JSON',
             paste_abi_json_here: 'Paste ABI JSON here',
             abi_json_preview: 'ABI JSON preview',
@@ -441,6 +442,7 @@ export default {
         },
     },
     global: {
+        all: 'all',
         true: 'true',
         false: 'false',
         close: 'Close',

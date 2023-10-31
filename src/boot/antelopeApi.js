@@ -50,19 +50,19 @@ const getAccount = async function (accountName) {
 };
 
 export default boot(async ({ app, store }) => {
-    app['$isAntelopeCapable'] = false;
+    store.$isAntelopeCapable = app.config.globalProperties.isAntelopeCapable = false;
     if(process.env.NETWORK_PROTOCOL && process.env.NETWORK_HOST){
         const rpc = new JsonRpc(
             `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}:${process.env.NETWORK_PORT}`,
         );
-        store['$defaultApi'] = new Api({
+        store.$defaultApi = new Api({
             rpc,
             textDecoder: new TextDecoder(),
             textEncoder: new TextEncoder(),
         });
-        app['$isAntelopeCapable'] = true;
+        store.$isAntelopeCapable = app.config.globalProperties.isAntelopeCapable = true;
     }
-    store['$antelopeApi'] = {
+    store.$antelopeApi = {
         signTransaction: signTransaction.bind(store),
         getTableRows: getTableRows.bind(store),
         getAccount: getAccount.bind(store),

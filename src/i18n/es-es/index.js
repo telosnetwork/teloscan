@@ -198,7 +198,8 @@ export default {
     },
     components: {
         approvals: {
-            approved: 'Approved',
+            token_id: 'Token ID',
+            approved: 'Aprobado',
             login_account: 'Inicie sesión en esta cuenta usando su billetera para poder ver sus aprobaciones.',
             approval_text: 'Se necesita una firma de su billetera para actualizar el monto de las aprobaciones seleccionadas a 0.',
             type: 'Tipo',
@@ -439,6 +440,7 @@ export default {
         },
     },
     global: {
+        all: 'Todo',
         true: 'true',
         false: 'false',
         close: 'Close',

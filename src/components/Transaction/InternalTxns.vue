@@ -60,9 +60,6 @@ export default {
                 }
             }
             for (let k = 0; k < dataset.length; k++) {
-                dataset[k].action = JSON.parse(dataset[k].action);
-            }
-            for (let k = 0; k < dataset.length; k++) {
                 let itx = dataset[k];
 
                 // Get rid of duplicated calls

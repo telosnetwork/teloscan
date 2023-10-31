@@ -1,7 +1,6 @@
 <script>
 import { toChecksumAddress, formatWei, WEI_PRECISION } from 'src/lib/utils';
 import { getIcon } from 'src/lib/token-utils';
-import { BigNumber } from 'ethers';
 import TransactionTable from 'components/TransactionTable';
 import InternalTransactionTable from 'components/InternalTransactionTable';
 import TransferTable from 'components/TransferTable';
@@ -209,22 +208,12 @@ export default {
                 }
             } else {
                 this.$contractManager.addContractToCache(this.accountAddress, { address: this.accountAddress });
-                if(this.$isAntelopeCapable){
-                    try {
-                        const account = await this.$evm.telos.getEthAccount(this.accountAddress);
-                        this.telosAccount = account?.account;
-                        this.nonce = account?.nonce;
-                    } catch (e) {
-                        console.info(e);
-                    }
-                } else {
-                    const result = await this.$evmEndpoint.post('/evm', {
-                        jsonrpc: '2.0',
-                        id: 1,
-                        method: 'eth_getTransactionCount',
-                        params: [this.accountAddress],
-                    });
-                    this.nonce = BigNumber.from(result.data?.result).toString();
+                try {
+                    const account = await this.$evm.telos.getEthAccount(this.accountAddress);
+                    this.telosAccount = account?.account;
+                    this.nonce = account?.nonce;
+                } catch (e) {
+                    console.info(e);
                 }
             }
 
@@ -745,7 +734,7 @@ export default {
                     v-model="subtab"
                     name="erc721_approvals"
                 >
-                    <ApprovalList type="721" :accountAddress="accountAddress" />
+                    <ApprovalList type="erc721" :accountAddress="accountAddress" />
                 </q-tab-panel>
                 <q-tab-panel
                     v-if="

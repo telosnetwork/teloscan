@@ -261,6 +261,7 @@ export default {
         from: 'De',
         to: 'À',
         approvals: {
+            token_id: 'ID Jeton',
             approved: 'Approuvé',
             approvals_granted_title: 'Permissions ERC:',
             login_account: 'Veuillez vous connecter à cette addresse à l\'aide de votre portefeuille afin de consulter ses permissions.',
@@ -442,6 +443,7 @@ export default {
         },
     },
     global: {
+        all: 'Tous',
         true: 'oui',
         false: 'non',
         close: 'Fermer',

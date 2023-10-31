@@ -32,7 +32,7 @@ export default {
                 name: 'amount',
                 label: (this.type === 'erc20') ?
                     this.$t('components.approvals.amount') :
-                    this.$t('components.approvals.approved'),
+                    this.$t('components.approvals.token_id'),
                 align: 'left',
                 sortable: !this.isNFT(),
             },
@@ -131,7 +131,7 @@ export default {
                 } else {
                     approval.amountRaw = approval.approved;
                     approval.amount = approval.approved;
-                    approval.spender = approval.operator;
+                    approval.spender = (approval.operator) ? approval.operator : approval.spender;
                 }
                 approvals.push(approval);
             }
@@ -152,7 +152,7 @@ export default {
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             return path;
         },
-        async getApprovalFunction(instance, spender, param2){
+        async getApprovalFunction(instance, spender, single, param2){
             if(this.isNFT()){
                 if(this.type === 'erc1155'){
                     try {
@@ -161,15 +161,18 @@ export default {
                         console.error(e);
                     }
                 } else {
-                    // TODO: ERC721 has both approve & setApprovalForAll..
-                    //  Find in approvals if there is a token ID, if not use setApprovalForAll
-                    return await instance.approve(spender, param2);
+                    // ERC721 has both approve & setApprovalForAll..
+                    if(single === 'true'){
+                        return await instance.approve(spender, param2);
+                    } else {
+                        return await instance.setApprovalForAll(spender, false);
+                    }
                 }
             } else {
                 return  await instance.approve(spender, param2);
             }
         },
-        async updateApproval(spender, contractAddress, param2) {
+        async updateApproval(spender, contractAddress, single, param2) {
             if(!contractAddress || !spender){
                 return;
             }
@@ -194,7 +197,7 @@ export default {
             let success = false;
             let err = this.$t('components.approvals.update_failed');
             try {
-                let result = await this.getApprovalFunction(instance, spender, param2);
+                let result = await this.getApprovalFunction(instance, spender, single, param2);
                 if(result?.hash){
                     success = true;
                     const spenderContract  = await this.$contractManager.getContract(spender);
@@ -226,7 +229,7 @@ export default {
             });
             return success;
         },
-        async handleCtaClick(spender, contract) {
+        async handleCtaClick(spender, contract, single, tokenId) {
             if (!this.isLoggedInAccount()) {
                 this.displayLoginModal = true;
                 return;
@@ -234,7 +237,7 @@ export default {
             this.displayConfirmModal = true;
             const ctx = this;
             this.confirmModal = async function () {
-                const result = await ctx.updateApproval(spender, contract, 0);
+                const result = await ctx.updateApproval(spender, contract, single, tokenId || 0);
                 if(result){
                     await ctx.checkChanges();
                 }
@@ -339,7 +342,7 @@ export default {
                 await Promise.all(
                     ctx.selected.map(async (id) => {
                         let parts = id.split(':');
-                        let result = await ctx.updateApproval(parts[0], parts[1], 0);
+                        let result = await ctx.updateApproval(parts[0], parts[1], parts[2], parseInt(parts[3]) || 0);
                         if(result){
                             results.push(true);
                         }
@@ -352,7 +355,7 @@ export default {
                 this.displayConfirmModal = false;
             };
         },
-        async handleCtaUpdate(spender, contractAddress, current){
+        async handleCtaUpdate(spender, contractAddress, single, tokenId, current){
             this.displayUpdateModal = true;
             this.modalUpdateValue = current;
             const contract  = await this.$contractManager.getContract(contractAddress);
@@ -361,6 +364,8 @@ export default {
                 let success = await this.updateApproval(
                     spender,
                     contractAddress,
+                    single,
+                    tokenId ||
                     BigNumber.from(ethers.utils.parseUnits(this.modalUpdateValue, contract.properties.decimals)),
                 );
                 if(success){
@@ -446,6 +451,8 @@ export default {
                                     @click="handleCtaUpdate(
                                         props.row.spender,
                                         props.row.contract.address,
+                                        props.row.single,
+                                        props.row.tokenId,
                                         props.row.amountRaw
                                     )"
                                 />
@@ -465,8 +472,11 @@ export default {
                         </div>
                     </div>
                     <div v-else class="flex items-center">
-                        <span>
-                            {{ $t('global.true') }}
+                        <span v-if="props.row.single">
+                            {{ props.row.tokenId }}
+                        </span>
+                        <span v-else>
+                            {{ $t('global.all') }}
                         </span>
                     </div>
                 </q-td>
@@ -483,13 +493,20 @@ export default {
                 <q-td
                     key="action"
                     :props="props"
-                    @click="handleCtaClick(props.row.spender, props.row.contract.address)"
+                    @click="handleCtaClick(
+                        props.row.spender,
+                        props.row.contract.address,
+                        props.row.single,
+                        props.row.tokenId
+                    )"
                 >
                     <span>
                         <q-checkbox
                             v-model="selected"
-                            :val="props.row.spender + ':' + props.row.contract.address"
-                            :true-val="props.row.spender + ':' + props.row.contract.address"
+                            :val="props.row.spender + ':' + props.row.contract.address + ':' + props.row.single + ':'
+                                + props.row.tokenId"
+                            :true-val="props.row.spender + ':' + props.row.contract.address + ':' + props.row.single
+                                + ':' + props.row.tokenId"
                             color="secondary"
                             size="xs"
                         />
