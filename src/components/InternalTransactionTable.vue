@@ -178,7 +178,6 @@ export default {
                     for(const trace of [...traces.data.results]){
                         trace.hash = trace.transaction_hash;
                     }
-                    transaction.logs = JSON.parse(transaction.logs);
                     transaction.traces = traces.data?.results;
                     transaction.contract = contract;
                     transaction.contractAddress = contract.address;
@@ -334,7 +333,7 @@ export default {
             class="q-virtual-scroll--with-prev"
         >
             <q-td colspan="100%">
-                <InternalTxns :traces="props.row.traces" />
+                <InternalTxns :traces="props.row.traces" :transaction="props.row" />
             </q-td>
         </q-tr>
     </template>
