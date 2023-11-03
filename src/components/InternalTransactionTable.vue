@@ -174,7 +174,9 @@ export default {
                     if (!contract) {
                         continue;
                     }
-                    let traces = await this.$indexerApi.get('/transaction/' + transaction.hash + '/internal');
+                    let traces = await this.$indexerApi.get(
+                        '/transaction/' + transaction.hash + '/internal?limit=1000&sort=ASC&offset=0&includeAbi=1',
+                    );
                     for(const trace of [...traces.data.results]){
                         trace.hash = trace.transaction_hash;
                     }

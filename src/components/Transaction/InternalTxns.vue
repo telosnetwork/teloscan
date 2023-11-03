@@ -3,7 +3,6 @@ import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 import FragmentList from 'components/Transaction/FragmentList.vue';
 import { WEI_PRECISION, formatWei, parseErrorMessage  } from 'src/lib/utils';
-import { BigNumber } from 'ethers';
 
 export default {
     name: 'InternalTxns',
@@ -127,7 +126,16 @@ export default {
                         : 0,
                 });
             }
-            this.parsedItxs.sort((a, b) => BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber());
+            this.parsedItxs.sort((a, b) => {
+                let deeper = (a.traceAddress.length > b.traceAddress.length) ? a : b;
+                let result = 0;
+                for(var i = 0; i < deeper.traceAddress.length;i++){
+                    let valueA = a.traceAddress[i] || -1;
+                    let valueB = b.traceAddress[i] || -1;
+                    result = result + (valueA - valueB);
+                }
+                return result;
+            });
         } catch (e) {
             console.error(`Could not retrieve internal transactions for transaction: ${e}`);
         }
@@ -191,7 +199,7 @@ export default {
                 v-if="human_readable"
                 :fragments="itxs"
                 :parsedFragments="parsedItxs"
-                :transactionFrom="transaction.from"
+                        :transactionFrom="transaction.from"
             />
             <VueJsonPretty
                 v-else
