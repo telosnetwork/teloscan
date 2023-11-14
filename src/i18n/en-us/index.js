@@ -330,8 +330,8 @@ export default {
             unverified_contract: 'Unverified contract',
         },
         header: {
-            sign_in: 'Connect Wallet',
-            sign_out: 'Disconnect',
+            sign_in: 'Sign in',
+            sign_out: 'Sign out',
             liq_staking: 'Liquid Staking',
             goto_staking: 'Go to Staking',
             goto_health_monitor: 'go to Heath Monitor page',

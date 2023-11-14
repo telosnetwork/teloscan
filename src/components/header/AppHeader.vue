@@ -158,7 +158,7 @@ export default defineComponent({
                     class="c-header__menu-item-icon"
                     size="sm"
                 />
-                {{ isLoggedIn ? $t('components.header.sign_out') : $t('components.header.sign_in') }}
+                {{ isLoggedIn ? $t('components.disconnect') : $t('components.connect_wallet') }}
             </li>
 
             <q-separator class="c-header__menu-separator"/>
