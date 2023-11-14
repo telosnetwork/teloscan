@@ -199,7 +199,7 @@ export default {
                 v-if="human_readable"
                 :fragments="itxs"
                 :parsedFragments="parsedItxs"
-                        :transactionFrom="transaction.from"
+                :transactionFrom="transaction.from"
             />
             <VueJsonPretty
                 v-else

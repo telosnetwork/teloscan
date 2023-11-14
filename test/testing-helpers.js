@@ -48,3 +48,4 @@ export const stubWithSlot = (componentName, namedSlots = [], options = {}) => {
         `,
     };
 };
+

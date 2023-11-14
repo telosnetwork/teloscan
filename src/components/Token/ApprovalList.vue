@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-this-alias -->
 <script>
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';

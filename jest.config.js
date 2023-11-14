@@ -4,6 +4,7 @@
  */
 
 module.exports = {
+    preset: 'ts-jest/presets/js-with-ts',
     rootDir: './',
     moduleNameMapper: {
         '^src(.*)$': '<rootDir>/src$1',
@@ -12,8 +13,9 @@ module.exports = {
         '^store(.*)$': '<rootDir>/src/store$1',
         '^test(.*)$': '<rootDir>/test$1',
     },
-    moduleFileExtensions: ['js', 'vue'],
+    moduleFileExtensions: ['js', 'ts', 'vue'],
     transform: {
+        '^.+\\.(ts|tsx)$': 'ts-jest',
         '^.+\\.js$': 'babel-jest',
         '^.+\\.vue$': '@vue/vue3-jest',
         '^.+\\.svg$': '<rootDir>/test/__mocks__/svg.mocks.js',

@@ -1,4 +1,5 @@
-<script>
+<!-- eslint-disable max-len -->
+<script lang="ts">
 import { mapGetters, mapMutations } from 'vuex';
 import { stlos as stlosLogo } from 'src/lib/logos.js';
 import { directive as clickaway } from 'vue3-click-away';
@@ -6,8 +7,12 @@ import HeaderSearch from 'components/header/HeaderSearch.vue';
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import LoginModal from 'components/LoginModal.vue';
 import LoginStatus from 'components/header/LoginStatus.vue';
+import { RouteLocationRaw } from 'vue-router';
+import { useAccountStore } from 'src/antelope';
+import { defineComponent } from 'vue';
 import moment from 'moment';
-export default {
+
+export default defineComponent({
     name: 'AppHeader',
     components: {
         LanguageSwitcherModal,
@@ -25,12 +30,12 @@ export default {
             if(health.data?.secondsBehind > 86400){
                 const behindByHours = Math.round(health.data.secondsBehind / 60 / 60);
                 const behindByDays = Math.floor(health.data.secondsBehind / 60 / 60 / 24);
-                let behindByLeft = behindByHours - (behindByDays * 24);
-                behindByLeft = (behindByLeft === 0)
+                const behindByLeft = behindByHours - (behindByDays * 24);
+                const behindByLeftStr = (behindByLeft === 0)
                     ? ''
                     :  this.$t('global.and') +  ' ' + behindByLeft + ' ' + this.$t('global.hours');
                 behindBy = (behindByDays > 0)
-                    ? behindByDays + ' ' + this.$t('global.days') + ' ' + behindByLeft
+                    ? behindByDays + ' ' + this.$t('global.days') + ' ' + behindByLeftStr
                     : behindByHours + ' ' + this.$t('global.hours')
                 ;
             }
@@ -53,7 +58,8 @@ export default {
         advancedMenuExpanded: false,
         menuHiddenDesktop: false,
         searchHiddenMobile: true,
-        isTestnet: process.env.NETWORK_EVM_CHAIN_ID !== 40,
+        isTestnet: Number(process.env.NETWORK_EVM_CHAIN_ID) !== 40,
+
     }),
     computed: {
         ...mapGetters('login', [
@@ -65,10 +71,10 @@ export default {
         ...mapMutations('login', [
             'setLogin',
         ]),
-        scrollHandler(info) {
+        scrollHandler(info: { direction: string; }) {
             this.menuHiddenDesktop = info.direction === 'down';
         },
-        goTo(to) {
+        goTo(to: RouteLocationRaw) {
             this.mobileMenuIsOpen = false;
             this.advancedMenuExpanded = false;
             const httpsRegex = /^https/;
@@ -84,7 +90,8 @@ export default {
         },
         toggleDarkMode() {
             this.$q.dark.toggle();
-            localStorage.setItem('darkModeEnabled', this.$q.dark.isActive);
+            localStorage.setItem('darkModeEnabled', this.$q.dark.isActive.toString());
+
         },
         handleLoginLogout() {
             if (this.isLoggedIn) {
@@ -94,21 +101,23 @@ export default {
             }
         },
         logout() {
+            const loginData = localStorage.getItem('loginData');
             if (this.isNative) {
-                const loginData = localStorage.getItem('loginData');
                 if (!loginData) {
                     return;
                 }
                 const loginObj = JSON.parse(loginData);
-                const wallet = this.$ual.authenticators.find(a => a.getName() === loginObj.provider);
-                wallet.logout();
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const wallet = this.$ual.getAuthenticators().availableAuthenticators.find(a => a.getName() === loginObj.provider);
+                wallet?.logout();
             }
+            useAccountStore().logout();
             this.setLogin({});
             localStorage.removeItem('loginData');
             this.$providerManager.setProvider(null);
         },
     },
-};
+});
 </script>
 
 <template>
@@ -177,7 +186,7 @@ export default {
                     class="c-header__menu-item-icon"
                     size="sm"
                 />
-                {{ isLoggedIn ? $t('components.header.sign_out') : $t('components.header.sign_in') }}
+                {{ isLoggedIn ? $t('components.disconnect') : $t('components.connect_wallet') }}
             </li>
 
             <q-separator class="c-header__menu-separator"/>
