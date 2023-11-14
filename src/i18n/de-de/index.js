@@ -319,6 +319,7 @@ export default {
                 'Alternativ können Sie mit dem Smart Contract interagieren, indem Sie ein beliebiges ABI verwenden:',
             use_erc20_abi: 'ERC20 ABI nutzen',
             use_erc721_abi: 'ERC721 ABI nutzen',
+            use_erc1155_abi: 'ERC1155 ABI nutzen',
             abi_from_json: 'ABI aus JSON-Datei',
             paste_abi_json_here: 'ABI JSON hier einfügen',
             abi_json_preview: 'ABI JSON Vorschau',

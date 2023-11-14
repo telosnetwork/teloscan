@@ -319,6 +319,7 @@ export default {
                 'Alternativamente, puede interactuar con el contrato usando un ABI arbitrario:',
             use_erc20_abi: 'Usar ABI ERC20',
             use_erc721_abi: 'Usar ABI ERC721',
+            use_erc1155_abi: 'Usar ABI ERC1155',
             abi_from_json: 'ABI desde JSON',
             paste_abi_json_here: 'Pegue el JSON ABI aquí',
             abi_json_preview: 'Vista previa del JSON ABI',
