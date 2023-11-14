@@ -214,19 +214,21 @@ export default defineComponent({
             this.loading = true;
             this.result = null;
             try {
+
+                if (this.abi.stateMutability === 'view') {
+                    return await this.runRead();
+                }
+
                 const loginData = localStorage.getItem(LOGIN_DATA_KEY);
                 if (!loginData) {
                     console.error('No login data found');
                     this.errorMessage = this.$t('global.internal_error');
                     return;
                 }
+
                 const opts: Opts = {};
                 if (this.abi.stateMutability === 'payable') {
                     opts.value = this.value;
-                }
-
-                if (this.abi.stateMutability === 'view') {
-                    return await this.runRead();
                 }
 
                 if (this.isNative) {
