@@ -2,7 +2,7 @@
 import JsonViewer from 'vue-json-viewer';
 
 import Contract from 'src/lib/Contract';
-import { erc721Abi } from 'src/lib/abi';
+import { erc721Abi, erc1155Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
 
 import { sortAbiFunctionsByName } from 'src/lib/utils';
@@ -26,6 +26,7 @@ export default {
         abiOptions: {
             erc20: 'erc20',
             erc721: 'erc721',
+            erc1155: 'erc1155',
             custom: 'custom',
         },
     }),
@@ -104,7 +105,7 @@ export default {
                 write: [],
             };
 
-            const { custom, erc20, erc721 } = this.abiOptions;
+            const { custom, erc20, erc721, erc1155 } = this.abiOptions;
 
             let abi;
             const customAbiSelected = this.selectedAbi === custom;
@@ -119,7 +120,9 @@ export default {
                 abi = erc20Abi;
             } else if (this.selectedAbi === erc721) {
                 abi = erc721Abi;
-            } else {
+            } else if (this.selectedAbi === erc1155) {
+                abi = erc1155Abi;
+            }else{
                 return;
             }
             if (!Array.isArray(abi)) {
@@ -200,6 +203,14 @@ export default {
                     @click="selectedAbi = abiOptions.erc721"
                 >
                     {{ $t('components.contract_tab.use_erc721_abi') }}
+                </q-btn>
+                <q-btn
+                    push
+                    no-caps
+                    :outline="selectedAbi === abiOptions.erc1155"
+                    @click="selectedAbi = abiOptions.erc1155"
+                >
+                    {{ $t('components.contract_tab.use_erc1155_abi') }}
                 </q-btn>
                 <q-btn
                     push
