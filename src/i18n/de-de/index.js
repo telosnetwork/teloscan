@@ -6,7 +6,7 @@ export default {
     },
     pages: {
         staking: {
-            sign_in: 'Please sign in first to be able to interact with our staking interface',
+            sign_in: 'Bitte melden Sie sich zuerst an, um mit unserem Staking-Interface interagieren zu können',
             note_unstaking_period: 'Beachten Sie, dass der Betrag erst nach { period } eingefordert werden kann.',
             claim_tlos: 'TLOS einfordern',
             add_stlos_to_metamask: 'Starten Sie den MetaMask-Dialog, um sTLOS hinzuzufügen',
