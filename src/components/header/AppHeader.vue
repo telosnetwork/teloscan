@@ -98,7 +98,7 @@ export default defineComponent({
         <div class="c-header__logo-image-container">
             <img
                 alt="Telos EVM logo"
-                src="~assets/evm_logo.png"
+                src="/branding/telos-scan.png"
                 width="32"
             >
             <div v-if="isTestnet" class="c-header__testnet-indicator">
