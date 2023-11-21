@@ -1,6 +1,12 @@
 /* eslint-disable no-unused-vars */
 import { RpcEndpoint } from 'universal-authenticator-library';
-import { IndexerTransactionsFilter, NFTClass, PriceChartData, TokenClass } from 'src/antelope/types';
+import {
+    Collectible,
+    IndexerAccountNftsFilter,
+    IndexerCollectionNftsFilter,
+    PriceChartData,
+    TokenClass,
+} from 'src/antelope/types';
 
 export interface ChainSettings {
     init(): Promise<void>;
@@ -19,8 +25,8 @@ export interface ChainSettings {
     getPriceData(): Promise<PriceChartData>;
     getUsdPrice(): Promise<number>;
     getSystemTokens(): TokenClass[];
-    getNFTsInventory(address: string, filter: IndexerTransactionsFilter): Promise<NFTClass[]>;
-    getNFTsCollection(contract: string, filter: IndexerTransactionsFilter): Promise<NFTClass[]>;
+    getNftsForAccount(address: string, filter: IndexerAccountNftsFilter): Promise<Collectible[]>;
+    getNftsForCollection(contract: string, filter: IndexerCollectionNftsFilter): Promise<Collectible[]>;
     trackAnalyticsEvent(params: Record<string, unknown>): void;
     getApy(): Promise<string>;
 }

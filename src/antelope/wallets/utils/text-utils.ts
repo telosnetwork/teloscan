@@ -37,12 +37,32 @@ export function truncateAddress(address: string): string {
  */
 export function getShapedNftName(name: string, id: string): string {
     let shapedName = name;
-    if (name.includes(id)) {
-        shapedName = name.replace(id, '');
+    const idAtTheEndRegex = new RegExp(` #?${id}$`);
+
+    if (name.match(idAtTheEndRegex)?.length) {
+        shapedName = name.replace(idAtTheEndRegex, '');
 
         if (shapedName[shapedName.length - 1] === '#') {
             shapedName = shapedName.slice(0, -1);
         }
     }
     return shapedName.trim();
+}
+
+/**
+ * Given a number, returns a string with the number abbreviated
+ * @param num - a number
+ * @returns {string}
+ * @example
+ * abbreviateNumber(navigator.language, 1000) // '1K'
+ * abbreviateNumber(navigator.language, 1200) // '1.2K'
+ */
+export function abbreviateNumber(language: string, num: number) {
+    const numberFormatter = new Intl.NumberFormat(language, {
+        maximumFractionDigits: 0,
+        maximumSignificantDigits: 4,
+        notation: 'compact',
+    });
+
+    return numberFormatter.format(num);
 }

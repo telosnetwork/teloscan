@@ -1,8 +1,7 @@
 import { usePlatformStore } from 'src/antelope';
 import { ethers } from 'ethers';
-import { AccountModel } from 'src/antelope/mocks';
 import { AntelopeError, TransactionResponse } from 'src/antelope/types';
-import { EVMAuthenticator } from 'src/antelope/wallets';
+import { AccountModel, EVMAuthenticator } from 'src/antelope/wallets';
 
 
 export async function subscribeForTransactionReceipt(account: AccountModel, response: TransactionResponse): Promise<{

@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 import { BigNumber } from 'ethers';
@@ -114,7 +115,7 @@ export function prettyPrintCurrency(
     displayCurrencyAsCode?: boolean,
     tokenDecimals?: number,
     trimZeroes?: boolean,
-): string {
+) {
     if (precision % 1 !== 0 || precision < 0) {
         throw new Error('Precision must be a positive integer or zero');
     }
@@ -129,7 +130,7 @@ export function prettyPrintCurrency(
     }
 
     const decimalSeparator = getDecimalSeparatorForLocale(locale);
-    const trailingZeroesRegex = new RegExp(`\\${decimalSeparator}?0+(\\D|$)`, 'g');
+    const trailingZeroesRegex = new RegExp(`\\${decimalSeparator}?0+(\D|$)`, 'g');
 
     const decimalOptions : Record<string, number | undefined> = {
         maximumFractionDigits: precision,
