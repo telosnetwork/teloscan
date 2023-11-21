@@ -1,4 +1,5 @@
-import { EvmABI } from 'src/antelope/wallets/utils/abi';
+// eslint-disable-next-line no-restricted-imports
+import { EvmABI } from '.';
 
 export const erc721Abi = [{
     'inputs': [{

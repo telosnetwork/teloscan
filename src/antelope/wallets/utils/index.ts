@@ -11,6 +11,7 @@ import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 const REVERT_FUNCTION_SELECTOR = '0x08c379a0';
 const REVERT_PANIC_SELECTOR = '0x4e487b71';
 
+export const PRICE_UPDATE_INTERVAL_IN_MIN = 30;
 export const WEI_PRECISION = 18;
 
 /**

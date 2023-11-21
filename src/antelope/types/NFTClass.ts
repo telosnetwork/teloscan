@@ -1,31 +1,62 @@
 /* eslint-disable max-len */
 // NFT interfaces ---------------
 
-import { IndexerNftContract, IndexerNftItemAttribute, IndexerNftItemResult } from 'src/antelope/types';
+import { AxiosInstance } from 'axios';
+import { Contract, ethers } from 'ethers';
+import {
+    AntelopeError,
+    GenericIndexerNft,
+    INVALID_METADATA,
+    IndexerNftContract,
+    IndexerNftItemAttribute,
+    IndexerNftMetadata,
+    IndexerTokenHoldersResponse,
+} from 'src/antelope/types';
+import {
+    CURRENT_CONTEXT,
+    EVMChainSettings,
+    useAccountStore,
+    useChainStore,
+    useContractStore,
+    useNftsStore,
+} from 'src/antelope/mocks';
+import {
+    IPFS_GATEWAY,
+    extractNftMetadata,
+} from 'src/antelope/wallets/utils/nft-utils';
 
 export interface NftAttribute {
     label: string;
     text: string;
 }
 
-// NFT which has been processed for display in the UI
-export interface ShapedNFT {
+interface NftPrecursorData {
     name: string;
     id: string;
-    description?: string;
-    ownerAddress: string;
-    contractAddress: string;
-    contractPrettyName?: string;
-    attributes: NftAttribute[];
-    imageSrcFull?: string; // if this is empty, the UI will display a generic image icon
-    imageSrcIcon?: string; // as a result of shaping, this will always have a value if imageSrcFull is defined
+    metadata: IndexerNftMetadata;
+    updated: number; // epoch
+    owner?: string; // ERC721 only
 
-    // only one of audioSrc or videoSrc should be present, not both
-    audioSrc?: string;
+    tokenUri?: string;
+    imageCache?: string; // url
+    minter?: string; // address
+    blockMinted?: number;
 
-    // during the shaping process, if there is a video but no image given in the metadata,
-    // the first frame of the video should be extracted and set as the imageSrcFull & imageSrcIcon
+    mediaType: NftSourceType;
+    imgSrc?: string;
     videoSrc?: string;
+    audioSrc?: string;
+}
+
+export type Collectible = Erc721Nft | Erc1155Nft;
+
+export interface Erc721NftPrecursorData extends NftPrecursorData {
+    owner: string;
+}
+
+export interface Erc1155NftPrecursorData extends NftPrecursorData {
+    owners: { [address: string]: number };
+    supply: number;
 }
 
 export type NftSourceType = 'image' | 'video' | 'audio' | 'unknown';
@@ -38,13 +69,137 @@ export const NFTSourceTypes: Record<string, NftSourceType> = {
 
 export type NftTokenInterface = 'ERC721' | 'ERC1155';
 
+// used as an intermediate type for constructing NFTs from indexer data
+export type NftRawData = { data: GenericIndexerNft, contract: NFTContractClass };
+
+
+export async function getErc721Owner(contract: Contract, tokenId: string): Promise<string> {
+    return await contract.ownerOf(tokenId);
+}
+
+export async function getErc1155OwnersFromIndexer(contractAddress: string, tokenId: string, indexer: AxiosInstance): Promise<{ [address: string]: number }> {
+    const holdersResponse = (await indexer.get(`/v1/token/${contractAddress}/holders?limit=10000&token_id=${tokenId}`)).data as IndexerTokenHoldersResponse;
+    const holders = holdersResponse.results;
+
+    return holders.reduce((acc, current) => {
+        acc[current.address] = +current.balance;
+        return acc;
+    }, {} as { [address: string]: number });
+}
+
+export async function getErc1155OwnersFromContract(ownerAddress: string, tokenId: string, contract: Contract): Promise<{ [address: string]: number }> {
+    // we create a reduced list of owners containing just the balance of the current user
+    // because we can't get all the owners from the contract (without a loop)
+    const _owners = await contract.balanceOf(ownerAddress, tokenId).then((balance: ethers.BigNumber) => {
+        const _balance = balance.toNumber();
+        const _owners: { [address: string]: number } = {};
+        _owners[ownerAddress] = _balance;
+        return _owners;
+    });
+    return _owners;
+}
+
+
+
+/**
+ * Construct an NFT from indexer data
+ * @param contract The contract this NFT belongs to
+ * @param indexerData The indexer data for this NFT
+ * @returns The constructed NFT
+ */
+export async function constructNft(
+    contract: NFTContractClass,
+    indexerData: GenericIndexerNft,
+    chainSettings: EVMChainSettings,
+    contractStore: ReturnType<typeof useContractStore>,
+    nftStore: ReturnType<typeof useNftsStore>,
+): Promise<Erc721Nft | Erc1155Nft> {
+    const network = chainSettings.getNetwork();
+
+    const isErc721 = contract.supportedInterfaces.includes('erc721');
+    const isErc1155 = contract.supportedInterfaces.includes('erc1155');
+
+    if (!isErc721 && !isErc1155) {
+        throw new AntelopeError('antelope.contracts.error_invalid_nft_contract_type');
+    }
+
+    const cachedNft = nftStore.__contracts[network]?.[contract.address]?.list.find(nft => nft.id === indexerData.tokenId);
+
+    if (cachedNft) {
+        await cachedNft.updateOwnerData();
+        return cachedNft;
+    }
+
+    try {
+        if (indexerData.metadata !== INVALID_METADATA) {
+            indexerData.metadata = typeof indexerData.metadata === 'string' ? JSON.parse(indexerData.metadata) : indexerData.metadata;
+        } else {
+            indexerData.metadata = {};
+        }
+    } catch (e) {
+        console.error('Error parsing metadata', `"${indexerData.metadata}"`, e);
+    }
+    if (!indexerData.metadata || typeof indexerData.metadata !== 'object') {
+        // we create a new metadata object with the actual string attributes of the item
+        const list = indexerData as unknown as { [key: string]: unknown };
+        indexerData.metadata =
+            Object.keys(indexerData)
+                .filter(k => typeof list[k] === 'string')
+                .reduce((obj, key) => {
+                    obj[key] = list[key] as string;
+                    return obj;
+                }, {} as { [key: string]: string });
+    }
+
+    indexerData.metadata.image = ((indexerData.metadata.image as string) ?? '').replace('ipfs://', IPFS_GATEWAY);
+
+    const { image, mediaType, mediaSource } = await extractNftMetadata(indexerData.imageCache ?? '', indexerData.tokenUri ?? '', indexerData.metadata ?? {});
+    const commonData: NftPrecursorData = {
+        name: (indexerData.metadata?.name ?? '') as string,
+        id: indexerData.tokenId,
+        metadata: indexerData.metadata,
+        minter: indexerData.minter,
+        tokenUri: indexerData.tokenUri,
+        imageCache: indexerData.imageCache,
+        blockMinted: indexerData.blockMinted,
+        updated: indexerData.updated,
+        mediaType,
+        imgSrc: image,
+        videoSrc: mediaType === NFTSourceTypes.VIDEO ? mediaSource : undefined,
+        audioSrc: mediaType === NFTSourceTypes.AUDIO ? mediaSource : undefined,
+        owner: indexerData.owner,
+    };
+
+    if (isErc721) {
+        const contractInstance = await (await contractStore.getContract(CURRENT_CONTEXT, contract.address, 'erc721'))?.getContractInstance();
+
+        if (!contractInstance) {
+            throw new AntelopeError('antelope.utils.error_contract_instance');
+        }
+
+        const owner = commonData.owner ?? await getErc721Owner(contractInstance, indexerData.tokenId);
+
+        return new Erc721Nft({
+            ...commonData,
+            owner,
+        }, contract);
+    }
+
+    const indexer = chainSettings.getIndexer();
+    const owners = await getErc1155OwnersFromIndexer(contract.address, indexerData.tokenId, indexer);
+
+    return new Erc1155Nft({
+        ...commonData,
+        owners,
+        supply: indexerData.supply as number,
+    }, contract);
+}
+
 // NFT classes ------------------
 
 export class NFTContractClass {
     indexer: IndexerNftContract;
-    constructor(
-        source: IndexerNftContract,
-    ) {
+    constructor(source: IndexerNftContract) {
         this.indexer = source;
     }
 
@@ -55,340 +210,140 @@ export class NFTContractClass {
     get name(): string | undefined {
         return this.indexer.calldata?.name;
     }
+
+    get supportedInterfaces() {
+        return this.indexer.supportedInterfaces?.map(iface => iface.toLowerCase()) ?? [];
+    }
 }
 
-export class NFTItemClass {
-    indexer: IndexerNftItemResult;
-    ready = true;
-    preview: string;
-    type: NftSourceType;
-    source: string | undefined;
-    contract: NFTContractClass;
+// use constructNft method to build an NFT from indexer data
+class NFT {
+    protected contract: NFTContractClass;
+
+    readonly name: string;
+    readonly id: string;
+    readonly metadata: IndexerNftMetadata;
+    readonly contractAddress: string; // address
+    readonly updated: number; // epoch
+    readonly attributes: NftAttribute[];
+    readonly mediaType: NftSourceType;
+
+    readonly contractPrettyName?: string;
+    readonly description?: string;
+    readonly tokenUri?: string;
+    readonly minter?: string; // address
+    readonly blockMinted?: number; // the block number when this NFT was minted
+    readonly imgSrc?: string;
+    readonly audioSrc?: string;
+    readonly videoSrc?: string;
+
+    readonly ownerDataLastFetched: number; // ms since epoch since the owner(s) was last updated
 
     constructor(
-        item: IndexerNftItemResult,
-        public _contract: NFTContractClass,
+        precursorData: NftPrecursorData,
+        contract: NFTContractClass,
     ) {
-        this.contract = _contract;
-        this.indexer = item;
-        const { preview, type, source } = this.extractMetadata();
-        this.preview = preview;
-        this.type = type as NftSourceType;
-        this.source = source;
-    }
+        this.contract = contract;
+        this.contractAddress = contract.address;
+        this.contractPrettyName = contract.name;
 
-    extractMetadata():  { preview:string, type:string, source:string | undefined } {
-        let type = NFTSourceTypes.IMAGE;
-        let preview = '';
-        let source: string | undefined = undefined;
+        this.name = precursorData.name;
+        this.id = precursorData.id;
+        this.metadata = precursorData.metadata;
+        this.minter = precursorData.minter;
+        this.tokenUri = precursorData.tokenUri;
+        this.blockMinted = precursorData.blockMinted;
+        this.updated = precursorData.updated;
+        this.description = precursorData.metadata?.description;
+        this.mediaType = precursorData.mediaType;
+        this.imgSrc = precursorData.imgSrc;
+        this.audioSrc = precursorData.audioSrc;
+        this.videoSrc = precursorData.videoSrc;
 
-        // We are going to test the imageCache URL to see if it is a valid URL
-        if (this.indexer.imageCache) {
+        this.ownerDataLastFetched = Date.now();
 
-            // first we create a regExp for the valid URL. e.g: "https://nfts.telos.net/40/0x552fd5743432eC2dAe222531e8b88bf7d2410FBc/344"
-            const regExp = new RegExp('^(https?:\\/\\/)?' + // protocol
-                '(nfts.telos.net\\/)' + // domain name
-                '(\\d+\\/)' + // chain id
-                '(0x[0-9a-fA-F]+\\/)' + // contract address
-                '(\\d+)$'); // token id
-
-            // then we test the imageCache URL against the regExp
-            const match = regExp.test(this.indexer.imageCache);
-            if (match) {
-                // we return the 1440.webp version of it
-                preview = this.indexer.imageCache.concat('/1440.webp');
-            }
-        }
-        // if there's an image in the metadata, we return that
-        if (!preview && this.indexer.metadata?.image) {
-            preview = this.indexer.metadata.image as string;
-        }
-
-        if (!preview && this.indexer.metadata) {
-            // this NFT is not a simple image and could be anything (including an image).
-            // We need to look at the metadata
-            const metadata = this.indexer.metadata as { [key: string]: string };
-            // we iterate over the metadata properties
-            for (const property in metadata) {
-                const value = metadata[property];
-                if (!value) {
-                    continue;
-                }
-                // if the value is a string and contains a valid url of a known media format, use it.
-                // image formats: .gif, .avif, .apng, .jpeg, .jpg, .jfif, .pjpeg, .pjp, .png, .svg, .webp
-                if (
-                    !preview &&  // if we already have a preview, we don't need to keep looking
-                    typeof value === 'string' &&
-                    value.match(/\.(gif|avif|apng|jpe?g|jfif|p?jpe?g|png|svg|webp)$/)
-                ) {
-                    preview = value;
-                }
-                // audio formats: .mp3, .wav, .aac, .webm
-                if (
-                    !source &&  // if we already have a source, we don't need to keep looking
-                    typeof value === 'string' &&
-                    value.match(/\.(mp3|wav|aac|webm)$/)
-                ) {
-                    type = NFTSourceTypes.AUDIO;
-                    source = value;
-                }
-                // video formats: .mp4, .webm, .ogg
-                if (
-                    !source &&  // if we already have a source, we don't need to keep looking
-                    typeof value === 'string' &&
-                    value.match(/\.(mp4|webm|ogg)$/)
-                ) {
-                    type = NFTSourceTypes.VIDEO;
-                    source = value;
-                }
-
-                const regex = /^data:(image|audio|video)\/\w+;base64,[\w+/=]+$/;
-
-                const match = value.match(regex);
-
-                if (match) {
-                    const contentType = match[1];
-
-                    if (contentType === 'image' && !preview) {
-                        preview = value;
-                    } else if (contentType === 'audio' && !source) {
-                        type = NFTSourceTypes.AUDIO;
-                        source = value;
-                    } else if (contentType === 'video' && !source) {
-                        type = NFTSourceTypes.VIDEO;
-                        source = value;
-                    }
-                }
-
-            }
-
-            // particular case of media format webm. We need to determine if it is a video or audio
-            if (source && source.match(/\.webm$/)) {
-                this.ready = false;
-
-                this.determineWebmType(source).then((_type) => {
-                    if (_type === NFTSourceTypes.VIDEO) {
-                        this.type = NFTSourceTypes.VIDEO;
-                        this.extractFirstFrameFromVideo(source as string).then((_preview) => {
-                            this.preview = _preview;
-                            this.ready = true;
-                            this.notifyWatchers();
-                        });
-                    } else {
-                        this.notifyWatchers();
-                    }
-                });
-            } else {
-                if (type === NFTSourceTypes.VIDEO) {
-                    this.ready = false;
-                    this.type = NFTSourceTypes.VIDEO;
-                    this.extractFirstFrameFromVideo(source as string).then((_preview) => {
-                        this.preview = _preview;
-                        this.ready = true;
-                        this.notifyWatchers();
-                    });
-                }
-            }
-        }
-
-        return  { preview, type, source };
-    }
-
-    async determineWebmType(source: string): Promise<string> {
-        return new Promise<string>((resolve, reject) => {
-            const video = document.createElement('video');
-
-            video.onloadedmetadata = function() {
-                if (video.videoWidth > 0 && video.videoHeight > 0) {
-                    resolve(NFTSourceTypes.VIDEO);
-                } else {
-                    resolve(NFTSourceTypes.AUDIO);
-                }
-            };
-
-            video.onerror = function(e) {
-                reject({ error: e, source });
-            };
-
-            video.src = source;
-        });
-    }
-
-    async extractFirstFrameFromVideo(source: string): Promise<string> {
-        return this.extractFrameFromVideo(source, 0);
-    }
-
-    async extractFrameFromVideo(source: string, time: number): Promise<string> {
-        // this function seams not to wer in most of the cases. It returns a transparent image
-        return new Promise<string>((resolve, reject) => {
-            const video = document.createElement('video');
-
-            video.onloadedmetadata = function() {
-                video.currentTime = time;
-
-                const canvas = document.createElement('canvas');
-
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-
-                const ctx = canvas.getContext('2d');
-                if (ctx) {
-                    // let's draw the video in the canvas
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                    // now we test the color of the pixel in the middle of the canvas
-                    const pixelData = ctx.getImageData((canvas.width / 2), (canvas.height / 2), 1, 1).data;
-                    if (pixelData[3] === 0) {
-                        // if it is transparent, it means that we don't have a preview for this video
-                        resolve('');
-                    } else {
-                        // if the pixel is not transparent, we return the canvas as a dataURL
-                        resolve(canvas.toDataURL());
-                    }
-                } else {
-                    reject({ error: 'no context', source });
-                }
-            };
-
-            video.onerror = function(e) {
-                reject({ error: e, source });
-            };
-
-            video.src = source;
-            video.setAttribute('crossOrigin', 'anonymous');
-            video.preload = 'metadata';
-            video.load();
-        });
-    }
-
-
-    get name(): string {
-        return (this.indexer.metadata?.name || '') as string;
-    }
-
-    get tokenId(): string {
-        return this.indexer.tokenId;
-    }
-
-    get description(): string | undefined {
-        return (this.indexer.metadata?.description) as string | undefined;
-    }
-
-    get owner(): string {
-        return this.indexer.owner || this.indexer.minter;
-    }
-
-    get attributes(): NftAttribute[] {
-        return ((this.indexer.metadata?.attributes || []) as IndexerNftItemAttribute[]).map(attr => ({
+        this.attributes = ((precursorData.metadata?.attributes || []) as IndexerNftItemAttribute[]).map(attr => ({
             label: attr.trait_type,
             text: attr.value,
         }));
     }
 
-    get image(): string {
-        return this.preview;
-    }
-
-    get icon(): string | undefined {
-        return this.preview;
-    }
-
-    watchers: (() => void)[] = [];
-    watch(cb: () => void): void {
-        this.watchers.push(cb);
-    }
-
-    notifyWatchers(): void {
-        this.watchers.forEach(w => w());
+    // this key property is useful when used as a key for the v-for directive
+    get key(): string {
+        return `nft-${this.contractAddress}-${this.id}`;
     }
 }
 
-export class NFTClass implements ShapedNFT {
-
-    item: NFTItemClass;
+export class Erc721Nft extends NFT {
+    private _owner: string;
 
     constructor(
-        item: NFTItemClass,
+        precursorData: Erc721NftPrecursorData,
+        contract: NFTContractClass,
     ) {
-        this.item = item;
+        super(precursorData, contract);
+        this._owner = precursorData.owner;
     }
 
-    // API --
-
-    // ShapedNFT support --
-    get name(): string {
-        return this.item.name;
+    set owner(owner: string) {
+        this._owner = owner;
     }
 
-    get id(): string {
-        return this.item.tokenId;
+    get owner(): string {
+        return this._owner;
     }
 
-    get description(): string | undefined {
-        return this.item.description;
-    }
+    async updateOwnerData(): Promise<void> {
+        const contract = await useContractStore().getContract(CURRENT_CONTEXT, this.contractAddress);
+        const contractInstance = await contract?.getContractInstance();
 
-    get ownerAddress(): string {
-        return this.item.owner;
-    }
-
-    get contractAddress(): string {
-        return this.item.contract.address;
-    }
-
-    get contractPrettyName(): string | undefined {
-        return this.item.contract.name;
-    }
-
-    get attributes(): NftAttribute[] {
-        return this.item.attributes;
-    }
-
-    get imageSrcFull(): string | undefined {
-        return this.item.image;
-    }
-
-    get imageSrcIcon(): string | undefined {
-        return this.item.icon;
-    }
-
-    get audioSrc(): string | undefined {
-        return this.item.type === NFTSourceTypes.AUDIO ? this.item.source : undefined;
-    }
-
-    get videoSrc(): string | undefined {
-        return this.item.type === NFTSourceTypes.VIDEO ? this.item.source : undefined;
-    }
-
-    getShapedNFT(): ShapedNFT {
-        return {
-            name: this.name,
-            id: this.id,
-            description: this.description,
-            ownerAddress: this.ownerAddress,
-            contractAddress: this.contractAddress,
-            contractPrettyName: this.contractPrettyName,
-            attributes: this.attributes,
-            imageSrcFull: this.imageSrcFull,
-            imageSrcIcon: this.imageSrcIcon,
-            audioSrc: this.audioSrc,
-            videoSrc: this.videoSrc,
-        };
-    }
-
-    // this jey property is very usefull to provide a unique key to the v-for directive
-    // because it is based on the content of the shapedNFT object
-    get key(): string {
-        const json = JSON.stringify(this.getShapedNFT());
-        let counter = 0;
-        for (let i = 0; i < json.length; i++) {
-            counter += json.charCodeAt(i);
+        if (!contractInstance) {
+            throw new AntelopeError('antelope.utils.error_contract_instance');
         }
-        return counter.toString();
-    }
 
-    watch(cb: () => void): void {
-        this.item.watch(cb);
+        this._owner = await getErc721Owner(contractInstance, this.id);
     }
 }
 
+export class Erc1155Nft extends NFT {
+    private _owners: { [address: string]: number };
+
+    readonly supply: number;
+
+    constructor(
+        precursorData: Erc1155NftPrecursorData,
+        contract: NFTContractClass,
+    ) {
+        super(precursorData, contract);
+        this._owners = precursorData.owners;
+        this.supply = precursorData.supply;
+    }
+
+    set owners(owners: { [address: string]: number }) {
+        this._owners = owners;
+    }
+
+    get owners(): { [address: string]: number } {
+        return this._owners;
+    }
+
+
+    async updateOwnerData(): Promise<void> {
+        const chainSettings = (useChainStore().currentChain.settings as EVMChainSettings);
+        if (chainSettings.isIndexerHealthy()) {
+            const indexer = chainSettings.getIndexer();
+            this._owners = await getErc1155OwnersFromIndexer(this.contractAddress, this.id, indexer);
+        } else {
+            const account = useAccountStore().getAccount(CURRENT_CONTEXT);
+            const contract = await useContractStore().getContract(CURRENT_CONTEXT, this.contractAddress);
+            const contractInstance = await contract?.getContractInstance();
+
+            if (!contractInstance) {
+                throw new AntelopeError('antelope.utils.error_contract_instance');
+            }
+
+            const updated_owners = await getErc1155OwnersFromContract(account.account, this.id, contractInstance);
+            this._owners = { ...this._owners, ...updated_owners };
+        }
+    }
+}

@@ -4,6 +4,7 @@
 
 import { RpcEndpoint } from 'universal-authenticator-library';
 import { NativeCurrencyAddress, TokenClass } from 'src/antelope/types';
+import { AxiosInstance } from 'axios';
 
 export interface EVMChainSettings {
     getStakedSystemToken(): TokenClass;
@@ -18,6 +19,8 @@ export interface EVMChainSettings {
     getExplorerUrl: () => string;
     getSmallLogoPath: () => string;
     getLargeLogoPath: () => string;
+    isIndexerHealthy: () => boolean;
+    getIndexer: () => AxiosInstance;
 }
 
 const settings = {
@@ -61,6 +64,8 @@ const settings = {
     getExplorerUrl: () => window.location.origin,
     getSmallLogoPath: () => 'small-icon-url',
     getLargeLogoPath: () => 'large-icon-url',
+    isIndexerHealthy: () => false,
+    getIndexer: () => ({}) as AxiosInstance,
 } as EVMChainSettings;
 
 const currentChain = {
