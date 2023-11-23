@@ -385,6 +385,7 @@ export default {
         neutral_message_wrapping: 'Convirtiendo <b>{quantity} {symbol}</b> a ERC20',
         neutral_message_unwrapping: 'Restaurando <b>{quantity} {symbol}</b>',
         neutral_message_withdrawing: 'Retirando <b>{quantity} {symbol}</b>',
+        dont_show_message_again: 'No volver a mostrar este mensaje',
         error_message_sending: 'Se produjo un error al enviar <b>{quantity}</b> a <b>{address}</b>',
         error_message_staking: 'Se produjo un error al depositar <b>{quantity} {symbol}</b>',
         error_message_unstaking: 'Se produjo un error al preparar retiro <b>{quantity} {symbol}</b>',
@@ -402,5 +403,10 @@ export default {
             error_unpredictable_gas_limit: 'No se pudo estimar el límite de gas para esta transacción',
             error_transaction_canceled: 'Has cancelado la acción',
         },
+    },
+    temporal: {
+        telos_cloud_discontinued_title: 'Importante',
+        telos_cloud_discontinued_message_title: 'Telos Cloud Wallet será discontinuado',
+        telos_cloud_discontinued_message_body: 'Es crucial que transfiera sus activos desde sus cuentas de Telos Cloud Wallet a otra cuenta antes del 31 de diciembre.',
     },
 };

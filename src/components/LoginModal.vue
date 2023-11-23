@@ -22,6 +22,7 @@ import { tlos } from 'src/lib/logos';
 import { CURRENT_CONTEXT, getAntelope, useAccountStore, useChainStore } from 'src/antelope/mocks';
 import { Authenticator } from 'universal-authenticator-library';
 import InlineSvg from 'vue-inline-svg';
+import { isTodayBeforeTelosCloudDown } from 'src/App.vue';
 
 export default defineComponent({
     name: 'LoginModal',
@@ -55,6 +56,9 @@ export default defineComponent({
         },
         darkModeEnabled(): boolean {
             return localStorage.getItem('darkModeEnabled') === 'true';
+        },
+        isTodayBeforeTelosCloudDown() {
+            return isTodayBeforeTelosCloudDown;
         },
     },
     async mounted() {
@@ -381,6 +385,7 @@ export default defineComponent({
                         <span> Brave Wallet </span>
                     </q-card>
                     <q-card
+                        v-if="isTodayBeforeTelosCloudDown"
                         class="c-login-modal__image-container"
                         @click="connectTelosCloud()"
                     >

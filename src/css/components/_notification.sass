@@ -3,6 +3,7 @@
 $notify-success: #255B00
 $notify-error: #880000
 $notify-neutral: #4D4D4D
+$notify-info: #008888
 
 =regular
   font-family: 'silka-regular', 'Roboto', sans-serif
@@ -41,6 +42,8 @@ $notify-neutral: #4D4D4D
                     transform: scale(0.5)
     // container will say if this notification is success or error and set the color
     &__container
+        --c-notify__checkbox--display: none
+        --c-notify__message--align: center
         &--success
             --notify-color: #{$notify-success}
             --c-notify__title--display: flex
@@ -50,6 +53,12 @@ $notify-neutral: #4D4D4D
             --notify-color: #{$notify-error}
             --c-notify__title--display: flex
             --c-notify__message--padding: 0 2rem
+        &--info
+            --notify-color: #{$notify-info}
+            --c-notify__title--display: flex
+            --c-notify__message--padding: 0 2rem
+            --c-notify__checkbox--display: block
+            --c-notify__message--align: left
         &--neutral
             --notify-color: #{$notify-neutral}
             --c-notify__title--display: none
@@ -57,6 +66,14 @@ $notify-neutral: #4D4D4D
             --c-notify__header--animation: consuming-bar 5s linear forwards
         display: flex
         flex-direction: column
+    &__checkbox-container
+        display: var(--c-notify__checkbox--display)
+        margin: 2rem 0 0 2rem
+        input
+            margin-right: 0.5rem
+        span
+            color: var(--text-color, #000)
+            @include text--paragraph
     &__header
         height: 8px
         background-color: var(--notify-color)
@@ -80,9 +97,12 @@ $notify-neutral: #4D4D4D
     &__message
         color: var(--text-color, #000)
         padding: var(--c-notify__message--padding)
-        text-align: center
+        text-align: var(--c-notify__message--align, center)
         span
             @include text--paragraph
+        &--subtitle
+            font-weight: bold
+            margin-bottom: 1rem
     &__action-btn
         color: var(--text-color, #000)
         &--hide

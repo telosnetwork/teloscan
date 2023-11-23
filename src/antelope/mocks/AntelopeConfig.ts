@@ -6,6 +6,12 @@ import { AntelopeError, AntelopeErrorPayload } from 'src/antelope/types';
 import { App } from 'vue';
 import { Authenticator } from 'universal-authenticator-library';
 
+export interface ComplexMessage {
+    tag: string,
+    class: string,
+    text: string,
+}
+
 export class AntelopeWallets {
     private authenticators: Map<string, EVMAuthenticator> = new Map();
     init() {
@@ -52,6 +58,8 @@ export class AntelopeConfig {
     private __notify_failure_action_handler: (message: string, payload?: AntelopeErrorPayload) => void = alert;
     private __notify_disconnected_handler: () => void = alert;
     private __notify_neutral_message_handler: (message: string) => (() => void) = () => (() => void 0);
+    private __notify_remember_info_handler: (title: string, message: string | ComplexMessage[],
+        payload: string, key: string) => (() => void) = () => (() => void 0);
 
     // ual authenticators list getter --
     private __authenticators_getter: () => Authenticator[] = () => [];
@@ -175,6 +183,10 @@ export class AntelopeConfig {
         return this.__notify_neutral_message_handler;
     }
 
+    get notifyRememberInfoHandler() {
+        return this.__notify_remember_info_handler;
+    }
+
     get authenticatorsGetter() {
         return this.__authenticators_getter;
     }
@@ -239,6 +251,15 @@ export class AntelopeConfig {
 
     public setNotifyNeutralMessageHandler(handler: (message: string) => (() => void)) {
         this.__notify_neutral_message_handler = handler;
+    }
+
+    public setNotifyRememberInfoHandler(handler: (
+        title: string,
+        message: string | ComplexMessage[],
+        payload: string,
+        key: string,
+    ) => (() => void)) {
+        this.__notify_remember_info_handler = handler;
     }
 
     // setting authenticators getter --
