@@ -434,6 +434,7 @@ export default {
         neutral_message_wrapping: 'Wrapping <b>{quantity} {symbol}</b>',
         neutral_message_unwrapping: 'Unwrapping <b>{quantity} {symbol}</b>',
         neutral_message_withdrawing: 'Withdrawing <b>{quantity} {symbol}</b>',
+        dont_show_message_again: 'Don\'t show me this message again',
         error_message_sending: 'An error occurred while sending <b>{quantity}</b> to <b>{address}</b>',
         error_message_staking: 'An error occurred while staking <b>{quantity} {symbol}</b>',
         error_message_unstaking: 'An error occurred while unstaking <b>{quantity} {symbol}</b>',
@@ -529,5 +530,10 @@ export default {
             minutes: 'minutes',
             seconds: 'seconds',
         },
+    },
+    temporal: {
+        telos_cloud_discontinued_title: 'Important',
+        telos_cloud_discontinued_message_title: 'Telos Cloud Wallet will be discontinued',
+        telos_cloud_discontinued_message_body: 'It is crucial for you to transfer your assets out of your Telos Cloud Wallet Accounts before December 31st.',
     },
 };

@@ -385,6 +385,7 @@ export default {
         neutral_message_wrapping: 'Conversion de <b>{quantity} {symbol}</b> en ERC20',
         neutral_message_unwrapping: 'Restauration de <b>{quantity} {symbol}</b>',
         neutral_message_withdrawing: 'Retrait de <b>{quantity} {symbol}</b>',
+        dont_show_message_again: 'Ne plus afficher ce message',
         error_message_sending: 'Une erreur s\'est produite lors de l\'envoi de <b>{quantity}</b> à <b>{address}</b>',
         error_message_staking: 'Une erreur s\'est produite lors du dépôt de <b>{quantity} {symbol}</b>',
         error_message_unstaking: 'Une erreur s\'est produite lors de la préparation du retrait de <b>{quantity} {symbol}</b>',
@@ -402,5 +403,10 @@ export default {
             error_unpredictable_gas_limit: 'Impossible d\'estimer la limite de gaz pour cette transaction',
             error_transaction_canceled: 'Vous avez annulé l\'action',
         },
+    },
+    temporal: {
+        telos_cloud_discontinued_title: 'Importante',
+        telos_cloud_discontinued_message_title: 'Telos Cloud Wallet sera abandonné',
+        telos_cloud_discontinued_message_body: 'Il est crucial pour vous de transférer vos actifs hors de vos comptes Telos Cloud Wallet avant le 31 décembre.',
     },
 };
