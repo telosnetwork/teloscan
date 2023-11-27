@@ -81,7 +81,7 @@ const html = `
         </div>
         <div class="c-notify__checkbox-container c-notify__checkbox--{remember}">
             <input type="checkbox" id="c-notify__checkbox--{remember}" class="c-notify__checkbox" />
-            <span class="c-notify__label">{remember-my-choice}</span>
+            <label for="c-notify__checkbox--{remember}" class="c-notify__label">{remember-my-choice}</label>
         </div>
     </div>
 `;
