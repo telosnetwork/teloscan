@@ -2868,10 +2868,10 @@
     "@stablelib/random" "^1.0.2"
     "@stablelib/wipe" "^1.0.1"
 
-"@telosnetwork/telosevm-js@^0.3.1":
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/@telosnetwork/telosevm-js/-/telosevm-js-0.3.1.tgz#f6386e7977420fcfb94e55c8a992636c3e30ee32"
-  integrity sha512-1kwYkQ4ONT7HqjCoUJS0Md/m8PE9CHC3JlRHygaYTy0hoHw9rfhoOKvn0/x7iAt3VehdKpMR6C2dg6CmF8AwVQ==
+"@telosnetwork/telosevm-js@^0.2.6":
+  version "0.2.8"
+  resolved "https://registry.yarnpkg.com/@telosnetwork/telosevm-js/-/telosevm-js-0.2.8.tgz#23fd27b912a36dfcdc6ebfd0b191441a50835fe3"
+  integrity sha512-mtW2QxFZyvrNb5QFdY2eLRV/+dfgrsukOyFp/dSRVmid/wFo+3UYe4BE6RgfJULj7ORwo+X/xLUE+EcK3mT2+Q==
   dependencies:
     "@ethereumjs/common" "^2.3.1"
     "@ethereumjs/tx" "^3.2.1"
