@@ -21,7 +21,7 @@ export default {
                 return this.nativeAccount;
             }
 
-            return `0x...${this.address.slice(38, 42)}`;
+            return `${this.address.slice(0, 6)}...${this.address.slice(38, 42)}`;
         },
     },
     methods: {
