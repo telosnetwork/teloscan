@@ -5,6 +5,5 @@ export * from 'src/antelope/mocks/ChainStore';
 export * from 'src/antelope/mocks/ContractStore';
 export * from 'src/antelope/mocks/EVMStore';
 export * from 'src/antelope/mocks/PlatformStore';
-export * from 'src/antelope/mocks/NftsStore';
 
 export const CURRENT_CONTEXT = 'current';

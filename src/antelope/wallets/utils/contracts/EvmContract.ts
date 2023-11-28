@@ -139,15 +139,8 @@ export default class EvmContract {
             throw new AntelopeError('antelope.utils.error_contract_instance');
         }
         const signer = await this._manager?.getSigner();
-        let provider;
 
-        if (!signer) {
-            provider = await this._manager?.getWeb3Provider();
-        }
-
-        const contract = new ethers.Contract(this.address, this.abi, signer ?? provider ?? undefined);
-
-        return contract;
+        return new ethers.Contract(this.address, this.abi, signer);
     }
 
     async parseTransaction(data:string) {

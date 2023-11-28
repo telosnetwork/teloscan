@@ -42,7 +42,7 @@ const hyperion = axios.create({
     baseURL: process.env.NETWORK_EVM_ENDPOINT,
 });
 
-export const contractManager = new ContractManager(hyperion);
+const contractManager = new ContractManager(hyperion);
 contractManager.init();
 
 export default boot(({ app, store }) => {

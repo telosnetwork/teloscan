@@ -32,6 +32,12 @@ import {
     EvmFunctionParam,
     TokenClass,
     addressString,
+    erc20Abi,
+    escrowAbiWithdraw,
+    stlosAbiDeposit,
+    stlosAbiWithdraw,
+    wtlosAbiDeposit,
+    wtlosAbiWithdraw,
 } from 'src/antelope/types';
 import { EVMAuthenticator } from 'src/antelope/wallets';
 import { RpcEndpoint } from 'universal-authenticator-library';
@@ -57,6 +63,8 @@ export class WalletConnectAuth extends EVMAuthenticator {
         this.options = options;
         this.wagmiClient = wagmiClient;
         this._debouncedPrepareTokenConfigResolver = null;
+
+        console.log('this.options, this.wagmiClient', this.options, this.wagmiClient);
 
         this.web3Modal = new Web3Modal(this.options, this.wagmiClient);
     }
@@ -162,7 +170,7 @@ export class WalletConnectAuth extends EVMAuthenticator {
             );
             return this.walletConnectLogin(network);
         } else {
-            return new Promise(async (resolve) => {
+            return new Promise((resolve) => {
                 this.trace('login', 'web3Modal.openModal()');
 
                 this.unsubscribeWeb3Modal = this.web3Modal.subscribeModal(async (newState: {open:boolean}) => {
@@ -242,74 +250,6 @@ export class WalletConnectAuth extends EVMAuthenticator {
         return BigNumber.from(balance);
     }
 
-    async isConnectedTo(chainId: string): Promise<boolean> {
-        this.trace('isConnectedTo', chainId);
-
-        if (usePlatformStore().isMobile) {
-            this.trace('isConnectedTo', 'mobile -> true');
-            return true;
-        }
-
-        return new Promise(async (resolve) => {
-            const web3Provider = await this.web3Provider();
-            const correct = +web3Provider.network.chainId === +chainId;
-            this.trace('isConnectedTo', chainId, correct ? 'OK!' : 'not connected');
-            resolve(correct);
-        });
-    }
-
-    async externalProvider(): Promise<ethers.providers.ExternalProvider> {
-        this.trace('externalProvider');
-        return new Promise(async (resolve) => {
-            const injected = new InjectedConnector();
-            const provider = toRaw(await injected.getProvider());
-            if (!provider) {
-                throw new AntelopeError('antelope.evm.error_no_provider');
-            }
-            resolve(provider as unknown as ethers.providers.ExternalProvider);
-        });
-    }
-
-    async web3Provider(): Promise<ethers.providers.Web3Provider> {
-        let web3Provider = null;
-        if (usePlatformStore().isMobile || this.usingQR) {
-            const p:RpcEndpoint = this.getChainSettings().getRPCEndpoint();
-            const url = `${p.protocol}://${p.host}:${p.port}${p.path ?? ''}`;
-            web3Provider = new ethers.providers.JsonRpcProvider(url);
-            this.trace('web3Provider', 'JsonRpcProvider ->', web3Provider);
-
-            // This is a hack to make the QR code work.
-            // this code is going to be used in EVMAuthenticator.ts login method
-            const listAccounts: () => Promise<`0x${string}`[]> = async () => [getAccount().address as addressString];
-            web3Provider.listAccounts = listAccounts;
-
-        } else {
-            web3Provider = new ethers.providers.Web3Provider(await this.externalProvider());
-            this.trace('web3Provider', 'Web3Provider ->', web3Provider);
-        }
-        await web3Provider.ready;
-        return web3Provider as ethers.providers.Web3Provider;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handleCatchError(error: any): AntelopeError {
-        this.trace('handleCatchError', error);
-        if (error.message.includes('User rejected the')) {
-            return new AntelopeError('antelope.evm.error_transaction_canceled');
-        } else {
-            return new AntelopeError('antelope.evm.error_send_transaction', { error });
-        }
-    }
-
-    async sendSystemToken(to: string, amount: ethers.BigNumber): Promise<SendTransactionResult> {
-        this.trace('sendSystemToken', to, amount.toString());
-        return sendTransaction(this.sendConfig as PrepareSendTransactionResult).then(
-            (transaction: SendTransactionResult) => transaction,
-        ).catch((error) => {
-            throw this.handleCatchError(error);
-        });
-    }
-
     async signCustomTransaction(contract: string, abi: EvmABI, parameters: EvmFunctionParam[], value?: BigNumber): Promise<WriteContractResult> {
         this.trace('signCustomTransaction', contract, [abi], parameters, value?.toString());
 
@@ -350,6 +290,31 @@ export class WalletConnectAuth extends EVMAuthenticator {
         return await writeContract(sendConfig);
     }
 
+
+    async transferTokens(token: TokenClass, amount: BigNumber, to: addressString): Promise<SendTransactionResult | WriteContractResult> {
+        this.trace('transferTokens', token, amount, to);
+        if (!this.sendConfig) {
+            throw new AntelopeError(token.isSystem ?
+                'antelope.wallets.error_system_token_transfer_config' :
+                'antelope.wallets.error_token_transfer_config',
+            );
+        } else {
+            if (token.isSystem) {
+                return await sendTransaction(this.sendConfig as PrepareSendTransactionResult);
+            } else {
+                // prepare variables
+                const value = amount.toHexString();
+                const transferAbi = erc20Abi.filter(abi => abi.name === 'transfer');
+
+                return this.signCustomTransaction(
+                    token.address,
+                    transferAbi,
+                    [to, value],
+                );
+            }
+        }
+    }
+
     readyForTransfer(): boolean {
         return !!this.sendConfig;
     }
@@ -380,7 +345,6 @@ export class WalletConnectAuth extends EVMAuthenticator {
         // Return the promise
         return promise;
     }
-
     async _prepareTokenForTransfer(token: TokenClass | null, amount: BigNumber, to: string) {
         this.trace('prepareTokenForTransfer', [token], amount, to);
         if (token) {
@@ -410,6 +374,136 @@ export class WalletConnectAuth extends EVMAuthenticator {
     async prepareTokenForTransfer(token: TokenClass | null, amount: BigNumber, to: string): Promise<void> {
         this.sendConfig = null;
         await this._debouncedPrepareTokenConfig(token, amount, to);
+    }
+
+    async wrapSystemToken(amount: BigNumber): Promise<WriteContractResult> {
+        this.trace('wrapSystemToken', amount);
+
+        // prepare variables
+        const chainSettings = this.getChainSettings();
+        const wrappedSystemTokenContractAddress = chainSettings.getWrappedSystemToken().address as addressString;
+
+        return this.signCustomTransaction(
+            wrappedSystemTokenContractAddress,
+            wtlosAbiDeposit,
+            [],
+            amount,
+        );
+    }
+
+    async unwrapSystemToken(amount: BigNumber): Promise<WriteContractResult> {
+        this.trace('unwrapSystemToken', amount);
+
+        // prepare variables
+        const chainSettings = this.getChainSettings();
+        const wrappedSystemTokenContractAddress = chainSettings.getWrappedSystemToken().address as addressString;
+
+        return this.signCustomTransaction(
+            wrappedSystemTokenContractAddress,
+            wtlosAbiWithdraw,
+            [amount.toString()],
+        );
+    }
+
+    async stakeSystemTokens(amount: BigNumber): Promise<WriteContractResult> {
+        this.trace('stakeSystemTokens', amount);
+
+        // prepare variables
+        const chainSettings = this.getChainSettings();
+        const stakedSystemTokenContractAddress = chainSettings.getStakedSystemToken().address as addressString;
+
+        return this.signCustomTransaction(
+            stakedSystemTokenContractAddress,
+            stlosAbiDeposit,
+            [],
+            amount,
+        );
+    }
+
+    async unstakeSystemTokens(amount: BigNumber): Promise<WriteContractResult> {
+        this.trace('unstakeSystemTokens', amount);
+
+        // prepare variables
+        const chainSettings = this.getChainSettings();
+        const stakedSystemTokenContractAddress = chainSettings.getStakedSystemToken().address as addressString;
+        const address = this.getAccountAddress();
+
+        return this.signCustomTransaction(
+            stakedSystemTokenContractAddress,
+            stlosAbiWithdraw,
+            [amount.toString(), address, address],
+        );
+    }
+
+    async withdrawUnstakedTokens(): Promise<WriteContractResult> {
+        this.trace('withdrawUnstakedTokens');
+
+        // prepare variables
+        const chainSettings = this.getChainSettings();
+        const escrowContractAddress = chainSettings.getEscrowContractAddress();
+
+        return this.signCustomTransaction(
+            escrowContractAddress,
+            escrowAbiWithdraw,
+            [],
+        );
+    }
+
+    async isConnectedTo(chainId: string): Promise<boolean> {
+        this.trace('isConnectedTo', chainId);
+
+        if (usePlatformStore().isMobile) {
+            this.trace('isConnectedTo', 'mobile -> true');
+            return true;
+        }
+
+        return new Promise(async (resolve) => {
+            const web3Provider = await this.web3Provider();
+            const correct = +web3Provider.network.chainId === +chainId;
+            this.trace('isConnectedTo', chainId, correct ? 'OK!' : 'not connected');
+            resolve(correct);
+        });
+    }
+
+    async web3Provider(): Promise<ethers.providers.Web3Provider> {
+        let web3Provider = null;
+        if (usePlatformStore().isMobile || this.usingQR) {
+            const p:RpcEndpoint = this.getChainSettings().getRPCEndpoint();
+            const url = `${p.protocol}://${p.host}:${p.port}${p.path ?? ''}`;
+            web3Provider = new ethers.providers.JsonRpcProvider(url);
+            this.trace('web3Provider', 'JsonRpcProvider ->', web3Provider);
+
+            // This is a hack to make the QR code work.
+            // this code is going to be used in EVMAuthenticator.ts login method
+            const listAccounts: () => Promise<`0x${string}`[]> = async () => [getAccount().address as addressString];
+            web3Provider.listAccounts = listAccounts;
+
+        } else {
+            web3Provider = new ethers.providers.Web3Provider(await this.externalProvider());
+            this.trace('web3Provider', 'Web3Provider ->', web3Provider);
+        }
+        await web3Provider.ready;
+        return web3Provider as ethers.providers.Web3Provider;
+    }
+
+    async getSigner(): Promise<ethers.Signer> {
+        this.trace('getSigner');
+        const web3Provider = await this.web3Provider();
+        const signer = web3Provider.getSigner();
+        this.trace('getSigner', 'signer ->', signer);
+        return signer;
+    }
+
+    async externalProvider(): Promise<ethers.providers.ExternalProvider> {
+        this.trace('externalProvider');
+        return new Promise(async (resolve) => {
+            const injected = new InjectedConnector();
+            const provider = toRaw(await injected.getProvider());
+            if (!provider) {
+                throw new AntelopeError('antelope.evm.error_no_provider');
+            }
+            resolve(provider as unknown as ethers.providers.ExternalProvider);
+        });
     }
 
     async ensureCorrectChain(): Promise<ethers.providers.Web3Provider> {

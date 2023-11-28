@@ -16,7 +16,7 @@ export interface EvmContractConstructorData {
 }
 
 export interface EvmContractManagerI {
-    getSigner: () => Promise<ethers.Signer | null>;
+    getSigner: () => Promise<ethers.Signer>;
     getWeb3Provider: () => Promise<ethers.providers.Web3Provider>;
     getFunctionIface: (hash:string) => Promise<ethers.utils.Interface | null>;
     getEventIface: (hash:string) => Promise<ethers.utils.Interface | null>;
@@ -100,4 +100,4 @@ export interface EvmContractFactoryData {
     manager?: EvmContractManagerI;
 }
 
-export type EvmFunctionParam = string | number | boolean;
+export type EvmFunctionParam = string | number | boolean | ethers.BigNumber;

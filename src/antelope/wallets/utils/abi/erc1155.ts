@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-restricted-imports
-import { EvmABI } from '.';
+import { EvmABI } from 'src/antelope/wallets/utils/abi';
 
 export const erc1155Abi = [{
     'anonymous': false,
