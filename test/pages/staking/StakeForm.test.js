@@ -40,6 +40,9 @@ jest.mock('src/antelope/mocks', () => ({
             }),
         },
     }),
+    createTraceFunction: jest.fn().mockReturnValue(() => {
+        // do nothing
+    }),
 }));
 
 
