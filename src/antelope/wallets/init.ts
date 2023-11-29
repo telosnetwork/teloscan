@@ -87,11 +87,5 @@ export function initAntelope(app: App) {
     ant.wallets.addEVMAuthenticator(new SafePalAuth());
     ant.wallets.addEVMAuthenticator(new BraveAuth());
 
-    // FIXME: remove this code
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).antelope = ant;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).ant = ant;
-
 }
 
