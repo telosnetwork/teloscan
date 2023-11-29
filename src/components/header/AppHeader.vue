@@ -8,7 +8,7 @@ import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import LoginModal from 'components/LoginModal.vue';
 import LoginStatus from 'components/header/LoginStatus.vue';
 import { RouteLocationRaw } from 'vue-router';
-import { useAccountStore } from 'src/antelope';
+import { getAntelope, useAccountStore } from 'src/antelope';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -73,6 +73,13 @@ export default defineComponent({
             }
         },
         logout() {
+            useAccountStore().logout();
+        },
+    },
+    async mounted() {
+
+        // On login we must set the address and record the provider
+        getAntelope().events.onLoggedOut.subscribe(() => {
             const loginData = localStorage.getItem('loginData');
             if (this.isNative) {
                 if (!loginData) {
@@ -83,11 +90,10 @@ export default defineComponent({
                 const wallet = this.$ual.getAuthenticators().availableAuthenticators.find(a => a.getName() === loginObj.provider);
                 wallet?.logout();
             }
-            useAccountStore().logout();
             this.setLogin({});
             localStorage.removeItem('loginData');
             this.$providerManager.setProvider(null);
-        },
+        });
     },
 });
 </script>
