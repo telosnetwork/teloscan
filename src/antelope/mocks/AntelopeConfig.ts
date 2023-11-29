@@ -5,6 +5,8 @@ import { EVMAuthenticator } from 'src/antelope/wallets/authenticators/EVMAuthent
 import { AntelopeError, AntelopeErrorPayload } from 'src/antelope/types';
 import { App } from 'vue';
 import { Authenticator } from 'universal-authenticator-library';
+import { Subject } from 'rxjs';
+import { AccountModel } from 'src/antelope/mocks/AccountStore';
 
 export interface ComplexMessage {
     tag: string,
@@ -286,9 +288,14 @@ export class AntelopeConfig {
 
 const config = new AntelopeConfig();
 const wallets = new AntelopeWallets();
+const events = {
+    onLoggedIn: new Subject<AccountModel>(),
+    onLoggedOut: new Subject<void>(),
+};
 const Antelope = {
     config,
     wallets,
+    events,
 };
 
 export const getAntelope = () => Antelope;
