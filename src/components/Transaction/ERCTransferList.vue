@@ -247,29 +247,39 @@ export default {
                         </span>
                     </span>
                     <span
-                        v-if="transfer.metadata?.image?.startsWith('data:image')
-                            || transfer.token?.imageCache
-                        "
+                        v-if="transfer.metadata?.image?.startsWith('data:image')"
                         class="q-ml-xs"
                     >
                         <a
                             clickable="clickable"
-                            :href="(transfer.metadata?.image?.startsWith('data:image'))
-                                ? transfer.metadata.image
-                                : transfer.token?.imageCache + '/1440.webp'
-                            "
+                            :href="transfer.metadata.image"
                             target="_blank"
+                            download
                         >
                             <q-img
-                                :src="(transfer.metadata?.image?.startsWith('data:image'))
-                                    ? transfer.metadata.image
-                                    : transfer.token?.imageCache + '/280.webp'
-                                "
+                                :src="transfer.metadata.image"
                                 class="nft-thumbnail"
                             />
                             <CustomTooltip :content="$t('components.nfts.consult_media')" />
                         </a>
                     </span>
+                    <span
+                        v-else-if="transfer.token?.imageCache?.length > 0"
+                        class="q-ml-xs"
+                    >
+                        <a
+                            clickable="clickable"
+                            :href="transfer.metadata.imageCache + '/1440.webp'"
+                            target="_blank"
+                        >
+                            <q-img
+                                :src="transfer.metadata.imageCache + '/280.webp'"
+                                class="nft-thumbnail"
+                            />
+                            <CustomTooltip :content="$t('components.nfts.consult_media')" />
+                        </a>
+                    </span>
+
                     <span v-if="transfer.contract.supportedInterfaces.includes('erc1155')">
                         <a clickable="clickable" :href="'/address/' + transfer.token.address" target="_blank">
                             <CustomTooltip :content="$t('components.nfts.consult_collection')" />

@@ -101,23 +101,28 @@ export default {
         };
     },
     methods: {
-        hasVideo(nft){
+        getMedia(nft){
             if(
                 !nft.metadata
                 && !nft.metadata?.image
                 && !nft.metadata?.animation_url
                 && (!nft.tokenUri || nft.tokenUri.endsWith('.json'))
             ){
-                return nft;
+                return false;
             }
-            let video = (nft.metadata?.animation_url && nft.metadata.animation_url.length > 0)
+            let media = (nft.metadata?.animation_url && nft.metadata.animation_url.length > 0)
                 ? nft.metadata.animation_url
                 : nft.metadata?.image
             ;
-            video = (typeof video !== 'undefined' && video) ? video : nft.tokenUri;
-            if(!video){
-                return nft;
+            media = (typeof media !== 'undefined' && media) ? media : nft.metadata?.properties?.image;
+            media = (typeof media !== 'undefined' && media) ? media : nft.tokenUri;
+            if(!media){
+                return false;
             }
+            return media;
+        },
+        hasVideo(nft){
+            let video = this.getMedia(nft);
             let parts = video.split('.');
             if(parts.length > 1){
                 let ext = parts[parts.length - 1].split('?')[0];
@@ -130,6 +135,11 @@ export default {
             }
             nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
             return nft;
+        },
+        isDataImage(nft){
+            let image = this.getMedia(nft);
+            const regex = new RegExp(/(data:image\/[^;]+;base64[^"]+)/);
+            return regex.test(image);
         },
         async onRequest(props) {
             this.loading = true;
@@ -298,19 +308,39 @@ export default {
                             }]"
                         />
                     </a>
-                    <a
+                    <span
                         v-else-if="props.row.imageCache || props.row.metadata?.image"
                         clickable="clickable"
-                        :href="(props.row.imageCache) ? props.row.imageCache + '/1440.webp' : props.row.metadata?.image"
-                        target="_blank"
                     >
-                        <q-img
-                            v-if="props.row.imageCache"
-                            :src="props.row.imageCache + '/280.webp'"
-                            :alt="props.row.metadata?.name"
-                        />
-                        <q-img v-else :src="props.row.metadata?.image" />
-                    </a>
+                        <a
+                            v-if="props.row.imageCache && !isDataImage(props.row)"
+                            :href="
+                                (props.row.imageCache) ? props.row.imageCache + '/1440.webp' :
+                                props.row.metadata?.image
+                            "
+                            target="_blank"
+                        >
+                            <q-img
+                                :src="props.row.imageCache + '/280.webp'"
+                                :alt="props.row.metadata?.name"
+                            />
+                        </a>
+                        <a
+                            v-else-if="isDataImage(props.row)"
+                            :href="props.row.metadata?.image"
+                            target="_blank"
+                            download
+                        >
+                            <q-img :src="props.row.metadata?.image" :alt="props.row.metadata?.name" />
+                        </a>
+                        <a
+                            v-else
+                            :href="props.row.metadata?.image"
+                            target="_blank"
+                        >
+                            <q-img :src="props.row.metadata?.image" :alt="props.row.metadata?.name" />
+                        </a>
+                    </span>
                     <q-tooltip v-if="props.row?.metadata?.description">{{ props.row.metadata.description }}</q-tooltip>
                 </q-td>
                 <q-td key="metadata" :props="props">
