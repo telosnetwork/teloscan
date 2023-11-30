@@ -8,7 +8,7 @@ import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import LoginModal from 'components/LoginModal.vue';
 import LoginStatus from 'components/header/LoginStatus.vue';
 import { RouteLocationRaw } from 'vue-router';
-import { useAccountStore } from 'src/antelope';
+import { getAntelope, useAccountStore } from 'src/antelope';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
@@ -73,6 +73,13 @@ export default defineComponent({
             }
         },
         logout() {
+            useAccountStore().logout();
+        },
+    },
+    async mounted() {
+
+        // On login we must set the address and record the provider
+        getAntelope().events.onLoggedOut.subscribe(() => {
             const loginData = localStorage.getItem('loginData');
             if (this.isNative) {
                 if (!loginData) {
@@ -83,11 +90,10 @@ export default defineComponent({
                 const wallet = this.$ual.getAuthenticators().availableAuthenticators.find(a => a.getName() === loginObj.provider);
                 wallet?.logout();
             }
-            useAccountStore().logout();
             this.setLogin({});
             localStorage.removeItem('loginData');
             this.$providerManager.setProvider(null);
-        },
+        });
     },
 });
 </script>
@@ -98,7 +104,7 @@ export default defineComponent({
         <div class="c-header__logo-image-container">
             <img
                 alt="Telos EVM logo"
-                src="~assets/evm_logo.png"
+                src="/branding/telos-scan.png"
                 width="32"
             >
             <div v-if="isTestnet" class="c-header__testnet-indicator">
@@ -158,7 +164,7 @@ export default defineComponent({
                     class="c-header__menu-item-icon"
                     size="sm"
                 />
-                {{ isLoggedIn ? $t('components.header.sign_out') : $t('components.header.sign_in') }}
+                {{ isLoggedIn ? $t('components.disconnect') : $t('components.connect_wallet') }}
             </li>
 
             <q-separator class="c-header__menu-separator"/>

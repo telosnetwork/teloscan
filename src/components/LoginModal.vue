@@ -5,23 +5,19 @@
 import detectEthereumProvider from '@metamask/detect-provider';
 import { defineComponent } from 'vue';
 import { mapGetters, mapMutations } from 'vuex';
-import { ethers } from 'ethers';
 import {
-    WEI_PRECISION,
     LOGIN_EVM,
     LOGIN_NATIVE,
-    PROVIDER_WEB3_INJECTED,
     PROVIDER_TELOS_CLOUD,
     PROVIDER_WALLET_CONNECT,
     PROVIDER_BRAVE,
     PROVIDER_METAMASK,
-    DEFAULT_CHAIN_ID,
     LOGIN_DATA_KEY,
 } from 'src/lib/utils';
-import { tlos } from 'src/lib/logos';
-import { CURRENT_CONTEXT, getAntelope, useAccountStore, useChainStore } from 'src/antelope/mocks';
+import { AccountModel, CURRENT_CONTEXT, EvmAccountModel, getAntelope, useAccountStore, useChainStore } from 'src/antelope/mocks';
 import { Authenticator } from 'universal-authenticator-library';
 import InlineSvg from 'vue-inline-svg';
+import { isTodayBeforeTelosCloudDown } from 'src/App.vue';
 
 export default defineComponent({
     name: 'LoginModal',
@@ -56,10 +52,26 @@ export default defineComponent({
         darkModeEnabled(): boolean {
             return localStorage.getItem('darkModeEnabled') === 'true';
         },
+        isTodayBeforeTelosCloudDown() {
+            return isTodayBeforeTelosCloudDown;
+        },
     },
     async mounted() {
         await this.detectProvider();
         this.detectMobile();
+
+        // On login we must set the address and record the provider
+        getAntelope().events.onLoggedIn.subscribe((account: AccountModel) => {
+            const evm_account = account as EvmAccountModel;
+            const address = evm_account.account;
+            const pr_name = evm_account.authenticator.getName();
+            this.setLogin({ address });
+
+            localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
+                type: LOGIN_EVM,
+                provider: pr_name,
+            }));
+        });
 
         const loginData = localStorage.getItem(LOGIN_DATA_KEY);
         if (!loginData) {
@@ -106,56 +118,8 @@ export default defineComponent({
         getLoginDisplay() {
             return this.isNative ? this.nativeAccount : `0x...${this.address.slice(this.address.length - 4)}`;
         },
-        connect() {
-            this.showLogin = true;
-        },
-        disconnect() {
-            if (this.isNative) {
-                const loginData = localStorage.getItem(LOGIN_DATA_KEY);
-                if (!loginData) {
-                    return;
-                }
-
-                const loginObj = JSON.parse(loginData);
-                const wallet = this.authenticators.find((a: { getName: () => any; }) => a.getName() === loginObj.provider);
-                wallet?.logout();
-            }
-
-            this.setLogin({});
-            localStorage.removeItem(LOGIN_DATA_KEY);
-            this.$providerManager.setProvider(null);
-        },
         goToAddress() {
             this.$router.push(`/address/${this.address}`);
-        },
-        async injectedWeb3Login() {
-            const address = await this.getInjectedAddress();
-            if (address) {
-                this.setLogin({
-                    address,
-                });
-                let provider = this.getInjectedProvider();
-                let checkProvider = new ethers.providers.Web3Provider(provider);
-                this.$providerManager.setProvider(provider);
-                const { chainId } = await checkProvider.getNetwork();
-                localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
-                    type: LOGIN_EVM,
-                    provider: PROVIDER_WEB3_INJECTED,
-                    chain: chainId,
-                }));
-                provider.on('chainChanged', (newNetwork: number) => {
-                    if(newNetwork !== chainId){
-                        this.setLogin({});
-                        this.$providerManager.setProvider(null);
-                    }
-                });
-                provider.on('accountsChanged', (accounts: any[]) => {
-                    this.setLogin({
-                        address: accounts[0],
-                    });
-                });
-            }
-            this.$emit('hide');
         },
         async ualLogin(wallet: Authenticator, account?: string) {
             await wallet.init();
@@ -183,96 +147,6 @@ export default defineComponent({
                 localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({ type: LOGIN_NATIVE, provider: wallet.getName() }));
             }
             this.$emit('hide');
-        },
-        async getInjectedAddress() {
-            const provider = this.getInjectedProvider();
-            let checkProvider: ethers.providers.Web3Provider | undefined = new ethers.providers.Web3Provider(provider);
-
-            const newProviderInstance = await this.ensureCorrectChain(checkProvider);
-            if(newProviderInstance){
-                checkProvider = newProviderInstance;
-            }
-            const accounts = await checkProvider.listAccounts();
-            if (accounts.length > 0) {
-                checkProvider = await this.ensureCorrectChain(checkProvider);
-                return accounts[0];
-            } else {
-                const accessGranted = await provider.request({ method: 'eth_requestAccounts' });
-                if (accessGranted.length < 1) {
-                    return false;
-                }
-
-                checkProvider = await this.ensureCorrectChain(checkProvider);
-                return accessGranted[0];
-            }
-        },
-        async ensureCorrectChain(checkProvider: ethers.providers.Web3Provider) {
-            const { chainId } = await checkProvider.getNetwork();
-            if (+chainId !== +(process.env.NETWORK_EVM_CHAIN_ID ?? DEFAULT_CHAIN_ID)) {
-                await this.switchChainInjected();
-                const provider = this.getInjectedProvider();
-                return new ethers.providers.Web3Provider(provider);
-            }
-        },
-        getInjectedProvider() {
-            // window.ethereum.isMetaMask includes Brave Wallet
-            const provider = window.ethereum.isMetaMask || window.ethereum.isCoinbaseWallet ?
-                window.ethereum :
-                null;
-            if (!provider) {
-                this.$q.notify({
-                    position: 'top',
-                    message: this.$t('components.no_provider_found'),
-                    timeout: 6000,
-                });
-            }
-            return provider;
-        },
-        async switchChainInjected() {
-            const provider = this.getInjectedProvider();
-
-            if (provider) {
-                const chainId = parseInt(process.env.NETWORK_EVM_CHAIN_ID || DEFAULT_CHAIN_ID, 10);
-                const chainIdParam = `0x${chainId.toString(16)}`;
-                const mainnet = chainId === 40;
-                try {
-                    await provider.request({
-                        method: 'wallet_switchEthereumChain',
-                        params: [{ chainId: chainIdParam }],
-                    });
-                    return true;
-                } catch (e) {
-                    const chainNotAddedCodes = [
-                        4902,
-                        -32603, // https://github.com/MetaMask/metamask-mobile/issues/2944
-                    ];
-
-                    if (chainNotAddedCodes.includes((e as {code:number}).code)) {  // 'Chain <hex chain id> hasn't been added'
-                        try {
-                            await provider.request({
-                                method: 'wallet_addEthereumChain',
-                                params: [{
-                                    chainId: chainIdParam,
-                                    chainName: `Telos EVM ${mainnet ? 'Mainnet' : 'Testnet'}`,
-                                    nativeCurrency: {
-                                        name: 'Telos',
-                                        symbol: 'TLOS',
-                                        decimals: WEI_PRECISION,
-                                    },
-                                    rpcUrls: [`https://${mainnet ? 'mainnet' : 'testnet'}.telos.net/evm`],
-                                    blockExplorerUrls: [`https://${mainnet ? '' : 'testnet.'}teloscan.io`],
-                                    iconUrls: [tlos],
-                                }],
-                            });
-                            return true;
-                        } catch (e) {
-                            console.error(e);
-                        }
-                    }
-                }
-            } else {
-                return false;
-            }
         },
         getIconForWallet(wallet: { getName: () => string; getStyle: () => { icon: string; }; }) {
             if (wallet.getName() === 'wombat') {
@@ -381,6 +255,7 @@ export default defineComponent({
                         <span> Brave Wallet </span>
                     </q-card>
                     <q-card
+                        v-if="isTodayBeforeTelosCloudDown"
                         class="c-login-modal__image-container"
                         @click="connectTelosCloud()"
                     >

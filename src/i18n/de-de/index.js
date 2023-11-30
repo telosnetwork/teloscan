@@ -319,6 +319,7 @@ export default {
                 'Alternativ können Sie mit dem Smart Contract interagieren, indem Sie ein beliebiges ABI verwenden:',
             use_erc20_abi: 'ERC20 ABI nutzen',
             use_erc721_abi: 'ERC721 ABI nutzen',
+            use_erc1155_abi: 'ERC1155 ABI nutzen',
             abi_from_json: 'ABI aus JSON-Datei',
             paste_abi_json_here: 'ABI JSON hier einfügen',
             abi_json_preview: 'ABI JSON Vorschau',
@@ -383,6 +384,7 @@ export default {
         neutral_message_wrapping: '<b>{quantity} {symbol}</b> in ERC20 umwandeln',
         neutral_message_unwrapping: '<b>{quantity} {symbol}</b> wiederherstellen',
         neutral_message_withdrawing: '<b>{quantity} {symbol}</b> abheben',
+        dont_show_message_again: 'Diese Nachricht nicht mehr anzeigen',
         error_message_sending: 'Beim Senden von <b>{quantity}</b> an <b>{address}</b> ist ein Fehler aufgetreten',
         error_message_staking: 'Beim Einzahlen von <b>{quantity} {symbol}</b> ist ein Fehler aufgetreten',
         error_message_unstaking: 'Beim Vorbereiten der Rücknahme von <b>{quantity} {symbol}</b> ist ein Fehler aufgetreten',
@@ -400,5 +402,10 @@ export default {
             error_unpredictable_gas_limit: 'Das Gaslimit für diese Transaktion konnte nicht geschätzt werden',
             error_transaction_canceled: 'Sie haben die Aktion abgebrochen',
         },
+    },
+    temporal: {
+        telos_cloud_discontinued_title: 'Wichtig',
+        telos_cloud_discontinued_message_title: 'Telos Cloud Wallet wird eingestellt',
+        telos_cloud_discontinued_message_body: 'Es ist wichtig, dass Sie Ihre Vermögenswerte vor dem 31. Dezember aus Ihrem Telos Cloud Wallet Konto abheben.',
     },
 };
