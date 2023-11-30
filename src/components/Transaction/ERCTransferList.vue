@@ -247,7 +247,7 @@ export default {
                         </span>
                     </span>
                     <span
-                        v-if="transfer.metadata?.image?.startsWith('data:image')"
+                        v-if="transfer.metadata?.image && transfer.metadata.image.startsWith('data:image')"
                         class="q-ml-xs"
                     >
                         <a
@@ -264,22 +264,21 @@ export default {
                         </a>
                     </span>
                     <span
-                        v-else-if="transfer.token?.imageCache?.length > 0"
+                        v-else-if="transfer.token?.imageCache"
                         class="q-ml-xs"
                     >
                         <a
                             clickable="clickable"
-                            :href="transfer.metadata.imageCache + '/1440.webp'"
+                            :href="transfer.token.imageCache + '/1440.webp'"
                             target="_blank"
                         >
                             <q-img
-                                :src="transfer.metadata.imageCache + '/280.webp'"
+                                :src="transfer.token.imageCache + '/280.webp'"
                                 class="nft-thumbnail"
                             />
                             <CustomTooltip :content="$t('components.nfts.consult_media')" />
                         </a>
                     </span>
-
                     <span v-if="transfer.contract.supportedInterfaces.includes('erc1155')">
                         <a clickable="clickable" :href="'/address/' + transfer.token.address" target="_blank">
                             <CustomTooltip :content="$t('components.nfts.consult_collection')" />
@@ -333,76 +332,76 @@ export default {
 
 <!--eslint-enable-->
 <style scoped lang="sass">
-pre
-    font-size: 0.8em
-.body--dark .expand-btn
-    color: rgba(255, 255, 255, 0.6)
-.expand-btn
-    position: relative
-    margin-top: 4px
-    cursor: pointer
-    color: rgba(0, 0, 0, 0.6)
-.body--dark .expand-btn .flex
-    background: var(--q-dark)
-.expand-btn .flex
-    background: white
-    padding-right: 5px
-    z-index: 2
-.body--dark .separator
-    border-top: 1px dashed rgba(255, 255, 255, 0.3)
-.separator
-    z-index: 1
-    background: transparent
-    position: absolute
-    width: 320px
-    border-top: 1px dashed rgba(0, 0, 0, 0.3)
-    top: 10px
-.nft-thumbnail:hover
-    transform: scale(1.2)
-.nft-thumbnail
-    transition: 500ms transform ease
-    vertical-align: middle
-    border-radius: 100%
-    width: 16px
-    height: 16px
-    margin-top: -7px
-.coin-icon
-    width: 16px
-    height: 16px
-    margin-top: -6px
-    margin-right: .15rem
-    vertical-align: middle
-    border-radius: 100%
-.erc-transfers
-    .row
-        .col-5
-            strong
-                margin-right: 3px
-
-@media (max-width: 1024px)
-    .row
-        .col-3
-            width: 100%
+    .nft-thumbnail:hover
+        transform: scale(1.2)
+    .nft-thumbnail
+        transition: 500ms transform ease
+        vertical-align: middle
+        border-radius: 100%
+        width: 16px
+        height: 16px
+        margin-top: -7px
+    .body--dark .expand-btn
+        color: rgba(255, 255, 255, 0.6)
+    .expand-btn
+        position: relative
+        margin-top: 4px
+        cursor: pointer
+        color: rgba(0, 0, 0, 0.6)
+    .body--dark .expand-btn .flex
+        background: var(--q-dark)
+    .expand-btn .flex
+        background: white
+        padding-right: 5px
+        z-index: 2
+    .body--dark .separator
+        border-top: 1px dashed rgba(255, 255, 255, 0.3)
+    .separator
+        z-index: 1
+        background: transparent
+        position: absolute
+        width: 320px
+        border-top: 1px dashed rgba(0, 0, 0, 0.3)
+        top: 10px
+    .coin-icon
+        width: 16px
+        height: 16px
+        margin-top: -6px
+        margin-right: .15rem
+        vertical-align: middle
+        border-radius: 100%
     .erc-transfers
         .row
-            .col-3, .col-9, .col-5
-                width: 100%
-                padding-left: 0px
             .col-5
-                padding-top: 2px
-            .col-3, .col-5
-                padding-left: 15px
-            .col-4
-                padding-top: 10px
+                strong
+                    margin-right: 3px
+
+    @media (max-width: 1024px)
+        .row
+            .col-3
                 width: 100%
-            .col-9
-                padding-left: 10px
+        .erc-transfers
+            .row
+                .col-3, .col-9, .col-5
+                    width: 100%
+                    padding-left: 0px
+                .col-5
+                    padding-top: 2px
+                .col-3, .col-5
+                    padding-left: 15px
+                .col-4
+                    padding-top: 10px
+                    width: 100%
+                .col-9
+                    padding-left: 10px
 
 
-@media screen and (max-width: 420px)
-    .coin-icon
-        width: 12px
-        height: 12px
-        margin-right: 3px
-        margin-top: -3px
+    @media screen and (max-width: 420px)
+        .coin-icon
+            width: 12px
+            height: 12px
+            margin-right: 3px
+            margin-top: -3px
+    pre
+        font-size: 0.8em
 </style>
