@@ -406,7 +406,7 @@ export default {
     },
     temporal: {
         telos_cloud_discontinued_title: 'Importante',
-        telos_cloud_discontinued_message_title: 'Telos Cloud Wallet sera abandonné',
-        telos_cloud_discontinued_message_body: 'Il est crucial pour vous de transférer vos actifs hors de vos comptes Telos Cloud Wallet avant le 31 décembre.',
+        telos_cloud_discontinued_message_title: 'Attention aux utilisateurs : Telos Cloud Wallet sera supprimé.',
+        telos_cloud_discontinued_message_body: 'L\'option de connexion au Telos Cloud Wallet sera supprimée après le 31 décembre. Si vous utilisez le Telos Cloud Wallet pour accéder à votre compte, veuillez transférer vos actifs vers un autre portefeuille avant cette date. Ce changement n\'affecte pas les utilisateurs qui accèdent à leurs comptes via Metamask, WalletConnect, Anchor ou d\'autres méthodes de connexion.',
     },
 };
