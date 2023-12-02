@@ -406,7 +406,7 @@ export default {
     },
     temporal: {
         telos_cloud_discontinued_title: 'Importante',
-        telos_cloud_discontinued_message_title: 'Telos Cloud Wallet será discontinuado',
-        telos_cloud_discontinued_message_body: 'Es crucial que transfiera sus activos desde sus cuentas de Telos Cloud Wallet a otra cuenta antes del 31 de diciembre.',
+        telos_cloud_discontinued_message_title: 'Atención usuarios: Telos Cloud Wallet será discontinuado.',
+        telos_cloud_discontinued_message_body: 'La opción de inicio de sesión Telos Cloud Wallet dejará de funcionar después del 31 de diciembre. Si utiliza Telos Cloud Wallet para acceder a su cuenta, transfiera sus activos a otro monedero antes de esta fecha límite. Este cambio no afecta a los usuarios que acceden a sus cuentas a través de Metamask, WalletConnect, Anchor u otros métodos de inicio de sesión.',
     },
 };

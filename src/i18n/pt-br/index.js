@@ -406,7 +406,7 @@ export default {
     },
     temporal: {
         telos_cloud_discontinued_title: 'Importante',
-        telos_cloud_discontinued_message_title: 'A carteira Telos Cloud será descontinuada',
-        telos_cloud_discontinued_message_body: 'É crucial que você transfira seus ativos de suas contas da carteira Telos Cloud antes de 31 de dezembro.',
+        telos_cloud_discontinued_message_title: 'Atenção utilizadores: A Telos Cloud Wallet será descontinuada.',
+        telos_cloud_discontinued_message_body: 'A opção de login da Telos Cloud Wallet será descontinuada após 31 de dezembro. Se utiliza a Telos Cloud Wallet para aceder à sua conta, transfira os seus activos para outra carteira antes deste prazo. Esta alteração não afecta os utilizadores que acedem às suas contas através de Metamask, WalletConnect, Anchor ou outros métodos de início de sessão.',
     },
 };
