@@ -406,7 +406,7 @@ export default {
     },
     temporal: {
         telos_cloud_discontinued_title: 'Importante',
-        telos_cloud_discontinued_message_title: 'Atención usuarios: Telos Cloud Wallet será discontinuado.',
-        telos_cloud_discontinued_message_body: 'La opción de inicio de sesión Telos Cloud Wallet dejará de funcionar después del 31 de diciembre. Si utiliza Telos Cloud Wallet para acceder a su cuenta, transfiera sus activos a otro monedero antes de esta fecha límite. Este cambio no afecta a los usuarios que acceden a sus cuentas a través de Metamask, WalletConnect, Anchor u otros métodos de inicio de sesión.',
+        telos_cloud_discontinued_message_title: 'Atención usuarios: La opción de cuenta Telos Cloud Wallet será discontinuado.',
+        telos_cloud_discontinued_message_body: 'La opción de cuenta Telos Cloud Wallet (ORE ID a través de Google) para conectarse y firmar transacciones dejará de funcionar después del 31 de diciembre. Si utiliza Telos Cloud Wallet para acceder a su cuenta, transfiera sus activos a otro monedero antes de esta fecha límite. <strong>Este cambio no afecta a los usuarios que acceden a sus cuentas a través de Metamask, WalletConnect, Anchor u otros métodos de inicio de sesión. </strong>',
     },
 };

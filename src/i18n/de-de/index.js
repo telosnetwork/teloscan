@@ -405,7 +405,7 @@ export default {
     },
     temporal: {
         telos_cloud_discontinued_title: 'Wichtig',
-        telos_cloud_discontinued_message_title: 'Achtung Benutzer: Telos Cloud Wallet wird eingestellt',
-        telos_cloud_discontinued_message_body: 'Die Telos Cloud Wallet-Anmeldeoption wird nach dem 31. Dezember eingestellt. Wenn Sie die Telos Cloud Wallet für den Zugang zu Ihrem Konto nutzen, übertragen Sie bitte Ihre Vermögenswerte vor diesem Stichtag auf eine andere Wallet. Diese Änderung hat keine Auswirkungen auf Nutzer, die über Metamask, WalletConnect, Anchor oder andere Anmeldemethoden auf ihre Konten zugreifen.',
+        telos_cloud_discontinued_message_title: 'Achtung Benutzer: Die Telos Cloud Wallet-Kontooption wird nicht mehr angeboten.',
+        telos_cloud_discontinued_message_body: 'Die Kontooption Telos Cloud Wallet (ORE ID via Google) zur Verbindung und Unterzeichnung von Transaktionen wird nach dem 31. Dezember eingestellt. Wenn Sie die Telos Cloud Wallet für den Zugang zu Ihrem Konto nutzen, übertragen Sie Ihr Vermögen bitte vor diesem Termin auf eine andere Wallet. <strong>Wenn Sie die Telos Cloud Wallet für den Zugang zu Ihrem Konto nutzen, übertragen Sie bitte Ihre Vermögenswerte vor diesem Stichtag auf eine andere Wallet. Diese Änderung hat keine Auswirkungen auf Nutzer, die über Metamask, WalletConnect, Anchor oder andere Anmeldemethoden auf ihre Konten zugreifen.</strong>',
     },
 };
