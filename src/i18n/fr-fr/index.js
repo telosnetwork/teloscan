@@ -406,7 +406,7 @@ export default {
     },
     temporal: {
         telos_cloud_discontinued_title: 'Importante',
-        telos_cloud_discontinued_message_title: 'Attention aux utilisateurs : Telos Cloud Wallet sera supprimé.',
-        telos_cloud_discontinued_message_body: 'L\'option de connexion au Telos Cloud Wallet sera supprimée après le 31 décembre. Si vous utilisez le Telos Cloud Wallet pour accéder à votre compte, veuillez transférer vos actifs vers un autre portefeuille avant cette date. Ce changement n\'affecte pas les utilisateurs qui accèdent à leurs comptes via Metamask, WalletConnect, Anchor ou d\'autres méthodes de connexion.',
+        telos_cloud_discontinued_message_title: 'Attention aux utilisateurs : L\'option de compte Telos Cloud Wallet sera supprimée.',
+        telos_cloud_discontinued_message_body: 'L\'option du compte Telos Cloud Wallet (ORE ID via Google) pour se connecter et signer des transactions sera supprimée après le 31 décembre. Si vous utilisez le Telos Cloud Wallet pour accéder à votre compte, veuillez transférer vos actifs vers un autre portefeuille avant cette date. <strong>Ce changement n\'affecte pas les utilisateurs qui accèdent à leurs comptes via Metamask, WalletConnect, Anchor ou d\'autres méthodes de connexion.</strong>',
     },
 };
