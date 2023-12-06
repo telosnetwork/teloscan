@@ -2,12 +2,59 @@
 <script>
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
-import { formatWei } from 'src/lib/utils';
+import {
+    formatWei,
+} from 'src/lib/utils';
 import { mapGetters } from 'vuex';
-import { erc721Abi, erc1155Abi } from 'src/lib/abi';
-import erc20Abi from 'erc-20-abi';
 import { BigNumber, ethers } from 'ethers';
+import { CURRENT_CONTEXT, useAccountStore } from 'src/antelope/mocks';
 
+const approveABI = [
+    {
+        'constant': false,
+        'inputs': [
+            {
+                'name': '_spender',
+                'type': 'address',
+            },
+            {
+                'name': '_value',
+                'type': 'uint256',
+            },
+        ],
+        'name': 'approve',
+        'outputs': [
+            {
+                'name': '',
+                'type': 'bool',
+            },
+        ],
+        'payable': false,
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+    },
+];
+
+const approvalForAllABI = [
+    {
+        'inputs': [
+            {
+                'internalType': 'address',
+                'name': 'operator',
+                'type': 'address',
+            },
+            {
+                'internalType': 'bool',
+                'name': '_approved',
+                'type': 'bool',
+            },
+        ],
+        'name': 'setApprovalForAll',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
+    },
+];
 export default {
     name: 'ApprovalList',
     components: { AddressField, DateField },
@@ -88,11 +135,6 @@ export default {
         ...mapGetters('login', ['address', 'isLoggedIn', 'isNative']),
     },
     methods: {
-        getProvider(){
-            return  this.isLoggedIn && !this.isNative ?
-                this.$providerManager.getEthersProvider().getSigner() :
-                this.$contractManager.getEthersProvider();
-        },
         async onRequest(props){
             this.loading = true;
 
@@ -153,24 +195,48 @@ export default {
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             return path;
         },
-        async getApprovalFunction(instance, spender, single, param2){
+        async toogleApproval(contractAddress, single, spender, param2, message, error){
             if(this.isNFT()){
                 if(this.type === 'erc1155'){
-                    try {
-                        return await instance.setApprovalForAll(spender, false);
-                    } catch (e) {
-                        console.error(e);
-                    }
+                    return await useAccountStore().signCustomTransaction(
+                        CURRENT_CONTEXT,
+                        message,
+                        error,
+                        contractAddress,
+                        approveABI,
+                        [spender, param2],
+                    );
                 } else {
                     // ERC721 has both approve & setApprovalForAll..
                     if(single === 'true'){
-                        return await instance.approve(spender, param2);
+                        return await useAccountStore().signCustomTransaction(
+                            CURRENT_CONTEXT,
+                            message,
+                            error,
+                            contractAddress,
+                            approveABI,
+                            [spender, param2],
+                        );
                     } else {
-                        return await instance.setApprovalForAll(spender, false);
+                        return await useAccountStore().signCustomTransaction(
+                            CURRENT_CONTEXT,
+                            message,
+                            error,
+                            contractAddress,
+                            approvalForAllABI,
+                            [spender, false],
+                        );
                     }
                 }
             } else {
-                return  await instance.approve(spender, param2);
+                return await useAccountStore().signCustomTransaction(
+                    CURRENT_CONTEXT,
+                    message,
+                    error,
+                    contractAddress,
+                    approveABI,
+                    [spender, param2],
+                );
             }
         },
         async updateApproval(spender, contractAddress, single, param2) {
@@ -182,53 +248,25 @@ export default {
             if(!contract){
                 return;
             }
-            let abi = erc20Abi;
-            switch (this.type) {
-            case('erc721'):
-                abi = erc721Abi;
-                break;
-            case('erc1155'):
-                abi = erc1155Abi;
-                break;
-            }
-            const instance  = await this.$contractManager.getContractInstance(
-                { address: contractAddress, abi: abi },
-                this.getProvider(),
-            );
-            let success = false;
-            let err = this.$t('components.approvals.update_failed');
-            try {
-                let result = await this.getApprovalFunction(instance, spender, single, param2);
-                if(result?.hash){
-                    success = true;
-                    const spenderContract  = await this.$contractManager.getContract(spender);
-                    let ctx = this;
-                    setTimeout(function () {
-                        ctx.$q.notify({
-                            type: 'positive',
-                            message: ctx.$t(
-                                'components.approvals.update_success',
-                                {
-                                    spender: spenderContract?.getName() || spender,
-                                    contract: contract.getName() || contract.address,
-                                },
-                            ),
-                        });
-                    }, 2000);
-                    return success;
+
+
+            if (this.isLoggedIn && !this.isNative) {
+                const spenderContract  = await this.$contractManager.getContract(spender);
+                try {
+                    await this.toogleApproval(contract.address, single, spender, param2, this.$t(
+                        'components.approvals.update_success',
+                        {
+                            spender: spenderContract?.getName() || spender,
+                            contract: contract.getName() || contract.address,
+                        }), this.$t('components.approvals.update_failed'),
+                    );
+                    return true;
+                } catch (e) {
+                    return false;
                 }
-            } catch (e) {
-                console.error(`Failed to remove approval: ${e}`);
-                if(e.message){
-                    err = e.message.split('(')[0];
-                    err = err[0].toUpperCase() + err.slice(1, err.length - 1);
-                }
+            } else {
+                return false;
             }
-            this.$q.notify({
-                type: 'negative',
-                message: err,
-            });
-            return success;
         },
         async handleCtaClick(spender, contract, single, tokenId) {
             if (!this.isLoggedInAccount()) {
@@ -250,6 +288,9 @@ export default {
             let approval = true;
             let i = 0;
             let currentApprovals = this.approvals;
+            this.displayConfirmModal = false;
+            this.displayUpdateModal = false;
+            this.signing = false;
             await new Promise(resolve => setTimeout(resolve, 2000));
             while(approval) {
                 await this.onRequest({
@@ -274,9 +315,6 @@ export default {
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 i++;
             }
-            this.displayConfirmModal = false;
-            this.displayUpdateModal = false;
-            this.signing = false;
         },
         toggleAll(value){
             for(let i = 0; i < this.approvals.length; i++){
@@ -601,7 +639,7 @@ export default {
                 <p class="text-h5">{{ $t('components.approvals.update') }}</p>
                 <p class="text-grey">{{ $t('components.approvals.update_description') }}</p>
                 <q-input
-                    v-if="!isNFT"
+                    v-if="!this.isNFT()"
                     ref="input"
                     v-model="modalUpdateValue"
                     type="number"
@@ -617,7 +655,7 @@ export default {
                     v-else
                     v-model="approved"
                     :options="[true, false]"
-                    label="Filled"
+                    label="Approved"
                 />
             </q-card-section>
             <q-card-actions align="right" class="q-pb-md q-px-md">
@@ -633,7 +671,7 @@ export default {
                     :label="$t('global.sign')"
                     color="secondary"
                     text-color="black"
-                    @click="this.$refs.input.validate() && confirmModalUpdate()"
+                    @click="this.$refs.input.validate() && this.confirmModalUpdate()"
                 />
             </q-card-actions>
         </q-card>
