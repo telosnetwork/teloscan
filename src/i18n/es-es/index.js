@@ -262,6 +262,7 @@ export default {
             incorrect_address_array_length: 'Debe haber { size } direcciones en la matriz',
             incorrect_booleans_array_length: 'Debe haber { size } booleanos en la matriz',
             incorrect_bytes_array_length: 'Debe haber { size } bytes en la matriz',
+            odd_number_of_bytes: 'Debe haber un número par de caracteres de bytes',
             incorrect_sigint_array_length: 'Debe haber { size } enteros firmados en la matriz',
             incorrect_strings_array_length: 'Debe haber { size } cadenas en la matriz',
             incorrect_unsigint_array_length: 'Debe haber { size } enteros sin firmar en la matriz',

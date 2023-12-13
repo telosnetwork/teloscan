@@ -262,6 +262,7 @@ export default {
             incorrect_address_array_length: 'Das Array sollte { size } Adressen enthalten',
             incorrect_booleans_array_length: 'In dem Array sollten { size } Boolesche Werte enthalten sein',
             incorrect_bytes_array_length: 'Das Array sollte { size } Bytes enthalten',
+            odd_number_of_bytes: 'Es sollte eine gerade Anzahl von Bytezeichen vorhanden sein',
             incorrect_sigint_array_length: 'Das Array muss { size } signed Integers enthalten',
             incorrect_strings_array_length: 'Das Array sollte nur { size } Zeichenfolgen enthalten',
             incorrect_unsigint_array_length: 'Das Array muss { size } unsigned Integers enthalten',
