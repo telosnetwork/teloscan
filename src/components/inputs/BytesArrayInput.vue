@@ -1,7 +1,9 @@
 <script>
-import { parseBytesArrayString } from 'components/ContractTab/function-interface-utils';
-
 import BaseTextInput from 'components/inputs/BaseTextInput';
+
+const bytesArrayStringRegex = /^0x([0-9A-Fa-f])*$/;
+
+const validateArrayIsEvenLength = value => value.length % 2 === 0 || value === '';
 
 export default {
     name: 'BytesArrayInput',
@@ -34,12 +36,12 @@ export default {
         },
     },
     data: () => ({
-        placeholder: '[a9, 4b, ff, ...]',
+        placeholder: '0xAB12CD...',
         previousParsedValue: undefined,
     }),
     computed: {
         rules() {
-            const validateParsedArray = value => Array.isArray(parseBytesArrayString(value)) || value === '';
+            const validateArrayString = value => bytesArrayStringRegex.test(value) || value === '';
 
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
@@ -48,16 +50,21 @@ export default {
                     return true;
                 }
 
+                // the number of bytes, i.e. the number of hex character pairs like 'EF'
                 const expectedLength = +this.size;
-                return Array.isArray(parseBytesArrayString(value, expectedLength));
+                const numberOfBytes = (value.length - 2) / 2; // subtract 2 for '0x' prefix
+
+                return numberOfBytes === expectedLength;
             };
 
+            const oddNumberOfBytesMessage = this.$t('components.inputs.odd_number_of_bytes');
             const incorrectArrayLengthMessage =
                 this.$t('components.inputs.incorrect_bytes_array_length', { size: +this.size });
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_bytes_array_string');
 
             return [
-                val => validateParsedArray(val) || invalidArrayStringMessage,
+                val => validateArrayString(val) || invalidArrayStringMessage,
+                val => validateArrayIsEvenLength(val) || oddNumberOfBytesMessage,
                 val => validateArrayLength(val) || incorrectArrayLengthMessage,
             ];
         },
@@ -87,8 +94,7 @@ export default {
             if (newValue !== this.modelValue) {
                 this.$emit('update:modelValue', newValue);
 
-                const expectedSize = +this.size === -1 ? undefined : +this.size;
-                const newParsed = parseBytesArrayString(newValue, expectedSize);
+                const newParsed = newValue || undefined;
 
                 if (this.previousParsedValue !== newParsed) {
                     this.$emit('valueParsed', newParsed);

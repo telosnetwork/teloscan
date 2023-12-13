@@ -536,40 +536,6 @@ function parseBooleanArrayString(str, expectedLength) {
 }
 
 /**
- * Given a string, returns an array of byte strings iff the string is a valid representation of bytes.
- * Returns undefined if string is valid but has the wrong number of elements in the case of fixed-size arrays
- *
- * @param {string} str - string representation of an array of bytes, e.g. "[a9, ff, 02]"
- * @param {number|undefined} expectedLength
- * @returns {string[]|undefined}
- */
-function parseBytesArrayString(str, expectedLength) {
-    if (str === '[]' && expectedLength === undefined) {
-        return [];
-    }
-
-    const bytesArrayStringRegex = /^\[(([0-9A-Fa-f]{2}), *)*([0-9A-Fa-f]{2})]$/;
-
-    const stringRepresentValidBoolArray = bytesArrayStringRegex.test(str);
-    if (!stringRepresentValidBoolArray) {
-        return undefined;
-    }
-
-    const byteRegex = /[0-9A-Fa-f]{2}/g;
-    const bytesArray = str.match(byteRegex);
-
-    if (Number.isInteger(expectedLength)) {
-        const actualLength = bytesArray.length;
-
-        if (actualLength !== expectedLength) {
-            return undefined;
-        }
-    }
-
-    return bytesArray;
-}
-
-/**
  * Given a string, returns an array of string iff it is a valid JSON representation of a string array.
  * Returns undefined if string is valid but has the wrong number of elements in the case of fixed-size arrays
  *
@@ -631,7 +597,6 @@ export {
     parseAddressString,
     parseBooleanArrayString,
     parseBooleanString,
-    parseBytesArrayString,
     parseSignedIntArrayString,
     parseSignedIntString,
     parseStringArrayString,

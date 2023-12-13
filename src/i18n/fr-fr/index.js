@@ -262,6 +262,7 @@ export default {
             incorrect_address_array_length: 'Le tableau doit contenir { size } adresses',
             incorrect_booleans_array_length: 'Le tableau doit contenir { size } booléens',
             incorrect_bytes_array_length: 'Le tableau doit contenir { size } bytes',
+            odd_number_of_bytes: 'Il devrait y avoir un nombre pair de caractères d\'octet',
             incorrect_sigint_array_length: 'Le tableau doit contenir { size } entiers signés',
             incorrect_strings_array_length: 'Le tableau doit contenir { size } chaînes de caractères',
             incorrect_unsigint_array_length: 'Le tableau doit contenir { size } entiers non signés',
