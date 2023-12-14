@@ -262,6 +262,7 @@ export default {
             incorrect_address_array_length: 'Deve haver { size } endereços na matriz',
             incorrect_booleans_array_length: 'Deve haver { size } booleanos na matriz',
             incorrect_bytes_array_length: 'Deve haver { size } bytes na matriz',
+            odd_number_of_bytes: 'Deve haver um número par de caracteres de byte',
             incorrect_sigint_array_length: 'Deve haver { size } inteiros com sinal na matriz',
             incorrect_strings_array_length: 'Deve haver { size } strings (sequência de caracteres) na matriz',
             incorrect_unsigint_array_length: 'Deve haver { size } inteiros sem sinal na matriz',

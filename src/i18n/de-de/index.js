@@ -262,6 +262,7 @@ export default {
             incorrect_address_array_length: 'Das Array sollte { size } Adressen enthalten',
             incorrect_booleans_array_length: 'In dem Array sollten { size } Boolesche Werte enthalten sein',
             incorrect_bytes_array_length: 'Das Array sollte { size } Bytes enthalten',
+            odd_number_of_bytes: 'Es sollte eine gerade Anzahl von Bytezeichen vorhanden sein',
             incorrect_sigint_array_length: 'Das Array muss { size } signed Integers enthalten',
             incorrect_strings_array_length: 'Das Array sollte nur { size } Zeichenfolgen enthalten',
             incorrect_unsigint_array_length: 'Das Array muss { size } unsigned Integers enthalten',
@@ -406,6 +407,6 @@ export default {
     temporal: {
         telos_cloud_discontinued_title: 'Wichtig',
         telos_cloud_discontinued_message_title: 'Achtung Benutzer: Die Telos Cloud Wallet-Kontooption wird nicht mehr angeboten.',
-        telos_cloud_discontinued_message_body: 'Die Kontooption Telos Cloud Wallet (ORE ID via Google) zur Verbindung und Unterzeichnung von Transaktionen wird nach dem 31. Dezember eingestellt. Wenn Sie die Telos Cloud Wallet für den Zugang zu Ihrem Konto nutzen, übertragen Sie Ihr Vermögen bitte vor diesem Termin auf eine andere Wallet. <strong>Wenn Sie die Telos Cloud Wallet für den Zugang zu Ihrem Konto nutzen, übertragen Sie bitte Ihre Vermögenswerte vor diesem Stichtag auf eine andere Wallet. Diese Änderung hat keine Auswirkungen auf Nutzer, die über Metamask, WalletConnect, Anchor oder andere Anmeldemethoden auf ihre Konten zugreifen.</strong>',
+        telos_cloud_discontinued_message_body: 'Die Kontooption Telos Cloud Wallet (ORE ID via Google) zur Verbindung und Unterzeichnung von Transaktionen wird nach dem 31. Dezember eingestellt. Wenn Sie die Telos Cloud Wallet für den Zugang zu Ihrem Konto nutzen, übertragen Sie Ihr Vermögen bitte vor diesem Termin auf eine andere Wallet. <strong>Diese Änderung hat keine Auswirkungen auf Nutzer, die über Metamask, WalletConnect, Anchor oder andere Anmeldemethoden auf ihre Konten zugreifen.</strong>',
     },
 };
