@@ -7,6 +7,13 @@ export const isTodayBeforeTelosCloudDown = new Date().getTime() < new Date('2023
 export default defineComponent({
     name: 'App',
     mounted() {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.usefathom.com/script.js';
+        script.dataset.site = 'PDKJSBKL';
+        script.dataset.spa = 'auto';
+        script.defer = true;
+        document.body.appendChild(script);
+
         if (isTodayBeforeTelosCloudDown) {
             getAntelope().config.notifyRememberInfoHandler(
                 this.$t('temporal.telos_cloud_discontinued_title'),
