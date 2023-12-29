@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // Mocking ChainStore -----------------------------------
+declare const fathom: { trackGoal: (eventId: string, value: 0) => void };
 
 import { RpcEndpoint } from 'universal-authenticator-library';
 import { NativeCurrencyAddress, TokenClass } from 'src/antelope/types';
@@ -23,7 +24,15 @@ export interface EVMChainSettings {
 const settings = {
     getChainId: () => process.env.NETWORK_EVM_CHAIN_ID,
     getDisplay: () => process.env.NETWORK_EVM_DISPLAY,
-    trackAnalyticsEvent: () => void 0,
+    trackAnalyticsEvent(params: Record<string, unknown>): void {
+        if (typeof fathom === 'undefined') {
+            console.warn(`Failed to track event with ID ${params.id}: Fathom Analytics not loaded`);
+            return;
+        }
+
+        const id = params.id as string;
+        fathom.trackGoal(id, 0);
+    },
     getRPCEndpoint: () => {
         // extract the url parts
         const regex = /^(https?):\/\/([^:/]+)(?::(\d+))?(\/.*)?$/;
