@@ -88,7 +88,7 @@ class EVMStore {
                         if (!authenticator) {
                             console.error('Inconsistency: logged account authenticator is null', authenticator);
                         } else {
-                            useAccountStore().loginEVM({ authenticator,  network });
+                            useAccountStore().loginEVM({ authenticator,  network }, false);
                         }
                     }
                 } else {
