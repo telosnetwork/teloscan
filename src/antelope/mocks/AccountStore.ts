@@ -51,9 +51,9 @@ class AccountStore {
         } as AccountModel;
     }
 
-    async loginEVM({ authenticator, network }: LoginEVMActionData): Promise<boolean> {
+    async loginEVM({ authenticator, network }: LoginEVMActionData, trackAnalyticsEvents: boolean): Promise<boolean> {
         currentAuthenticator = authenticator;
-        currentAccount = await authenticator.login(network);
+        currentAccount = await authenticator.login(network, trackAnalyticsEvents);
         const account = useAccountStore().getAccount(authenticator.label);
         getAntelope().events.onLoggedIn.next(account);
         return true;
