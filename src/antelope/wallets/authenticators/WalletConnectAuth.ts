@@ -220,7 +220,7 @@ export class WalletConnectAuth extends EVMAuthenticator {
                     }
 
                     if (wagmiConnected()) {
-                        resolve(this.walletConnectLogin(network));
+                        resolve(this.walletConnectLogin(network, true));
                     }
                 });
                 this.web3Modal.openModal();
