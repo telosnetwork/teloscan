@@ -132,20 +132,23 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
         });
     }
 
-    async login(network: string): Promise<addressString | null> {
+    async login(network: string, trackAnalyticsEvents?: boolean): Promise<addressString | null> {
         const chainSettings = this.getChainSettings();
         const authName = this.getName();
+        const isTelos = TELOS_NETWORK_NAMES.includes(network);
 
         this.trace('login', network);
         useFeedbackStore().setLoading(`${this.getName()}.login`);
 
-        this.trace('login', 'trackAnalyticsEvent -> login started');
-        chainSettings.trackAnalyticsEvent(
-            { id: TELOS_ANALYTICS_EVENT_IDS.loginStarted },
-        );
+        if (isTelos && trackAnalyticsEvents) {
+            this.trace('login', 'trackAnalyticsEvent -> login started');
+            chainSettings.trackAnalyticsEvent(
+                { id: TELOS_ANALYTICS_EVENT_IDS.loginStarted },
+            );
+        }
 
-        const response = await super.login(network).then((res) => {
-            if (TELOS_NETWORK_NAMES.includes(network)) {
+        const response = await super.login(network, trackAnalyticsEvents).then((res) => {
+            if (isTelos && trackAnalyticsEvents && TELOS_NETWORK_NAMES.includes(network)) {
                 let successfulLoginEventId = '';
 
                 if (authName === MetamaskAuthName) {
@@ -171,7 +174,8 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
         }).catch((error) => {
             // if the user rejects the connection, we don't want to track it as an error
             if (
-                TELOS_NETWORK_NAMES.includes(network) &&
+                trackAnalyticsEvents &&
+                isTelos &&
                 error.message !== 'antelope.evm.error_connect_rejected'
             ) {
                 let failedLoginEventId = '';

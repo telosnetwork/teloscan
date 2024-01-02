@@ -165,7 +165,7 @@ export default defineComponent({
             }
             const authenticator = auth.newInstance(label);
             const network = useChainStore().currentChain.settings.getNetwork();
-            useAccountStore().loginEVM({ authenticator, network }).then(() => {
+            useAccountStore().loginEVM({ authenticator, network }, true).then(() => {
                 const address = useAccountStore().getAccount(label).account;
                 this.setLogin({ address });
                 localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
