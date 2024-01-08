@@ -25,8 +25,6 @@ const settings = {
     getChainId: () => process.env.NETWORK_EVM_CHAIN_ID,
     getDisplay: () => process.env.NETWORK_EVM_DISPLAY,
     trackAnalyticsEvent(eventName: string): void {
-        console.log(eventName);
-
         if (typeof fathom === 'undefined') {
             console.warn(`Failed to track event with name ${eventName}: Fathom Analytics not loaded`);
             return;
