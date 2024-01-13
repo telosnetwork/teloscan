@@ -1,5 +1,5 @@
 <script>
-import { getCompilerOptions } from 'src/lib/contractVerification';
+import { getCompilerOptions } from 'src/lib/contract/ContractVerification';
 import { isValidAddressFormat } from 'src/lib/utils';
 
 export default {

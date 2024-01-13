@@ -4,6 +4,7 @@ import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import {
     formatWei,
+    ZERO_ADDRESSES,
 } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
@@ -148,9 +149,11 @@ export default {
             this.pagination.descending = descending;
             this.pagination.rowsNumber = response.data.total_count;
             let approvals = [];
+            console.log(approvals);
             for (let approval of response.data.results) {
                 approval.selected = (this.selected.includes(approval.spender + ':' + approval.contract));
                 approval.contract = await this.$contractManager.getContract(approval.contract);
+                approval.single = 0;
                 if(this.isNFT() === false){
                     approval.usd = 0;
                     if(approval.contract.properties?.price){
@@ -172,6 +175,9 @@ export default {
                         ).toString();
                     }
                 } else {
+                    if(typeof approval.tokenId !== 'undefined'){
+                        approval.single = 1;
+                    }
                     approval.amountRaw = approval.approved;
                     approval.amount = approval.approved;
                     approval.spender = (approval.operator) ? approval.operator : approval.spender;
@@ -195,7 +201,7 @@ export default {
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             return path;
         },
-        async toogleApproval(contractAddress, single, spender, param2, message, error){
+        async toggleApproval(contractAddress, single, spender, param2, message, error){
             if(this.isNFT()){
                 if(this.type === 'erc1155'){
                     return await useAccountStore().signCustomTransaction(
@@ -208,7 +214,7 @@ export default {
                     );
                 } else {
                     // ERC721 has both approve & setApprovalForAll..
-                    if(single === 'true'){
+                    if(single){
                         return await useAccountStore().signCustomTransaction(
                             CURRENT_CONTEXT,
                             message,
@@ -249,14 +255,17 @@ export default {
                 return;
             }
 
-
             if (this.isLoggedIn && !this.isNative) {
-                const spenderContract  = await this.$contractManager.getContract(spender);
+                let spenderAddress = spender; // Needed to avoid reassign error
+                if(single){
+                    spenderAddress = ZERO_ADDRESSES;
+                }
+                const spenderContract  = await this.$contractManager.getContract(spenderAddress);
                 try {
-                    await this.toogleApproval(contract.address, single, spender, param2, this.$t(
+                    await this.toggleApproval(contract.address, single, spenderAddress, param2, this.$t(
                         'components.approvals.update_success',
                         {
-                            spender: spenderContract?.getName() || spender,
+                            spender: spenderContract?.getName() || spenderAddress,
                             contract: contract.getName() || contract.address,
                         }), this.$t('components.approvals.update_failed'),
                     );
@@ -269,10 +278,12 @@ export default {
             }
         },
         async handleCtaClick(spender, contract, single, tokenId) {
+            console.log('Clicked', single, tokenId);
             if (!this.isLoggedInAccount()) {
                 this.displayLoginModal = true;
                 return;
             }
+
             this.displayConfirmModal = true;
             const ctx = this;
             this.confirmModal = async function () {
@@ -366,7 +377,8 @@ export default {
             let offset = 0;
             while(more){
                 let response = await this.$indexerApi.get(
-                    `/account/${this.accountAddress}/approvals?limit=${limit}&offset=${offset}&includePagination=true`,
+                    `/account/${this.accountAddress}/approvals?limit=${limit}&offset=${offset}&includePagination=true
+                    &type=${this.type}`,
                 );
                 more = response.data?.more || false;
                 offset = offset + limit;
@@ -393,7 +405,13 @@ export default {
                 await Promise.all(
                     ctx.selected.map(async (id) => {
                         let parts = id.split(':');
-                        let result = await ctx.updateApproval(parts[0], parts[1], parts[2], parseInt(parts[3]) || 0);
+                        console.log(parts);
+                        let result = await ctx.updateApproval(
+                            parts[0],
+                            parts[1],
+                            (parts[2] === '1' || parts[2] === 'true'),
+                            parseInt(parts[3]) || 0,
+                        );
                         if(result){
                             results.push(true);
                         }
@@ -407,6 +425,7 @@ export default {
             };
         },
         async handleCtaUpdate(spender, contractAddress, single, tokenId, current){
+            console.log('Update', single, tokenId);
             this.displayUpdateModal = true;
             this.modalUpdateValue = current;
             const contract  = await this.$contractManager.getContract(contractAddress);

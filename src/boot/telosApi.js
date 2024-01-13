@@ -22,6 +22,7 @@ export default boot(({ app, store }) => {
     app.config.globalProperties.$telosApi =  telosApi;
     app.config.globalProperties.$indexerApi = indexerApi;
     app.config.globalProperties.$fragmentParser = fragmentParser;
+    app.config.globalProperties.$contractManager = contractManager;
     store.$contractManager = app.config.globalProperties.$contractManager = markRaw(contractManager);
     store.$indexerApi = indexerApi;
     // Intercept API answer to set contracts & abi in cache directly

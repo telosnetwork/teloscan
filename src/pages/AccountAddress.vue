@@ -379,125 +379,129 @@ export default {
                             </div>
                         </small>
                     </div>
-                    <div class="dataCardsContainer">
-                        <div v-if="!!telosAccount" class="dataCardItem">
-                            <div class="dataCardTile">
-                                {{ $t('pages.native_account') }}
-                            </div>
-                            <div class="dataCardData">
-                                <a :href="getAddressNativeExplorerURL()" target="_blank">{{ telosAccount }}</a>
-                            </div>
-                        </div>
-                        <div
-                            v-if="this.contract && this.contract.properties?.price
-                                && parseFloat(this.contract.properties.price) > 0"
-                            class="dataCardItem balance "
-                        >
-                            <div class="dataCardTile">
-                                {{ $t('components.usd_price') }}
-                            </div>
-                            <div class="dataCardData">
-                                <span v-if="this.contract.properties.price < 0.0001">{{ '< 0.0001 $' }}</span>
-                                <span v-else>
-                                    {{
-                                        Number(parseFloat(contract.properties.price))
-                                            .toLocaleString('en-US', { minimumFractionDigits: 4 })
-                                    }} $
-                                </span>
-                            </div>
-                            <q-tooltip> {{ $t('components.price_sources') }}</q-tooltip>
-                        </div>
-                        <div
-                            v-if="
-                                this.contract && this.contract.properties?.marketcap
-                                    && parseFloat(this.contract.properties.marketcap) > 0
-                            "
-                            class="dataCardItem balance "
-                        >
-                            <div class="dataCardTile">
-                                {{ $t('components.usd_marketcap') }}
-                            </div>
-                            <div class="dataCardData">
-                                <span v-if="parseFloat(contract.properties.marketcap)< 0.0001">{{ '< 0.0001 $' }}</span>
-                                <span v-else>
-                                    {{ Number(parseFloat(contract.properties.marketcap))
-                                        .toLocaleString('en-US', { minimumFractionDigits: 4 })
-                                    }} $
-                                </span>
-                            </div>
-                            <q-tooltip> {{ $t('components.marketcap_sources') }}</q-tooltip>
-                        </div>
-                        <div
-                            v-if="
-                                this.contract && this.contract.properties?.supply
-                                    && (this.contract.supportedInterfaces.includes('erc721')
-                                        || this.contract.supportedInterfaces.includes('erc20'))
-                            "
-                            class="dataCardItem"
-                        >
+                    <div class="metrics">
+                        <div class="dataCardsContainer balance">
                             <div
-                                v-if="this.contract.supportedInterfaces.includes('erc721')"
-                                :key="contract.properties.supply + contract.address"
+                                v-if="balance != '0.0 TLOS'"
+                                class="dataCardItem"
                             >
-                                <div class="dataCardTile text-center">
-                                    {{ $t('pages.minted') }}
+                                <div class="dataCardTile">
+                                    {{ $t('pages.balance') }}
                                 </div>
-                                <div class="dataCardData text-center">
-                                    <span>
-                                        {{ contract.properties.supply }}
-                                    </span>
-                                    <q-tooltip>{{ $t('pages.total_nfts_minted') }}</q-tooltip>
+                                <div class="dataCardData">
+                                    {{ balance }}
                                 </div>
                             </div>
-                            <div v-else>
-                                <div class="dataCardTile text-center">
-                                    {{ $t('pages.telos_supply') }}
+                            <div v-if="!!telosAccount" class="dataCardItem">
+                                <div class="dataCardTile">
+                                    {{ $t('pages.native_account') }}
                                 </div>
-                                <div class="dataCardData text-center">
-                                    <span>
+                                <div class="dataCardData">
+                                    <a :href="getAddressNativeExplorerURL()" target="_blank">{{ telosAccount }}</a>
+                                </div>
+                            </div>
+                            <div
+                                v-if="this.contract && this.contract.properties?.price
+                                    && parseFloat(this.contract.properties.price) > 0"
+                                class="dataCardItem"
+                            >
+                                <div class="dataCardTile">
+                                    {{ $t('components.usd_price') }}
+                                </div>
+                                <div class="dataCardData">
+                                    <span v-if="this.contract.properties.price < 0.0001">{{ '< 0.0001 $' }}</span>
+                                    <span v-else>
                                         {{
-                                            Number(parseFloat(formatWei(
-                                                contract.properties.supply,
-                                                contract.properties.decimals
-                                            ))).toLocaleString('en-US', { minimumFractionDigits: 4 })
-                                        }}
+                                            Number(parseFloat(contract.properties.price))
+                                                .toLocaleString('en-US', { minimumFractionDigits: 4 })
+                                        }} $
                                     </span>
                                 </div>
-                                <q-tooltip>
-                                    {{ Number(formatWei(
-                                        contract.properties.supply ,
-                                        contract.properties.decimals
-                                    )).toLocaleString('en-US', {
-                                        minimumFractionDigits: 4,
-                                        maximumFractionDigits: contract.properties?.decimals
-                                    })}}
-                                </q-tooltip>
+                                <q-tooltip> {{ $t('components.price_sources') }}</q-tooltip>
                             </div>
-                        </div>
-                        <div
-                            v-else-if="!this.contract && balance != null"
-                            class="dataCardItem balance"
-                        >
-                            <div class="dataCardTile">
-                                {{ $t('pages.balance') }}
+                            <div
+                                v-if="
+                                    this.contract && this.contract.properties?.marketcap
+                                        && parseFloat(this.contract.properties.marketcap) > 0
+                                "
+                                class="dataCardItem"
+                            >
+                                <div class="dataCardTile">
+                                    {{ $t('components.usd_marketcap') }}
+                                </div>
+                                <div class="dataCardData">
+                                    <span v-if="parseFloat(contract.properties.marketcap)< 0.0001">
+                                        {{ '< 0.0001 $' }}
+                                    </span>
+                                    <span v-else>
+                                        {{ Number(parseFloat(contract.properties.marketcap))
+                                            .toLocaleString('en-US', { minimumFractionDigits: 4 })
+                                        }} $
+                                    </span>
+                                </div>
+                                <q-tooltip> {{ $t('components.marketcap_sources') }}</q-tooltip>
                             </div>
-                            <div class="dataCardData">
-                                {{ balance }}
+                            <div
+                                v-if="
+                                    this.contract && this.contract.properties?.supply
+                                        && (this.contract.supportedInterfaces.includes('erc721')
+                                            || this.contract.supportedInterfaces.includes('erc20'))
+                                "
+                                class="dataCardItem"
+                            >
+                                <div
+                                    v-if="this.contract.supportedInterfaces.includes('erc721')"
+                                    :key="contract.properties.supply + contract.address"
+                                >
+                                    <div class="dataCardTile text-center">
+                                        {{ $t('pages.minted') }}
+                                    </div>
+                                    <div class="dataCardData text-center">
+                                        <span>
+                                            {{ contract.properties.supply }}
+                                        </span>
+                                        <q-tooltip>{{ $t('pages.total_nfts_minted') }}</q-tooltip>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <div class="dataCardTile text-center">
+                                        {{ $t('pages.telos_supply') }}
+                                    </div>
+                                    <div class="dataCardData text-center">
+                                        <span>
+                                            {{
+                                                Number(parseFloat(formatWei(
+                                                    contract.properties.supply,
+                                                    contract.properties.decimals
+                                                ))).toLocaleString('en-US', { minimumFractionDigits: 4 })
+                                            }}
+                                        </span>
+                                    </div>
+                                    <q-tooltip>
+                                        {{ Number(formatWei(
+                                            contract.properties.supply ,
+                                            contract.properties.decimals
+                                        )).toLocaleString('en-US', {
+                                            minimumFractionDigits: 4,
+                                            maximumFractionDigits: contract.properties?.decimals
+                                        })}}
+                                    </q-tooltip>
+                                </div>
                             </div>
-                        </div>
-                        <div
-                            v-if="this.contract && this.contract.properties?.holders &&
-                                (this.contract.supportedInterfaces.includes('erc20')
-                                    || this.contract.supportedInterfaces.includes('erc721'))"
-                            class="dataCardItem"
-                        >
-                            <div class="dataCardTile">
-                                {{ $t('pages.holders') }}
+                            <div
+                                v-if="this.contract && this.contract.properties?.holders &&
+                                    (this.contract.supportedInterfaces.includes('erc20')
+                                        || this.contract.supportedInterfaces.includes('erc721'))"
+                                class="dataCardItem"
+                            >
+                                <div class="dataCardTile">
+                                    {{ $t('pages.holders') }}
+                                </div>
+                                <div class="dataCardData">
+                                    {{ contract.properties?.holders }}
+                                </div>
+                                <q-tooltip>{{ $t('pages.evm_holders')  }}</q-tooltip>
                             </div>
-                            <div class="dataCardData">
-                                {{ contract.properties?.holders }}
-                            </div>
-                            <q-tooltip>{{ $t('pages.evm_holders')  }}</q-tooltip>
                         </div>
                     </div>
                 </div>
@@ -797,14 +801,19 @@ export default {
 .dataCardsContainer .dataCardItem
   width: fit-content
   min-width: auto
-  height: 5rem
+  height: 3.5rem
 
+.dataCardsContainer .dataCardData
+    font-size: 1rem
 .dataCardsContainer .dataCardData span
-  font-size: 1.2rem
+  font-size: 1rem
 
 body.body--dark .supported-interface
   background: #282828 !important
 
+.dataCardsContainer
+  gap: 3px
+  justify-content: right
 .supported-interface
   height: auto
   user-select: none
@@ -829,7 +838,9 @@ body.ios .q-hoverable:active .q-focus-helper
 
 .homeInfo
   width: 100%
-
+  .metrics
+    margin-top: auto
+    flex: 1 1 0
 .homeInfo .text-secondary .q-icon
   color: white !important
 

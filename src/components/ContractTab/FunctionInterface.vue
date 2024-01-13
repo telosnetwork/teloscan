@@ -243,7 +243,7 @@ export default defineComponent({
             this.endLoading();
         },
         async getEthersFunction(provider?: ethers.providers.JsonRpcSigner | ethers.providers.JsonRpcProvider) {
-            const contractInstance = await this.contract.getContractInstance(provider);
+            const contractInstance = await this.$contractManager.getContractInstance(this.contract, provider);
             return contractInstance[this.functionABI];
         },
         runRead() {
