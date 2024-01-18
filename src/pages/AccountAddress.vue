@@ -16,6 +16,8 @@ import CopyButton from 'components/CopyButton';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
 import DateField from 'components/DateField';
 import { mapGetters } from 'vuex';
+import { EXPORT_DOWNLOAD_TYPES } from 'src/lib/constants';
+import ExportLink from 'pages/export/ExportLink.vue';
 
 const tabs = {
     transactions: '#transactions',
@@ -50,6 +52,7 @@ export default {
         ConfirmationDialog,
         ContractTab,
         CopyButton,
+        ExportLink,
         NFTList,
         GenericContractInterface,
         TokenList,
@@ -86,6 +89,7 @@ export default {
             subtab: '#transactions',
             tokens: null,
             confirmationDialog: false,
+            EXPORT_DOWNLOAD_TYPES,
         };
     },
     computed: {
@@ -702,6 +706,12 @@ export default {
                         :title="accountAddress"
                         :account-address="accountAddress"
                     />
+                    <!-- eztodo i18n -->
+                    <ExportLink
+                        :account="accountAddress"
+                        :type="EXPORT_DOWNLOAD_TYPES.transactions"
+                        ariaLabel="Download Transactions CSV"
+                    />
                 </q-tab-panel>
                 <q-tab-panel
                     v-if="contract && contract.supportedInterfaces?.includes('erc721')"
@@ -765,6 +775,12 @@ export default {
                         :address="accountAddress"
                         @before-hide="cancelHide"
                     />
+                    <!-- eztodo i18n -->
+                    <ExportLink
+                        :account="accountAddress"
+                        :type="EXPORT_DOWNLOAD_TYPES.erc20Transfers"
+                        ariaLabel="Download ERC-20 Transfers CSV"
+                    />
                 </q-tab-panel>
                 <q-tab-panel :v-model="subtab" name="erc1155_transfers">
                     <TransferTable
@@ -774,6 +790,12 @@ export default {
                         :address="accountAddress"
                         @before-hide="cancelHide"
                     />
+                    <!-- eztodo i18n -->
+                    <ExportLink
+                        :account="accountAddress"
+                        :type="EXPORT_DOWNLOAD_TYPES.erc1155Transfers"
+                        ariaLabel="Download ERC-1155 Transfers CSV"
+                    />
                 </q-tab-panel>
                 <q-tab-panel :v-model="subtab" name="erc721_transfers">
                     <TransferTable
@@ -782,6 +804,12 @@ export default {
                         :initialPageSize="10"
                         :address="accountAddress"
                         @before-hide="cancelHide"
+                    />
+                    <!-- eztodo i18n -->
+                    <ExportLink
+                        :account="accountAddress"
+                        :type="EXPORT_DOWNLOAD_TYPES.erc721Transfers"
+                        ariaLabel="Download ERC-721 Transfers CSV"
                     />
                 </q-tab-panel>
                 <q-tab-panel v-if="isContract" name="contract">
@@ -947,4 +975,7 @@ body.ios .q-hoverable:active .q-focus-helper
             font-size: 1.25rem !important
         .text-h4
             font-size: 2em
+
+.no-padding
+    padding: 0
 </style>
