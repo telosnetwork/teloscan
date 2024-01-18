@@ -342,6 +342,7 @@ export default {
             incorrect_address_array_length: 'Das Array sollte { size } Adressen enthalten',
             incorrect_booleans_array_length: 'In dem Array sollten { size } Boolesche Werte enthalten sein',
             incorrect_bytes_array_length: 'Das Array sollte { size } Bytes enthalten',
+            odd_number_of_bytes: 'Es sollte eine gerade Anzahl von Bytezeichen vorhanden sein',
             incorrect_sigint_array_length: 'Das Array muss { size } signed Integers enthalten',
             incorrect_strings_array_length: 'Das Array sollte nur { size } Zeichenfolgen enthalten',
             incorrect_unsigint_array_length: 'Das Array muss { size } unsigned Integers enthalten',
@@ -502,6 +503,7 @@ export default {
         neutral_message_wrapping: '<b>{quantity} {symbol}</b> in ERC20 umwandeln',
         neutral_message_unwrapping: '<b>{quantity} {symbol}</b> wiederherstellen',
         neutral_message_withdrawing: '<b>{quantity} {symbol}</b> abheben',
+        dont_show_message_again: 'Diese Nachricht nicht mehr anzeigen',
         error_message_sending: 'Beim Senden von <b>{quantity}</b> an <b>{address}</b> ist ein Fehler aufgetreten',
         error_message_staking: 'Beim Einzahlen von <b>{quantity} {symbol}</b> ist ein Fehler aufgetreten',
         error_message_unstaking: 'Beim Vorbereiten der Rücknahme von <b>{quantity} {symbol}</b> ist ein Fehler aufgetreten',
@@ -519,5 +521,10 @@ export default {
             error_unpredictable_gas_limit: 'Das Gaslimit für diese Transaktion konnte nicht geschätzt werden',
             error_transaction_canceled: 'Sie haben die Aktion abgebrochen',
         },
+    },
+    temporal: {
+        telos_cloud_discontinued_title: 'Wichtig',
+        telos_cloud_discontinued_message_title: 'Achtung Benutzer: Die Telos Cloud Wallet-Kontooption wird nicht mehr angeboten.',
+        telos_cloud_discontinued_message_body: 'Die Kontooption Telos Cloud Wallet (ORE ID via Google) zur Verbindung und Unterzeichnung von Transaktionen wird nach dem 31. Dezember eingestellt. Wenn Sie die Telos Cloud Wallet für den Zugang zu Ihrem Konto nutzen, übertragen Sie Ihr Vermögen bitte vor diesem Termin auf eine andere Wallet. <strong>Diese Änderung hat keine Auswirkungen auf Nutzer, die über Metamask, WalletConnect, Anchor oder andere Anmeldemethoden auf ihre Konten zugreifen.</strong>',
     },
 };

@@ -20,9 +20,8 @@ import {
     wtlosAbiDeposit,
     wtlosAbiWithdraw,
 } from 'src/antelope/types';
-import { EVMAuthenticator } from 'src/antelope/wallets';
-import { MetamaskAuthName, SafePalAuthName } from 'src/antelope/wallets';
-import { TELOS_ANALYTICS_EVENT_IDS, TELOS_NETWORK_NAMES } from 'src/antelope/mocks/chain-constants';
+import { BraveAuthName, EVMAuthenticator, MetamaskAuthName, SafePalAuthName } from 'src/antelope/wallets';
+import { TELOS_ANALYTICS_EVENT_NAMES, TELOS_NETWORK_NAMES } from 'src/antelope/mocks/chain-constants';
 
 export abstract class InjectedProviderAuth extends EVMAuthenticator {
     onReady = new BehaviorSubject<boolean>(false);
@@ -132,61 +131,61 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
         });
     }
 
-    async login(network: string): Promise<addressString | null> {
+    async login(network: string, trackAnalyticsEvents?: boolean): Promise<addressString | null> {
         const chainSettings = this.getChainSettings();
         const authName = this.getName();
+        const isTelos = TELOS_NETWORK_NAMES.includes(network);
 
         this.trace('login', network);
         useFeedbackStore().setLoading(`${this.getName()}.login`);
 
-        this.trace('login', 'trackAnalyticsEvent -> login started');
-        chainSettings.trackAnalyticsEvent(
-            { id: TELOS_ANALYTICS_EVENT_IDS.loginStarted },
-        );
+        if (isTelos && trackAnalyticsEvents) {
+            this.trace('login', 'trackAnalyticsEvent -> login started');
+            chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginStarted);
+        }
 
-        const response = await super.login(network).then((res) => {
-            if (TELOS_NETWORK_NAMES.includes(network)) {
-                let successfulLoginEventId = '';
+        const response = await super.login(network, trackAnalyticsEvents).then((res) => {
+            if (isTelos && trackAnalyticsEvents && TELOS_NETWORK_NAMES.includes(network)) {
+                let successfulLoginEventName = '';
 
                 if (authName === MetamaskAuthName) {
-                    successfulLoginEventId = TELOS_ANALYTICS_EVENT_IDS.loginSuccessfulMetamask;
+                    successfulLoginEventName = TELOS_ANALYTICS_EVENT_NAMES.loginSuccessfulMetamask;
                 } else if (authName === SafePalAuthName) {
-                    successfulLoginEventId = TELOS_ANALYTICS_EVENT_IDS.loginSuccessfulSafepal;
+                    successfulLoginEventName = TELOS_ANALYTICS_EVENT_NAMES.loginSuccessfulSafepal;
+                } else if (authName === BraveAuthName) {
+                    successfulLoginEventName = TELOS_ANALYTICS_EVENT_NAMES.loginSuccessfulBrave;
                 }
 
-                if (successfulLoginEventId) {
-                    this.trace('login', 'trackAnalyticsEvent -> login succeeded', authName, successfulLoginEventId);
-                    chainSettings.trackAnalyticsEvent(
-                        { id: successfulLoginEventId },
-                    );
+                if (successfulLoginEventName) {
+                    this.trace('login', 'trackAnalyticsEvent -> login succeeded', authName, successfulLoginEventName);
+                    chainSettings.trackAnalyticsEvent(successfulLoginEventName);
                 }
 
-                this.trace('login', 'trackAnalyticsEvent -> generic login succeeded', TELOS_ANALYTICS_EVENT_IDS.loginSuccessful);
-                chainSettings.trackAnalyticsEvent(
-                    { id: TELOS_ANALYTICS_EVENT_IDS.loginSuccessful },
-                );
+                this.trace('login', 'trackAnalyticsEvent -> generic login succeeded', TELOS_ANALYTICS_EVENT_NAMES.loginSuccessful);
+                chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginSuccessful);
             }
 
             return res;
         }).catch((error) => {
             // if the user rejects the connection, we don't want to track it as an error
             if (
-                TELOS_NETWORK_NAMES.includes(network) &&
+                trackAnalyticsEvents &&
+                isTelos &&
                 error.message !== 'antelope.evm.error_connect_rejected'
             ) {
-                let failedLoginEventId = '';
+                let failedLoginEventName = '';
 
                 if (authName === MetamaskAuthName) {
-                    failedLoginEventId = TELOS_ANALYTICS_EVENT_IDS.loginFailedMetamask;
+                    failedLoginEventName = TELOS_ANALYTICS_EVENT_NAMES.loginFailedMetamask;
                 } else if (authName === SafePalAuthName) {
-                    failedLoginEventId = TELOS_ANALYTICS_EVENT_IDS.loginFailedSafepal;
+                    failedLoginEventName = TELOS_ANALYTICS_EVENT_NAMES.loginFailedSafepal;
+                } else if (authName === BraveAuthName) {
+                    failedLoginEventName = TELOS_ANALYTICS_EVENT_NAMES.loginFailedBrave;
                 }
 
-                if (failedLoginEventId) {
-                    this.trace('login', 'trackAnalyticsEvent -> login failed', authName, failedLoginEventId);
-                    chainSettings.trackAnalyticsEvent(
-                        { id: failedLoginEventId },
-                    );
+                if (failedLoginEventName) {
+                    this.trace('login', 'trackAnalyticsEvent -> login failed', authName, failedLoginEventName);
+                    chainSettings.trackAnalyticsEvent(failedLoginEventName);
                 }
             }
         }).finally(() => {

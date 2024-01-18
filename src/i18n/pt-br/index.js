@@ -342,6 +342,7 @@ export default {
             incorrect_address_array_length: 'Deve haver { size } endereços na matriz',
             incorrect_booleans_array_length: 'Deve haver { size } booleanos na matriz',
             incorrect_bytes_array_length: 'Deve haver { size } bytes na matriz',
+            odd_number_of_bytes: 'Deve haver um número par de caracteres de byte',
             incorrect_sigint_array_length: 'Deve haver { size } inteiros com sinal na matriz',
             incorrect_strings_array_length: 'Deve haver { size } strings (sequência de caracteres) na matriz',
             incorrect_unsigint_array_length: 'Deve haver { size } inteiros sem sinal na matriz',
@@ -502,6 +503,7 @@ export default {
         neutral_message_wrapping: 'Convertendo <b>{quantity} {symbol}</b> para ERC20',
         neutral_message_unwrapping: 'Restaurando <b>{quantity} {symbol}</b>',
         neutral_message_withdrawing: 'Retirando <b>{quantity} {symbol}</b>',
+        dont_show_message_again: 'Não mostrar esta mensagem novamente',
         error_message_sending: 'Ocorreu um erro ao enviar <b>{quantity}</b> para <b>{address}</b>',
         error_message_staking: 'Ocorreu um erro ao depositar <b>{quantity} {symbol}</b>',
         error_message_unstaking: 'Ocorreu um erro ao preparar a retirada de <b>{quantity} {symbol}</b>',
@@ -519,5 +521,10 @@ export default {
             error_unpredictable_gas_limit: 'Não foi possível estimar o limite de gás para esta transação',
             error_transaction_canceled: 'Você cancelou a ação',
         },
+    },
+    temporal: {
+        telos_cloud_discontinued_title: 'Importante',
+        telos_cloud_discontinued_message_title: 'Atenção utilizadores: A opção de conta Telos Cloud Wallet será descontinuada.',
+        telos_cloud_discontinued_message_body: 'A opção da conta Telos Cloud Wallet (ORE ID via Google) para ligar e assinar transacções será descontinuada após 31 de dezembro. Se utiliza a Telos Cloud Wallet para aceder à sua conta, transfira os seus activos para outra carteira antes deste prazo. <strong>Esta alteração não afecta os utilizadores que acedem às suas contas através de Metamask, WalletConnect, Anchor ou outros métodos de início de sessão.</strong>',
     },
 };
