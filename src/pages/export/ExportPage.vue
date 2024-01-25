@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
+
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -36,9 +38,25 @@ const accountInputRef = ref<null | typeof AddressInput>(null);
 const typeSelectModel = ref(exportTypes[0]);
 const downloadRangeType = ref(downloadRangeTypes.date);
 const dateRange = ref({ to: '', from: '' });
+const startBlockModel = ref('');
+const endBlockModel = ref('');
 
 // computed
-const enableDownloadButton = computed(() => !!parseAddressString(accountModel.value));
+const enableDownloadButton = computed(() => {
+    const isNumber = (val: string) => /^\d+$/.test(val);
+
+    const addressIsValid = !!parseAddressString(accountModel.value);
+    const dateRangeIsValid = dateRange.value.from && dateRange.value.to;
+    const blockRangeIsValid = isNumber(startBlockModel.value) && isNumber(endBlockModel.value);
+
+    return addressIsValid && (
+        (downloadRangeType.value === downloadRangeTypes.date && dateRangeIsValid) ||
+        (downloadRangeType.value === downloadRangeTypes.block && blockRangeIsValid)
+    );
+});
+const dateTextInputModel = computed(() =>
+    (dateRange.value.from && dateRange.value.to) ? `${dateRange.value.from} - ${dateRange.value.to}` : '',
+);
 
 // watchers
 watch(accountModel, () => {
@@ -59,6 +77,12 @@ watch(typeSelectModel, () => {
             },
         });
     }
+}, { immediate: true });
+
+watch(downloadRangeType, () => {
+    startBlockModel.value = '';
+    endBlockModel.value = '';
+    dateRange.value = { to: '', from: '' };
 });
 
 // methods
@@ -66,6 +90,9 @@ function resetOptions() {
     accountModel.value = '';
     typeSelectModel.value = exportTypes[0];
     accountInputRef.value?.resetValidation();
+    startBlockModel.value = '';
+    endBlockModel.value = '';
+    dateRange.value = { to: '', from: '' };
 }
 
 function download() {
@@ -92,16 +119,17 @@ onMounted(() => {
     <q-card>
         <div class="q-pa-lg">
             <div class="row q-mb-md">
-                <div class="col-12 col-md-6 col-lg-3">
+                <div class="col-12 col-md-6 col-lg-2">
                     <q-select
                         v-model="typeSelectModel"
                         :options="exportTypes"
+                        color="secondary"
                         label="Export type"
                     />
                 </div>
             </div>
 
-            <div class="row q-mb-xl">
+            <div class="row q-mb-md">
                 <div class="col-12 col-md-6 col-lg-4">
                     <AddressInput
                         ref="accountInputRef"
@@ -113,7 +141,7 @@ onMounted(() => {
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row q-mb-md">
                 <div class="col-12">
                     Choose download option:
                     <br>
@@ -130,14 +158,13 @@ onMounted(() => {
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row q-mb-xl">
                 <div v-if="downloadRangeType === downloadRangeTypes.date" class="col-4">
                     <q-input
-                        :model-value="`${dateRange.from} - ${dateRange.to}`"
-                        filled
-                        mask="date"
-                        :rules="['date']"
-                        label="Start Date"
+                        :model-value="dateTextInputModel"
+                        :readonly="true"
+                        flat
+                        label="Date Range"
                         class="q-mr-md"
                     >
                         <template v-slot:append>
@@ -162,6 +189,33 @@ onMounted(() => {
                             </q-icon>
                         </template>
                     </q-input>
+                </div>
+
+                <template v-else>
+                    <q-input
+                        v-model="startBlockModel"
+                        label="Start Block*"
+                        name="export-data-start-block"
+                        type="number"
+                        color="secondary"
+                        required="required"
+                        class="col-12 col-sm-6 col-md-4 q-pr-md"
+                    />
+                    <q-input
+                        v-model="endBlockModel"
+                        label="End Block*"
+                        name="export-data-end-block"
+                        type="number"
+                        color="secondary"
+                        required="required"
+                        class="col-12 col-sm-6 col-md-4 q-pr-md"
+                    />
+                </template>
+            </div>
+
+            <div class="row q-mb-md">
+                <div class="col-12">
+                    <VueHcaptcha sitekey="885ed0ce-c4ed-439e-a7c0-1ad3b3727f5b" />
                 </div>
             </div>
 
