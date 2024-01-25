@@ -1,17 +1,28 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import {
+    computed,
+    onMounted,
+    ref,
+    watch,
+} from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
 
 import { EXPORT_DOWNLOAD_TYPES } from 'src/lib/constants';
 import { parseAddressString } from 'src/lib/function-interface-utils';
 
 import AddressInput from 'src/components/inputs/AddressInput.vue';
 
-// eztodo
-declare const hcaptcha: any;
+declare const hcaptcha: {
+    /* eslint-disable-next-line no-unused-vars */
+    render: (id: string, options: { sitekey: string; theme: string; callback: string }) => void;
+};
+
+const TELOSCAN_HCAPTCHA_SITEKEY = '885ed0ce-c4ed-439e-a7c0-1ad3b3727f5b';
 
 const route = useRoute();
 const router = useRouter();
+const $q = useQuasar();
 
 // eztodo i18n
 const exportTypes = [{
@@ -41,6 +52,7 @@ const downloadRangeType = ref(downloadRangeTypes.date);
 const dateRange = ref({ to: '', from: '' });
 const startBlockModel = ref('');
 const endBlockModel = ref('');
+const captchaSucceeded = ref(false);
 
 // computed
 const enableDownloadButton = computed(() => {
@@ -50,10 +62,12 @@ const enableDownloadButton = computed(() => {
     const dateRangeIsValid = dateRange.value.from && dateRange.value.to;
     const blockRangeIsValid = isNumber(startBlockModel.value) && isNumber(endBlockModel.value);
 
-    return addressIsValid && (
-        (downloadRangeType.value === downloadRangeTypes.date && dateRangeIsValid) ||
-        (downloadRangeType.value === downloadRangeTypes.block && blockRangeIsValid)
-    );
+    return addressIsValid &&
+        captchaSucceeded.value &&
+        (
+            (downloadRangeType.value === downloadRangeTypes.date && dateRangeIsValid) ||
+            (downloadRangeType.value === downloadRangeTypes.block && blockRangeIsValid)
+        );
 });
 const dateTextInputModel = computed(() =>
     (dateRange.value.from && dateRange.value.to) ? `${dateRange.value.from} - ${dateRange.value.to}` : '',
@@ -101,21 +115,31 @@ function download() {
     console.log('download', accountModel.value, typeSelectModel.value);
 }
 
-function hCaptchaSuccessHandler() {
-    console.log('test');
+function hCaptchaLoadHandler() {
+    hcaptcha.render('export-page-captcha', {
+        sitekey: TELOSCAN_HCAPTCHA_SITEKEY,
+        theme: $q.dark.isActive ? 'dark' : 'light',
+        callback: 'teloscanHCaptchaSuccessHandler',
+    });
+}
 
+function hCaptchaSuccessHandler() {
+    captchaSucceeded.value = true;
 }
 
 onMounted(() => {
     // hCaptcha requires this global function
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    /* eslint-disable @typescript-eslint/no-explicit-any */
     (window as any).teloscanHCaptchaSuccessHandler = hCaptchaSuccessHandler;
+    (window as any).teloscanHCaptchaLoadHandler = hCaptchaLoadHandler;
+    /* eslint-enable */
 
-    hcaptcha.render('captcha-1', {
-        sitekey: '885ed0ce-c4ed-439e-a7c0-1ad3b3727f5b',
-        theme: 'dark',
-        callback: 'teloscanHCaptchaSuccessHandler',
-    });
+    const hcaptchaScript = document.createElement('script');
+    hcaptchaScript.src = 'https://js.hcaptcha.com/1/api.js';
+    hcaptchaScript.async = true;
+    hcaptchaScript.defer = true;
+    hcaptchaScript.onload = hCaptchaLoadHandler;
+    document.body.appendChild(hcaptchaScript);
 
     if (route.query?.account) {
         accountModel.value = route.query.account as string;
@@ -145,7 +169,7 @@ onMounted(() => {
                 </div>
             </div>
 
-            <div class="row q-mb-md">
+            <div class="row q-mb-lg">
                 <div class="col-12 col-md-6 col-lg-4">
                     <AddressInput
                         ref="accountInputRef"
@@ -164,11 +188,13 @@ onMounted(() => {
                     <q-radio
                         v-model="downloadRangeType"
                         :val="downloadRangeTypes.date"
+                        color="secondary"
                         label="Date"
                     />
                     <q-radio
                         v-model="downloadRangeType"
                         :val="downloadRangeTypes.block"
+                        color="secondary"
                         label="Block Number"
                     />
                 </div>
@@ -215,7 +241,7 @@ onMounted(() => {
                         type="number"
                         color="secondary"
                         required="required"
-                        class="col-12 col-sm-6 col-md-4 q-pr-md"
+                        class="col-12 col-sm-6 col-md-4 col-lg-3 q-mr-md"
                     />
                     <q-input
                         v-model="endBlockModel"
@@ -224,16 +250,14 @@ onMounted(() => {
                         type="number"
                         color="secondary"
                         required="required"
-                        class="col-12 col-sm-6 col-md-4 q-pr-md"
+                        class="col-12 col-sm-6 col-md-4 col-lg-3"
                     />
                 </template>
             </div>
 
             <div class="row q-mb-md">
                 <div class="col-12">
-                    <div
-                        id="captcha-1"
-                    ></div>
+                    <div id="export-page-captcha"></div>
                 </div>
             </div>
 
