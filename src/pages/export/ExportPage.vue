@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import VueHcaptcha from '@hcaptcha/vue3-hcaptcha';
-
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -8,6 +6,9 @@ import { EXPORT_DOWNLOAD_TYPES } from 'src/lib/constants';
 import { parseAddressString } from 'src/lib/function-interface-utils';
 
 import AddressInput from 'src/components/inputs/AddressInput.vue';
+
+// eztodo
+declare const hcaptcha: any;
 
 const route = useRoute();
 const router = useRouter();
@@ -100,7 +101,22 @@ function download() {
     console.log('download', accountModel.value, typeSelectModel.value);
 }
 
+function hCaptchaSuccessHandler() {
+    console.log('test');
+
+}
+
 onMounted(() => {
+    // hCaptcha requires this global function
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    (window as any).teloscanHCaptchaSuccessHandler = hCaptchaSuccessHandler;
+
+    hcaptcha.render('captcha-1', {
+        sitekey: '885ed0ce-c4ed-439e-a7c0-1ad3b3727f5b',
+        theme: 'dark',
+        callback: 'teloscanHCaptchaSuccessHandler',
+    });
+
     if (route.query?.account) {
         accountModel.value = route.query.account as string;
     }
@@ -215,7 +231,9 @@ onMounted(() => {
 
             <div class="row q-mb-md">
                 <div class="col-12">
-                    <VueHcaptcha sitekey="885ed0ce-c4ed-439e-a7c0-1ad3b3727f5b" />
+                    <div
+                        id="captcha-1"
+                    ></div>
                 </div>
             </div>
 
