@@ -6,10 +6,13 @@ import {
     watch,
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+// import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 
 import { EXPORT_DOWNLOAD_TYPES } from 'src/lib/constants';
 import { parseAddressString } from 'src/lib/function-interface-utils';
+import { contractManager, indexerApi } from 'src/boot/telosApi';
+import { ZERO_ADDRESSES } from 'src/lib/utils';
 
 import AddressInput from 'src/components/inputs/AddressInput.vue';
 
@@ -22,6 +25,7 @@ const TELOSCAN_HCAPTCHA_SITEKEY = '885ed0ce-c4ed-439e-a7c0-1ad3b3727f5b';
 
 const route = useRoute();
 const router = useRouter();
+// const { t: $t } = useI18n();
 const $q = useQuasar();
 
 // eztodo i18n
@@ -63,7 +67,7 @@ const enableDownloadButton = computed(() => {
     const blockRangeIsValid = isNumber(startBlockModel.value) && isNumber(endBlockModel.value);
 
     return addressIsValid &&
-        captchaSucceeded.value &&
+        // captchaSucceeded.value && eztodo uncomment
         (
             (downloadRangeType.value === downloadRangeTypes.date && dateRangeIsValid) ||
             (downloadRangeType.value === downloadRangeTypes.block && blockRangeIsValid)
@@ -110,9 +114,170 @@ function resetOptions() {
     dateRange.value = { to: '', from: '' };
 }
 
-function download() {
-    // eztodo download
-    console.log('download', accountModel.value, typeSelectModel.value);
+async function download() {
+    // eztodo add limit note
+    const limit = 10000;
+
+    function escapeCSVValue(value: string) {
+        let escapedVal = value;
+
+        if (escapedVal.includes(',') || escapedVal.includes('\n') || escapedVal.includes('"')) {
+            escapedVal = `"${escapedVal.replace(/"/g, '""')}"`; // Escape quotes
+        }
+
+        return value;
+    }
+
+    function formatTimestamp(unixTimestampMs: number) {
+        const date = new Date(unixTimestampMs);
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    }
+
+    function addEmptyToCache(contracts: any, transaction: any) {
+        let found_to = 0;
+        let found_from = 0;
+        for (const contract in contracts) {
+            if (contract.toLowerCase() === transaction.to.toLowerCase()) {
+                found_to++;
+            }
+            if (contract.toLowerCase() === transaction.from.toLowerCase()) {
+                found_from++;
+            }
+        }
+        if (found_from === 0) {
+            contractManager.addContractToCache(transaction.from, { 'address': transaction.from });
+        }
+        if (found_to === 0) {
+            contractManager.addContractToCache(transaction.to, { 'address': transaction.to });
+        }
+    }
+    if (typeSelectModel.value.value === EXPORT_DOWNLOAD_TYPES.transactions) {
+        type TransactionResult = {
+            gasused: string;
+            contractAddress: string | null;
+            index: number;
+            nonce: number;
+            output: string | null;
+            input: string;
+            gasLimit: string;
+            r: string;
+            s: string;
+            v: string;
+            blockNumber: number;
+            cumulativeGasUsed: string;
+            from: string;
+            to: string;
+            value: string;
+            hash: string;
+            timestamp: number;
+            gasPrice: string;
+            status: string;
+            data: string | null;
+        };
+        // eztodo error handling
+        const { data } = await indexerApi.get(`/address/${accountModel.value}/transactions?limit=${limit}`);
+        const { results } = data as { results: TransactionResult[] };
+        console.log(results);
+
+
+        const transactionRows = await Promise.all(results.map(async (transaction) => {
+            let contract;
+            let parsedTransaction;
+
+            if (transaction.input !== '0x' && transaction.to) {
+                addEmptyToCache(data.contracts, transaction);
+
+                contract = await contractManager.getContract(
+                    transaction.to,
+                );
+
+                if (contract) {
+                    try {
+                        parsedTransaction = await contractManager.parseContractTransaction(
+                            transaction, transaction.input, contract, true,
+                        );
+                    } catch (e) {
+                        parsedTransaction = null;
+                    }
+                }
+            }
+
+            let actionName = '';
+
+            if (
+                !parsedTransaction
+                && transaction.from === ZERO_ADDRESSES
+                && Number(transaction.value) > 0
+                && parseInt(transaction.gasPrice) === 0
+            ) {
+                actionName = 'deposit';
+            } else if (
+                !parsedTransaction
+                && transaction.to === ZERO_ADDRESSES
+                && Number(transaction.value) > 0
+                && parseInt(transaction.gasPrice) === 0
+            ) {
+                actionName = 'withdraw';
+            } else if (!parsedTransaction && transaction.input === '0x' && Number(transaction.value) > 0) {
+                // actionName = $t('components.transaction.tlos_transfer');
+                actionName = 'transfer';
+            } else if (!parsedTransaction && transaction.to === null && transaction.data !== null) {
+                // actionName = $t('components.transaction.contract_deployment');
+                actionName = 'Contract Deployment';
+            } else if (parsedTransaction) {
+                actionName = parsedTransaction.name;
+            } else {
+                // actionName = $t('components.transaction.contract_interaction');
+                actionName = 'Contract Interaction';
+            }
+
+            return {
+                From: transaction.from,
+                To: transaction.to ?? '',
+                'Contract Address': transaction.contractAddress ?? '',
+                'Block Number': String(transaction.blockNumber),
+                'Transaction Hash': transaction.hash,
+                'Unix Timestamp': String(transaction.timestamp),
+                'DateTime': formatTimestamp(transaction.timestamp), // eztodo check this
+                Action: actionName,
+            };
+        }));
+
+        let csvContent = '';
+
+        // Add the header
+        const headers = ['Transaction Hash', 'Block Number', 'Unix Timestamp', 'DateTime', 'From', 'To', 'Contract Address', 'Action']; // Quotes around each header
+        csvContent += headers.map(header => `"${header}"`).join(',') + '\r\n';
+
+        transactionRows.forEach((obj) => {
+            const row = headers.map(header => escapeCSVValue((obj as Record<string, string>)[header]));
+            csvContent += row.join(',') + '\r\n';
+        });
+
+        // Create a Blob from the CSV String
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+        // Create a Download Link
+        const link = document.createElement('a');
+        link.setAttribute('href', URL.createObjectURL(blob));
+        link.setAttribute('download', 'my_data.csv');
+
+        // Trigger the Download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+    } else {
+        // eztodo get transfers
+    }
 }
 
 function hCaptchaLoadHandler() {
