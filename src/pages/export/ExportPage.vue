@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import {
     computed,
+    onBeforeUnmount,
     onMounted,
     ref,
     watch,
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-// import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
 
 import { EXPORT_DOWNLOAD_TYPES } from 'src/lib/constants';
 import { parseAddressString } from 'src/lib/function-interface-utils';
 import { contractManager, indexerApi } from 'src/boot/telosApi';
 import { ZERO_ADDRESSES } from 'src/lib/utils';
+
+import { EvmTransaction } from 'src/antelope/types/EvmTransaction';
 
 import AddressInput from 'src/components/inputs/AddressInput.vue';
 
@@ -25,21 +28,21 @@ const TELOSCAN_HCAPTCHA_SITEKEY = '885ed0ce-c4ed-439e-a7c0-1ad3b3727f5b';
 
 const route = useRoute();
 const router = useRouter();
-// const { t: $t } = useI18n();
 const $q = useQuasar();
+const { t: $t } = useI18n();
 
 // eztodo i18n
 const exportTypes = [{
-    label: 'Transactions',
+    label: $t('components.export.transactions'),
     value: EXPORT_DOWNLOAD_TYPES.transactions,
 }, {
-    label: 'ERC-20 Transfers',
+    label: $t('components.export.erc_20_transfers'),
     value: EXPORT_DOWNLOAD_TYPES.erc20Transfers,
 }, {
-    label: 'ERC-721 Transfers',
+    label: $t('components.export.erc_721_transfers'),
     value: EXPORT_DOWNLOAD_TYPES.erc721Transfers,
 }, {
-    label: 'ERC-1155 Transfers',
+    label: $t('components.export.erc_1155_transfers'),
     value: EXPORT_DOWNLOAD_TYPES.erc1155Transfers,
 }];
 
@@ -160,33 +163,10 @@ async function download() {
         }
     }
     if (typeSelectModel.value.value === EXPORT_DOWNLOAD_TYPES.transactions) {
-        type TransactionResult = {
-            gasused: string;
-            contractAddress: string | null;
-            index: number;
-            nonce: number;
-            output: string | null;
-            input: string;
-            gasLimit: string;
-            r: string;
-            s: string;
-            v: string;
-            blockNumber: number;
-            cumulativeGasUsed: string;
-            from: string;
-            to: string;
-            value: string;
-            hash: string;
-            timestamp: number;
-            gasPrice: string;
-            status: string;
-            data: string | null;
-        };
         // eztodo error handling
+        // eztodo loading state
         const { data } = await indexerApi.get(`/address/${accountModel.value}/transactions?limit=${limit}`);
-        const { results } = data as { results: TransactionResult[] };
-        console.log(results);
-
+        const { results } = data as { results: EvmTransaction[] };
 
         const transactionRows = await Promise.all(results.map(async (transaction) => {
             let contract;
@@ -218,43 +198,49 @@ async function download() {
                 && Number(transaction.value) > 0
                 && parseInt(transaction.gasPrice) === 0
             ) {
-                actionName = 'deposit';
+                actionName = $t('components.transaction.deposit');
             } else if (
                 !parsedTransaction
                 && transaction.to === ZERO_ADDRESSES
                 && Number(transaction.value) > 0
                 && parseInt(transaction.gasPrice) === 0
             ) {
-                actionName = 'withdraw';
+                actionName = $t('components.transaction.withdraw');
             } else if (!parsedTransaction && transaction.input === '0x' && Number(transaction.value) > 0) {
-                // actionName = $t('components.transaction.tlos_transfer');
-                actionName = 'transfer';
-            } else if (!parsedTransaction && transaction.to === null && transaction.data !== null) {
-                // actionName = $t('components.transaction.contract_deployment');
-                actionName = 'Contract Deployment';
+                actionName = $t('components.transaction.tlos_transfer');
+            } else if (!parsedTransaction && transaction.to === null) {
+                actionName = $t('components.transaction.contract_deployment');
             } else if (parsedTransaction) {
                 actionName = parsedTransaction.name;
             } else {
-                // actionName = $t('components.transaction.contract_interaction');
-                actionName = 'Contract Interaction';
+                actionName = $t('components.transaction.contract_interaction');
             }
 
             return {
-                From: transaction.from,
-                To: transaction.to ?? '',
-                'Contract Address': transaction.contractAddress ?? '',
-                'Block Number': String(transaction.blockNumber),
-                'Transaction Hash': transaction.hash,
-                'Unix Timestamp': String(transaction.timestamp),
-                'DateTime': formatTimestamp(transaction.timestamp), // eztodo check this
-                Action: actionName,
+                [$t('components.export.column_header_to')]: `"${transaction.from}"`,
+                [$t('components.export.column_header_from')]: `"${transaction.to ?? ''}"`,
+                [$t('components.export.column_header_contract_address')]: `"${transaction.contractAddress ?? ''}"`,
+                [$t('components.export.column_header_block_number')]: `"${String(transaction.blockNumber)}"`,
+                [$t('components.export.column_header_tx_hash')]: `"${transaction.hash}"`,
+                [$t('components.export.column_header_timestamp')]: `"${String(transaction.timestamp)}"`,
+                [$t('components.export.column_header_date')]: `"${formatTimestamp(transaction.timestamp)}"`,
+                [$t('components.export.column_header_action')]: `"${actionName}"`,
             };
         }));
 
         let csvContent = '';
 
         // Add the header
-        const headers = ['Transaction Hash', 'Block Number', 'Unix Timestamp', 'DateTime', 'From', 'To', 'Contract Address', 'Action']; // Quotes around each header
+        const headers = [
+            $t('components.export.column_header_to'),
+            $t('components.export.column_header_from'),
+            $t('components.export.column_header_contract_address'),
+            $t('components.export.column_header_block_number'),
+            $t('components.export.column_header_tx_hash'),
+            $t('components.export.column_header_timestamp'),
+            $t('components.export.column_header_date'),
+            $t('components.export.column_header_action'),
+        ];
         csvContent += headers.map(header => `"${header}"`).join(',') + '\r\n';
 
         transactionRows.forEach((obj) => {
@@ -268,7 +254,7 @@ async function download() {
         // Create a Download Link
         const link = document.createElement('a');
         link.setAttribute('href', URL.createObjectURL(blob));
-        link.setAttribute('download', 'my_data.csv');
+        link.setAttribute('download', 'teloscan-txs.csv');
 
         // Trigger the Download
         document.body.appendChild(link);
@@ -314,12 +300,20 @@ onMounted(() => {
         typeSelectModel.value = exportTypes.find(type => type.value === route.query.type) as { label: string; value: string };
     }
 });
+
+onBeforeUnmount(() => {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    delete (window as any).teloscanHCaptchaSuccessHandler;
+    delete (window as any).teloscanHCaptchaLoadHandler;
+    /* eslint-enable */
+});
 </script>
 
 <template>
-<!-- eztodo i18n -->
 <div class="pageContainer q-pt-lg">
-    <h1 class="text-primary text-h4 q-pb-md">Download Data (CSV Export)</h1>
+    <h1 class="text-primary text-h4 q-pb-md">
+        {{ $t('components.export.page_header') }}
+    </h1>
 
     <q-card>
         <div class="q-pa-lg">
@@ -329,7 +323,7 @@ onMounted(() => {
                         v-model="typeSelectModel"
                         :options="exportTypes"
                         color="secondary"
-                        label="Export type"
+                        :label="$t('components.export.export_type')"
                     />
                 </div>
             </div>
@@ -339,7 +333,7 @@ onMounted(() => {
                     <AddressInput
                         ref="accountInputRef"
                         v-model="accountModel"
-                        label="Account"
+                        :label="$t('pages.account')"
                         required="required"
                         name="export-account"
                     />
@@ -348,19 +342,19 @@ onMounted(() => {
 
             <div class="row q-mb-md">
                 <div class="col-12">
-                    Choose download option:
+                    {{ $t('components.export.choose_download_option') }}
                     <br>
                     <q-radio
                         v-model="downloadRangeType"
                         :val="downloadRangeTypes.date"
+                        :label="$t('components.export.date_range')"
                         color="secondary"
-                        label="Date"
                     />
                     <q-radio
                         v-model="downloadRangeType"
                         :val="downloadRangeTypes.block"
+                        :label="$t('components.export.column_header_block_number')"
                         color="secondary"
-                        label="Block Number"
                     />
                 </div>
             </div>
@@ -371,7 +365,7 @@ onMounted(() => {
                         :model-value="dateTextInputModel"
                         :readonly="true"
                         flat
-                        label="Date Range"
+                        :label="$t('components.export.date_range')"
                         class="q-mr-md"
                     >
                         <template v-slot:append>
@@ -401,7 +395,7 @@ onMounted(() => {
                 <template v-else>
                     <q-input
                         v-model="startBlockModel"
-                        label="Start Block*"
+                        :label="`${$t('components.export.start_block')}*`"
                         name="export-data-start-block"
                         type="number"
                         color="secondary"
@@ -410,7 +404,7 @@ onMounted(() => {
                     />
                     <q-input
                         v-model="endBlockModel"
-                        label="End Block*"
+                        :label="`${$t('components.export.end_block')}*`"
                         name="export-data-end-block"
                         type="number"
                         color="secondary"
@@ -430,14 +424,14 @@ onMounted(() => {
                 <div class="col-12">
                     <q-btn
                         :disable="!enableDownloadButton"
-                        label="Download CSV"
+                        :label="$t('components.export.download_csv')"
                         icon="download"
                         color="secondary"
                         class="q-mr-md"
                         @click="download"
                     />
                     <q-btn
-                        label="Reset"
+                        :label="$t('components.export.reset')"
                         flat
                         color="secondary"
                         @click="resetOptions"
