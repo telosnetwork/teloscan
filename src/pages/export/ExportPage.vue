@@ -14,6 +14,7 @@ import { EXPORT_DOWNLOAD_TYPES } from 'src/lib/constants';
 import { parseAddressString } from 'src/lib/function-interface-utils';
 import { contractManager, indexerApi } from 'src/boot/telosApi';
 import { ZERO_ADDRESSES } from 'src/lib/utils';
+import { addEmptyContractToCache } from 'src/lib/contract-utils';
 
 import { EvmTransaction } from 'src/antelope/types/EvmTransaction';
 
@@ -146,24 +147,6 @@ async function download() {
         return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     }
 
-    function addEmptyToCache(contracts: any, transaction: any) {
-        let found_to = 0;
-        let found_from = 0;
-        for (const contract in contracts) {
-            if (contract.toLowerCase() === transaction.to.toLowerCase()) {
-                found_to++;
-            }
-            if (contract.toLowerCase() === transaction.from.toLowerCase()) {
-                found_from++;
-            }
-        }
-        if (found_from === 0) {
-            contractManager.addContractToCache(transaction.from, { 'address': transaction.from });
-        }
-        if (found_to === 0) {
-            contractManager.addContractToCache(transaction.to, { 'address': transaction.to });
-        }
-    }
     if (typeSelectModel.value.value === EXPORT_DOWNLOAD_TYPES.transactions) {
         // eztodo error handling
         // eztodo loading state
@@ -175,7 +158,7 @@ async function download() {
             let parsedTransaction;
 
             if (transaction.input !== '0x' && transaction.to) {
-                addEmptyToCache(data.contracts, transaction);
+                addEmptyContractToCache(contractManager, data.contracts, transaction);
 
                 contract = await contractManager.getContract(
                     transaction.to,
@@ -384,7 +367,7 @@ onBeforeUnmount(() => {
                                         <div class="row items-center justify-end">
                                             <q-btn
                                                 v-close-popup
-                                                label="Close"
+                                                :label="$t('global.close')"
                                                 color="primary"
                                                 flat
                                             />
