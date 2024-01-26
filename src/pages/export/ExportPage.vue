@@ -416,7 +416,11 @@ onBeforeUnmount(() => {
 
             <div class="row q-mb-md">
                 <div class="col-12">
-                    <div id="export-page-captcha"></div>
+                    <div class="c-export-page__captcha-container">
+                        <q-spinner class="c-export-page__captcha-spinner" size="md" aria-hidden="true" />
+
+                        <div id="export-page-captcha" class="c-export-page__captcha"></div>
+                    </div>
                 </div>
             </div>
 
@@ -442,3 +446,24 @@ onBeforeUnmount(() => {
     </q-card>
 </div>
 </template>
+
+<style lang="scss">
+.c-export-page {
+    &__captcha-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    &__captcha-spinner {
+        position: absolute;
+        left: 0;
+        z-index: 1;
+    }
+
+    &__captcha {
+        z-index: 5
+    }
+}
+</style>
