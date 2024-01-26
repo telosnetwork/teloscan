@@ -60,6 +60,7 @@ const dateRange = ref({ to: '', from: '' });
 const startBlockModel = ref('');
 const endBlockModel = ref('');
 const captchaSucceeded = ref(false);
+const exportIsLoading = ref(false);
 
 // computed
 const enableDownloadButton = computed(() => {
@@ -118,6 +119,7 @@ function resetOptions() {
 }
 
 async function download() {
+    exportIsLoading.value = true;
     // eztodo add limit note
     const limit = 10000;
 
@@ -264,6 +266,8 @@ async function download() {
     } else {
         // eztodo get transfers
     }
+
+    exportIsLoading.value = false;
 }
 
 function hCaptchaLoadHandler() {
@@ -429,6 +433,7 @@ onBeforeUnmount(() => {
                     <q-btn
                         :disable="!enableDownloadButton"
                         :label="$t('components.export.download_csv')"
+                        :loading="exportIsLoading"
                         icon="download"
                         color="secondary"
                         class="q-mr-md"
