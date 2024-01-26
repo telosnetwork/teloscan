@@ -120,25 +120,34 @@ function resetOptions() {
     dateRange.value = { to: '', from: '' };
 }
 
+function escapeCSVValue(value: string) {
+    let escapedVal = value;
+
+    if (escapedVal.includes(',') || escapedVal.includes('\n') || escapedVal.includes('"')) {
+        escapedVal = `"${escapedVal.replace(/"/g, '""')}"`; // Escape quotes
+    }
+
+    return value;
+}
+
 async function download() {
     exportIsLoading.value = true;
     // eztodo add limit note
     const limit = 10000;
 
-    function escapeCSVValue(value: string) {
-        let escapedVal = value;
-
-        if (escapedVal.includes(',') || escapedVal.includes('\n') || escapedVal.includes('"')) {
-            escapedVal = `"${escapedVal.replace(/"/g, '""')}"`; // Escape quotes
-        }
-
-        return value;
-    }
-
     if (typeSelectModel.value.value === EXPORT_DOWNLOAD_TYPES.transactions) {
         // eztodo error handling
-        // eztodo loading state
-        const { data } = await indexerApi.get(`/address/${accountModel.value}/transactions?limit=${limit}`);
+        let url = `/address/${accountModel.value}/transactions?limit=${limit}&`;
+
+        if (dateRange.value.from && dateRange.value.to) {
+            const startTime = (new Date(dateRange.value.from)).getTime();
+            const endTime = (new Date(dateRange.value.to)).getTime();
+            url += `startDate=${startTime}&endDate=${endTime}`;
+        } else {
+            url += `startBlock=${startBlockModel.value}&endBlock=${endBlockModel.value}`;
+        }
+
+        const { data } = await indexerApi.get(url);
         const { results } = data as { results: EvmTransaction[] };
 
         const transactionRows = await Promise.all(results.map(async (transaction) => {
