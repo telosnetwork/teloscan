@@ -474,6 +474,8 @@ export default {
             column_header_contract_address: 'Vertragsadresse',
             column_header_date: 'Datum',
             column_header_from: 'Aus',
+            column_header_nft_collection_name: 'NFT-Sammlungsname',
+            column_header_nft_id: 'NFT-ID',
             column_header_timestamp: 'Unix-Zeitstempel (ms)',
             column_header_to: 'Zu',
             column_header_token_contract_address: 'Token-Vertragsadresse',

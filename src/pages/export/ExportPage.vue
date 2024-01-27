@@ -245,7 +245,6 @@ async function download() {
 
         const { data } = await indexerApi.get(url);
         const { results } = data as { results: EvmTransfer[] };
-        console.log(results);
 
         const transferRows = await Promise.all(results.map(async (transfer) => {
             const contract = await contractManager.getContract(
@@ -288,6 +287,63 @@ async function download() {
         });
 
         fileName = `teloscan-erc20-transfers-${accountModel.value}.csv`;
+    } else {
+        let url = `/account/${accountModel.value}/transfers`;
+        let type;
+
+        if (typeSelectModel.value.value === EXPORT_DOWNLOAD_TYPES.erc721Transfers) {
+            type = 'erc721';
+            fileName = `teloscan-erc721-transfers-${accountModel.value}.csv`;
+
+        } else {
+            type = 'erc1155';
+            fileName = `teloscan-erc1155-transfers-${accountModel.value}.csv`;
+        }
+
+        url = appendFilters(url, `type=${type}`);
+
+        const { data } = await indexerApi.get(url);
+        const { results } = data as { results: EvmTransfer[] };
+
+        const transferRows = await Promise.all(results.map(async (transfer) => {
+            const contract = await contractManager.getContract(
+                transfer.contract,
+            );
+            const amount = typeSelectModel.value.value === EXPORT_DOWNLOAD_TYPES.erc721Transfers ? '1' : transfer.amount;
+
+            return {
+                [$t('components.export.column_header_to')]: `"${transfer.from}"`,
+                [$t('components.export.column_header_from')]: `"${transfer.to}"`,
+                [$t('components.export.column_header_block_number')]: `"${String(transfer.blockNumber)}"`,
+                [$t('components.export.column_header_tx_hash')]: `"${transfer.transaction}"`,
+                [$t('components.export.column_header_timestamp')]: `"${String(transfer.timestamp)}"`,
+                [$t('components.export.column_header_date')]: `"${formatTimestamp(transfer.timestamp)}"`,
+                [$t('components.export.column_header_amount')]: `"${amount}"`,
+                [$t('components.export.column_header_nft_collection_name')]: `"${contract.properties.name}"`,
+                [$t('components.export.column_header_nft_id')]: `"${transfer.id}"`,
+                [$t('components.export.column_header_token_contract_address')]: `"${transfer.contract}"`,
+            };
+        }));
+
+        // Add the header
+        const headers = [
+            $t('components.export.column_header_to'),
+            $t('components.export.column_header_from'),
+            $t('components.export.column_header_block_number'),
+            $t('components.export.column_header_tx_hash'),
+            $t('components.export.column_header_timestamp'),
+            $t('components.export.column_header_date'),
+            $t('components.export.column_header_amount'),
+            $t('components.export.column_header_nft_collection_name'),
+            $t('components.export.column_header_nft_id'),
+            $t('components.export.column_header_token_contract_address'),
+        ];
+        csvContent += headers.map(header => `"${header}"`).join(',') + '\r\n';
+
+        transferRows.forEach((obj) => {
+            const row = headers.map(header => escapeCSVValue((obj as Record<string, string>)[header]));
+            csvContent += row.join(',') + '\r\n';
+        });
     }
 
     // Create a Blob with the CSV content
