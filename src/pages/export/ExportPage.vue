@@ -53,6 +53,8 @@ const downloadRangeTypes = {
     block: 'block',
 };
 
+const RESULTS_LIMIT = 10000;
+
 // data
 const accountModel = ref('');
 const accountInputRef = ref<null | typeof AddressInput>(null);
@@ -132,14 +134,12 @@ function escapeCSVValue(value: string) {
 
 async function download() {
     exportIsLoading.value = true;
-    // eztodo add limit note
-    const limit = 10000;
 
     let csvContent = '';
     let fileName = '';
 
     function appendFilters(url: string, extras?: string) {
-        let returnUrl = `${url}?limit=${limit}${extras ? `&${extras}` : ''}&`;
+        let returnUrl = `${url}?limit=${RESULTS_LIMIT}${extras ? `&${extras}` : ''}&`;
         if (dateRange.value.from && dateRange.value.to) {
             const startTime = (new Date(dateRange.value.from)).getTime();
             const endTime = (new Date(dateRange.value.to)).getTime();
@@ -454,7 +454,7 @@ onBeforeUnmount(() => {
                 </div>
             </div>
 
-            <div class="row q-mb-xl">
+            <div class="row q-mb-md">
                 <div v-if="downloadRangeType === downloadRangeTypes.date" class="col-4">
                     <q-input
                         :model-value="dateTextInputModel"
@@ -507,6 +507,15 @@ onBeforeUnmount(() => {
                         class="col-12 col-sm-6 col-md-4 col-lg-3"
                     />
                 </template>
+            </div>
+
+            <div class="row q-mb-lg">
+                <div class="col-12">
+                    <div class="flex items-center text-grey">
+                        <q-icon name="info" class="q-mr-sm" />
+                        {{ $t('components.export.limit_notice', { amount: RESULTS_LIMIT.toLocaleString() }) }}
+                    </div>
+                </div>
             </div>
 
             <div class="row q-mb-md">

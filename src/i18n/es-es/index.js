@@ -490,6 +490,7 @@ export default {
             erc_20_transfers: 'Transferencias ERC-20',
             erc_721_transfers: 'Transferencias ERC-721',
             export_type: 'Tipo de exportación',
+            limit_notice: 'Sólo se exportarán los primeros {amount} resultados.',
             page_header: 'Descargar datos (exportación CSV)',
             reset: 'Reiniciar',
             start_block: 'Bloque de inicio',

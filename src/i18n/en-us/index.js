@@ -494,6 +494,7 @@ export default {
             erc_20_transfers: 'ERC-20 Transfers',
             erc_721_transfers: 'ERC-721 Transfers',
             export_type: 'Export Type',
+            limit_notice: 'Only the first {amount} results will be exported',
             page_header: 'Download Data (CSV Export)',
             reset: 'Reset',
             start_block: 'Start Block',
