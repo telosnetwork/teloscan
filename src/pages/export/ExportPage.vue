@@ -16,8 +16,9 @@ import { contractManager, indexerApi } from 'src/boot/telosApi';
 import { ZERO_ADDRESSES } from 'src/lib/utils';
 import { addEmptyContractToCache } from 'src/lib/contract-utils';
 import { formatTimestamp } from 'src/lib/date-utils';
+import { formatWei } from 'src/lib/utils';
 
-import { EvmTransaction } from 'src/antelope/types/EvmTransaction';
+import { EvmTransaction, EvmTransfer } from 'src/antelope/types/EvmTransaction';
 
 import AddressInput from 'src/components/inputs/AddressInput.vue';
 
@@ -135,17 +136,26 @@ async function download() {
     // eztodo add limit note
     const limit = 10000;
 
-    if (typeSelectModel.value.value === EXPORT_DOWNLOAD_TYPES.transactions) {
-        // eztodo error handling
-        let url = `/address/${accountModel.value}/transactions?limit=${limit}&`;
+    let csvContent = '';
+    let fileName = '';
 
+    function appendFilters(url: string, extras?: string) {
+        let returnUrl = `${url}?limit=${limit}${extras ? `&${extras}` : ''}&`;
         if (dateRange.value.from && dateRange.value.to) {
             const startTime = (new Date(dateRange.value.from)).getTime();
             const endTime = (new Date(dateRange.value.to)).getTime();
-            url += `startDate=${startTime}&endDate=${endTime}`;
+            returnUrl += `startDate=${startTime}&endDate=${endTime}`;
         } else {
-            url += `startBlock=${startBlockModel.value}&endBlock=${endBlockModel.value}`;
+            returnUrl += `startBlock=${startBlockModel.value}&endBlock=${endBlockModel.value}`;
         }
+
+        return returnUrl;
+    }
+
+    if (typeSelectModel.value.value === EXPORT_DOWNLOAD_TYPES.transactions) {
+        // eztodo error handling
+        let url = `/address/${accountModel.value}/transactions`;
+        url = appendFilters(url);
 
         const { data } = await indexerApi.get(url);
         const { results } = data as { results: EvmTransaction[] };
@@ -210,8 +220,6 @@ async function download() {
             };
         }));
 
-        let csvContent = '';
-
         // Add the header
         const headers = [
             $t('components.export.column_header_to'),
@@ -230,22 +238,70 @@ async function download() {
             csvContent += row.join(',') + '\r\n';
         });
 
-        // Create a Blob from the CSV String
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        fileName = `teloscan-txs-${accountModel.value}.csv`;
+    } else if (typeSelectModel.value.value === EXPORT_DOWNLOAD_TYPES.erc20Transfers) {
+        let url = `/account/${accountModel.value}/transfers`;
+        url = appendFilters(url, 'type=erc20');
 
-        // Create a Download Link
-        const link = document.createElement('a');
-        link.setAttribute('href', URL.createObjectURL(blob));
-        link.setAttribute('download', 'teloscan-txs.csv');
+        const { data } = await indexerApi.get(url);
+        const { results } = data as { results: EvmTransfer[] };
+        console.log(results);
 
-        // Trigger the Download
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const transferRows = await Promise.all(results.map(async (transfer) => {
+            const contract = await contractManager.getContract(
+                transfer.contract,
+            );
+            const amount = formatWei(transfer.amount, contract.properties.decimals);
 
-    } else {
-        // eztodo get transfers
+            return {
+                [$t('components.export.column_header_to')]: `"${transfer.from}"`,
+                [$t('components.export.column_header_from')]: `"${transfer.to}"`,
+                [$t('components.export.column_header_block_number')]: `"${String(transfer.blockNumber)}"`,
+                [$t('components.export.column_header_tx_hash')]: `"${transfer.transaction}"`,
+                [$t('components.export.column_header_timestamp')]: `"${String(transfer.timestamp)}"`,
+                [$t('components.export.column_header_date')]: `"${formatTimestamp(transfer.timestamp)}"`,
+                [$t('components.export.column_header_amount')]: `"${amount}"`,
+                [$t('components.export.column_header_token_name')]: `"${contract.properties.name}"`,
+                [$t('components.export.column_header_token_symbol')]: `"${contract.properties.symbol}"`,
+                [$t('components.export.column_header_token_contract_address')]: `"${transfer.contract}"`,
+            };
+        }));
+
+        // Add the header
+        const headers = [
+            $t('components.export.column_header_to'),
+            $t('components.export.column_header_from'),
+            $t('components.export.column_header_block_number'),
+            $t('components.export.column_header_tx_hash'),
+            $t('components.export.column_header_timestamp'),
+            $t('components.export.column_header_date'),
+            $t('components.export.column_header_amount'),
+            $t('components.export.column_header_token_name'),
+            $t('components.export.column_header_token_symbol'),
+            $t('components.export.column_header_token_contract_address'),
+        ];
+        csvContent += headers.map(header => `"${header}"`).join(',') + '\r\n';
+
+        transferRows.forEach((obj) => {
+            const row = headers.map(header => escapeCSVValue((obj as Record<string, string>)[header]));
+            csvContent += row.join(',') + '\r\n';
+        });
+
+        fileName = `teloscan-erc20-transfers-${accountModel.value}.csv`;
     }
+
+    // Create a Blob with the CSV content
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    // Create a Download Link
+    const link = document.createElement('a');
+    link.setAttribute('href', URL.createObjectURL(blob));
+    link.setAttribute('download', fileName);
+
+    // Trigger the Download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
     exportIsLoading.value = false;
 }
