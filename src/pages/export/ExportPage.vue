@@ -34,7 +34,6 @@ const router = useRouter();
 const $q = useQuasar();
 const { t: $t } = useI18n();
 
-// eztodo i18n
 const exportTypes = [{
     label: $t('components.export.transactions'),
     value: EXPORT_DOWNLOAD_TYPES.transactions,
@@ -74,7 +73,7 @@ const enableDownloadButton = computed(() => {
     const blockRangeIsValid = isNumber(startBlockModel.value) && isNumber(endBlockModel.value);
 
     return addressIsValid &&
-        // captchaSucceeded.value && eztodo uncomment
+        captchaSucceeded.value &&
         (
             (downloadRangeType.value === downloadRangeTypes.date && dateRangeIsValid) ||
             (downloadRangeType.value === downloadRangeTypes.block && blockRangeIsValid)
