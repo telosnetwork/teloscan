@@ -468,6 +468,7 @@ export default {
             back_to_top: 'Volver arriba',
         },
         export: {
+            block_range: 'Rango de bloques',
             choose_download_option: 'Elija una opción de descarga',
             column_header_action: 'Acción',
             column_header_amount: 'Cantidad',

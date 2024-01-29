@@ -418,6 +418,7 @@ export default {
             in_this_block: 'dans ce bloc',
         },
         export: {
+            block_range: 'Plage de blocs',
             choose_download_option: 'Choisir une option de téléchargement',
             column_header_action: 'Action',
             column_header_amount: 'Montant',

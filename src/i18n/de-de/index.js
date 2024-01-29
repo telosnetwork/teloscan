@@ -467,6 +467,7 @@ export default {
             back_to_top: 'Zurück nach oben',
         },
         export: {
+            block_range: 'Blockbereich',
             choose_download_option: 'Wählen Sie eine Download-Option',
             column_header_action: 'Aktion',
             column_header_amount: 'Betrag',

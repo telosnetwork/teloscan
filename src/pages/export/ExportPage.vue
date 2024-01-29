@@ -17,6 +17,7 @@ import { downloadCsv } from 'src/lib/data-export-utils';
 import { useNotifications } from 'src/boot/errorHandling';
 
 import AddressInput from 'src/components/inputs/AddressInput.vue';
+import { nextTick } from 'vue';
 
 declare const hcaptcha: {
     /* eslint-disable-next-line no-unused-vars */
@@ -113,10 +114,13 @@ watch(downloadRangeType, () => {
 function resetOptions() {
     accountModel.value = '';
     typeSelectModel.value = exportTypes[0];
-    accountInputRef.value?.resetValidation();
     startBlockModel.value = '';
     endBlockModel.value = '';
     dateRange.value = { to: '', from: '' };
+
+    nextTick(() => {
+        accountInputRef.value?.resetValidation();
+    });
 }
 
 function download() {
@@ -244,7 +248,7 @@ onBeforeUnmount(() => {
                     <q-radio
                         v-model="downloadRangeType"
                         :val="downloadRangeTypes.block"
-                        :label="$t('components.export.column_header_block_number')"
+                        :label="$t('components.export.block_range')"
                         color="secondary"
                     />
                 </div>

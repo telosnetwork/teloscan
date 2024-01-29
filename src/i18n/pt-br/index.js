@@ -464,6 +464,7 @@ export default {
             back_to_top: 'Voltar ao topo',
         },
         export: {
+            block_range: 'Intervalo de blocos',
             choose_download_option: 'Escolha uma opção de download',
             column_header_action: 'Ação',
             column_header_amount: 'Montante',

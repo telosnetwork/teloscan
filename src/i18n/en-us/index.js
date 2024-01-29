@@ -472,6 +472,7 @@ export default {
             back_to_top: 'Back to top',
         },
         export: {
+            block_range: 'Block Range',
             choose_download_option: 'Choose download option',
             column_header_action: 'Action',
             column_header_amount: 'Amount',
