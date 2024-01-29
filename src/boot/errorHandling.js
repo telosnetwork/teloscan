@@ -391,13 +391,13 @@ export function useNotifications() {
     const { proxy } = instance;
 
     const notifySuccessTransaction = proxy.$notifySuccessTransaction;
-    const notifySuccessMessage = proxy.$notifySuccessMessage;
-    const notifySuccessCopy = proxy.$notifySuccessCopy;
-    const notifyFailure = proxy.$notifyFailure;
-    const notifyFailureWithAction = proxy.$notifyFailureWithAction;
-    const notifyDisconnected = proxy.$notifyDisconnected;
-    const notifyNeutralMessage = proxy.$notifyNeutralMessage;
-    const notifyRememberInfo = proxy.$notifyRememberInfo;
+    const notifySuccessMessage     = proxy.$notifySuccessMessage;
+    const notifySuccessCopy        = proxy.$notifySuccessCopy;
+    const notifyFailure            = proxy.$notifyFailure;
+    const notifyFailureWithAction  = proxy.$notifyFailureWithAction;
+    const notifyDisconnected       = proxy.$notifyDisconnected;
+    const notifyNeutralMessage     = proxy.$notifyNeutralMessage;
+    const notifyRememberInfo       = proxy.$notifyRememberInfo;
 
     return {
         notifySuccessTransaction,
