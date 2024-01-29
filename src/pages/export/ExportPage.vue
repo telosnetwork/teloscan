@@ -255,7 +255,7 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="row q-mb-md">
-                <div v-if="downloadRangeType === downloadRangeTypes.date" class="col-4">
+                <div v-if="downloadRangeType === downloadRangeTypes.date" class="col-12 col-md-6 col-lg-4">
                     <q-input
                         :model-value="dateTextInputModel"
                         :readonly="true"
