@@ -8,7 +8,6 @@ defineProps<{
 
 <template>
 <p class="text-right q-pa-sm q-mr-md">
-    <!-- eztodo i18n -->
     [
     <router-link
         :to="{
@@ -19,7 +18,7 @@ defineProps<{
             }
         }"
     >
-        Download CSV
+        {{ $t('components.export.download_csv') }}
         <q-icon
             name="download"
             size="xs"

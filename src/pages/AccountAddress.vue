@@ -706,11 +706,10 @@ export default {
                         :title="accountAddress"
                         :account-address="accountAddress"
                     />
-                    <!-- eztodo i18n -->
                     <ExportLink
                         :account="accountAddress"
                         :type="EXPORT_DOWNLOAD_TYPES.transactions"
-                        ariaLabel="Download Transactions CSV"
+                        :ariaLabel="$t('components.export.download_transactions_csv')"
                     />
                 </q-tab-panel>
                 <q-tab-panel
@@ -775,11 +774,10 @@ export default {
                         :address="accountAddress"
                         @before-hide="cancelHide"
                     />
-                    <!-- eztodo i18n -->
                     <ExportLink
                         :account="accountAddress"
                         :type="EXPORT_DOWNLOAD_TYPES.erc20Transfers"
-                        ariaLabel="Download ERC-20 Transfers CSV"
+                        :ariaLabel="$t('components.export.download_erc_20_transfers_csv')"
                     />
                 </q-tab-panel>
                 <q-tab-panel :v-model="subtab" name="erc1155_transfers">
@@ -790,11 +788,10 @@ export default {
                         :address="accountAddress"
                         @before-hide="cancelHide"
                     />
-                    <!-- eztodo i18n -->
                     <ExportLink
                         :account="accountAddress"
                         :type="EXPORT_DOWNLOAD_TYPES.erc1155Transfers"
-                        ariaLabel="Download ERC-1155 Transfers CSV"
+                        :ariaLabel="$t('components.export.download_erc_1155_transfers_csv')"
                     />
                 </q-tab-panel>
                 <q-tab-panel :v-model="subtab" name="erc721_transfers">
@@ -805,11 +802,10 @@ export default {
                         :address="accountAddress"
                         @before-hide="cancelHide"
                     />
-                    <!-- eztodo i18n -->
                     <ExportLink
                         :account="accountAddress"
                         :type="EXPORT_DOWNLOAD_TYPES.erc721Transfers"
-                        ariaLabel="Download ERC-721 Transfers CSV"
+                        :ariaLabel="$t('components.export.download_erc_721_transfers_csv')"
                     />
                 </q-tab-panel>
                 <q-tab-panel v-if="isContract" name="contract">

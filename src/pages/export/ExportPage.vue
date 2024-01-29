@@ -17,8 +17,9 @@ import { ZERO_ADDRESSES } from 'src/lib/utils';
 import { addEmptyContractToCache } from 'src/lib/contract-utils';
 import { formatTimestamp } from 'src/lib/date-utils';
 import { formatWei } from 'src/lib/utils';
+import { useNotifications } from 'src/boot/errorHandling';
 
-import { EvmTransaction, EvmTransfer } from 'src/antelope/types/EvmTransaction';
+import { EvmTransaction, EvmTransfer, IndexerContractData } from 'src/antelope/types/EvmTransaction';
 
 import AddressInput from 'src/components/inputs/AddressInput.vue';
 
@@ -33,6 +34,7 @@ const route = useRoute();
 const router = useRouter();
 const $q = useQuasar();
 const { t: $t } = useI18n();
+const { notifyFailure, notifySuccessMessage } = useNotifications();
 
 const exportTypes = [{
     label: $t('components.export.transactions'),
@@ -152,19 +154,29 @@ async function download() {
     }
 
     if (typeSelectModel.value.value === EXPORT_DOWNLOAD_TYPES.transactions) {
-        // eztodo error handling
-        let url = `/address/${accountModel.value}/transactions`;
+        let url = `/address/${accountModel.value}/transactionszz`;
         url = appendFilters(url);
+        let contracts: IndexerContractData[];
+        let transactions: EvmTransaction[];
 
-        const { data } = await indexerApi.get(url);
-        const { results } = data as { results: EvmTransaction[] };
+        try {
+            const { data } = await indexerApi.get(url);
+            const { results } = data as { results: EvmTransaction[] };
 
-        const transactionRows = await Promise.all(results.map(async (transaction) => {
+            contracts = data.contracts;
+            transactions = results;
+        } catch (e) {
+            console.error(e);
+            notifyFailure($t('components.export.notification_failed_download'), e);
+            return;
+        }
+
+        const transactionRows = await Promise.all(transactions.map(async (transaction) => {
             let contract;
             let parsedTransaction;
 
             if (transaction.input !== '0x' && transaction.to) {
-                addEmptyContractToCache(contractManager, data.contracts, transaction);
+                addEmptyContractToCache(contractManager, contracts, transaction);
 
                 contract = await contractManager.getContract(
                     transaction.to,
@@ -242,10 +254,19 @@ async function download() {
         let url = `/account/${accountModel.value}/transfers`;
         url = appendFilters(url, 'type=erc20');
 
-        const { data } = await indexerApi.get(url);
-        const { results } = data as { results: EvmTransfer[] };
+        let transfers: EvmTransfer[];
 
-        const transferRows = await Promise.all(results.map(async (transfer) => {
+        try {
+            const { data } = await indexerApi.get(url);
+            const { results } = data as { results: EvmTransfer[] };
+            transfers = results;
+        } catch (e) {
+            console.error(e);
+            notifyFailure($t('components.export.notification_failed_download'), e);
+            return;
+        }
+
+        const transferRows = await Promise.all(transfers.map(async (transfer) => {
             const contract = await contractManager.getContract(
                 transfer.contract,
             );
@@ -301,10 +322,20 @@ async function download() {
 
         url = appendFilters(url, `type=${type}`);
 
-        const { data } = await indexerApi.get(url);
-        const { results } = data as { results: EvmTransfer[] };
 
-        const transferRows = await Promise.all(results.map(async (transfer) => {
+        let transfers: EvmTransfer[];
+
+        try {
+            const { data } = await indexerApi.get(url);
+            const { results } = data as { results: EvmTransfer[] };
+            transfers = results;
+        } catch (e) {
+            console.error(e);
+            notifyFailure($t('components.export.notification_failed_download'), e);
+            return;
+        }
+
+        const transferRows = await Promise.all(transfers.map(async (transfer) => {
             const contract = await contractManager.getContract(
                 transfer.contract,
             );
@@ -359,6 +390,7 @@ async function download() {
     document.body.removeChild(link);
 
     exportIsLoading.value = false;
+    notifySuccessMessage($t('components.export.notification_successful_download'));
 }
 
 function hCaptchaLoadHandler() {

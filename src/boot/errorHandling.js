@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { boot } from 'quasar/wrappers';
 import { Dialog, Notify } from 'quasar';
+import { getCurrentInstance } from 'vue';
 
 // to persist the notification and require user to dismiss pass `true` as second param
 const errorNotification = function(error, dismiss = false) {
@@ -364,7 +365,6 @@ export default boot(({ app, store }) => {
 
     // transaction notifications handlers
     store['$t'] = app.config.globalProperties.$t;
-
 });
 
 export {
@@ -381,3 +381,32 @@ export {
     notifyNeutralMessage,
     notifyRememberInfo,
 };
+
+export function useNotifications() {
+    const instance = getCurrentInstance();
+    if (!instance) {
+        throw new Error('useNotifications must be used within a setup function.');
+    }
+
+    const { proxy } = instance;
+
+    const notifySuccessTransaction = proxy.$notifySuccessTransaction;
+    const notifySuccessMessage = proxy.$notifySuccessMessage;
+    const notifySuccessCopy = proxy.$notifySuccessCopy;
+    const notifyFailure = proxy.$notifyFailure;
+    const notifyFailureWithAction = proxy.$notifyFailureWithAction;
+    const notifyDisconnected = proxy.$notifyDisconnected;
+    const notifyNeutralMessage = proxy.$notifyNeutralMessage;
+    const notifyRememberInfo = proxy.$notifyRememberInfo;
+
+    return {
+        notifySuccessTransaction,
+        notifySuccessMessage,
+        notifySuccessCopy,
+        notifyFailure,
+        notifyFailureWithAction,
+        notifyDisconnected,
+        notifyNeutralMessage,
+        notifyRememberInfo,
+    };
+}
