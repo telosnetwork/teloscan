@@ -8,7 +8,7 @@ import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import LoginModal from 'components/LoginModal.vue';
 import LoginStatus from 'components/header/LoginStatus.vue';
 import { RouteLocationRaw } from 'vue-router';
-import { useAccountStore } from 'src/antelope';
+import { getAntelope, useAccountStore } from 'src/antelope';
 import { defineComponent } from 'vue';
 import moment from 'moment';
 
@@ -25,7 +25,7 @@ export default defineComponent({
     },
     async mounted () {
         const health = await this.$indexerApi.get('/health');
-        if(health.data?.secondsBehind > 3){
+        if (health.data?.secondsBehind > 3) {
             let behindBy = moment(health.data.secondsBehind*1000).utc().format('HH:mm:ss');
             if(health.data?.secondsBehind > 86400){
                 const behindByHours = Math.round(health.data.secondsBehind / 60 / 60);
@@ -49,6 +49,23 @@ export default defineComponent({
                 html: true,
             });
         }
+
+        // On login we must set the address and record the provider
+        getAntelope().events.onLoggedOut.subscribe(() => {
+            const loginData = localStorage.getItem('loginData');
+            if (this.isNative) {
+                if (!loginData) {
+                    return;
+                }
+                const loginObj = JSON.parse(loginData);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const wallet = this.$ual.getAuthenticators().availableAuthenticators.find(a => a.getName() === loginObj.provider);
+                wallet?.logout();
+            }
+            this.setLogin({});
+            localStorage.removeItem('loginData');
+            this.$providerManager.setProvider(null);
+        });
     },
     data: () => ({
         stlosLogo,
@@ -101,20 +118,7 @@ export default defineComponent({
             }
         },
         logout() {
-            const loginData = localStorage.getItem('loginData');
-            if (this.isNative) {
-                if (!loginData) {
-                    return;
-                }
-                const loginObj = JSON.parse(loginData);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const wallet = this.$ual.getAuthenticators().availableAuthenticators.find(a => a.getName() === loginObj.provider);
-                wallet?.logout();
-            }
             useAccountStore().logout();
-            this.setLogin({});
-            localStorage.removeItem('loginData');
-            this.$providerManager.setProvider(null);
         },
     },
 });
@@ -126,7 +130,7 @@ export default defineComponent({
         <div class="c-header__logo-image-container">
             <img
                 alt="Telos EVM logo"
-                src="~assets/evm_logo.png"
+                src="/branding/telos-scan.png"
                 width="32"
             >
             <div v-if="isTestnet" class="c-header__testnet-indicator">

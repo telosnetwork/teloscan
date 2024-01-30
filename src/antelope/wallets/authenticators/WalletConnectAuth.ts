@@ -42,7 +42,7 @@ import {
 import { EVMAuthenticator } from 'src/antelope/wallets';
 import { RpcEndpoint } from 'universal-authenticator-library';
 import { toRaw } from 'vue';
-import { TELOS_ANALYTICS_EVENT_IDS } from 'src/antelope/mocks/chain-constants';
+import { TELOS_ANALYTICS_EVENT_NAMES, TELOS_NETWORK_NAMES } from 'src/antelope/mocks/chain-constants';
 
 const name = 'WalletConnect';
 
@@ -81,9 +81,10 @@ export class WalletConnectAuth extends EVMAuthenticator {
         return new WalletConnectAuth(this.options, this.wagmiClient, label);
     }
 
-    async walletConnectLogin(network: string): Promise<addressString | null> {
+    async walletConnectLogin(network: string, trackAnalyticsEvents: boolean): Promise<addressString | null> {
         this.trace('walletConnectLogin');
         const chainSettings = this.getChainSettings();
+        const isOnTelos = TELOS_NETWORK_NAMES.includes(chainSettings.getNetwork());
 
         try {
             this.clearAuthenticator();
@@ -113,62 +114,61 @@ export class WalletConnectAuth extends EVMAuthenticator {
                 console.error(e);
             }
 
-            this.trace(
-                'login',
-                'trackAnalyticsEvent -> login successful',
-                'WalletConnect',
-                TELOS_ANALYTICS_EVENT_IDS.loginSuccessfulWalletConnect,
-            );
-            chainSettings.trackAnalyticsEvent(
-                { id: TELOS_ANALYTICS_EVENT_IDS.loginSuccessfulWalletConnect },
-            );
-            this.trace(
-                'login',
-                'trackAnalyticsEvent -> generic login successful',
-                TELOS_ANALYTICS_EVENT_IDS.loginSuccessful,
-            );
-            chainSettings.trackAnalyticsEvent(
-                { id: TELOS_ANALYTICS_EVENT_IDS.loginSuccessful },
-            );
+            if (isOnTelos && trackAnalyticsEvents) {
+                this.trace(
+                    'login',
+                    'trackAnalyticsEvent -> login successful',
+                    'WalletConnect',
+                    TELOS_ANALYTICS_EVENT_NAMES.loginSuccessfulWalletConnect,
+                );
+                chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginSuccessfulWalletConnect);
+                this.trace(
+                    'login',
+                    'trackAnalyticsEvent -> generic login successful',
+                    TELOS_ANALYTICS_EVENT_NAMES.loginSuccessful,
+                );
+                chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginSuccessful);
+            }
 
             return address;
         } catch (e) {
             // This is a non-expected error
             console.error(e);
-            this.trace(
-                'walletConnectLogin',
-                'trackAnalyticsEvent -> login failed',
-                'WalletConnect',
-                TELOS_ANALYTICS_EVENT_IDS.loginFailedWalletConnect,
-            );
-            const chainSettings = this.getChainSettings();
-            chainSettings.trackAnalyticsEvent(
-                { id: TELOS_ANALYTICS_EVENT_IDS.loginFailedWalletConnect },
-            );
+            if (isOnTelos && trackAnalyticsEvents) {
+                this.trace(
+                    'walletConnectLogin',
+                    'trackAnalyticsEvent -> login failed',
+                    'WalletConnect',
+                    TELOS_ANALYTICS_EVENT_NAMES.loginFailedWalletConnect,
+                );
+                const chainSettings = this.getChainSettings();
+                chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginFailedWalletConnect);
+            }
             throw new AntelopeError('antelope.evm.error_login');
         } finally {
             useFeedbackStore().unsetLoading(`${this.getName()}.login`);
         }
     }
 
-    async login(network: string): Promise<addressString | null> {
+    async login(network: string, trackAnalyticsEvents: boolean): Promise<addressString | null> {
         this.trace('login', network);
         const wagmiConnected = () => localStorage.getItem('wagmi.connected');
         const chainSettings = this.getChainSettings();
+        const isOnTelos = TELOS_NETWORK_NAMES.includes(chainSettings.getNetwork());
 
         useFeedbackStore().setLoading(`${this.getName()}.login`);
         if (wagmiConnected()) {
             // We are in auto-login process. So log loginStarted before calling the walletConnectLogin method
-            this.trace(
-                'login',
-                'trackAnalyticsEvent -> login started',
-                'WalletConnect',
-                TELOS_ANALYTICS_EVENT_IDS.loginStarted,
-            );
-            chainSettings.trackAnalyticsEvent(
-                { id: TELOS_ANALYTICS_EVENT_IDS.loginStarted },
-            );
-            return this.walletConnectLogin(network);
+            if (isOnTelos && trackAnalyticsEvents) {
+                this.trace(
+                    'login',
+                    'trackAnalyticsEvent -> login started',
+                    'WalletConnect',
+                    TELOS_ANALYTICS_EVENT_NAMES.loginStarted,
+                );
+                chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginStarted);
+            }
+            return this.walletConnectLogin(network, trackAnalyticsEvents);
         } else {
             return new Promise((resolve) => {
                 this.trace('login', 'web3Modal.openModal()');
@@ -176,31 +176,27 @@ export class WalletConnectAuth extends EVMAuthenticator {
                 this.unsubscribeWeb3Modal = this.web3Modal.subscribeModal(async (newState: {open:boolean}) => {
                     this.trace('login', 'web3Modal.subscribeModal ', toRaw(newState), wagmiConnected);
 
-                    if (newState.open === true) {
+                    if (isOnTelos && newState.open === true && trackAnalyticsEvents) {
                         this.trace(
                             'login',
                             'trackAnalyticsEvent -> login started',
                             'WalletConnect',
-                            TELOS_ANALYTICS_EVENT_IDS.loginStarted,
+                            TELOS_ANALYTICS_EVENT_NAMES.loginStarted,
                         );
-                        chainSettings.trackAnalyticsEvent(
-                            { id: TELOS_ANALYTICS_EVENT_IDS.loginStarted },
-                        );
+                        chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginStarted);
                     }
 
                     if (newState.open === false) {
                         useFeedbackStore().unsetLoading(`${this.getName()}.login`);
 
-                        if (!wagmiConnected()) {
+                        if (isOnTelos && !wagmiConnected() && trackAnalyticsEvents) {
                             this.trace(
                                 'login',
                                 'trackAnalyticsEvent -> login failed',
                                 'WalletConnect',
-                                TELOS_ANALYTICS_EVENT_IDS.loginFailedWalletConnect,
+                                TELOS_ANALYTICS_EVENT_NAMES.loginFailedWalletConnect,
                             );
-                            chainSettings.trackAnalyticsEvent(
-                                { id: TELOS_ANALYTICS_EVENT_IDS.loginFailedWalletConnect },
-                            );
+                            chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginFailedWalletConnect);
                         }
 
                         // this prevents multiple subscribers from being attached to the web3Modal
@@ -212,7 +208,7 @@ export class WalletConnectAuth extends EVMAuthenticator {
                     }
 
                     if (wagmiConnected()) {
-                        resolve(this.walletConnectLogin(network));
+                        resolve(this.walletConnectLogin(network, true));
                     }
                 });
                 this.web3Modal.openModal();

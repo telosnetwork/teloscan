@@ -344,6 +344,7 @@ export default {
             incorrect_address_array_length: 'There should be { size } addresses in the array',
             incorrect_booleans_array_length: 'There should be { size } booleans in the array',
             incorrect_bytes_array_length: 'There should be { size } bytes in the array',
+            odd_number_of_bytes: 'There should be an even number of byte characters',
             incorrect_sigint_array_length: 'There should be { size } signed integers in the array',
             incorrect_strings_array_length: 'There should be { size } strings in the array',
             incorrect_unsigint_array_length: 'There should be { size } unsigned integers in the array',
@@ -555,6 +556,7 @@ export default {
         neutral_message_wrapping: 'Wrapping <b>{quantity} {symbol}</b>',
         neutral_message_unwrapping: 'Unwrapping <b>{quantity} {symbol}</b>',
         neutral_message_withdrawing: 'Withdrawing <b>{quantity} {symbol}</b>',
+        dont_show_message_again: 'Don\'t show me this message again',
         error_message_sending: 'An error occurred while sending <b>{quantity}</b> to <b>{address}</b>',
         error_message_staking: 'An error occurred while staking <b>{quantity} {symbol}</b>',
         error_message_unstaking: 'An error occurred while unstaking <b>{quantity} {symbol}</b>',
@@ -651,4 +653,10 @@ export default {
             seconds: 'seconds',
         },
     },
+    temporal: {
+        telos_cloud_discontinued_title: 'Important',
+        telos_cloud_discontinued_message_title: 'Attention Users: Telos Cloud Wallet account option will be discontinued.',
+        telos_cloud_discontinued_message_body:'The Telos Cloud Wallet (ORE ID via Google) account option to connect and sign transactions will be discontinued after December 31st. If you use the Telos Cloud Wallet to access your account, please transfer your assets to another wallet before this deadline. <strong> This change does <i>not</i> impact users accessing their accounts via Metamask, WalletConnect, Anchor, or other sign-in methods.</strong>',
+    },
 };
+

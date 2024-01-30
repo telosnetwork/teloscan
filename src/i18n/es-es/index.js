@@ -342,6 +342,7 @@ export default {
             incorrect_address_array_length: 'Debe haber { size } direcciones en la matriz',
             incorrect_booleans_array_length: 'Debe haber { size } booleanos en la matriz',
             incorrect_bytes_array_length: 'Debe haber { size } bytes en la matriz',
+            odd_number_of_bytes: 'Debe haber un número par de caracteres de bytes',
             incorrect_sigint_array_length: 'Debe haber { size } enteros firmados en la matriz',
             incorrect_strings_array_length: 'Debe haber { size } cadenas en la matriz',
             incorrect_unsigint_array_length: 'Debe haber { size } enteros sin firmar en la matriz',
@@ -502,6 +503,7 @@ export default {
         neutral_message_wrapping: 'Convirtiendo <b>{quantity} {symbol}</b> a ERC20',
         neutral_message_unwrapping: 'Restaurando <b>{quantity} {symbol}</b>',
         neutral_message_withdrawing: 'Retirando <b>{quantity} {symbol}</b>',
+        dont_show_message_again: 'No volver a mostrar este mensaje',
         error_message_sending: 'Se produjo un error al enviar <b>{quantity}</b> a <b>{address}</b>',
         error_message_staking: 'Se produjo un error al depositar <b>{quantity} {symbol}</b>',
         error_message_unstaking: 'Se produjo un error al preparar retiro <b>{quantity} {symbol}</b>',
@@ -519,5 +521,10 @@ export default {
             error_unpredictable_gas_limit: 'No se pudo estimar el límite de gas para esta transacción',
             error_transaction_canceled: 'Has cancelado la acción',
         },
+    },
+    temporal: {
+        telos_cloud_discontinued_title: 'Importante',
+        telos_cloud_discontinued_message_title: 'Atención usuarios: La opción de cuenta Telos Cloud Wallet será discontinuado.',
+        telos_cloud_discontinued_message_body: 'La opción de cuenta Telos Cloud Wallet (ORE ID a través de Google) para conectarse y firmar transacciones dejará de funcionar después del 31 de diciembre. Si utiliza Telos Cloud Wallet para acceder a su cuenta, transfiera sus activos a otro monedero antes de esta fecha límite. <strong>Este cambio no afecta a los usuarios que acceden a sus cuentas a través de Metamask, WalletConnect, Anchor u otros métodos de inicio de sesión. </strong>',
     },
 };

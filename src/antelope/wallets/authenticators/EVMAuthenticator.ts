@@ -59,8 +59,10 @@ export abstract class EVMAuthenticator {
         return (useChainStore().getChain(this.label).settings as EVMChainSettings);
     }
 
-    async login(network: string): Promise<addressString | null> {
+    async login(network: string, trackAnalyticsEvents?: boolean): Promise<addressString | null> {
         this.trace('login', network);
+        this.trace('Login analytics enabled =', trackAnalyticsEvents);
+
         const chain = useChainStore();
         try {
             chain.setChain(CURRENT_CONTEXT, network);

@@ -320,7 +320,7 @@ export default defineComponent({
                 error,
                 this.stlosContractInstance.address,
                 this.abi,
-                [value, logged.account, logged.account],
+                [value.toString(), logged.account, logged.account],
             );
         },
     },
