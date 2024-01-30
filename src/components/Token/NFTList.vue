@@ -51,13 +51,15 @@ export default {
                 align: 'left',
             },
             {
-                name: 'minter',
-                label: this.$t('components.nfts.minter'),
+                name: 'name',
+                label: this.$t('components.nfts.name'),
                 align: 'left',
             },
             {
-                name: 'name',
-                label: this.$t('components.nfts.name'),
+                name: (this.type === 'erc1155') ? 'amount' : 'minter',
+                label: (this.type === 'erc1155') ?
+                    this.$t('components.nfts.amount') :
+                    this.$t('components.nfts.minter'),
                 align: 'left',
             },
             {
@@ -79,7 +81,6 @@ export default {
         ];
         if(this.type === 'erc1155'){
             columns.shift();
-            columns.splice(2, 1);
         }
         return {
             columns: columns,
@@ -252,14 +253,6 @@ export default {
                 <q-td v-else key="contract" :props="props">
                     <AddressField :key="props.row.tokenId + 'contract'" :address="props.row.contract" :truncate="12" />
                 </q-td>
-                <q-td v-if="type === 'erc721'" key="minter" :props="props">
-                    <AddressField
-                        v-if="props.row.minter"
-                        :key="props.row.tokenId + 'minter'"
-                        :address="props.row.minter"
-                        :truncate="12"
-                    />
-                </q-td>
                 <q-td key="name" :props="props">
                     <span v-if="props.row.metadata?.name && props.row.metadata?.name.length < 22">
                         <span :key="props.row.tokenId + 'name'">
@@ -272,6 +265,17 @@ export default {
                         </span>
                         <q-tooltip>{{ props.row.metadata?.name }}</q-tooltip>
                     </span>
+                </q-td>
+                <q-td v-if="type === 'erc721'" key="minter" :props="props">
+                    <AddressField
+                        v-if="props.row.minter"
+                        :key="props.row.tokenId + 'minter'"
+                        :address="props.row.minter"
+                        :truncate="12"
+                    />
+                </q-td>
+                <q-td v-else key="amount" :props="props">
+                    x{{ props.row.amount }}
                 </q-td>
                 <q-td key="attributes" :props="props">
                     <div v-if="props.row.metadata?.attributes" class="flex items-center">
