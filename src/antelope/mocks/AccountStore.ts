@@ -3,13 +3,16 @@
 // Mocking AccountStore -----------------------------------
 // useAccountStore().getAccount(this.label).account as addressString;
 import { EVMAuthenticator } from 'src/antelope/wallets';
-import { addressString } from 'src/antelope/types';
+import { AntelopeError, addressString } from 'src/antelope/types';
 import { CURRENT_CONTEXT, EVMChainSettings, createTraceFunction, useChainStore } from 'src/antelope/mocks';
 import { BigNumber } from 'ethers'; 'src/antelope/mocks/FeedbackStore';
 import { getAntelope } from 'src/antelope/mocks/AntelopeConfig';
 import { useFeedbackStore } from 'src/antelope/mocks';
 import { EvmABI, EvmFunctionParam, Label, TransactionResponse } from 'src/antelope/types';
 import { subscribeForTransactionReceipt } from 'src/antelope/wallets/utils/trx-utils';
+
+export const errorToString = (error: unknown) =>
+    getAntelope().config.errorToStringHandler(error);
 
 export interface AccountModel {
     label: typeof CURRENT_CONTEXT;
@@ -98,6 +101,10 @@ class AccountStore {
         const funcname = 'signCustomTransaction';
         this.trace(funcname, label, contract, abi, parameters, value?.toString());
 
+        if (! await this.assertNetworkConnection(label)) {
+            throw new AntelopeError('antelope.evm.error_switch_chain_rejected');
+        }
+
         try {
             useFeedbackStore().setLoading(funcname);
             const account = this.loggedAccount as EvmAccountModel;
@@ -127,6 +134,59 @@ class AccountStore {
             throw trxError;
         } finally {
             useFeedbackStore().unsetLoading(funcname);
+        }
+    }
+
+    async isConnectedToCorrectNetwork(label: string): Promise<boolean> {
+        this.trace('isConnectedToCorrectNetwork', label);
+        try {
+            useFeedbackStore().setLoading('account.isConnectedToCorrectNetwork');
+            const authenticator = useAccountStore().getAccount(label)?.authenticator as EVMAuthenticator;
+            return authenticator.isConnectedToCorrectChain();
+        } catch (error) {
+            console.error('Error: ', errorToString(error));
+            return Promise.resolve(false);
+        } finally {
+            useFeedbackStore().unsetLoading('account.isConnectedToCorrectNetwork');
+        }
+    }
+
+    async assertNetworkConnection(label: string): Promise<boolean> {
+        if (!await useAccountStore().isConnectedToCorrectNetwork(label)) {
+            return new Promise<boolean>((resolve) => {
+                const ant = getAntelope();
+                const authenticator = useAccountStore().loggedAccount.authenticator as EVMAuthenticator;
+                const networkName = useChainStore().loggedChain.settings.getDisplay();
+                const errorMessage = ant.config.localizationHandler('evm_wallet.incorrect_network', { networkName });
+                let userClickedSwitch = false;
+                ant.config.notifyFailureWithAction(errorMessage, {
+                    label: ant.config.localizationHandler('evm_wallet.switch'),
+                    handler: async () => {
+                        userClickedSwitch = true;
+                        try {
+                            await authenticator.ensureCorrectChain();
+                            if (!await useAccountStore().isConnectedToCorrectNetwork(label)) {
+                                resolve(false);
+                            } else {
+                                resolve(true);
+                            }
+                        } catch (error) {
+                            const message = (error as Error).message;
+                            if (message === 'antelope.evm.error_switch_chain_rejected') {
+                                ant.config.notifyNeutralMessageHandler(message);
+                            }
+                            resolve(false);
+                        }
+                    },
+                    onDismiss: () => {
+                        if (!userClickedSwitch) {
+                            resolve(false);
+                        }
+                    },
+                });
+            });
+        } else {
+            return true;
         }
     }
 
