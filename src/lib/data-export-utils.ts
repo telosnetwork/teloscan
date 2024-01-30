@@ -149,28 +149,28 @@ export async function downloadCsv(
                 return {
                     [$t(
                         'components.export.column_header_to',
-                    )]: `'${transaction.from}'`,
-                    [$t('components.export.column_header_from')]: `'${
+                    )]: `"${transaction.from}"`,
+                    [$t('components.export.column_header_from')]: `"${
                         transaction.to ?? ''
-                    }'`,
+                    }"`,
                     [$t(
                         'components.export.column_header_contract_address',
-                    )]: `'${transaction.contractAddress ?? ''}'`,
+                    )]: `"${transaction.contractAddress ?? ''}"`,
                     [$t(
                         'components.export.column_header_block_number',
-                    )]: `'${String(transaction.blockNumber)}'`,
+                    )]: `"${String(transaction.blockNumber)}"`,
                     [$t(
                         'components.export.column_header_tx_hash',
-                    )]: `'${transaction.hash}'`,
+                    )]: `"${transaction.hash}"`,
                     [$t(
                         'components.export.column_header_timestamp',
-                    )]: `'${String(transaction.timestamp)}'`,
+                    )]: `"${String(transaction.timestamp)}"`,
                     [$t(
                         'components.export.column_header_date',
-                    )]: `'${formatTimestamp(transaction.timestamp)}'`,
+                    )]: `"${formatTimestamp(transaction.timestamp)}"`,
                     [$t(
                         'components.export.column_header_action',
-                    )]: `'${actionName}'`,
+                    )]: `"${actionName}"`,
                 };
             }),
         );
@@ -186,7 +186,7 @@ export async function downloadCsv(
             $t('components.export.column_header_date'),
             $t('components.export.column_header_action'),
         ];
-        csvContent += headers.map(header => `'${header}'`).join(',') + '\r\n';
+        csvContent += headers.map(header => `"${header}"`).join(',') + '\r\n';
 
         transactionRows.forEach((obj) => {
             const row = headers.map(header =>
@@ -217,34 +217,34 @@ export async function downloadCsv(
                 return {
                     [$t(
                         'components.export.column_header_to',
-                    )]: `'${transfer.from}'`,
+                    )]: `"${transfer.from}"`,
                     [$t(
                         'components.export.column_header_from',
-                    )]: `'${transfer.to}'`,
+                    )]: `"${transfer.to}"`,
                     [$t(
                         'components.export.column_header_block_number',
-                    )]: `'${String(transfer.blockNumber)}'`,
+                    )]: `"${String(transfer.blockNumber)}"`,
                     [$t(
                         'components.export.column_header_tx_hash',
-                    )]: `'${transfer.transaction}'`,
+                    )]: `"${transfer.transaction}"`,
                     [$t(
                         'components.export.column_header_timestamp',
-                    )]: `'${String(transfer.timestamp)}'`,
+                    )]: `"${String(transfer.timestamp)}"`,
                     [$t(
                         'components.export.column_header_date',
-                    )]: `'${formatTimestamp(transfer.timestamp)}'`,
+                    )]: `"${formatTimestamp(transfer.timestamp)}"`,
                     [$t(
                         'components.export.column_header_amount',
-                    )]: `'${amount}'`,
+                    )]: `"${amount}"`,
                     [$t(
                         'components.export.column_header_token_name',
-                    )]: `'${contract.properties.name}'`,
+                    )]: `"${contract.properties.name}"`,
                     [$t(
                         'components.export.column_header_token_symbol',
-                    )]: `'${contract.properties.symbol}'`,
+                    )]: `"${contract.properties.symbol}"`,
                     [$t(
                         'components.export.column_header_token_contract_address',
-                    )]: `'${transfer.contract}'`,
+                    )]: `"${transfer.contract}"`,
                 };
             }),
         );
@@ -262,7 +262,7 @@ export async function downloadCsv(
             $t('components.export.column_header_token_symbol'),
             $t('components.export.column_header_token_contract_address'),
         ];
-        csvContent += headers.map(header => `'${header}'`).join(',') + '\r\n';
+        csvContent += headers.map(header => `"${header}"`).join(',') + '\r\n';
 
         transferRows.forEach((obj) => {
             const row = headers.map(header =>
@@ -305,34 +305,34 @@ export async function downloadCsv(
                 return {
                     [$t(
                         'components.export.column_header_to',
-                    )]: `'${transfer.from}'`,
+                    )]: `"${transfer.from}"`,
                     [$t(
                         'components.export.column_header_from',
-                    )]: `'${transfer.to}'`,
+                    )]: `"${transfer.to}"`,
                     [$t(
                         'components.export.column_header_block_number',
-                    )]: `'${String(transfer.blockNumber)}'`,
+                    )]: `"${String(transfer.blockNumber)}"`,
                     [$t(
                         'components.export.column_header_tx_hash',
-                    )]: `'${transfer.transaction}'`,
+                    )]: `"${transfer.transaction}"`,
                     [$t(
                         'components.export.column_header_timestamp',
-                    )]: `'${String(transfer.timestamp)}'`,
+                    )]: `"${String(transfer.timestamp)}"`,
                     [$t(
                         'components.export.column_header_date',
-                    )]: `'${formatTimestamp(transfer.timestamp)}'`,
+                    )]: `"${formatTimestamp(transfer.timestamp)}"`,
                     [$t(
                         'components.export.column_header_amount',
-                    )]: `'${amount}'`,
+                    )]: `"${amount}"`,
                     [$t(
                         'components.export.column_header_nft_collection_name',
-                    )]: `'${contract.properties.name}'`,
+                    )]: `"${contract.properties.name}"`,
                     [$t(
                         'components.export.column_header_nft_id',
-                    )]: `'${transfer.id}'`,
+                    )]: `"${transfer.id}"`,
                     [$t(
                         'components.export.column_header_token_contract_address',
-                    )]: `'${transfer.contract}'`,
+                    )]: `"${transfer.contract}"`,
                 };
             }),
         );
@@ -350,7 +350,7 @@ export async function downloadCsv(
             $t('components.export.column_header_nft_id'),
             $t('components.export.column_header_token_contract_address'),
         ];
-        csvContent += headers.map(header => `'${header}'`).join(',') + '\r\n';
+        csvContent += headers.map(header => `"${header}"`).join(',') + '\r\n';
 
         transferRows.forEach((obj) => {
             const row = headers.map(header =>
