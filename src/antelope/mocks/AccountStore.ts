@@ -35,6 +35,7 @@ let currentAccount = null as addressString | null;
 interface LoginEVMActionData {
     authenticator: EVMAuthenticator
     network: string,
+    autoLogAccount?: string,
 }
 
 class AccountStore {
@@ -54,9 +55,10 @@ class AccountStore {
         } as AccountModel;
     }
 
-    async loginEVM({ authenticator, network }: LoginEVMActionData, trackAnalyticsEvents: boolean): Promise<boolean> {
+    async loginEVM({ authenticator, network, autoLogAccount }: LoginEVMActionData, trackAnalyticsEvents: boolean): Promise<boolean> {
         currentAuthenticator = authenticator;
-        currentAccount = await authenticator.login(network, trackAnalyticsEvents);
+        currentAccount = autoLogAccount ? await authenticator.autoLogin(network, autoLogAccount, trackAnalyticsEvents) : await authenticator.login(network, trackAnalyticsEvents);
+
         const account = useAccountStore().getAccount(authenticator.label);
         getAntelope().events.onLoggedIn.next(account);
         return true;
@@ -153,37 +155,24 @@ class AccountStore {
 
     async assertNetworkConnection(label: string): Promise<boolean> {
         if (!await useAccountStore().isConnectedToCorrectNetwork(label)) {
-            return new Promise<boolean>((resolve) => {
+            // eslint-disable-next-line no-async-promise-executor
+            return new Promise<boolean>(async (resolve) => {
                 const ant = getAntelope();
                 const authenticator = useAccountStore().loggedAccount.authenticator as EVMAuthenticator;
-                const networkName = useChainStore().loggedChain.settings.getDisplay();
-                const errorMessage = ant.config.localizationHandler('evm_wallet.incorrect_network', { networkName });
-                let userClickedSwitch = false;
-                ant.config.notifyFailureWithAction(errorMessage, {
-                    label: ant.config.localizationHandler('evm_wallet.switch'),
-                    handler: async () => {
-                        userClickedSwitch = true;
-                        try {
-                            await authenticator.ensureCorrectChain();
-                            if (!await useAccountStore().isConnectedToCorrectNetwork(label)) {
-                                resolve(false);
-                            } else {
-                                resolve(true);
-                            }
-                        } catch (error) {
-                            const message = (error as Error).message;
-                            if (message === 'antelope.evm.error_switch_chain_rejected') {
-                                ant.config.notifyNeutralMessageHandler(message);
-                            }
-                            resolve(false);
-                        }
-                    },
-                    onDismiss: () => {
-                        if (!userClickedSwitch) {
-                            resolve(false);
-                        }
-                    },
-                });
+                try {
+                    await authenticator.ensureCorrectChain();
+                    if (!await useAccountStore().isConnectedToCorrectNetwork(label)) {
+                        resolve(false);
+                    } else {
+                        resolve(true);
+                    }
+                } catch (error) {
+                    const message = (error as Error).message;
+                    if (message === 'antelope.evm.error_switch_chain_rejected') {
+                        ant.config.notifyNeutralMessageHandler(message);
+                    }
+                    resolve(false);
+                }
             });
         } else {
             return true;
