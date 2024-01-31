@@ -43,7 +43,7 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
     async ensureInitializedProvider(): Promise<ethers.providers.ExternalProvider> {
         return new Promise((resolve, reject) => {
             this.onReady.asObservable().pipe(
-                filter((ready) => ready),
+                filter(ready => ready),
                 map(() => this.getProvider()),
             ).subscribe((provider) => {
                 if (provider) {
@@ -231,7 +231,7 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
             return this.sendSystemToken(to, amount);
         }
         const value = amount.toHexString();
-        const transferAbi = erc20Abi.filter((abi) => abi.name === 'transfer');
+        const transferAbi = erc20Abi.filter(abi => abi.name === 'transfer');
         return this.signCustomTransaction(
             token.address,
             transferAbi,

@@ -17,10 +17,10 @@ export async function doRPC(_, { method, params }) {
 // TODO: make sure we're not using this and remove...
 //  should be using the $contractManager that's on prototype (this.$contractManager)
 export async function getContract(_, { address }) {
-    return await this.$contractManager.getContract(address);
+    return this.$contractManager.getContract(address);
 }
 
-export const fetchTlosPrice = async function({ commit }) {
+export const fetchTlosPrice = async function ({ commit }) {
     try {
         const response = await this.$api.getTableRows({
             code: 'delphioracle',
@@ -37,7 +37,7 @@ export const fetchTlosPrice = async function({ commit }) {
     }
 };
 
-export const fetchGasPrice = async function({ dispatch, commit }) {
+export const fetchGasPrice = async function ({ dispatch, commit }) {
     try {
         const gasPriceResponse = await dispatch('doRPC', {
             method: 'eth_gasPrice',
@@ -50,7 +50,7 @@ export const fetchGasPrice = async function({ dispatch, commit }) {
     }
 };
 
-export const fetchLatestBlock = async function({ dispatch, commit }) {
+export const fetchLatestBlock = async function ({ dispatch, commit }) {
     try {
         const getBlockResponse = await dispatch('doRPC', {
             method: 'eth_blockNumber',

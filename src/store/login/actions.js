@@ -53,7 +53,7 @@ export const autoLogin = async function ({ dispatch, commit }, returnUrl) {
 const getAuthenticator = function (ual, wallet = null) {
     const authWallet = wallet || localStorage.getItem('autoLogin');
     const idx = ual.authenticators.findIndex(
-        (auth) => auth.constructor.name === authWallet,
+        auth => auth.constructor.name === authWallet,
     );
     return {
         authenticator: ual.authenticators[idx],

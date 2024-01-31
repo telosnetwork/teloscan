@@ -162,7 +162,7 @@ const notifyMessage = function (type, icon, title, message, payload, remember = 
     let final_message = `<span>${this.$t(message.toString() ?? '')}</span>`;
     if (Array.isArray(message)) {
         final_message = message.map(
-            (m) => ` <${m.tag ?? 'span'} class="${m.class}">${m.text}</${m.tag ?? 'span'}> `,
+            m => ` <${m.tag ?? 'span'} class="${m.class}">${m.text}</${m.tag ?? 'span'}> `,
         ).join('');
     }
 

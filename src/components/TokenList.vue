@@ -31,7 +31,7 @@ export default {
         },
         async loadTokens() {
             const tokenList = await this.$contractManager.getTokenList();
-            let tokens = tokenList.tokens;
+            let { tokens } = tokenList;
             tokens = this.sortTokens(tokens);
             await Promise.all(tokens.map(async (token) => {
                 if (token.logoURI && token.logoURI.startsWith('ipfs://')) {
@@ -49,7 +49,7 @@ export default {
                     token.balance = `${formatWei(balance, token.decimals, 4)}`;
                     token.fullBalance = `${formatWei(balance, token.decimals)}`;
                 } catch (e) {
-                    throw `Failed to fetch balance:\n${e}`;
+                    throw new Error(`Failed to fetch balance:\n${e}`);
                 }
             }));
             this.tokens = tokens;

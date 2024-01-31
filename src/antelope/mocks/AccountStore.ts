@@ -107,7 +107,7 @@ class AccountStore {
             const chainSettings = useChainStore().loggedChain.settings as unknown as EVMChainSettings;
 
             const tx = await authenticator.signCustomTransaction(contract, abi, parameters, value)
-                .then((r) => this.subscribeForTransactionReceipt(account, r as TransactionResponse));
+                .then(r => this.subscribeForTransactionReceipt(account, r as TransactionResponse));
 
             // we create tne neutral notification
             const dismiss = ant.config.notifyNeutralMessageHandler(actionMessage);

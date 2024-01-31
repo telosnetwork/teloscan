@@ -45,7 +45,7 @@ export default {
         rules() {
             if (['required', true, 'true'].includes(this.required)) {
                 return [
-                    (val) => [true, false].includes(val) || this.$t('components.inputs.required'),
+                    val => [true, false].includes(val) || this.$t('components.inputs.required'),
                 ];
             }
 

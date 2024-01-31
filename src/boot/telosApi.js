@@ -36,7 +36,7 @@ export default boot(({ app, store }) => {
             app.config.globalProperties.$contractManager.addContractsToCache(response.data.contracts);
         }
         return response;
-    }, (error) => Promise.reject(error));
+    }, error => Promise.reject(error));
 });
 
 export { contractManager, telosApi, indexerApi };

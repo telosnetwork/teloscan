@@ -318,13 +318,13 @@ function parseUintArrayString(str, expectedLength, expectedIntSize) {
     let intBigNums;
 
     try {
-        intBigNums = intStrings.map((int) => BigNumber.from(int));
+        intBigNums = intStrings.map(int => BigNumber.from(int));
     } catch {
         return undefined;
     }
 
     const maxValue = BigNumber.from(2).pow(expectedIntSize).sub(1);
-    const allIntsAreValidSize = intBigNums.every((intBigNum) => intBigNum.lte(maxValue));
+    const allIntsAreValidSize = intBigNums.every(intBigNum => intBigNum.lte(maxValue));
 
     if (!allIntsAreValidSize) {
         return undefined;
@@ -407,14 +407,14 @@ function parseSignedIntArrayString(str, expectedLength, expectedIntSize) {
     let intBigNums;
 
     try {
-        intBigNums = intStrings.map((int) => BigNumber.from(int));
+        intBigNums = intStrings.map(int => BigNumber.from(int));
     } catch {
         return undefined;
     }
 
     const maxValue = BigNumber.from(2).pow(expectedIntSize).sub(1);
     const minValue = maxValue.mul(-1);
-    const allIntsAreValidSize = intBigNums.every((intBigNum) => intBigNum.lte(maxValue) && intBigNum.gte(minValue));
+    const allIntsAreValidSize = intBigNums.every(intBigNum => intBigNum.lte(maxValue) && intBigNum.gte(minValue));
 
     if (!allIntsAreValidSize) {
         return undefined;
@@ -461,7 +461,7 @@ function parseAddressArrayString(str, expectedLength) {
 
     try {
         const addressStringArray = str.match(/0x[a-zA-Z0-9]{40}/g);
-        addressArray = addressStringArray.map((addressString) => ethers.utils.getAddress(addressString));
+        addressArray = addressStringArray.map(addressString => ethers.utils.getAddress(addressString));
     } catch {
         return undefined;
     }
@@ -520,7 +520,7 @@ function parseBooleanArrayString(str, expectedLength) {
 
     const booleanRegex = /true|false/g;
     const trueRegex = /true/;
-    const boolArray = str.match(booleanRegex).map((bool) => trueRegex.test(bool));
+    const boolArray = str.match(booleanRegex).map(bool => trueRegex.test(bool));
 
     if (Number.isInteger(expectedLength)) {
         const actualLength = boolArray.length;
@@ -551,7 +551,7 @@ function parseStringArrayString(str, expectedLength) {
     }
 
     const valueIsArrayOfStrings = Array.isArray(parsedArrayOfStrings)
-        && parsedArrayOfStrings.every((val) => typeof val === 'string');
+        && parsedArrayOfStrings.every(val => typeof val === 'string');
 
     if (!valueIsArrayOfStrings) {
         return undefined;

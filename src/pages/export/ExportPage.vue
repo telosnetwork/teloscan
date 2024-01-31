@@ -190,7 +190,7 @@ onMounted(() => {
     }
 
     if (Object.values(EXPORT_DOWNLOAD_TYPES).includes((route.query?.type ?? '') as string)) {
-        typeSelectModel.value = exportTypes.find((type) => type.value === route.query.type) as { label: string; value: string };
+        typeSelectModel.value = exportTypes.find(type => type.value === route.query.type) as { label: string; value: string };
     }
 });
 

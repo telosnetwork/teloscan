@@ -29,7 +29,7 @@ export default {
         size: {
             type: [Number, String],
             default: -1,
-            validator: (length) => +length >= -1,
+            validator: length => +length >= -1,
         },
     },
     data: () => ({
@@ -44,7 +44,7 @@ export default {
     },
     computed: {
         rules() {
-            const validateParsedArray = (value) => Array.isArray(parseStringArrayString(value)) || value === '';
+            const validateParsedArray = value => Array.isArray(parseStringArrayString(value)) || value === '';
 
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
@@ -61,8 +61,8 @@ export default {
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_strings_array_string');
 
             return [
-                (val) => validateParsedArray(val) || invalidArrayStringMessage,
-                (val) => validateArrayLength(val) || incorrectArrayLengthMessage,
+                val => validateParsedArray(val) || invalidArrayStringMessage,
+                val => validateArrayLength(val) || incorrectArrayLengthMessage,
             ];
         },
         shapedLabel() {

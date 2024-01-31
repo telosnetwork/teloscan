@@ -132,7 +132,7 @@ export default defineComponent({
             const inputsInvalid = (
                 this.isLoggedIn
                 && this.walletBalanceBn.gt(reservedForGasBn)
-                && [this.topInputAmount, this.bottomInputAmount].some((amount) => BigNumber.from(amount ?? '0').eq('0'))
+                && [this.topInputAmount, this.bottomInputAmount].some(amount => BigNumber.from(amount ?? '0').eq('0'))
             );
 
             return inputsInvalid

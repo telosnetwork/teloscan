@@ -54,7 +54,7 @@ const LocalStorageMap = {
 };
 
 describe('StakeForm.vue', () => {
-    let isLoggedInMock = jest.fn();
+    const isLoggedInMock = jest.fn();
     let savedLocalStorage;
 
     const globalMock = () => ({
@@ -84,14 +84,14 @@ describe('StakeForm.vue', () => {
             'q-card': stubWithSlot('q-card'),
             'q-card-section': stubWithSlot('q-card-section'),
             'q-card-actions': stubWithSlot('q-card-actions'),
-            'q-dialog':  stubWithSlot('q-dialog'),
+            'q-dialog': stubWithSlot('q-dialog'),
             'transaction-field': stubWithSlot('transaction-field'),
         },
     });
     const stlosContractInstanceMock = {
         previewDeposit: jest.fn(),
         previewRedeem: jest.fn(),
-        ['depositTLOS()']: jest.fn(),
+        'depositTLOS()': jest.fn(),
     };
     const defaultProps = {
         stlosContractInstance: { ...stlosContractInstanceMock },
@@ -134,8 +134,8 @@ describe('StakeForm.vue', () => {
     it('should render correctly when the user is not logged in', () => {
         isLoggedInMock.mockImplementation(() => false);
         const wrapper = shallowMount(StakeForm, {
-            props:  { ...defaultProps },
-            global: { ...globalMock()   },
+            props: { ...defaultProps },
+            global: { ...globalMock() },
         });
 
         expect(wrapper.element).toMatchSnapshot();
@@ -143,8 +143,8 @@ describe('StakeForm.vue', () => {
 
     it('should render a banner when the user has unlocked TLOS', async () => {
         const wrapper = shallowMount(StakeForm, {
-            props:  { ...defaultProps },
-            global: { ...globalMock()   },
+            props: { ...defaultProps },
+            global: { ...globalMock() },
         });
 
         // no banner
@@ -164,8 +164,8 @@ describe('StakeForm.vue', () => {
         beforeEach(() => {
             jest.clearAllMocks();
             wrapper = shallowMount(StakeForm, {
-                props:  { ...defaultProps },
-                global: { ...globalMock()   },
+                props: { ...defaultProps },
+                global: { ...globalMock() },
             });
             formStub = wrapper.findComponent(BaseStakingForm);
         });
@@ -185,7 +185,6 @@ describe('StakeForm.vue', () => {
             expect(stlosContractInstanceMock[mockedContractMethod]).toHaveBeenLastCalledWith(oneEthInWei);
             expect(wrapper.element).toMatchSnapshot();
 
-
             stlosContractInstanceMock[mockedContractMethod]
                 .mockImplementationOnce(() => Promise.resolve('0'));
 
@@ -198,7 +197,7 @@ describe('StakeForm.vue', () => {
         };
 
         ['top', 'bottom'].forEach((topOrBottom) => {
-            test(`for the ${topOrBottom} input`, async() => {
+            test(`for the ${topOrBottom} input`, async () => {
                 await runInputExpects(topOrBottom);
             });
         });
@@ -219,7 +218,7 @@ describe('StakeForm.vue', () => {
         LocalStorageMap[PROVIDER_TELOS_CLOUD] = JSON.stringify({ provider: PROVIDER_WEB3_INJECTED });
 
         const wrapper = shallowMount(StakeForm, {
-            props:  { ...defaultProps },
+            props: { ...defaultProps },
             global: { ...globalMock() },
         });
         const formStub = wrapper.findComponent(BaseStakingForm);

@@ -244,7 +244,7 @@ export class WalletConnectAuth extends EVMAuthenticator {
     async getERC20TokenBalance(address: addressString, token: addressString): Promise<BigNumber> {
         this.trace('getERC20TokenBalance', [address, token]);
         const chainId = +useChainStore().getChain(this.label).settings.getChainId();
-        const balance = await fetchBalance({ address, chainId, token }).then((balanceBn) => balanceBn.value);
+        const balance = await fetchBalance({ address, chainId, token }).then(balanceBn => balanceBn.value);
         return BigNumber.from(balance);
     }
 
@@ -300,7 +300,7 @@ export class WalletConnectAuth extends EVMAuthenticator {
             }
             // prepare variables
             const value = amount.toHexString();
-            const transferAbi = erc20Abi.filter((abi) => abi.name === 'transfer');
+            const transferAbi = erc20Abi.filter(abi => abi.name === 'transfer');
 
             return this.signCustomTransaction(
                 token.address,

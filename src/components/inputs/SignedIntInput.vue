@@ -32,7 +32,7 @@ export default {
         size: {
             type: [Number, String],
             required: true,
-            validator: (size) => integerSizeValidator(size, true),
+            validator: size => integerSizeValidator(size, true),
         },
     },
     computed: {
@@ -45,9 +45,9 @@ export default {
             const errMessageTooSmallPow2 = this.$t('components.inputs.too_small_pow2', { size: this.size });
 
             return [
-                (val) => (/^-?\d+$/.test(val) || val === '') || errMessageInvalidInput,
-                (val) => BigNumber.from(val || 0).lte(maximum) || errMessageTooLargePow2,
-                (val) => BigNumber.from(val || 0).gte(minimum) || errMessageTooSmallPow2,
+                val => (/^-?\d+$/.test(val) || val === '') || errMessageInvalidInput,
+                val => BigNumber.from(val || 0).lte(maximum) || errMessageTooLargePow2,
+                val => BigNumber.from(val || 0).gte(minimum) || errMessageTooSmallPow2,
             ];
         },
         shapedLabel() {

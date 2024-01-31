@@ -30,14 +30,14 @@ export default {
         uintSize: {
             type: [Number, String],
             required: true,
-            validator: (size) => integerSizeValidator(size, false),
+            validator: size => integerSizeValidator(size, false),
         },
         // expected size of the uint array
         // if size is undefined or -1, array size is unconstrained; else it is fixed-size (e.g. uint256[3])
         size: {
             type: [Number, String],
             default: -1,
-            validator: (length) => +length >= -1,
+            validator: length => +length >= -1,
         },
     },
     data: () => ({
@@ -49,7 +49,7 @@ export default {
             return +this.size === -1 ? undefined : +this.size;
         },
         rules() {
-            const validateParsedArray = (value) => Array.isArray(parseUintArrayString(value, undefined, +this.uintSize)) || value === '';
+            const validateParsedArray = value => Array.isArray(parseUintArrayString(value, undefined, +this.uintSize)) || value === '';
 
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
@@ -68,8 +68,8 @@ export default {
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_unsigint_array_string');
 
             return [
-                (val) => validateParsedArray(val) || invalidArrayStringMessage,
-                (val) => validateArrayLength(val) || incorrectArrayLengthMessage,
+                val => validateParsedArray(val) || invalidArrayStringMessage,
+                val => validateArrayLength(val) || incorrectArrayLengthMessage,
             ];
         },
         shapedLabel() {

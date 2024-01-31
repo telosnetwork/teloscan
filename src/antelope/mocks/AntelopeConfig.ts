@@ -53,7 +53,7 @@ export class AntelopeConfig {
     private __indexer_health_check_interval = 1000 * 60 * 5; // 5 minutes expressed in milliseconds
 
     // notifucation handlers --
-    private __notify_error_handler: (message: string) => void = (m) => alert(`Error: ${m}`);
+    private __notify_error_handler: (message: string) => void = m => alert(`Error: ${m}`);
 
     private __notify_success_handler: (message: string) => void = alert;
 
@@ -126,7 +126,7 @@ export class AntelopeConfig {
                     return 'null';
                 }
                 if (Array.isArray(error)) {
-                    return error.map((a) => this.__error_to_string_handler(a)).join(', ');
+                    return error.map(a => this.__error_to_string_handler(a)).join(', ');
                 }
                 return JSON.stringify(error);
             }

@@ -9,7 +9,6 @@ import {
 import { BigNumber } from 'ethers';
 import StakingFormInput from 'pages/staking/StakingFormInput.vue';
 
-
 const defaultProps = {
     modelValue: '',
     label: 'Label Text',
@@ -32,7 +31,6 @@ const mountInput = props => mount(
         },
     },
 );
-
 
 describe('StakingFormInput.vue', () => {
     it('should have the correct name', () => {
@@ -71,7 +69,6 @@ describe('StakingFormInput.vue', () => {
             expect(wrapper.element).toMatchSnapshot();
         };
 
-
         it('should warn when passed an invalid modelValue', () => {
             const consoleWarnMock = jest.spyOn(console, 'warn').mockImplementation(() => {
                 // do nothing
@@ -97,7 +94,6 @@ describe('StakingFormInput.vue', () => {
         it('should correctly handle a change in the modelValue prop', async () => {
             const wrapper = mountInput({ modelValue: '0' });
             expect(wrapper.emitted()['update:modelValue']).toBe(undefined);
-
 
             // update:modelValue event should only emit if value has been changed by the user,
             // but the input's value should still change and be formatted for the user:
@@ -132,7 +128,6 @@ describe('StakingFormInput.vue', () => {
             // component should not emit as wei value has not changed from 1e+18 wei
             await simulateUserInput(wrapper, '.', '1.');
             await checkInputExpectations(wrapper, emitCounter, oneEthInWei, '1.');
-
 
             // single keypress: 5 => formatted value === "1.5"
             // component should emit as wei value has changed from 1e10^18 to 1.5e10^17 wei

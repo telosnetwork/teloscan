@@ -370,7 +370,7 @@ export class OreIdAuth extends EVMAuthenticator {
         // prepare variables
         const from = this.getAccountAddress();
         const value = amount.toHexString();
-        const transferAbi = erc20Abi.filter((abi) => abi.name === 'transfer');
+        const transferAbi = erc20Abi.filter(abi => abi.name === 'transfer');
 
         if (token.isSystem) {
             return this.performOreIdTransaction(from, {

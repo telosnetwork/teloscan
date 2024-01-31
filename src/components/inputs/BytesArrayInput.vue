@@ -3,7 +3,7 @@ import BaseTextInput from 'components/inputs/BaseTextInput.vue';
 
 const bytesArrayStringRegex = /^0x([0-9A-Fa-f])*$/;
 
-const validateArrayIsEvenLength = (value) => value.length % 2 === 0 || value === '';
+const validateArrayIsEvenLength = value => value.length % 2 === 0 || value === '';
 
 export default {
     name: 'BytesArrayInput',
@@ -32,7 +32,7 @@ export default {
         size: {
             type: [Number, String],
             default: -1,
-            validator: (length) => (+length >= -1 && +length <= 32) || [undefined, null].includes(length),
+            validator: length => (+length >= -1 && +length <= 32) || [undefined, null].includes(length),
         },
     },
     data: () => ({
@@ -41,7 +41,7 @@ export default {
     }),
     computed: {
         rules() {
-            const validateArrayString = (value) => bytesArrayStringRegex.test(value) || value === '';
+            const validateArrayString = value => bytesArrayStringRegex.test(value) || value === '';
 
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
@@ -62,9 +62,9 @@ export default {
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_bytes_array_string');
 
             return [
-                (val) => validateArrayString(val) || invalidArrayStringMessage,
-                (val) => validateArrayIsEvenLength(val) || oddNumberOfBytesMessage,
-                (val) => validateArrayLength(val) || incorrectArrayLengthMessage,
+                val => validateArrayString(val) || invalidArrayStringMessage,
+                val => validateArrayIsEvenLength(val) || oddNumberOfBytesMessage,
+                val => validateArrayLength(val) || incorrectArrayLengthMessage,
             ];
         },
         shapedLabel() {

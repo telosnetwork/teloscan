@@ -183,10 +183,10 @@ export async function downloadCsv(
             $t('components.export.column_header_date'),
             $t('components.export.column_header_action'),
         ];
-        csvContent += `${headers.map((header) => `"${header}"`).join(',')}\r\n`;
+        csvContent += `${headers.map(header => `"${header}"`).join(',')}\r\n`;
 
         transactionRows.forEach((obj) => {
-            const row = headers.map((header) => escapeCSVValue((obj as Record<string, string>)[header]));
+            const row = headers.map(header => escapeCSVValue((obj as Record<string, string>)[header]));
             csvContent += `${row.join(',')}\r\n`;
         });
 
@@ -257,10 +257,10 @@ export async function downloadCsv(
             $t('components.export.column_header_token_symbol'),
             $t('components.export.column_header_token_contract_address'),
         ];
-        csvContent += `${headers.map((header) => `"${header}"`).join(',')}\r\n`;
+        csvContent += `${headers.map(header => `"${header}"`).join(',')}\r\n`;
 
         transferRows.forEach((obj) => {
-            const row = headers.map((header) => escapeCSVValue((obj as Record<string, string>)[header]));
+            const row = headers.map(header => escapeCSVValue((obj as Record<string, string>)[header]));
             csvContent += `${row.join(',')}\r\n`;
         });
 
@@ -341,10 +341,10 @@ export async function downloadCsv(
             $t('components.export.column_header_nft_id'),
             $t('components.export.column_header_token_contract_address'),
         ];
-        csvContent += `${headers.map((header) => `"${header}"`).join(',')}\r\n`;
+        csvContent += `${headers.map(header => `"${header}"`).join(',')}\r\n`;
 
         transferRows.forEach((obj) => {
-            const row = headers.map((header) => escapeCSVValue((obj as Record<string, string>)[header]));
+            const row = headers.map(header => escapeCSVValue((obj as Record<string, string>)[header]));
             csvContent += `${row.join(',')}\r\n`;
         });
     }

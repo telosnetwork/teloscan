@@ -246,7 +246,7 @@ export default defineComponent({
         },
         runRead() {
             return this.getEthersFunction()
-                .then((func) => func(...this.params)
+                .then(func => func(...this.params)
                     .then((response: string) => {
                         this.result = response;
                         this.errorMessage = null;

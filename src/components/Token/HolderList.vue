@@ -18,7 +18,7 @@ export default {
     },
     async mounted() {
         const list = await this.$contractManager.getSystemContractsList();
-        this.systemContractsList = Object.keys(list.contracts).map((contractKey) => list.contracts[contractKey].address).join(',');
+        this.systemContractsList = Object.keys(list.contracts).map(contractKey => list.contracts[contractKey].address).join(',');
         this.systemContractsList.substr(this.systemContractsList.length - 2, this.systemContractsList.length - 1);
         await this.onRequest({
             pagination: this.pagination,

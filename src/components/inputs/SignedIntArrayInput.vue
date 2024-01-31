@@ -31,14 +31,14 @@ export default {
         intSize: {
             type: [Number, String],
             required: true,
-            validator: (size) => integerSizeValidator(size, true),
+            validator: size => integerSizeValidator(size, true),
         },
         // expected size of the int array
         // if size is undefined or -1, array size is unconstrained; else it is fixed-size (e.g. int256[3])
         size: {
             type: [Number, String],
             default: -1,
-            validator: (length) => +length >= -1,
+            validator: length => +length >= -1,
         },
     },
     data: () => ({
@@ -53,10 +53,10 @@ export default {
             const maximum = +this.intSize === 0 ? '0' : BigNumber.from(2).pow(+this.intSize).sub(1);
             const minimum = maximum.mul(-1);
 
-            const getIntsFromString = (str) => str.match(/-?\d+/g) ?? [];
-            const validateMaximum = (val) => getIntsFromString(val).every((int) => BigNumber.from(int).lte(maximum));
-            const validateMinimum = (val) => getIntsFromString(val).every((int) => BigNumber.from(int).gte(minimum));
-            const validateParsedArray = (value) => /^\[(-?\d+, *)*(-?\d+)]$/.test(value) || value === '';
+            const getIntsFromString = str => str.match(/-?\d+/g) ?? [];
+            const validateMaximum = val => getIntsFromString(val).every(int => BigNumber.from(int).lte(maximum));
+            const validateMinimum = val => getIntsFromString(val).every(int => BigNumber.from(int).gte(minimum));
+            const validateParsedArray = value => /^\[(-?\d+, *)*(-?\d+)]$/.test(value) || value === '';
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
 
@@ -77,10 +77,10 @@ export default {
             const errMessageTooSmall = this.$t('components.inputs.too_small', { size: this.intSize, min: minimum.toString() });
 
             return [
-                (val) => validateParsedArray(val) || invalidArrayStringMessage,
-                (val) => validateMaximum(val) || errMessageTooLarge,
-                (val) => validateMinimum(val) || errMessageTooSmall,
-                (val) => validateArrayLength(val) || incorrectArrayLengthMessage,
+                val => validateParsedArray(val) || invalidArrayStringMessage,
+                val => validateMaximum(val) || errMessageTooLarge,
+                val => validateMinimum(val) || errMessageTooSmall,
+                val => validateArrayLength(val) || incorrectArrayLengthMessage,
             ];
         },
         shapedLabel() {

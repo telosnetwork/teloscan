@@ -28,7 +28,7 @@ export default {
     },
     methods: {
         checkTokenList(address, tokenList) {
-            return tokenList.tokens.filter((token) => address.toLowerCase() === token.address.toLowerCase())[0];
+            return tokenList.tokens.filter(token => address.toLowerCase() === token.address.toLowerCase())[0];
         },
         async loadTokens() {
             if (this.tokensOfficial !== false || this.tokens !== false || this.processing || this.address === null) {

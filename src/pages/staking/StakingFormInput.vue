@@ -22,7 +22,7 @@ export default {
         modelValue: {
             type: String,
             required: true,
-            validator: (str) => typeof str === 'string' && /^\d{1,256}$/.test(str),
+            validator: str => typeof str === 'string' && /^\d{1,256}$/.test(str),
         },
         label: {
             type: String,
@@ -47,7 +47,7 @@ export default {
         maxValue: {
             type: String,
             default: null,
-            validator: (str) => BigNumber.from(str),
+            validator: str => BigNumber.from(str),
         },
     },
     emits: ['update:modelValue'],
@@ -77,12 +77,12 @@ export default {
             const { input } = this.$refs;
 
             const numKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-            const modifierKeys = ['ctrl', 'meta', 'shift', 'alt'].map((mod) => `${mod}Key`);
+            const modifierKeys = ['ctrl', 'meta', 'shift', 'alt'].map(mod => `${mod}Key`);
             const { value } = input;
             const caretPosition = input.selectionStart;
             const pressedKey = event.key;
 
-            const eventHasModifiers = modifierKeys.some((modifier) => event[modifier] === true);
+            const eventHasModifiers = modifierKeys.some(modifier => event[modifier] === true);
             const targetHasNoSelection = caretPosition === input.selectionEnd;
             const deletingBackward = event.key === 'Backspace' && !eventHasModifiers && targetHasNoSelection;
             const deletingForward = event.key === 'Delete' && !eventHasModifiers && targetHasNoSelection;

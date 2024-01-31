@@ -1,3 +1,3 @@
-export const tlosPrice = ({ tlosPrice }) => tlosPrice;
-export const gasPrice = ({ gasPrice }) => gasPrice;
-export const latestBlock = ({ latestBlock }) => latestBlock;
+export const tlosPrice = state => state.tlosPrice;
+export const gasPrice = state => state.gasPrice;
+export const latestBlock = state => state.latestBlock;

@@ -35,7 +35,7 @@ export const quasarInputProps = {
     'lazy-rules': {
         type: [Boolean, String],
         default: true,
-        validator: (rule) => [true, false, 'ondemand'].includes(rule),
+        validator: rule => [true, false, 'ondemand'].includes(rule),
     },
     loading: {
         type: Boolean,
@@ -112,7 +112,7 @@ export const quasarInputProps = {
     type: {
         type: String,
         default: 'text',
-        validator: (type) => [
+        validator: type => [
             'text',
             'password',
             'textarea',

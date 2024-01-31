@@ -16,7 +16,8 @@ module.exports = {
         browser: true,
         es2021: true,
         node: true,
-        'vue/setup-compiler-macros': true
+        'vue/setup-compiler-macros': true,
+        jest: true,
     },
 
     // Rules order is important, please avoid shuffling them
@@ -134,7 +135,6 @@ module.exports = {
             'patterns': ['.*'], // disallow relative imports
         }],
         'no-return-assign': ['error', 'always'],
-        'no-param-reassign': 'error',
 
         'vue/html-indent': ['warn', 4, { 'baseIndent': 0 }],
         'vue/max-attributes-per-line': ['warn', {

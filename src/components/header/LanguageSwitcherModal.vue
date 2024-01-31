@@ -26,7 +26,7 @@ export default {
         //     { code: 'es-es', name: 'Español'},
         //     ...
         // ],
-        this.languageOptions = Object.keys(messages).map((key) => ({
+        this.languageOptions = Object.keys(messages).map(key => ({
             code: key,
             name: messages[key].locale.current_language_name,
         }));

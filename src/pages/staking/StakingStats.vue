@@ -102,7 +102,7 @@ export default {
             }
         },
         formatWeiForStats(wei) {
-            const format = (val) => formatWei(val, WEI_PRECISION, 3);
+            const format = val => formatWei(val, WEI_PRECISION, 3);
 
             return wei === null ? '--' : format(wei);
         },

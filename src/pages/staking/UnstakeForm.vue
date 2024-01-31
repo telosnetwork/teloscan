@@ -139,7 +139,7 @@ export default defineComponent({
             const inputsInvalid = (
                 this.isLoggedIn
                 && [this.topInputAmount, this.bottomInputAmount]
-                    .some((amount) => ['0', '', null, undefined].includes(amount))
+                    .some(amount => ['0', '', null, undefined].includes(amount))
             );
 
             return inputsInvalid

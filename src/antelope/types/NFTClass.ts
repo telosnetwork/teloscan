@@ -282,7 +282,7 @@ export class NFTItemClass {
     }
 
     get attributes(): NftAttribute[] {
-        return ((this.indexer.metadata?.attributes || []) as IndexerNftItemAttribute[]).map((attr) => ({
+        return ((this.indexer.metadata?.attributes || []) as IndexerNftItemAttribute[]).map(attr => ({
             label: attr.trait_type,
             text: attr.value,
         }));
@@ -303,7 +303,7 @@ export class NFTItemClass {
     }
 
     notifyWatchers(): void {
-        this.watchers.forEach((w) => w());
+        this.watchers.forEach(w => w());
     }
 }
 

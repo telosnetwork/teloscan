@@ -31,7 +31,7 @@ export default {
         size: {
             type: [Number, String],
             required: true,
-            validator: (size) => integerSizeValidator(size, false),
+            validator: size => integerSizeValidator(size, false),
         },
     },
     data: () => ({
@@ -46,9 +46,9 @@ export default {
             const errMessageNoNegative = this.$t('components.inputs.no_negative_unsigint', { size: this.size });
 
             return [
-                (val) => val[0] !== '-' || errMessageNoNegative,
-                (val) => (/^\d*$/.test(val) || val === '') || errMessageInvalidInput,
-                (val) => BigNumber.from(val || 0).lte(maximum) || errMessageTooLarge,
+                val => val[0] !== '-' || errMessageNoNegative,
+                val => (/^\d*$/.test(val) || val === '') || errMessageInvalidInput,
+                val => BigNumber.from(val || 0).lte(maximum) || errMessageTooLarge,
             ];
         },
         shapedLabel() {

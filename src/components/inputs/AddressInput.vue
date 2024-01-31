@@ -36,9 +36,9 @@ export default {
             const addressRegex = /(^0x[0-9a-fA-F]{40}$)|(^$)/;
 
             return [
-                (val) => [0, 42].includes(val.length) || errMessageInvalidLength,
-                (val) => startsWith0xRegex.test(val) || errMessageStartsWith0x,
-                (val) => addressRegex.test(val) || errMessageInvalidInput,
+                val => [0, 42].includes(val.length) || errMessageInvalidLength,
+                val => startsWith0xRegex.test(val) || errMessageStartsWith0x,
+                val => addressRegex.test(val) || errMessageInvalidInput,
             ];
         },
         shapedLabel() {

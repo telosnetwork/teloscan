@@ -58,7 +58,7 @@ export default defineComponent({
                 }
                 const loginObj = JSON.parse(loginData);
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const wallet = this.$ual.getAuthenticators().availableAuthenticators.find((a) => a.getName() === loginObj.provider);
+                const wallet = this.$ual.getAuthenticators().availableAuthenticators.find(a => a.getName() === loginObj.provider);
                 wallet?.logout();
             }
             this.setLogin({});
