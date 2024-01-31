@@ -1,0 +1,631 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StakeForm.vue should render a banner when the user has unlocked TLOS 1`] = `
+<div
+  data-v-app=""
+>
+  
+  <div
+    class="c-stake-form row"
+  >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="0"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        bottominputmaxvalue=""
+        ctadisabled="true"
+        ctaloading="false"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="0"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
+    <!--v-if-->
+    <q-dialog-stub
+      modelvalue="false"
+    >
+      
+      <q-card-stub>
+        
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
+        >
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
+          />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
+        
+      </q-card-stub>
+      
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
+</div>
+`;
+
+exports[`StakeForm.vue should render a banner when the user has unlocked TLOS 2`] = `
+<div
+  data-v-app=""
+>
+  
+  <div
+    class="c-stake-form row"
+  >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <q-banner-stub
+        class="bg-green text-black"
+        dense=""
+        inline-actions=""
+        rounded=""
+      >
+        
+        pages.staking.you_have_unlocked_tlos 
+        
+        
+        <q-btn-stub
+          color="black"
+          flat=""
+          label="global.dismiss"
+        />
+        <q-btn-stub
+          color="black"
+          flat=""
+          label="pages.staking.claim_tlos"
+        />
+        
+      </q-banner-stub>
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="0"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        bottominputmaxvalue=""
+        ctadisabled="true"
+        ctaloading="false"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="0"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
+    <!--v-if-->
+    <q-dialog-stub
+      modelvalue="false"
+    >
+      
+      <q-card-stub>
+        
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
+        >
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
+          />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
+        
+      </q-card-stub>
+      
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
+</div>
+`;
+
+exports[`StakeForm.vue should render correctly when the user is not logged in 1`] = `
+<div
+  data-v-app=""
+>
+  
+  <div
+    class="c-stake-form row"
+  >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="0"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        bottominputmaxvalue=""
+        ctadisabled="false"
+        ctaloading="false"
+        ctatext="pages.staking.connect_wallet"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="0"
+        topinputerrortext="pages.staking.wallet_not_connected"
+        topinputinfotext=""
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue=""
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
+    <!--v-if-->
+    <q-dialog-stub
+      modelvalue="false"
+    >
+      
+      <q-card-stub>
+        
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
+        >
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
+          />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
+        
+      </q-card-stub>
+      
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
+</div>
+`;
+
+exports[`StakeForm.vue user input should be correctly handled for the bottom input 1`] = `
+<div
+  data-v-app=""
+>
+  
+  <div
+    class="c-stake-form row"
+  >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="1000000000000000000"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        bottominputmaxvalue=""
+        ctadisabled="false"
+        ctaloading="false"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="1500000000000000000"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
+    <!--v-if-->
+    <q-dialog-stub
+      modelvalue="false"
+    >
+      
+      <q-card-stub>
+        
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
+        >
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
+          />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
+        
+      </q-card-stub>
+      
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
+</div>
+`;
+
+exports[`StakeForm.vue user input should be correctly handled for the bottom input 2`] = `
+<div
+  data-v-app=""
+>
+  
+  <div
+    class="c-stake-form row"
+  >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="0"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        bottominputmaxvalue=""
+        ctadisabled="true"
+        ctaloading="false"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="0"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
+    <!--v-if-->
+    <q-dialog-stub
+      modelvalue="false"
+    >
+      
+      <q-card-stub>
+        
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
+        >
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
+          />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
+        
+      </q-card-stub>
+      
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
+</div>
+`;
+
+exports[`StakeForm.vue user input should be correctly handled for the top input 1`] = `
+<div
+  data-v-app=""
+>
+  
+  <div
+    class="c-stake-form row"
+  >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="1500000000000000000"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        bottominputmaxvalue=""
+        ctadisabled="false"
+        ctaloading="false"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="1000000000000000000"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
+    <!--v-if-->
+    <q-dialog-stub
+      modelvalue="false"
+    >
+      
+      <q-card-stub>
+        
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
+        >
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
+          />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
+        
+      </q-card-stub>
+      
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
+</div>
+`;
+
+exports[`StakeForm.vue user input should be correctly handled for the top input 2`] = `
+<div
+  data-v-app=""
+>
+  
+  <div
+    class="c-stake-form row"
+  >
+    <div
+      class="col-xs-12 col-md-6 offset-md-3"
+    >
+      <!--v-if-->
+    </div>
+    <div
+      class="col-12 q-mb-lg"
+    >
+      <base-staking-form-stub
+        bottominputamount="0"
+        bottominputisloading="false"
+        bottominputlabel="pages.staking.receive_stlos"
+        bottominputmaxvalue=""
+        ctadisabled="true"
+        ctaloading="false"
+        ctatext="pages.staking.stake_tlos"
+        header="pages.staking.stake_tlos"
+        subheader="pages.staking.stake_tlos_subheader"
+        topinputamount="0"
+        topinputerrortext=""
+        topinputinfotext="pages.staking.available"
+        topinputisloading="false"
+        topinputlabel="pages.staking.stake_tlos"
+        topinputmaxvalue="149000000000000000000"
+        topinputtooltip="pages.staking.click_to_input_full_wallet_balance"
+        unstakeperiodseconds="60"
+        valueofonestlosintlos="1.23456789"
+      />
+    </div>
+    <!--v-if-->
+    <q-dialog-stub
+      modelvalue="false"
+    >
+      
+      <q-card-stub>
+        
+        <q-card-section-stub>
+          
+          <p>
+            pages.staking.stake_tlos_confirm
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_2a 1 pages.staking.minutes, pages.staking.stake_tlos_confirm_2b
+          </p>
+          <p>
+            pages.staking.stake_tlos_confirm_3
+          </p>
+          
+        </q-card-section-stub>
+        <q-card-actions-stub
+          align="right"
+          class="q-pb-md q-px-md"
+        >
+          
+          <!--v-if-->
+          <q-btn-stub
+            color="negative"
+            flat=""
+            label="pages.staking.cancel"
+          />
+          <q-btn-stub
+            color="secondary"
+            label="pages.staking.stake_tlos"
+            text-color="black"
+          />
+          
+        </q-card-actions-stub>
+        
+      </q-card-stub>
+      
+    </q-dialog-stub>
+  </div>
+  <login-modal-stub
+    show="false"
+  />
+  
+</div>
+`;

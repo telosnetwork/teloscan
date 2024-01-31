@@ -1,0 +1,48 @@
+/* General */
+.u-flex {
+    $this: &;
+
+    &--left,
+    &--center,
+    &--center-y,
+    &--right,
+    &--space-between {
+        display: flex;
+        align-items: center;
+
+        &#{$this}--inline {
+            display: inline-flex;
+        }
+    }
+
+    &--left {
+        justify-content: flex-start;
+    }
+
+    &--right {
+        justify-content: flex-end;
+    }
+
+    &--center {
+        justify-content: center;
+    }
+
+    &--space-between {
+        justify-content: space-between;
+    }
+}
+
+/* Text */
+.u-text {
+    &--small {
+        font-size: 12px;
+    }
+
+    &--pre {
+        white-space: pre-line;
+    }
+}
+
+
+// components
+@import 'components/notification'
