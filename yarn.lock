@@ -2455,24 +2455,25 @@
     core-js "^3.6.5"
     core-js-compat "^3.6.5"
 
-"@quasar/extras@^1.13.0", "@quasar/extras@^1.16.4":
+"@quasar/extras@^1.10.8", "@quasar/extras@^1.16.4":
   version "1.16.9"
   resolved "https://registry.yarnpkg.com/@quasar/extras/-/extras-1.16.9.tgz#6cdf9d34862e6f58009443a2d1e34b84a5e73ad0"
   integrity sha512-SlOhwzXyPQHWgQIS2ncyDdYdksCJvUYNtgsDQqzAKEG3r3d/ejOxvThle79HTK3Q6HB+gQWFG21Ux00Osr5XSw==
 
-"@quasar/quasar-app-extension-qmediaplayer@^2.0.0-beta.6":
-  version "2.0.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@quasar/quasar-app-extension-qmediaplayer/-/quasar-app-extension-qmediaplayer-2.0.0-beta.6.tgz#527430f1c1821d2c8623a508146aad754a9dcf29"
-  integrity sha512-Mrqqny92+/Kj5TuHzXLsbHF8j4Ltjuhwdq+tkkpx99Iw0zeE5lcFDTNzmiAllN8+W7h57FzDWiidvsh8dXPnDg==
+"@quasar/quasar-app-extension-qmediaplayer@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@quasar/quasar-app-extension-qmediaplayer/-/quasar-app-extension-qmediaplayer-1.4.1.tgz#96f275f0001b7466129b8167652047c4a066d884"
+  integrity sha512-xvebugH69aGF1PDH6sOgRf73dTTOl1FOnRfQK/ZvpObT+uxkmQeNvdyVnbI0zOIkODC4cGVwBW+TIfQWnsNwUQ==
   dependencies:
-    "@quasar/quasar-ui-qmediaplayer" "^2.0.0-beta.6"
+    "@quasar/quasar-ui-qmediaplayer" "^1.4.1"
 
-"@quasar/quasar-ui-qmediaplayer@^2.0.0-beta.6":
-  version "2.0.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@quasar/quasar-ui-qmediaplayer/-/quasar-ui-qmediaplayer-2.0.0-beta.6.tgz#9b29e0b68ffe4575df682abd13e50392bc8a2361"
-  integrity sha512-j0Y6NCMkup/fjwpOT2kWPG+w3X1yVxmRaSHxQRtWLsWHjiSheaJLWKqZDJ9UarEKL8rtS/CUtadD+ENvcBEHHQ==
+"@quasar/quasar-ui-qmediaplayer@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@quasar/quasar-ui-qmediaplayer/-/quasar-ui-qmediaplayer-1.4.1.tgz#0ab638b69bcbfca3be3113943ecb61ecafe1c87b"
+  integrity sha512-6b/Meyhqk+9Od7C28MyScY4m3uL3XU8I5ol5+fsDku+fj9brEAtL8YF8pozZinh5qtv+jbEN7m90wWwQHsFQzQ==
   dependencies:
-    "@quasar/extras" "^1.13.0"
+    "@quasar/extras" "^1.10.8"
+    q-colorize-mixin "^1.0.10"
 
 "@quasar/render-ssr-error@^1.0.3":
   version "1.0.3"
@@ -9386,6 +9387,11 @@ pure-rand@^6.0.0:
   version "6.0.4"
   resolved "https://registry.yarnpkg.com/pure-rand/-/pure-rand-6.0.4.tgz#50b737f6a925468679bff00ad20eade53f37d5c7"
   integrity sha512-LA0Y9kxMYv47GIPJy6MI84fqTd2HmYZI83W/kM/SkKfDlajnZYfmXFTxkbY+xSBPkLJxltMa9hIkmdc29eguMA==
+
+q-colorize-mixin@^1.0.10:
+  version "1.0.10"
+  resolved "https://registry.yarnpkg.com/q-colorize-mixin/-/q-colorize-mixin-1.0.10.tgz#f0fbfa2826cbfdaffc5c6851e9949aff311da48a"
+  integrity sha512-pqMSb3mxTps0pfKh2zV/7ukgVvrzQT8+Ic2c3PaTkMI5yGPBbBK+t0SgF1ktBJ0PCYFE1bpK1unK20Z2OlTzlg==
 
 qrcode@1.5.3, qrcode@^1.5.1:
   version "1.5.3"
