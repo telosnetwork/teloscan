@@ -22,10 +22,9 @@ import {
 } from '@web3modal/ethereum';
 import { Web3Modal, Web3ModalConfig } from '@web3modal/html';
 import { BigNumber, ethers } from 'ethers';
-import { useChainStore } from 'src/antelope';
-import { useContractStore } from 'src/antelope';
-import { useFeedbackStore } from 'src/antelope';
-import { usePlatformStore } from 'src/antelope';
+import {
+    useChainStore, useContractStore, useFeedbackStore, usePlatformStore,
+} from 'src/antelope';
 import {
     AntelopeError,
     EvmABI,
@@ -50,21 +49,25 @@ export class WalletConnectAuth extends EVMAuthenticator {
     // debounce methods do not allow for async functions to be awaited; they return a promise which resolves immediately
     // thus, we need to implement out own debounce so that we can await the async function (in this case, _prepareTokenForTransfer)
     private _debounceTimer = setTimeout(() => {}, 0);
+
     private _debouncedPrepareTokenConfigResolver: ((value: unknown) => void) | null;
+
     private web3Modal: Web3Modal;
+
     private unsubscribeWeb3Modal: null | (() => void) = null;
+
     private usingQR = false;
 
     options: Web3ModalConfig;
+
     wagmiClient: EthereumClient;
+
     // this is just a dummy label to identify the authenticator base class
     constructor(options: Web3ModalConfig, wagmiClient: EthereumClient, label = name) {
         super(label);
         this.options = options;
         this.wagmiClient = wagmiClient;
         this._debouncedPrepareTokenConfigResolver = null;
-
-        console.log('this.options, this.wagmiClient', this.options, this.wagmiClient);
 
         this.web3Modal = new Web3Modal(this.options, this.wagmiClient);
     }
@@ -141,8 +144,8 @@ export class WalletConnectAuth extends EVMAuthenticator {
                     'WalletConnect',
                     TELOS_ANALYTICS_EVENT_NAMES.loginFailedWalletConnect,
                 );
-                const chainSettings = this.getChainSettings();
-                chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginFailedWalletConnect);
+                const settings = this.getChainSettings();
+                settings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginFailedWalletConnect);
             }
             throw new AntelopeError('antelope.evm.error_login');
         } finally {
@@ -169,51 +172,50 @@ export class WalletConnectAuth extends EVMAuthenticator {
                 chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginStarted);
             }
             return this.walletConnectLogin(network, trackAnalyticsEvents);
-        } else {
-            return new Promise((resolve) => {
-                this.trace('login', 'web3Modal.openModal()');
+        }
+        return new Promise((resolve) => {
+            this.trace('login', 'web3Modal.openModal()');
 
-                this.unsubscribeWeb3Modal = this.web3Modal.subscribeModal(async (newState: {open:boolean}) => {
-                    this.trace('login', 'web3Modal.subscribeModal ', toRaw(newState), wagmiConnected);
+            this.unsubscribeWeb3Modal = this.web3Modal.subscribeModal(async (newState: {open:boolean}) => {
+                this.trace('login', 'web3Modal.subscribeModal ', toRaw(newState), wagmiConnected);
 
-                    if (isOnTelos && newState.open === true && trackAnalyticsEvents) {
+                if (isOnTelos && newState.open === true && trackAnalyticsEvents) {
+                    this.trace(
+                        'login',
+                        'trackAnalyticsEvent -> login started',
+                        'WalletConnect',
+                        TELOS_ANALYTICS_EVENT_NAMES.loginStarted,
+                    );
+                    chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginStarted);
+                }
+
+                if (newState.open === false) {
+                    useFeedbackStore().unsetLoading(`${this.getName()}.login`);
+
+                    if (isOnTelos && !wagmiConnected() && trackAnalyticsEvents) {
                         this.trace(
                             'login',
-                            'trackAnalyticsEvent -> login started',
+                            'trackAnalyticsEvent -> login failed',
                             'WalletConnect',
-                            TELOS_ANALYTICS_EVENT_NAMES.loginStarted,
+                            TELOS_ANALYTICS_EVENT_NAMES.loginFailedWalletConnect,
                         );
-                        chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginStarted);
+                        chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginFailedWalletConnect);
                     }
 
-                    if (newState.open === false) {
-                        useFeedbackStore().unsetLoading(`${this.getName()}.login`);
-
-                        if (isOnTelos && !wagmiConnected() && trackAnalyticsEvents) {
-                            this.trace(
-                                'login',
-                                'trackAnalyticsEvent -> login failed',
-                                'WalletConnect',
-                                TELOS_ANALYTICS_EVENT_NAMES.loginFailedWalletConnect,
-                            );
-                            chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginFailedWalletConnect);
-                        }
-
-                        // this prevents multiple subscribers from being attached to the web3Modal
-                        // without this, every time the user logs out and back in again, this subscribeModal handler
-                        // runs one more time than the last time
-                        if (this.unsubscribeWeb3Modal) {
-                            this.unsubscribeWeb3Modal();
-                        }
+                    // this prevents multiple subscribers from being attached to the web3Modal
+                    // without this, every time the user logs out and back in again, this subscribeModal handler
+                    // runs one more time than the last time
+                    if (this.unsubscribeWeb3Modal) {
+                        this.unsubscribeWeb3Modal();
                     }
+                }
 
-                    if (wagmiConnected()) {
-                        resolve(this.walletConnectLogin(network, true));
-                    }
-                });
-                this.web3Modal.openModal();
+                if (wagmiConnected()) {
+                    resolve(this.walletConnectLogin(network, true));
+                }
             });
-        }
+            this.web3Modal.openModal();
+        });
     }
 
     // having this two properties attached to the authenticator instance may bring some problems
@@ -227,7 +229,7 @@ export class WalletConnectAuth extends EVMAuthenticator {
 
     async logout(): Promise<void> {
         this.trace('logout');
-        if (localStorage.getItem('wagmi.connected')){
+        if (localStorage.getItem('wagmi.connected')) {
             await disconnect();
         }
     }
@@ -262,7 +264,7 @@ export class WalletConnectAuth extends EVMAuthenticator {
         const config = {
             chainId: +chainSettings.getChainId(),
             address: contract,
-            abi: abi,
+            abi,
             functionName: method,
             args: parameters,
         } as {
@@ -283,31 +285,28 @@ export class WalletConnectAuth extends EVMAuthenticator {
         const sendConfig = await prepareWriteContract(config);
 
         this.trace('signCustomTransaction', 'writeContract ->', sendConfig);
-        return await writeContract(sendConfig);
+        return writeContract(sendConfig);
     }
-
 
     async transferTokens(token: TokenClass, amount: BigNumber, to: addressString): Promise<SendTransactionResult | WriteContractResult> {
         this.trace('transferTokens', token, amount, to);
         if (!this.sendConfig) {
-            throw new AntelopeError(token.isSystem ?
-                'antelope.wallets.error_system_token_transfer_config' :
-                'antelope.wallets.error_token_transfer_config',
-            );
+            throw new AntelopeError(token.isSystem
+                ? 'antelope.wallets.error_system_token_transfer_config'
+                : 'antelope.wallets.error_token_transfer_config');
         } else {
             if (token.isSystem) {
-                return await sendTransaction(this.sendConfig as PrepareSendTransactionResult);
-            } else {
-                // prepare variables
-                const value = amount.toHexString();
-                const transferAbi = erc20Abi.filter(abi => abi.name === 'transfer');
-
-                return this.signCustomTransaction(
-                    token.address,
-                    transferAbi,
-                    [to, value],
-                );
+                return sendTransaction(this.sendConfig as PrepareSendTransactionResult);
             }
+            // prepare variables
+            const value = amount.toHexString();
+            const transferAbi = erc20Abi.filter(abi => abi.name === 'transfer');
+
+            return this.signCustomTransaction(
+                token.address,
+                transferAbi,
+                [to, value],
+            );
         }
     }
 
@@ -316,8 +315,9 @@ export class WalletConnectAuth extends EVMAuthenticator {
     }
 
     sendConfig: PrepareSendTransactionResult | PrepareWriteContractResult<EvmABI, string, number> | null = null;
+
     private _debouncedPrepareTokenConfig(token: TokenClass | null, amount: BigNumber, to: string) {
-        // If there is already a pending call, clear it
+    // If there is already a pending call, clear it
         if (this._debouncedPrepareTokenConfigResolver) {
             clearTimeout(this._debounceTimer);
             this._debouncedPrepareTokenConfigResolver(null); // Resolve with null when debounced
@@ -341,6 +341,7 @@ export class WalletConnectAuth extends EVMAuthenticator {
         // Return the promise
         return promise;
     }
+
     async _prepareTokenForTransfer(token: TokenClass | null, amount: BigNumber, to: string) {
         this.trace('prepareTokenForTransfer', [token], amount, to);
         if (token) {
@@ -473,7 +474,6 @@ export class WalletConnectAuth extends EVMAuthenticator {
             // this code is going to be used in EVMAuthenticator.ts login method
             const listAccounts: () => Promise<`0x${string}`[]> = async () => [getAccount().address as addressString];
             web3Provider.listAccounts = listAccounts;
-
         } else {
             web3Provider = new ethers.providers.Web3Provider(await this.externalProvider());
             this.trace('web3Provider', 'Web3Provider ->', web3Provider);
@@ -507,9 +507,7 @@ export class WalletConnectAuth extends EVMAuthenticator {
         if (this.usingQR) {
             // we don't have tools to check the chain when using QR
             return this.web3Provider();
-        } else {
-            return super.ensureCorrectChain();
         }
+        return super.ensureCorrectChain();
     }
-
 }

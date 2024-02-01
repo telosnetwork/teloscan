@@ -1,7 +1,7 @@
 <script>
 import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 
-import StakingFormInput from 'pages/staking/StakingFormInput';
+import StakingFormInput from 'pages/staking/StakingFormInput.vue';
 
 const genericMaxWei = '999999999999000000000000000000';
 
@@ -99,17 +99,17 @@ export default {
         },
         inputs() {
             return [{
-                label:       this.topInputLabel,
-                infoText:    this.topInputInfoText,
-                errorText:   this.topInputErrorText,
-                tooltip:     this.topInputTooltip,
-                maxValue:    this.topInputMaxValue || genericMaxWei,
-                isLoading:   this.topInputIsLoading,
+                label: this.topInputLabel,
+                infoText: this.topInputInfoText,
+                errorText: this.topInputErrorText,
+                tooltip: this.topInputTooltip,
+                maxValue: this.topInputMaxValue || genericMaxWei,
+                isLoading: this.topInputIsLoading,
             }, {
-                label:       this.bottomInputLabel,
-                errorText:   '',
-                maxValue:    this.bottomInputMaxValue || null,
-                isLoading:   this.bottomInputIsLoading,
+                label: this.bottomInputLabel,
+                errorText: '',
+                maxValue: this.bottomInputMaxValue || null,
+                isLoading: this.bottomInputIsLoading,
             }];
         },
     },
@@ -173,7 +173,7 @@ export default {
                         :disabled="ctaDisabled"
                         :loading="ctaLoading"
                         color="secondary"
-                        text-color="black"
+                        text-color="white"
                         @click="handleCtaClick"
                     >
                         {{ ctaText }}

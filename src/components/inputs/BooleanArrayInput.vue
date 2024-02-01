@@ -1,7 +1,7 @@
 <script>
-import { parseBooleanArrayString } from 'components/ContractTab/function-interface-utils';
+import { parseBooleanArrayString } from 'src/lib/function-interface-utils';
 
-import BaseTextInput from 'components/inputs/BaseTextInput';
+import BaseTextInput from 'components/inputs/BaseTextInput.vue';
 
 export default {
     name: 'BooleanArrayInput',
@@ -51,8 +51,7 @@ export default {
                 return Array.isArray(parseBooleanArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage =
-                this.$t('components.inputs.incorrect_booleans_array_length', { size: +this.size });
+            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_booleans_array_length', { size: +this.size });
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_booleans_array_string');
 
             return [

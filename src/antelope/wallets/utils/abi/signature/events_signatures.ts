@@ -23,4 +23,3 @@ export const events_signatures = {
     '0x4a39dc06': 'event TransferBatch(address indexed operator, address indexed from, address indexed to, uint256[] ids,uint256[] amounts)',
     '0xc3d58168': 'event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 amount)',
 } as { [prefix: string]: string };
-

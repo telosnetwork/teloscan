@@ -1,5 +1,5 @@
 import { route } from 'quasar/wrappers';
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, createMemoryHistory } from 'vue-router';
 import routes from 'src/router/routes';
 
 /*
@@ -11,8 +11,9 @@ import routes from 'src/router/routes';
  * with the Router instance.
  */
 
-export default route(function (/* { store, ssrContext } */) {
-    const createHistory = createWebHistory;
+export default route((/* { store, ssrContext } */) => {
+    const isServer = typeof window === 'undefined';
+    const history = isServer ? createMemoryHistory(process.env.VUE_ROUTER_BASE) : createWebHistory(process.env.VUE_ROUTER_BASE);
 
     const Router = createRouter({
         scrollBehavior: () => ({ left: 0, top: 0 }),
@@ -21,7 +22,7 @@ export default route(function (/* { store, ssrContext } */) {
         // Leave this as is and make changes in quasar.conf.js instead!
         // quasar.conf.js -> build -> vueRouterMode
         // quasar.conf.js -> build -> publicPath
-        history: createHistory(process.env.VUE_ROUTER_BASE),
+        history,
     });
     return Router;
 });

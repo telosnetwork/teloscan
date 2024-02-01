@@ -4,7 +4,6 @@ import { EVMAuthenticator, InjectedProviderAuth } from 'src/antelope/wallets';
 const name = 'Brave';
 export const BraveAuthName = name;
 export class BraveAuth extends InjectedProviderAuth {
-
     // this is just a dummy label to identify the authenticator base class
     constructor(label = name) {
         super(label);
@@ -13,6 +12,9 @@ export class BraveAuth extends InjectedProviderAuth {
     // InjectedProviderAuth API ------------------------------------------------------
 
     getProvider(): EthereumProvider | null {
+        if (typeof window === 'undefined') {
+            return null;
+        }
         return window.ethereum as unknown as EthereumProvider ?? null;
     }
 

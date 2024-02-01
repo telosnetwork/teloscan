@@ -3,7 +3,9 @@
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
 import { Web3ModalConfig } from '@web3modal/html';
 import { OreIdOptions } from 'oreid-js';
-import { MetamaskAuth, OreIdAuth, SafePalAuth, WalletConnectAuth, BraveAuth } from 'src/antelope/wallets';
+import {
+    MetamaskAuth, OreIdAuth, SafePalAuth, WalletConnectAuth, BraveAuth,
+} from 'src/antelope/wallets';
 import { configureChains, createConfig } from '@wagmi/core';
 import { telos, telosTestnet } from '@wagmi/core/chains';
 import { getAntelope } from 'src/antelope/mocks/AntelopeConfig';
@@ -20,7 +22,6 @@ export function initAntelope(app: App) {
     };
 
     const projectId = process.env.PROJECT_ID || '14ec76c44bae7d461fa0f5fd5f8a9da1';
-    console.log('process.env', process.env);
     const chains = [telos, telosTestnet];
 
     const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);
@@ -36,10 +37,10 @@ export function initAntelope(app: App) {
 
     // Wagmi Options --
     const explorerRecommendedWalletIds = [
-        // MetaMask
+    // MetaMask
         'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96',
-        // SafePal
-        // '0b415a746fb9ee99cce155c2ceca0c6f6061b1dbca2d722b3ba16381d0562150',
+    // SafePal
+    // '0b415a746fb9ee99cce155c2ceca0c6f6061b1dbca2d722b3ba16381d0562150',
     ];
     const explorerExcludedWalletIds = 'ALL' as const; // Web3Modal option excludes all but recomended
     const wagmiOptions: Web3ModalConfig = { projectId, explorerRecommendedWalletIds, explorerExcludedWalletIds };
@@ -57,14 +58,15 @@ export function initAntelope(app: App) {
     ant.config.setNotifyNeutralMessageHandler(app.config.globalProperties.$notifyNeutralMessage);
     ant.config.setNotifyRememberInfoHandler(app.config.globalProperties.$notifyRememberInfo);
 
-
     // setting authenticators getter --
     ant.config.setAuthenticatorsGetter(
-        () => app.config.globalProperties.$ual.getAuthenticators().availableAuthenticators);
+        () => app.config.globalProperties.$ual.getAuthenticators().availableAuthenticators,
+    );
 
     // setting translation handler --
     ant.config.setLocalizationHandler(
-        (key:string, payload?: Record<string, unknown>) => app.config.globalProperties.$t(key, payload ? payload : {}));
+        (key:string, payload?: Record<string, unknown>) => app.config.globalProperties.$t(key, payload || {}),
+    );
 
     // setting transaction error handler --
     ant.config.setTransactionErrorHandler((err: object) => {
@@ -86,6 +88,4 @@ export function initAntelope(app: App) {
     ant.wallets.addEVMAuthenticator(new MetamaskAuth());
     ant.wallets.addEVMAuthenticator(new SafePalAuth());
     ant.wallets.addEVMAuthenticator(new BraveAuth());
-
 }
-

@@ -4,8 +4,7 @@ import { BigNumber, ethers } from 'ethers';
 import { formatUnits } from '@ethersproject/units';
 import { EvmABIEntry } from 'src/antelope/types';
 import { fromUnixTime, format } from 'date-fns';
-import { toStringNumber } from 'src/antelope/wallets/utils/currency-utils';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
+import { toStringNumber, prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 import { keccak256, toUtf8Bytes } from 'ethers/lib/utils';
 
 const REVERT_FUNCTION_SELECTOR = '0x08c379a0';
@@ -28,7 +27,7 @@ export function divideFloat(a: string | number, b: string | number): string {
     const A = ethers.utils.parseUnits(a_str, decimals);
     const B = ethers.utils.parseUnits(b_str, b_decimals);
     const result = A.div(B);
-    return formatUnits(result.toString(), decimals-b_decimals);
+    return formatUnits(result.toString(), decimals - b_decimals);
 }
 
 /**
@@ -46,7 +45,7 @@ export function multiplyFloat(a: string | number, b: string | number): string {
     const A = ethers.utils.parseUnits(a_str, decimals);
     const B = ethers.utils.parseUnits(b_str, decimals);
     const result = A.mul(B);
-    return formatUnits(result.toString(), decimals+decimals);
+    return formatUnits(result.toString(), decimals + decimals);
 }
 
 export function formatWei(bn: string | number | ethers.BigNumber, tokenDecimals: number, displayDecimals = 4): string {
@@ -56,7 +55,7 @@ export function formatWei(bn: string | number | ethers.BigNumber, tokenDecimals:
     // Use string, do not convert to number so we never lose precision
     if (displayDecimals > 0 && str.includes('.')) {
         const parts = str.split('.');
-        return parts[0] + '.' + parts[1].slice(0, displayDecimals);
+        return `${parts[0]}.${parts[1].slice(0, displayDecimals)}`;
     }
     return str;
 }
@@ -145,8 +144,8 @@ export function parsePanicReason(revertOutput: string): string {
         reason = 'If you call .pop() on an empty array.';
         break;
     case '32':
-        reason = 'If you access an array, bytesN or an array slice at an out-of-bounds or negative index ' +
-            '(i.e. x[i] where i >= x.length or i < 0).';
+        reason = 'If you access an array, bytesN or an array slice at an out-of-bounds or negative index '
+            + '(i.e. x[i] where i >= x.length or i < 0).';
         break;
     case '41':
         reason = 'If you allocate too much memory or create an array that is too large.';
@@ -195,12 +194,12 @@ export function getClientIsApple() {
  * @return {string}
  */
 export function getFormattedUtcOffset(date: Date): string {
-    const pad = (value: number) => value < 10 ? '0' + value : value;
+    const pad = (value: number) => (value < 10 ? `0${value}` : value);
     const sign = (date.getTimezoneOffset() > 0) ? '-' : '+';
     const offset = Math.abs(date.getTimezoneOffset());
     const hours = pad(Math.floor(offset / 60));
     const minutes = pad(offset % 60);
-    return sign + hours + ':' + minutes;
+    return `${sign + hours}:${minutes}`;
 }
 
 /**
@@ -214,7 +213,6 @@ export function getLongDate(epoch: number): string {
     const offset = getFormattedUtcOffset(new Date(epoch));
     return `${format(fromUnixTime(epoch), 'MMM d, yyyy hh:mm:ss a')} (UTC ${offset})`;
 }
-
 
 /**
  * Given a unix timestamp, returns string with the date in a given format showing UTC offset optionally.
@@ -236,14 +234,11 @@ export function getFormatedDate(epoch: number, timeFormat = 'MMM d, yyyy hh:mm:s
 * return {boolean} - true if the amount is too large to be displayed in full on mobile devices
 * */
 export function isAmountTooLarge(amount: number | string): boolean {
-    const primaryAmountIsTooLarge =
-        (typeof amount === 'number' && amount.toString().length > 6) ||
-        (typeof amount === 'string' && amount.length > 6);
+    const primaryAmountIsTooLarge = (typeof amount === 'number' && amount.toString().length > 6)
+        || (typeof amount === 'string' && amount.length > 6);
 
     return primaryAmountIsTooLarge;
 }
-
-
 
 /*
 * Formats a token balance amount in a localized way, using 4 decimals,
@@ -256,7 +251,7 @@ export function isAmountTooLarge(amount: number | string): boolean {
 * return {string} - the formatted amount
 * */
 export function prettyPrintBalance(amount: number | string, locale: string, tiny: boolean, symbol = '') {
-    return ['', ' ' + symbol].join(prettyPrintCurrency(+amount, 4, locale, tiny ? isAmountTooLarge(amount) : false));
+    return ['', ` ${symbol}`].join(prettyPrintCurrency(+amount, 4, locale, tiny ? isAmountTooLarge(amount) : false));
 }
 
 /*
@@ -300,8 +295,7 @@ export function getShortenedHash(hash: string) {
     const textIsAddress = /^0x[0-9a-fA-F]+$/.test(hash);
 
     if (textIsAddress) {
-        return hash.slice(0, 6) + '...' + hash.slice(-4);
-    } else {
-        throw new Error('Invalid hash ' + hash);
+        return `${hash.slice(0, 6)}...${hash.slice(-4)}`;
     }
+    throw new Error(`Invalid hash ${hash}`);
 }

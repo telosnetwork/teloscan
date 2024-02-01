@@ -33,7 +33,7 @@ const settings = {
         fathom.trackEvent(eventName);
     },
     getRPCEndpoint: () => {
-        // extract the url parts
+    // extract the url parts
         const regex = /^(https?):\/\/([^:/]+)(?::(\d+))?(\/.*)?$/;
         const match = (process.env.NETWORK_EVM_RPC as string).match(regex);
         if (!match) {
@@ -66,7 +66,7 @@ const settings = {
         symbol: 'TLOS',
     } as TokenClass),
     getNetwork: () => process.env.NETWORK_EVM_NAME,
-    getExplorerUrl: () => window.location.origin,
+    getExplorerUrl: () => (typeof window !== 'undefined' ? window.location.origin : ''),
     getSmallLogoPath: () => 'small-icon-url',
     getLargeLogoPath: () => 'large-icon-url',
 } as EVMChainSettings;

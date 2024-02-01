@@ -8,15 +8,15 @@ export const quasarInputProps = {
         type: String,
         default: undefined,
     },
-    ['fill-mask']: {
+    'fill-mask': {
         type: [Boolean, String],
         default: false,
     },
-    ['reverse-fill-mask']: {
+    'reverse-fill-mask': {
         type: Boolean,
         default: false,
     },
-    ['unmasked-value']: {
+    'unmasked-value': {
         type: Boolean,
         default: false,
     },
@@ -28,11 +28,11 @@ export const quasarInputProps = {
         type: Array,
         default: undefined,
     },
-    ['reactive-rules']: {
+    'reactive-rules': {
         type: Boolean,
         default: false,
     },
-    ['lazy-rules']: {
+    'lazy-rules': {
         type: [Boolean, String],
         default: true,
         validator: rule => [true, false, 'ondemand'].includes(rule),
@@ -53,11 +53,11 @@ export const quasarInputProps = {
         type: String,
         default: '',
     },
-    ['error-message']: {
+    'error-message': {
         type: String,
         default: '',
     },
-    ['no-error-icon']: {
+    'no-error-icon': {
         type: Boolean,
         default: false,
     },
@@ -65,7 +65,7 @@ export const quasarInputProps = {
         type: String,
         required: true,
     },
-    ['stack-label']: {
+    'stack-label': {
         type: Boolean,
         default: false,
     },
@@ -73,7 +73,7 @@ export const quasarInputProps = {
         type: String,
         default: '',
     },
-    ['hide-hint']: {
+    'hide-hint': {
         type: Boolean,
         default: false,
     },
@@ -85,15 +85,15 @@ export const quasarInputProps = {
         type: String,
         default: '',
     },
-    ['clear-icon']: {
+    'clear-icon': {
         type: String,
         default: '',
     },
-    ['label-slot']: {
+    'label-slot': {
         type: Boolean,
         default: false,
     },
-    ['bottom-slots']: {
+    'bottom-slots': {
         type: Boolean,
         default: false,
     },
@@ -101,7 +101,7 @@ export const quasarInputProps = {
         type: Boolean,
         default: false,
     },
-    ['shadow-text']: {
+    'shadow-text': {
         type: String,
         default: '',
     },

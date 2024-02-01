@@ -8,6 +8,7 @@ import ContractManager from 'src/lib/ContractManager';
 declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
     $axios: AxiosInstance;
+    $indexerApi: AxiosInstance;
     $api: ApiClient;
     $ual: UAL;
     $user: User;

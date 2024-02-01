@@ -6,7 +6,6 @@
 export const HOUR_SECONDS = 60 * 60;
 export const DAY_SECONDS = 24 * HOUR_SECONDS;
 
-
 /**
  * Returns true if the given epochMs is less than the given number of minutes ago
  * @param epochMs seconds since epoch representing the date to check
@@ -29,7 +28,6 @@ export function dateIsWithinXMinutes(epochMs: number, minutes: number) {
     // return true if the date is within the defined timeframe
     return new Date(epochMs) > xMinsAgo;
 }
-
 
 /**
  * Translates a number of seconds to a natural language time period using the given translation function.
@@ -63,4 +61,3 @@ export function formatUnstakePeriod(seconds: number|null, $t: (key:string) => st
 
     return `${quantity} ${unit}`;
 }
-

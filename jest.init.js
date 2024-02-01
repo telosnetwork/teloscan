@@ -1,4 +1,4 @@
-import { config } from '@vue/test-utils';
+const { config } = require('@vue/test-utils');
 
 config.global.mocks = {
     $t: str => str,

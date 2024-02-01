@@ -1,5 +1,5 @@
 <script lang="javascript">
-import FunctionInterface from 'components/ContractTab/FunctionInterface';
+import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
 
 import { sortAbiFunctionsByName } from 'src/lib/utils';
 
@@ -11,15 +11,20 @@ export default {
             type: Boolean,
             required: true,
         },
+        contract: {
+            type: Object,
+        },
     },
-    data: () => ({
-        functions: [],
-        contract: [],
-    }),
+    data(props) {
+        return ({
+            functions: [],
+            verified: props.contract.verified,
+        });
+    },
     async mounted() {
-        this.contract = await this.$contractManager.getContract(this.$route.params.address);
-        let read = [];
-        let write = [];
+        const read = [];
+        const write = [];
+        this.verified = this.contract.verified;
         this.contract.abi.forEach((a) => {
             if (a.type !== 'function') {
                 return;
@@ -41,7 +46,7 @@ export default {
 </script>
 
 <template>
-<div class="q-pa-md">
+<div class="q-pt-md">
     <q-list>
         <q-expansion-item
             v-for="func in (write ? functions.write : functions.read)"
@@ -59,8 +64,11 @@ export default {
                     />
                 </div>
             </q-card>
-
         </q-expansion-item>
     </q-list>
+    <small v-if="contract.autoloadedAbi" class="row q-pb-md items-start flex text-grey no-wrap">
+        <q-icon name="info" size="12px" class="q-mr-xs q-mt-xs" />
+        <span>{{ $t('components.contract_tab.abi_loaded_from_interface') }}</span>
+    </small>
 </div>
 </template>

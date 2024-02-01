@@ -78,7 +78,7 @@ export default {
 
 <style lang="scss">
 .c-login-status {
-    font-size: 18px;
+    font-size: 16px;
 
     &__account-icon {
         margin-right: 8px;

@@ -1,24 +1,26 @@
 <script>
-import JsonViewer from 'vue-json-viewer';
-
-import Contract from 'src/lib/Contract';
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
+import ContractFactory from 'src/lib/contract/ContractFactory';
 import { erc721Abi, erc1155Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
-
 import { sortAbiFunctionsByName } from 'src/lib/utils';
-
 import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
 
 export default {
     name: 'GenericContractInterface',
     components: {
         FunctionInterface,
-        JsonViewer,
+        VueJsonPretty,
+    },
+    props: {
+        contract: {
+            type: Object,
+        },
     },
     data: () => ({
         file_model: null,
         address: null,
-        contract: null,
         functions: null,
         displayWriteFunctions: false,
         customAbiDefinition: '',
@@ -29,11 +31,12 @@ export default {
             erc1155: 'erc1155',
             custom: 'custom',
         },
+        factory: new ContractFactory(),
     }),
     computed: {
         showAbiFunctions() {
-            return Object.values(this.abiOptions).includes(this.selectedAbi) &&
-                ['read', 'write']
+            return Object.values(this.abiOptions).includes(this.selectedAbi)
+                && ['read', 'write']
                     .some(access => (this.functions?.[access] ?? [])
                         .some(member => member.type === 'function'));
         },
@@ -53,7 +56,6 @@ export default {
             }
         },
         customAbiDefinition(newValue, oldValue) {
-            console.log('Watching customAbiDefinition:', [newValue, oldValue]);
             if (oldValue !== newValue && this.customAbiIsValidJSON) {
                 this.formatAbiFunctionLists();
                 this.displayWriteFunctions = false;
@@ -81,10 +83,10 @@ export default {
             this.customAbiDefinition = '';
         },
         async uploadFile(e) {
-            let file = e.target.files[0];
-            let fileReader = new FileReader();
+            const file = e.target.files[0];
+            const fileReader = new FileReader();
             fileReader.onload = (event) => {
-                let json = event.target.result;
+                const json = event.target.result;
                 try {
                     JSON.parse(json); // this will throw an error if the json is invalid
                     this.customAbiDefinition = json;
@@ -105,15 +107,16 @@ export default {
                 write: [],
             };
 
-            const { custom, erc20, erc721, erc1155 } = this.abiOptions;
+            const {
+                custom, erc20, erc721, erc1155,
+            } = this.abiOptions;
 
             let abi;
             const customAbiSelected = this.selectedAbi === custom;
 
-            const selectedAbiIsCustomAndValid =
-                !!this.customAbiDefinition &&
-                this.customAbiIsValidJSON &&
-                customAbiSelected;
+            const selectedAbiIsCustomAndValid = !!this.customAbiDefinition
+                && this.customAbiIsValidJSON
+                && customAbiSelected;
             if (selectedAbiIsCustomAndValid) {
                 abi = JSON.parse(this.customAbiDefinition);
             } else if (this.selectedAbi === erc20) {
@@ -122,7 +125,7 @@ export default {
                 abi = erc721Abi;
             } else if (this.selectedAbi === erc1155) {
                 abi = erc1155Abi;
-            }else{
+            } else {
                 return;
             }
             if (!Array.isArray(abi)) {
@@ -135,16 +138,15 @@ export default {
             // https://github.com/ethers-io/ethers.js/blob/master/packages/abi/lib.esm/interface.js#L57
             console.assert(typeof abi.map === 'function', 'ERROR: abi is not an array');
 
-            this.contract = new Contract({
+            const contract = this.factory.buildContract({
                 name: this.$t('components.contract_tab.unverified_contract'),
                 address: this.address,
-                abi,
-                manager: this.$contractManager,
+                abi: JSON.stringify(abi),
             });
-            let read = [];
-            let write = [];
+            const read = [];
+            const write = [];
 
-            (this.contract?.abi ?? []).forEach((a) => {
+            (contract?.abi ?? []).forEach((a) => {
                 if (a.type !== 'function') {
                     return;
                 }
@@ -168,19 +170,25 @@ export default {
 <div class="q-pa-md">
     <div class="row q-pb-md">
         <div class="col-12">
-            <p>
+            <p class="text-h5 flex">
                 <q-icon
                     name="warning"
-                    class="text-negative"
-                    size="1.25rem"
+                    class="text-negative q-mt-xs q-mr-xs"
+                    size="1.5rem"
                 />
-                {{ $t('components.contract_tab.unverified_contract_source') }}
+                <span>{{ $t('components.contract_tab.unverified_contract_source') }}</span>
             </p>
             <p>
-                <a href="https://sourcify.dev" target="_blank">
+                <a href="https://sourcify.dev/" target="_blank">
                     {{ $t('components.contract_tab.click_here') }}
                 </a>
                 {{ $t('components.contract_tab.upload_source_files') }}
+            </p>
+            <p v-if="this.contract?.autoloadedAbi">
+                {{ $t('components.contract_tab.abi_autoloaded') }}
+            </p>
+            <p v-else>
+                {{ $t('components.contract_tab.choose_abi') }}
             </p>
         </div>
     </div>
@@ -257,11 +265,10 @@ export default {
                     <p class="q-mb-sm">
                         {{ $t('components.contract_tab.abi_json_preview') }}
                     </p>
-                    <JsonViewer
-                        :value="JSON.parse(customAbiDefinition)"
-                        :expand-depth="1"
+                    <VueJsonPretty
+                        :data="JSON.parse(customAbiDefinition)"
+                        :depth="1"
                         expanded
-                        theme="custom-theme"
                     />
                     <p
                         v-if="!showAbiFunctions"

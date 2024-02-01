@@ -26,14 +26,14 @@ export default {
         };
     },
     async created() {
-        // initialization of the translated texts
+    // initialization of the translated texts
         this.dialogMessage = this.$t('components.verify_prompt');
     },
     watch: {
-        flag(val){
+        flag(val) {
             this.showDialog = val;
         },
-        status(val){
+        status(val) {
             if (val) {
                 this.icon = 'verified';
                 this.color = 'text-positive';
@@ -44,14 +44,14 @@ export default {
                 this.dialogMessage = this.$t('components.verify_prompt');
             }
         },
-        showDialog(val){
+        showDialog(val) {
             if (!val) {
                 this.$emit('dialog', val);
             }
         },
     },
     methods: {
-        navigate(){
+        navigate() {
             window.open('https://sourcify.dev', '_blank');
         },
     },

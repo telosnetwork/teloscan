@@ -15,14 +15,12 @@ import { WEI_PRECISION } from 'src/antelope/wallets/utils';
 export function toStringNumber(value: number | string): string {
     if (typeof value === 'string') {
         return value;
-    } else if (typeof value === 'number') {
+    } if (typeof value === 'number') {
         const num = new Decimal(value);
         return num.toFixed(WEI_PRECISION);
-    } else {
-        throw new Error('Invalid value type: ' + typeof value);
     }
+    throw new Error(`Invalid value type: ${typeof value}`);
 }
-
 
 /**
  * Given a locale string, returns the character used to separate integer and decimal portions of a number,
@@ -92,7 +90,6 @@ export function getBigNumberFromLocalizedNumberString(formatted: string, decimal
     return parseUnits(unformatted, decimals);
 }
 
-
 /*
 * Formats a currency amount in a localized way
 *
@@ -109,6 +106,7 @@ export function prettyPrintCurrency(
     amount: number | BigNumber,
     precision: number,
     locale: string,
+    // eslint-disable-next-line default-param-last
     abbreviate = false,
     currency?: string,
     displayCurrencyAsCode?: boolean,
@@ -149,7 +147,7 @@ export function prettyPrintCurrency(
             decimalOptions.maximumIntegerDigits = 1;
             decimalOptions.minimumIntegerDigits = 1;
         } else if (abbreviate) {
-            const forceFractionDisplay = amount < 1000 && amount > -1000 ;
+            const forceFractionDisplay = amount < 1000 && amount > -1000;
 
             decimalOptions.maximumFractionDigits = forceFractionDisplay ? precision : 2;
             decimalOptions.minimumFractionDigits = forceFractionDisplay ? precision : 2;
@@ -162,69 +160,67 @@ export function prettyPrintCurrency(
                 notation: abbreviate ? 'compact' : undefined,
                 ...currencyOptions,
                 ...decimalOptions,
-            }).format(amount);
+            },
+        ).format(amount);
 
         if ((trimZeroes || precision === 0) && finalFormattedValue.indexOf(decimalSeparator) > -1) {
             finalFormattedValue = finalFormattedValue.replace(trailingZeroesRegex, '');
-        }
-
-        return finalFormattedValue;
-    } else {
-        if (amount.lt(1) && amount.gt(0)) {
-            decimalOptions.maximumIntegerDigits = 1;
-            decimalOptions.minimumIntegerDigits = 1;
-        } else if (abbreviate) {
-            const forceFractionDisplay = amount.lt(1000) && amount.gt(-1000);
-
-            decimalOptions.maximumFractionDigits = forceFractionDisplay ? precision : 2;
-            decimalOptions.minimumFractionDigits = forceFractionDisplay ? precision : 2;
-            decimalOptions.maximumIntegerDigits = 3;
-        }
-
-        // Intl format method only takes number / bigint, and a BigNumber value cannot have a fractional amount,
-        // and also decimals may be more places than maximum JS precision.
-        // As such, decimals must be handled specially for BigNumber amounts.
-
-        const amountAsString = formatUnits(amount, tokenDecimals); // amount string, like "1.0"
-
-        const [integerString, decimalString] = amountAsString.split('.');
-
-        const formattedInteger = Intl.NumberFormat(
-            locale,
-            { notation: abbreviate ? 'compact' : undefined },
-        ).format(BigInt(integerString));
-
-        const formattedDecimal = decimalString.slice(0, precision || 1).padEnd(precision, '0');
-
-        let finalFormattedValue;
-
-        if (abbreviate) {
-            finalFormattedValue = formattedInteger; // drop decimals for abbreviated amounts
-        } else {
-            finalFormattedValue = `${formattedInteger}${decimalSeparator}${formattedDecimal}`;
-        }
-
-        if ((trimZeroes || precision === 0) && finalFormattedValue.indexOf(decimalSeparator) > -1) {
-            finalFormattedValue = finalFormattedValue.replace(trailingZeroesRegex, '');
-        }
-
-        if (precision === 2 && tokenDecimals === 2 && currency) {
-            // value is a fiat currency with 2 decimals, so add the currency symbol
-            if (displayCurrencyAsCode) {
-                finalFormattedValue = `${finalFormattedValue}\u00A0${currency}`;
-            } else {
-                const symbol = getCurrencySymbol(locale, currency);
-                finalFormattedValue = `${symbol}${finalFormattedValue}`;
-            }
-
-        } else if (currency) {
-            finalFormattedValue += ` ${currency}`;
         }
 
         return finalFormattedValue;
     }
-}
+    if (amount.lt(1) && amount.gt(0)) {
+        decimalOptions.maximumIntegerDigits = 1;
+        decimalOptions.minimumIntegerDigits = 1;
+    } else if (abbreviate) {
+        const forceFractionDisplay = amount.lt(1000) && amount.gt(-1000);
 
+        decimalOptions.maximumFractionDigits = forceFractionDisplay ? precision : 2;
+        decimalOptions.minimumFractionDigits = forceFractionDisplay ? precision : 2;
+        decimalOptions.maximumIntegerDigits = 3;
+    }
+
+    // Intl format method only takes number / bigint, and a BigNumber value cannot have a fractional amount,
+    // and also decimals may be more places than maximum JS precision.
+    // As such, decimals must be handled specially for BigNumber amounts.
+
+    const amountAsString = formatUnits(amount, tokenDecimals); // amount string, like "1.0"
+
+    const [integerString, decimalString] = amountAsString.split('.');
+
+    const formattedInteger = Intl.NumberFormat(
+        locale,
+        { notation: abbreviate ? 'compact' : undefined },
+    ).format(BigInt(integerString));
+
+    const formattedDecimal = decimalString.slice(0, precision || 1).padEnd(precision, '0');
+
+    let finalFormattedValue;
+
+    if (abbreviate) {
+        finalFormattedValue = formattedInteger; // drop decimals for abbreviated amounts
+    } else {
+        finalFormattedValue = `${formattedInteger}${decimalSeparator}${formattedDecimal}`;
+    }
+
+    if ((trimZeroes || precision === 0) && finalFormattedValue.indexOf(decimalSeparator) > -1) {
+        finalFormattedValue = finalFormattedValue.replace(trailingZeroesRegex, '');
+    }
+
+    if (precision === 2 && tokenDecimals === 2 && currency) {
+    // value is a fiat currency with 2 decimals, so add the currency symbol
+        if (displayCurrencyAsCode) {
+            finalFormattedValue = `${finalFormattedValue}\u00A0${currency}`;
+        } else {
+            const symbol = getCurrencySymbol(locale, currency);
+            finalFormattedValue = `${symbol}${finalFormattedValue}`;
+        }
+    } else if (currency) {
+        finalFormattedValue += ` ${currency}`;
+    }
+
+    return finalFormattedValue;
+}
 
 /**
  * Converts a currency amount from one token to another
@@ -287,7 +283,6 @@ export function convertCurrency(tokenOneAmount: BigNumber, tokenOneDecimals: num
     // remove conversion rate scaling
     return denormalizedScaledAmountTwo.div(tenBn.pow(conversionRateScalingFactor.add(numberOfConversionRateDecimals)));
 }
-
 
 /**
  * Inverts a floating point number, useful for taking a conversion rate from token A to token B and getting the
@@ -362,7 +357,7 @@ export async function promptAddToMetamask(
     type: string,
     decimals: number,
 ): Promise<void> {
-    if (!window.ethereum) {
+    if (typeof window !== 'undefined' && !window.ethereum) {
         return Promise.reject();
     }
 
@@ -370,7 +365,7 @@ export async function promptAddToMetamask(
         request: (args: { method: string, params: Record<string, unknown> }) => Promise<void>
     };
 
-    const ethereum = window.ethereum as unknown as MetamaskEthereum;
+    const ethereum = (typeof window !== 'undefined' ? window.ethereum : {}) as unknown as MetamaskEthereum;
 
     return ethereum.request({
         method: 'wallet_watchAsset',

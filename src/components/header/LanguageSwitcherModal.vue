@@ -17,7 +17,7 @@ export default {
     }),
     created() {
         this.selectedLanguage = {
-            code: this.$i18n.locale,
+            code: this.$i18n.global.locale.value,
             name: this.$t('locale.current_language_name'),
         };
 
@@ -32,7 +32,7 @@ export default {
         }));
     },
     watch: {
-        'selectedLanguage.code'(newCode, oldCode) {
+        'selectedLanguage.code': function (newCode, oldCode) {
             if (newCode !== oldCode) {
                 this.changeLanguage();
             }

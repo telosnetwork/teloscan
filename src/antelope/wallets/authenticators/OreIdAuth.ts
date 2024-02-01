@@ -1,5 +1,7 @@
 /* eslint-disable max-len */
-import { AuthProvider, ChainNetwork, OreId, OreIdOptions, JSONObject, UserChainAccount } from 'oreid-js';
+import {
+    AuthProvider, ChainNetwork, OreId, OreIdOptions, JSONObject, UserChainAccount,
+} from 'oreid-js';
 import { BigNumber, ethers } from 'ethers';
 import { WebPopup } from 'oreid-webpopup';
 import {
@@ -11,19 +13,16 @@ import {
     stlosAbiWithdraw,
     wtlosAbiDeposit,
     wtlosAbiWithdraw,
-} from 'src/antelope/types';
-import { EVMAuthenticator } from 'src/antelope/wallets';
-import {
+
     AntelopeError,
     TokenClass,
     addressString,
     EvmTransactionResponse,
 } from 'src/antelope/types';
-import { useFeedbackStore } from 'src/antelope';
-import { useChainStore } from 'src/antelope';
+import { EVMAuthenticator } from 'src/antelope/wallets';
+import { useFeedbackStore, useChainStore } from 'src/antelope';
 import { RpcEndpoint } from 'universal-authenticator-library';
 import { TELOS_ANALYTICS_EVENT_NAMES } from 'src/antelope/mocks/chain-constants';
-
 
 const name = 'OreId';
 export const OreIdAuthName = name;
@@ -36,9 +35,10 @@ export interface AuthOreIdOptions extends OreIdOptions {
 }
 
 export class OreIdAuth extends EVMAuthenticator {
-
     options: AuthOreIdOptions;
+
     userChainAccount: UserChainAccount | null = null;
+
     // this is just a dummy label to identify the authenticator base class
     constructor(options: OreIdOptions, label = name) {
         super(label);
@@ -96,7 +96,6 @@ export class OreIdAuth extends EVMAuthenticator {
     }
 
     async login(network: string): Promise<addressString | null> {
-        console.log('login', network);
         const chainSettings = this.getChainSettings();
         const trackSuccessfulLogin = () => {
             this.trace('login', 'trackAnalyticsEvent -> generic login succeeded', TELOS_ANALYTICS_EVENT_NAMES.loginSuccessful);
@@ -108,15 +107,15 @@ export class OreIdAuth extends EVMAuthenticator {
         useFeedbackStore().setLoading(`${this.getName()}.login`);
         const oreIdOptions: OreIdOptions = {
             plugins: { popup: WebPopup() },
-            ... this.options,
+            ...this.options,
         };
 
         oreId = new OreId(oreIdOptions);
         await oreId.init();
 
         if (
-            localStorage.getItem('autoLogin') === this.getName() &&
-            typeof localStorage.getItem('rawAddress') === 'string'
+            localStorage.getItem('autoLogin') === this.getName()
+            && typeof localStorage.getItem('rawAddress') === 'string'
         ) {
             // auto login without the popup
             const chainAccount = localStorage.getItem('rawAddress') as addressString;
@@ -139,10 +138,11 @@ export class OreIdAuth extends EVMAuthenticator {
         this.trace('login', 'userData', userData);
 
         this.userChainAccount = userData.chainAccounts.find(
-            (account: UserChainAccount) => this.getChainNetwork(network) === account.chainNetwork) ?? null;
+            (account: UserChainAccount) => this.getChainNetwork(network) === account.chainNetwork,
+        ) ?? null;
 
         if (!this.userChainAccount) {
-            const appName = this.options.appName;
+            const { appName } = this.options;
             const networkName = useChainStore().getNetworkSettings(network).getDisplay();
 
             this.trace('login', 'trackAnalyticsEvent -> login failed', this.getName(), TELOS_ANALYTICS_EVENT_NAMES.loginFailedOreId);
@@ -183,9 +183,8 @@ export class OreIdAuth extends EVMAuthenticator {
             const provider = await this.web3Provider();
             if (provider) {
                 return provider.getBalance(address);
-            } else {
-                throw new AntelopeError('antelope.evm.error_no_provider');
             }
+            throw new AntelopeError('antelope.evm.error_no_provider');
         } catch (e) {
             console.error('getSystemTokenBalance', e, address);
             throw e;
@@ -200,9 +199,8 @@ export class OreIdAuth extends EVMAuthenticator {
                 const erc20Contract = new ethers.Contract(token, erc20Abi, provider);
                 const balance = await erc20Contract.balanceOf(address);
                 return balance;
-            } else {
-                throw new AntelopeError('antelope.evm.error_no_provider');
             }
+            throw new AntelopeError('antelope.evm.error_no_provider');
         } catch (e) {
             console.error('getERC20TokenBalance', e, address, token);
             throw e;
@@ -231,7 +229,6 @@ export class OreIdAuth extends EVMAuthenticator {
     }
 
     async performOreIdTransaction(from: addressString, json: JSONObject): Promise<EvmTransactionResponse> {
-
         const oreIdInstance = oreId as OreId;
 
         // sign a blockchain transaction
@@ -272,10 +269,10 @@ export class OreIdAuth extends EVMAuthenticator {
         const transactionBody = {
             from,
             to: contract,
-            'contract': {
+            contract: {
                 abi,
                 parameters,
-                'method': abi[0].name,
+                method: abi[0].name,
             },
         } as unknown as JSONObject;
 
@@ -381,13 +378,12 @@ export class OreIdAuth extends EVMAuthenticator {
                 to,
                 value,
             });
-        } else {
-            return this.signCustomTransaction(
-                token.address,
-                transferAbi,
-                [to, value],
-            );
         }
+        return this.signCustomTransaction(
+            token.address,
+            transferAbi,
+            [to, value],
+        );
     }
 
     async isConnectedTo(chainId: string): Promise<boolean> {
@@ -422,5 +418,4 @@ export class OreIdAuth extends EVMAuthenticator {
         const provider = await this.web3Provider();
         return provider.getSigner();
     }
-
 }

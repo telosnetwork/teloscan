@@ -1,17 +1,16 @@
 {
-    "eslint.validate": [
-        "javascript",
-        "javascriptreact",
-        "typescript",
-        "vue"
-    ],
-    "eslint.alwaysShowStatus": true,
-    "eslint.format.enable": true,
-    "eslint.lintTask.enable": true,
-    "eslint.packageManager": "yarn",
-    "workbench.colorCustomizations": {
-        "activityBar.background": "#233211",
-        "titleBar.activeBackground": "#314618",
-        "titleBar.activeForeground": "#F8FBF4"
-    },
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "editor.codeActionsOnSave": [
+    "source.fixAll.eslint"
+  ],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "vue"
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

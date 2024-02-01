@@ -7,6 +7,8 @@ const PlatformStore = {
     isMobile: false,
 };
 
+const navigator = typeof window !== 'undefined' ? window.navigator : { userAgent: '' };
+
 // detect brave browser
 const type_navegator = navigator as unknown as { brave?:{isBrave:()=>Promise<boolean>} };
 if (type_navegator.brave) {

@@ -78,33 +78,33 @@ export default {
 
             const numKeys = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
             const modifierKeys = ['ctrl', 'meta', 'shift', 'alt'].map(mod => `${mod}Key`);
-            const value = input.value;
+            const { value } = input;
             const caretPosition = input.selectionStart;
             const pressedKey = event.key;
 
             const eventHasModifiers = modifierKeys.some(modifier => event[modifier] === true);
             const targetHasNoSelection = caretPosition === input.selectionEnd;
             const deletingBackward = event.key === 'Backspace' && !eventHasModifiers && targetHasNoSelection;
-            const deletingForward  = event.key === 'Delete'    && !eventHasModifiers && targetHasNoSelection;
+            const deletingForward = event.key === 'Delete' && !eventHasModifiers && targetHasNoSelection;
 
-            const nextCharacterIsComma     = commaRegex.test(value[caretPosition]);
+            const nextCharacterIsComma = commaRegex.test(value[caretPosition]);
             const previousCharacterIsComma = commaRegex.test(value[caretPosition - 1]);
-            const nextCharacterIsDot       =   dotRegex.test(value[caretPosition]);
-            const previousCharacterIsDot   =   dotRegex.test(value[caretPosition - 1]);
+            const nextCharacterIsDot = dotRegex.test(value[caretPosition]);
+            const previousCharacterIsDot = dotRegex.test(value[caretPosition - 1]);
 
             const deletingDot = (deletingForward && nextCharacterIsDot) || (deletingBackward && previousCharacterIsDot);
-            const deletingComma = (deletingForward && nextCharacterIsComma) ||
-                (deletingBackward && previousCharacterIsComma);
+            const deletingComma = (deletingForward && nextCharacterIsComma)
+                || (deletingBackward && previousCharacterIsComma);
 
             if (deletingDot) {
                 this.setInputValue(value.replace(dotRegex, ''));
             } else if (deletingForward && nextCharacterIsComma) {
                 const preCommaInclusive = value.slice(0, caretPosition + 1);
-                const newPostComma =      value.slice(caretPosition + 2);
+                const newPostComma = value.slice(caretPosition + 2);
 
                 this.setInputValue(preCommaInclusive.concat(newPostComma));
             } else if (deletingBackward && previousCharacterIsComma) {
-                const newPreComma =        value.slice(0, caretPosition - 2);
+                const newPreComma = value.slice(0, caretPosition - 2);
                 const postCommaInclusive = value.slice(caretPosition - 1);
 
                 this.setInputValue(newPreComma.concat(postCommaInclusive));
@@ -127,16 +127,14 @@ export default {
                 return keypressIsDigit && caretIsPastDecimal && !fractionalUnderMaxLength;
             })();
             const tryingToAddSecondDot = pressedKey === dot && value.includes(dot);
-            const tryingToAddLeadingZeroes =
-                pressedKey === zero &&
-                value[0] !== dot &&
-                value.length > 1 &&
-                caretPosition === 0;
+            const tryingToAddLeadingZeroes = pressedKey === zero
+                && value[0] !== dot
+                && value.length > 1
+                && caretPosition === 0;
 
-            const invalidKeystroke =
-                tryingToAddDigitsPastMaxPrecision ||
-                tryingToAddSecondDot ||
-                tryingToAddLeadingZeroes;
+            const invalidKeystroke = tryingToAddDigitsPastMaxPrecision
+                || tryingToAddSecondDot
+                || tryingToAddLeadingZeroes;
 
             if (invalidKeystroke) {
                 event.preventDefault();
@@ -235,11 +233,28 @@ export default {
     class="c-staking-input container-fluid shadow-3"
     @animationend="handleWiggleEnd"
 >
-    <div class="row">
+    <div class="row items-start">
         <div class="col-6">
             <h6 class="c-staking-input__label">
                 {{ label }}
             </h6>
+            <div class="col">
+                <input
+                    v-show="!isLoading"
+                    ref="input"
+                    :disabled="isLoading"
+                    type="text"
+                    pattern="[0-9.]*"
+                    inputmode="decimal"
+                    placeholder="0"
+                    class="c-staking-input__input"
+                    @keydown="handleKeydown"
+                    @input.stop="handleInput"
+                >
+                <div v-if="isLoading" class="c-staking-input__loading u-flex--left">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </div>
+            </div>
         </div>
         <div class="col-6 u-flex--right">
             <p v-if="errorText" class="text-negative">
@@ -265,23 +280,6 @@ export default {
         </div>
     </div>
     <div class="row">
-        <div class="col">
-            <input
-                v-show="!isLoading"
-                ref="input"
-                :disabled="isLoading"
-                type="text"
-                pattern="[0-9.]*"
-                inputmode="decimal"
-                placeholder="0"
-                class="c-staking-input__input"
-                @keydown="handleKeydown"
-                @input.stop="handleInput"
-            >
-            <div v-if="isLoading" class="c-staking-input__loading u-flex--left">
-                <i class="fa fa-spinner fa-spin"></i>
-            </div>
-        </div>
     </div>
 </div>
 </template>

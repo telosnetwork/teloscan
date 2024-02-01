@@ -1,9 +1,9 @@
 <script>
 import { BigNumber } from 'ethers';
 
-import { integerSizeValidator, parseSignedIntString } from 'components/ContractTab/function-interface-utils';
+import { integerSizeValidator, parseSignedIntString } from 'src/lib/function-interface-utils';
 
-import BaseTextInput from 'components/inputs/BaseTextInput';
+import BaseTextInput from 'components/inputs/BaseTextInput.vue';
 
 export default {
     name: 'SignedIntInput',
@@ -45,7 +45,7 @@ export default {
             const errMessageTooSmallPow2 = this.$t('components.inputs.too_small_pow2', { size: this.size });
 
             return [
-                val => (/^-?\d+$/.test(val) || val === '')|| errMessageInvalidInput,
+                val => (/^-?\d+$/.test(val) || val === '') || errMessageInvalidInput,
                 val => BigNumber.from(val || 0).lte(maximum) || errMessageTooLargePow2,
                 val => BigNumber.from(val || 0).gte(minimum) || errMessageTooSmallPow2,
             ];

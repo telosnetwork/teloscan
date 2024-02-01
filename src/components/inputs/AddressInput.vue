@@ -1,7 +1,7 @@
 <script>
-import { parseAddressString } from 'components/ContractTab/function-interface-utils';
+import { parseAddressString } from 'src/lib/function-interface-utils';
 
-import BaseTextInput from 'components/inputs/BaseTextInput';
+import BaseTextInput from 'components/inputs/BaseTextInput.vue';
 
 export default {
     name: 'AddressInput',
@@ -37,8 +37,8 @@ export default {
 
             return [
                 val => [0, 42].includes(val.length) || errMessageInvalidLength,
-                val => startsWith0xRegex.test(val)  || errMessageStartsWith0x,
-                val => addressRegex.test(val)       || errMessageInvalidInput,
+                val => startsWith0xRegex.test(val) || errMessageStartsWith0x,
+                val => addressRegex.test(val) || errMessageInvalidInput,
             ];
         },
         shapedLabel() {
@@ -58,12 +58,16 @@ export default {
                 }
             }
         },
+        resetValidation() {
+            this.$refs.input.resetValidation();
+        },
     },
 };
 </script>
 
 <template>
 <BaseTextInput
+    ref="input"
     v-bind="$attrs"
     :model-value="modelValue"
     :label="shapedLabel"

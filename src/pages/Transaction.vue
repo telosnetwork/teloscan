@@ -1,18 +1,27 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import DateField from 'components/DateField';
-import BlockField from 'components/BlockField';
-import AddressField from 'components/AddressField';
-import LogsViewer from 'components/Transaction/LogsViewer';
-import InternalTxns from 'components/Transaction/InternalTxns';
-import CopyButton from 'components/CopyButton';
-import MethodField from 'components/MethodField';
-import ERCTransferList from 'components/Transaction/ERCTransferList';
-import ParameterList from 'components/Transaction/ParameterList';
+import DateField from 'components/DateField.vue';
+import BlockField from 'components/BlockField.vue';
+import AddressField from 'components/AddressField.vue';
+import LogsViewer from 'components/Transaction/LogsViewer.vue';
+import InternalTxns from 'components/Transaction/InternalTxns.vue';
+import CopyButton from 'components/CopyButton.vue';
+import MethodField from 'components/MethodField.vue';
+import ERCTransferList from 'components/Transaction/ERCTransferList.vue';
+import ApprovalList from 'components/Transaction/ApprovalList.vue';
+import ParameterList from 'components/Transaction/ParameterList.vue';
 
 import { BigNumber } from 'ethers';
-import { WEI_PRECISION, formatWei, parseErrorMessage, getRouteWatcherForTabs } from 'src/lib/utils';
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+import {
+    WEI_PRECISION,
+    REVERT_FUNCTION_SELECTOR,
+    REVERT_PANIC_SELECTOR,
+    formatWei,
+    parseErrorMessage,
+    getRouteWatcherForTabs,
+} from 'src/lib/utils';
+
+const REVERT_SELECTORS = [REVERT_FUNCTION_SELECTOR, REVERT_PANIC_SELECTOR];
 
 const tabs = {
     general: '#general',
@@ -34,6 +43,7 @@ export default {
         DateField,
         MethodField,
         ERCTransferList,
+        ApprovalList,
         ParameterList,
     },
     data() {
@@ -43,13 +53,11 @@ export default {
             trxNotFound: false,
             errorMessage: null,
             trx: null,
-            erc20_transfers: [],
-            erc721_transfers: [],
-            erc1155_transfers: [],
             params: [],
             tab: '#general',
             isContract: false,
             contract: null,
+            loading: true,
             parsedTransaction: null,
             methodTrx: null,
             showAge: true,
@@ -57,7 +65,7 @@ export default {
         };
     },
     computed: {
-        ...mapGetters('evm', ['tlosPrice']),
+        ...mapGetters('chain', ['tlosPrice']),
     },
     watch: {
         '$route.params': {
@@ -79,10 +87,10 @@ export default {
         await this.loadTransaction();
     },
     async created() {
-        this.fetchTlosPrice();
+        await this.fetchTlosPrice();
     },
     methods: {
-        ...mapActions('evm', ['fetchTlosPrice']),
+        ...mapActions('chain', ['fetchTlosPrice']),
         formatWei,
         resetTransaction() {
             this.blockData = null;
@@ -92,169 +100,107 @@ export default {
             this.contract = null;
             this.parsedTransaction = null;
             this.methodTrx = null;
-            this.erc20_transfers = [];
-            this.erc721_transfers = [];
-            this.erc1155_transfers = [];
             this.params = [];
         },
         async loadTransaction() {
-            const trxResponse = await this.$evmEndpoint.get(
-                `/v2/evm/get_transactions?hash=${this.hash}`,
+            const trxResponse = await this.$indexerApi.get(
+                `/transaction/${this.hash}?full=true&includeAbi=true`,
             );
-            if (trxResponse.data.transactions.length === 0) {
+            if (trxResponse.data.results.length === 0) {
                 this.trxNotFound = true;
                 return;
             }
-            this.trx = trxResponse.data.transactions[0];
-            this.trx.value = BigNumber.from(this.trx.value.toLocaleString('fullwide', { useGrouping:false }));
+            [this.trx] = trxResponse.data.results;
+            if (this.trx.logs) {
+                this.trx.logs = this.trx.logs.replace('transaction_hash', 'transactionHash');
+                this.trx.logs = JSON.parse(this.trx.logs);
+            }
+            this.trx.gasUsed = BigNumber.from(this.trx.gasUsed);
+            this.trx.gasLimit = BigNumber.from(this.trx.gasLimit);
+            this.trx.value = BigNumber.from(this.trx.value.toLocaleString('fullwide', { useGrouping: false }));
             await this.loadContract();
-            await this.loadTransfers();
             this.setErrorMessage();
+            this.loading = false;
         },
-        async loadTransfers() {
-            this.transfers = [];
-            for (const log of this.trx.logs) {
-                // ERC20, ERC721 & ERC1155 transfers (ERC721 & ERC20 have same first topic but ERC20 has 4 topics for
-                // transfers, ERC20 has 3 log topics, ERC1155 has a different first topic)
-                let sig = log.topics[0].substr(0, 10);
-                if (TRANSFER_SIGNATURES.includes(sig)) {
-                    let type = this.$contractManager.getTokenTypeFromLog(log);
-                    let contract = await this.$contractManager.getContract(log.address, type);
-                    if (typeof contract.token !== 'undefined' && contract.token !== null) {
-                        let token = {
-                            'symbol': contract.token.symbol,
-                            'address': log.address,
-                            name: contract.token.name,
-                            'decimals': contract.token.decimals,
-                        };
-                        if (contract.token.type === 'erc721') {
-                            let tokenId = BigNumber.from(log.topics[3]).toString();
-                            if (contract.token.extensions?.metadata) {
-                                try {
-                                    token = await this.$contractManager.loadTokenMetadata(
-                                        log.address,
-                                        contract.token,
-                                        tokenId,
-                                    );
-                                } catch (e) {
-                                    console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
-                                    // notify the user
-                                    this.$q.notify({
-                                        message: this.$t(
-                                            'pages.couldnt_retreive_metadata_for_address',
-                                            { address: contract.address, message: e.message },
-                                        ),
-                                        color: 'negative',
-                                        position: 'top',
-                                        timeout: 5000,
-                                    });
-                                }
-                            }
-                            this.erc721_transfers.push({
-                                'tokenId': tokenId,
-                                'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                                'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
-                                'token': token,
-                            });
-                        } else if (contract.token.type === 'erc1155') {
-                            let tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
-                            if (contract.token.extensions?.metadata) {
-                                try {
-                                    token = await this.$contractManager.loadTokenMetadata(
-                                        log.address,
-                                        contract.token,
-                                        tokenId,
-                                    );
-                                } catch (e) {
-                                    console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
-                                    // notify the user
-                                    this.$q.notify({
-                                        message: this.$t(
-                                            'pages.couldnt_retreive_metadata_for_address',
-                                            { address: contract.address, message: e.message },
-                                        ),
-                                        color: 'negative',
-                                        position: 'top',
-                                        timeout: 5000,
-                                    });
-                                }
-                            }
-                            this.erc1155_transfers.push({
-                                'tokenId': tokenId,
-                                'amount': BigNumber.from(log.data).toString(),
-                                'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
-                                'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                                'token': token,
-                            });
-                        } else {
-                            this.erc20_transfers.push({
-                                'value': log.data,
-                                'wei': BigNumber.from(log.data).toString(),
-                                'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                                'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
-                                'token': token,
-                            });
-                        }
-                    }
+        async loadErrorMessage() {
+            if (this.trx.output && REVERT_SELECTORS.includes(this.trx.output.slice(0, 10))) {
+                this.errorMessage = parseErrorMessage(this.trx.output);
+                return;
+            }
+            const response = await this.$indexerApi.get(
+                `/transaction/${this.hash}/internal`,
+            );
+            const intrxs = response.data.results;
+            for (let i = 0; i < intrxs.length; i++) {
+                const intrx = intrxs[i];
+                const output = (REVERT_SELECTORS.includes(intrx.result?.output.slice(0, 10)))
+                    ? intrx.result?.output
+                    : this.trx.output;
+                if (intrx.error !== null) {
+                    this.errorMessage = (REVERT_SELECTORS.includes(output?.slice(0, 10)))
+                        ? parseErrorMessage(output)
+                        : intrx.error;
+                    return;
                 }
             }
         },
         async loadContract() {
-            if (this.trx.input_data === '0x') {
+            if (!this.trx || this.trx.input === '0x') {
                 return;
             }
 
-            const contract = await this.$contractManager.getContract(this.trx.to);
+            const contract = await this.$contractManager.getContract(this.trx.to?.toLowerCase());
             if (!contract) {
                 return;
             }
 
             this.contract = contract;
-            this.parsedTransaction = await this.contract.parseTransaction(this.trx.input_data);
-            this.params = this.getFunctionParams();
-            this.methodTrx = Object.assign(
-                { parsedTransaction: this.parsedTransaction },
+            this.parsedTransaction = await this.$contractManager.parseContractTransaction(
                 this.trx,
+                this.trx.input,
+                contract,
             );
+            this.params = this.getFunctionParams();
+            this.methodTrx = {
+                parsedTransaction: this.parsedTransaction,
+                ...this.trx,
+            };
             this.isContract = true;
         },
-        setErrorMessage() {
-            if (this.trx.status !== 0) {
+        async setErrorMessage() {
+            if (this.trx.status === '0x1') {
                 return;
             }
-
-            this.errorMessage = parseErrorMessage(this.trx.output);
+            await this.loadErrorMessage();
         },
         getFunctionName() {
-            if (this.parsedTransaction) {
-                return this.parsedTransaction.name;
-            }
+            return this.parsedTransaction?.name ?? '';
         },
         getFunctionParams() {
             if (!this.parsedTransaction) {
                 return [];
             }
-            let args = [];
+            const args = [];
             this.parsedTransaction.functionFragment.inputs.forEach((input, i) => {
                 args.push({
                     name: input.name,
                     type: input.type,
                     arrayChildren: (input.arrayChildren !== null) ? input.arrayChildren.type : false,
-                    value:  this.parsedTransaction.args[i],
+                    value: this.parsedTransaction.args[i],
                 });
             });
             return args;
         },
         getGasFee() {
             return formatWei(
-                BigNumber.from(this.trx.charged_gas_price)
-                    .mul(this.trx.gasused).toLocaleString('fullwide', { useGrouping:false }),
+                BigNumber.from(this.trx.gasPrice)
+                    .mul(this.trx.gasUsed).toLocaleString('fullwide', { useGrouping: false }),
                 WEI_PRECISION,
                 5,
             );
         },
         getGasChargedGWEI() {
-            return formatWei(this.trx.charged_gas_price, 9, 2);
+            return formatWei(this.trx.gasPrice, 9, 2);
         },
     },
 };
@@ -272,9 +218,12 @@ export default {
             </div>
         </div>
     </div>
-    <div class="row tableWrapper">
+    <div v-if="!trxNotFound" class="row tableWrapper">
         <div class="col-12 q-py-lg">
-            <div v-if="trx" :key="erc20_transfers.length + isContract" class="content-container">
+            <div v-if="loading" class="content-container q-pa-md text-center">
+                <q-spinner size="lg" />
+            </div>
+            <div v-else-if="trx" :key="isContract" class="content-container">
                 <q-tabs
                     v-model="tab"
                     class="text-white topRounded"
@@ -321,7 +270,7 @@ export default {
                     animated="animated"
                     keep-alive="keep-alive"
                 >
-                    <q-tab-panel id="transaction-page" name="general"><br><br>
+                    <q-tab-panel v-if="trx !== null" id="transaction-page" name="general"><br><br>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3">
                                 <strong class="wrapStrong">{{ $t('pages.transaction_hash') }}:&nbsp;</strong>
@@ -336,7 +285,7 @@ export default {
                                 <strong>{{ $t('pages.block_number') }}:&nbsp;</strong>
                             </div>
                             <div class="col-9">
-                                <BlockField :block="trx.block"/>
+                                <BlockField :block="trx.blockNumber"/>
                             </div>
                         </div><br>
                         <div
@@ -347,7 +296,7 @@ export default {
                                 <strong>{{ $t('pages.date') }}:&nbsp;</strong>
                             </div>
                             <div class="u-flex--left">
-                                <DateField :epoch="trx.epoch"/>
+                                <DateField :epoch="trx.timestamp  / 1000"/>
                             </div>
                         </div><br>
                         <div class="fit row wrap justify-start items-start content-start">
@@ -380,12 +329,12 @@ export default {
                                 <AddressField
                                     :address="trx.from"
                                     :truncate="0"
-                                    :highlight="erc20_transfers.length + erc721_transfers.length > 1"
+                                    :highlight="trx.logs?.length > 1"
                                     copy="copy"
                                 />
                             </div>
                         </div><br>
-                        <div class="fit row wrap justify-start items-start content-start">
+                        <div v-if="trx.to" class="fit row wrap justify-start items-start content-start">
                             <div class="col-3">
                                 <strong>{{ $t('pages.to') }}:&nbsp;</strong>
                             </div>
@@ -397,15 +346,24 @@ export default {
                                     copy="copy"
                                 />
                             </div>
+                        </div>
+                        <div v-else-if="trx.contractAddress" class="fit row justify-start items-start content-start">
+                            <div class="col-3">
+                                <strong>{{ $t('pages.deployed_contract') }}:&nbsp;</strong>
+                            </div>
+                            <div class="col-9 word-break">
+                                <AddressField :address="trx.contractAddress" :truncate="0" copy="copy" />
+                            </div>
                         </div><br>
                         <div v-if="isContract" class="fit row wrap justify-start items-start content-start">
                             <div class="col-3">
                                 <strong>{{ $t('pages.contract_function') }}:&nbsp;</strong>
                             </div>
                             <div class="col-9">
-                                <MethodField :contract="contract" :trx="methodTrx" shortenSignature="shortenSignature"/>
+                                <MethodField :contract="contract" :trx="methodTrx" :shortenSignature="true"/>
                             </div>
-                        </div><br v-if="isContract">
+                        </div>
+                        <br v-if="isContract">
                         <div
                             v-if="isContract && params.length > 0"
                             class="fit row wrap justify-start items-start content-start"
@@ -432,34 +390,21 @@ export default {
                                     <q-tooltip>{{ $t('pages.click_to_show_in_wei') }}</q-tooltip>
                                 </span>
                             </div>
-                        </div><br>
-                        <ERCTransferList
-                            v-if="erc20_transfers.length > 0"
-                            type="ERC20"
-                            :trxFrom="trx.from"
-                            :contract="contract"
-                            :transfers="erc20_transfers"
-                        />
-                        <ERCTransferList
-                            v-if="erc721_transfers.length > 0"
-                            type="ERC721"
-                            :trxFrom="trx.from"
-                            :contract="contract"
-                            :transfers="erc721_transfers"
-                        />
-                        <ERCTransferList
-                            v-if="erc1155_transfers.length > 0"
-                            type="ERC1155"
-                            :trxFrom="trx.from"
-                            :contract="contract"
-                            :transfers="erc1155_transfers"
-                        />
-                        <div class="fit row wrap justify-start items-start content-start">
+                        </div>
+                        <br>
+                        <div v-if="trx.logs?.length > 0">
+                            <ApprovalList :trxFrom="trx.from" :logs="trx.logs" />
+                            <ERCTransferList :trxFrom="trx.from" type="erc20" :logs="trx.logs" />
+                            <ERCTransferList :trxFrom="trx.from" type="erc721" :logs="trx.logs" />
+                            <ERCTransferList :trxFrom="trx.from" type="erc1155" :logs="trx.logs" />
+                        </div>
+                        <div class="fit row wrap justify-start items-start content-start q-border-top">
                             <div class="col-3">
                                 <strong>{{ $t('pages.gas_price_charged') }}:&nbsp;</strong>
                             </div>
                             <span>{{ $t('pages.balance_gwei', { amount: getGasChargedGWEI() }) }}</span>
-                        </div><br>
+                        </div>
+                        <br>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3">
                                 <strong>{{ $t('pages.gas_fee') }}:&nbsp;</strong>
@@ -468,15 +413,18 @@ export default {
                                 {{ $t('pages.balance_tlos', { amount: getGasFee() }) }}
                                 <small class="q-pl-sm">(~ ${{ (getGasFee() * tlosPrice).toFixed(5) }})</small>
                             </span>
-                        </div><br>
+                        </div>
+                        <br>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3"><strong>{{ $t('pages.gas_used') }}:&nbsp;</strong></div>
-                            <div class="col-9">{{ trx.gasused }}</div>
-                        </div><br>
+                            <div class="col-9">{{ trx.gasUsed }}</div>
+                        </div>
+                        <br>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3"><strong>{{ $t('pages.gas_limit') }}:&nbsp;</strong></div>
-                            <div class="col-9">{{ trx.gas_limit }}</div>
-                        </div><br>
+                            <div class="col-9">{{ trx.gasLimit }}</div>
+                        </div>
+                        <br>
                         <div class="fit row wrap justify-start items-start content-start">
                             <div class="col-3"><strong>{{ $t('pages.nonce') }}:&nbsp;</strong></div>
                             <div class="col-9">{{ trx.nonce }}</div>
@@ -485,7 +433,7 @@ export default {
                     <q-tab-panel name="details">
                         <div>
                             <div class="col-3"><strong>{{ $t('pages.input') }}:&nbsp;</strong></div>
-                            <div class="col-9">{{ trx.input_data }}</div>
+                            <div class="col-9">{{ trx.input }}</div>
                         </div><br>
                         <div>
                             <div class="col-3"><strong>{{ $t('pages.output') }}:&nbsp;</strong></div>
@@ -494,11 +442,11 @@ export default {
                     </q-tab-panel>
                     <q-tab-panel name="logs">
                         <div class="jsonViewer">
-                            <LogsViewer :logs="trx.logs" :contract="contract"/>
+                            <LogsViewer :logs="trx?.logs" :trx="trx" :contract="contract"/>
                         </div>
                     </q-tab-panel>
                     <q-tab-panel name="internal">
-                        <InternalTxns :itxs="trx.itxs" :contract="contract"/>
+                        <InternalTxns :transaction="trx" />
                     </q-tab-panel>
                 </q-tab-panels>
             </div>
@@ -508,17 +456,17 @@ export default {
 </template>
 
 <style scoped lang="sass">
-    @media screen and (max-width: 650px)
-        #function-parameters
-            width: 100%
-            flex: auto
-            margin-top: 20px
+@media screen and (max-width: 650px)
+    #function-parameters
+        width: 100%
+        flex: auto
+        margin-top: 20px
 
-        #transaction-page
-            .col-3
-                width: 100%
-            .col-9
-                width: 100%
+    #transaction-page
+        .col-3
+            width: 100%
+        .col-9
+            width: 100%
 
     @media only screen and (max-width: 900px)
         #function-parameters
@@ -533,6 +481,8 @@ export default {
 </style>
 
 <style lang="sass" scoped>
+.content-container
+    background: $primary
 .shadow-2
     box-shadow: none !important
 
@@ -545,6 +495,18 @@ span
 
 .date .col-9 > div
     display: inline-block
+
+body.body--dark
+    .content-container
+        background: $dark
+    .col-9 .positive
+        background: $positive
+        span, .q-icon
+            color: white !important
+    .col-9 .negative
+        background: $negative
+        span, .q-icon
+            color: white !important
 
 .col-9 .positive, .col-9 .negative
     border: 1px solid
@@ -561,6 +523,8 @@ span
     margin-bottom: -1px
 
 @media only screen and (max-width: 550px)
+    .col-9 .positive .q-icon, .col-9 .negative .q-icon
+        margin-top: 0px
     .q-tab
         padding: 0px 5px
     .q-tab__label

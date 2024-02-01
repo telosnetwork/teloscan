@@ -8,6 +8,9 @@ import { Authenticator } from 'universal-authenticator-library';
 import { Subject } from 'rxjs';
 import { AccountModel } from 'src/antelope/mocks/AccountStore';
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const alert = typeof window !== 'undefined' ? window.alert : () => {};
+
 export interface ComplexMessage {
     tag: string,
     class: string,
@@ -16,12 +19,15 @@ export interface ComplexMessage {
 
 export class AntelopeWallets {
     private authenticators: Map<string, EVMAuthenticator> = new Map();
+
     init() {
-        // dummie function
+    // dummie function
     }
+
     addEVMAuthenticator(authenticator: EVMAuthenticator) {
         this.authenticators.set(authenticator.getName(), authenticator);
     }
+
     getAuthenticator(name: string) {
         return this.authenticators.get(name);
     }
@@ -36,9 +42,8 @@ export class AntelopeConfig {
         // if it matches antelope.*.error_*
         if (str.match(/^antelope\.[a-z0-9_]+\.error_/)) {
             return new AntelopeError(str, { error });
-        } else {
-            return new AntelopeError(description, { error: str });
         }
+        return new AntelopeError(description, { error: str });
     }
 
     // indexer health threshold --
@@ -49,17 +54,26 @@ export class AntelopeConfig {
 
     // notifucation handlers --
     private __notify_error_handler: (message: string) => void = m => alert(`Error: ${m}`);
+
     private __notify_success_handler: (message: string) => void = alert;
+
     private __notify_warning_handler: (message: string) => void = alert;
 
     // notification handlers --
     private __notify_successful_trx_handler: (link: string) => void = alert;
+
     private __notify_success_message_handler: (message: string, payload?: never) => void = alert;
+
     private __notify_success_copy_handler: () => void = alert;
+
     private __notify_failure_message_handler: (message: string, payload?: AntelopeErrorPayload) => void = alert;
+
     private __notify_failure_action_handler: (message: string, payload?: AntelopeErrorPayload) => void = alert;
+
     private __notify_disconnected_handler: () => void = alert;
+
     private __notify_neutral_message_handler: (message: string) => (() => void) = () => (() => void 0);
+
     private __notify_remember_info_handler: (title: string, message: string | ComplexMessage[],
         payload: string, key: string) => (() => void) = () => (() => void 0);
 
@@ -75,21 +89,21 @@ export class AntelopeConfig {
     // error to string handler --
     private __error_to_string_handler: (error: unknown) => string = (error: unknown) => {
         try {
-
             type EVMError = {code:string};
             const evmErr = error as EVMError;
 
             switch (evmErr.code) {
-            case 'CALL_EXCEPTION':          return 'antelope.evm.error_call_exception';
-            case 'INSUFFICIENT_FUNDS':      return 'antelope.evm.error_insufficient_funds';
-            case 'MISSING_NEW':             return 'antelope.evm.error_missing_new';
-            case 'NONCE_EXPIRED':           return 'antelope.evm.error_nonce_expired';
-            case 'NUMERIC_FAULT':           return 'antelope.evm.error_numeric_fault';
+            case 'CALL_EXCEPTION': return 'antelope.evm.error_call_exception';
+            case 'INSUFFICIENT_FUNDS': return 'antelope.evm.error_insufficient_funds';
+            case 'MISSING_NEW': return 'antelope.evm.error_missing_new';
+            case 'NONCE_EXPIRED': return 'antelope.evm.error_nonce_expired';
+            case 'NUMERIC_FAULT': return 'antelope.evm.error_numeric_fault';
             case 'REPLACEMENT_UNDERPRICED': return 'antelope.evm.error_replacement_underpriced';
-            case 'TRANSACTION_REPLACED':    return 'antelope.evm.error_transaction_replaced';
+            case 'TRANSACTION_REPLACED': return 'antelope.evm.error_transaction_replaced';
             case 'UNPREDICTABLE_GAS_LIMIT': return 'antelope.evm.error_unpredictable_gas_limit';
-            case 'USER_REJECTED':           return 'antelope.evm.error_user_rejected';
-            case 'ACTION_REJECTED':         return 'antelope.evm.error_transaction_canceled';
+            case 'USER_REJECTED': return 'antelope.evm.error_user_rejected';
+            case 'ACTION_REJECTED': return 'antelope.evm.error_transaction_canceled';
+            default: break;
             }
 
             if (typeof error === 'string') {
@@ -124,10 +138,6 @@ export class AntelopeConfig {
 
     // Vue.App holder --
     private __app: App | null = null;
-
-    constructor() {
-        //
-    }
 
     init(app: App) {
         this.__app = app;
@@ -283,7 +293,6 @@ export class AntelopeConfig {
     public setErrorToStringHandler(handler: (catched: unknown) => string) {
         this.__error_to_string_handler = handler;
     }
-
 }
 
 const config = new AntelopeConfig();
@@ -300,4 +309,3 @@ const Antelope = {
 
 export const getAntelope = () => Antelope;
 // ----------------------------------------------------------------
-

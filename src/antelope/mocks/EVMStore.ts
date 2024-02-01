@@ -5,7 +5,9 @@ import { ethers } from 'ethers';
 import { EVMAuthenticator, InjectedProviderAuth } from 'src/antelope/wallets';
 import { createTraceFunction } from 'src/antelope/mocks/FeedbackStore';
 import { getAntelope } from 'src/antelope/mocks/AntelopeConfig';
-import { EVMChainSettings, useChainStore, useFeedbackStore, useAccountStore } from 'src/antelope/mocks';
+import {
+    EVMChainSettings, useChainStore, useFeedbackStore, useAccountStore,
+} from 'src/antelope/mocks';
 import { AntelopeError, EthereumProvider, ExceptionError } from 'src/antelope/types';
 import { RpcEndpoint } from 'universal-authenticator-library';
 
@@ -41,8 +43,8 @@ class EVMStore {
             const checkNetworkHandler = async () => {
                 window.removeEventListener('focus', checkNetworkHandler);
                 if (useAccountStore().loggedAccount) {
-                    const authenticator = useAccountStore().loggedAccount.authenticator as EVMAuthenticator;
-                    if (await authenticator.isConnectedToCorrectChain()) {
+                    const auth = useAccountStore().loggedAccount.authenticator as EVMAuthenticator;
+                    if (await auth.isConnectedToCorrectChain()) {
                         evm.trace('checkNetworkHandler', 'correct network');
                     } else {
                         const networkName = useChainStore().loggedChain.settings.getDisplay();
@@ -51,7 +53,7 @@ class EVMStore {
                         ant.config.notifyFailureWithAction(errorMessage, {
                             label,
                             handler: () => {
-                                authenticator.ensureCorrectChain();
+                                auth.ensureCorrectChain();
                             },
                         });
                     }
@@ -84,11 +86,11 @@ class EVMStore {
                     // overwriting the previous logged account, which in turn will trigger all account data to be reloaded
                     if (useAccountStore().loggedAccount) {
                         // if the user is already authenticated we try to re login the account using the same authenticator
-                        const authenticator = useAccountStore().loggedAccount.authenticator as EVMAuthenticator;
-                        if (!authenticator) {
-                            console.error('Inconsistency: logged account authenticator is null', authenticator);
+                        const auth = useAccountStore().loggedAccount.authenticator as EVMAuthenticator;
+                        if (!auth) {
+                            console.error('Inconsistency: logged account authenticator is null', auth);
                         } else {
-                            useAccountStore().loginEVM({ authenticator,  network }, false);
+                            useAccountStore().loginEVM({ authenticator: auth, network }, false);
                         }
                     }
                 } else {
@@ -132,7 +134,7 @@ class EVMStore {
                     -32603, // https://github.com/MetaMask/metamask-mobile/issues/2944
                 ];
 
-                if (chainNotAddedCodes.includes((error as unknown as ExceptionError).code)) {  // 'Chain <hex chain id> hasn't been added'
+                if (chainNotAddedCodes.includes((error as unknown as ExceptionError).code)) { // 'Chain <hex chain id> hasn't been added'
                     const p:RpcEndpoint = chainSettings.getRPCEndpoint();
                     const rpcUrl = `${p.protocol}://${p.host}:${p.port}${p.path ?? ''}`;
                     try {
@@ -198,7 +200,6 @@ class EVMStore {
         }
         return response;
     }
-
 }
 
 export const useEVMStore = () => new EVMStore();

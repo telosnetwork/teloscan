@@ -1,15 +1,21 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { boot } from 'quasar/wrappers';
 import { Dialog, Notify } from 'quasar';
+import { getCurrentInstance } from 'vue';
+
+import crossIcon from 'src/assets/icon--cross.svg';
+import infoIcon from 'src/assets/icon--info.svg';
+import checkIcon from 'src/assets/icon--check.svg';
+import discoIcon from 'src/assets/icon--disconnected.svg';
 
 // to persist the notification and require user to dismiss pass `true` as second param
-const errorNotification = function(error, dismiss = false) {
+const errorNotification = function (error, dismiss = false) {
     let errorStr;
     if (error !== undefined) {
         if (typeof error.startsWith !== 'function') {
             errorStr = error;
         } else if (error.startsWith('assertion failure with message:')) {
-            errorStr = error.split('assertion failure with message:')[1];
+            [, errorStr] = error.split('assertion failure with message:');
         } else {
             errorStr = error;
         }
@@ -28,7 +34,7 @@ const errorNotification = function(error, dismiss = false) {
     });
 };
 
-const unexpectedErrorNotification = function(error) {
+const unexpectedErrorNotification = function (error) {
     Notify.create({
         color: 'dark',
         icon: 'warning',
@@ -36,7 +42,7 @@ const unexpectedErrorNotification = function(error) {
     });
 };
 
-const warningNotification = function(warning) {
+const warningNotification = function (warning) {
     Notify.create({
         color: 'warning',
         icon: 'warning',
@@ -44,7 +50,7 @@ const warningNotification = function(warning) {
     });
 };
 
-const successNotification = function(message) {
+const successNotification = function (message) {
     Notify.create({
         color: 'primary',
         icon: 'done',
@@ -56,18 +62,13 @@ const successNotification = function(message) {
 
 class NotificationAction {
     constructor(payload) {
-        this.label     = payload.label;
-        this.class     = payload.class;
-        this.handler   = payload.handler;
+        this.label = payload.label;
+        this.class = payload.class;
+        this.handler = payload.handler;
         this.iconRight = payload.iconRight;
-        this.color     = payload.color;
+        this.color = payload.color;
     }
 }
-
-const crossIcon = require('src/assets/icon--cross.svg');
-const infoIcon  = require('src/assets/icon--info.svg');
-const checkIcon = require('src/assets/icon--check.svg');
-const discoIcon = require('src/assets/icon--disconnected.svg');
 
 const html = `
     <div class="c-notify__container c-notify__container--{type} c-notify__container--{random}">
@@ -86,7 +87,7 @@ const html = `
     </div>
 `;
 
-const notifyMessage = function(type, icon, title, message, payload, remember = '') {
+const notifyMessage = function (type, icon, title, message, payload, remember = '') {
     // action buttons
     const actions = [];
     const dismiss_btn = {
@@ -115,17 +116,17 @@ const notifyMessage = function(type, icon, title, message, payload, remember = '
                 // If it fails, we discard the error and try to executes toString() from the payload
                 try {
                     content = payload.toString();
-                } catch (e) {
+                } catch (err) {
                     // If it fails, likely the payload is null (or some unknown object with no toString function),
                     // so we set the content to a forced string to have something to show
-                    content = payload + ' ';
+                    content = `${payload} `;
                 }
             }
 
             Dialog.create({
                 class: 'c-notify__dialog',
                 title: this.$t('notification.error_details_title'),
-                message: '<q-card-section>' + content + '</q-card-section>',
+                message: `<q-card-section>${content}</q-card-section>`,
                 html: true,
             });
         },
@@ -134,7 +135,7 @@ const notifyMessage = function(type, icon, title, message, payload, remember = '
         label: this.$t(payload?.label ?? '') ?? this.$t('notification.error_see_details_label'),
         color: payload?.color ?? type === 'error' ? 'negative' : 'positive',
         iconRight: payload?.iconRight,
-        class: 'c-notify__action-btn ' + payload?.class ? payload?.class : '',
+        class: payload?.class ? `c-notify__action-btn ${payload?.class}` : '',
         handler: payload?.handler,
     };
     const hidden_btn = {
@@ -154,11 +155,11 @@ const notifyMessage = function(type, icon, title, message, payload, remember = '
     }
     actions.push(dismiss_btn);
     if (type === 'neutral') {
-        // if neutral, no buttons
+    // if neutral, no buttons
         actions.splice(0, actions.length);
     }
 
-    let final_message = '<span>' + this.$t(message.toString() ?? '') + '</span>';
+    let final_message = `<span>${this.$t(message.toString() ?? '')}</span>`;
     if (Array.isArray(message)) {
         final_message = message.map(
             m => ` <${m.tag ?? 'span'} class="${m.class}">${m.text}</${m.tag ?? 'span'}> `,
@@ -175,12 +176,11 @@ const notifyMessage = function(type, icon, title, message, payload, remember = '
         position = 'bottom-right';
     }
 
-    let random = Math.floor(Math.random() * 1000000);
+    const random = Math.floor(Math.random() * 1000000);
 
-
-    function replaceAllOccurrences(html, replacements) {
-        let modifiedHtml = html;
-        for (let [key, value] of Object.entries(replacements)) {
+    function replaceAllOccurrences(htmlText, replacements) {
+        let modifiedHtml = htmlText;
+        for (const [key, value] of Object.entries(replacements)) {
             const regex = new RegExp(key.replace(/[-\\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g');
             modifiedHtml = modifiedHtml.replace(regex, value);
         }
@@ -209,7 +209,7 @@ const notifyMessage = function(type, icon, title, message, payload, remember = '
     });
 };
 
-const notifySuccessTransaction = function(link) {
+const notifySuccessTransaction = function (link) {
     return notifyMessage.bind(this)(
         'success',
         checkIcon,
@@ -219,7 +219,7 @@ const notifySuccessTransaction = function(link) {
     );
 };
 
-const notifySuccessMessage = function(message, payload) {
+const notifySuccessMessage = function (message, payload) {
     return notifyMessage.bind(this)(
         'success',
         checkIcon,
@@ -229,7 +229,7 @@ const notifySuccessMessage = function(message, payload) {
     );
 };
 
-const notifySuccessCopy = function() {
+const notifySuccessCopy = function () {
     return notifyMessage.bind(this)(
         'success',
         checkIcon,
@@ -238,7 +238,7 @@ const notifySuccessCopy = function() {
     );
 };
 
-const notifyFailure = function(message, payload) {
+const notifyFailure = function (message, payload) {
     return notifyMessage.bind(this)(
         'error',
         crossIcon,
@@ -248,7 +248,7 @@ const notifyFailure = function(message, payload) {
     );
 };
 
-const notifyFailureWithAction = function(message, payload) {
+const notifyFailureWithAction = function (message, payload) {
     return notifyMessage.bind(this)(
         'error',
         crossIcon,
@@ -258,7 +258,7 @@ const notifyFailureWithAction = function(message, payload) {
     );
 };
 
-const notifyDisconnected = function() {
+const notifyDisconnected = function () {
     return notifyMessage.bind(this)(
         'error',
         discoIcon,
@@ -267,7 +267,7 @@ const notifyDisconnected = function() {
     );
 };
 
-const notifyNeutralMessage = function(message) {
+const notifyNeutralMessage = function (message) {
     return notifyMessage.bind(this)(
         'neutral',
         null,
@@ -276,12 +276,12 @@ const notifyNeutralMessage = function(message) {
     );
 };
 
-const notifyRememberInfo = function(title, message, payload, key) {
+const notifyRememberInfo = function (title, message, payload, key) {
     const id = `c-notify__checkbox--${key}`;
     const storageKey = 'c-notify--dismissed-messages';
     const dismissed = JSON.parse(localStorage.getItem(storageKey)) ?? {};
     if (dismissed[id]) {
-        return;
+        return null;
     }
     const notification = notifyMessage.bind(this)(
         'info',
@@ -293,7 +293,7 @@ const notifyRememberInfo = function(title, message, payload, key) {
     );
 
     const handler = (event) => {
-        // If the user click the checkbox, we set the flag in the local storage
+    // If the user click the checkbox, we set the flag in the local storage
         if (event.target.id === id) {
             const checkbox = document.getElementById(id);
             if (checkbox.checked) {
@@ -302,11 +302,8 @@ const notifyRememberInfo = function(title, message, payload, key) {
                 delete dismissed[id];
             }
             localStorage.setItem(storageKey, JSON.stringify(dismissed));
-        } else {
-            // catching Dismiss button click
-            if (event.target.parentNode.classList.contains('q-btn__content')) {
-                window.removeEventListener('click', handler);
-            }
+        } else if (event.target.parentNode.classList.contains('q-btn__content')) {
+            window.removeEventListener('click', handler);
         }
     };
 
@@ -314,37 +311,63 @@ const notifyRememberInfo = function(title, message, payload, key) {
     return notification;
 };
 
-
-
 export default boot(({ app, store }) => {
-    app.config.globalProperties.$errorNotification           = errorNotification.bind(store);
+    app.config.globalProperties.$errorNotification = errorNotification.bind(store);
     app.config.globalProperties.$unexpectedErrorNotification = unexpectedErrorNotification.bind(store);
-    app.config.globalProperties.$warningNotification         = warningNotification.bind(store);
-    app.config.globalProperties.$successNotification         = successNotification.bind(store);
-    store['$errorNotification']                              = app.config.globalProperties.$errorNotification;
-    store['$unexpectedErrorNotification']                    = app.config.globalProperties.$unexpectedErrorNotification;
-    store['$warningNotification']                            = app.config.globalProperties.$warningNotification;
-    store['$successNotification']                            = app.config.globalProperties.$successNotification;
+    app.config.globalProperties.$warningNotification = warningNotification.bind(store);
+    app.config.globalProperties.$successNotification = successNotification.bind(store);
+    store.$errorNotification = app.config.globalProperties.$errorNotification;
+    store.$unexpectedErrorNotification = app.config.globalProperties.$unexpectedErrorNotification;
+    store.$warningNotification = app.config.globalProperties.$warningNotification;
+    store.$successNotification = app.config.globalProperties.$successNotification;
 
     // new Message notifications handlers
     app.config.globalProperties.$notifySuccessTransaction = notifySuccessTransaction.bind(store);
-    app.config.globalProperties.$notifySuccessMessage     = notifySuccessMessage.bind(store);
-    app.config.globalProperties.$notifySuccessCopy        = notifySuccessCopy.bind(store);
-    app.config.globalProperties.$notifyFailure            = notifyFailure.bind(store);
-    app.config.globalProperties.$notifyFailureWithAction  = notifyFailureWithAction.bind(store);
-    app.config.globalProperties.$notifyDisconnected       = notifyDisconnected.bind(store);
-    app.config.globalProperties.$notifyNeutralMessage     = notifyNeutralMessage.bind(store);
-    app.config.globalProperties.$notifyRememberInfo       = notifyRememberInfo.bind(store);
-    store['$notifySuccessTransaction']                    = app.config.globalProperties.$notifySuccessTransaction;
-    store['$notifySuccessMessage']                        = app.config.globalProperties.$notifySuccessMessage;
-    store['$notifySuccessCopy']                           = app.config.globalProperties.$notifySuccessCopy;
-    store['$notifyFailure']                               = app.config.globalProperties.$notifyFailure;
-    store['$notifyFailureWithAction']                     = app.config.globalProperties.$notifyFailureWithAction;
-    store['$notifyDisconnected']                          = app.config.globalProperties.$notifyDisconnected;
-    store['$notifyNeutralMessage']                        = app.config.globalProperties.$notifyNeutralMessage;
-    store['$notifyRememberInfo']                          = app.config.globalProperties.$notifyRememberInfo;
+    app.config.globalProperties.$notifySuccessMessage = notifySuccessMessage.bind(store);
+    app.config.globalProperties.$notifySuccessCopy = notifySuccessCopy.bind(store);
+    app.config.globalProperties.$notifyFailure = notifyFailure.bind(store);
+    app.config.globalProperties.$notifyFailureWithAction = notifyFailureWithAction.bind(store);
+    app.config.globalProperties.$notifyDisconnected = notifyDisconnected.bind(store);
+    app.config.globalProperties.$notifyNeutralMessage = notifyNeutralMessage.bind(store);
+    app.config.globalProperties.$notifyRememberInfo = notifyRememberInfo.bind(store);
+    store.$notifySuccessTransaction = app.config.globalProperties.$notifySuccessTransaction;
+    store.$notifySuccessMessage = app.config.globalProperties.$notifySuccessMessage;
+    store.$notifySuccessCopy = app.config.globalProperties.$notifySuccessCopy;
+    store.$notifyFailure = app.config.globalProperties.$notifyFailure;
+    store.$notifyFailureWithAction = app.config.globalProperties.$notifyFailureWithAction;
+    store.$notifyDisconnected = app.config.globalProperties.$notifyDisconnected;
+    store.$notifyNeutralMessage = app.config.globalProperties.$notifyNeutralMessage;
+    store.$notifyRememberInfo = app.config.globalProperties.$notifyRememberInfo;
 
     // transaction notifications handlers
-    store['$t'] = app.config.globalProperties.$t;
-
+    store.$t = app.config.globalProperties.$t;
 });
+
+export function useNotifications() {
+    const instance = getCurrentInstance();
+    if (!instance) {
+        throw new Error('useNotifications must be used within a setup function.');
+    }
+
+    const { proxy } = instance;
+
+    const qNotifySuccessTransaction = proxy.$notifySuccessTransaction;
+    const qNotifySuccessMessage = proxy.$notifySuccessMessage;
+    const qNotifySuccessCopy = proxy.$notifySuccessCopy;
+    const qNotifyFailure = proxy.$notifyFailure;
+    const qNotifyFailureWithAction = proxy.$notifyFailureWithAction;
+    const qNotifyDisconnected = proxy.$notifyDisconnected;
+    const qNotifyNeutralMessage = proxy.$notifyNeutralMessage;
+    const qNotifyRememberInfo = proxy.$notifyRememberInfo;
+
+    return {
+        notifySuccessTransaction: qNotifySuccessTransaction,
+        notifySuccessMessage: qNotifySuccessMessage,
+        notifySuccessCopy: qNotifySuccessCopy,
+        notifyFailure: qNotifyFailure,
+        notifyFailureWithAction: qNotifyFailureWithAction,
+        notifyDisconnected: qNotifyDisconnected,
+        notifyNeutralMessage: qNotifyNeutralMessage,
+        notifyRememberInfo: qNotifyRememberInfo,
+    };
+}

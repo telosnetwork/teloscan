@@ -58,9 +58,6 @@ export interface IndexerNftContract {
     transaction: string;
 }
 
-
-
-
 // -------
 
 export interface IndexerTokenInfo {
@@ -99,7 +96,6 @@ export interface IndexerTokenBalance {
     contract: string;
     updated: number;
 }
-
 
 export interface IndexerAccountBalances {
     success: boolean;

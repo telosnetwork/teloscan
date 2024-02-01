@@ -1,6 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { RpcEndpoint } from 'universal-authenticator-library';
-import { IndexerTransactionsFilter, NFTClass, PriceChartData, TokenClass } from 'src/antelope/types';
+import {
+    IndexerTransactionsFilter, NFTClass, PriceChartData, TokenClass,
+} from 'src/antelope/types';
 
 export interface ChainSettings {
     init(): Promise<void>;

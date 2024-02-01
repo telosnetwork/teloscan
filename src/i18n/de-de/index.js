@@ -6,30 +6,31 @@ export default {
     },
     pages: {
         staking: {
+            sign_in: 'Bitte melden Sie sich zuerst an, um mit unserem Staking-Interface interagieren zu können',
             note_unstaking_period: 'Beachten Sie, dass der Betrag erst nach { period } eingefordert werden kann.',
             claim_tlos: 'TLOS einfordern',
             add_stlos_to_metamask: 'Starten Sie den MetaMask-Dialog, um sTLOS hinzuzufügen',
             metamask_fox_logo: 'MetaMask-Logo',
-            stake_tlos_confirm: 'Beim Bestätigen tauschen Sie Ihre TLOS gegen sTLOS. ' +
-            'sTLOS kann jederzeit gegen TLOS eingetauscht werden, indem Sie die Registerkarte "Abheben" verwenden.',
+            stake_tlos_confirm: 'Beim Bestätigen tauschen Sie Ihre TLOS gegen sTLOS. '
+            + 'sTLOS kann jederzeit gegen TLOS eingetauscht werden, indem Sie die Registerkarte "Abheben" verwenden.',
             cancel: 'Abbrechen',
-            stake_tlos_confirm_2a: 'Nachdem TLOS eingetauscht wurden, sind diese für einen Zeitraum von', /* unstakePeriodPretty...*/
-            stake_tlos_confirm_2b: /*...unstakePeriodPretty */ 'gesperrt. Nach Ablauf der Sperrfrist können Sie in der Registerkarte "Einfordern" erneut Ihrem Konto gutgeschrieben werden.',
+            stake_tlos_confirm_2a: 'Nachdem TLOS eingetauscht wurden, sind diese für einen Zeitraum von', /* unstakePeriodPretty... */
+            stake_tlos_confirm_2b: /* ...unstakePeriodPretty */ 'gesperrt. Nach Ablauf der Sperrfrist können Sie in der Registerkarte "Einfordern" erneut Ihrem Konto gutgeschrieben werden.',
             stake_tlos_confirm_3: 'Möchten Sie fortfahren?',
             stake_tlos: 'TLOS tauschen',
-            stake_tlos_subheader: 'Ihr Einsatz von TLOS in sTLOS gewährt Ihnen Zugriff auf einen regelmäßige Belohnungen und Zugang zu verschiedene DeFi-Anwendungen, ' +
-            'dies kann Ihre Erlöse weiter erhöhen. Der Umrechnungskurs von TLOS zu sTLOS erhöht sich regelmäßig durch das Wachstum des Belohnungs-Pools ' +
-            'Daher ist die erhaltene Menge an sTLOS grundsätzlich geringer als die Menge der eingesetzten TLOS. Aufgrund der thesaurierenden ' +
-            'Auszahlung ist keine zusätzliche Aktion erforderlich.',
+            stake_tlos_subheader: 'Ihr Einsatz von TLOS in sTLOS gewährt Ihnen Zugriff auf einen regelmäßige Belohnungen und Zugang zu verschiedene DeFi-Anwendungen, '
+            + 'dies kann Ihre Erlöse weiter erhöhen. Der Umrechnungskurs von TLOS zu sTLOS erhöht sich regelmäßig durch das Wachstum des Belohnungs-Pools '
+            + 'Daher ist die erhaltene Menge an sTLOS grundsätzlich geringer als die Menge der eingesetzten TLOS. Aufgrund der thesaurierenden '
+            + 'Auszahlung ist keine zusätzliche Aktion erforderlich.',
             receive_stlos: 'sTLOS erhalten',
             available: '{balanceTlos} Verfügbar',
             insufficient_tlos_balance: 'Unzureichendes TLOS-Guthaben',
             login_using_an_evm_wallet: 'Melden Sie sich mit einem EVM-Wallet an',
             wallet_not_connected: 'Wallet nicht verbunden',
-            click_to_input_full_wallet_balance: 'Klicken Sie hier, um das gesamte Wallet-Guthaben einzusetzen.\n\n' +
-            'Der angezeigte Betrag wird um 1 TLOS reduziert, um die Handlungsfähigkeit Ihres Konto sicherzustellen.\n' +
-            'Exakter Betrag (abzüglich der geschätzten Gasgebühren):\n' +
-            '{prettyBalance} TLOS',
+            click_to_input_full_wallet_balance: 'Klicken Sie hier, um das gesamte Wallet-Guthaben einzusetzen.\n\n'
+            + 'Der angezeigte Betrag wird um 1 TLOS reduziert, um die Handlungsfähigkeit Ihres Konto sicherzustellen.\n'
+            + 'Exakter Betrag (abzüglich der geschätzten Gasgebühren):\n'
+            + '{prettyBalance} TLOS',
             loading: 'In Bearbeitung...',
             get_more_tlos: 'Erhalten Sie mehr TLOS',
             connect_wallet: 'Wallet verbinden',
@@ -43,41 +44,41 @@ export default {
             stake_tlos_earn_interest: 'Tauschen Sie TLOS für sTLOS, um Belohnungen aus dem Rewards-Pool zu erhalten.',
             staked: 'Eingezahlt',
             unstaked: 'Abgehoben',
-            tooltip_1: 'APY: Annual Percentage Yield\n\nDie jährliche Rendite nach Berücksichtigung von Zinseszinsen.\n\n' +
-            'Die Belohnungen werden etwa alle 30 Minuten in den Rewards-Pool ausgezahlt. Der Prozentsatz ist variabel, er verändert sich ' +
-            'kontinuierlich auf Basis der im Rewards-Pool enthaltenen TLOS, dies betrifft die kombinierten Telos von EVM und Native. ' +
-            'Die Belohnungen werden aus einem Community Reserve in den sTLOS-Vertrag eingezahlt.',
-            tooltip_2: 'TVL: Total Value Locked\n\nAktueller Wert (in TLOS) aller im sTLOS' +
-            '(Staked TLOS) Smart Contract gehaltenen Tokens, also die derzeitige Summe aller eingezahlten TLOS in der Telos EVM. ',
-            tooltip_3: 'Eingezahlt\n\n' +
-            'Der Gesamteinsatz für das angemeldete Konto, also ' +
-            'Ihr sTLOS-Guthaben mit seinem aktuellen Wert, in TLOS ',
-            tooltip_4: 'Abgehoben\n\n' +
-            'Der Gesamtwert der TLOS, die Sie abgehoben haben, dies beinhaltet gesperrte und einforderbare Beträge.\n\n' +
-            'Beim Abheben \u2014i.e. redeem\u2014 von sTLOS, wird die entsprechende Anzahl TLOS ' +
-            'für {unlockPeriod} in einen ESCROW-Vertrag übertragen ("gesperrt"), in diesem Zeitraum ' +
-            'ist keine Transaktion mit diesen TLOS möglich.\n\n' +
-            'Nach Ablauf der Sperrfrist können Sie Ihre abgehobenen TLOS auf der entsprechenden Registerkarte einfordern, ' +
-            'der Betrag wird dann Ihrem TLOS-Konto gutgeschrieben ',
-            confirm_unstake_1a: 'Fortsetzen, um sTLOS in TLOS zu tauschen. ' +
-            'Abgehobene TLOS bleiben für den folgenden Zeitraum gesperrt:', /* unstakePeriodPretty...*/
-            confirm_unstake_1b: /*...unstakePeriodPretty */ 'Danach kann der Betrag über die Registerkarte "Einfordern" Ihrem Konto gutgeschrieben werden.',
-            confirm_unstake_2a: 'Achtung, dies führt zur Abhebung ', /* remainingDeposits...*/
-            confirm_unstake_2b: /*...remainingDeposits */ 'Verbleibende Abhebungen, ' +
-            'bis Sie die maximale Anzahl der parallelen Abhebungen erreicht haben. Bitte fordern Sie entsperrte Positionen ein, bevor Sie weitere Positionen öffnen.' +
-            'Bitte warten Sie bis die Sperrfrist einer Position abgelaufgen ist, um weitere sTLOS abzuheben. ' +
-            'In dringenden Fällen können Sie sTLOS in einer DEX (Decentralized Exchange) für TLOS tauschen, bitte beachten Sie, dass der Wert deutlich abweichen kann. -',
+            tooltip_1: 'APY: Annual Percentage Yield\n\nDie jährliche Rendite nach Berücksichtigung von Zinseszinsen.\n\n'
+            + 'Die Belohnungen werden etwa alle 30 Minuten in den Rewards-Pool ausgezahlt. Der Prozentsatz ist variabel, er verändert sich '
+            + 'kontinuierlich auf Basis der im Rewards-Pool enthaltenen TLOS, dies betrifft die kombinierten Telos von EVM und Native. '
+            + 'Die Belohnungen werden aus einem Community Reserve in den sTLOS-Vertrag eingezahlt.',
+            tooltip_2: 'TVL: Total Value Locked\n\nAktueller Wert (in TLOS) aller im sTLOS'
+            + '(Staked TLOS) Smart Contract gehaltenen Tokens, also die derzeitige Summe aller eingezahlten TLOS in der Telos EVM. ',
+            tooltip_3: 'Eingezahlt\n\n'
+            + 'Der Gesamteinsatz für das angemeldete Konto, also '
+            + 'Ihr sTLOS-Guthaben mit seinem aktuellen Wert, in TLOS ',
+            tooltip_4: 'Abgehoben\n\n'
+            + 'Der Gesamtwert der TLOS, die Sie abgehoben haben, dies beinhaltet gesperrte und einforderbare Beträge.\n\n'
+            + 'Beim Abheben \u2014i.e. redeem\u2014 von sTLOS, wird die entsprechende Anzahl TLOS '
+            + 'für {unlockPeriod} in einen ESCROW-Vertrag übertragen ("gesperrt"), in diesem Zeitraum '
+            + 'ist keine Transaktion mit diesen TLOS möglich.\n\n'
+            + 'Nach Ablauf der Sperrfrist können Sie Ihre abgehobenen TLOS auf der entsprechenden Registerkarte einfordern, '
+            + 'der Betrag wird dann Ihrem TLOS-Konto gutgeschrieben ',
+            confirm_unstake_1a: 'Fortsetzen, um sTLOS in TLOS zu tauschen. '
+            + 'Abgehobene TLOS bleiben für den folgenden Zeitraum gesperrt:', /* unstakePeriodPretty... */
+            confirm_unstake_1b: /* ...unstakePeriodPretty */ 'Danach kann der Betrag über die Registerkarte "Einfordern" Ihrem Konto gutgeschrieben werden.',
+            confirm_unstake_2a: 'Achtung, dies führt zur Abhebung ', /* remainingDeposits... */
+            confirm_unstake_2b: /* ...remainingDeposits */ 'Verbleibende Abhebungen, '
+            + 'bis Sie die maximale Anzahl der parallelen Abhebungen erreicht haben. Bitte fordern Sie entsperrte Positionen ein, bevor Sie weitere Positionen öffnen.'
+            + 'Bitte warten Sie bis die Sperrfrist einer Position abgelaufgen ist, um weitere sTLOS abzuheben. '
+            + 'In dringenden Fällen können Sie sTLOS in einer DEX (Decentralized Exchange) für TLOS tauschen, bitte beachten Sie, dass der Wert deutlich abweichen kann. -',
             unstake_stlos_for_tlos: 'sTLOS für TLOS tauschen',
             unstake_stlos: 'sTLOS abheben',
             receive_tlos: 'TLOS erhalten',
             amount: 'Betrag',
             time_remaining: 'Verbleibende Zeit',
-            full_staked_balance_tooltip: 'Clicken Sie hier, um die gesamte verfügbare Summe einzufügen\n\n' +
-            'Saldo (abzüglich geschätzter Transaktionskosten):\n' +
-            '{prettyBalance} sTLOS',
+            full_staked_balance_tooltip: 'Clicken Sie hier, um die gesamte verfügbare Summe einzufügen\n\n'
+            + 'Saldo (abzüglich geschätzter Transaktionskosten):\n'
+            + '{prettyBalance} sTLOS',
             login_using_evm_wallet: 'Mit einem EVM-Wallet anmelden',
-            max_unstake_transactions_reached: 'Sie haben die maximale Anzahl paralleler Abhebungen erreicht, ' +
-            'Bitte fordern Sie verfügbare TLOS ein oder warten Sie, bis ausstehende Positionen entsperrt werden.',
+            max_unstake_transactions_reached: 'Sie haben die maximale Anzahl paralleler Abhebungen erreicht, '
+            + 'Bitte fordern Sie verfügbare TLOS ein oder warten Sie, bis ausstehende Positionen entsperrt werden.',
             click_to_change_time_format: 'Clicken Sie hier, um die Zeit-Formatierung zu ändern.',
             unstaking: 'Abhebung',
             available_to_withdraw: 'Zum Einfordern verfügbar',
@@ -85,8 +86,8 @@ export default {
             withdraw_successful: 'Transaktion erfolgreich! Jetzt prüfen:',
             no_withdrawable_positions: 'Keine einforderbaren Positionen',
             you_have_unlocked_tlos: 'Sie verfügen über einforderbare TLOS Positionen!',
-            stake_tlos_success: 'Transaktion erfolgreich! Jetzt prüfen:',
-            unstake_stlos_success: 'Transaktion erfolgreich! Jetzt prüfen:',
+            stake_tlos_success: 'Transaktion erfolgreich! Jetzt prüfen: ',
+            unstake_stlos_success: 'Transaktion erfolgreich! Jetzt prüfen: ',
             deposit_failed: 'Fehler bei der TLOS Einzahlung: { message }',
             redeem_failed: 'STLOS zu TLOS Konvertierung nicht möglich: { message }',
             fetch_balance_error: 'Konten-Saldo konnte nicht abgerufen werden: { message }',
@@ -108,6 +109,10 @@ export default {
             unstake_stlos_error: 'sTLOS konnte nicht abgehoben werden: { message }',
             withdraw_failed: 'TLOS Position konnte nicht ausgezahlt werden: { message }',
         },
+        issuer: 'Issuer',
+        account_not_found: 'Wir konnten dieses Konto nicht finden',
+        approvals: 'Approvals',
+        supported_interfaces: 'Bekannte unterstützte Schnittstellen',
         explore_transactions: 'Transaktionen prüfen',
         recent_transactions: 'Neueste Transaktionen',
         telos_evm_explorer: 'Telos EVM Explorer',
@@ -115,6 +120,11 @@ export default {
         monitor: 'Monitor',
         oops: 'Oh. Hier existiert nichts...',
         go_home: 'Home',
+        minted: 'Minted',
+        holders: 'Holders',
+        evm_holders: 'Alle Telos EVM Halter',
+        total_nfts_minted: 'Insgesamt geprägte NFTs in dieser Sammlung',
+        telos_supply: 'Telos EVM supply',
         select_sol_file: 'Bitte .sol Smart Contract Datei für Hochladen auswählen',
         select_json_file: 'Bitte standard JSON Objekt-Datei für Hochladen auswählen',
         paste_contract_contents: 'Sie müssen eine Datei zum Hochladen auswählen oder den Reiter wechseln, um Smart Contract Inhalte direkt einzufügen.',
@@ -140,6 +150,9 @@ export default {
         transactions: 'Transaktionen',
         account: 'Konto',
         contract: 'Smart Contract',
+        transfers_title: '{ type } Transfers',
+        loading_transfers: 'Loading transfers',
+        loading_approvals: 'Loading approvals',
         erc20_transfers: 'ERC20 Transfers',
         erc721_transfers: 'ERC721 Transfers',
         erc1155_transfers: 'ERC1155 Transfers',
@@ -184,6 +197,62 @@ export default {
         value: 'Wert',
     },
     components: {
+        approvals: {
+            token_id: 'Token ID',
+            approved: 'Genehmigt',
+            login_account: 'Bitte melden Sie sich mit Ihrem Wallet bei diesem Konto an, um dessen Genehmigungen sehen zu können.',
+            approval_text: 'Um den Betrag der ausgewählten Genehmigungen auf 0 zu aktualisieren, ist eine Signatur Ihres Wallets erforderlich',
+            type: 'Typ',
+            delete: 'Löschen',
+            delete_all: 'Alles löschen',
+            unselect_all: 'Alles wiederufen',
+            cancel: 'Stornieren',
+            remove_approval: 'Entfernen Sie es',
+            removal_approval: 'Einzelgenehmigung entfernen',
+            unselect_all_approvals: 'Deaktivieren Sie alle Genehmigungen',
+            infinite: 'Unendlich',
+            infinite_tooltip: 'Der Zuschuss ist höher als der Gesamtvorrat dieses Tokens',
+            select: 'Wählen Sie Genehmigung aus',
+            unselect: 'Genehmigung deaktivieren',
+            update: 'Genehmigungs-Update',
+            update_description: 'Geben Sie den neuen Betrag ein, um den Spender zu berücksichtigen. Hierzu ist eine Wallet-Signatur erforderlich.',
+            removal_approvals: 'Entfernen Sie alle Genehmigungen',
+            removal_selected_approvals: 'Alle ausgewählten Genehmigungen entfernen',
+            update_failed: 'Die Genehmigung konnte nicht aktualisiert werden',
+            update_success: 'Die Genehmigung von {spender} für {contract} wurde erfolgreich aktualisiert',
+            spender: 'Spender',
+            amount: 'Zuschuss',
+        },
+        nfts: {
+            show_without_metadata: 'NFTs ohne Metadaten anzeigen',
+            id: 'Token ID',
+            name: 'Name',
+            collection: 'Sammlung',
+            nfts: 'NFTs',
+            metadata: 'Meta',
+            minter: 'Münzmeister',
+            owner: 'Eigentümer',
+            contract: 'Vertrag',
+            image: 'Bild',
+            media: 'Medien',
+            minted: 'Block geprägt',
+            attributes: 'attribut',
+            ipfs: 'Von IPFS beziehen',
+            consult_metadata: 'Konsultieren Sie Metadaten\n',
+            consult_media: 'Konsultieren Sie die Medien',
+            consult_collection: 'Konsultieren Sie die Sammlung',
+        },
+        holders: {
+            show_system_contracts: 'Systemverträge anzeigen',
+            holder: 'Halter',
+            balance: 'Guthaben',
+            global_supply: 'Weltweite Versorgung',
+            telos_supply: 'Telos EVM Versorgung',
+            updated: 'Letzte Aktualisierung\n',
+        },
+        known_tokens: 'Known tokens',
+        other_tokens: 'Unknown tokens',
+        no_balances_found: 'Für diese Adresse wurde kein erc20-Token-Guthaben gefunden',
         internal_txns: 'Interne Transaktionen',
         n_internal_txns: '{ amount } Interne Transaktionen',
         none: 'Keine',
@@ -206,9 +275,15 @@ export default {
         text3_or_to_recover_assets: 'oder zur Wiedererlangung von Werten, die an eine Telos Native Adresse gesendet wurden',
         copy_to_clipboard: '{ text } in die Zwischenablage kopieren',
         latest_block: 'Letzter Block',
+        price_sources: 'Daten von Coingecko, CoinMarketCap oder, falls nicht verfügbar, von dezentralen Börsen auf Telos EVM',
+        marketcap_sources: 'Daten stammen von Coingecko oder CoinMarketCap',
+        usd_marketcap: 'USD Marketcap',
+        usd_price: 'USD Preis',
+        usd_value: 'USD Wert',
         tlos_price: 'TLOS Preis',
         gas_price: 'Gas Preis',
-        click_to_expand: 'Klicken Sie, um die Funktionssignatur zu erweitern',
+        click_to_expand: 'Zum erweitern klicken',
+        click_to_fold: 'Zum Falten klicken',
         search_evm_failed: 'Suche nach verlinkter EVM-Adresse für Telos Native Konto { search_term } fehlgeschlagen.',
         search_failed: 'Suche fehlgeschlagen, bitte geben Sie einen gültigen Suchbegriff ein.',
         add_to_metamask: '{ symbol } zu MetaMask hinzufügen',
@@ -231,6 +306,7 @@ export default {
         copied: 'Kopiert',
         copy_to_clipboard_failed: 'Koipieren in die Zwischenablage ist fehlgeschlagen',
         gwei: 'Gwei',
+        failed_to_fetch_transactions: 'Transaktionen konnten nicht abgerufen werden.',
         failed_to_parse_transaction: 'Das Parsen der Daten für die Transaktion ist fehlgeschlagen, Fehler: { message }',
         executed_based_on_decoded_data: 'Funktion wird auf der Grundlage der dekodierten Eingabedaten ausgeführt. Bei nicht identifizierter Funktion wird stattdessen die Methoden-ID angezeigt.',
         unsupported_token_type: 'Token Typ nicht unterstützt: { tokenType }',
@@ -240,18 +316,25 @@ export default {
         from: 'Von',
         to: 'An',
         transaction: {
+            in: 'in',
+            out: 'out',
             form_from: 'Von : ',
             form_to: 'An : ',
+            load_error: 'Transaktionen konnten nicht geladen werden',
             form_token: 'Token : ',
-            consult_collection: 'Sammlung ansehen',
-            consult_metadata: 'Metadaten ansehen',
-            consult_media: 'Medien ansehen',
+            show_short: 'Kurz anzeigen',
             show_total: 'Summe anzeigen',
             show_wei: 'wei anzeigen',
             value_uint256: 'Wert (uint256) : ',
-            tlos_transfer: 'TLOS Transfer',
+            tlos_transfer: 'TLOS Überweisen',
+            native_deposit: 'Einzahlung von Native Telos',
+            native_withdraw: 'Ziehen Sie sich zum einheimischen Telos zurück',
             unknown: 'Unbekannt',
-            contract_deployment: 'Smart Contract Deployment',
+            contract_deployed: 'Vertrag bereitgestellt',
+            contract_deployment: 'Smart Contract Einsatz',
+            contract_interaction: 'Smart Contract Interaktion',
+            deposit: 'einzahlung',
+            withdraw: 'abziehen',
             no_internal_trxs_found: 'Keine interne Transaktion gefunden',
             human_readable: 'Für Menschen lesbar',
             no_logs_found: 'Keine Protokolle gefunden',
@@ -298,16 +381,23 @@ export default {
             checked_at: 'Geprüft am',
             task: 'Aufgabe',
             message: 'Nachricht',
+            category: 'Category',
             block_height: 'Block Nummer',
             latency: 'Latenz',
+            success: 'Success',
+            info: 'Info',
+            alert: 'Alert',
+            error: 'Error',
             click_to_change_format: 'Zum Ändern des Formats anklicken',
         },
         contract_tab: {
+            abi_loaded_from_interface: 'This generic ABI was loaded using IEP-165\'s supportsInterface() and may not be exhaustive. Some of the functions displayed may not be implemented. Verify the contract to be able to interact with it using its full ABI.',
             copy_abi_to_clipboard: 'ABI JSON des Smart Contracts in die Zwischenablage kopieren',
             enter_amount: 'Wählen Sie Anzahl der Dezimalstellen und geben Sie einen Betrag ein, dieser wird als Funktionsparameter als uint256 erfasst',
             result: 'Ergebnis',
             view_transaction: 'Transaktion ansehen',
             code: 'Code',
+            bytecode: 'Bytecode',
             read: 'Lesen',
             write: 'Schreiben',
             amount: 'Anzahl',
@@ -316,8 +406,9 @@ export default {
             custom: 'Benutzerdefiniert',
             unverified_contract_source: 'Dieser Smart Contract wurde nicht verifiziert...',
             click_here: 'Klicken Sie hier, ',
-            upload_source_files: 'um Quelldateien hochzuladen und diesen Smart Contract zu verifizieren. ' +
-                'Alternativ können Sie mit dem Smart Contract interagieren, indem Sie ein beliebiges ABI verwenden:',
+            upload_source_files: 'um Quelldateien hochzuladen und diesen Smart Contract zu verifizieren. ',
+            abi_autoloaded: 'In the meantime, you can interact with the contract using our automatically loaded preset ABI.',
+            choose_abi: 'Alternatively, you can interact with the contract either using one of our preset ABIs or a custom JSON one:',
             use_erc20_abi: 'ERC20 ABI nutzen',
             use_erc721_abi: 'ERC721 ABI nutzen',
             use_erc1155_abi: 'ERC1155 ABI nutzen',
@@ -329,6 +420,7 @@ export default {
             read_functions: 'Lese-Funktionen',
             write_functions: 'Schreib-Funktionen',
             unverified_contract: 'Ungeprüfter Smart Contract',
+            verified_contract: 'Verified contract',
         },
         header: {
             sign_in: 'Anmelden',
@@ -341,8 +433,8 @@ export default {
             health_monitor: 'Health Monitor',
             health_status: 'Health Status',
             advanced: 'Erweitert',
-            light_mode: 'Light Mode',
-            dark_mode: 'Dark Mode',
+            light_mode: 'Modus Licht',
+            dark_mode: 'Modus Dunkle',
             address_not_found: 'Suche nach verlinkter EVM-Adresse für Telos Native Konto { search_term } fehlgeschlagen.',
             search_failed: 'Suche fehlgeschlagen, bitte geben Sie einen gültigen Suchbegriff ein.',
             goto_address_details: 'Adresse/Konto Details öffnen',
@@ -350,9 +442,75 @@ export default {
             address_copied: 'Adresse/Konto in Zwischenablage kopiert',
             search_placeholder: 'Adresse/Konto, Transaktion, Block',
             select_language: 'Sprache wählen',
+            open_language_switcher: 'open language switcher',
+        },
+        export: {
+            block_range: 'Blockbereich',
+            choose_download_option: 'Wählen Sie eine Download-Option',
+            column_header_action: 'Aktion',
+            column_header_amount: 'Betrag',
+            column_header_block_number: 'Blocknummer',
+            column_header_contract_address: 'Vertragsadresse',
+            column_header_date: 'Datum',
+            column_header_from: 'Aus',
+            column_header_nft_collection_name: 'NFT-Sammlungsname',
+            column_header_nft_id: 'NFT-ID',
+            column_header_timestamp: 'Unix-Zeitstempel (ms)',
+            column_header_to: 'Zu',
+            column_header_token_contract_address: 'Token-Vertragsadresse',
+            column_header_token_name: 'Token-Name',
+            column_header_token_symbol: 'Token-Symbol',
+            column_header_tx_hash: 'Transaktions-Hash',
+            date_range: 'Datumsbereich',
+            download_csv: 'CSV-Datei herunterladen',
+            download_transactions_csv: 'Transaktionen CSV-Datei herunterladen',
+            download_erc_20_transfers_csv: 'ERC-20-Übertragungen CSV-Datei herunterladen',
+            download_erc_721_transfers_csv: 'ERC-721-Übertragungen CSV-Datei herunterladen',
+            download_erc_1155_transfers_csv: 'ERC-1155-Übertragungen CSV-Datei herunterladen',
+            end_block: 'Endblock',
+            erc_1155_transfers: 'ERC-1155-Übertragungen',
+            erc_20_transfers: 'ERC-20-Übertragungen',
+            erc_721_transfers: 'ERC-721-Übertragungen',
+            export_data: 'Daten exportieren',
+            export_type: 'Export-Typ',
+            limit_notice: 'Es werden nur die ersten {amount} Ergebnisse exportiert',
+            notification_successful_download: 'Erfolgreicher Download',
+            notification_failed_download: 'Beim Herunterladen der Daten ist ein Fehler aufgetreten',
+            page_header: 'Daten herunterladen (CSV-Export)',
+            reset: 'Zurücksetzen',
+            start_block: 'Startblock',
+            transactions: 'Transaktionen',
         },
     },
     global: {
+        all: 'Alle',
+        true: 'wahr',
+        false: 'falsch',
+        close: 'Schließen',
+        toggle_fullscreen: 'Vollbildmodus umschalten',
+        name: 'Name',
+        symbol: 'Symbol',
+        show_table: 'Tabelle anzeigen',
+        show_grid: 'Raster anzeigen',
+        records_per_page: 'Einträge pro Seite:',
+        max_decimals_reached: 'Please use { max } decimal places maximum',
+        erc20_token: 'ERC20 Token',
+        erc721_token: 'ERC721 Token',
+        sign: 'Zeichen',
+        hours: 'std.',
+        updated: 'Letzte Aktualisierung',
+        action: 'Aktion',
+        wallet_response: 'Warten auf Antwort von Ihrem Wallet-Anbieter',
+        minutes: 'minutes',
+        days: 'tage',
+        and: 'und',
+        unknown: 'Unknown',
+        data_behind_by: 'Entschuldigung ! Die angezeigten Daten liegen hinterher',
+        not_synced: 'Der Indexer ist nicht mit dem neuesten Block synchronisiert',
+        try_reloading: 'Sie können versuchen, die Seite neu zu laden, um das Problem zu beheben. Wenn das Problem weiterhin besteht, wenden Sie sich bitte an ein Telos-Teammitglied.',
+        expand: 'Mehr sehen',
+        error: 'Fehler',
+        async_error_description: 'Entschuldigung ! Beim Versuch, Ressourcen anzufordern, ist ein Fehler aufgetreten. Bitte stellen Sie sicher, dass Ihre Internetverbindung funktioniert, und versuchen Sie es erneut. Wenn der Fehler weiterhin besteht, kontaktieren Sie uns direkt über unseren Telegram-Kanal.',
         language: 'Sprache',
         cancel: 'Abbrechen',
         ok: 'Ok',
@@ -360,7 +518,7 @@ export default {
         internal_error: 'Interner Fehler',
     },
     layouts: {
-        health_status: 'Health Status',
+        health_status: 'Gesundheitszustand',
         stake_telos: 'Stake TLOS',
         teloscan_mainnet: 'Teloscan Mainnet',
         teloscan_testnet: 'Teloscan Testnet',

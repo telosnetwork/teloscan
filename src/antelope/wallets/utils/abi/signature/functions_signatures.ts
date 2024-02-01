@@ -25,4 +25,3 @@ export const functions_overrides = {
     '0xf23a6e61': 'function onERC1155Received(address operator, address from, uint256 id, uint256 value, bytes data)',
     '0x3542aee2': 'function mintByOwner(address to, uint256 tokenType)',
 } as { [prefix: string]: string };
-

@@ -1,4 +1,3 @@
-<!-- eslint-disable max-len -->
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <!-- eslint-disable no-unused-vars -->
 <script lang="ts">
@@ -14,10 +13,16 @@ import {
     PROVIDER_METAMASK,
     LOGIN_DATA_KEY,
 } from 'src/lib/utils';
-import { AccountModel, CURRENT_CONTEXT, EvmAccountModel, getAntelope, useAccountStore, useChainStore } from 'src/antelope/mocks';
+import {
+    AccountModel, CURRENT_CONTEXT, EvmAccountModel, getAntelope, useAccountStore, useChainStore,
+} from 'src/antelope/mocks';
 import { Authenticator } from 'universal-authenticator-library';
 import InlineSvg from 'vue-inline-svg';
 import { isTodayBeforeTelosCloudDown } from 'src/App.vue';
+import metamaskLogo from 'src/assets/metamask-fox.svg';
+import braveLogo from 'src/assets/brave_lion.svg';
+import telosCloudWalletLogo from 'src/assets/logo--telos-cloud-wallet.svg';
+import walletConnectLogo from 'src/assets/logo--wallet-connect.svg';
 
 export default defineComponent({
     name: 'LoginModal',
@@ -37,6 +42,10 @@ export default defineComponent({
         browserSupportsMetaMask: true,
         isBraveBrowser: false,
         isIOSMobile: false,
+        metamaskLogo,
+        braveLogo,
+        telosCloudWalletLogo,
+        walletConnectLogo,
     }),
     emits: ['hide'],
     computed: {
@@ -50,6 +59,10 @@ export default defineComponent({
             return this.$ual.getAuthenticators().availableAuthenticators;
         },
         darkModeEnabled(): boolean {
+            if (typeof window === 'undefined') {
+                return true;
+            }
+
             return localStorage.getItem('darkModeEnabled') === 'true';
         },
         isTodayBeforeTelosCloudDown() {
@@ -103,7 +116,7 @@ export default defineComponent({
         async detectProvider() {
             const provider = await detectEthereumProvider({ mustBeMetaMask: true });
             this.browserSupportsMetaMask = provider?.isMetaMask || false;
-            this.isBraveBrowser = navigator.brave && await navigator.brave.isBrave() || false;
+            this.isBraveBrowser = (navigator.brave && await navigator.brave.isBrave()) || false;
         },
 
         detectMobile() {
@@ -125,8 +138,8 @@ export default defineComponent({
             await wallet.init();
             const users = await wallet.login(account);
             if (users.length) {
-                const account = users[0];
-                const accountName = await account.getAccountName();
+                const userAccount = users[0];
+                const accountName = await userAccount.getAccountName();
                 let evmAccount;
                 try {
                     evmAccount = await this.$evm.telos.getEthAccountByTelosAccount(accountName);
@@ -176,7 +189,7 @@ export default defineComponent({
             this.$emit('hide');
         },
         async connectMetaMask() {
-            if (this.isBraveBrowser && window.ethereum.isBraveWallet && !this.isMobile){
+            if (this.isBraveBrowser && window.ethereum.isBraveWallet && !this.isMobile) {
                 this.$q.notify({
                     position: 'top',
                     message: this.$t('components.enable_wallet_extensions'),
@@ -185,11 +198,10 @@ export default defineComponent({
                 return;
             }
 
-            if (!this.browserSupportsMetaMask || !window.ethereum || (this.isMobile && this.isBraveBrowser)){
+            if (!this.browserSupportsMetaMask || !window.ethereum || (this.isMobile && this.isBraveBrowser)) {
                 try {
                     window.open('https://metamask.app.link/dapp/teloscan.io');
                 } catch {
-
                     this.$q.notify({
                         position: 'top',
                         message: this.$t('components.enable_wallet_extensions'),
@@ -206,7 +218,7 @@ export default defineComponent({
         },
         async connectBraveWallet() {
             // Brave Wallet is not set as default and/or has other extensions enabled
-            if (!window.ethereum.isBraveWallet){
+            if (!window.ethereum.isBraveWallet) {
                 this.$q.notify({
                     position: 'top',
                     message: this.$t('components.disable_wallet_extensions'),
@@ -235,7 +247,7 @@ export default defineComponent({
                 <q-tab-panel name="web3">
                     <q-card class="c-login-modal__image-container" @click="connectMetaMask()">
                         <q-img
-                            :src="require('src/assets/metamask-fox.svg')"
+                            :src="metamaskLogo"
                             height="64px"
                             width="64px"
                         />
@@ -249,7 +261,7 @@ export default defineComponent({
                         @click="connectBraveWallet()"
                     >
                         <q-img
-                            :src="require('src/assets/brave_lion.svg')"
+                            :src="braveLogo"
                             width="50px"
                         />
                         <span> Brave Wallet </span>
@@ -260,7 +272,7 @@ export default defineComponent({
                         @click="connectTelosCloud()"
                     >
                         <InlineSvg
-                            :src="require('src/assets/logo--telos-cloud-wallet.svg')"
+                            :src="telosCloudWalletLogo"
                             height="64px"
                             width="64px"
                         />
@@ -271,7 +283,7 @@ export default defineComponent({
                         @click="connectWalletConnect()"
                     >
                         <q-img
-                            :src="require('src/assets/logo--wallet-connect.svg')"
+                            :src="walletConnectLogo"
                             height="64px"
                             width="64px"
                             fit="contain"
@@ -336,6 +348,5 @@ export default defineComponent({
         }
     }
 }
-
 
 </style>

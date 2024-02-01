@@ -11,6 +11,17 @@ const routes = [
         ],
     },
     {
+        path: '/address/:address/sourcify',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'sourcify',
+                component: () => import('pages/ContractVerification.vue'),
+            },
+        ],
+    },
+    {
         path: '/address/:address',
         component: () => import('layouts/MainLayout.vue'),
         children: [
@@ -39,6 +50,17 @@ const routes = [
             name: 'block',
             component: () => import('pages/Block.vue'),
         }],
+    },
+    {
+        path: '/holders',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'holders',
+                component: () => import('pages/Holders.vue'),
+            },
+        ],
     },
     {
         path: '/transactions',
@@ -72,14 +94,26 @@ const routes = [
     },
     {
         path: '/health',
-        name: 'health',
         component: () => import('layouts/MainLayout.vue'),
-        children: [{ path: '', component: () => import('pages/HealthPage.vue') }],
+        children: [{
+            path: '',
+            name: 'health',
+            component: () => import('pages/HealthPage.vue'),
+        }],
     },
     {
         path: '/endpoints',
         // eslint-disable-next-line no-unused-vars
         redirect: () => ({ path: '/health' }),
+    },
+    {
+        path: '/export',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            name: 'export',
+            component: () => import('pages/export/ExportPage.vue'),
+        }],
     },
     {
         path: '/:catchAll(.*)*',

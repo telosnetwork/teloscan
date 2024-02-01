@@ -8,7 +8,6 @@ import { BigNumber, ethers } from 'ethers';
 import { debounce, DebouncedFunc } from 'lodash';
 import { stlos } from 'src/lib/logos';
 
-
 import { formatUnstakePeriod } from 'pages/staking/staking-utils';
 import { promptAddToMetamask } from 'src/lib/token-utils';
 import {
@@ -23,6 +22,7 @@ import LoginModal from 'components/LoginModal.vue';
 import { CURRENT_CONTEXT, useAccountStore } from 'src/antelope/mocks';
 import { EvmABI, stlosAbiDeposit } from 'src/antelope/types';
 import { formatWei } from 'src/antelope/wallets/utils';
+import metamaskLogo from 'src/assets/metamask-fox.svg';
 
 const reservedForGasBn = BigNumber.from('10').pow(WEI_PRECISION);
 
@@ -73,6 +73,7 @@ export default defineComponent({
         debouncedTopInputHandler: (() => void 0) as DebouncedFunc<() => void>,
         debouncedBottomInputHandler: (() => void 0) as DebouncedFunc<() => void>,
         userDismissedBanner: false,
+        metamaskLogo,
     }),
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn', 'isNative']),
@@ -115,11 +116,10 @@ export default defineComponent({
             if (this.isLoggedIn) {
                 if (walletBalanceBn.lt(reservedForGasBn) && !this.isNative) {
                     return this.$t('pages.staking.insufficient_tlos_balance');
-                } else if(this.isNative) {
+                } if (this.isNative) {
                     return this.$t('pages.staking.login_using_an_evm_wallet');
-                } else {
-                    return '';
                 }
+                return '';
             }
 
             return this.$t('pages.staking.wallet_not_connected');
@@ -130,15 +130,15 @@ export default defineComponent({
         },
         ctaIsDisabled() {
             const inputsInvalid = (
-                this.isLoggedIn &&
-                this.walletBalanceBn.gt(reservedForGasBn) &&
-                [this.topInputAmount, this.bottomInputAmount].some(amount => BigNumber.from(amount ?? '0').eq('0'))
+                this.isLoggedIn
+                && this.walletBalanceBn.gt(reservedForGasBn)
+                && [this.topInputAmount, this.bottomInputAmount].some(amount => BigNumber.from(amount ?? '0').eq('0'))
             );
 
-            return inputsInvalid ||
-                this.topInputIsLoading ||
-                this.bottomInputIsLoading ||
-                this.ctaIsLoading;
+            return inputsInvalid
+                || this.topInputIsLoading
+                || this.bottomInputIsLoading
+                || this.ctaIsLoading;
         },
         ctaText() {
             if (this.ctaIsLoading) {
@@ -148,9 +148,8 @@ export default defineComponent({
             if (this.isLoggedIn) {
                 if (this.walletBalanceBn.lt(reservedForGasBn)) {
                     return this.$t('pages.staking.get_more_tlos');
-                } else {
-                    return this.$t('pages.staking.stake_tlos');
                 }
+                return this.$t('pages.staking.stake_tlos');
             }
 
             return this.$t('pages.staking.connect_wallet');
@@ -166,7 +165,7 @@ export default defineComponent({
         },
     },
     async created() {
-        // Initialization of the text translations
+    // Initialization of the text translations
         this.header = this.$t('pages.staking.stake_tlos');
         this.subheader = this.$t('pages.staking.stake_tlos_subheader');
         this.topInputLabel = this.$t('pages.staking.stake_tlos');
@@ -289,7 +288,6 @@ export default defineComponent({
             const value = BigNumber.from(this.topInputAmount);
 
             try {
-
                 this.continueDeposit(value).then((result) => {
                     this.resultHash = result.hash;
                     this.$emit('balance-changed');
@@ -299,7 +297,6 @@ export default defineComponent({
                 }).finally(() => {
                     this.ctaIsLoading = false;
                 });
-
             } catch (e) {
                 console.error('Failed to deposit TLOS', e);
                 this.ctaIsLoading = false;
@@ -381,8 +378,13 @@ export default defineComponent({
         />
     </div>
     <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
-        {{ $t('pages.staking.stake_tlos_success') }}
-        <TransactionField :transaction-hash="resultHash" />
+        <div class="bg-positive text-white q-py-xs q-px-sm flex items-center">
+            <q-icon name="check_circle" class="q-mr-xs" />
+            {{ $t('pages.staking.stake_tlos_success')  }}
+            <span class="q-ml-xs">
+                <TransactionField :transaction-hash="resultHash" />
+            </span>
+        </div>
     </div>
     <q-dialog v-model="displayConfirmModal">
         <q-card>
@@ -408,7 +410,7 @@ export default defineComponent({
                 >
                     {{ $t('pages.staking.add_stlos_to_metamask') }}
                     <img
-                        :src="require('src/assets/metamask-fox.svg')"
+                        :src="metamaskLogo"
                         class="q-ml-xs"
                         height="24"
                         width="24"
@@ -436,6 +438,9 @@ export default defineComponent({
 </template>
 
 <style lang="scss">
+.c-stake-form .bg-positive {
+    border-radius: 4px;
+}
 .c-stake-form {
     &__metamask-prompt {
         color: $secondary;

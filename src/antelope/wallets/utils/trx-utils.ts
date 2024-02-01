@@ -4,7 +4,6 @@ import { AccountModel } from 'src/antelope/mocks';
 import { AntelopeError, TransactionResponse } from 'src/antelope/types';
 import { EVMAuthenticator } from 'src/antelope/wallets';
 
-
 export async function subscribeForTransactionReceipt(account: AccountModel, response: TransactionResponse): Promise<{
     newResponse: TransactionResponse;
     receipt: ethers.providers.TransactionReceipt;
@@ -24,13 +23,11 @@ export async function subscribeForTransactionReceipt(account: AccountModel, resp
             // so that the caller can subscribe to the confirmation event
             result.newResponse.wait = async () => whenConfirmed;
             return result;
-        } else {
-            if (usePlatformStore().isMobile) {
-                response.wait = async () => Promise.resolve({} as ethers.providers.TransactionReceipt);
-                return result;
-            } else {
-                throw new AntelopeError('antelope.evm.error_no_provider');
-            }
         }
+        if (usePlatformStore().isMobile) {
+            response.wait = async () => Promise.resolve({} as ethers.providers.TransactionReceipt);
+            return result;
+        }
+        throw new AntelopeError('antelope.evm.error_no_provider');
     }
 }

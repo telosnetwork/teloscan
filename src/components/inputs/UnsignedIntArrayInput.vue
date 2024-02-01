@@ -1,7 +1,7 @@
 <script>
-import { integerSizeValidator, parseUintArrayString } from 'components/ContractTab/function-interface-utils';
+import { integerSizeValidator, parseUintArrayString } from 'src/lib/function-interface-utils';
 
-import BaseTextInput from 'components/inputs/BaseTextInput';
+import BaseTextInput from 'components/inputs/BaseTextInput.vue';
 
 export default {
     name: 'UnsignedIntArrayInput',
@@ -49,8 +49,7 @@ export default {
             return +this.size === -1 ? undefined : +this.size;
         },
         rules() {
-            const validateParsedArray = value =>
-                Array.isArray(parseUintArrayString(value, undefined, +this.uintSize)) || value === '';
+            const validateParsedArray = value => Array.isArray(parseUintArrayString(value, undefined, +this.uintSize)) || value === '';
 
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
@@ -60,14 +59,12 @@ export default {
                 }
 
                 const expectedLength = +this.size;
-                const parsedArrayLength =
-                    (parseUintArrayString(value, this.expectedArraySize, +this.uintSize) ?? []).length;
+                const parsedArrayLength = (parseUintArrayString(value, this.expectedArraySize, +this.uintSize) ?? []).length;
 
                 return parsedArrayLength === expectedLength;
             };
 
-            const incorrectArrayLengthMessage =
-                this.$t('components.inputs.incorrect_unsigint_array_length', { size: +this.size });
+            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_unsigint_array_length', { size: +this.size });
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_unsigint_array_string');
 
             return [

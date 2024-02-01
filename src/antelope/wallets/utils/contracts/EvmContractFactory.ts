@@ -1,7 +1,9 @@
 /* eslint-disable max-len */
 import { erc1155Abi, erc20Abi, erc721Abi } from 'src/antelope/wallets/utils/abi';
 import EvmContract from 'src/antelope/wallets/utils/contracts/EvmContract';
-import { AntelopeError, EvmContractCalldata, EvmContractMetadata, EvmContractFactoryData } from 'src/antelope/types';
+import {
+    AntelopeError, EvmContractCalldata, EvmContractMetadata, EvmContractFactoryData,
+} from 'src/antelope/types';
 
 export default class EvmContractFactory {
     buildContract(data: EvmContractFactoryData): EvmContract {
@@ -29,13 +31,13 @@ export default class EvmContractFactory {
         const properties: EvmContractCalldata = (data.calldata) ? JSON.parse(data.calldata) : {};
 
         if (!data.name) {
-            if (properties?.name){
+            if (properties?.name) {
                 data.name = properties.name;
             } else if (data.metadata) {
                 const metadata: EvmContractMetadata = JSON.parse(data.metadata);
 
-                if(metadata?.settings?.compilationTarget){
-                    data.name = Object.values(metadata?.settings?.compilationTarget)[0];
+                if (metadata?.settings?.compilationTarget) {
+                    [data.name] = Object.values(metadata?.settings?.compilationTarget);
                 }
             }
         }
@@ -44,7 +46,7 @@ export default class EvmContractFactory {
         return new EvmContract({
             address: data.address,
             name: data.name ?? '',
-            verified: verified,
+            verified,
             creationInfo: {
                 creator: data.creator,
                 transaction: data.transaction ?? '',

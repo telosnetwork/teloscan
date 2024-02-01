@@ -3,12 +3,16 @@
 // Mocking AccountStore -----------------------------------
 // useAccountStore().getAccount(this.label).account as addressString;
 import { EVMAuthenticator } from 'src/antelope/wallets';
-import { addressString } from 'src/antelope/types';
-import { CURRENT_CONTEXT, EVMChainSettings, createTraceFunction, useChainStore } from 'src/antelope/mocks';
-import { BigNumber } from 'ethers'; 'src/antelope/mocks/FeedbackStore';
+import {
+    addressString, EvmABI, EvmFunctionParam, Label, TransactionResponse,
+} from 'src/antelope/types';
+import {
+    CURRENT_CONTEXT, EVMChainSettings, createTraceFunction, useChainStore,
+    useFeedbackStore,
+} from 'src/antelope/mocks';
+import { BigNumber } from 'ethers';
+
 import { getAntelope } from 'src/antelope/mocks/AntelopeConfig';
-import { useFeedbackStore } from 'src/antelope/mocks';
-import { EvmABI, EvmFunctionParam, Label, TransactionResponse } from 'src/antelope/types';
 import { subscribeForTransactionReceipt } from 'src/antelope/wallets/utils/trx-utils';
 
 export interface AccountModel {
@@ -35,7 +39,6 @@ interface LoginEVMActionData {
 }
 
 class AccountStore {
-
     trace: (action: string, ...args: unknown[]) => void;
 
     constructor() {
@@ -60,7 +63,6 @@ class AccountStore {
     }
 
     logout() {
-        console.log('AccountStore.logout()');
         currentAuthenticator.logout();
         currentAuthenticator = {} as EVMAuthenticator;
         currentAccount = null;
@@ -93,7 +95,7 @@ class AccountStore {
         abi: EvmABI,
         parameters: EvmFunctionParam[],
         value?: BigNumber,
-    ): Promise<TransactionResponse>{
+    ): Promise<TransactionResponse> {
         const ant = getAntelope();
         const funcname = 'signCustomTransaction';
         this.trace(funcname, label, contract, abi, parameters, value?.toString());
@@ -129,7 +131,6 @@ class AccountStore {
             useFeedbackStore().unsetLoading(funcname);
         }
     }
-
 }
 
 const accountStore = new AccountStore();

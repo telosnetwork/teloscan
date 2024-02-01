@@ -6,30 +6,31 @@ export default {
     },
     pages: {
         staking: {
+            sign_in: 'Por favor, inicia sesión primero para poder interactuar con nuestra interfaz de staking',
             note_unstaking_period: 'Tenga en cuenta que hay un período de recuperación de { period }',
             claim_tlos: 'Retirar TLOS',
             add_stlos_to_metamask: 'Iniciar el cuadro de diálogo MetaMask para agregar sTLOS',
             metamask_fox_logo: 'Logotipo de la zorra de MetaMask',
-            stake_tlos_confirm: 'continuar significa bloquer TLOS a cambio de sTLOS. ' +
-            'sTLOS se puede canjear por TLOS en cualquier momento usando la pestaña Desbloquear.',
+            stake_tlos_confirm: 'continuar significa bloquer TLOS a cambio de sTLOS. '
+            + 'sTLOS se puede canjear por TLOS en cualquier momento usando la pestaña Desbloquear.',
             cancel: 'Cancelar',
-            stake_tlos_confirm_2a: 'Después de que se canjéen los TLOS, éstos estarán bloqueados durante un período de', /* unstakePeriodPretty...*/
-            stake_tlos_confirm_2b: /*...unstakePeriodPretty */ 'después de lo cual se puede retirar a su cuenta desde la pestaña Retirar.',
+            stake_tlos_confirm_2a: 'Después de que se canjéen los TLOS, éstos estarán bloqueados durante un período de', /* unstakePeriodPretty... */
+            stake_tlos_confirm_2b: /* ...unstakePeriodPretty */ 'después de lo cual se puede retirar a su cuenta desde la pestaña Retirar.',
             stake_tlos_confirm_3: '¿Le gustaría proceder?',
             stake_tlos: 'Bloquar TLOS',
-            stake_tlos_subheader: 'Su bloqueo de TLOS a sTLOS le otorga acceso a una renta constante y varias aplicaciones DeFi, ' +
-            'aumentando aún más la rentabilidad. A medida que aumenta la cantidad de recompensas, la tasa de conversión de TLOS a sTLOS cambiará ' +
-            'con el tiempo. Por lo tanto, la cantidad de sTLOS recibida es menor que la cantidad de TLOS bloqueada. Las recompensas se ' +
-            'auto-compensarán. No se requiere ninguna acción adicional.',
+            stake_tlos_subheader: 'Su bloqueo de TLOS a sTLOS le otorga acceso a una renta constante y varias aplicaciones DeFi, '
+            + 'aumentando aún más la rentabilidad. A medida que aumenta la cantidad de recompensas, la tasa de conversión de TLOS a sTLOS cambiará '
+            + 'con el tiempo. Por lo tanto, la cantidad de sTLOS recibida es menor que la cantidad de TLOS bloqueada. Las recompensas se '
+            + 'auto-compensarán. No se requiere ninguna acción adicional.',
             receive_stlos: 'Recibir sTLOS',
             available: '{balanceTlos} Disponible',
             insufficient_tlos_balance: 'Saldo de TLOS insuficiente para apostar',
             login_using_an_evm_wallet: 'Iniciar sesión usando una billetera EVM',
             wallet_not_connected: 'Billetera no conectada',
-            click_to_input_full_wallet_balance: 'Haga clic para ingresar el saldo completo de la billetera\n\n' +
-            'El saldo mostrado se reduce en 1 TLOS para mantener su cuenta operativa.\n' +
-            'Saldo preciso (menos las tarifas de gas aproximadas):\n' +
-            '{prettyBalance} TLOS',
+            click_to_input_full_wallet_balance: 'Haga clic para ingresar el saldo completo de la billetera\n\n'
+            + 'El saldo mostrado se reduce en 1 TLOS para mantener su cuenta operativa.\n'
+            + 'Saldo preciso (menos las tarifas de gas aproximadas):\n'
+            + '{prettyBalance} TLOS',
             loading: 'Cargando...',
             get_more_tlos: 'Obtener más TLOS',
             connect_wallet: 'Conectar billetera',
@@ -43,41 +44,41 @@ export default {
             stake_tlos_earn_interest: 'Bloquear TLOS para obtener sTLOS y ganar intereses de la recompensa de bloqueo',
             staked: 'Bloqueado',
             unstaked: 'Desbloqueado',
-            tooltip_1: 'APY: Tasa Anual Efectiva (APY en Inglés)\n\nLa tasa de retorno anual después de tomar en cuenta el interés compuesto.\n\n' +
-            'El interés se compone aproximadamente cada 30 minutos. La tasa porcentual no es fija, lo que significa que ' +
-            'cambiará con el tiempo con la cantidad total de TLOS bloqueados en Telos EVM y Telos nativo. ' +
-            'Las recompensas se pagan desde un fondo de recompensas de la comunidad al contrato de sTLOS.',
-            tooltip_2: 'TVL: Valor Total Bloqueado (TVL en Inglés)\n\nEl valor actual, en TLOS, de todos los activos en el contrato inteligente de sTLOS ' +
-            '(TLOS bloqueado), es decir, la suma de todos los TLOS bloqueados en Telos EVM en este momento.',
-            tooltip_3: 'Bloqueado\n\n' +
-            'La cantidad total bloqueada asociada con la cuenta iniciada, es decir, ' +
-            'su saldo de sTLOS, junto con su valor en TLOS',
-            tooltip_4: 'Desbloqueado\n\n' +
-            'El valor total de TLOS que ha desbloqueado, tanto bloqueado como desbloqueado.\n\n' +
-            'Cuando desbloquea\u2014es decir, canjea\u2014algun valor de sTLOS, la cantidad equivalente de ' +
-            'TLOS se envía en garantía ("bloqueado") por {unlockPeriod}; durante este tiempo, ' +
-            'no puede interactuar con este TLOS.\n\n' +
-            'Después de que transcurra el período de desbloqueo, puede retirar su TLOS desbloqueados desde la pestaña Retirar ' +
-            'en esta página, momento en el que se agregará a su saldo de TLOS de su cuenta.',
-            confirm_unstake_1a: 'Continuará canjeando sTLOS a cambio de TLOS. ' +
-            'El TLOS desbloqueado permanecerá bloqueado por un período de', /* unstakePeriodPretty...*/
-            confirm_unstake_1b: /*...unstakePeriodPretty */ 'después del cual se puede retirar a su cuenta desde la pestaña Retirar',
-            confirm_unstake_2a: 'Tenga en cuenta, que sólo puede desbloquear ', /* remainingDeposits...*/
-            confirm_unstake_2b: /*...remainingDeposits */ 'veces más antes ' +
-            'de alcanzar el máximo de acciones de desbloqueo concurrentes. Cuando llegue al máximo, deberá retirar ' +
-            'los TLOS desbloqueados para continuar desbloqueando más sTLOS. Si no tiene ningún TLOS desbloqueado en ese momento, debe ' +
-            'espear hasta que transcurra el período de bloqueo antes de que pueda retirar los TLOS canjeados y pueda desbloquear más sTLOS. -',
+            tooltip_1: 'APY: Tasa Anual Efectiva (APY en Inglés)\n\nLa tasa de retorno anual después de tomar en cuenta el interés compuesto.\n\n'
+            + 'El interés se compone aproximadamente cada 30 minutos. La tasa porcentual no es fija, lo que significa que '
+            + 'cambiará con el tiempo con la cantidad total de TLOS bloqueados en Telos EVM y Telos nativo. '
+            + 'Las recompensas se pagan desde un fondo de recompensas de la comunidad al contrato de sTLOS.',
+            tooltip_2: 'TVL: Valor Total Bloqueado (TVL en Inglés)\n\nEl valor actual, en TLOS, de todos los activos en el contrato inteligente de sTLOS '
+            + '(TLOS bloqueado), es decir, la suma de todos los TLOS bloqueados en Telos EVM en este momento.',
+            tooltip_3: 'Bloqueado\n\n'
+            + 'La cantidad total bloqueada asociada con la cuenta iniciada, es decir, '
+            + 'su saldo de sTLOS, junto con su valor en TLOS',
+            tooltip_4: 'Desbloqueado\n\n'
+            + 'El valor total de TLOS que ha desbloqueado, tanto bloqueado como desbloqueado.\n\n'
+            + 'Cuando desbloquea\u2014es decir, canjea\u2014algun valor de sTLOS, la cantidad equivalente de '
+            + 'TLOS se envía en garantía ("bloqueado") por {unlockPeriod}; durante este tiempo, '
+            + 'no puede interactuar con este TLOS.\n\n'
+            + 'Después de que transcurra el período de desbloqueo, puede retirar su TLOS desbloqueados desde la pestaña Retirar '
+            + 'en esta página, momento en el que se agregará a su saldo de TLOS de su cuenta.',
+            confirm_unstake_1a: 'Continuará canjeando sTLOS a cambio de TLOS. '
+            + 'El TLOS desbloqueado permanecerá bloqueado por un período de', /* unstakePeriodPretty... */
+            confirm_unstake_1b: /* ...unstakePeriodPretty */ 'después del cual se puede retirar a su cuenta desde la pestaña Retirar',
+            confirm_unstake_2a: 'Tenga en cuenta, que sólo puede desbloquear ', /* remainingDeposits... */
+            confirm_unstake_2b: /* ...remainingDeposits */ 'veces más antes '
+            + 'de alcanzar el máximo de acciones de desbloqueo concurrentes. Cuando llegue al máximo, deberá retirar '
+            + 'los TLOS desbloqueados para continuar desbloqueando más sTLOS. Si no tiene ningún TLOS desbloqueado en ese momento, debe '
+            + 'espear hasta que transcurra el período de bloqueo antes de que pueda retirar los TLOS canjeados y pueda desbloquear más sTLOS. -',
             unstake_stlos_for_tlos: 'Desbloquear sTLOS a cambio de TLOS',
             unstake_stlos: 'Desbloquear sTLOS',
             receive_tlos: 'Recibir TLOS',
             amount: 'Cantidad',
             time_remaining: 'Tiempo restante',
-            full_staked_balance_tooltip: 'Haga clic para ingresar el saldo total bloqueado\n\n' +
-            'Saldo preciso (menos las tarifas de gas aproximadas):\n' +
-            '{prettyBalance} sTLOS',
+            full_staked_balance_tooltip: 'Haga clic para ingresar el saldo total bloqueado\n\n'
+            + 'Saldo preciso (menos las tarifas de gas aproximadas):\n'
+            + '{prettyBalance} sTLOS',
             login_using_evm_wallet: 'Inicie sesión usando una billetera EVM',
-            max_unstake_transactions_reached: 'Ha alcanzado el número máximo de transacciones de desbloqueo pendientes, ' +
-            'por favor retire los TLOS disponibles o espere a que los TLOS desbloqueados pendientes se conviertan en retirables antes de realizar otro depósito.',
+            max_unstake_transactions_reached: 'Ha alcanzado el número máximo de transacciones de desbloqueo pendientes, '
+            + 'por favor retire los TLOS disponibles o espere a que los TLOS desbloqueados pendientes se conviertan en retirables antes de realizar otro depósito.',
             click_to_change_time_format: 'Haga clic para cambiar el formato de tiempo',
             unstaking: 'Desbloqueando',
             available_to_withdraw: 'Disponible para retirar',
@@ -85,8 +86,8 @@ export default {
             withdraw_successful: 'Retiro exitoso! Ver transacción:',
             no_withdrawable_positions: 'No hay posiciones disponibles para retirar',
             you_have_unlocked_tlos: '¡Ha desbloqueado TLOS!',
-            stake_tlos_success: '¡Bloqueo exitoso! Ver transacción:',
-            unstake_stlos_success: '¡Desbloqueo exitoso! Ver transacción:',
+            stake_tlos_success: '¡Bloqueo exitoso! Ver transacción: ',
+            unstake_stlos_success: '¡Desbloqueo exitoso! Ver transacción: ',
             deposit_failed: 'Error al depositar TLOS: { message }',
             redeem_failed: 'No se puede convertir sTLOS a TLOS: { message }',
             fetch_balance_error: 'Error al buscar cuenta: { message }',
@@ -108,6 +109,10 @@ export default {
             unstake_stlos_error: 'Error al desbloquear sTLOS { message }',
             withdraw_failed: 'Error al retirar TLOS desbloqueado: { message }',
         },
+        issuer: 'Issuer',
+        account_not_found: 'No pudimos encontrar esta cuenta',
+        approvals: 'Aprobaciones',
+        supported_interfaces: 'Interfaces compatibles',
         explore_transactions: 'Explorar transacciones',
         recent_transactions: 'Transacciones recientes',
         telos_evm_explorer: 'Explorador Telos EVM',
@@ -115,6 +120,11 @@ export default {
         monitor: 'Monitor',
         oops: 'Ups. Nada por aquí...',
         go_home: 'Ir a inicio',
+        minted: 'Acuñado',
+        holders: 'Titulares',
+        evm_holders: 'Todos los titulares de EVM de Telos',
+        total_nfts_minted: 'Total de NFTs creados en esta colección',
+        telos_supply: 'Suministro Telos EVM ',
         select_sol_file: 'Seleccione el archivo de contrato .sol para cargar',
         select_json_file: 'Seleccione el archivo de objeto de entrada JSON estándar para cargar',
         paste_contract_contents: 'debe seleccionar un archivo para cargar o alternar la entrada para pegar el contenido del contrato',
@@ -140,6 +150,9 @@ export default {
         transactions: 'Transacciones',
         account: 'Cuenta',
         contract: 'Contrato',
+        transfers_title: 'Transferencias { type }',
+        loading_transfers: 'Cargando transferencias',
+        loading_approvals: 'Cargando aprobaciones de permisos',
         erc20_transfers: 'Transferencias ERC20',
         erc721_transfers: 'Transferencias ERC721',
         erc1155_transfers: 'Transferencias ERC1155',
@@ -184,6 +197,62 @@ export default {
         value: 'Valor',
     },
     components: {
+        approvals: {
+            token_id: 'Token ID',
+            approved: 'Aprobado',
+            login_account: 'Inicie sesión en esta cuenta usando su billetera para poder ver sus aprobaciones.',
+            approval_text: 'Se necesita una firma de su billetera para actualizar el monto de las aprobaciones seleccionadas a 0.',
+            type: 'Tipo',
+            delete: 'Borrar',
+            delete_all: 'Eliminar todos',
+            unselect_all: 'Deselecciona todo',
+            cancel: 'Anular',
+            remove_approval: 'Bórralo',
+            removal_approval: 'Eliminar aprobación única',
+            unselect_all_approvals: 'Deseleccionar todas las aprobaciones',
+            infinite: 'Infinita',
+            infinite_tooltip: 'El límite de la aprobación (del permiso) es mayor que la cantidad total de este token',
+            select: 'Seleccionar aprobación',
+            unselect: 'Deseleccionar aprobación',
+            update: 'Actualización de aprobación',
+            update_description: 'Ingrese la nueva cantidad para permitir al gastador. Esto requerirá una firma de billetera.',
+            removal_approvals: 'Eliminar todas las aprobaciones',
+            removal_selected_approvals: 'Eliminar todas las aprobaciones seleccionadas',
+            update_failed: 'Error al actualizar la aprobación',
+            update_success: 'La aprobación del permiso a {spender} para el contrato {contract} se actualizó con éxito',
+            spender: 'Gastador',
+            amount: 'Cantidad',
+        },
+        nfts: {
+            show_without_metadata: 'Mostrar Items sin metadatos',
+            id: 'Token ID',
+            name: 'Nombre',
+            collection: 'Recopilación',
+            nfts: 'NFTs',
+            metadata: 'Meta',
+            minter: 'Minter',
+            owner: 'Dueño',
+            contract: 'Contrato',
+            image: 'Imagen',
+            media: 'Media',
+            minted: 'Bloque acuñado',
+            attributes: 'atributo',
+            ipfs: 'Obtener de IPFS',
+            consult_metadata: 'Consultar metadatos',
+            consult_media: 'Consultar media',
+            consult_collection: 'Consultar recopilación',
+        },
+        holders: {
+            show_system_contracts: 'Mostrar contratos del sistema',
+            holder: 'Poseedor',
+            balance: 'Balance',
+            global_supply: 'Suministro mundial',
+            telos_supply: 'Suministro Telos EVM',
+            updated: 'Ultima actualización',
+        },
+        known_tokens: 'Token conocida',
+        other_tokens: 'Token desconocida',
+        no_balances_found: 'No se encontraron saldos de tokens erc20 para esta cuenta',
         internal_txns: 'Transacciones internas',
         n_internal_txns: '{ amount } transacciones internas',
         none: 'Ninguno',
@@ -206,13 +275,19 @@ export default {
         text3_or_to_recover_assets: 'o para recuperar activos enviados a una dirección vinculada nativa',
         copy_to_clipboard: 'Copiar { text } al portapapeles',
         latest_block: 'Último bloque',
+        price_sources: 'Data obtained from Coingecko, CoinMarketCap or if unavailable from decentralized exchanges on Telos EVM',
+        marketcap_sources: 'Data obtained from Coingecko or CoinMarketCap',
+        usd_marketcap: 'Capitalización de mercado USD',
+        usd_price: 'Precio USD',
+        usd_value: 'USD Value',
         tlos_price: 'Precio TLOS',
         gas_price: 'Precio del gas',
-        click_to_expand: 'Haga clic para expandir la firma de la función',
+        click_to_expand: 'Haga clic para expandir',
+        click_to_fold: 'Haga clic para doblar',
         search_evm_failed: 'La búsqueda de la dirección EVM vinculada a la cuenta nativa { search_term } falló.',
         search_failed: 'La búsqueda falló, ingrese un término de búsqueda válido.',
         add_to_metamask: 'Agregar { symbol } a MetaMask',
-        tx_hash: 'Tx Hash',
+        tx_hash: 'Hash de Tx',
         block: 'Bloque',
         date: 'Fecha',
         method: 'Método',
@@ -231,6 +306,7 @@ export default {
         copied: 'Copiado',
         copy_to_clipboard_failed: 'Error al copiar al portapapeles',
         gwei: 'Gwei',
+        failed_to_fetch_transactions: 'Failed to fetch transactions.',
         failed_to_parse_transaction: 'No se pudo analizar los datos de la transacción, el error fue: { message }',
         executed_based_on_decoded_data: 'Función ejecutada en función de los datos decodificados. Para la función no identificada, se muestra el ID de método en su lugar.',
         unsupported_token_type: 'Tipo de token no compatible: { tokenType }',
@@ -240,18 +316,25 @@ export default {
         from: 'De',
         to: 'A',
         transaction: {
+            in: 'entra',
+            out: 'sale',
             form_from: 'De : ',
             form_to: 'A : ',
+            load_error: 'No se pudieron cargar las transacciones',
             form_token: 'Token : ',
-            consult_collection: 'Consultar colección',
-            consult_metadata: 'Consultar metadatos',
-            consult_media: 'Consultar medios',
+            show_short: 'Mostrar corta',
             show_total: 'Mostrar total',
             show_wei: 'Mostrar wei',
             value_uint256: 'Valor (uint256) : ',
             tlos_transfer: 'Transferencia TLOS',
+            native_deposit: 'Depósito de Native Telos',
+            native_withdraw: 'Retirarse a Telos Nativo',
             unknown: 'Desconocido',
+            contract_deployed: 'Contrato Desplegado',
             contract_deployment: 'Despliegue de contrato',
+            contract_interaction: 'Interacción de contrato',
+            deposit: 'depósito',
+            withdraw: 'retirar',
             no_internal_trxs_found: 'No se encontraron transacciones internas',
             human_readable: 'Lectura humana',
             no_logs_found: 'No se encontraron registros',
@@ -298,16 +381,23 @@ export default {
             checked_at: 'Verificado en',
             task: 'Tarea',
             message: 'Mensaje',
+            category: 'Category',
             block_height: 'Altura del bloque',
             latency: 'Latencia',
+            success: 'Success',
+            info: 'Info',
+            alert: 'Alert',
+            error: 'Error',
             click_to_change_format: 'Haga clic para cambiar el formato',
         },
         contract_tab: {
+            abi_loaded_from_interface: 'Esta ABI genérica se cargó utilizando supportsInterface() de IEP-165 y puede no ser exhaustiva. Algunas de las funciones mostradas podrían no estar implementadas. Verifica el contrato para poder interactuar con él utilizando su ABI completo.',
             copy_abi_to_clipboard: 'Copiar el JSON del ABI del contrato al portapapeles',
             enter_amount: 'Seleccione el número de decimales y escriba una cantidad, esto se ingresará para usted en el parámetro de función como uint256',
             result: 'Resultado',
             view_transaction: 'Ver transacción',
             code: 'Código',
+            bytecode: 'Código de bytes',
             read: 'Leer',
             write: 'Escribir',
             amount: 'Cantidad',
@@ -316,8 +406,9 @@ export default {
             custom: 'Personalizado',
             unverified_contract_source: 'El código fuente de este contrato no ha sido verificado.',
             click_here: 'Haga clic aquí',
-            upload_source_files: 'para cargar archivos de código fuente y verificar este contrato. ' +
-                'Alternativamente, puede interactuar con el contrato usando un ABI arbitrario:',
+            upload_source_files: 'para cargar archivos de código fuente y verificar este contrato. ',
+            abi_autoloaded: 'Mientras tanto, puedes interactuar con el contrato utilizando nuestra ABI preestablecida cargada automáticamente.',
+            choose_abi: 'Alternativamente, puedes interactuar con el contrato usando una de nuestras ABIs preestablecidas o una personalizada en JSON:',
             use_erc20_abi: 'Usar ABI ERC20',
             use_erc721_abi: 'Usar ABI ERC721',
             use_erc1155_abi: 'Usar ABI ERC1155',
@@ -329,6 +420,7 @@ export default {
             read_functions: 'Funciones de lectura',
             write_functions: 'Funciones de escritura',
             unverified_contract: 'Contrato no verificado',
+            verified_contract: 'Contrato verificado',
         },
         header: {
             sign_in: 'Iniciar sesión',
@@ -352,8 +444,73 @@ export default {
             select_language: 'Seleccionar idioma',
             open_language_switcher: 'Abrir el selector de idioma',
         },
+        export: {
+            block_range: 'Rango de bloques',
+            choose_download_option: 'Elija una opción de descarga',
+            column_header_action: 'Acción',
+            column_header_amount: 'Cantidad',
+            column_header_block_number: 'Número de bloque',
+            column_header_contract_address: 'Dirección del contrato',
+            column_header_date: 'Fecha',
+            column_header_from: 'De',
+            column_header_nft_collection_name: 'Nombre de la colección NFT',
+            column_header_nft_id: 'ID de NFT',
+            column_header_timestamp: 'Marca de tiempo de Unix (ms)',
+            column_header_to: 'A',
+            column_header_token_contract_address: 'Dirección del contrato del token',
+            column_header_token_name: 'Nombre del token',
+            column_header_token_symbol: 'Símbolo del token',
+            column_header_tx_hash: 'Hash de transacción',
+            date_range: 'Rango de fechas',
+            download_csv: 'Descargar CSV',
+            download_transactions_csv: 'Descargar transacciones CSV',
+            download_erc_20_transfers_csv: 'Descargar transferencias ERC-20 CSV',
+            download_erc_721_transfers_csv: 'Descargar transferencias ERC-721 CSV',
+            download_erc_1155_transfers_csv: 'Descargar transferencias ERC-1155 CSV',
+            end_block: 'Bloque final',
+            erc_1155_transfers: 'Transferencias ERC-1155',
+            erc_20_transfers: 'Transferencias ERC-20',
+            erc_721_transfers: 'Transferencias ERC-721',
+            export_data: 'Exportar datos',
+            export_type: 'Tipo de exportación',
+            limit_notice: 'Sólo se exportarán los primeros {amount} resultados.',
+            notification_successful_download: '¡Descarga exitosa!',
+            notification_failed_download: 'Se produjo un error al descargar datos.',
+            page_header: 'Descargar datos (exportación CSV)',
+            reset: 'Reiniciar',
+            start_block: 'Bloque de inicio',
+            transactions: 'Transacciones',
+        },
     },
     global: {
+        all: 'Todo',
+        true: 'verdadero',
+        false: 'falso',
+        close: 'Cerrar',
+        toggle_fullscreen: 'Cambiar al modo de pantalla completa',
+        name: 'Nombre',
+        symbol: 'Símbolo',
+        show_table: 'Mostrar tabla',
+        show_grid: 'Mostrar cuadrícula',
+        records_per_page: 'Registros por página:',
+        expand: 'Ver más',
+        max_decimals_reached: 'Utilice { max } decimales como máximo',
+        erc20_token: 'ERC20 Token',
+        erc721_token: 'ERC721 Token',
+        sign: 'Firmar',
+        hours: 'horas',
+        updated: 'Ultima actualización',
+        action: 'Acción',
+        wallet_response: 'Esperando respuesta de tu proveedor de cartera',
+        minutes: 'minutos',
+        days: 'días',
+        and: 'y',
+        unknown: 'Desconocido',
+        data_behind_by: 'Lo siento ! Los datos mostrados están atrasados ​​por',
+        not_synced: 'El indexador no está sincronizado con el último bloque',
+        try_reloading: 'Puede intentar volver a cargar la página para solucionarlo, si el problema persiste, comuníquese con un miembro del equipo de Telos.',
+        error: 'Error',
+        async_error_description: '¡Lo sentimos! Ocurrió un error al intentar solicitar recursos. Por favor, asegúrate de que tu conexión a Internet esté funcionando y vuelve a intentarlo. Si el error persiste, contáctanos directamente en nuestro canal de Telegram.',
         language: 'Idioma',
         ok: 'Ok',
         cancel: 'Cancelar',

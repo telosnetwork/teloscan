@@ -86,8 +86,6 @@ export interface GetTableRowsParams<Index = TableIndexType | string> {
   show_payer?: boolean;
 }
 
-
-
 export interface GetTableRowsResponse<Index = TableIndexType, Row = unknown> {
     rows: Row[];
     more: boolean;

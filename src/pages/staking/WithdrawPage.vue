@@ -50,12 +50,14 @@ export default defineComponent({
                 label: '',
                 field: 'amount',
                 sortable: true,
+                align: 'left',
             },
             {
                 name: 'time',
                 label: '',
                 field: 'until',
                 sortable: true,
+                align: 'right',
             },
         ],
         showAge: true,
@@ -66,17 +68,17 @@ export default defineComponent({
     },
     computed: {
         ...mapGetters('login', ['isLoggedIn', 'isNative']),
-        withdrawDisabled(){
+        withdrawDisabled() {
             return this.unlockedTlosBalance === '0' || this.isLoading || !this.isLoggedIn || this.isNative;
         },
-        isLoading(){
+        isLoading() {
             return this.isLoggedIn && !this.isNative && this.unlockedTlosBalance === null;
         },
-        unstakingBalance(){
+        unstakingBalance() {
             const total = BigNumber.from(this.totalUnstaked ?? '0').sub(this.unlockedTlosBalance ?? '0');
             return this.formatAmount(total);
         },
-        unlockedBalance(){
+        unlockedBalance() {
             return this.formatAmount(this.unlockedTlosBalance);
         },
         abi(): EvmABI {
@@ -97,7 +99,6 @@ export default defineComponent({
                 }).finally(() => {
                     this.ctaIsLoading = false;
                 });
-
             } catch (e) {
                 console.error('Failed to unstake sTLOS', e);
                 this.ctaIsLoading = false;
@@ -197,7 +198,7 @@ export default defineComponent({
                 :disabled="withdrawDisabled"
                 :loading="ctaIsLoading"
                 color="secondary"
-                text-color="black"
+                text-color="white"
                 @click="withdrawUnlocked"
             >
                 {{ $t('pages.staking.withdraw_tlos') }}
@@ -226,7 +227,8 @@ export default defineComponent({
 
 .deposits-table
     max-height: 50rem
-    max-width: 20rem
+    max-width: 30rem
+    width: 100%
     margin: auto
 
     .q-table__top,

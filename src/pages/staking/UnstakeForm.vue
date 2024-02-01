@@ -125,27 +125,27 @@ export default defineComponent({
             return this.$t('pages.staking.available', { balanceTlos });
         },
         topInputErrorText() {
-            if(this.isLoggedIn && !this.isNative) {
+            if (this.isLoggedIn && !this.isNative) {
                 return '';
             }
-            return this.isNative ?
-                this.$t('pages.staking.login_using_evm_wallet') :
-                this.$t('pages.staking.wallet_not_connected');
+            return this.isNative
+                ? this.$t('pages.staking.login_using_evm_wallet')
+                : this.$t('pages.staking.wallet_not_connected');
         },
         canDeposit() {
             return this.deposits.length < this.maxDeposits;
         },
         ctaIsDisabled() {
             const inputsInvalid = (
-                this.isLoggedIn &&
-                [this.topInputAmount, this.bottomInputAmount]
+                this.isLoggedIn
+                && [this.topInputAmount, this.bottomInputAmount]
                     .some(amount => ['0', '', null, undefined].includes(amount))
             );
 
-            return inputsInvalid ||
-                this.topInputIsLoading ||
-                this.bottomInputIsLoading ||
-                this.ctaIsLoading;
+            return inputsInvalid
+                || this.topInputIsLoading
+                || this.bottomInputIsLoading
+                || this.ctaIsLoading;
         },
         ctaText() {
             if (this.ctaIsLoading) {
@@ -161,7 +161,7 @@ export default defineComponent({
         },
     },
     async created() {
-        // initialization of the translated texts
+    // initialization of the translated texts
         this.header = this.$t('pages.staking.unstake_stlos');
         this.subheader = this.$t('pages.staking.unstake_stlos_for_tlos');
         this.topInputLabel = this.$t('pages.staking.unstake_stlos');
@@ -248,7 +248,7 @@ export default defineComponent({
         );
     },
     methods: {
-        notifyMaxDeposits(){
+        notifyMaxDeposits() {
             this.$q.notify({
                 position: 'top',
                 message: this.$t('pages.staking.max_unstake_transactions_reached'),
@@ -276,7 +276,7 @@ export default defineComponent({
             this.debouncedBottomInputHandler();
         },
         handleCtaClick() {
-            if (!this.isLoggedIn){
+            if (!this.isLoggedIn) {
                 this.displayLoginModal = true;
                 return;
             }
@@ -284,7 +284,7 @@ export default defineComponent({
             this.displayConfirmModal = true;
         },
         initiateUnstake() {
-            if (!this.canDeposit){
+            if (!this.canDeposit) {
                 this.notifyMaxDeposits();
                 return;
             }
@@ -301,7 +301,6 @@ export default defineComponent({
                 }).finally(() => {
                     this.ctaIsLoading = false;
                 });
-
             } catch (e) {
                 console.error('Failed to unstake sTLOS', e);
                 this.ctaIsLoading = false;
@@ -328,7 +327,7 @@ export default defineComponent({
 </script>
 
 <template>
-<div class="row">
+<div class="row c-unstake-form">
     <div class="col-12 q-mb-lg">
         <BaseStakingForm
             :header="header"
@@ -355,8 +354,13 @@ export default defineComponent({
         />
     </div>
     <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
-        {{ $t('pages.staking.unstake_stlos_success') }}
-        <TransactionField :transaction-hash="resultHash" />
+        <div class="bg-positive text-white q-py-xs q-px-sm flex items-center">
+            <q-icon name="check_circle" class="q-mr-xs" />
+            {{ $t('pages.staking.unstake_stlos_success')  }}
+            <span class="q-ml-xs">
+                <TransactionField :transaction-hash="resultHash" />
+            </span>
+        </div>
     </div>
     <q-dialog v-model="displayConfirmModal">
         <q-card>
@@ -397,4 +401,7 @@ export default defineComponent({
 <LoginModal :show="displayLoginModal" @hide="displayLoginModal = false" />
 </template>
 
-<style lang="sass"></style>
+<style lang="sass" scoped>
+.c-unstake-form .bg-positive
+    border-radius: 4px
+</style>

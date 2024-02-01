@@ -4,6 +4,7 @@ export interface AntelopeErrorPayload {
 
 export class AntelopeError extends Error {
     public payload?: AntelopeErrorPayload;
+
     constructor(
         message: string | undefined,
         public _payload?: unknown,
@@ -14,4 +15,3 @@ export class AntelopeError extends Error {
         }
     }
 }
-

@@ -42,6 +42,7 @@ export type NftTokenInterface = 'ERC721' | 'ERC1155';
 
 export class NFTContractClass {
     indexer: IndexerNftContract;
+
     constructor(
         source: IndexerNftContract,
     ) {
@@ -59,10 +60,15 @@ export class NFTContractClass {
 
 export class NFTItemClass {
     indexer: IndexerNftItemResult;
+
     ready = true;
+
     preview: string;
+
     type: NftSourceType;
+
     source: string | undefined;
+
     contract: NFTContractClass;
 
     constructor(
@@ -77,20 +83,19 @@ export class NFTItemClass {
         this.source = source;
     }
 
-    extractMetadata():  { preview:string, type:string, source:string | undefined } {
+    extractMetadata(): { preview:string, type:string, source:string | undefined } {
         let type = NFTSourceTypes.IMAGE;
         let preview = '';
-        let source: string | undefined = undefined;
+        let source: string | undefined;
 
         // We are going to test the imageCache URL to see if it is a valid URL
         if (this.indexer.imageCache) {
-
             // first we create a regExp for the valid URL. e.g: "https://nfts.telos.net/40/0x552fd5743432eC2dAe222531e8b88bf7d2410FBc/344"
-            const regExp = new RegExp('^(https?:\\/\\/)?' + // protocol
-                '(nfts.telos.net\\/)' + // domain name
-                '(\\d+\\/)' + // chain id
-                '(0x[0-9a-fA-F]+\\/)' + // contract address
-                '(\\d+)$'); // token id
+            const regExp = new RegExp('^(https?:\\/\\/)?' // protocol
+                + '(nfts.telos.net\\/)' // domain name
+                + '(\\d+\\/)' // chain id
+                + '(0x[0-9a-fA-F]+\\/)' // contract address
+                + '(\\d+)$'); // token id
 
             // then we test the imageCache URL against the regExp
             const match = regExp.test(this.indexer.imageCache);
@@ -110,56 +115,57 @@ export class NFTItemClass {
             const metadata = this.indexer.metadata as { [key: string]: string };
             // we iterate over the metadata properties
             for (const property in metadata) {
-                const value = metadata[property];
-                if (!value) {
-                    continue;
-                }
-                // if the value is a string and contains a valid url of a known media format, use it.
-                // image formats: .gif, .avif, .apng, .jpeg, .jpg, .jfif, .pjpeg, .pjp, .png, .svg, .webp
-                if (
-                    !preview &&  // if we already have a preview, we don't need to keep looking
-                    typeof value === 'string' &&
-                    value.match(/\.(gif|avif|apng|jpe?g|jfif|p?jpe?g|png|svg|webp)$/)
-                ) {
-                    preview = value;
-                }
-                // audio formats: .mp3, .wav, .aac, .webm
-                if (
-                    !source &&  // if we already have a source, we don't need to keep looking
-                    typeof value === 'string' &&
-                    value.match(/\.(mp3|wav|aac|webm)$/)
-                ) {
-                    type = NFTSourceTypes.AUDIO;
-                    source = value;
-                }
-                // video formats: .mp4, .webm, .ogg
-                if (
-                    !source &&  // if we already have a source, we don't need to keep looking
-                    typeof value === 'string' &&
-                    value.match(/\.(mp4|webm|ogg)$/)
-                ) {
-                    type = NFTSourceTypes.VIDEO;
-                    source = value;
-                }
-
-                const regex = /^data:(image|audio|video)\/\w+;base64,[\w+/=]+$/;
-
-                const match = value.match(regex);
-
-                if (match) {
-                    const contentType = match[1];
-
-                    if (contentType === 'image' && !preview) {
+                if (Object.hasOwnProperty.call(metadata, property)) {
+                    const value = metadata[property];
+                    if (!value) {
+                        continue;
+                    }
+                    // if the value is a string and contains a valid url of a known media format, use it.
+                    // image formats: .gif, .avif, .apng, .jpeg, .jpg, .jfif, .pjpeg, .pjp, .png, .svg, .webp
+                    if (
+                        !preview // if we already have a preview, we don't need to keep looking
+                        && typeof value === 'string'
+                        && value.match(/\.(gif|avif|apng|jpe?g|jfif|p?jpe?g|png|svg|webp)$/)
+                    ) {
                         preview = value;
-                    } else if (contentType === 'audio' && !source) {
+                    }
+                    // audio formats: .mp3, .wav, .aac, .webm
+                    if (
+                        !source // if we already have a source, we don't need to keep looking
+                        && typeof value === 'string'
+                        && value.match(/\.(mp3|wav|aac|webm)$/)
+                    ) {
                         type = NFTSourceTypes.AUDIO;
                         source = value;
-                    } else if (contentType === 'video' && !source) {
+                    }
+                    // video formats: .mp4, .webm, .ogg
+                    if (
+                        !source // if we already have a source, we don't need to keep looking
+                        && typeof value === 'string'
+                        && value.match(/\.(mp4|webm|ogg)$/)
+                    ) {
                         type = NFTSourceTypes.VIDEO;
                         source = value;
                     }
-                }
 
+                    const regex = /^data:(image|audio|video)\/\w+;base64,[\w+/=]+$/;
+
+                    const match = value.match(regex);
+
+                    if (match) {
+                        const contentType = match[1];
+
+                        if (contentType === 'image' && !preview) {
+                            preview = value;
+                        } else if (contentType === 'audio' && !source) {
+                            type = NFTSourceTypes.AUDIO;
+                            source = value;
+                        } else if (contentType === 'video' && !source) {
+                            type = NFTSourceTypes.VIDEO;
+                            source = value;
+                        }
+                    }
+                }
             }
 
             // particular case of media format webm. We need to determine if it is a video or audio
@@ -178,27 +184,25 @@ export class NFTItemClass {
                         this.notifyWatchers();
                     }
                 });
-            } else {
-                if (type === NFTSourceTypes.VIDEO) {
-                    this.ready = false;
-                    this.type = NFTSourceTypes.VIDEO;
-                    this.extractFirstFrameFromVideo(source as string).then((_preview) => {
-                        this.preview = _preview;
-                        this.ready = true;
-                        this.notifyWatchers();
-                    });
-                }
+            } else if (type === NFTSourceTypes.VIDEO) {
+                this.ready = false;
+                this.type = NFTSourceTypes.VIDEO;
+                this.extractFirstFrameFromVideo(source as string).then((_preview) => {
+                    this.preview = _preview;
+                    this.ready = true;
+                    this.notifyWatchers();
+                });
             }
         }
 
-        return  { preview, type, source };
+        return { preview, type, source };
     }
 
     async determineWebmType(source: string): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             const video = document.createElement('video');
 
-            video.onloadedmetadata = function() {
+            video.onloadedmetadata = function () {
                 if (video.videoWidth > 0 && video.videoHeight > 0) {
                     resolve(NFTSourceTypes.VIDEO);
                 } else {
@@ -206,7 +210,7 @@ export class NFTItemClass {
                 }
             };
 
-            video.onerror = function(e) {
+            video.onerror = function (e) {
                 reject({ error: e, source });
             };
 
@@ -219,11 +223,11 @@ export class NFTItemClass {
     }
 
     async extractFrameFromVideo(source: string, time: number): Promise<string> {
-        // this function seams not to wer in most of the cases. It returns a transparent image
+    // this function seams not to wer in most of the cases. It returns a transparent image
         return new Promise<string>((resolve, reject) => {
             const video = document.createElement('video');
 
-            video.onloadedmetadata = function() {
+            video.onloadedmetadata = function () {
                 video.currentTime = time;
 
                 const canvas = document.createElement('canvas');
@@ -250,7 +254,7 @@ export class NFTItemClass {
                 }
             };
 
-            video.onerror = function(e) {
+            video.onerror = function (e) {
                 reject({ error: e, source });
             };
 
@@ -260,7 +264,6 @@ export class NFTItemClass {
             video.load();
         });
     }
-
 
     get name(): string {
         return (this.indexer.metadata?.name || '') as string;
@@ -294,6 +297,7 @@ export class NFTItemClass {
     }
 
     watchers: (() => void)[] = [];
+
     watch(cb: () => void): void {
         this.watchers.push(cb);
     }
@@ -304,7 +308,6 @@ export class NFTItemClass {
 }
 
 export class NFTClass implements ShapedNFT {
-
     item: NFTItemClass;
 
     constructor(
@@ -391,4 +394,3 @@ export class NFTClass implements ShapedNFT {
         this.item.watch(cb);
     }
 }
-

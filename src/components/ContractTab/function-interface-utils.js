@@ -114,8 +114,6 @@ function parameterTypeIsUnsignedIntArray(type) {
     return /^uint\d+\[\d*]$/.test(type);
 }
 
-
-
 /**
  * Given a function interface type, returns true iff that type represents an array of any kind, e.g. string[] or uint8[]
  * @param {string} type
@@ -144,7 +142,7 @@ function parameterIsIntegerType(type) {
  */
 function integerSizeValidator(prop, signed) {
     if (![true, false].includes(signed)) {
-        throw 'Invalid parameter - "signed" must be boolean';
+        throw new Error('Invalid parameter - "signed" must be boolean');
     }
 
     const propIsNumber = Number.isInteger(+prop);
@@ -155,7 +153,6 @@ function integerSizeValidator(prop, signed) {
 
     return propIsNumber && propIs8Multiple && propIsInRange;
 }
-
 
 /**
  * Given a function interface input type (e.g. "uint256"), returns true iff the corresponding input component emits
@@ -168,14 +165,14 @@ function integerSizeValidator(prop, signed) {
  * @returns {boolean}
  */
 function inputIsComplex(type) {
-    return parameterIsIntegerType(type)     ||
-        parameterTypeIsAddress(type)        ||
-        parameterTypeIsAddressArray(type)   ||
-        parameterTypeIsBooleanArray(type)   ||
-        parameterTypeIsBytes(type)          ||
-        parameterTypeIsSignedIntArray(type) ||
-        parameterTypeIsStringArray(type)    ||
-        parameterTypeIsUnsignedIntArray(type);
+    return parameterIsIntegerType(type)
+        || parameterTypeIsAddress(type)
+        || parameterTypeIsAddressArray(type)
+        || parameterTypeIsBooleanArray(type)
+        || parameterTypeIsBytes(type)
+        || parameterTypeIsSignedIntArray(type)
+        || parameterTypeIsStringArray(type)
+        || parameterTypeIsUnsignedIntArray(type);
 }
 
 /**
@@ -188,31 +185,30 @@ function inputIsComplex(type) {
 function getComponentForInputType(type) {
     if (parameterTypeIsString(type)) {
         return asyncInputComponents.StringInput;
-    } else if (parameterTypeIsStringArray(type)) {
+    } if (parameterTypeIsStringArray(type)) {
         return asyncInputComponents.StringArrayInput;
-    } else if (parameterTypeIsAddress(type)) {
+    } if (parameterTypeIsAddress(type)) {
         return asyncInputComponents.AddressInput;
-    } else if (parameterTypeIsAddressArray(type)) {
+    } if (parameterTypeIsAddressArray(type)) {
         return asyncInputComponents.AddressArrayInput;
-    } else if (parameterTypeIsBoolean(type)) {
+    } if (parameterTypeIsBoolean(type)) {
         return asyncInputComponents.BooleanInput;
-    } else if (parameterTypeIsBooleanArray(type)) {
+    } if (parameterTypeIsBooleanArray(type)) {
         return asyncInputComponents.BooleanArrayInput;
-    } else if (parameterTypeIsBytes(type)) {
+    } if (parameterTypeIsBytes(type)) {
         return asyncInputComponents.BytesArrayInput;
-    } else if (parameterTypeIsSignedInt(type)) {
+    } if (parameterTypeIsSignedInt(type)) {
         return asyncInputComponents.SignedIntInput;
-    } else if (parameterTypeIsSignedIntArray(type)) {
+    } if (parameterTypeIsSignedIntArray(type)) {
         return asyncInputComponents.SignedIntArrayInput;
-    } else if (parameterTypeIsUnsignedInt(type)) {
+    } if (parameterTypeIsUnsignedInt(type)) {
         return asyncInputComponents.UnsignedIntInput;
-    } else if (parameterTypeIsUnsignedIntArray(type)) {
+    } if (parameterTypeIsUnsignedIntArray(type)) {
         return asyncInputComponents.UnsignedIntArrayInput;
     }
 
     return undefined;
 }
-
 
 /**
  * Given a function interface type, returns the expected size of the array iff it is defined
@@ -225,11 +221,13 @@ function getExpectedArrayLengthFromParameterType(type) {
         // therefore a type with an array of byte arrays like bytes32[8] is not supported.
         // Only fixed-size byte value types and unbounded bytes arrays are supported
         // see https://docs.soliditylang.org/en/latest/types.html#bytes-and-string-as-arrays
-        return (+type.match(/\d+/)?.[0]) || undefined;
+        const match = type.match(/\d+/)?.[0];
+        return match ? Number(match) : undefined;
     }
 
     const expectedArrayLengthRegex = /\d+(?=]$)/;
-    return (+type.match(expectedArrayLengthRegex)?.[0]) || undefined;
+    const match = type.match(expectedArrayLengthRegex)?.[0];
+    return match ? Number(match) : undefined;
 }
 
 /**
@@ -243,7 +241,8 @@ function getIntegerBits(type) {
     }
 
     const bitsRegex = /\d+$/;
-    return (+type.match(bitsRegex)?.[0]) || undefined;
+    const match = type.match(bitsRegex)?.[0];
+    return match ? Number(match) : undefined;
 }
 
 /**
@@ -254,14 +253,14 @@ function getIntegerBits(type) {
  * @param {number} expectedSizeInBits - integer from 8 to 256, must be multiple of 8, e.g. 64 for uint64
  * @returns {BigNumber|undefined}
  */
-function parseUintString (str, expectedSizeInBits) {
+function parseUintString(str, expectedSizeInBits) {
     const uintStringRegex = /^\d+$/;
     const stringRepresentsValidUint = uintStringRegex.test(str);
     const expectedSizeIsLegal = expectedSizeInBits === undefined || (
-        Number.isInteger(expectedSizeInBits) &&
-        expectedSizeInBits % 8 === 0 &&
-        expectedSizeInBits >= 0 &&
-        expectedSizeInBits <= 256
+        Number.isInteger(expectedSizeInBits)
+        && expectedSizeInBits % 8 === 0
+        && expectedSizeInBits >= 0
+        && expectedSizeInBits <= 256
     );
 
     if (!stringRepresentsValidUint || !expectedSizeIsLegal) {
@@ -292,7 +291,7 @@ function parseUintString (str, expectedSizeInBits) {
  * @param {number} expectedIntSize - integer from 8 to 256, must be multiple of 8, e.g. 64 for uint64
  * @returns {BigNumber[]|undefined}
  */
-function parseUintArrayString (str, expectedLength, expectedIntSize) {
+function parseUintArrayString(str, expectedLength, expectedIntSize) {
     if (str === '[]' && expectedLength === undefined) {
         return [];
     }
@@ -300,10 +299,10 @@ function parseUintArrayString (str, expectedLength, expectedIntSize) {
     const uintArrayRegex = /^\[(\d+, *)*(\d+)]$/;
     const stringRepresentsUintArray = uintArrayRegex.test(str);
     const expectedSizeIsLegal = expectedIntSize === undefined || (
-        Number.isInteger(expectedIntSize) &&
-        expectedIntSize % 8 === 0 &&
-        expectedIntSize >= 0 &&
-        expectedIntSize <= 256
+        Number.isInteger(expectedIntSize)
+        && expectedIntSize % 8 === 0
+        && expectedIntSize >= 0
+        && expectedIntSize <= 256
     );
 
     if (!stringRepresentsUintArray || !expectedSizeIsLegal) {
@@ -342,14 +341,14 @@ function parseUintArrayString (str, expectedLength, expectedIntSize) {
  * @param {number} expectedSizeInBits - integer from 8 to 256, must be multiple of 8, e.g. 64 for int64
  * @returns {BigNumber|undefined}
  */
-function parseSignedIntString (str, expectedSizeInBits) {
+function parseSignedIntString(str, expectedSizeInBits) {
     const signedIntStringRegex = /^-?\d+$/;
     const stringRepresentsValidInt = signedIntStringRegex.test(str);
     const expectedSizeIsLegal = expectedSizeInBits === undefined || (
-        Number.isInteger(expectedSizeInBits) &&
-        expectedSizeInBits % 8 === 0 &&
-        expectedSizeInBits >= 0 &&
-        expectedSizeInBits <= 128
+        Number.isInteger(expectedSizeInBits)
+        && expectedSizeInBits % 8 === 0
+        && expectedSizeInBits >= 0
+        && expectedSizeInBits <= 128
     );
 
     if (!stringRepresentsValidInt || !expectedSizeIsLegal) {
@@ -368,7 +367,6 @@ function parseSignedIntString (str, expectedSizeInBits) {
         intIsCorrectSize = intBigNumber.lte(maxValue) && intBigNumber.gte(minValue);
     }
 
-
     return intIsCorrectSize ? intBigNumber : undefined;
 }
 
@@ -382,7 +380,7 @@ function parseSignedIntString (str, expectedSizeInBits) {
  * @param {number} expectedIntSize - integer from 8 to 256, must be multiple of 8, e.g. 64 for int64
  * @returns {BigNumber[]|undefined}
  */
-function parseSignedIntArrayString (str, expectedLength, expectedIntSize) {
+function parseSignedIntArrayString(str, expectedLength, expectedIntSize) {
     if (str === '[]' && expectedLength === undefined) {
         return [];
     }
@@ -390,10 +388,10 @@ function parseSignedIntArrayString (str, expectedLength, expectedIntSize) {
     const signedIntArrayRegex = /^\[(-?\d+, *)*(-?\d+)]$/;
     const stringRepresentsIntArray = signedIntArrayRegex.test(str);
     const expectedSizeIsLegal = expectedIntSize === undefined || (
-        Number.isInteger(expectedIntSize) &&
-        expectedIntSize % 8 === 0 &&
-        expectedIntSize >= 0 &&
-        expectedIntSize <= 128
+        Number.isInteger(expectedIntSize)
+        && expectedIntSize % 8 === 0
+        && expectedIntSize >= 0
+        && expectedIntSize <= 128
     );
 
     if (!stringRepresentsIntArray || !expectedSizeIsLegal) {
@@ -486,7 +484,7 @@ function parseAddressArrayString(str, expectedLength) {
  * @returns {boolean|undefined}
  */
 function parseBooleanString(str) {
-    const trueRegex  = /^true$/i;
+    const trueRegex = /^true$/i;
     const falseRegex = /^false$/i;
 
     if (trueRegex.test(str)) {
@@ -552,8 +550,8 @@ function parseStringArrayString(str, expectedLength) {
         return undefined;
     }
 
-    const valueIsArrayOfStrings = Array.isArray(parsedArrayOfStrings) &&
-        parsedArrayOfStrings.every(val => typeof val === 'string');
+    const valueIsArrayOfStrings = Array.isArray(parsedArrayOfStrings)
+        && parsedArrayOfStrings.every(val => typeof val === 'string');
 
     if (!valueIsArrayOfStrings) {
         return undefined;
@@ -569,7 +567,6 @@ function parseStringArrayString(str, expectedLength) {
 
     return parsedArrayOfStrings;
 }
-
 
 export {
     parameterIsArrayType,

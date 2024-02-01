@@ -7,7 +7,7 @@ export default defineComponent({
     },
     setup() {
         function onChainSelected(chain: string) {
-            console.log(chain);
+            console.info(chain);
         }
 
         return {

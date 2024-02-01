@@ -1,11 +1,9 @@
-
 import { EthereumProvider } from 'src/antelope/types';
 import { EVMAuthenticator, InjectedProviderAuth } from 'src/antelope/wallets';
 
 const name = 'Metamask';
 export const MetamaskAuthName = name;
 export class MetamaskAuth extends InjectedProviderAuth {
-
     // this is just a dummy label to identify the authenticator base class
     constructor(label = name) {
         super(label);
@@ -14,6 +12,9 @@ export class MetamaskAuth extends InjectedProviderAuth {
     // InjectedProviderAuth API ------------------------------------------------------
 
     getProvider(): EthereumProvider | null {
+        if (typeof window === 'undefined') {
+            return null;
+        }
         return window.ethereum as unknown as EthereumProvider ?? null;
     }
 
@@ -28,5 +29,4 @@ export class MetamaskAuth extends InjectedProviderAuth {
         this.trace('newInstance', label);
         return new MetamaskAuth(label);
     }
-
 }

@@ -27,5 +27,3 @@ export interface PriceStats {
     };
   };
 }
-
-

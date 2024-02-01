@@ -8,7 +8,6 @@ import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
 import { LOGIN_DATA_KEY } from 'src/lib/utils';
 
-
 import {
     asyncInputComponents,
     getComponentForInputType,
@@ -20,14 +19,13 @@ import {
     parameterTypeIsBoolean,
     parameterTypeIsSignedIntArray,
     parameterTypeIsUnsignedIntArray,
-} from 'components/ContractTab/function-interface-utils';
+} from 'src/lib/function-interface-utils';
 
 import TransactionField from 'src/components/TransactionField.vue';
 import { useAccountStore } from 'src/antelope';
 import { CURRENT_CONTEXT } from 'src/antelope/wallets';
 import { EvmABI, EvmFunctionParam } from 'src/antelope/types';
 import { WEI_PRECISION } from 'src/antelope/wallets/utils';
-
 
 interface Opts {
     value?: string;
@@ -57,7 +55,7 @@ export default defineComponent({
             default: null,
         },
     },
-    data : () => {
+    data: () => {
         const decimalOptions = [{
             label: '18 - TLOS/ETH/etc..',
             value: 18,
@@ -79,26 +77,26 @@ export default defineComponent({
             loading: false,
             errorMessage: null as string | null,
             decimalOptions,
-            result: null as string | null,                // string | null
-            hash: null as string | null,                  // string | null
-            enterAmount: false,                           // boolean
-            amountInput: 0,                               // number
-            amountParam: 0 as number | string,            // null ?
-            amountDecimals: 0,                            // number
+            result: null as string | null, // string | null
+            hash: null as string | null, // string | null
+            enterAmount: false, // boolean
+            amountInput: 0, // number
+            amountParam: 0 as number | string, // null ?
+            amountDecimals: 0, // number
             selectDecimals: decimalOptions[0],
-            customDecimals: 0,                            // number
-            value: '0',                                   // string
-            inputModels: [] as string[],                  // raw input values
-            params: [] as EvmFunctionParam[],             // parsed input values
+            customDecimals: 0, // number
+            value: '0', // string
+            inputModels: [] as string[], // raw input values
+            params: [] as EvmFunctionParam[], // parsed input values
             valueParam: {
-                'name': 'value',
-                'type': 'amount',
-                'internalType': 'amount',
+                name: 'value',
+                type: 'amount',
+                internalType: 'amount',
             },
         };
     },
     async created() {
-        // initialization of the translated texts
+    // initialization of the translated texts
         this.decimalOptions[4].label = this.$t('components.contract_tab.custom');
     },
     computed: {
@@ -108,7 +106,7 @@ export default defineComponent({
             'isNative',
             'nativeAccount',
         ]),
-        functionABI(){
+        functionABI() {
             return `${this.abi.name}(${this.abi.inputs.map((i: { type: never; }) => i.type).join(',')})`;
         },
         inputComponents() {
@@ -117,11 +115,11 @@ export default defineComponent({
             }
 
             const getExtraBindingsForType = ({ type, name }: {type: string, name: string}, index: number) => {
-                const label = `${name ? name : `Param ${index + 1}`}`;
+                const label = `${name || `Param ${index + 1}`}`;
                 const extras = {} as {[key:string]: string};
 
                 // represents integer bits (e.g. uint256) for int types, or array length for array types
-                let size = undefined;
+                let size;
                 if (parameterIsArrayType(type)) {
                     size = getExpectedArrayLengthFromParameterType(type);
                 } else if (parameterIsIntegerType(type)) {
@@ -165,8 +163,8 @@ export default defineComponent({
                 bindings: getExtraBindingsForType(input, index),
                 is: getComponentForInputType(input.type),
                 inputType: input.type,
-                handleModelValueChange: (type: string, index: number, value: string) => handleModelValueChange(type, index, value),
-                handleValueParsed:      (type: string, index: number, value: EvmFunctionParam) => handleValueParsed(type, index, value),
+                handleModelValueChange: (type: string, idx: number, value: string) => handleModelValueChange(type, idx, value),
+                handleValueParsed: (type: string, idx: number, value: EvmFunctionParam) => handleValueParsed(type, idx, value),
             }));
         },
         enableRun() {
@@ -193,9 +191,9 @@ export default defineComponent({
             this.enterAmount = true;
         },
         updateDecimals() {
-            this.amountDecimals = this.selectDecimals.value === 'custom' ?
-                +this.customDecimals :
-                +this.selectDecimals.value;
+            this.amountDecimals = this.selectDecimals.value === 'custom'
+                ? +this.customDecimals
+                : +this.selectDecimals.value;
         },
         setAmount() {
             const integerAmount = ethers.utils.parseUnits(this.amountInput.toString(), this.amountDecimals).toString();
@@ -214,7 +212,6 @@ export default defineComponent({
             this.loading = true;
             this.result = null;
             try {
-
                 if (this.abi.stateMutability === 'view') {
                     return await this.runRead();
                 }
@@ -223,7 +220,7 @@ export default defineComponent({
                 if (!loginData) {
                     console.error('No login data found');
                     this.errorMessage = this.$t('global.internal_error');
-                    return;
+                    return null;
                 }
 
                 const opts: Opts = {};
@@ -241,9 +238,10 @@ export default defineComponent({
             }
 
             this.endLoading();
+            return null;
         },
         async getEthersFunction(provider?: ethers.providers.JsonRpcSigner | ethers.providers.JsonRpcProvider) {
-            const contractInstance = await this.contract.getContractInstance(provider);
+            const contractInstance = await this.$contractManager.getContractInstance(this.contract, provider);
             return contractInstance[this.functionABI];
         },
         runRead() {
@@ -256,14 +254,13 @@ export default defineComponent({
                     .catch((msg: string) => {
                         this.errorMessage = msg;
                     })
-                    .finally(() => this.endLoading()),
-                );
+                    .finally(() => this.endLoading()));
         },
         async runNative(opts: Opts) {
             const contractInstance = toRaw(await this.contract.getContractInstance());
             const func = contractInstance.populateTransaction[this.functionABI];
             const gasEstimater = contractInstance.estimateGas[this.functionABI];
-            const gasLimit = await gasEstimater(...this.params, Object.assign({ from: this.address }, opts));
+            const gasLimit = await gasEstimater(...this.params, { from: this.address, ...opts });
             const unsignedTrx = await func(...this.params, opts);
             const nonce = parseInt(await this.$evm.telos.getNonce(this.address), 16);
             const gasPrice = BigNumber.from(`0x${await this.$evm.telos.getGasPrice()}`);
@@ -277,7 +274,7 @@ export default defineComponent({
 
             const raw = ethers.utils.serializeTransaction(unsignedTrx);
 
-            let user = this.$providerManager.getProvider() as {
+            const user = this.$providerManager.getProvider() as {
                 signTransaction: (tx: never, opts: never) => Promise<void>;
             } | undefined;
 
@@ -312,14 +309,14 @@ export default defineComponent({
                 common: this.$evm.chainConfig,
             });
 
-            this.hash = `0x${tx.hash().toString('hex')}`;
+            this.hash = `0x${tx?.hash().toString('hex')}`;
             this.endLoading();
         },
         async runEVM(opts: Opts) {
             const value = opts.value ? BigNumber.from(opts.value) : undefined;
 
             // Preparing the mesage to show while waiting for confirmation.
-            const name = this.abi.name;
+            const { name } = this.abi;
             const params = this.abi.inputs.length;
             let keyMsg = 'notification.neutral_message_custom_call';
             let keyErr = 'notification.error_message_custom_call';
@@ -330,8 +327,12 @@ export default defineComponent({
                 keyErr = 'notification.error_message_custom_call_send';
                 const quantity = ethers.utils.formatUnits(value, WEI_PRECISION);
                 const symbol = 'TLOS';
-                message = this.$t(keyMsg, { name, params, quantity, symbol });
-                error = this.$t(keyErr, { name, params, quantity, symbol });
+                message = this.$t(keyMsg, {
+                    name, params, quantity, symbol,
+                });
+                error = this.$t(keyErr, {
+                    name, params, quantity, symbol,
+                });
             }
 
             useAccountStore().signCustomTransaction(
@@ -345,8 +346,8 @@ export default defineComponent({
             ).then((result) => {
                 this.hash = result.hash;
                 this.endLoading();
-            }).catch((error) => {
-                this.result = this.$t(error.message);
+            }).catch((err) => {
+                this.result = this.$t(err.message);
                 this.endLoading();
             });
         },
@@ -385,14 +386,12 @@ export default defineComponent({
                         v-close-popup
                         flat
                         :label="$t('global.ok')"
-                        color="primary"
                         @click="setAmount"
                     />
                     <q-btn
                         v-close-popup
                         flat
                         :label="$t('global.cancel')"
-                        color="primary"
                         @click="clearAmount"
                     />
                 </q-card-actions>
@@ -454,7 +453,3 @@ export default defineComponent({
     </div>
 </div>
 </template>
-
-<style lang="scss">
-
-</style>

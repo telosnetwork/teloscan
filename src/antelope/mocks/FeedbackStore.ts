@@ -3,7 +3,7 @@
 
 // Mocking FeedbackStore -----------------------------------
 // auxiliary tracing functions
-export const createTraceFunction = (store_name: string) => function(action: string, ...args: unknown[]) {
+export const createTraceFunction = (store_name: string) => function (action: string, ...args: unknown[]) {
     if (trace) {
         const titlecase = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
         const eventName = `${titlecase(store_name)}.${action}()`;
@@ -11,16 +11,15 @@ export const createTraceFunction = (store_name: string) => function(action: stri
     }
 };
 
-
 // only if we are NOT in production mode search in the url for the trace flag
 // to turn on the Antelope trace mode
 let trace = false;
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
     trace = urlParams.get('trace') === 'true';
 }
 export const isTracingAll = () => trace;
-export const createInitFunction = () => function() {
+export const createInitFunction = () => function () {
     // dummie function
 };
 
@@ -33,7 +32,7 @@ const FeedBackStoreMock = {
         this.loading.push(key);
     },
     setDebug(name: string, value: boolean) {
-        // dummie function
+    // dummie function
     },
 };
 

@@ -143,4 +143,3 @@ export interface EvmTransfer {
     timestamp: number; // integer representing ms from epoch
     id?: string; // id of the NFT transferred (ERC721 or ERC1155 only)
 }
-

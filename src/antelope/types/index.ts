@@ -25,7 +25,6 @@ export * from 'src/antelope/types/Theme';
 export * from 'src/antelope/types/TokenClass';
 export * from 'src/antelope/types/TransactionV1';
 
-
 // classes for antelope
 export * from 'src/antelope/types/AntelopeError';
 

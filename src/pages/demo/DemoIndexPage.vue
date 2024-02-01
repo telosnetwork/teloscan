@@ -3,6 +3,10 @@ export default {
     name: 'DemoIndex',
     methods: {
         toggleDarkMode() {
+            if (typeof window === 'undefined') {
+                return;
+            }
+
             this.$q.dark.toggle();
             localStorage.setItem('darkModeEnabled', this.$q.dark.isActive);
         },

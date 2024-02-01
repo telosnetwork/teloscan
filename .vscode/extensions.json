@@ -1,14 +1,12 @@
 {
   "recommendations": [
-    "abdelaziz18003.quasar-snippets",
     "dbaeumer.vscode-eslint",
-    "eg2.vscode-npm-script",
-    "christian-kohler.npm-intellisense",
-    "syler.sass-indented",
+    "editorconfig.editorconfig",
     "vue.volar",
-    "eamodio.gitlens"
+    "wayou.vscode-todo-highlight"
   ],
   "unwantedRecommendations": [
+    "octref.vetur",
     "hookyqr.beautify",
     "dbaeumer.jshint",
     "ms-vscode.vscode-typescript-tslint-plugin"

@@ -1,16 +1,19 @@
 <script>
 import axios from 'axios';
-const API_URL = (process.env.NETWORK_EVM_CHAIN_ID === 40) ?
-    'https://api.monitor.telos.net' :
-    'https://api.monitor-test.telos.net';
-const API_ENDPOINT_TASKS = API_URL + '/tasks';
-const API_ENDPOINT_STATUSES = API_URL + '/task_status';
+
+const API_URL = (process.env.NETWORK_EVM_CHAIN_ID === 40)
+    ? 'https://api.monitor.telos.net'
+    : 'https://api.monitor-test.telos.net';
+const API_ENDPOINT_TASKS = `${API_URL}/tasks`;
+const API_ENDPOINT_STATUSES = `${API_URL}/task_status`;
+const API_ENDPOINT_CATEGORIES = `${API_URL}/task_categories`;
 
 export default {
     name: 'MonitorComponent',
     async mounted() {
         await this.getTasks();
-        this.onRequest({
+        await this.getCategories();
+        await this.onRequest({
             pagination: this.pagination,
         });
     },
@@ -23,6 +26,11 @@ export default {
             },
             {
                 name: 'checked_at',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'category',
                 label: '',
                 align: 'left',
             },
@@ -41,6 +49,7 @@ export default {
         return {
             rows: [],
             tasks: [],
+            categories: [],
             columns,
             pagination: {
                 sortBy: 'checked_at',
@@ -53,28 +62,39 @@ export default {
         };
     },
     async created() {
-        // initialization of the translated texts
+    // initialization of the translated texts
         this.columns[0].label = this.$t('components.health.status');
         this.columns[1].label = this.$t('components.health.checked_at');
-        this.columns[2].label = this.$t('components.health.task');
-        this.columns[3].label = this.$t('components.health.message');
+        this.columns[2].label = this.$t('components.health.category');
+        this.columns[3].label = this.$t('components.health.task');
+        this.columns[4].label = this.$t('components.health.message');
     },
     methods: {
-        async getTasks(){
+        async getCategories() {
+            try {
+                const results = await axios.get(API_ENDPOINT_CATEGORIES);
+                this.categories = results.data;
+            } catch (e) {
+                console.error(`Could not retrieve task categories: ${e}`);
+            }
+        },
+        async getTasks() {
             try {
                 const results = await axios.get(API_ENDPOINT_TASKS);
                 this.tasks = results.data;
             } catch (e) {
-                console.error(e);
+                console.error(`Could not retrieve tasks: ${e}`);
             }
         },
         async onRequest(props) {
-            const { page, rowsPerPage, sortBy, descending } = props.pagination;
+            const {
+                page, rowsPerPage, sortBy, descending,
+            } = props.pagination;
             this.loading = true;
             try {
                 let url = API_ENDPOINT_STATUSES;
-                url += '?order=id.desc&select=task(name),message,checked_at,id&limit=';
-                url += rowsPerPage + '&offset=' + rowsPerPage * (page - 1);
+                url += '?order=id.desc&select=task(name,category),message,checked_at,type,id&limit=';
+                url += `${rowsPerPage}&offset=${rowsPerPage * (page - 1)}`;
                 const results = await axios.get(url);
 
                 this.rows = results.data;
@@ -93,6 +113,34 @@ export default {
             } catch (e) {
                 console.error(e);
             }
+        },
+        getType(id) {
+            let type = '';
+            switch (id) {
+            case (1):
+                type = this.$t('components.health.success');
+                break;
+            case (2):
+                type = this.$t('components.health.info');
+                break;
+            case (3):
+                type = this.$t('components.health.alert');
+                break;
+            case (4):
+                type = this.$t('components.health.error');
+                break;
+            default:
+                type = '';
+            }
+            return type;
+        },
+        getCategory(id) {
+            for (const i in this.categories) {
+                if (this.categories[i].id === id) {
+                    return this.categories[i].name;
+                }
+            }
+            return '';
         },
     },
 };
@@ -126,11 +174,40 @@ export default {
         <template v-slot:body="props">
             <q-tr :props="props">
                 <q-td key="status" :props="props">
-                    <q-icon v-if="props.row.message !== ''" name="warning" color="negative"/>
+                    <q-icon
+                        v-if="props.row.type === 4"
+                        name="warning"
+                        color="negative"
+                        size="1.15em"
+                    />
+                    <q-icon
+                        v-else-if="props.row.type === 3"
+                        name="warning"
+                        color="orange"
+                        size="1.15em"
+                    />
+                    <q-icon
+                        v-else-if="props.row.type === 2"
+                        name="info"
+                        color="secondary"
+                        size="1.15em"
+                    />
+                    <q-icon
+                        v-else
+                        name="task_alt"
+                        color="positive"
+                        size="1.15em"
+                    />
+                    <q-tooltip>{{ getType(props.row.type) }} </q-tooltip>
                 </q-td>
                 <q-td key="checked_at" :props="props">{{ props.row.checked_at }}</q-td>
+                <q-td key="category" :props="props" class="text-capitalize">
+                    {{ getCategory(props.row.task.category) }}
+                </q-td>
                 <q-td key="task" :props="props">{{ props.row.task.name }}</q-td>
-                <q-td key="message" :props="props">{{ props.row.message }}</q-td>
+                <q-td key="message" :props="props" :class="(props.row.type === 4) ? 'text-negative' : ''">
+                    {{ props.row.message }}
+                </q-td>
             </q-tr>
         </template>
     </q-table>

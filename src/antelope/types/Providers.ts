@@ -21,4 +21,3 @@ export interface EthereumProvider {
     // internal injected API -----
     __initialized: boolean;
 }
-

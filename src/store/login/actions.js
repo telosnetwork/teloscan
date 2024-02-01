@@ -1,4 +1,4 @@
-export const login = async function(
+export const login = async function (
     { commit, dispatch },
     { idx, account },
 ) {
@@ -16,9 +16,9 @@ export const login = async function(
         }
         const users = await authenticator.login(account);
         if (users.length) {
-            const account = users[0];
-            const accountName = await account.getAccountName();
-            this.$ualUser = account;
+            const loggedAccount = users[0];
+            const accountName = await loggedAccount.getAccountName();
+            this.$ualUser = loggedAccount;
             this.$type = 'ual';
             commit('setAccountName', accountName);
             localStorage.setItem('autoLogin', authenticator.constructor.name);
@@ -27,18 +27,17 @@ export const login = async function(
             dispatch('getAccountProfile');
         }
     } catch (e) {
-        const error =
-      (authenticator.getError() && authenticator.getError().message) ||
-      e.message ||
-      e.reason;
+        const error = (authenticator.getError() && authenticator.getError().message)
+      || e.message
+      || e.reason;
         commit('general/setErrorMsg', error, { root: true });
-        console.log('Login error: ', error);
+        console.error('Login error: ', error);
     } finally {
         commit('setLoadingWallet');
     }
 };
 
-export const autoLogin = async function({ dispatch, commit }, returnUrl) {
+export const autoLogin = async function ({ dispatch, commit }, returnUrl) {
     const { authenticator, idx } = getAuthenticator(this.$ual);
     if (authenticator) {
         commit('setAutoLogin', true);
@@ -51,7 +50,7 @@ export const autoLogin = async function({ dispatch, commit }, returnUrl) {
     }
 };
 
-const getAuthenticator = function(ual, wallet = null) {
+const getAuthenticator = function (ual, wallet = null) {
     const authWallet = wallet || localStorage.getItem('autoLogin');
     const idx = ual.authenticators.findIndex(
         auth => auth.constructor.name === authWallet,
@@ -62,13 +61,15 @@ const getAuthenticator = function(ual, wallet = null) {
     };
 };
 
-export const logout = async function({ getters }) {
+export const logout = async function ({ getters }) {
     if (getters.isNative) {
         const { authenticator } = getAuthenticator(this.$ual);
         try {
-            authenticator && (await authenticator.logout());
+            if (authenticator) {
+                await authenticator.logout();
+            }
         } catch (error) {
-            console.log('Authenticator logout error', error);
+            console.error('Authenticator logout error', error);
         }
 
         localStorage.removeItem('autoLogin');

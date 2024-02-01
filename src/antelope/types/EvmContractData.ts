@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { ethers } from 'ethers';
-import type { TokenSourceInfo } from 'src/antelope/types';
-import type { EvmABI } from 'src/antelope/types';
+import type { TokenSourceInfo, EvmABI } from 'src/antelope/types';
 
 export interface EvmContractConstructorData {
     address: string;

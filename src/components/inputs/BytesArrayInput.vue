@@ -1,5 +1,5 @@
 <script>
-import BaseTextInput from 'components/inputs/BaseTextInput';
+import BaseTextInput from 'components/inputs/BaseTextInput.vue';
 
 const bytesArrayStringRegex = /^0x([0-9A-Fa-f])*$/;
 
@@ -58,8 +58,7 @@ export default {
             };
 
             const oddNumberOfBytesMessage = this.$t('components.inputs.odd_number_of_bytes');
-            const incorrectArrayLengthMessage =
-                this.$t('components.inputs.incorrect_bytes_array_length', { size: +this.size });
+            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_bytes_array_length', { size: +this.size });
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_bytes_array_string');
 
             return [

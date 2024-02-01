@@ -1,7 +1,7 @@
 <script>
-import { integerSizeValidator, parseSignedIntArrayString } from 'components/ContractTab/function-interface-utils';
+import { integerSizeValidator, parseSignedIntArrayString } from 'src/lib/function-interface-utils';
 
-import BaseTextInput from 'components/inputs/BaseTextInput';
+import BaseTextInput from 'components/inputs/BaseTextInput.vue';
 import { BigNumber } from 'ethers';
 
 export default {
@@ -65,20 +65,16 @@ export default {
                 }
 
                 const expectedLength = +this.size;
-                const parsedArrayLength =
-                    (parseSignedIntArrayString(value, this.expectedArraySize, +this.intSize) ?? []).length;
+                const parsedArrayLength = (parseSignedIntArrayString(value, this.expectedArraySize, +this.intSize) ?? []).length;
 
                 return parsedArrayLength === expectedLength;
             };
 
-            const incorrectArrayLengthMessage =
-                this.$t('components.inputs.incorrect_sigint_array_length', { size: +this.size });
+            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_sigint_array_length', { size: +this.size });
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_sigint_array_string');
 
-            const errMessageTooLarge =
-                this.$t('components.inputs.too_large', { size: this.intSize, max: maximum.toString() });
-            const errMessageTooSmall =
-                this.$t('components.inputs.too_small', { size: this.intSize, min: minimum.toString() });
+            const errMessageTooLarge = this.$t('components.inputs.too_large', { size: this.intSize, max: maximum.toString() });
+            const errMessageTooSmall = this.$t('components.inputs.too_small', { size: this.intSize, min: minimum.toString() });
 
             return [
                 val => validateParsedArray(val) || invalidArrayStringMessage,

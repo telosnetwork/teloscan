@@ -56,7 +56,7 @@ export default {
             // incorrectly causes the label to be always raised
             const required = undefined;
             const isRequired = ['required', true, 'true'].includes(this.required);
-            const disable  = (this.disable  || ['disabled', true, 'true'].includes(this.disabled)) || undefined;
+            const disable = (this.disable || ['disabled', true, 'true'].includes(this.disabled)) || undefined;
             const readonly = (this.readonly || ['readonly', true, 'true'].includes(this.readonly)) || undefined;
 
             return {

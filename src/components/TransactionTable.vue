@@ -1,11 +1,12 @@
 <script>
-import AddressField from 'components/AddressField';
-import BlockField from 'components/BlockField';
-import DateField from 'components/DateField';
-import TransactionField from 'components/TransactionField';
-import MethodField from 'components/MethodField';
-import { formatWei } from 'src/lib/utils';
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+import { addEmptyContractToCache } from 'src/lib/contract-utils';
+
+import TokenValueField from 'components/Token/TokenValueField.vue';
+import AddressField from 'components/AddressField.vue';
+import BlockField from 'components/BlockField.vue';
+import DateField from 'components/DateField.vue';
+import TransactionField from 'components/TransactionField.vue';
+import MethodField from 'components/MethodField.vue';
 
 export default {
     name: 'TransactionTable',
@@ -15,6 +16,7 @@ export default {
         BlockField,
         AddressField,
         MethodField,
+        TokenValueField,
     },
     props: {
         title: {
@@ -22,8 +24,12 @@ export default {
             required: true,
         },
         filter: {
-            type: Object,
-            default: () => ({}),
+            type: String,
+            default: '',
+        },
+        address: {
+            type: String,
+            required: false,
         },
         initialPageSize: {
             type: Number,
@@ -34,40 +40,48 @@ export default {
         const columns = [
             {
                 name: 'hash',
-                label: '',
+                label: this.$t('components.tx_hash'),
                 align: 'left',
             },
             {
                 name: 'block',
-                label: '',
+                label: this.$t('components.block'),
                 align: 'left',
+                sortable: true,
             },
             {
                 name: 'date',
-                label: '',
+                label: this.$t('components.date'),
                 align: 'left',
             },
             {
                 name: 'method',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'from',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'to',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'value',
-                label: '',
+                label: this.$t('components.method'),
                 align: 'left',
             },
         ];
+        if (this.address) {
+            columns.push({
+                name: 'direction',
+                label: '',
+                align: 'left',
+            });
+        }
+        columns.push({
+            name: 'from',
+            label: this.$t('components.from'),
+            align: 'left',
+        });
+        columns.push({
+            name: 'to',
+            label: this.$t('components.to_interacted_with'),
+            align: 'left',
+        });
+        columns.push({
+            name: 'value',
+            label: this.$t('components.value_transfer'),
+            align: 'left',
+        });
 
         return {
             rows: [],
@@ -78,7 +92,7 @@ export default {
             total: null,
             loading: false,
             pagination: {
-                sortBy: 'date',
+                sortBy: 'block',
                 descending: true,
                 page: 1,
                 rowsPerPage: 10,
@@ -88,21 +102,12 @@ export default {
             showDateAge: true,
         };
     },
-    async created() {
-        // initialization of the translated texts
-        this.columns[0].label = this.$t('components.tx_hash');
-        this.columns[1].label = this.$t('components.block');
-        this.columns[2].label = this.$t('components.date');
-        this.columns[3].label = this.$t('components.method');
-        this.columns[4].label = this.$t('components.from');
-        this.columns[5].label = this.$t('components.to_interacted_with');
-        this.columns[6].label = this.$t('components.value_transfer');
-    },
     watch: {
         '$route.query.page': {
             handler(_pag) {
-                let pag = _pag;
+                const pag = _pag;
                 let page = 1;
+                let desc = true;
                 let size = this.page_size_options[0];
 
                 // we also allow to pass a single number as the page number
@@ -110,12 +115,13 @@ export default {
                     page = pag;
                 } else if (typeof pag === 'string') {
                     // we also allow to pass a string of two numbers: 'page,rowsPerPage'
-                    const [p, s] = pag.split(',');
+                    const [p, s, d] = pag.split(',');
                     page = p;
                     size = s;
+                    desc = (!d || d.toUpperCase() !== 'ASC');
                 }
 
-                this.setPagination(page, size);
+                this.setPagination(page, size, desc);
             },
             immediate: true,
         },
@@ -130,20 +136,20 @@ export default {
         },
     },
     methods: {
-        setPagination(page, size) {
+        setPagination(page, size, desc) {
             if (page) {
                 this.pagination.page = Number(page);
             }
             if (size) {
                 this.pagination.rowsPerPage = Number(size);
             }
+            this.pagination.descending = Boolean(desc);
             this.onRequest({
                 pagination: this.pagination,
             });
         },
         async onPaginationChange(props) {
-            const { page, rowsPerPage } = props.pagination;
-
+            const { page, rowsPerPage, descending } = props.pagination;
             // we need to change the URL to keep the pagination state by changing the this.$route.query.page
             // with a string like 'page,rowsPerPage'
             this.$router.push({
@@ -151,103 +157,89 @@ export default {
                 hash: window.location.hash,
                 query: {
                     ...this.$route.query,
-                    page: `${page},${rowsPerPage}`,
+                    page: `${page},${rowsPerPage},${(descending) ? 'DESC' : 'ASC'}`,
                 },
             });
         },
         async onRequest(props) {
+            if (this.loading) {
+                return;
+            }
             this.loading = true;
+            const {
+                page, rowsPerPage, sortBy, descending,
+            } = props.pagination;
 
-            const { page, rowsPerPage, sortBy, descending } = props.pagination;
-            let result = await this.$evmEndpoint.get(this.getPath(props));
-
-            if (this.total === null) {
-                this.pagination.rowsNumber = result.data.total.value;
-            }
-
-            this.pagination.page = page;
-            this.pagination.rowsPerPage = rowsPerPage;
-            this.pagination.sortBy = sortBy;
-            this.pagination.descending = descending;
-            this.transactions = result.data.transactions;
-            for (const transaction of this.transactions) {
-                try {
-                    transaction.transfer = false;
-                    transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
-                    if (transaction.input_data === '0x') {
-                        continue;
-                    }
-                    if(!transaction.to) {
-                        continue;
-                    }
-
-                    const contract = await this.$contractManager.getContract(
-                        transaction.to,
-                    );
-
-                    if (!contract) {
-                        continue;
-                    }
-
-                    const parsedTransaction = await contract.parseTransaction(
-                        transaction.input_data,
-                    );
-                    if (parsedTransaction) {
-                        transaction.parsedTransaction = parsedTransaction;
-                        transaction.contract = contract;
-                    }
-                    // Get ERC20 transfer from main function call
-                    let signature = transaction.input_data.substring(0, 10);
-                    if (
-                        signature &&
-                        TRANSFER_SIGNATURES.includes(signature) &&
-                        transaction.parsedTransaction.args['amount']
-                    ) {
-                        let token = await this.$contractManager.getTokenData(transaction.to, 'erc20');
-                        if(transaction.contract && token && token.decimals){
-                            transaction.transfer = {
-                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], token.decimals)}`,
-                                'symbol': token.symbol,
-                            };
-                        }
-                    }
-                } catch (e) {
-                    console.error(
-                        `Failed to parse data for transaction, error was: ${e.message}`,
-                    );
-                    // notifiy user
-                    this.$q.notify({
-                        message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
-                        color: 'negative',
-                        position: 'top',
-                        timeout: 5000,
-                    });
+            try {
+                const response = await this.$indexerApi.get(this.getPath(props));
+                if (this.pagination.rowsNumber === 0) {
+                    this.pagination.rowsNumber = response.data?.total_count;
                 }
+
+                this.pagination.page = page;
+                this.pagination.rowsPerPage = rowsPerPage;
+                this.pagination.sortBy = sortBy;
+                this.pagination.descending = descending;
+
+                this.transactions.splice(
+                    0,
+                    this.transactions.length,
+                    ...response.data.results,
+                );
+                this.rows = this.transactions;
+                await Promise.all(this.transactions.map(async (transaction) => {
+                    try {
+                        if (transaction.input === '0x') {
+                            return;
+                        }
+                        if (!transaction.to) {
+                            return;
+                        }
+
+                        addEmptyContractToCache(this.$contractManager, response.data.contracts, transaction);
+
+                        const contract = await this.$contractManager.getContract(transaction.to);
+
+                        if (!contract) {
+                            return;
+                        }
+
+                        const parsedTransaction = await this.$contractManager.parseContractTransaction(transaction, transaction.input, contract, true);
+                        if (parsedTransaction) {
+                            transaction.parsedTransaction = parsedTransaction;
+                        }
+                        transaction.contract = contract;
+                    } catch (e) {
+                        console.error(`Failed to parse data for transaction, error was: ${e.message}`);
+                        this.$q.notify({
+                            message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
+                            color: 'negative',
+                            position: 'top',
+                            timeout: 5000,
+                        });
+                    }
+                }));
+                this.loading = false;
+                this.rows = this.transactions;
+            } catch (e) {
+                this.$q.notify({
+                    type: 'negative',
+                    message: this.$t('components.transaction.load_error'),
+                    caption: e.message,
+                });
+                this.loading = false;
             }
-            this.rows = this.transactions;
-            this.loading = false;
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/v2/evm/get_transactions?limit=${
+            const filter = (this.filter.toString().length > 0) ? this.filter.toString() : '';
+            let path = `${filter}/transactions?limit=${
                 rowsPerPage === 0 ? 500 : rowsPerPage
             }`;
-            const filter = Object.assign({}, this.filter ? this.filter : {});
-            if (filter.address) {
-                path += `&address=${filter.address}`;
-            }
-
-            if (filter.block) {
-                path += `&block=${filter.block}`;
-            }
-
-            if (filter.hash) {
-                path += `&hash=${filter.hash}`;
-            }
-
-            path += `&skip=${(page - 1) * rowsPerPage}`;
+            path += `&offset=${(page - 1) * rowsPerPage}`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
-
+            path += (this.pagination.rowsNumber === 0) ? '&includePagination=true' : ''; // We only need the count once
+            path += '&includeAbi=true';
             return path;
         },
         toggleDateFormat() {
@@ -261,6 +253,8 @@ export default {
 <q-table
     v-model:pagination="pagination"
     :rows="rows"
+    :binary-state-sort="true"
+    :rows-per-page-label="$t('global.records_per_page')"
     :row-key="row => row.hash"
     :columns="columns"
     :loading="loading"
@@ -268,6 +262,9 @@ export default {
     flat
     @request="onPaginationChange"
 >
+    <template v-slot:loading>
+        <q-inner-loading showing color="secondary" />
+    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
@@ -295,41 +292,87 @@ export default {
         </q-tr>
     </template>
     <template v-slot:body="props">
-        <q-tr :props="props">
+        <q-tr :key="props.row.hash + props.row.parsedTransaction?.transfers?.length" :props="props">
             <q-td key="hash" :props="props">
-                <TransactionField :transaction-hash="props.row.hash"/>
+                <div class="flex items-center">
+                    <q-icon
+                        v-if="props.row.status !== '0x1'"
+                        class="q-mr-xs"
+                        name="warning"
+                        color="negative"
+                    />
+                    <TransactionField
+                        :color="(props.row.status !== '0x1') ? 'negative' : 'secondary'"
+                        :transaction-hash="props.row.hash"
+                        :truncate="(props.row.status !== '0x1') ? 15 : 18"
+                    />
+                </div>
             </q-td>
             <q-td key="block" :props="props">
-                <BlockField :block="props.row.block"/>
+                <BlockField :block="props.row.blockNumber"/>
             </q-td>
             <q-td key="date" :props="props">
-                <DateField :epoch="props.row.epoch" :force-show-age="showDateAge"/>
+                <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
             </q-td>
             <q-td key="method" :props="props">
-                <MethodField v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"/>
+                <MethodField :trx="props.row" :shortenName="true"/>
+            </q-td>
+            <q-td v-if="address" key="direction" :props="props">
+                <span v-if="address === props.row.from" class="direction out">
+                    {{ $t('components.transaction.out').toUpperCase() }}
+                </span>
+                <span v-else-if="address === props.row.to" class="direction in">
+                    {{ $t('components.transaction.in').toUpperCase() }}
+                </span>
             </q-td>
             <q-td key="from" :props="props">
-                <AddressField v-if="props.row.from" :address="props.row.from"/>
+                <AddressField
+                    v-if="props.row.from"
+                    :key="'trxt'+ props.row.from"
+                    :address="props.row.from"
+                    :truncate="14"
+                />
             </q-td>
             <q-td key="to" :props="props">
                 <AddressField
                     v-if="props.row.to"
-                    :key="props.row.to + ((props.row.contract) ? '1' : '0')"
+                    :key="'trxt'+ props.row.to"
                     :address="props.row.to"
-                    :isContractTrx="!!(props.row.contract)"
+                    :truncate="14"
                 />
             </q-td>
-            <q-td key="value" :props="props">
-                <span v-if="props.row.value > 0 ||  !props.row.transfer ">
-                    {{ props.row.value }} TLOS
+            <q-td key='value' :props="props">
+                <TokenValueField v-if="props.row.value > 0" :value="BigInt(props.row.value).toString(10) || '0.0'" />
+                <span v-else-if="props.row.parsedTransaction?.transfers?.length > 0">
+                    <TokenValueField
+                        v-if="props.row.parsedTransaction?.transfers?.length > 0"
+                        :value="props.row.parsedTransaction.transfers[0].value.toString(16) || '0.0'"
+                        :address="props.row.parsedTransaction.transfers[0].address"
+                    />
                 </span>
-                <div v-else>
-                    <span v-if="props.row.transfer">
-                        {{ props.row.transfer.value }} {{ props.row.transfer.symbol }}
-                    </span>
-                </div>
+                <TokenValueField v-else :value="'0.0'" />
             </q-td>
         </q-tr>
     </template>
 </q-table>
 </template>
+<!--eslint-enable-->
+<style scoped lang="sass">
+.direction
+    user-select: none
+    padding: 3px 6px
+    border-radius: 5px
+    font-size: 0.9em
+.direction.in
+    color: rgb(0,161,134)
+    background: rgba(0,161,134,0.1)
+    border: 1px solid rgb(0,161,134)
+.direction.out
+    color: #cc9a06!important
+    background: rgba(255,193,7,0.1)
+    border: 1px solid #cc9a06!important
+.sortable
+    height: 60px
+    display: flex
+    align-items: center
+</style>

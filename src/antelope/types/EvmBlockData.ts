@@ -20,5 +20,3 @@ export interface EvmBlockData {
     transactionsRoot: string;
     uncles: unknown[];
 }
-
-

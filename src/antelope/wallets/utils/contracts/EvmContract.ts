@@ -15,16 +15,23 @@ import {
 } from 'src/antelope/types';
 import { Interface } from 'ethers/lib/utils';
 
-
 export default class EvmContract {
     private readonly _name: string;
+
     private readonly _abi?: EvmABI | null;
+
     private readonly _address: string;
+
     private readonly _creationInfo?: EvmContractCreationInfo | null;
+
     private readonly _interface?: ContractInterface | null;
+
     private readonly _supportedInterfaces: string[];
+
     private readonly _properties?: EvmContractCalldata;
+
     private readonly _manager?: EvmContractManagerI;
+
     private readonly _token?: TokenSourceInfo | null;
 
     private _verified?: boolean;
@@ -58,13 +65,12 @@ export default class EvmContract {
 
         const indexOfNone = supportedInterfaces.indexOf('none');
         this._supportedInterfaces = [];
-        for (let i = 0; i < supportedInterfaces.length; i++){
+        for (let i = 0; i < supportedInterfaces.length; i++) {
             if (i !== indexOfNone) {
                 this._supportedInterfaces.push(supportedInterfaces[i]);
             }
         }
     }
-
 
     get name() {
         return this._name;
@@ -128,14 +134,14 @@ export default class EvmContract {
         }
 
         return (
-            this._supportedInterfaces.includes('erc721') ||
-            this._supportedInterfaces.includes('erc1155') ||
-            this._supportedInterfaces.includes('erc20')
+            this._supportedInterfaces.includes('erc721')
+            || this._supportedInterfaces.includes('erc1155')
+            || this._supportedInterfaces.includes('erc20')
         );
     }
 
     async getContractInstance() {
-        if (!this.abi){
+        if (!this.abi) {
             throw new AntelopeError('antelope.utils.error_contract_instance');
         }
         const signer = await this._manager?.getSigner();
@@ -166,27 +172,26 @@ export default class EvmContract {
 
     async parseLogs(logs: EvmLogs): Promise<EvmFormatedLog[]> {
         if (this.iface && this.iface instanceof Interface) {
-            const iface = this.iface;
+            const { iface } = this;
             const parsedArray = await Promise.all(logs.map(async (log) => {
                 try {
                     const parsedLog:ethers.utils.LogDescription = iface.parseLog(log);
-                    return  this.formatLog(log, parsedLog);
+                    return this.formatLog(log, parsedLog);
                 } catch (e) {
                     return this.parseEvent(log);
                 }
             }));
             parsedArray.forEach((parsed) => {
-                if(parsed.name && parsed.eventFragment?.inputs){
+                if (parsed.name && parsed.eventFragment?.inputs) {
                     parsed.inputs = parsed.eventFragment.inputs;
                 }
             });
             return parsedArray;
         }
 
-
-        return await Promise.all(logs.map(async (log) => {
+        return Promise.all(logs.map(async (log) => {
             const parsedLog = await this.parseEvent(log);
-            if(parsedLog.name && parsedLog.eventFragment?.inputs){
+            if (parsedLog.name && parsedLog.eventFragment?.inputs) {
                 parsedLog.inputs = parsedLog.eventFragment.inputs;
             }
             return parsedLog;
@@ -194,13 +199,13 @@ export default class EvmContract {
     }
 
     formatLog(log: EvmLog, parsedLog: ethers.utils.LogDescription): EvmFormatedLog {
-        if(!parsedLog.signature) {
+        if (!parsedLog.signature) {
             console.error('No signature found for log! Check if this explodes. Returning EvmLog instead of EvmFormatedLog. ');
             return log as unknown as EvmFormatedLog;
         }
         const function_signature = log.topics[0].substring(0, 10);
         return {
-            ... parsedLog,
+            ...parsedLog,
             function_signature,
             isTransfer: TRANSFER_SIGNATURES.includes(function_signature),
             logIndex: log.logIndex,
@@ -216,7 +221,7 @@ export default class EvmContract {
             try {
                 const parsedLog:ethers.utils.LogDescription = eventIface.parseLog(log);
                 return this.formatLog(log, parsedLog);
-            } catch(e) {
+            } catch (e) {
                 throw new AntelopeError('antelope.utils.error_parsing_log_event', log);
             }
         } else {

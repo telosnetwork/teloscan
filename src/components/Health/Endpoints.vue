@@ -63,10 +63,10 @@ export default {
 
                 axiosTime(checker);
                 const result = await checker.post(endpoint.http, {
-                    'jsonrpc': '2.0',
-                    'method': 'eth_blockNumber',
-                    'params': [],
-                    'id': 1,
+                    jsonrpc: '2.0',
+                    method: 'eth_blockNumber',
+                    params: [],
+                    id: 1,
                 });
 
                 const block = parseInt(result.data.result, 16);

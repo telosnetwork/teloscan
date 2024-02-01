@@ -40,4 +40,3 @@ export interface EvmABIEntryOutput {
 export interface AbiSignature {
     text_signature: string;
 }
-

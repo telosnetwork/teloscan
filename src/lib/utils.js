@@ -1,8 +1,20 @@
 import { BigNumber, ethers } from 'ethers';
 import moment from 'moment';
-import keccak from 'keccak';
-const REVERT_FUNCTION_SELECTOR = '0x08c379a0';
-const REVERT_PANIC_SELECTOR = '0x4e487b71';
+
+export const REVERT_FUNCTION_SELECTOR = '0x08c379a0';
+export const REVERT_PANIC_SELECTOR = '0x4e487b71';
+export const ZERO_ADDRESSES = '0x0000000000000000000000000000000000000000';
+export const DEAD_ADDRESSES = [
+    ZERO_ADDRESSES,
+    '0x00000000000000000000000000000000000xdead',
+];
+
+export const ALLOWED_IMAGE_EXTENSIONS = [
+    'svg', 'jpg', 'jpeg', 'gif', 'png', 'webp',
+];
+export const ALLOWED_VIDEO_EXTENSIONS = [
+    'mp4', 'webm', 'ogg',
+];
 
 export const WEI_PRECISION = 18;
 export const DISPLAY_DECIMALS = 4;
@@ -20,20 +32,21 @@ export const DEFAULT_CHAIN_ID = '40'; // Telos Mainnet
 export function formatWei(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);
     const formatted = ethers.utils.formatUnits(amount.toString(), (tokenDecimals || WEI_PRECISION));
-    let str = formatted.toString();
+    const str = formatted.toString();
     // Use string, do not convert to number so we never loose precision
-    if(displayDecimals > 0 && str.includes('.')) {
+    if (displayDecimals > 0 && str.includes('.')) {
         const parts = str.split('.');
-        return parts[0] + '.' + parts[1].slice(0, displayDecimals);
+        return `${parts[0]}.${parts[1].slice(0, displayDecimals)}`;
     }
     return str;
 }
+
 export function isValidAddressFormat(ethAddressString) {
     const pattern = /^0x[a-fA-F0-9]{40}$/;
     return pattern.test(ethAddressString);
 }
 
-export function getTopicHash(topic)  {
+export function getTopicHash(topic) {
     return `0x${topic.substring(topic.length - 40)}`;
 }
 
@@ -41,33 +54,9 @@ export function formatIsoDateTime(dateTimezone) {
     return moment(dateTimezone).utc().format('DD/MM/YYYY');
 }
 
-export function toChecksumAddress(address) {
-    if (!address) {
-        return address;
-    }
-
-    let addy = address.toLowerCase().replace('0x', '');
-    if (addy.length !== 40) {
-        addy = addy.padStart(40, '0');
-    }
-
-    let hash = keccak('keccak256').update(addy).digest('hex');
-    let ret = '0x';
-
-    for (let i = 0; i < addy.length; i++) {
-        if (parseInt(hash[i], 16) >= 8) {
-            ret += addy[i].toUpperCase();
-        } else {
-            ret += addy[i];
-        }
-    }
-
-    return ret;
-}
-
 export function parseErrorMessage(output) {
     if (!output) {
-        return;
+        return '';
     }
 
     let message = '';
@@ -79,7 +68,6 @@ export function parseErrorMessage(output) {
         message = parsePanicReason(output);
     }
 
-
     return message.replace(/[^a-zA-Z0-9 /./'/"/,/@/+/-/_/(/)/[]/g, '');
 }
 
@@ -89,7 +77,7 @@ export function parseRevertReason(revertOutput) {
     }
 
     let reason = '';
-    let trimmedOutput = revertOutput.substr(138);
+    const trimmedOutput = revertOutput.substr(138);
     for (let i = 0; i < trimmedOutput.length; i += 2) {
         reason += String.fromCharCode(parseInt(trimmedOutput.substr(i, 2), 16));
     }
@@ -97,7 +85,7 @@ export function parseRevertReason(revertOutput) {
 }
 
 export function parsePanicReason(revertOutput) {
-    let trimmedOutput = revertOutput.slice(-2);
+    const trimmedOutput = revertOutput.slice(-2);
     let reason;
 
     switch (trimmedOutput) {
@@ -117,8 +105,8 @@ export function parsePanicReason(revertOutput) {
         reason = 'If you call .pop() on an empty array.';
         break;
     case '32':
-        reason = 'If you access an array, bytesN or an array slice at an out-of-bounds or negative index ' +
-            '(i.e. x[i] where i >= x.length or i < 0).';
+        reason = 'If you access an array, bytesN or an array slice at an out-of-bounds or negative index '
+            + '(i.e. x[i] where i >= x.length or i < 0).';
         break;
     case '41':
         reason = 'If you allocate too much memory or create an array that is too large.';
@@ -138,7 +126,8 @@ export function sortAbiFunctionsByName(fns) {
             const upperA = nameA.toUpperCase();
             const upperB = nameB.toUpperCase();
             return (upperA < upperB) ? -1 : (upperA > upperB) ? 1 : 0;
-        });
+        },
+    );
 }
 
 export function getRouteWatcherForTabs(routeName, tabs, defaultTab) {
@@ -189,10 +178,10 @@ export function getClientIsApple() {
  * @return {string}
  */
 export function getFormattedUtcOffset(date) {
-    const pad = value => value < 10 ? '0' + value : value;
+    const pad = value => (value < 10 ? `0${value}` : value);
     const sign = (date.getTimezoneOffset() > 0) ? '-' : '+';
     const offset = Math.abs(date.getTimezoneOffset());
     const hours = pad(Math.floor(offset / 60));
     const minutes = pad(offset % 60);
-    return sign + hours + ':' + minutes;
+    return `${sign + hours}:${minutes}`;
 }

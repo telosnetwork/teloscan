@@ -1,7 +1,7 @@
 <script>
-import { parseStringArrayString } from 'components/ContractTab/function-interface-utils';
+import { parseStringArrayString } from 'src/lib/function-interface-utils';
 
-import BaseTextInput from 'components/inputs/BaseTextInput';
+import BaseTextInput from 'components/inputs/BaseTextInput.vue';
 
 export default {
     name: 'StringArrayInput',
@@ -38,7 +38,7 @@ export default {
         previousParsedValue: undefined,
     }),
     async created() {
-        // initialization of the translated texts
+    // initialization of the translated texts
         this.placeholder = this.$t('components.inputs.str_input_placeholder');
         this.hint = this.$t('components.inputs.str_input_hint');
     },
@@ -57,8 +57,7 @@ export default {
                 return Array.isArray(parseStringArrayString(value, expectedLength));
             };
 
-            const incorrectArrayLengthMessage =
-                this.$t('components.inputs.incorrect_strings_array_length', { size: +this.size });
+            const incorrectArrayLengthMessage = this.$t('components.inputs.incorrect_strings_array_length', { size: +this.size });
             const invalidArrayStringMessage = this.$t('components.inputs.invalid_strings_array_string');
 
             return [

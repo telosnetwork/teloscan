@@ -1,6 +1,5 @@
 /* eslint-disable max-len */
 
-
 import { BigNumber, ethers } from 'ethers';
 import { BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
@@ -20,7 +19,9 @@ import {
     wtlosAbiDeposit,
     wtlosAbiWithdraw,
 } from 'src/antelope/types';
-import { BraveAuthName, EVMAuthenticator, MetamaskAuthName, SafePalAuthName } from 'src/antelope/wallets';
+import {
+    BraveAuthName, EVMAuthenticator, MetamaskAuthName, SafePalAuthName,
+} from 'src/antelope/wallets';
 import { TELOS_ANALYTICS_EVENT_NAMES, TELOS_NETWORK_NAMES } from 'src/antelope/mocks/chain-constants';
 
 export abstract class InjectedProviderAuth extends EVMAuthenticator {
@@ -31,6 +32,7 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
         super(label);
         useEVMStore().initInjectedProvider(this);
     }
+
     abstract getProvider(): EthereumProvider | null;
 
     async getSigner(): Promise<ethers.Signer> {
@@ -55,13 +57,12 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private handleCatchError(error: any): AntelopeError {
-        if ('ACTION_REJECTED' === ((error as {code:string}).code)) {
+        if (((error as {code:string}).code) === 'ACTION_REJECTED') {
             return new AntelopeError('antelope.evm.error_transaction_canceled');
-        } else {
-            // unknown error we print on console
-            console.error(error);
-            return new AntelopeError('antelope.evm.error_send_transaction', { error });
         }
+        // unknown error we print on console
+        console.error(error);
+        return new AntelopeError('antelope.evm.error_send_transaction', { error });
     }
 
     // this action is used by MetamaskAuth.transferTokens()
@@ -167,11 +168,11 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
 
             return res;
         }).catch((error) => {
-            // if the user rejects the connection, we don't want to track it as an error
+        // if the user rejects the connection, we don't want to track it as an error
             if (
-                trackAnalyticsEvents &&
-                isTelos &&
-                error.message !== 'antelope.evm.error_connect_rejected'
+                trackAnalyticsEvents
+                && isTelos
+                && error.message !== 'antelope.evm.error_connect_rejected'
             ) {
                 let failedLoginEventName = '';
 
@@ -204,9 +205,8 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
         const provider = await this.web3Provider();
         if (provider) {
             return provider.getBalance(address);
-        } else {
-            throw new AntelopeError('antelope.evm.error_no_provider');
         }
+        throw new AntelopeError('antelope.evm.error_no_provider');
     }
 
     async getERC20TokenBalance(address: addressString, token: addressString): Promise<ethers.BigNumber> {
@@ -217,9 +217,8 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
                 const erc20Contract = new ethers.Contract(token, erc20Abi, provider);
                 const balance = await erc20Contract.balanceOf(address);
                 return balance;
-            } else {
-                throw new AntelopeError('antelope.evm.error_no_provider');
             }
+            throw new AntelopeError('antelope.evm.error_no_provider');
         } catch (e) {
             console.error('getERC20TokenBalance', e, address, token);
             throw e;
@@ -230,15 +229,14 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
         this.trace('transferTokens', token, amount, to);
         if (token.isSystem) {
             return this.sendSystemToken(to, amount);
-        } else {
-            const value = amount.toHexString();
-            const transferAbi = erc20Abi.filter(abi => abi.name === 'transfer');
-            return this.signCustomTransaction(
-                token.address,
-                transferAbi,
-                [to, value],
-            );
         }
+        const value = amount.toHexString();
+        const transferAbi = erc20Abi.filter(abi => abi.name === 'transfer');
+        return this.signCustomTransaction(
+            token.address,
+            transferAbi,
+            [to, value],
+        );
     }
 
     prepareTokenForTransfer(token: TokenClass | null, amount: ethers.BigNumber, to: string): Promise<void> {
@@ -327,5 +325,4 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
         this.trace('ensureCorrectChain');
         return super.ensureCorrectChain();
     }
-
 }

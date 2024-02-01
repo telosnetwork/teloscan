@@ -39,18 +39,17 @@ export default {
                 if (this.searchTerm.length === 42) {
                     this.$router.push(`/address/${this.searchTerm}`);
                     return;
-                } else {
-                    this.$router.push(`/tx/${this.searchTerm}`);
-                    return;
                 }
-            } else if (this.searchTerm.match(/(^[a-z1-5.]{1,11}[a-z1-5]$)|(^[a-z1-5.]{12}[a-j1-5]$)/)) {
+                this.$router.push(`/tx/${this.searchTerm}`);
+                return;
+            } if (this.searchTerm.match(/(^[a-z1-5.]{1,11}[a-z1-5]$)|(^[a-z1-5.]{12}[a-j1-5]$)/)) {
                 try {
                     const account = await this.$evm.telos.getEthAccountByTelosAccount(this.searchTerm);
                     this.$router.push(`/address/${account.address}`);
                     return;
                 } catch (e) {
                     // in case this was a block that looked like an account name let's try it as a block
-                    if (this.searchTerm && !isNaN(this.searchTerm)) {
+                    if (this.searchTerm && !Number.isNaN(this.searchTerm)) {
                         this.$router.push(`/block/${this.searchTerm}`);
                         return;
                     }
@@ -62,7 +61,7 @@ export default {
                     });
                     return;
                 }
-            } else if (!isNaN(this.searchTerm)) {
+            } else if (!Number.isNaN(this.searchTerm)) {
                 this.$router.push(`/block/${this.searchTerm}`);
                 return;
             }
