@@ -119,18 +119,17 @@ export default {
                 push
                 @click="selectedTab = TABS.write"
             />
-            <!-- eztodo i18n -->
             <q-btn
                 v-if="contractIsProxy"
                 :outline="selectedTab === TABS.proxyRead"
-                :label="'Read as Proxy'"
+                :label="$t('components.contract_tab.read_as_proxy')"
                 push
                 @click="selectedTab = TABS.proxyRead"
             />
             <q-btn
                 v-if="contractIsProxy"
                 :outline="selectedTab === TABS.proxyWrite"
-                :label="'Write as Proxy'"
+                :label="$t('components.contract_tab.write_as_proxy')"
                 push
                 @click="selectedTab = TABS.proxyWrite"
             />

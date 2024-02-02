@@ -36,7 +36,6 @@ export default {
         },
     },
     async mounted() {
-        // eztodo add label saying it is a proxy if it is
         this.populateFunctions();
     },
     watch: {
@@ -100,28 +99,25 @@ export default {
     </div>
 
     <template v-else>
-        <!-- eztodo i18n -->
         <p v-if="proxy" class="q-mt-md">
-            This contract is an EIP-1967 Transparent Proxy for the contract
+            {{ $t('components.contract_tab.contract_is_proxy') }}
             <router-link :to="{ name: 'address', params: { address: formattedProxyAddress } }">
                 {{ formattedProxyAddress }}
-            </router-link>.
+            </router-link>
         </p>
 
-        <!-- eztodo i18n -->
         <template v-if="isProxyForUnverifiedContract">
             <p class="q-mt-md">
-                The contract for which this is a proxy is not verified, so its ABI is not available. To interact with the implementation contract,
-                visit the
+                {{ $t('components.contract_tab.proxy_for_unverified_contract_part_1') }}
+
                 <router-link :to="{ name: 'address', params: { address: formattedProxyAddress }, hash: '#contract' }">
-                    implementation contract page
+                    {{ $t('components.contract_tab.proxy_for_unverified_contract_part_2') }}
                 </router-link>
             </p>
         </template>
 
-        <!-- eztodo i18n -->
         <p v-if="showNoAvailableMethods" class="q-mt-md">
-            There are no available Contract ABI methods to read
+            {{ $t('components.contract_tab.no_abi_methods') }}
         </p>
 
         <q-list v-if="(write && functions.write.length) || (!write && functions.read.length)">
@@ -137,7 +133,7 @@ export default {
                             :abi="func"
                             :contract="contract"
                             :group="write ? 'write' : 'read'"
-                            :run-label="write ? 'Write' : 'Query'"
+                            :run-label="write ? $t('components.contract_tab.write') : $t('components.contract_tab.query')"
                         />
                     </div>
                 </q-card>
