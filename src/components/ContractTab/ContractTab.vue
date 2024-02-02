@@ -32,26 +32,13 @@ export default {
         proxyContractAddress: '',
         TABS,
     }),
-    async mounted() {
-        const contractAddress = this.contract.address;
-
-        const web3 = new Web3(process.env.NETWORK_EVM_RPC);
-
-        // Slot for the implementation address
-        const implementationSlot = '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc';
-
-        async function checkEIP1967Implementation() {
-            const implementationAddressBytes = await web3.eth.getStorageAt(contractAddress, implementationSlot);
-            // Extract the last 40 characters (20 bytes) to get the actual address
-            const implementationAddress = implementationAddressBytes !== '0x0' ? '0x' + implementationAddressBytes.slice(-40) : null;
-
-            return implementationAddress ?? '';
-        }
-
-        this.proxyContractAddress = await checkEIP1967Implementation(this);
-        this.loading = false;
+    mounted() {
+        this.checkIsProxy();
     },
     computed: {
+        contractAddress() {
+            return this.contract?.address ?? '';
+        },
         abi() {
             const { abi } = this.contract;
 
@@ -65,24 +52,50 @@ export default {
             return !!this.proxyContractAddress;
         },
     },
+    watch: {
+        contractAddress() {
+            this.checkIsProxy();
+        },
+    },
+    methods: {
+        async checkEIP1967Implementation() {
+            if (!this.contractAddress) {
+                return '';
+            }
+
+            const web3 = new Web3(process.env.NETWORK_EVM_RPC);
+
+            // Slot for the implementation address
+            // equivalent to `keccak256("eip1967.proxy.implementation") - 1`
+            const implementationSlot = '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc';
+            const implementationAddressBytes = await web3.eth.getStorageAt(this.contractAddress, implementationSlot);
+            // Extract the last 40 characters (20 bytes) to get the actual address
+            return implementationAddressBytes !== '0x0' ? '0x' + implementationAddressBytes.slice(-40) : '';
+        },
+        async checkIsProxy() {
+            this.loading = true;
+            this.proxyContractAddress = await this.checkEIP1967Implementation();
+            this.loading = false;
+        },
+    },
 };
 </script>
 
 <template>
-<div class='contract-tab'>
-    <div v-if='loading' class='text-center'>
+<div class="contract-tab">
+    <div v-if="loading" class="text-center">
         <q-spinner
-            size='md'
-            class='q-ma-xl'
+            size="md"
+            class="q-ma-xl"
         />
     </div>
 
     <template v-else>
         <CopyButton
-            v-if='abi'
-            :text='abi'
+            v-if="abi"
+            :text="abi"
             :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
-            class='q-mb-md'
+            class="q-mb-md"
         />
 
         <br>
@@ -127,8 +140,7 @@ export default {
         <ContractInterface
             v-else
             :write="[TABS.write, TABS.proxyWrite].includes(selectedTab)"
-            :showProxyOwnFunctions="[TABS.read, TABS.write].includes(selectedTab)"
-            :proxy="proxyContractAddress"
+            :proxy="([TABS.proxyWrite, TABS.proxyRead].includes(selectedTab) && proxyContractAddress) ? proxyContractAddress : null"
         />
     </template>
 </div>
