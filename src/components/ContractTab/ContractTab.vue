@@ -105,7 +105,7 @@ export default {
                 :outline="selectedTab === TABS.source"
                 :label="$t('components.contract_tab.code')"
                 push
-                @click='selectedTab = TABS.source'
+                @click="selectedTab = TABS.source"
             />
             <q-btn
                 :outline="selectedTab === TABS.read"
