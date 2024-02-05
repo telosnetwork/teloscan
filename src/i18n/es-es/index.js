@@ -333,7 +333,7 @@ export default {
             read_as_proxy: 'Leer como proxy',
             write_as_proxy: 'Escribir como proxy',
             contract_is_proxy: 'Este contrato es un proxy transparente EIP-1967 para el contrato',
-            proxy_for_unverified_contract_part_1: 'El contrato para el cual este es un proxy no está verificado, por lo que su ABI no está disponible. Para interactuar con el contrato de implementación, visite el',
+            proxy_for_unverified_contract_part_1: 'El contrato para el cual este es un proxy no está verificado, por lo que su ABI no está disponible. Para interactuar con el contrato de implementación, visite la',
             proxy_for_unverified_contract_part_2: 'página del contrato de implementación',
             no_abi_methods: 'No se encontraron funciones ejecutables en el contrato ABI',
         },
