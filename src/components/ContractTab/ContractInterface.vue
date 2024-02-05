@@ -13,7 +13,8 @@ export default {
             type: Boolean,
             required: true,
         },
-        proxy: {
+        // for EIP-1967 proxies
+        implementationContractAddress: {
             type: String,
             default: '',
         },
@@ -32,7 +33,7 @@ export default {
             return !this.isProxyForUnverifiedContract && ((this.write && !this.functions.write.length) || (!this.write && !this.functions.read.length));
         },
         formattedProxyAddress() {
-            return this.proxy ? toChecksumAddress(this.proxy) : '';
+            return this.implementationContractAddress ? toChecksumAddress(this.implementationContractAddress) : '';
         },
     },
     async mounted() {
@@ -51,11 +52,17 @@ export default {
             this.loading = true;
             this.isProxyForUnverifiedContract = false;
 
-            const contractAddress = this.proxy || this.$route.params.address;
+            let abi;
 
-            this.contract = await this.$contractManager.getContract(contractAddress);
+            this.contract = await this.$contractManager.getContract(this.$route.params.address);
 
-            if (this.proxy && !this.contract.abi) {
+            if (this.implementationContractAddress) {
+                abi = (await this.$contractManager.getContract(this.implementationContractAddress)).abi;
+            } else {
+                abi = this.contract.abi;
+            }
+
+            if (this.implementationContractAddress && !abi) {
                 this.isProxyForUnverifiedContract = true;
                 this.functions = {
                     read: [],
@@ -67,7 +74,7 @@ export default {
 
             let read = [];
             let write = [];
-            this.contract.abi.forEach((a) => {
+            abi.forEach((a) => {
                 if (a.type !== 'function') {
                     return;
                 }
@@ -99,7 +106,7 @@ export default {
     </div>
 
     <template v-else>
-        <p v-if="proxy" class="q-mt-md">
+        <p v-if="implementationContractAddress" class="q-mt-md">
             {{ $t('components.contract_tab.contract_is_proxy') }}
             <router-link :to="{ name: 'address', params: { address: formattedProxyAddress } }">
                 {{ formattedProxyAddress }}
@@ -134,6 +141,7 @@ export default {
                             :contract="contract"
                             :group="write ? 'write' : 'read'"
                             :run-label="write ? $t('components.contract_tab.write') : $t('components.contract_tab.query')"
+                            :implementation-contract-address="implementationContractAddress"
                         />
                     </div>
                 </q-card>

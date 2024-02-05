@@ -56,6 +56,10 @@ export default defineComponent({
             type: String,
             default: null,
         },
+        implementationContractAddress: {
+            type: String,
+            default: null,
+        },
     },
     data : () => {
         const decimalOptions = [{
@@ -243,7 +247,7 @@ export default defineComponent({
             this.endLoading();
         },
         async getEthersFunction(provider?: ethers.providers.JsonRpcSigner | ethers.providers.JsonRpcProvider) {
-            const contractInstance = await this.contract.getContractInstance(provider);
+            const contractInstance = await (this.implementationContractAddress ? this.contract.getProxyInstance(provider, [this.abi]) : this.contract.getContractInstance(provider));
             return contractInstance[this.functionABI];
         },
         runRead() {
@@ -318,7 +322,7 @@ export default defineComponent({
         async runEVM(opts: Opts) {
             const value = opts.value ? BigNumber.from(opts.value) : undefined;
 
-            // Preparing the mesage to show while waiting for confirmation.
+            // Preparing the message to show while waiting for confirmation.
             const name = this.abi.name;
             const params = this.abi.inputs.length;
             let keyMsg = 'notification.neutral_message_custom_call';

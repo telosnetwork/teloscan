@@ -77,6 +77,12 @@ export default {
             this.proxyContractAddress = await this.checkEIP1967Implementation();
             this.loading = false;
         },
+        getImplContractAddress() {
+            return (
+                [TABS.proxyWrite, TABS.proxyRead].includes(this.selectedTab) &&
+                this.proxyContractAddress
+            ) ? this.proxyContractAddress : null;
+        },
     },
 };
 </script>
@@ -139,7 +145,7 @@ export default {
         <ContractInterface
             v-else
             :write="[TABS.write, TABS.proxyWrite].includes(selectedTab)"
-            :proxy="([TABS.proxyWrite, TABS.proxyRead].includes(selectedTab) && proxyContractAddress) ? proxyContractAddress : null"
+            :implementation-contract-address="getImplContractAddress()"
         />
     </template>
 </div>
