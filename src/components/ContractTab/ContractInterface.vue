@@ -42,7 +42,7 @@ export default {
         this.populateFunctions();
     },
     watch: {
-        proxy() {
+        implementationContractAddress() {
             this.populateFunctions();
         },
         write() {

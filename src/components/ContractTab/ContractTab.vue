@@ -31,6 +31,7 @@ export default {
         loading: true,
         proxyContractAddress: '',
         TABS,
+        contractInterfaceKey: 0,
     }),
     mounted() {
         this.checkIsProxy();
@@ -83,9 +84,10 @@ export default {
                 this.proxyContractAddress
             ) ? this.proxyContractAddress : null;
         },
-        handleFunctionRun() {
+        async handleFunctionRun() {
             if (this.proxyContractAddress) {
-                this.checkIsProxy();
+                await this.checkIsProxy();
+                this.contractInterfaceKey += 1;
             }
         },
     },
@@ -149,6 +151,7 @@ export default {
         <ContractSource v-if="selectedTab === TABS.source" />
         <ContractInterface
             v-else
+            :key="contractInterfaceKey"
             :write="[TABS.write, TABS.proxyWrite].includes(selectedTab)"
             :implementation-contract-address="getImplContractAddress()"
             @function-run="handleFunctionRun"
