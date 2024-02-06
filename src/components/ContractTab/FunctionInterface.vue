@@ -61,6 +61,8 @@ export default defineComponent({
             default: null,
         },
     },
+    // emitted when a fn on the contract is run; for proxy contracts, this is used to check if the implementation contract has changed
+    emits: ['functionRun'],
     data : () => {
         const decimalOptions = [{
             label: '18 - TLOS/ETH/etc..',
@@ -348,6 +350,7 @@ export default defineComponent({
                 value,
             ).then((result) => {
                 this.hash = result.hash;
+                this.$emit('functionRun');
                 this.endLoading();
             }).catch((error) => {
                 this.result = this.$t(error.message);

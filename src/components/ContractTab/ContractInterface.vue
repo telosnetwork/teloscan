@@ -19,6 +19,8 @@ export default {
             default: '',
         },
     },
+    // emitted when a fn on the contract is run; for proxy contracts, this is used to check if the implementation contract has changed
+    emits: ['functionRun'],
     data: () => ({
         functions: {
             read: [],
@@ -142,6 +144,7 @@ export default {
                             :group="write ? 'write' : 'read'"
                             :run-label="write ? $t('components.contract_tab.write') : $t('components.contract_tab.query')"
                             :implementation-contract-address="implementationContractAddress"
+                            @function-run="$emit('functionRun')"
                         />
                     </div>
                 </q-card>

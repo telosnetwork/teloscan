@@ -83,6 +83,11 @@ export default {
                 this.proxyContractAddress
             ) ? this.proxyContractAddress : null;
         },
+        handleFunctionRun() {
+            if (this.proxyContractAddress) {
+                this.checkIsProxy();
+            }
+        },
     },
 };
 </script>
@@ -146,6 +151,7 @@ export default {
             v-else
             :write="[TABS.write, TABS.proxyWrite].includes(selectedTab)"
             :implementation-contract-address="getImplContractAddress()"
+            @function-run="handleFunctionRun"
         />
     </template>
 </div>
