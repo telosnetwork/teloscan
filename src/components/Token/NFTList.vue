@@ -287,25 +287,15 @@ export default {
                         :href="props.row.metadata.animation"
                         target="_blank"
                     >
-                        <div class="overlay"></div>
-                        <q-media-player
-                            type="video"
-                            loop="loop"
+                        <video
                             :autoplay="true"
-                            :show-big-play-button="false"
-                            muted="muted"
-                            big-play-button-color="purpleBright"
-                            :hideVolumeSlider="true"
-                            :noControls="true"
-                            :hideVolumeBtn="true"
-                            :hidePlayBtn="true"
-                            :hideSettingsBtn="true"
-                            :hideFullscreenBtn="true"
-                            :sources="[{
-                                type: 'video/' + props.row.metadata.animationExtension,
-                                src: props.row.metadata.animation,
-                            }]"
-                        />
+                            loop
+                            :muted="true"
+                            playsinline
+                            class="nft-video"
+                        >
+                            <source :src="props.row.metadata.animation" :type="'video/' + props.row.metadata.animationExtension">
+                        </video>
                     </a>
                     <span
                         v-else-if="props.row.imageCache || props.row.metadata?.image"
@@ -378,15 +368,10 @@ export default {
     font-size: 12px
     position: absolute
     bottom: 4px
-.overlay
-    position: absolute
-    width: 100%
-    height: 100%
-    z-index: 55
-.q-media
-    justify-content: space-evenly
+.nft-video
     padding: 0
-    margin: 0
+    margin: auto
+    display: block
     z-index: 1
     max-width: 220px
     max-height: 160px

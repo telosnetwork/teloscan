@@ -264,7 +264,7 @@ export default {
                 this.hash = this.subtab;
                 this.menus[menu] = true;
                 this.indicators[menu] = true;
-                this.$refs.panels.goTo(this.subtab);
+                this.$refs.panels?.goTo(this.subtab);
             }
         },
         disableConfirmation() {
@@ -284,9 +284,9 @@ export default {
             <div class="homeInfo">
                 <div class="flex">
                     <q-img
-                        v-if="this.contract?.supportedInterfaces.includes('erc20')"
+                        v-if="contract?.supportedInterfaces.includes('erc20')"
                         class="coin-icon"
-                        :alt="this.contract.getName() + ' ERC20 token'"
+                        :alt="contract.getName() + ' ERC20 token'"
                         :src="getIcon(this.contract.logoURI)"
                     />
                     <q-icon
@@ -330,17 +330,17 @@ export default {
                         <ConfirmationDialog
                             class="text-secondary"
                             :flag="confirmationDialog"
-                            :address="this.accountAddress"
-                            :status="this.contract?.isVerified()"
+                            :address="accountAddress"
+                            :status="contract?.isVerified()"
                             @dialog="disableConfirmation"
                         />
                         <CopyButton
                             class="text-secondary"
-                            :text="this.accountAddress"
-                            :accompanyingText="this.accountAddress"
+                            :text="accountAddress"
+                            :accompanyingText="accountAddress"
                             description="address"
                         />
-                        <template v-if="this.contract">
+                        <template v-if="contract">
                             <div v-if="contract.getCreationTrx()" class="text-white">
                                 {{ $t('pages.created_at_trx' )}}
                                 <TransactionField :transaction-hash="contract.getCreationTrx()"/>
@@ -354,8 +354,8 @@ export default {
                             </div>
                             <div v-if="contract.issuer" class="text-white">
                                 {{ $t('pages.issuer') }}
-                                <a :href="this.contract.issuer_link" target="_blank">
-                                    {{ this.contract.issuer }}
+                                <a :href="contract.issuer_link" target="_blank">
+                                    {{ contract.issuer }}
                                 </a>
                             </div>
                             <div v-if="creationDate > 0" class="text-white">
@@ -365,7 +365,7 @@ export default {
                                     :force-show-age="false"
                                 />
                             </div>
-                            <div v-if="this.contract.supportedInterfaces.length > 0" class="q-pt-md">
+                            <div v-if="contract.supportedInterfaces.length > 0" class="q-pt-md">
                                 <span>
                                     <span
                                         v-for="intf in contract.supportedInterfaces"
@@ -407,15 +407,15 @@ export default {
                                 </div>
                             </div>
                             <div
-                                v-if="this.contract && this.contract.properties?.price
-                                    && parseFloat(this.contract.properties.price) > 0"
+                                v-if="contract && contract.properties?.price
+                                    && parseFloat(contract.properties.price) > 0"
                                 class="dataCardItem"
                             >
                                 <div class="dataCardTile">
                                     {{ $t('components.usd_price') }}
                                 </div>
                                 <div class="dataCardData">
-                                    <span v-if="this.contract.properties.price < 0.0001">{{ '< 0.0001 $' }}</span>
+                                    <span v-if="contract.properties.price < 0.0001">{{ '< 0.0001 $' }}</span>
                                     <span v-else>
                                         {{
                                             Number(parseFloat(contract.properties.price))
@@ -427,8 +427,8 @@ export default {
                             </div>
                             <div
                                 v-if="
-                                    this.contract && this.contract.properties?.marketcap
-                                        && parseFloat(this.contract.properties.marketcap) > 0
+                                    contract && contract.properties?.marketcap
+                                        && parseFloat(contract.properties.marketcap) > 0
                                 "
                                 class="dataCardItem"
                             >
@@ -449,14 +449,14 @@ export default {
                             </div>
                             <div
                                 v-if="
-                                    this.contract && this.contract.properties?.supply
+                                    contract && contract.properties?.supply
                                         && (this.contract.supportedInterfaces.includes('erc721')
-                                            || this.contract.supportedInterfaces.includes('erc20'))
+                                            || contract.supportedInterfaces.includes('erc20'))
                                 "
                                 class="dataCardItem"
                             >
                                 <div
-                                    v-if="this.contract.supportedInterfaces.includes('erc721')"
+                                    v-if="contract.supportedInterfaces.includes('erc721')"
                                     :key="contract.properties.supply + contract.address"
                                 >
                                     <div class="dataCardTile text-center">
@@ -495,7 +495,7 @@ export default {
                                 </div>
                             </div>
                             <div
-                                v-if="this.contract && this.contract.properties?.holders &&
+                                v-if="contract && contract.properties?.holders &&
                                     (this.contract.supportedInterfaces.includes('erc20')
                                         || this.contract.supportedInterfaces.includes('erc721'))"
                                 class="dataCardItem"
@@ -528,7 +528,7 @@ export default {
                 exact
                 replace
                 :label="$t('pages.transactions')"
-                @click.stop="this.toggleMenus(false)"
+                @click.stop="toggleMenus(false)"
             />
             <q-route-tab
                 v-if="contract && contract.supportedInterfaces.includes('erc721')"
@@ -537,7 +537,7 @@ export default {
                 exact
                 replace
                 :label="$t('components.nfts.collection')"
-                @click.stop="this.toggleMenus(false)"
+                @click.stop="toggleMenus(false)"
             />
             <q-route-tab
                 v-if="contract && contract.isToken()"
@@ -546,7 +546,7 @@ export default {
                 exact
                 replace
                 :label="$t('pages.holders')"
-                @click.stop="this.toggleMenus(false)"
+                @click.stop="toggleMenus(false)"
             />
             <q-route-tab
                 v-if="contract && !contract.isToken()"
@@ -555,7 +555,7 @@ export default {
                 exact
                 replace
                 :label="$t('pages.internal_txns')"
-                @click.stop="this.toggleMenus(false)"
+                @click.stop="toggleMenus(false)"
             />
             <q-route-tab
                 name="tokens"
@@ -563,13 +563,13 @@ export default {
                 exact
                 replace
                 :label="$t('pages.tokens')"
-                @click.stop="this.toggleMenus(false)"
+                @click.stop="toggleMenus(false)"
             />
             <q-tab
                 v-if="!contract"
                 name="nfts"
                 :class="tabClass(indicators.nfts)"
-                @click="this.toggleMenus('nfts')"
+                @click="toggleMenus('nfts')"
             >
                 <q-btn-dropdown
                     v-model="menus.nfts"
@@ -603,12 +603,12 @@ export default {
                 v-if="
                     !contract
                         && isLoggedIn
-                        && toChecksumAddress(this.accountAddress) === toChecksumAddress(address)
+                        && toChecksumAddress(accountAddress) === toChecksumAddress(address)
                 "
                 v-model="tab"
                 name="approvals"
                 :class="tabClass(indicators.approvals)"
-                @click="this.toggleMenus('approvals')"
+                @click="toggleMenus('approvals')"
             >
                 <q-btn-dropdown
                     v-model="menus.approvals"
@@ -649,7 +649,7 @@ export default {
             <q-tab
                 :class="tabClass(indicators.transfers)"
                 name="transfers"
-                @click="this.toggleMenus('transfers')"
+                @click="toggleMenus('transfers')"
             >
                 <q-btn-dropdown
                     v-model="menus.transfers"
@@ -733,7 +733,7 @@ export default {
                     v-if="
                         !contract
                             && isLoggedIn
-                            && toChecksumAddress(this.accountAddress) === toChecksumAddress(address)
+                            && toChecksumAddress(accountAddress) === toChecksumAddress(address)
                     "
                     v-model="subtab"
                     name="erc20_approvals"
@@ -744,7 +744,7 @@ export default {
                     v-if="
                         !contract
                             && isLoggedIn
-                            && toChecksumAddress(this.accountAddress) === toChecksumAddress(address)
+                            && toChecksumAddress(accountAddress) === toChecksumAddress(address)
                     "
                     v-model="subtab"
                     name="erc721_approvals"
@@ -755,7 +755,7 @@ export default {
                     v-if="
                         !contract
                             && isLoggedIn
-                            && toChecksumAddress(this.accountAddress) === toChecksumAddress(address)
+                            && toChecksumAddress(accountAddress) === toChecksumAddress(address)
                     "
                     v-model="subtab"
                     name="erc1155_approvals"
