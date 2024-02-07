@@ -138,6 +138,11 @@ export function getRouteWatcherForTabs(routeName, tabs, defaultTab) {
             if (newRoute !== oldRoute) {
                 const { hash: newHash } = newRoute;
 
+                if (!newHash) {
+                    this.$router.replace({ hash: defaultTab });
+                    return;
+                }
+
                 if (newRoute.name !== routeName || !newHash) {
                     return;
                 }

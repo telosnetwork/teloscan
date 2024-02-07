@@ -118,7 +118,11 @@ export default {
                 if (newRoute !== oldRoute) {
                     const { hash: newHash } = newRoute;
                     this.hash = newHash;
-                    if (newRoute.name !== 'address' || !newHash) {
+                    if (newRoute.name !== 'address') {
+                        return;
+                    }
+                    if (!newHash) {
+                        this.$router.replace({ hash: tabs.transactions });
                         return;
                     }
 
