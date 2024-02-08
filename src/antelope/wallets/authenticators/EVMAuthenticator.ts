@@ -92,6 +92,24 @@ export abstract class EVMAuthenticator {
         }
     }
 
+    async autoLogin(network: string, account: string, trackAnalyticsEvents?: boolean): Promise<addressString> {
+        this.trace('autoLogin', network, account);
+        this.trace('AutoLogin analytics enabled =', trackAnalyticsEvents);
+
+        const chain = useChainStore();
+        try {
+            chain.setChain(CURRENT_CONTEXT, network);
+            return account as addressString;
+        } catch (error) {
+            if ((error as unknown as ExceptionError).code === 4001) {
+                throw new AntelopeError('antelope.evm.error_connect_rejected');
+            } else {
+                console.error('Error:', error);
+                throw new AntelopeError('antelope.evm.error_login');
+            }
+        }
+    }
+
     async ensureCorrectChain(): Promise<ethers.providers.Web3Provider> {
         this.trace('ensureCorrectChain');
         if (usePlatformStore().isMobile) {
