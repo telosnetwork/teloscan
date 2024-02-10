@@ -18,6 +18,8 @@ export default class Contract {
           this.supportedInterfaces.push(supportedInterfaces[i])
         }
       }
+    } else {
+      this.supportedInterfaces = [];
     }
     this.properties = properties;
     if (abi){

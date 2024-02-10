@@ -278,20 +278,20 @@ export default {
             <div class="homeInfo">
                 <div class="flex">
                     <q-img
-                        v-if="this.contract?.supportedInterfaces.includes('erc20')"
+                        v-if="this.contract?.supportedInterfaces?.includes('erc20')"
                         class="coin-icon"
                         :alt="this.contract.getName() + ' ERC20 token'"
                         :src="getIcon(this.contract.logoURI)"
                     />
                     <q-icon
-                        v-else-if="!contract"
+                        v-else-if="!this.contract"
                         class="q-mr-xs"
                         name="account_circle"
                         size="md"
                     />
                     <q-icon
                         v-else
-                        :name="(contract.supportedInterfaces.includes('erc721')) ? 'perm_media' : 'source'"
+                        :name="(this.contract.supportedInterfaces?.includes('erc721')) ? 'perm_media' : 'source'"
                         class="q-mr-sm"
                         size="md"
                     />
@@ -359,10 +359,10 @@ export default {
                                     :force-show-age="false"
                                 />
                             </div>
-                            <div v-if="this.contract.supportedInterfaces.length > 0" class="q-pt-md">
+                            <div v-if="this.contract.supportedInterfaces?.length > 0" class="q-pt-md">
                                 <span>
                                     <span
-                                        v-for="intf in contract.supportedInterfaces"
+                                        v-for="intf in this.contract.supportedInterfaces"
                                         v-bind:key="intf"
                                         class="supported-interface bg-primary q-pa-sm text-secondary"
                                     >
@@ -444,13 +444,13 @@ export default {
                             <div
                                 v-if="
                                     this.contract && this.contract.properties?.supply
-                                        && (this.contract.supportedInterfaces.includes('erc721')
-                                            || this.contract.supportedInterfaces.includes('erc20'))
+                                        && (this.contract.supportedInterfaces?.includes('erc721')
+                                            || this.contract.supportedInterfaces?.includes('erc20'))
                                 "
                                 class="dataCardItem"
                             >
                                 <div
-                                    v-if="this.contract.supportedInterfaces.includes('erc721')"
+                                    v-if="this.contract.supportedInterfaces?.includes('erc721')"
                                     :key="contract.properties.supply + contract.address"
                                 >
                                     <div class="dataCardTile text-center">
@@ -490,8 +490,8 @@ export default {
                             </div>
                             <div
                                 v-if="this.contract && this.contract.properties?.holders &&
-                                    (this.contract.supportedInterfaces.includes('erc20')
-                                        || this.contract.supportedInterfaces.includes('erc721'))"
+                                    (this.contract.supportedInterfaces?.includes('erc20')
+                                        || this.contract.supportedInterfaces?.includes('erc721'))"
                                 class="dataCardItem"
                             >
                                 <div class="dataCardTile">
@@ -707,7 +707,7 @@ export default {
                     />
                 </q-tab-panel>
                 <q-tab-panel
-                    v-if="contract && contract.supportedInterfaces.includes('erc721')"
+                    v-if="contract && contract.supportedInterfaces?.includes('erc721')"
                     name="collection"
                 >
                     <NFTList :address="contract.address" filter="contract" />
