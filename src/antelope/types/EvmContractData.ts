@@ -100,4 +100,5 @@ export interface EvmContractFactoryData {
     manager?: EvmContractManagerI;
 }
 
-export type EvmFunctionParam = string | number | boolean | ethers.BigNumber;
+export type EvmFunctionParamSimple = string | number | boolean | ethers.BigNumber;
+export type EvmFunctionParam = EvmFunctionParamSimple | EvmFunctionParamSimple[];

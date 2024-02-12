@@ -167,7 +167,7 @@ function integerSizeValidator(prop, signed) {
  * @param type
  * @returns {boolean}
  */
-function inputIsComplex(type) {
+function inputRequiresParsing(type) {
     return parameterIsIntegerType(type)     ||
         parameterTypeIsAddress(type)        ||
         parameterTypeIsAddressArray(type)   ||
@@ -213,6 +213,38 @@ function getComponentForInputType(type) {
     return undefined;
 }
 
+// eztodo docs
+function getExtraBindingsForInputComponent(type, name, index) {
+    const label = `${name ? name : `Param ${index + 1}`}`;
+    const extras = {};
+
+    // represents integer bits (e.g. uint256) for int types, or array length for array types
+    let size = undefined;
+    if (parameterIsArrayType(type)) {
+        size = getExpectedArrayLengthFromParameterType(type);
+    } else if (parameterIsIntegerType(type)) {
+        size = getIntegerBits(type);
+    }
+
+    const result = type.match(/(\d+)(?=\[)/);
+    const intSize = result ? result[0] : undefined;
+
+    if (intSize && parameterTypeIsUnsignedIntArray(type)) {
+        extras['uint-size'] = intSize;
+    } else if (intSize && parameterTypeIsSignedIntArray(type)) {
+        extras['int-size'] = intSize;
+    }
+
+    const defaultModelValue = parameterTypeIsBoolean(type) ? null : '';
+
+    return {
+        ...extras,
+        label,
+        size,
+        defaultModelValue,
+        name: (label.replaceAll(' ', '-')).toLowerCase(),
+    };
+}
 
 /**
  * Given a function interface type, returns the expected size of the array iff it is defined
@@ -576,10 +608,11 @@ export {
     parameterIsIntegerType,
     getExpectedArrayLengthFromParameterType,
     getIntegerBits,
-    inputIsComplex,
+    inputRequiresParsing,
     asyncInputComponents,
     getComponentForInputType,
     integerSizeValidator,
+    getExtraBindingsForInputComponent,
 
     parameterTypeIsAddress,
     parameterTypeIsAddressArray,

@@ -6,27 +6,22 @@ import { defineComponent, toRaw } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
+
+import { useAccountStore } from 'src/antelope';
+import { CURRENT_CONTEXT } from 'src/antelope/wallets';
+import { WEI_PRECISION } from 'src/antelope/wallets/utils';
 import { LOGIN_DATA_KEY } from 'src/lib/utils';
-
-
 import {
     asyncInputComponents,
     getComponentForInputType,
-    getExpectedArrayLengthFromParameterType,
-    getIntegerBits,
-    inputIsComplex,
-    parameterIsArrayType,
-    parameterIsIntegerType,
-    parameterTypeIsBoolean,
-    parameterTypeIsSignedIntArray,
-    parameterTypeIsUnsignedIntArray,
+    getExtraBindingsForInputComponent,
+    inputRequiresParsing,
 } from 'components/ContractTab/function-interface-utils';
 
+import type { EvmABI, EvmFunctionParam, EvmFunctionParamSimple } from 'src/antelope/types';
+
 import TransactionField from 'src/components/TransactionField.vue';
-import { useAccountStore } from 'src/antelope';
-import { CURRENT_CONTEXT } from 'src/antelope/wallets';
-import { EvmABI, EvmFunctionParam } from 'src/antelope/types';
-import { WEI_PRECISION } from 'src/antelope/wallets/utils';
+import TupleInput from 'src/components/inputs/TupleInput.vue';
 
 
 interface Opts {
@@ -37,11 +32,18 @@ interface Error {
     message: string;
 }
 
+// eztodo no any
+type RenderedInput = {
+    input: any;
+    abiOrder: number;
+};
+
 export default defineComponent({
     name: 'FunctionInterfaceNew',
     components: {
         ...asyncInputComponents,
         TransactionField,
+        TupleInput,
     },
     props: {
         contract: {
@@ -119,61 +121,57 @@ export default defineComponent({
         },
         inputComponents() {
             if (!Array.isArray(this.abi?.inputs)) {
-                return [];
+                return {
+                    tuples: [],
+                    nonTuples: [],
+                };
             }
 
-            const getExtraBindingsForType = ({ type, name }: {type: string, name: string}, index: number) => {
-                const label = `${name ? name : `Param ${index + 1}`}`;
-                const extras = {} as {[key:string]: string};
+            const handleModelValueChange = (type: string, abiOrder: number, value: string) => {
+                this.inputModels[abiOrder] = value;
 
-                // represents integer bits (e.g. uint256) for int types, or array length for array types
-                let size = undefined;
-                if (parameterIsArrayType(type)) {
-                    size = getExpectedArrayLengthFromParameterType(type);
-                } else if (parameterIsIntegerType(type)) {
-                    size = getIntegerBits(type);
-                }
-
-                const result = type.match(/(\d+)(?=\[)/);
-                const intSize = result ? result[0] : undefined;
-
-                if (intSize && parameterTypeIsUnsignedIntArray(type)) {
-                    extras['uint-size'] = intSize;
-                } else if (intSize && parameterTypeIsSignedIntArray(type)) {
-                    extras['int-size'] = intSize;
-                }
-
-                const defaultModelValue = parameterTypeIsBoolean(type) ? null : '';
-
-                return {
-                    ...extras,
-                    label,
-                    size,
-                    modelValue: this.inputModels[index] ?? defaultModelValue,
-                    name: label.toLowerCase(),
-                };
-            };
-
-            const handleModelValueChange = (type: string, index: number, value: string) => {
-                this.inputModels[index] = value;
-
-                if (!inputIsComplex(type)) {
-                    this.params[index] = value;
+                if (!inputRequiresParsing(type)) {
+                    this.params[abiOrder] = value;
                 }
             };
-            const handleValueParsed = (type: string, index: number, value: EvmFunctionParam) => {
-                if (inputIsComplex(type)) {
-                    this.params[index] = value;
+            const handleValueParsed = (type: string, abiOrder: number, value: EvmFunctionParam) => {
+                if (inputRequiresParsing(type)) {
+                    this.params[abiOrder] = value;
                 }
             };
+            const handleTupleModelChanged = (abiOrder: number, value: EvmFunctionParam) => {
+                this.params[abiOrder] = value;
+            };
 
-            return this.abi.inputs.map((input, index) => ({
-                bindings: getExtraBindingsForType(input, index),
-                is: getComponentForInputType(input.type),
-                inputType: input.type,
-                handleModelValueChange: (type: string, index: number, value: string) => handleModelValueChange(type, index, value),
-                handleValueParsed:      (type: string, index: number, value: EvmFunctionParam) => handleValueParsed(type, index, value),
-            }));
+            const tupleInputs: RenderedInput[] = [];
+            const nonTupleInputs: RenderedInput[] = [];
+            this.abi.inputs.forEach((input, index) => {
+                (input.type === 'tuple' ? tupleInputs : nonTupleInputs).push({ input, abiOrder: index });
+            });
+
+            return {
+                tuples: tupleInputs.map(({ input, abiOrder }) => ({
+                    inputs: input.components,
+                    name: input.name,
+                    abiOrder: abiOrder,
+                    handleModelValueChange: (abiOrder: number, value: string) => handleTupleModelChanged(abiOrder, value),
+                })),
+                nonTuples: nonTupleInputs.map(({ input, abiOrder }, index) => {
+                    const extraBindings = getExtraBindingsForInputComponent(input.type, input.name, index);
+                    return {
+                        bindings: {
+                            ...extraBindings,
+                            modelValue: this.inputModels[index] ?? extraBindings.defaultModelValue,
+                        },
+                        abiOrder,
+                        is: getComponentForInputType(input.type),
+                        inputType: input.type,
+                        handleModelValueChange: (type: string, abiOrder: number, value: string) => handleModelValueChange(type, abiOrder, value),
+                        handleValueParsed: (type: string, abiOrder: number, value: EvmFunctionParam) => handleValueParsed(type, abiOrder, value),
+                    };
+                }),
+            };
+
         },
         enableRun() {
             return this.isLoggedIn || this.abi.stateMutability === 'view';
@@ -184,7 +182,14 @@ export default defineComponent({
             }
 
             for (let i = 0; i < this.abi.inputs.length; i++) {
-                if (['', null, undefined].includes(this.params[i] as never)) {
+                const isEmpty = (val: EvmFunctionParam) => (['', null, undefined] as unknown[]).includes(val);
+
+                // true if input is a tuple and has at least one empty value, or if input is not a tuple and is empty
+                const inputIsEmpty = Array.isArray(this.params[i]) ?
+                    (this.params[i] as EvmFunctionParamSimple[]).some(param => isEmpty(param)) :
+                    isEmpty(this.params[i]);
+
+                if (inputIsEmpty) {
                     return true;
                 }
             }
@@ -424,7 +429,16 @@ export default defineComponent({
         </unsigned-int-input>
     </div>
 
-    <template v-for="(component, index) in inputComponents">
+    <TupleInput
+        v-for="(tuple, index) in inputComponents.tuples"
+        :key="`tuple-${index}`"
+        :inputs="tuple.inputs"
+        :name="tuple.name"
+        class="q-mb-lg"
+        @update:model-value="tuple.handleModelValueChange(tuple.abiOrder, $event)"
+    />
+
+    <template v-for="(component, index) in inputComponents.nonTuples">
         <component
             :is="component.is"
             v-if="component.is"
@@ -432,8 +446,8 @@ export default defineComponent({
             v-bind="component.bindings"
             required="true"
             class="q-pb-lg"
-            @valueParsed="component.handleValueParsed(component.inputType, index, $event)"
-            @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
+            @valueParsed="component.handleValueParsed(component.inputType, component.abiOrder, $event)"
+            @update:modelValue="component.handleModelValueChange(component.inputType, component.abiOrder, $event)"
         />
     </template>
 
