@@ -70,6 +70,7 @@ export default defineComponent({
             localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
                 type: LOGIN_EVM,
                 provider: pr_name,
+                account: address,
             }));
         });
 
@@ -80,7 +81,7 @@ export default defineComponent({
 
         const loginObj = JSON.parse(loginData);
         if (loginObj.type === LOGIN_EVM) {
-            this.loginWithAntelope(loginObj.provider);
+            this.loginWithAntelope(loginObj.provider, loginObj.account);
         } else if (loginObj.type === LOGIN_NATIVE) {
             const wallet = this.authenticators.find((a: { getName: () => any; }) => a.getName() === loginObj.provider);
             if (wallet) {
@@ -144,7 +145,7 @@ export default defineComponent({
                     nativeAccount: accountName,
                 });
                 this.$providerManager.setProvider(account);
-                localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({ type: LOGIN_NATIVE, provider: wallet.getName() }));
+                localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({ type: LOGIN_NATIVE, provider: wallet.getName(), account: evmAccount.address }));
             }
             this.$emit('hide');
         },
@@ -156,7 +157,7 @@ export default defineComponent({
 
             return wallet.getStyle().icon;
         },
-        async loginWithAntelope(name:string) {
+        async loginWithAntelope(name:string, autoLogAccount?: string) {
             const label = CURRENT_CONTEXT;
             const auth = getAntelope().wallets.getAuthenticator(name);
             if (!auth) {
@@ -165,12 +166,13 @@ export default defineComponent({
             }
             const authenticator = auth.newInstance(label);
             const network = useChainStore().currentChain.settings.getNetwork();
-            useAccountStore().loginEVM({ authenticator, network }, true).then(() => {
+            useAccountStore().loginEVM({ authenticator, network, autoLogAccount }, true).then(() => {
                 const address = useAccountStore().getAccount(label).account;
                 this.setLogin({ address });
                 localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
                     type: LOGIN_EVM,
                     provider: name,
+                    account: address,
                 }));
             });
             this.$emit('hide');
