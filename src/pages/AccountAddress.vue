@@ -278,20 +278,20 @@ export default {
             <div class="homeInfo">
                 <div class="flex">
                     <q-img
-                        v-if="this.contract?.supportedInterfaces?.includes('erc20')"
+                        v-if="contract?.supportedInterfaces?.includes('erc20')"
                         class="coin-icon"
-                        :alt="this.contract.getName() + ' ERC20 token'"
-                        :src="getIcon(this.contract.logoURI)"
+                        :alt="contract.getName() + ' ERC20 token'"
+                        :src="getIcon(contract.logoURI)"
                     />
                     <q-icon
-                        v-else-if="!this.contract"
+                        v-else-if="!contract"
                         class="q-mr-xs"
                         name="account_circle"
                         size="md"
                     />
                     <q-icon
                         v-else
-                        :name="(this.contract.supportedInterfaces?.includes('erc721')) ? 'perm_media' : 'source'"
+                        :name="(contract.supportedInterfaces?.includes('erc721')) ? 'perm_media' : 'source'"
                         class="q-mr-sm"
                         size="md"
                     />
@@ -324,17 +324,17 @@ export default {
                         <ConfirmationDialog
                             class="text-secondary"
                             :flag="confirmationDialog"
-                            :address="this.accountAddress"
-                            :status="this.contract?.isVerified()"
+                            :address="accountAddress"
+                            :status="contract?.isVerified()"
                             @dialog="disableConfirmation"
                         />
                         <CopyButton
                             class="text-secondary"
-                            :text="this.accountAddress"
-                            :accompanyingText="this.accountAddress"
+                            :text="accountAddress"
+                            :accompanyingText="accountAddress"
                             description="address"
                         />
-                        <template v-if="this.contract">
+                        <template v-if="contract">
                             <div v-if="contract.getCreationTrx()" class="text-white">
                                 {{ $t('pages.created_at_trx' )}}
                                 <TransactionField :transaction-hash="contract.getCreationTrx()"/>
@@ -348,8 +348,8 @@ export default {
                             </div>
                             <div v-if="contract.issuer" class="text-white">
                                 {{ $t('pages.issuer') }}
-                                <a :href="this.contract.issuer_link" target="_blank">
-                                    {{ this.contract.issuer }}
+                                <a :href="contract.issuer_link" target="_blank">
+                                    {{ contract.issuer }}
                                 </a>
                             </div>
                             <div v-if="creationDate > 0" class="text-white">
@@ -359,10 +359,10 @@ export default {
                                     :force-show-age="false"
                                 />
                             </div>
-                            <div v-if="this.contract.supportedInterfaces?.length > 0" class="q-pt-md">
+                            <div v-if="contract.supportedInterfaces?.length > 0" class="q-pt-md">
                                 <span>
                                     <span
-                                        v-for="intf in this.contract.supportedInterfaces"
+                                        v-for="intf in contract.supportedInterfaces"
                                         v-bind:key="intf"
                                         class="supported-interface bg-primary q-pa-sm text-secondary"
                                     >
@@ -401,15 +401,15 @@ export default {
                                 </div>
                             </div>
                             <div
-                                v-if="this.contract && this.contract.properties?.price
-                                    && parseFloat(this.contract.properties.price) > 0"
+                                v-if="contract && contract.properties?.price
+                                    && parseFloat(contract.properties.price) > 0"
                                 class="dataCardItem"
                             >
                                 <div class="dataCardTile">
                                     {{ $t('components.usd_price') }}
                                 </div>
                                 <div class="dataCardData">
-                                    <span v-if="this.contract.properties.price < 0.0001">{{ '< 0.0001 $' }}</span>
+                                    <span v-if="contract.properties.price < 0.0001">{{ '< 0.0001 $' }}</span>
                                     <span v-else>
                                         {{
                                             Number(parseFloat(contract.properties.price))
@@ -421,8 +421,8 @@ export default {
                             </div>
                             <div
                                 v-if="
-                                    this.contract && this.contract.properties?.marketcap
-                                        && parseFloat(this.contract.properties.marketcap) > 0
+                                    contract && contract.properties?.marketcap
+                                        && parseFloat(contract.properties.marketcap) > 0
                                 "
                                 class="dataCardItem"
                             >
@@ -443,14 +443,14 @@ export default {
                             </div>
                             <div
                                 v-if="
-                                    this.contract && this.contract.properties?.supply
-                                        && (this.contract.supportedInterfaces?.includes('erc721')
-                                            || this.contract.supportedInterfaces?.includes('erc20'))
+                                    contract && contract.properties?.supply
+                                        && (contract.supportedInterfaces?.includes('erc721')
+                                            || contract.supportedInterfaces?.includes('erc20'))
                                 "
                                 class="dataCardItem"
                             >
                                 <div
-                                    v-if="this.contract.supportedInterfaces?.includes('erc721')"
+                                    v-if="contract.supportedInterfaces?.includes('erc721')"
                                     :key="contract.properties.supply + contract.address"
                                 >
                                     <div class="dataCardTile text-center">
@@ -489,9 +489,9 @@ export default {
                                 </div>
                             </div>
                             <div
-                                v-if="this.contract && this.contract.properties?.holders &&
-                                    (this.contract.supportedInterfaces?.includes('erc20')
-                                        || this.contract.supportedInterfaces?.includes('erc721'))"
+                                v-if="contract && contract.properties?.holders &&
+                                    (contract.supportedInterfaces?.includes('erc20')
+                                        || contract.supportedInterfaces?.includes('erc721'))"
                                 class="dataCardItem"
                             >
                                 <div class="dataCardTile">
