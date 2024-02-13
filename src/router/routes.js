@@ -11,6 +11,17 @@ const routes = [
         ],
     },
     {
+        path: '/address/:address/sourcify',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'sourcify',
+                component: () => import('pages/ContractVerification.vue'),
+            },
+        ],
+    },
+    {
         path: '/address/:address',
         component: () => import('layouts/MainLayout.vue'),
         children: [
@@ -39,6 +50,17 @@ const routes = [
             name: 'block',
             component: () => import('pages/Block.vue'),
         }],
+    },
+    {
+        path: '/holders',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'holders',
+                component: () => import('pages/Holders.vue'),
+            },
+        ],
     },
     {
         path: '/transactions',

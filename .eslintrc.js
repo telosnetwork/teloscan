@@ -7,6 +7,7 @@ module.exports = {
         sourceType: 'module',
     },
     env: {
+        'es2020': true,
         'browser': true,
         'es2021': true,
         'amd': true,

@@ -65,6 +65,12 @@ export default {
     async created() {
         await this.fetchContracts();
         await this.fetchContractInstances();
+        if(!this.isLoggedIn){
+            this.$q.notify({
+                type: 'info',
+                message: this.$t('pages.staking.sign_in'),
+            });
+        }
     },
     methods: {
         async fetchBalances() {
@@ -88,7 +94,7 @@ export default {
                     console.error(`Failed to fetch account: ${message}`);
                     this.$q.notify({
                         type: 'negative',
-                        message: this.$t('page.staking.fetch_balance_error', { message }),
+                        message: this.$t('pages.staking.fetch_balance_error', { message }),
                     });
                     this.tlosBalance = null;
                 });
@@ -183,7 +189,7 @@ export default {
             ]);
         },
         async fetchContracts() {
-            const stlosPromise = this.$contractManager.getContract(process.env.STAKED_TLOS_CONTRACT_ADDRESS)
+            const stlosPromise = await this.$contractManager.getContract(process.env.STAKED_TLOS_CONTRACT_ADDRESS)
                 .then((contract) => {
                     this.stlosContract = contract;
                 })
@@ -196,12 +202,12 @@ export default {
                     this.stlosContract = null;
                 });
 
-            const escrowPromise = this.$contractManager.getContract(process.env.TELOS_ESCROW_CONTRACT_ADDRESS)
+            const escrowPromise = await this.$contractManager.getContract(process.env.TELOS_ESCROW_CONTRACT_ADDRESS)
                 .then((contract) => {
                     this.escrowContract = contract;
                 })
                 .catch(({ message }) => {
-                    console.error(`Failed to get STLOS contract: ${message}`);
+                    console.error(`Failed to get Escrow contract: ${message}`);
                     this.$q.notify({
                         type: 'negative',
                         message: this.$t('page.staking.fetch_escrow_contract_error', { message }),
@@ -209,10 +215,10 @@ export default {
                     this.escrowContract = null;
                 });
 
-            return Promise.all([stlosPromise, escrowPromise]);
+            return await Promise.all([stlosPromise, escrowPromise]);
         },
         async fetchContractInstances() {
-            if (!this.stlosContract || !this.escrowContract) {
+            if (!this.stlosContract || !this.escrowContract || !this.escrowContract.abi) {
                 await this.fetchContracts();
             }
 
@@ -236,8 +242,8 @@ export default {
                 }
             }
 
-            this.stlosContractInstance  = this.stlosContract.getContractInstance(provider, true);
-            this.escrowContractInstance = this.escrowContract.getContractInstance(provider, true);
+            this.stlosContractInstance  = this.$contractManager.getContractInstance(this.stlosContract, provider);
+            this.escrowContractInstance = this.$contractManager.getContractInstance(this.escrowContract, provider);
 
             await this.fetchBalances();
 
@@ -274,14 +280,16 @@ export default {
 
 <template>
 <div class="c-staking-page pageContainer">
-    <div class="row q-mx-md">
-        <div class="c-staking-page__header col-xs-12 col-md-6">
+    <div class="row flex q-mx-md">
+        <div class="c-staking-page__header col-xs-12 col-md-5">
             <h1 class="c-staking-page__title">
                 {{ $t('pages.staking.telos_evm_staking') }}
             </h1>
             <span class="text-white">
                 {{ $t('pages.staking.stake_tlos_earn_interest') }}
             </span>
+        </div>
+        <div class="col-xs-12 col-md-1">
         </div>
         <div class="col-xs-12 col-md-6">
             <StakingStats

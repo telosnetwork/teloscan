@@ -328,7 +328,7 @@ export default defineComponent({
 </script>
 
 <template>
-<div class="row">
+<div class="row c-unstake-form">
     <div class="col-12 q-mb-lg">
         <BaseStakingForm
             :header="header"
@@ -355,8 +355,13 @@ export default defineComponent({
         />
     </div>
     <div v-if="resultHash" class="col-sm-12 col-md-6 offset-md-3">
-        {{ $t('pages.staking.unstake_stlos_success') }}
-        <TransactionField :transaction-hash="resultHash" />
+        <div class="bg-positive text-white q-py-xs q-px-sm flex items-center">
+            <q-icon name="check_circle" class="q-mr-xs" />
+            {{ $t('pages.staking.unstake_stlos_success')  }}
+            <span class="q-ml-xs">
+                <TransactionField :transaction-hash="resultHash" />
+            </span>
+        </div>
     </div>
     <q-dialog v-model="displayConfirmModal">
         <q-card>
@@ -397,4 +402,7 @@ export default defineComponent({
 <LoginModal :show="displayLoginModal" @hide="displayLoginModal = false" />
 </template>
 
-<style lang="sass"></style>
+<style lang="sass" scoped>
+    .c-unstake-form .bg-positive
+        border-radius: 4px
+</style>

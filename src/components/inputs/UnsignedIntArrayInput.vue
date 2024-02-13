@@ -1,5 +1,5 @@
 <script>
-import { integerSizeValidator, parseUintArrayString } from 'components/ContractTab/function-interface-utils';
+import { integerSizeValidator, parseUintArrayString } from 'src/lib/function-interface-utils';
 
 import BaseTextInput from 'components/inputs/BaseTextInput';
 

@@ -3,9 +3,9 @@ import BlockField from 'components/BlockField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import MethodField from 'components/MethodField';
+import InternalTxns from 'components/Transaction/InternalTxns';
 import { formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
-import InternalTxns from 'components/Transaction/InternalTxns';
 
 export default {
     name: 'InternalTransactionTable',
@@ -146,63 +146,61 @@ export default {
         },
         async onRequest(props) {
             this.loading = true;
-
             // this line cleans the table for a second and the components have to be created again (clean)
             this.rows = [];
-
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
-            let result = await this.$evmEndpoint.get(this.getPath(props));
-
+            let result = await this.$indexerApi.get(this.getPath(props));
             if (this.total === null) {
-                this.pagination.rowsNumber = result.data.total.value;
+                this.pagination.rowsNumber = result.data.total_count;
             }
-
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
-
-            this.transactions = [...result.data.transactions];
-            this.rows = this.transactions;
-
+            this.transactions = [...result.data.results];
             for (const transaction of this.transactions) {
                 try {
                     transaction.transfer = false;
                     transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
-                    if (transaction.input_data === '0x') {
+                    if (transaction.input === '0x') {
                         continue;
                     }
                     if(!transaction.to) {
                         continue;
                     }
-
                     const contract = await this.$contractManager.getContract(
                         transaction.to,
                     );
-
                     if (!contract) {
                         continue;
                     }
-
-                    const parsedTransaction = await contract.parseTransaction(
-                        transaction.input_data,
+                    let traces = await this.$indexerApi.get(
+                        '/transaction/' + transaction.hash + '/internal?limit=1000&sort=ASC&offset=0&includeAbi=1',
                     );
-                    if (parsedTransaction) {
-                        transaction.parsedTransaction = parsedTransaction;
-                        transaction.contract = contract;
+                    for(const trace of [...traces.data.results]){
+                        trace.hash = trace.transaction_hash;
                     }
+                    transaction.traces = traces.data?.results;
+                    transaction.contract = contract;
+                    transaction.contractAddress = contract.address;
+                    const parsedTransaction = await this.$contractManager.parseContractTransaction(
+                        transaction,
+                        transaction.input,
+                        contract,
+                    );
+                    transaction.parsedTransaction = parsedTransaction;
                     // Get ERC20 transfer from main function call
-                    let signature = transaction.input_data.substring(0, 10);
+                    let signature = transaction.input.substring(0, 10);
                     if (
                         signature &&
                         TRANSFER_SIGNATURES.includes(signature) &&
                         transaction.parsedTransaction.args['amount']
                     ) {
-                        let token = await this.$contractManager.getTokenData(transaction.to, 'erc20');
-                        if(transaction.contract && token && token.decimals){
+                        let decimals = transaction.contract.properties?.decimals;
+                        if(transaction.contract && decimals){
                             transaction.transfer = {
-                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], token.decimals)}`,
-                                'symbol': token.symbol,
+                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], decimals)}`,
+                                'symbol': transaction.contract.properties.symbol,
                             };
                         }
                     }
@@ -224,13 +222,16 @@ export default {
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/v2/evm/get_transactions?limit=${
-                rowsPerPage === 0 ? 500 : rowsPerPage
-            }`;
+            let path;
             const filter = Object.assign({}, this.filter ? this.filter : {});
             if (filter.address) {
-                path += `&address=${filter.address}`;
+                path = `/address/${filter.address}/transactions`;
+            } else {
+                path = '/transactions';
             }
+            path += `?limit=${
+                rowsPerPage === 0 ? 500 : rowsPerPage
+            }`;
 
             if (filter.block) {
                 path += `&block=${filter.block}`;
@@ -240,8 +241,11 @@ export default {
                 path += `&hash=${filter.hash}`;
             }
 
-            path += `&skip=${(page - 1) * rowsPerPage}`;
+            path += `&offset=${(page - 1) * rowsPerPage}`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
+            path += '&includeAbi=1&full=1';
+
+            path += (this.total === null) ? '&includePagination=true' : '';  // We only need the count once
 
             return path;
         },
@@ -263,6 +267,9 @@ export default {
     flat
     @request="onPaginationChange"
 >
+    <template v-slot:loading>
+        <q-inner-loading showing color="secondary" />
+    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
@@ -296,37 +303,39 @@ export default {
                 <TransactionField :transaction-hash="props.row.hash"/>
             </q-td>
             <q-td key="block" :props="props">
-                <BlockField :block="props.row.block"/>
+                <BlockField :block="props.row.blockNumber"/>
             </q-td>
             <q-td key="date" :props="props">
-                <DateField :epoch="props.row.epoch" :force-show-age="showDateAge"/>
+                <DateField :epoch="(props.row.timestamp / 1000)" :force-show-age="showDateAge"/>
             </q-td>
             <q-td key="method" :props="props">
                 <MethodField v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"/>
             </q-td>
             <q-td key="int_txns" :props="props">
-                <span v-if="props.row.itxs.length > 0">
-                    <b> {{ $t('components.n_internal_txns', {amount: props.row.itxs.length} ) }} </b>
+                <span v-if="props.row.traces?.length > 0">
+                    <b> {{ $t('components.n_internal_txns', {amount: props.row.traces.length} ) }} </b>
                 </span>
                 <span v-else>{{ $t('components.none') }}</span>
             </q-td>
             <q-td auto-width>
                 <q-icon
-                    v-if="props.row.itxs.length > 0"
+                    v-if="props.row.traces?.length > 0"
                     :name="props.expand ? 'expand_more' : 'expand_less'"
                     size="sm"
+                    class="clickable"
+                    clickable
                     @click="props.expand = !props.expand"
                 />
             </q-td>
         </q-tr>
         <q-tr
-            v-show="!props.expand"
-            v-if="props.row.itxs.length > 0"
+            v-show="props.expand"
+            v-if="props.row.traces?.length > 0"
             :props="props"
             class="q-virtual-scroll--with-prev"
         >
             <q-td colspan="100%">
-                <InternalTxns :itxs="props.row.itxs"/>
+                <InternalTxns :traces="props.row.traces" :transaction="props.row" />
             </q-td>
         </q-tr>
     </template>

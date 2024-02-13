@@ -1,5 +1,6 @@
 <script>
 import TransactionTable from 'components/TransactionTable';
+
 export default {
     name: 'TransactionsPage',
     components: {

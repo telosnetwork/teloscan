@@ -16,22 +16,33 @@ export default {
             default: () => ({}),
         },
     },
-    data: () => ({
-        source: true,
-        write: false,
-    }),
+    data() {
+        if(this.contract.abi?.length > 0){
+            return ({
+                source: true,
+                write: false,
+            });
+        }
+        return ({
+            source: false,
+            write: false,
+        });
+    },
     computed: {
+        verified() {
+            return this.contract.verified;
+        },
         abi() {
-            const { abi } = this.contract;
+            const abi  = this.contract.abi;
 
-            if (!Array.isArray(abi)) {
-                return '';
+            if (!abi || abi === null || !Array.isArray(abi)) {
+                return false;
             }
 
             return JSON.stringify(this.contract.abi);
         },
-        codeSeleted() {
-            return this.source === true;
+        codeSelected() {
+            return (this.source === true);
         },
         readSelected() {
             return this.source === false && this.write === false;
@@ -44,47 +55,56 @@ export default {
 </script>
 
 <template>
-<div class="contract-tab">
-    <CopyButton
-        v-if="abi"
-        :text="abi"
-        :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
-        class="q-mb-md"
-    />
-    <br>
-
-    <q-btn-group>
-        <q-btn
-            :outline="codeSeleted"
-            :label="$t('components.contract_tab.code')"
-            push
-            @click="source = true"
+<div v-if="abi" :key="contract.address + abi.length" class="contract-tab">
+    <div class="flex justify-between items-center">
+        <q-btn-group >
+            <q-btn
+                :outline="codeSelected"
+                :label="$t('components.contract_tab.code')"
+                push
+                @click="source = true; write = false"
+            />
+            <q-btn
+                :outline="readSelected"
+                :label="$t('components.contract_tab.read')"
+                push
+                @click="source = false; write = false"
+            />
+            <q-btn
+                :outline="writeSelected"
+                :label="$t('components.contract_tab.write')"
+                push
+                @click="source = false; write = true"
+            />
+        </q-btn-group>
+        <CopyButton
+            v-if="verified && !contract?.autoloadedAbi"
+            :text="abi"
+            :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
         />
-        <q-btn
-            :outline="readSelected"
-            :label="$t('components.contract_tab.read')"
-            push
-            @click="source = false; write = false"
-        />
-        <q-btn
-            :outline="writeSelected"
-            :label="$t('components.contract_tab.write')"
-            push
-            @click="source = false; write = true"
-        />
-    </q-btn-group>
-
-    <ContractSource v-if="source" />
+    </div>
+    <ContractSource v-if="source" :contract="contract" />
     <ContractInterface
         v-else
         :write="write"
+        :contract="contract"
     />
 </div>
 </template>
 
 <style lang='sass'>
+.contract-tab .vjs-tree-list-holder-inner
+    padding-bottom: 20px
 .contract-tab
     margin-left: 2rem
     margin-right: 2rem
     padding-top: 1rem
+
+@media screen and (max-width: 764px)
+    .contract-tab > .items-center .c-copy-button
+        margin-top: 12px
+
+    .contract-tab > .items-center
+        display: block
+
 </style>

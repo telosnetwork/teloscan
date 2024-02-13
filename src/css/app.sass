@@ -13,6 +13,13 @@ a
   background: radial-gradient( circle at 50% 50%, rgba(97, 8, 183, 1) 1%, rgba(0, 188, 212, 1) 53%, rgba(213, 109, 213, 1) 100%)
   color: $purpleDarkMode
 
+.q-btn:hover .q-focus-helper, .q-btn:focus .q-focus-helper
+  opacity: 0 !important
+
+.q-btn .q-focus-helper
+  background: inherit
+  opacity: 0 !important
+
 .q-header
   margin:10px
 
@@ -83,6 +90,9 @@ body.body--light
 body.body--dark
   color: $white
 
+  .vjs-tree-node.is-highlight, .vjs-tree-node:hover
+    background-color: #494f52
+
   .bgNormal
     background: #1a1a1a
     background-size: cover
@@ -105,6 +115,9 @@ body.body--dark
 
 .info-icon
     margin-left: 4px
+
+.q-layout
+  min-height: auto !important
 
 .ellipsis-label
   color: #999
@@ -201,6 +214,49 @@ body.body--dark
 
 .tableWrapper
   max-width: 100vw
+
+.source-container.fullscreen .vjs-tree-list
+  height: 100% !important
+
+.source-container.fullscreen
+  height: 100% !important
+  max-height: 100% !important
+  top: 50px
+  z-index: 222
+
+.q-media
+  max-width: 280px !important
+
+.vjs-tree.source-container
+    padding: 20px
+
+.hljs-built_in, .hljs-bullet, .hljs-code, .hljs-addition
+  color: inherit !important
+.vjs-value-boolean, .hljs-title, .hljs-section
+  color: $orange !important
+.vjs-value-string, .hljs-string, .hljs-meta
+  color: $green !important
+.vjs-value-number, .hljs-keyword
+  color: $secondary !important
+.vjs-value-null, .vjs-value-undefined, .hljs-number
+  color: $red !important
+.vjs-tree-list
+  height: auto !important
+.vjs-tree.is-virtual .vjs-tree-node
+  white-space: normal !important
+.q-expansion-item__container .q-item__section--side
+  padding: 0 !important
+.q-expansion-item__container .q-item.disabled, .q-expansion-item__container .q-item.disabled *
+  opacity: 1 !important
+  cursor: initial !important
+.q-expansion-item__container .q-item
+  background: rgba(103, 110, 203, 0.08)
+.body--dark .q-expansion-item__container .q-item
+  background: rgba(47, 60, 156, 0.11)
+
+@media screen and (max-width: 1440px)
+  .source-container.fullscreen
+    top: 0px
 
 @media screen and (max-width: 650px)
   body

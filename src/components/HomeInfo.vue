@@ -14,7 +14,7 @@ export default {
         blockImage: blockImage,
     }),
     computed: {
-        ...mapGetters('evm', ['tlosPrice', 'gasPrice', 'latestBlock']),
+        ...mapGetters('chain', ['tlosPrice', 'gasPrice', 'latestBlock']),
         gasPriceGwei() {
             let gweiStr = ethers.utils.formatUnits(this.gasPrice, 'gwei');
             gweiStr = (+gweiStr).toFixed(0);
@@ -29,10 +29,10 @@ export default {
             this.fetchTlosPrice();
             this.fetchGasPrice();
             this.fetchLatestBlock();
-        }, 3000);
+        }, 6000);
     },
     methods: {
-        ...mapActions('evm', ['fetchTlosPrice', 'fetchGasPrice', 'fetchLatestBlock']),
+        ...mapActions('chain', ['fetchTlosPrice', 'fetchGasPrice', 'fetchLatestBlock']),
     },
 };
 </script>

@@ -50,12 +50,14 @@ export default defineComponent({
                 label: '',
                 field: 'amount',
                 sortable: true,
+                align: 'left',
             },
             {
                 name: 'time',
                 label: '',
                 field: 'until',
                 sortable: true,
+                align: 'right',
             },
         ],
         showAge: true,
@@ -197,7 +199,7 @@ export default defineComponent({
                 :disabled="withdrawDisabled"
                 :loading="ctaIsLoading"
                 color="secondary"
-                text-color="black"
+                text-color="white"
                 @click="withdrawUnlocked"
             >
                 {{ $t('pages.staking.withdraw_tlos') }}
@@ -226,7 +228,8 @@ export default defineComponent({
 
 .deposits-table
     max-height: 50rem
-    max-width: 20rem
+    max-width: 30rem
+    width: 100%
     margin: auto
 
     .q-table__top,

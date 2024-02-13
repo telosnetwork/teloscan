@@ -173,7 +173,7 @@ export default {
                         :disabled="ctaDisabled"
                         :loading="ctaLoading"
                         color="secondary"
-                        text-color="black"
+                        text-color="white"
                         @click="handleCtaClick"
                     >
                         {{ ctaText }}

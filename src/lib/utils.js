@@ -1,8 +1,21 @@
 import { BigNumber, ethers } from 'ethers';
 import moment from 'moment';
+
+export const REVERT_FUNCTION_SELECTOR = '0x08c379a0';
+export const REVERT_PANIC_SELECTOR = '0x4e487b71';
+export const ZERO_ADDRESSES = '0x0000000000000000000000000000000000000000';
+export const DEAD_ADDRESSES = [
+    ZERO_ADDRESSES,
+    '0x00000000000000000000000000000000000xdead',
+];
+
+export const ALLOWED_IMAGE_EXTENSIONS = [
+    'svg', 'jpg', 'jpeg', 'gif', 'png', 'webp',
+];
+export const ALLOWED_VIDEO_EXTENSIONS = [
+    'mp4', 'webm', 'ogg',
+];
 import keccak from 'keccak';
-const REVERT_FUNCTION_SELECTOR = '0x08c379a0';
-const REVERT_PANIC_SELECTOR = '0x4e487b71';
 
 export const WEI_PRECISION = 18;
 export const DISPLAY_DECIMALS = 4;
@@ -28,6 +41,7 @@ export function formatWei(bn, tokenDecimals, displayDecimals) {
     }
     return str;
 }
+
 export function isValidAddressFormat(ethAddressString) {
     const pattern = /^0x[a-fA-F0-9]{40}$/;
     return pattern.test(ethAddressString);

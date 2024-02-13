@@ -30,7 +30,6 @@ export default {
     computed: {
         friendlyDate ()  {
             const showAge = this.forceShowAge === true || (this.forceShowAge === null && this.showAge);
-
             if (showAge) {
                 return moment.unix(this.epoch).fromNow();
             }

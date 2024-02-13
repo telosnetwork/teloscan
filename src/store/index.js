@@ -2,7 +2,8 @@ import { createStore } from 'vuex';
 
 import login from 'src/store/login';
 import general from 'src/store/general';
-import evm from 'src/store/evm';
+import chain from 'src/store/chain';
+import transaction from 'src/store/transaction';
 import { store } from 'quasar/wrappers';
 
 /*
@@ -15,7 +16,8 @@ export default store(function (/* { ssrContext } */) {
         modules: {
             general,
             login,
-            evm,
+            chain,
+            transaction,
         },
 
         // enable strict mode (adds overhead!)

@@ -20,7 +20,7 @@ import {
     parameterTypeIsBoolean,
     parameterTypeIsSignedIntArray,
     parameterTypeIsUnsignedIntArray,
-} from 'components/ContractTab/function-interface-utils';
+} from 'src/lib/function-interface-utils';
 
 import TransactionField from 'src/components/TransactionField.vue';
 import { useAccountStore } from 'src/antelope';
@@ -243,7 +243,7 @@ export default defineComponent({
             this.endLoading();
         },
         async getEthersFunction(provider?: ethers.providers.JsonRpcSigner | ethers.providers.JsonRpcProvider) {
-            const contractInstance = await this.contract.getContractInstance(provider);
+            const contractInstance = await this.$contractManager.getContractInstance(this.contract, provider);
             return contractInstance[this.functionABI];
         },
         runRead() {
@@ -312,7 +312,7 @@ export default defineComponent({
                 common: this.$evm.chainConfig,
             });
 
-            this.hash = `0x${tx.hash().toString('hex')}`;
+            this.hash = `0x${tx?.hash().toString('hex')}`;
             this.endLoading();
         },
         async runEVM(opts: Opts) {
@@ -385,14 +385,12 @@ export default defineComponent({
                         v-close-popup
                         flat
                         :label="$t('global.ok')"
-                        color="primary"
                         @click="setAmount"
                     />
                     <q-btn
                         v-close-popup
                         flat
                         :label="$t('global.cancel')"
-                        color="primary"
                         @click="clearAmount"
                     />
                 </q-card-actions>
@@ -454,7 +452,3 @@ export default defineComponent({
     </div>
 </div>
 </template>
-
-<style lang="scss">
-
-</style>
