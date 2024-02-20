@@ -271,7 +271,7 @@ export default {
                 </q-tabs>
                 <q-tab-panels
                     v-model="tab"
-                    class="column shadow-2"
+                    class="column"
                     animated="animated"
                     keep-alive="keep-alive"
                 >
@@ -488,8 +488,6 @@ export default {
 <style lang="sass" scoped>
 .content-container
     background: $primary
-.shadow-2
-    box-shadow: none !important
 
 span
     word-break: break-word

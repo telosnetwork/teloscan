@@ -96,7 +96,7 @@ export default {
     </div>
     <div
         v-if="!error && blockData && blockData.transactionsCount > 0"
-        class="tableWrapper shadow-2 content-container q-mt-lg"
+        class="tableWrapper content-container q-mt-lg"
     >
         <TransactionTable :title="block" :filter="`block/${block}`"/>
     </div>
@@ -128,7 +128,7 @@ export default {
     height: 40px
 
 .dataCardItem
-    color: $white
+    color: white
 
 .inline
     display: inline-flex
@@ -144,16 +144,14 @@ export default {
     &__block-navigation
         height: 24px
         margin-top: 8px
-        color: $white
+        color: white
         &--box
             height: 16px
             width: 16px
             margin: 0 2px 0 2px
-            border: 1px solid $white
+            border: 1px solid white
             border-radius: 2px
             cursor: pointer
-.shadow-2
-    box-shadow: none !important
 
 @media only screen and (max-width: 1200px)
     .row.justify-between.q-mb-lg

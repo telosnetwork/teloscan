@@ -117,7 +117,7 @@ export default {
         margin: auto;
     }
     .c-method-icon {
-        background: $purpleBright;
+        background: var(--q-primary);
         display: flex;
         align-items: center;
         justify-content: center;

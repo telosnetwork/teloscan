@@ -19,9 +19,6 @@ export default {
 </template>
 
 <style lang="scss">
-body.body--light .c-footer {
-    color: $white
-}
 .c-footer {
     margin: 8px auto 24px;
     padding: 0 16px;

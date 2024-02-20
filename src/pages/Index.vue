@@ -13,7 +13,7 @@ export default {
 <template>
 <q-page class="pageContainer">
     <div class="row justify-center q-py-lg">
-        <div class="text-h4 text-primary title q-mt-xl bold">{{ $t('pages.telos_evm_explorer') }}</div>
+        <div class="text-h4 title q-mt-xl bold">{{ $t('pages.telos_evm_explorer') }}</div>
     </div>
     <div class="row q-pt-xl q-pb-md tableWrapper">
         <div class="col-12">

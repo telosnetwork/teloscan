@@ -125,7 +125,7 @@ export default defineComponent({
 </script>
 
 <template>
-<header v-clickaway="handleClickaway" class="c-header shadow-2">
+<header v-clickaway="handleClickaway" class="c-header">
     <router-link to="/" class="c-header__logo-container u-flex--left">
         <div class="c-header__logo-image-container">
             <img
@@ -409,6 +409,7 @@ export default defineComponent({
     padding: 0 0 0 16px;
     z-index: 999;
     color: var(--text-color);
+    border-bottom: 1px solid var(--border-color);
 
     display: flex;
     flex-wrap: nowrap;
@@ -524,10 +525,7 @@ export default defineComponent({
         left: 0;
         padding: 0 16px;
         width: 100%;
-        box-shadow:
-            0 4px 5px rgba(0, 0, 0, 0.2),
-            0 2px 2px rgba(0, 0, 0, 0.14),
-            0 3px 1px -2px rgba(0, 0, 0, 0.12);
+        border-bottom: 1px solid var(--border-color);
 
         display: none;
 
@@ -583,7 +581,7 @@ export default defineComponent({
 
             & > #{$this}__menu-item-icon:not(#{$this}__menu-item-icon--chevron) {
                 filter: grayscale(0);
-                color: $secondary;
+                color: $primary;
             }
         }
 
