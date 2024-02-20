@@ -253,6 +253,7 @@ export default {
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
             const filter =  (this.filter.toString().length > 0) ? this.filter.toString() : '';
+            const blockNumber = this.$route.query.block;
             let path = `${filter}/transactions?limit=${
                 rowsPerPage === 0 ? 500 : rowsPerPage
             }`;
@@ -260,6 +261,9 @@ export default {
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             path += (this.pagination.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
             path += '&includeAbi=true';
+            if (blockNumber){
+                path += `&block=${blockNumber}`;
+            }
             return path;
         },
         toggleDateFormat() {

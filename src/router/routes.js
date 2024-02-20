@@ -43,6 +43,17 @@ const routes = [
         }],
     },
     {
+        path: '/txs',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'transactions',
+                component: () => import('pages/Transactions.vue'),
+            },
+        ],
+    },
+    {
         path: '/block/:block',
         component: () => import('layouts/MainLayout.vue'),
         children: [{
@@ -59,17 +70,6 @@ const routes = [
                 path: '',
                 name: 'holders',
                 component: () => import('pages/Holders.vue'),
-            },
-        ],
-    },
-    {
-        path: '/transactions',
-        component: () => import('layouts/MainLayout.vue'),
-        children: [
-            {
-                path: '',
-                name: 'transactions',
-                component: () => import('pages/Transactions.vue'),
             },
         ],
     },
