@@ -486,6 +486,14 @@ export default {
 </style>
 
 <style lang="sass" scoped>
+.pageContainer
+    flex: 0 1 1200px
+    margin: auto
+    max-width: 1200px
+
+.tableContainer
+    max-width: 100vw
+
 .content-container
     background: $primary
 

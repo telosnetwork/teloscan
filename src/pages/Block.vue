@@ -122,6 +122,9 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.tableWrapper
+  max-width: 100vw
+
 .body--dark .bg-white
     background: $dark !important
 .dataCardData
@@ -158,7 +161,10 @@ export default {
         padding: 5px 15px
 @media only screen and (max-width: 768px)
     .pageContainer
-        background: linear-gradient(#252a5e 17.19%, #2d4684 65.83%, transparent 100%)
+        flex: 0 1 1200px
+        margin: auto
+        max-width: 1200px
+
     .time-stamp
         text-align: center
         width: 100%

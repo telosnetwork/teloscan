@@ -796,6 +796,8 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.tabeWrapper
+  max-width: 100vw
 .dataCardsContainer .dataCardItem
   width: fit-content
   min-width: auto

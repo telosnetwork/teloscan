@@ -11,7 +11,7 @@ export default {
 </script>
 
 <template>
-<q-page class="pageContainer">
+<q-page class="c-index">
     <div class="row justify-center q-py-lg">
         <div class="text-h4 title q-mt-xl bold">{{ $t('pages.telos_evm_explorer') }}</div>
     </div>
@@ -20,7 +20,7 @@ export default {
             <HomeInfo/>
         </div>
     </div>
-    <div class="row tableWrapper">
+    <div class="row c-index__table">
         <div class="col-12 q-pb-lg">
             <q-card>
                 <TransactionTable title="$t('pages.recent_transactions')"/>
@@ -29,3 +29,15 @@ export default {
     </div>
 </q-page>
 </template>
+
+<style lang="scss">
+.c-index {
+    flex: 0 1 1200px;
+    margin: auto;
+    max-width: 1200px;
+
+    &__table {
+        max-width: 100vw;
+    }
+}
+</style>
