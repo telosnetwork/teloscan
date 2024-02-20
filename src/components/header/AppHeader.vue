@@ -573,7 +573,6 @@ export default defineComponent({
         border-radius: 4px;
 
         &:hover,
-        &:focus,
         &:active {
             @media screen and (min-width: $breakpoint-lg-min) {
                 background-color: var(--highlight-color);
