@@ -1,276 +1,273 @@
-<script>
-import TokenValueField from 'components/Token/TokenValueField';
-import AddressField from 'components/AddressField';
-import BlockField from 'components/BlockField';
-import DateField from 'components/DateField';
-import TransactionField from 'components/TransactionField';
-import MethodField from 'components/MethodField';
+<script lang="ts" setup>
+import TokenValueField from 'components/Token/TokenValueField.vue';
+import AddressField from 'components/AddressField.vue';
+import BlockField from 'components/BlockField.vue';
+import DateField from 'components/DateField.vue';
+import TransactionField from 'components/TransactionField.vue';
+import MethodField from 'components/MethodField.vue';
+import { useI18n } from 'vue-i18n';
+import { useRoute, useRouter } from 'vue-router';
+import { ref, watch } from 'vue';
+import { useQuasar } from 'quasar';
 
-export default {
-    name: 'TransactionTable',
-    components: {
-        TransactionField,
-        DateField,
-        BlockField,
-        AddressField,
-        MethodField,
-        TokenValueField,
+const route = useRoute();
+const router = useRouter();
+const { t: $t } = useI18n();
+const $q = useQuasar();
+
+const props = defineProps<{
+    title: string;
+    filter: string;
+    address: string;
+    initialPageSize: number;
+}>();
+
+const rows = ref<Array<any>>([]);
+const filterUpdated = ref<boolean>(false);
+const loading =  ref<boolean>(false);
+const showDateAge = ref<boolean>(true);
+
+const transactions: any[] = [];
+const page_size_options = [10, 20, 50];
+
+type Pagination = {
+    sortBy: string;
+    descending: boolean;
+    page: number;
+    rowsPerPage: number;
+    rowsNumber: number;
+}
+
+const pagination = ref<Pagination>(
+    {
+        sortBy: 'block',
+        descending: true,
+        page: 1,
+        rowsPerPage: 10,
+        rowsNumber: 0,
     },
-    props: {
-        title: {
-            type: String,
-            required: true,
-        },
-        filter: {
-            type: String,
-            default: '',
-        },
-        address: {
-            type: String,
-            required: false,
-        },
-        initialPageSize: {
-            type: Number,
-            default: 1,
-        },
+);
+
+const columns = [
+    {
+        name: 'hash',
+        label: $t('components.tx_hash'),
+        align: 'left',
     },
-    data() {
-        const columns = [
-            {
-                name: 'hash',
-                label: this.$t('components.tx_hash'),
-                align: 'left',
-            },
-            {
-                name: 'block',
-                label: this.$t('components.block'),
-                align: 'left',
-                sortable: true,
-            },
-            {
-                name: 'date',
-                label: this.$t('components.date'),
-                align: 'left',
-            },
-            {
-                name: 'method',
-                label: this.$t('components.method'),
-                align: 'left',
-            },
-        ];
-        if(this.address){
-            columns.push({
-                name: 'direction',
-                label: '',
-                align: 'left',
-            });
+    {
+        name: 'block',
+        label: $t('components.block'),
+        align: 'left',
+        sortable: true,
+    },
+    {
+        name: 'date',
+        label: $t('components.date'),
+        align: 'left',
+    },
+    {
+        name: 'method',
+        label: $t('components.method'),
+        align: 'left',
+    },
+];
+
+if(props.address){
+    columns.push({
+        name: 'direction',
+        label: '',
+        align: 'left',
+    });
+}
+
+columns.push(
+    {
+        name: 'from',
+        label: $t('components.from'),
+        align: 'left',
+    },
+    {
+        name: 'to',
+        label: $t('components.to_interacted_with'),
+        align: 'left',
+    },
+    {
+        name: 'value',
+        label: $t('components.value_transfer'),
+        align: 'left',
+    },
+);
+
+function setPagination(page: number, size: number, desc: boolean) {
+    if (page) {
+        pagination.value.page = page;
+    }
+    if (size) {
+        pagination.value.rowsPerPage = size;
+    }
+    pagination.value.descending = desc;
+    parseTransactions();
+}
+
+async function onPaginationChange() {
+    const { page, rowsPerPage, descending } = pagination.value;
+    // we need to change the URL to keep the pagination state by changing the this.$route.query.page
+    // with a string like 'page,rowsPerPage'
+    router.push({
+        // taking care to preserve the current #hash anchor and the current query parameters
+        hash: window.location.hash,
+        query: {
+            ...route.query,
+            page: `${page},${rowsPerPage},${(descending) ? 'DESC' : 'ASC'}`,
+        },
+    });
+}
+
+async function parseTransactions() {
+    if(loading.value){
+        return;
+    }
+    loading.value = true;
+    // const { page, rowsPerPage, sortBy, descending } = pagination.value;
+
+    try {
+        let response = await $indexerApi.get(getPath());
+        if (pagination.value.rowsNumber === 0) {
+            pagination.value.rowsNumber = response.data?.total_count;
         }
-        columns.push({
-            name: 'from',
-            label: this.$t('components.from'),
-            align: 'left',
-        });
-        columns.push({
-            name: 'to',
-            label: this.$t('components.to_interacted_with'),
-            align: 'left',
-        });
-        columns.push({
-            name: 'value',
-            label: this.$t('components.value_transfer'),
-            align: 'left',
-        });
 
-        return {
-            rows: [],
-            columns,
-            filterUpdated: false,
-            transactions: [],
-            pageSize: this.initialPageSize,
-            total: null,
-            loading: false,
-            pagination: {
-                sortBy: 'block',
-                descending: true,
-                page: 1,
-                rowsPerPage: 10,
-                rowsNumber: 0,
-            },
-            page_size_options: [10, 20, 50],
-            showDateAge: true,
-        };
-    },
-    watch: {
-        '$route.query.page': {
-            handler(_pag) {
-                let pag = _pag;
-                let page = 1;
-                let desc = true;
-                let size = this.page_size_options[0];
+        // pagination.value.page = page;
+        // pagination.value.rowsPerPage = rowsPerPage;
+        // pagination.value.sortBy = sortBy;
+        // pagination.value.descending = descending;
 
-                // we also allow to pass a single number as the page number
-                if (typeof pag === 'number') {
-                    page = pag;
-                } else if (typeof pag === 'string') {
-                    // we also allow to pass a string of two numbers: 'page,rowsPerPage'
-                    const [p, s, d] = pag.split(',');
-                    page = p;
-                    size = s;
-                    desc = (!d || d.toUpperCase() !== 'ASC');
-                }
-
-                this.setPagination(page, size, desc);
-            },
-            immediate: true,
-        },
-        filter: {
-            async handler() {
-                if (!this.filterUpdated) {
-                    this.filterUpdated = true;
-                    return;
-                }
-                await this.onRequest({ pagination: this.pagination });
-            },
-        },
-    },
-    methods: {
-        setPagination(page, size, desc) {
-            if (page) {
-                this.pagination.page = Number(page);
-            }
-            if (size) {
-                this.pagination.rowsPerPage = Number(size);
-            }
-            this.pagination.descending = Boolean(desc);
-            this.onRequest({
-                pagination: this.pagination,
-            });
-        },
-        async onPaginationChange(props) {
-            const { page, rowsPerPage, descending } = props.pagination;
-            // we need to change the URL to keep the pagination state by changing the this.$route.query.page
-            // with a string like 'page,rowsPerPage'
-            this.$router.push({
-                // taking care to preserve the current #hash anchor and the current query parameters
-                hash: window.location.hash,
-                query: {
-                    ...this.$route.query,
-                    page: `${page},${rowsPerPage},${(descending) ? 'DESC' : 'ASC'}`,
-                },
-            });
-        },
-        async onRequest(props) {
-            if(this.loading){
-                return;
-            }
-            this.loading = true;
-            const { page, rowsPerPage, sortBy, descending } = props.pagination;
-
+        transactions.splice(
+            0,
+            transactions.length,
+            ...response.data.results,
+        );
+        rows.value = transactions;
+        for (const transaction of transactions) {
             try {
-                let response = await this.$indexerApi.get(this.getPath(props));
-                if (this.pagination.rowsNumber === 0) {
-                    this.pagination.rowsNumber = response.data?.total_count;
+                if (transaction.input === '0x') {
+                    continue;
+                }
+                if(!transaction.to) {
+                    continue;
                 }
 
-                this.pagination.page = page;
-                this.pagination.rowsPerPage = rowsPerPage;
-                this.pagination.sortBy = sortBy;
-                this.pagination.descending = descending;
+                addEmptyToCache(response.data.contracts, transaction);
 
-                this.transactions.splice(
-                    0,
-                    this.transactions.length,
-                    ...response.data.results,
+                const contract = await $contractManager.getContract(transaction.to);
+
+                if (!contract) {
+                    continue;
+                }
+
+                const parsedTransaction = await $contractManager.parseContractTransaction(
+                    transaction, transaction.input, contract, true,
                 );
-                this.rows = this.transactions;
-                for (const transaction of this.transactions) {
-                    try {
-                        if (transaction.input === '0x') {
-                            continue;
-                        }
-                        if(!transaction.to) {
-                            continue;
-                        }
-
-                        this.addEmptyToCache(response.data.contracts, transaction);
-
-                        const contract = await this.$contractManager.getContract(
-                            transaction.to,
-                        );
-
-                        if (!contract) {
-                            continue;
-                        }
-
-                        const parsedTransaction = await this.$contractManager.parseContractTransaction(
-                            transaction, transaction.input, contract, true,
-                        );
-                        if (parsedTransaction) {
-                            transaction.parsedTransaction = parsedTransaction;
-                        }
-                        transaction.contract = contract;
-                    } catch (e) {
-                        console.error(
-                            `Failed to parse data for transaction, error was: ${e.message}`,
-                        );
-                        this.$q.notify({
-                            message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
-                            color: 'negative',
-                            position: 'top',
-                            timeout: 5000,
-                        });
-                    }
+                if (parsedTransaction) {
+                    transaction.parsedTransaction = parsedTransaction;
                 }
-                this.loading = false;
-                this.rows = this.transactions;
-            } catch (e) {
-                this.$q.notify({
-                    type: 'negative',
-                    message: this.$t('components.transaction.load_error'),
-                    caption: e.message,
+                transaction.contract = contract;
+            } catch (e: any) {
+                console.error(
+                    `Failed to parse data for transaction, error was: ${e.message}`,
+                );
+                $q.notify({
+                    message: $t('components.failed_to_parse_transaction', { message: e.message }),
+                    color: 'negative',
+                    position: 'top',
+                    timeout: 5000,
                 });
-                this.loading = false;
             }
-        },
-        addEmptyToCache(contracts, transaction){
-            let found_to = 0;
-            let found_from = 0;
-            for(const contract in contracts){
-                if(contract.toLowerCase() === transaction.to.toLowerCase()) {
-                    found_to++;
-                }
-                if(contract.toLowerCase() === transaction.from.toLowerCase()) {
-                    found_from++;
-                }
-            }
-            if(found_from === 0){
-                this.$contractManager.addContractToCache(transaction.from, { 'address': transaction.from });
-            }
-            if(found_to === 0){
-                this.$contractManager.addContractToCache(transaction.to, { 'address': transaction.to });
-            }
-        },
-        getPath(props) {
-            const { page, rowsPerPage, descending } = props.pagination;
-            const filter =  (this.filter.toString().length > 0) ? this.filter.toString() : '';
-            const blockNumber = this.$route.query.block;
-            let path = `${filter}/transactions?limit=${
-                rowsPerPage === 0 ? 500 : rowsPerPage
-            }`;
-            path += `&offset=${(page - 1) * rowsPerPage}`;
-            path += `&sort=${descending ? 'desc' : 'asc'}`;
-            path += (this.pagination.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
-            path += '&includeAbi=true';
-            if (blockNumber){
-                path += `&block=${blockNumber}`;
-            }
-            return path;
-        },
-        toggleDateFormat() {
-            this.showDateAge = !this.showDateAge;
-        },
+        }
+        loading.value = false;
+        rows.value = transactions;
+    } catch (e: any) {
+        $q.notify({
+            type: 'negative',
+            message: $t('components.transaction.load_error'),
+            caption: e.message,
+        });
+        loading.value = false;
+    }
+}
+
+function addEmptyToCache(contracts: any, transaction: any){
+    let found_to = 0;
+    let found_from = 0;
+    for(const contract in contracts){
+        if(contract.toLowerCase() === transaction.to.toLowerCase()) {
+            found_to++;
+        }
+        if(contract.toLowerCase() === transaction.from.toLowerCase()) {
+            found_from++;
+        }
+    }
+    if(found_from === 0){
+        $contractManager.addContractToCache(transaction.from, { 'address': transaction.from });
+    }
+    if(found_to === 0){
+        $contractManager.addContractToCache(transaction.to, { 'address': transaction.to });
+    }
+}
+
+function getPath() {
+    const { page, rowsPerPage, descending } = pagination.value;
+    const filter =  (props.filter.toString().length > 0) ? props.filter.toString() : '';
+    const blockNumber = route.query.block;
+    let path = `${filter}/transactions?limit=${
+        rowsPerPage === 0 ? 500 : rowsPerPage
+    }`;
+    path += `&offset=${(page - 1) * rowsPerPage}`;
+    path += `&sort=${descending ? 'desc' : 'asc'}`;
+    path += (pagination.value.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
+    path += '&includeAbi=true';
+    if (blockNumber){
+        path += `&block=${blockNumber}`;
+    }
+    return path;
+}
+
+function toggleDateFormat() {
+    showDateAge.value = !showDateAge.value;
+}
+
+watch(() => route.query.page,
+    (pageParam) => {
+
+        let page = 1;
+        let desc = true;
+        let size = page_size_options[0];
+
+        // we also allow to pass a single number as the page number
+        if (typeof pageParam === 'number') {
+            page = pageParam;
+        } else if (typeof pageParam === 'string') {
+            // we also allow to pass a string of two numbers: 'page,rowsPerPage'
+            const [p, s, d] = pageParam.split(',');
+            page = Number(p);
+            size = Number(s);
+            desc = (!d || d.toUpperCase() !== 'ASC');
+        }
+
+        setPagination(page, size, desc);
     },
-};
+    { immediate: true },
+);
+
+watch(() => props.filter,
+    async () => {
+        if (!filterUpdated.value) {
+            filterUpdated.value = true;
+            return;
+        }
+        await parseTransactions();
+    },
+);
+
 </script>
 
 <template>
@@ -280,7 +277,7 @@ export default {
     :binary-state-sort="true"
     :rows-per-page-label="$t('global.records_per_page')"
     :row-key="row => row.hash"
-    :columns="columns"
+    :columns="(columns as any)"
     :loading="loading"
     :rows-per-page-options="page_size_options"
     flat
