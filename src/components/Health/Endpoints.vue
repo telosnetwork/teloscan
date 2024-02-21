@@ -131,6 +131,7 @@ export default {
   border-radius: 6px
   box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%)
 .tableWrapper
+  max-width: 100vw
   min-width: 50vw
   max-width: 100vw
   border-radius: 6px

@@ -292,7 +292,7 @@ export default {
                     {{ col.label }}
                     <template v-if="col.name === 'date'">
                         <q-icon
-                            class="info-icon"
+                            class="info-icon q-ml-xs"
                             name="fas fa-info-circle"
                             @click="toggleDateFormat"
                         >
@@ -302,7 +302,7 @@ export default {
                         </q-icon>
                     </template>
                     <template v-if="col.name === 'method'">
-                        <q-icon class="info-icon" name="fas fa-info-circle" />
+                        <q-icon class="info-icon" name="fas fa-info-circle q-ml-xs" />
                         <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
                             {{ $t('components.executed_based_on_decoded_data') }}
                         </q-tooltip>
@@ -322,7 +322,7 @@ export default {
                         color="negative"
                     />
                     <TransactionField
-                        :color="(props.row.status !== '0x1') ? 'negative' : 'secondary'"
+                        :color="(props.row.status !== '0x1') ? 'negative' : 'primary'"
                         :transaction-hash="props.row.hash"
                         :truncate="(props.row.status !== '0x1') ? 15 : 18"
                     />

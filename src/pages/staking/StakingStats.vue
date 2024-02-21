@@ -274,7 +274,7 @@ export default {
 
                 content: '';
                 border-radius: 4px;
-                background-color: #8591FD;
+                background-color:  var(--q-primary);
             }
         }
     }
@@ -287,7 +287,7 @@ export default {
         gap: 4px;
 
         &--global {
-            color: $white;
+            color: white;
         }
 
         &--personal {

@@ -311,7 +311,7 @@ export default {
                     active-color="secondary"
                     align="justify"
                     narrow-indicator
-                    class="c-staking-page__tabs-header tabsBar topRounded tableWrapper"
+                    class="c-staking-page__tabs-header tabsBar topRounded"
                 >
                     <q-route-tab
                         name="stake"
@@ -433,6 +433,7 @@ export default {
     &__tabs-header {
         background: $dark;
         color: white;
+        max-width: 100vw;
 
         @at-root .body--light & {
             background: white;

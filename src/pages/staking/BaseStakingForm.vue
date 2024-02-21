@@ -207,10 +207,10 @@ export default {
             width: 4px;
             border-radius: 4px 4px 0 0;
 
-            background-color: $grey-0;
+            background-color: $grey-1;
 
             @at-root .body--light & {
-                background-color: $purpleDark;
+                background-color: var(--q-primary);
             }
         }
 
@@ -229,10 +229,10 @@ export default {
         font-size: 12px;
         margin: 0 0 16px;
 
-        color: $grey-0;
+        color: $grey-1;
 
         @at-root .body--light & {
-            color: $purpleDark;
+            color: var(--q-primary);
         }
 
         @media screen and (min-width: $breakpoint-sm) {

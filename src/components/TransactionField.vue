@@ -14,7 +14,7 @@ export default {
         color: {
             type: String,
             required: false,
-            default: 'secondary',
+            default: 'primary',
         },
         truncate: {
             type: Number,

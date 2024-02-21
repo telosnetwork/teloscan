@@ -1,0 +1,18 @@
+// this file contains one-time global imports
+@import './utilities';
+@import './components/json-viewer';
+@import './components/notification';
+
+
+body {
+    font-family: "silkaregular", sans-serif;
+}
+
+a {
+    color: var(--q-primary);
+    text-decoration: none;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
