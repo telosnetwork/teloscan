@@ -40,6 +40,12 @@ export default boot(({ app, store }) => {
     }, function (error) {
         return Promise.reject(error);
     });
+
+    // TODO remove global property assignments above after full migration to composition
+    app.provide('$telosApi', telosApi);
+    app.provide('$contractManager', markRaw(contractManager));
+    app.provide('$indexerApi', indexerApi);
+    app.provide('$fragmentParser', fragmentParser);
 });
 
 export { telosApi, indexerApi };
