@@ -1,3 +1,5 @@
+<!-- eslint-disable @typescript-eslint/no-unused-vars -->
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
 import TokenValueField from 'components/Token/TokenValueField.vue';
 import AddressField from 'components/AddressField.vue';
@@ -5,25 +7,30 @@ import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import TransactionField from 'components/TransactionField.vue';
 import MethodField from 'components/MethodField.vue';
-import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import { inject, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
+
+const route = useRoute();
+const router = useRouter();
+const $q = useQuasar();
+const { t: $t } = useI18n();
 
 const $contractManager=inject('$contractManager') as any;
 const $indexerApi = inject('$indexerApi') as any;
 
-const route = useRoute();
-const router = useRouter();
-const { t: $t } = useI18n();
-const $q = useQuasar();
-
-const props = defineProps<{
+export interface Props {
     title: string;
-    filter: string;
-    address: string;
-    initialPageSize: number;
-}>();
+    filter?: object
+    initialPageSize?: number,
+    address?: string,
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    title: '',
+    initialPageSize: 1,
+});
 
 const rows = ref<Array<any>>([]);
 const filterUpdated = ref<boolean>(false);
@@ -101,6 +108,7 @@ columns.push(
     },
 );
 
+// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 function setPagination(page: number, size: number, desc: boolean) {
     if (page) {
         pagination.value.page = page;
@@ -219,7 +227,7 @@ function addEmptyToCache(contracts: any, transaction: any){
 
 function getPath() {
     const { page, rowsPerPage, descending } = pagination.value;
-    const filter =  (props.filter.toString().length > 0) ? props.filter.toString() : '';
+    const filter =  props.filter  ? props.filter.toString() : '';
     const blockNumber = route.query.block;
     let path = `${filter}/transactions?limit=${
         rowsPerPage === 0 ? 500 : rowsPerPage
