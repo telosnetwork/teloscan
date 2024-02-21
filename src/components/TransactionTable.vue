@@ -1,16 +1,14 @@
-<!-- eslint-disable @typescript-eslint/no-unused-vars -->
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
+import { useRoute, useRouter } from 'vue-router';
+import { inject, ref, watch } from 'vue';
+import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
 import TokenValueField from 'components/Token/TokenValueField.vue';
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import TransactionField from 'components/TransactionField.vue';
 import MethodField from 'components/MethodField.vue';
-import { useRoute, useRouter } from 'vue-router';
-import { inject, ref, watch } from 'vue';
-import { useQuasar } from 'quasar';
-import { useI18n } from 'vue-i18n';
 
 const route = useRoute();
 const router = useRouter();
@@ -108,7 +106,6 @@ columns.push(
     },
 );
 
-// eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
 function setPagination(page: number, size: number, desc: boolean) {
     if (page) {
         pagination.value.page = page;
