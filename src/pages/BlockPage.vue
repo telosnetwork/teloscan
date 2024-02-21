@@ -226,8 +226,15 @@ export default defineComponent({
                             <div class="p-block__row-attribute">{{ $t('pages.blockpage.transactions') }}</div>
                             <div class="p-block__row-value">
                                 <router-link :to="{ query: { tab: 'transactions' } }">
-                                    {{ transactionsCount }} transactions
-                                </router-link> and {{ internalTrxCount }} contract internal transactions in this block
+                                    {{ $t('pages.blockpage.count_transactions', { count: transactionsCount }) }}
+                                </router-link>
+                                <template v-if="internalTrxCount > 0">
+                                    &nbsp;{{ $t('pages.blockpage.and') }}&nbsp;
+                                    <router-link :to="{ query: { tab: 'transactions' } }">
+                                        {{ $t('pages.blockpage.count_int_transactions', { count: internalTrxCount }) }}
+                                    </router-link>
+                                </template>
+                                {{ $t('pages.blockpage.in_this_block') }}
                             </div>
                         </div>
                         <div class="p-block__row">
