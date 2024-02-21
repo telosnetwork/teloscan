@@ -19,7 +19,6 @@ export const i18n = createI18n({
     locale: lastChosenLanguage,
     globalInjection: true,
     messages,
-    // allowComposition: true,
     legacy: false,
 });
 
