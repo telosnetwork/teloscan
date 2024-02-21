@@ -8,29 +8,33 @@
 
 import { defineComponent } from 'vue';
 import DateField from 'components/DateField.vue';
+import TransactionTable from 'components/TransactionTable.vue';
 import { BlockData } from 'src/types';
 import { ethers } from 'ethers';
 
+const defaultTab = 'overview';
+const tabs = ['overview', 'transactions'];
 
 export default defineComponent({
     name: 'BlockPage',
-    components: { DateField },
+    components: {
+        DateField,
+        TransactionTable,
+    },
     data: () => ({
-        tab: 'overview',
+        tab: '',
         block: '',
         blockData: null as BlockData | null,
         error: '',
         showDateAge: false,
     }),
     async mounted() {
+        this.checkTabFromUrl();
         await this.loadBlock();
     },
     computed: {
         blockHeight() {
             return parseInt(this.block);
-        },
-        status() {
-            return 'finalized';
         },
         timestamp() {
             if (this.blockData) {
@@ -44,31 +48,39 @@ export default defineComponent({
             }
             return 0;
         },
-        Withdrawals() {
-            if (this.blockData) {
-                return this.blockData.transactionsCount;
-            }
+        internalTrxCount() {
             return 0;
         },
         size() {
             if (this.blockData) {
-                //const size = ethers.utils.formatUnits(this.blockData.size, 'wei');
                 const size = ethers.BigNumber.from(this.blockData.size).toNumber();
-                return `${size} bytes`;
+                return `${size.toLocaleString()} bytes`;
             }
             return 0;
         },
         gasUsed() {
             if (this.blockData) {
                 console.log('this.blockData.gasUsed', typeof this.blockData.gasUsed, this.blockData.gasUsed);
-                return parseInt(this.blockData.gasUsed, 16);
+                const gas = ethers.BigNumber.from(this.blockData.gasUsed);
+                try {
+                    return gas.toNumber().toLocaleString();
+                } catch (e) {
+                    console.error(e);
+                    return gas.toString();
+                }
             }
             return 0;
         },
         gasLimit() {
             if (this.blockData) {
                 console.log('this.blockData.gasLimit', typeof this.blockData.gasLimit, this.blockData.gasLimit);
-                return parseInt(this.blockData.gasLimit, 16);
+                const gas = ethers.BigNumber.from(this.blockData.gasLimit);
+                try {
+                    return gas.toNumber().toLocaleString();
+                } catch (e) {
+                    console.error(e);
+                    return gas.toString();
+                }
             }
             return 0;
         },
@@ -90,18 +102,6 @@ export default defineComponent({
             }
             return '';
         },
-        stateRoot() {
-            if (this.blockData) {
-                return this.blockData.stateRoot;
-            }
-            return '';
-        },
-        transactionsRoot() {
-            if (this.blockData) {
-                return this.blockData.transactionsRoot;
-            }
-            return '';
-        },
     },
     watch: {
         '$route.params.block': {
@@ -114,8 +114,22 @@ export default defineComponent({
             },
             immediate: true,
         },
+        '$route.query.tab'(newTab) {
+            this.tab = newTab || defaultTab;
+        },
+        tab(newTab) {
+            this.$router.push({ query: { tab: newTab } });
+        },
     },
     methods: {
+        checkTabFromUrl() {
+            const tabQueryParam = this.$route.query.tab as string;
+            if (tabQueryParam && tabs.includes(tabQueryParam)) {
+                this.tab = tabQueryParam;
+            } else {
+                this.tab = defaultTab;
+            }
+        },
         async loadBlock() {
             try {
                 const blockResponse = await this.$indexerApi.get(`/block/${this.block}?includeAbi=true`);
@@ -143,136 +157,155 @@ export default defineComponent({
 
 </script>
 <template>
-<div class="p-block-page">
-    <div class="p-block-page__header">
-        <span class="p-block-page__header-title">{{ $t('pages.blockpage.block') }}</span>
-        <span class="p-block-page__header-block-num">#{{ blockHeight }}</span>
+<div class="p-block">
+    <div class="p-block__header">
+        <span class="p-block__header-title">{{ $t('pages.blockpage.block') }}</span>
+        <span class="p-block__header-block-num">#{{ blockHeight }}</span>
     </div>
 
     <q-tabs
         v-model="tab"
-        class="p-block-page__tabs-tabs text-blue shadow-2"
+        class="p-block__tabs-tabs text-blue shadow-2"
         align="left"
     >
-        <q-tab class="p-block-page__tabs-tab" name="overview" :label="$t('pages.blockpage.overview')" />
-        <q-tab class="p-block-page__tabs-tab" name="consensus-info" :label="$t('pages.blockpage.consensus_info')" />
-        <q-tab class="p-block-page__tabs-tab" name="mev-info" :label="$t('pages.blockpage.mev_info')" />
+        <q-tab class="p-block__tabs-tab" name="overview" :label="$t('pages.blockpage.overview')" />
+        <q-tab class="p-block__tabs-tab" name="transactions" :label="$t('pages.blockpage.transactions')" />
     </q-tabs>
 
-    <div class="p-block-page__main-container">
-        <div class="p-block-page__main-content">
-            <q-tab-panels v-model="tab" class="p-block-page__panels">
-                <q-tab-panel class="p-block-page__panel" name="overview">
-                    <q-card class="p-block-page__card-section">
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.block_height') }}</div>
-                            <div class="p-block-page__row-value">{{ blockHeight }}</div>
-                            <div class="p-block-page__row-icon-btn" @click="prevBlock">
+    <div class="p-block__main-container">
+        <div class="p-block__main-content">
+            <q-tab-panels v-model="tab" class="p-block__panels">
+                <q-tab-panel class="p-block__panel" name="overview">
+                    <q-card class="p-block__card-section">
+                        <div class="p-block__row">
+                            <div class="p-block__row-tooltip">
+                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                                    <q-tooltip anchor="bottom right" self="top start">
+                                        {{ $t('pages.blockpage.block_height_tooltip') }}
+                                    </q-tooltip>
+                                </q-icon>
+                            </div>
+                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.block_height') }}</div>
+                            <div class="p-block__row-value">{{ blockHeight }}</div>
+                            <div class="p-block__row-icon-btn p-block__row-icon-btn--left" @click="prevBlock">
                                 <i class="fa fa-chevron-left small"></i>
                             </div>
-                            <div class="p-block-page__row-icon-btn" @click="nextBlock">
+                            <div class="p-block__row-icon-btn p-block__row-icon-btn--right" @click="nextBlock">
                                 <i class="fa fa-chevron-right small"></i>
                             </div>
                         </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.status') }}</div>
-                            <div class="p-block-page__row-value">{{ status }}</div>
-                        </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.timestamp') }}</div>
-                            <div class="p-block-page__row-value">
+                        <div class="p-block__row">
+                            <div class="p-block__row-tooltip">
+                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                                    <q-tooltip anchor="bottom right" self="top start">
+                                        {{ $t('pages.blockpage.timestamp_tooltip') }}
+                                    </q-tooltip>
+                                </q-icon>
+                            </div>
+                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.timestamp') }}</div>
+                            <div
+                                class="p-block__row-value p-block__row-value--timestamp"
+                                @click="showDateAge = !showDateAge"
+                            >
+                                <q-icon class="p-block__row-value-clock-icon" name="far fa-clock">
+                                    <q-tooltip anchor="bottom right" self="top start">
+                                        {{ $t('components.click_to_change_format') }}
+                                    </q-tooltip>
+                                </q-icon>
                                 <DateField :epoch="Math.round(timestamp / 1000)" :force-show-age="showDateAge"/>
                             </div>
                         </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.proposed_on') }}</div>
-                            <div class="p-block-page__row-value p-block-page__row-value--hardcoded">
-                                Block proposed on slot 8462645, epoch 264457
+                        <div class="p-block__row">
+                            <div class="p-block__row-tooltip">
+                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                                    <q-tooltip anchor="bottom right" self="top start">
+                                        {{ $t('pages.blockpage.transactions_tooltip') }}
+                                    </q-tooltip>
+                                </q-icon>
+                            </div>
+                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.transactions') }}</div>
+                            <div class="p-block__row-value">
+                                <router-link :to="{ query: { tab: 'transactions' } }">
+                                    {{ transactionsCount }} transactions
+                                </router-link> and {{ internalTrxCount }} contract internal transactions in this block
                             </div>
                         </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.transactions') }}</div>
-                            <div class="p-block-page__row-value">
-                                {{ transactionsCount }} transactions in this block
+                        <div class="p-block__row">
+                            <div class="p-block__row-tooltip">
+                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                                    <q-tooltip anchor="bottom right" self="top start">
+                                        {{ $t('pages.blockpage.size_tooltip') }}
+                                    </q-tooltip>
+                                </q-icon>
                             </div>
-                        </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.withdrawals') }}</div>
-                            <div class="p-block-page__row-value p-block-page__row-value--hardcoded">
-                                0 withdrawals in this block</div>
-                        </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.fee_recipient') }}</div>
-                            <div class="p-block-page__row-value p-block-page__row-value--hardcoded">0x...</div>
-                        </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.block_reward') }}</div>
-                            <div class="p-block-page__row-value p-block-page__row-value--hardcoded">
-                                0.048789575882690142 TLOS (0 + 0.607287151157049444 - 0.558497575274359302)
-                            </div>
-                        </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.total_difficulty') }}</div>
-                            <div class="p-block-page__row-value p-block-page__row-value--hardcoded">
-                                58,750,003,716,598,352,816,469
-                            </div>
-                        </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.size') }}</div>
-                            <div class="p-block-page__row-value">{{ size }}</div>
-                        </div>
-                        <hr class="p-block-page__separator">
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.gas_used') }}</div>
-                            <div class="p-block-page__row-value">{{ gasUsed }}</div>
-                        </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.gas_limit') }}</div>
-                            <div class="p-block-page__row-value">{{ gasLimit }}</div>
-                        </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.base_fee_per_gas') }}</div>
-                            <div class="p-block-page__row-value p-block-page__row-value--hardcoded">
-                                0.000000001 ETH
-                            </div>
-                        </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.burnt_fees') }}</div>
-                            <div class="p-block-page__row-value p-block-page__row-value--hardcoded">0.0 TLOS</div>
-                        </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.extra_data') }}</div>
-                            <div class="p-block-page__row-value">{{ blockData?.extraData }}</div>
+                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.size') }}</div>
+                            <div class="p-block__row-value">{{ size }}</div>
                         </div>
                     </q-card>
-                    <q-card class="p-block-page__card-section">
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.hash') }}</div>
-                            <div class="p-block-page__row-value">{{ hash }}</div>
+                    <q-card class="p-block__card-section">
+                        <div class="p-block__row">
+                            <div class="p-block__row-tooltip">
+                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                                    <q-tooltip anchor="bottom right" self="top start">
+                                        {{ $t('pages.blockpage.gas_used_tooltip') }}
+                                    </q-tooltip>
+                                </q-icon>
+                            </div>
+                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.gas_used') }}</div>
+                            <div class="p-block__row-value">{{ gasUsed }}</div>
                         </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.parent_hash') }}</div>
-                            <div class="p-block-page__row-value">{{ parentHash }}</div>
+                        <div class="p-block__row">
+                            <div class="p-block__row-tooltip">
+                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                                    <q-tooltip anchor="bottom right" self="top start">
+                                        {{ $t('pages.blockpage.gas_limit_tooltip') }}
+                                    </q-tooltip>
+                                </q-icon>
+                            </div>
+                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.gas_limit') }}</div>
+                            <div class="p-block__row-value">{{ gasLimit }}</div>
                         </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.state_root') }}</div>
-                            <div class="p-block-page__row-value">{{ stateRoot }}</div>
+                        <div class="p-block__row">
+                            <div class="p-block__row-tooltip">
+                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                                    <q-tooltip anchor="bottom right" self="top start">
+                                        {{ $t('pages.blockpage.nonce_tooltip') }}
+                                    </q-tooltip>
+                                </q-icon>
+                            </div>
+                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.nonce') }}</div>
+                            <div class="p-block__row-value">{{ nonce }}</div>
                         </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.withdrawals_root') }}</div>
-                            <div class="p-block-page__row-value">{{ transactionsRoot }}</div>
+                        <div class="p-block__row">
+                            <div class="p-block__row-tooltip">
+                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                                    <q-tooltip anchor="bottom right" self="top start">
+                                        {{ $t('pages.blockpage.hash_tooltip') }}
+                                    </q-tooltip>
+                                </q-icon>
+                            </div>
+                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.hash') }}</div>
+                            <div class="p-block__row-value">{{ hash }}</div>
                         </div>
-                        <div class="p-block-page__row">
-                            <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.nonce') }}</div>
-                            <div class="p-block-page__row-value">{{ nonce }}</div>
+                        <div class="p-block__row">
+                            <div class="p-block__row-tooltip">
+                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                                    <q-tooltip anchor="bottom right" self="top start">
+                                        {{ $t('pages.blockpage.parent_hash_tooltip') }}
+                                    </q-tooltip>
+                                </q-icon>
+                            </div>
+                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.parent_hash') }}</div>
+                            <div class="p-block__row-value">{{ parentHash }}</div>
                         </div>
                     </q-card>
                 </q-tab-panel>
-                <q-tab-panel class="p-block-page__panel" name="consensus-info">
-                    <h1>Consensus Info</h1>
-                </q-tab-panel>
-                <q-tab-panel class="p-block-page__panel" name="mev-info">
-                    <h1>MEV Info</h1>
+                <q-tab-panel class="p-block__panel" name="transactions">
+                    <div
+                        v-if="!error && blockData && blockData.transactionsCount > 0"
+                    >
+                        <TransactionTable :title="block" :filter="`block/${blockHeight}`"/>
+                    </div>
                 </q-tab-panel>
             </q-tab-panels>
         </div>
@@ -282,7 +315,7 @@ export default defineComponent({
 </template>
 
 <style lang="scss">
-.p-block-page {
+.p-block {
     --bs-gutter-x: 1.5rem;
     --bs-gutter-y: 0;
     padding-top: 35px;
@@ -291,7 +324,7 @@ export default defineComponent({
     margin-right: auto;
     margin-left: auto;
     width: 100%;
-    max-width: 1400px;
+    max-width: 1200px;
     &__header {
         display: flex;
         justify-content: left;
@@ -305,8 +338,15 @@ export default defineComponent({
         }
     }
 
+    &__tabs-tabs {
+        display: inline-flex;
+    }
+
     &__main-container {
         background: transparent !important;
+    }
+    &__main-content {
+        padding: 0px;
     }
     &__panels {
         background: transparent;
@@ -328,6 +368,11 @@ export default defineComponent({
         padding: 0.5rem 0;
         gap: 5px;
     }
+    &__row-tooltip {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
     &__row-attribute {
         font-weight: 500;
         min-width: 230px;
@@ -337,19 +382,31 @@ export default defineComponent({
         &--hardcoded {
             color: #999;
         }
+        &--timestamp {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
     }
     &__row-icon-btn {
         cursor: pointer;
         color: rgb(8, 29, 53);
         background-color: rgb(233, 236, 239);
         border: solid 1.25px rgb(233, 236, 239);
-        height: 25px;
-        width: 25px;
+        height: 22px;
+        width: 22px;
         border-radius: 6px;
         // center content with flex
         display: flex;
         justify-content: center;
         align-items: center;
+        &--left {
+            padding-right: 1px;
+        }
+        &--right {
+            padding-left: 1px;
+        }
     }
     &__separator {
         border: 1px solid #e0e0e0;
