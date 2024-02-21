@@ -322,14 +322,12 @@ export default {
                 <div class="flex">
                     <div>
                         <ConfirmationDialog
-                            class="text-secondary"
                             :flag="confirmationDialog"
                             :address="accountAddress"
                             :status="contract?.isVerified()"
                             @dialog="disableConfirmation"
                         />
                         <CopyButton
-                            class="text-secondary"
                             :text="accountAddress"
                             :accompanyingText="accountAddress"
                             description="address"
@@ -364,7 +362,7 @@ export default {
                                     <span
                                         v-for="intf in contract.supportedInterfaces"
                                         v-bind:key="intf"
-                                        class="supported-interface bg-primary q-pa-sm text-secondary"
+                                        class="supported-interface bg-primary q-pa-sm"
                                     >
                                         {{ intf.replace('_', ' ') }}
                                     </span>
@@ -798,6 +796,8 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.tabeWrapper
+  max-width: 100vw
 .dataCardsContainer .dataCardItem
   width: fit-content
   min-width: auto

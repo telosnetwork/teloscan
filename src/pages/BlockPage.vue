@@ -9,6 +9,7 @@
 import { defineComponent } from 'vue';
 import DateField from 'components/DateField.vue';
 import { BlockData } from 'src/types';
+import { ethers } from 'ethers';
 
 
 export default defineComponent({
@@ -19,6 +20,7 @@ export default defineComponent({
         block: '',
         blockData: null as BlockData | null,
         error: '',
+        showDateAge: false,
     }),
     async mounted() {
         await this.loadBlock();
@@ -46,57 +48,59 @@ export default defineComponent({
             if (this.blockData) {
                 return this.blockData.transactionsCount;
             }
-            return -99999;
+            return 0;
         },
         size() {
             if (this.blockData) {
-                return this.blockData.size;
+                //const size = ethers.utils.formatUnits(this.blockData.size, 'wei');
+                const size = ethers.BigNumber.from(this.blockData.size).toNumber();
+                return `${size} bytes`;
             }
-            return -99999;
+            return 0;
         },
         gasUsed() {
             if (this.blockData) {
                 console.log('this.blockData.gasUsed', typeof this.blockData.gasUsed, this.blockData.gasUsed);
                 return parseInt(this.blockData.gasUsed, 16);
             }
-            return -99999;
+            return 0;
         },
         gasLimit() {
             if (this.blockData) {
                 console.log('this.blockData.gasLimit', typeof this.blockData.gasLimit, this.blockData.gasLimit);
                 return parseInt(this.blockData.gasLimit, 16);
             }
-            return -99999;
+            return 0;
         },
         nonce() {
             if (this.blockData) {
                 return this.blockData.nonce;
             }
-            return 'No-Hay-Data';
+            return '';
         },
         hash() {
             if (this.blockData) {
                 return this.blockData.hash;
             }
-            return 'No-Hay-Data';
+            return '';
         },
         parentHash() {
             if (this.blockData) {
                 return this.blockData.parentHash;
             }
-            return 'No-Hay-Data';
+            return '';
         },
         stateRoot() {
             if (this.blockData) {
                 return this.blockData.stateRoot;
             }
-            return 'No-Hay-Data';
+            return '';
         },
         transactionsRoot() {
             if (this.blockData) {
                 return this.blockData.transactionsRoot;
             }
-            return 'No-Hay-Data';
+            return '';
         },
     },
     watch: {
@@ -177,20 +181,25 @@ export default defineComponent({
                         <div class="p-block-page__row">
                             <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.timestamp') }}</div>
                             <div class="p-block-page__row-value">
-                                <DateField :epoch="Math.round(timestamp / 1000)" :force-show-age="true"/>
+                                <DateField :epoch="Math.round(timestamp / 1000)" :force-show-age="showDateAge"/>
                             </div>
                         </div>
                         <div class="p-block-page__row">
                             <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.proposed_on') }}</div>
-                            <div class="p-block-page__row-value">{{ timestamp }}</div>
+                            <div class="p-block-page__row-value p-block-page__row-value--hardcoded">
+                                Block proposed on slot 8462645, epoch 264457
+                            </div>
                         </div>
                         <div class="p-block-page__row">
                             <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.transactions') }}</div>
-                            <div class="p-block-page__row-value">{{ transactionsCount }}</div>
+                            <div class="p-block-page__row-value">
+                                {{ transactionsCount }} transactions in this block
+                            </div>
                         </div>
                         <div class="p-block-page__row">
                             <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.withdrawals') }}</div>
-                            <div class="p-block-page__row-value">{{ Withdrawals }}</div>
+                            <div class="p-block-page__row-value p-block-page__row-value--hardcoded">
+                                0 withdrawals in this block</div>
                         </div>
                         <div class="p-block-page__row">
                             <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.fee_recipient') }}</div>
@@ -198,11 +207,15 @@ export default defineComponent({
                         </div>
                         <div class="p-block-page__row">
                             <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.block_reward') }}</div>
-                            <div class="p-block-page__row-value p-block-page__row-value--hardcoded">2.0 TLOS</div>
+                            <div class="p-block-page__row-value p-block-page__row-value--hardcoded">
+                                0.048789575882690142 TLOS (0 + 0.607287151157049444 - 0.558497575274359302)
+                            </div>
                         </div>
                         <div class="p-block-page__row">
                             <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.total_difficulty') }}</div>
-                            <div class="p-block-page__row-value p-block-page__row-value--hardcoded">0x...</div>
+                            <div class="p-block-page__row-value p-block-page__row-value--hardcoded">
+                                58,750,003,716,598,352,816,469
+                            </div>
                         </div>
                         <div class="p-block-page__row">
                             <div class="p-block-page__row-attribute">{{ $t('pages.blockpage.size') }}</div>
