@@ -7,8 +7,11 @@ import TransactionField from 'components/TransactionField.vue';
 import MethodField from 'components/MethodField.vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
-import { ref, watch } from 'vue';
+import { inject, ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
+
+const $contractManager=inject('$contractManager') as any;
+const $indexerApi = inject('$indexerApi') as any;
 
 const route = useRoute();
 const router = useRouter();
