@@ -193,13 +193,13 @@ export default {
         height: 70vh;
 
         background-image:
-            radial-gradient(circle at 100% 83%, $secondary, transparent 30%),
-            radial-gradient(circle at 72% 90%, $accent, transparent 36%);
+            radial-gradient(circle at 100% 83%, $accent, transparent 30%),
+            radial-gradient(circle at 72% 90%, $secondary, transparent 36%);
 
         @media screen and (min-width: $breakpoint-md-min) {
             background-image:
-                radial-gradient(circle at 100% 83%, $secondary, transparent 20%),
-                radial-gradient(circle at 80% 90%, $accent, transparent 25%);
+                radial-gradient(circle at 100% 83%, $accent, transparent 20%),
+                radial-gradient(circle at 80% 90%, $secondary, transparent 25%);
         }
     }
 
