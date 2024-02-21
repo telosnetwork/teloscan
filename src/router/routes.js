@@ -39,7 +39,7 @@ const routes = [
         children: [{
             path: '',
             name: 'transaction',
-            component: () => import('pages/Transaction.vue'),
+            component: () => import('pages/TransactionPage.vue'),
         }],
     },
     {
@@ -49,7 +49,7 @@ const routes = [
             {
                 path: '',
                 name: 'transactions',
-                component: () => import('pages/Transactions.vue'),
+                component: () => import('pages/TransactionsPage.vue'),
             },
         ],
     },
