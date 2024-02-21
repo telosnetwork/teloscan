@@ -75,7 +75,21 @@ export default {
 
 <template>
 <AppHeader />
-<q-layout view="lhh Lpr lFf">
+<q-layout view="lhh Lpr lFf" class="c-main-layout">
+    <div class="c-main-layout__background-container">
+        <div class="c-main-layout__background-top">
+            <div class="c-main-layout__background-circle c-main-layout__background-circle--1">
+
+            </div>
+            <div class="c-main-layout__background-circle c-main-layout__background-circle--2">
+
+            </div>
+        </div>
+        <div class="c-main-layout__background-bottom">
+
+        </div>
+    </div>
+
     <q-page-container class="flex flex-center page-container">
         <router-view />
     </q-page-container>
@@ -109,44 +123,171 @@ export default {
 </q-layout>
 </template>
 
-<style lang="sass" scoped>
-.page-container
-    margin-top: 48px
-    @media screen and (min-width: $breakpoint-lg-min)
-        margin-top: 105px
+<style lang="scss" scoped>
 
+.c-main-layout {
+    --faint-circle-color: rgba(255, 255, 255, 0.1);
 
-.separator
-  border-bottom: 1px solid lightgrey
+    body.body--dark & {
+        --faint-circle-color: rgba(100, 100, 100, 0.1);
+    }
 
+    &__background-container {
+        position: fixed;
+        z-index: -1;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
 
-.connection
-  font-size: .5rem
-  margin-right: 0.2rem
+        body.body--dark & {
+            background-color: darken($dark, 5%);
+            opacity: 0.4;
+        }
+    }
 
-.q-item
-    .q-icon
-        transition: 400ms color ease
+    &__background-top,
+    &__background-bottom {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-position: center center;
+        background-size: 100% auto;
+        background-repeat: no-repeat;
+    }
 
-.q-item:hover
-    .grayscale
-        filter: grayscale(0)
-    .q-icon
-        color: $secondary
+    &__background-top {
+        top: 0;
+        height: 30vh;
+        overflow: hidden;
+        background-image:
+            radial-gradient(circle at 0% 150%, $primary, transparent 40%),
+            radial-gradient(circle at 100% 100%, $primary, transparent 39%),
+            radial-gradient(circle at 100% 0%, $secondary, transparent 40%),
+            radial-gradient(circle at 65% 21%, $accent, transparent 40%);
 
-.account
-  width: 96px
-  white-space: nowrap
-  overflow: hidden
-  text-overflow: ellipsis
+        @media screen and (min-width: $breakpoint-sm-min) {
+            background-image:
+                radial-gradient(circle at 0% 120%, $primary, transparent 25%),
+                radial-gradient(circle at 100% 100%, $primary, transparent 25%),
+                radial-gradient(circle at 100% 0%, $secondary, transparent 25%),
+                radial-gradient(circle at 75% 10%, $accent, transparent 25%);
+        }
 
-.q-header
-  position: relative
+        @media screen and (min-width: $breakpoint-md-min) {
+            background-image:
+                radial-gradient(circle at 0% 150%, $primary, transparent 20%),
+                radial-gradient(circle at 100% 100%, $primary, transparent 20%),
+                radial-gradient(circle at 100% 0%, $secondary, transparent 25%),
+                radial-gradient(circle at 70% -10%, $accent, transparent 30%);
+        }
 
-@media only screen and (max-width: 400px)
-    #logo
-        .text-h5
-            font-size: 1.1rem
-        img
-            width: 24px
+        @media screen and (min-width: $breakpoint-lg-min) {
+            background-image:
+                radial-gradient(circle at 0% 150%, $primary, transparent 20%),
+                radial-gradient(circle at 100% 100%, $primary, transparent 18%),
+                radial-gradient(circle at 100% 0%, $secondary, transparent 22%),
+                radial-gradient(circle at 75% -10%, $accent, transparent 20%)
+        }
+    }
+
+    &__background-bottom {
+        top: 30vh;
+        height: 70vh;
+
+        background-image:
+            radial-gradient(circle at 100% 83%, $secondary, transparent 30%),
+            radial-gradient(circle at 72% 90%, $accent, transparent 36%);
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            background-image:
+                radial-gradient(circle at 100% 83%, $secondary, transparent 20%),
+                radial-gradient(circle at 80% 90%, $accent, transparent 25%);
+        }
+    }
+
+    &__background-circle {
+        position: absolute;
+        content: "";
+        border-radius: 100%;
+        border: 24px solid var(--faint-circle-color);
+
+        &--1 {
+            top: -5vh;
+            right: -20vh;
+            width: 40vh;
+            height: 40vh;
+        }
+
+        &--2 {
+            display: none;
+
+            @media screen and (min-width: $breakpoint-md-min) {
+                display: block;
+                top: -50%;
+                right: 0;
+                left: 0;
+                width: 40vh;
+                height: 40vh;
+                margin: 0 auto;
+            }
+        }
+    }
+}
+.page-container {
+  margin-top: 48px;
+  @media screen and (min-width: $breakpoint-lg-min) {
+    margin-top: 105px;
+  }
+}
+
+.separator {
+  border-bottom: 1px solid lightgrey;
+}
+
+.connection {
+  font-size: .5rem;
+  margin-right: 0.2rem;
+}
+
+.q-item {
+  .q-icon {
+    transition: 400ms color ease;
+  }
+}
+
+.q-item:hover {
+  .grayscale {
+    filter: grayscale(0);
+  }
+  .q-icon {
+    color: $secondary;
+  }
+}
+
+.account {
+  width: 96px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.q-header {
+  position: relative;
+}
+
+@media only screen and (max-width: 400px) {
+  #logo {
+    .text-h5 {
+      font-size: 1.1rem;
+    }
+    img {
+      width: 24px;
+    }
+  }
+}
+
 </style>

@@ -1,22 +1,11 @@
 // this file contains one-time global imports
 @import './utilities';
-@import './quasar-overrides';
 @import './components/json-viewer';
 @import './components/notification';
 
 
 body {
     font-family: "silkaregular", sans-serif;
-}
-
-body.body--light {
-    background-color: #FCFCFE;
-
-    --border-color: #E5E5E5;
-}
-
-body.body--dark {
-    --border-color: #2E2E2E;
 }
 
 a {

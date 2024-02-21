@@ -101,8 +101,8 @@ module.exports = function(/* ctx */) {
             config: {
                 brand: {
                     // brand colors
-                    primary: '#348DCC',
-                    secondary: '#8B3F98',
+                    primary: '#8B3F98',
+                    secondary: '#348DCC',
                     accent: '#73C58F',
                 },
             },
