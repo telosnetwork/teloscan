@@ -78,16 +78,10 @@ export default {
 <q-layout view="lhh Lpr lFf" class="c-main-layout">
     <div class="c-main-layout__background-container">
         <div class="c-main-layout__background-top">
-            <div class="c-main-layout__background-circle c-main-layout__background-circle--1">
-
-            </div>
-            <div class="c-main-layout__background-circle c-main-layout__background-circle--2">
-
-            </div>
+            <div class="c-main-layout__background-circle c-main-layout__background-circle--1"></div>
+            <div class="c-main-layout__background-circle c-main-layout__background-circle--2"></div>
         </div>
-        <div class="c-main-layout__background-bottom">
-
-        </div>
+        <div class="c-main-layout__background-bottom"></div>
     </div>
 
     <q-page-container class="flex flex-center page-container">
