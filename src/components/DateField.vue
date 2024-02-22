@@ -23,6 +23,11 @@ export default {
             type: Boolean,
             default: null,
         },
+        // if true or not defined, the component will display the date in parentheses
+        utcUseParentheses: {
+            type: Boolean,
+            default: true,
+        },
     },
     data: () => ({
         showAge: false,
@@ -35,7 +40,8 @@ export default {
             }
 
             const offset = getFormattedUtcOffset(new Date(this.epoch));
-            return `${moment.unix(this.epoch).format('MMM D, YYYY HH:mm:ss')} (UTC ${offset})`;
+            const utc = this.utcUseParentheses ? ` (UTC ${offset})` : ` - UTC ${offset}`;
+            return `${moment.unix(this.epoch).format('MMM D, YYYY HH:mm:ss')} ${utc}`;
         },
     },
     created() {
