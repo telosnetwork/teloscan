@@ -1,14 +1,11 @@
 <script setup lang="ts">
 
-import { ref, watch, computed, onMounted } from 'vue';
-
+import { ref, watch, onMounted, computed, toRaw } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { indexerApi } from 'src/boot/telosApi';
-
-import { ethers } from 'ethers';
-import DateField from 'components/DateField.vue';
 import TransactionTable from 'components/TransactionTable.vue';
+import BlockOverview from 'components/BlockOverview.vue';
 import { BlockData } from 'src/types';
 
 
@@ -21,84 +18,47 @@ const tabs = ['overview', 'transactions'];
 
 const tab = ref(defaultTab);
 const block = ref('');
+const blockHeight = computed(() => parseInt(block.value ?? '0'));
 const blockData = ref<BlockData | null>(null);
-const error = ref('');
-const showDateAge = ref(false);
 
-// Computed properties
-const blockHeight = computed(() => parseInt(block.value));
-const timestamp = computed(() => blockData.value ? blockData.value.timestamp : 0);
 const transactionsCount = computed(() => blockData.value ? blockData.value.transactionsCount : 0);
-const internalTrxCount = ref(0); // Assuming this remains static for now
-const size = computed(() => {
-    if (blockData.value) {
-        const size = ethers.BigNumber.from(blockData.value.size).toNumber();
-        return `${size.toLocaleString()} bytes`;
-    }
-    return '0';
-});
-const gasUsed = computed(() => {
-    if (blockData.value) {
-        const gas = ethers.BigNumber.from(blockData.value.gasUsed);
-        try {
-            return gas.toNumber().toLocaleString();
-        } catch (e) {
-            console.error(e);
-            return gas.toString();
-        }
-    }
-    return '0';
-});
-const gasLimit = computed(() => {
-    if (blockData.value) {
-        const gas = ethers.BigNumber.from(blockData.value.gasLimit);
-        try {
-            return gas.toNumber().toLocaleString();
-        } catch (e) {
-            console.error(e);
-            return gas.toString();
-        }
-    }
-    return '0';
-});
-const nonce = computed(() => blockData.value ? blockData.value.nonce : '');
-const hash = computed(() => blockData.value ? blockData.value.hash : '');
-const parentHash = computed(() => blockData.value ? blockData.value.parentHash : '');
 
 // Methods
-async function loadBlock() {
-    try {
-        const blockResponse = await indexerApi.get(`/block/${block.value}?includeAbi=true`);
-        if (blockResponse) {
-            blockData.value = blockResponse.data.results[0];
-        }
-    } catch (e) {
-        error.value = $t('components.failed_to_fetch_transactions');
-        console.error(e);
-    }
-}
-
-function resetBlockData() {
-    blockData.value = null;
-}
 
 function prevBlock() {
-    resetBlockData();
-    router.push({ name: 'block', params: { block: blockHeight.value - 1 } });
+    router.push({ name: 'block', params: { block: parseInt(block.value) - 1 } });
 }
 
 function nextBlock() {
-    resetBlockData();
-    router.push({ name: 'block', params: { block: blockHeight.value + 1 } });
+    router.push({ name: 'block', params: { block: parseInt(block.value) + 1 } });
 }
 
+const loadBlockData = async () => {
+    blockData.value = null;
+    try {
+        if (blockHeight.value <= 0) {
+            return;
+        }
+        const response = await indexerApi.get(`/block/${blockHeight.value}`);
+        blockData.value = toRaw(response.data?.results?.[0]) as BlockData;
+    } catch (error) {
+        console.error('Failed to fetch block data:', error);
+    }
+};
+
 // Watchers
+
+// cuando block cambie hay que actualizar la url
+watch(block, (newBlock) => {
+    router.push({ params: { block: newBlock } });
+    loadBlockData();
+});
 watch(() => route.params.block, (newBlock) => {
     if (block.value === newBlock) {
         return;
     }
     block.value = newBlock as string;
-    loadBlock();
+    // loadBlock();
 }, { immediate: true });
 
 watch(() => route.query.tab, (newTab) => {
@@ -114,7 +74,7 @@ watch(tab, (newTab) => {
 onMounted(() => {
     const tabQueryParam = route.query.tab as string;
     tab.value = tabs.includes(tabQueryParam) ? tabQueryParam : defaultTab;
-    loadBlock();
+    // loadBlock();
 });
 </script>
 
@@ -122,7 +82,7 @@ onMounted(() => {
 <div class="p-block">
     <div class="p-block__header">
         <span class="p-block__header-title">{{ $t('pages.blockpage.block') }}</span>
-        <span class="p-block__header-block-num">#{{ blockHeight }}</span>
+        <span class="p-block__header-block-num">#{{ block }}</span>
     </div>
 
     <q-tabs
@@ -131,150 +91,27 @@ onMounted(() => {
         align="left"
     >
         <q-tab class="p-block__tabs-tab" name="overview" :label="$t('pages.blockpage.overview')" />
-        <q-tab class="p-block__tabs-tab" name="transactions" :label="$t('pages.blockpage.transactions')" />
+        <q-tab
+            v-if="transactionsCount > 0"
+            class="p-block__tabs-tab"
+            name="transactions"
+            :label="$t('pages.blockpage.transactions')"
+        />
     </q-tabs>
 
     <div class="p-block__main-container">
         <div class="p-block__main-content">
             <q-tab-panels v-model="tab" class="p-block__panels">
                 <q-tab-panel class="p-block__panel" name="overview">
-                    <q-card class="p-block__card-section">
-                        <div class="p-block__row">
-                            <div class="p-block__row-tooltip">
-                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                                    <q-tooltip anchor="bottom right" self="top start">
-                                        {{ $t('pages.blockpage.block_height_tooltip') }}
-                                    </q-tooltip>
-                                </q-icon>
-                            </div>
-                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.block_height') }}</div>
-                            <div class="p-block__row-value">{{ blockHeight }}</div>
-                            <div class="p-block__row-icon-btn p-block__row-icon-btn--left" @click="prevBlock">
-                                <i class="fa fa-chevron-left small"></i>
-                            </div>
-                            <div class="p-block__row-icon-btn p-block__row-icon-btn--right" @click="nextBlock">
-                                <i class="fa fa-chevron-right small"></i>
-                            </div>
-                        </div>
-                        <div class="p-block__row">
-                            <div class="p-block__row-tooltip">
-                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                                    <q-tooltip anchor="bottom right" self="top start">
-                                        {{ $t('pages.blockpage.timestamp_tooltip') }}
-                                    </q-tooltip>
-                                </q-icon>
-                            </div>
-                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.timestamp') }}</div>
-                            <div
-                                class="p-block__row-value p-block__row-value--timestamp"
-                                @click="showDateAge = !showDateAge"
-                            >
-                                <q-icon class="p-block__row-value-clock-icon" name="far fa-clock">
-                                    <q-tooltip anchor="bottom right" self="top start">
-                                        {{ $t('components.click_to_change_format') }}
-                                    </q-tooltip>
-                                </q-icon>
-                                <DateField :epoch="Math.round(timestamp / 1000)" :force-show-age="showDateAge"/>
-                            </div>
-                        </div>
-                        <div class="p-block__row">
-                            <div class="p-block__row-tooltip">
-                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                                    <q-tooltip anchor="bottom right" self="top start">
-                                        {{ $t('pages.blockpage.transactions_tooltip') }}
-                                    </q-tooltip>
-                                </q-icon>
-                            </div>
-                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.transactions') }}</div>
-                            <div class="p-block__row-value">
-                                <router-link :to="{ query: { tab: 'transactions' } }">
-                                    {{ $t('pages.blockpage.count_transactions', { count: transactionsCount }) }}
-                                </router-link>
-                                <template v-if="internalTrxCount > 0">
-                                    &nbsp;{{ $t('pages.blockpage.and') }}&nbsp;
-                                    <router-link :to="{ query: { tab: 'transactions' } }">
-                                        {{ $t('pages.blockpage.count_int_transactions', { count: internalTrxCount }) }}
-                                    </router-link>
-                                </template>
-                                {{ $t('pages.blockpage.in_this_block') }}
-                            </div>
-                        </div>
-                        <div class="p-block__row">
-                            <div class="p-block__row-tooltip">
-                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                                    <q-tooltip anchor="bottom right" self="top start">
-                                        {{ $t('pages.blockpage.size_tooltip') }}
-                                    </q-tooltip>
-                                </q-icon>
-                            </div>
-                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.size') }}</div>
-                            <div class="p-block__row-value">{{ size }}</div>
-                        </div>
-                    </q-card>
-                    <q-card class="p-block__card-section">
-                        <div class="p-block__row">
-                            <div class="p-block__row-tooltip">
-                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                                    <q-tooltip anchor="bottom right" self="top start">
-                                        {{ $t('pages.blockpage.gas_used_tooltip') }}
-                                    </q-tooltip>
-                                </q-icon>
-                            </div>
-                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.gas_used') }}</div>
-                            <div class="p-block__row-value">{{ gasUsed }}</div>
-                        </div>
-                        <div class="p-block__row">
-                            <div class="p-block__row-tooltip">
-                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                                    <q-tooltip anchor="bottom right" self="top start">
-                                        {{ $t('pages.blockpage.gas_limit_tooltip') }}
-                                    </q-tooltip>
-                                </q-icon>
-                            </div>
-                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.gas_limit') }}</div>
-                            <div class="p-block__row-value">{{ gasLimit }}</div>
-                        </div>
-                        <div class="p-block__row">
-                            <div class="p-block__row-tooltip">
-                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                                    <q-tooltip anchor="bottom right" self="top start">
-                                        {{ $t('pages.blockpage.nonce_tooltip') }}
-                                    </q-tooltip>
-                                </q-icon>
-                            </div>
-                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.nonce') }}</div>
-                            <div class="p-block__row-value">{{ nonce }}</div>
-                        </div>
-                        <div class="p-block__row">
-                            <div class="p-block__row-tooltip">
-                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                                    <q-tooltip anchor="bottom right" self="top start">
-                                        {{ $t('pages.blockpage.hash_tooltip') }}
-                                    </q-tooltip>
-                                </q-icon>
-                            </div>
-                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.hash') }}</div>
-                            <div class="p-block__row-value">{{ hash }}</div>
-                        </div>
-                        <div class="p-block__row">
-                            <div class="p-block__row-tooltip">
-                                <q-icon class="p-block__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                                    <q-tooltip anchor="bottom right" self="top start">
-                                        {{ $t('pages.blockpage.parent_hash_tooltip') }}
-                                    </q-tooltip>
-                                </q-icon>
-                            </div>
-                            <div class="p-block__row-attribute">{{ $t('pages.blockpage.parent_hash') }}</div>
-                            <div class="p-block__row-value">{{ parentHash }}</div>
-                        </div>
-                    </q-card>
+                    <BlockOverview
+                        :data="blockData"
+                        @prev-block="prevBlock"
+                        @next-block="nextBlock"
+                        @trx-table="tab = 'transactions'"
+                    />
                 </q-tab-panel>
                 <q-tab-panel class="p-block__panel" name="transactions">
-                    <div
-                        v-if="!error && blockData && blockData.transactionsCount > 0"
-                    >
-                        <TransactionTable :title="block" :filter="`block/${blockHeight}`"/>
-                    </div>
+                    <TransactionTable :title="block" :filter="`block/${block}`"/>
                 </q-tab-panel>
             </q-tab-panels>
         </div>
@@ -322,64 +159,6 @@ onMounted(() => {
     }
     &__panel {
         padding: 0px;
-    }
-    &__card-section {
-        padding: 1.25rem!important;
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 16px;
-    }
-    &__row {
-        display: flex;
-        flex-direction: row;
-        justify-content: left;
-        align-items: center;
-        padding: 0.5rem 0;
-        gap: 5px;
-    }
-    &__row-tooltip {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    &__row-attribute {
-        font-weight: 500;
-        min-width: 230px;
-    }
-    &__row-value {
-        margin-left: 1rem;
-        &--hardcoded {
-            color: #999;
-        }
-        &--timestamp {
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-    }
-    &__row-icon-btn {
-        cursor: pointer;
-        color: rgb(8, 29, 53);
-        background-color: rgb(233, 236, 239);
-        border: solid 1.25px rgb(233, 236, 239);
-        height: 22px;
-        width: 22px;
-        border-radius: 6px;
-        // center content with flex
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        &--left {
-            padding-right: 1px;
-        }
-        &--right {
-            padding-left: 1px;
-        }
-    }
-    &__separator {
-        border: 1px solid #e0e0e0;
-        margin: 1rem 0;
     }
 }
 </style>
