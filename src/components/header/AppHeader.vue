@@ -86,7 +86,7 @@ function scrollHandler(info: { direction: string; }) {
     menuHiddenDesktop.value = info.direction === 'down';
 }
 
-function goTo(to: string) {
+function goTo(to: string | { name: string }) {
     mobileMenuIsOpen.value = false;
     advancedMenuExpanded.value = false;
     const httpsRegex = /^https/;
