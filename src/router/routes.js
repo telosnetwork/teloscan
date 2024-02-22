@@ -59,7 +59,7 @@ const routes = [
         children: [{
             path: '',
             name: 'block',
-            component: () => import('pages/Block.vue'),
+            component: () => import('pages/BlockPage.vue'),
         }],
     },
     {
