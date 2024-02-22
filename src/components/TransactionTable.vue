@@ -1,19 +1,21 @@
 <script lang="ts" setup>
+import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import { ref, watch } from 'vue';
-import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
+
 import TokenValueField from 'components/Token/TokenValueField.vue';
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import TransactionField from 'components/TransactionField.vue';
 import MethodField from 'components/MethodField.vue';
+
 import { contractManager, indexerApi } from 'src/boot/telosApi';
 
+const $q = useQuasar();
 const route = useRoute();
 const router = useRouter();
-const $q = useQuasar();
 const { t: $t } = useI18n();
 
 export interface Props {
@@ -30,9 +32,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const rows = ref<Array<any>>([]);
-const filterUpdated = ref<boolean>(false);
-const loading =  ref<boolean>(false);
-const showDateAge = ref<boolean>(true);
+const filterUpdated = ref(false);
+const loading =  ref(false);
+const showDateAge = ref(true);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const transactions: any[] = [];
@@ -103,6 +105,38 @@ columns.push(
         name: 'value',
         label: $t('components.value_transfer'),
         align: 'left',
+    },
+);
+
+watch(() => route.query.page,
+    (pageParam) => {
+        let page = 1;
+        let desc = true;
+        let size = page_size_options[0];
+
+        // we also allow to pass a single number as the page number
+        if (typeof pageParam === 'number') {
+            page = pageParam;
+        } else if (typeof pageParam === 'string') {
+            // we also allow to pass a string of two numbers: 'page,rowsPerPage'
+            const [p, s, d] = pageParam.split(',');
+            page = Number(p);
+            size = Number(s);
+            desc = (!d || d.toUpperCase() !== 'ASC');
+        }
+
+        setPagination(page, size, desc);
+    },
+    { immediate: true },
+);
+
+watch(() => props.filter,
+    async () => {
+        if (!filterUpdated.value) {
+            filterUpdated.value = true;
+            return;
+        }
+        await parseTransactions();
     },
 );
 
@@ -245,38 +279,6 @@ function getPath() {
 function toggleDateFormat() {
     showDateAge.value = !showDateAge.value;
 }
-
-watch(() => route.query.page,
-    (pageParam) => {
-        let page = 1;
-        let desc = true;
-        let size = page_size_options[0];
-
-        // we also allow to pass a single number as the page number
-        if (typeof pageParam === 'number') {
-            page = pageParam;
-        } else if (typeof pageParam === 'string') {
-            // we also allow to pass a string of two numbers: 'page,rowsPerPage'
-            const [p, s, d] = pageParam.split(',');
-            page = Number(p);
-            size = Number(s);
-            desc = (!d || d.toUpperCase() !== 'ASC');
-        }
-
-        setPagination(page, size, desc);
-    },
-    { immediate: true },
-);
-
-watch(() => props.filter,
-    async () => {
-        if (!filterUpdated.value) {
-            filterUpdated.value = true;
-            return;
-        }
-        await parseTransactions();
-    },
-);
 
 </script>
 

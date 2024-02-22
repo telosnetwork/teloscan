@@ -6,69 +6,31 @@ import { RouteLocationRaw, useRouter } from 'vue-router';
 import vClickaway from 'vue3-click-away';
 import { useI18n } from 'vue-i18n';
 import moment from 'moment';
+import { UAL } from 'universal-authenticator-library';
+
 import { stlos as stlosLogo } from 'src/lib/logos.js';
+import { getAntelope, useAccountStore } from 'src/antelope';
+import { indexerApi } from 'src/boot/telosApi';
+import ual from 'src/boot/ual';
+import { providerManager } from 'src/boot/evm';
+
 import HeaderSearch from 'components/header/HeaderSearch.vue';
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import LoginModal from 'components/LoginModal.vue';
 import LoginStatus from 'components/header/LoginStatus.vue';
-import { getAntelope, useAccountStore } from 'src/antelope';
-import { indexerApi } from 'src/boot/telosApi';
-import ual from 'src/boot/ual';
-import { UAL } from 'universal-authenticator-library';
-import { providerManager } from 'src/boot/evm';
 
-const store = useStore();
 const $q = useQuasar();
 const router = useRouter();
+const store = useStore();
 const { t: $t } = useI18n();
 
 const isTestnet =  Number(process.env.NETWORK_EVM_CHAIN_ID) !== 40;
-const mobileMenuIsOpen = ref<boolean>(false);
-const showLoginModal = ref<boolean>(false);
-const showLanguageSwitcher = ref<boolean>(false);
-const advancedMenuExpanded = ref<boolean>(false);
-const menuHiddenDesktop = ref<boolean>(false);
-const searchHiddenMobile = ref<boolean>(true);
-
-function scrollHandler(info: { direction: string; }) {
-    menuHiddenDesktop.value = info.direction === 'down';
-}
-
-function goTo(to: RouteLocationRaw) {
-    mobileMenuIsOpen.value = false;
-    advancedMenuExpanded.value = false;
-    const httpsRegex = /^https/;
-    if (typeof to === 'string' && httpsRegex.test(to)) {
-        window.location.href = to;
-        return;
-    }
-    router.push(to);
-}
-
-function handleClickaway() {
-    mobileMenuIsOpen.value = false;
-    advancedMenuExpanded.value = false;
-}
-
-function toggleDarkMode() {
-    $q.dark.toggle();
-    localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
-}
-
-function handleLoginLogout(){
-    if (isLoggedIn.value) {
-        logout();
-    } else {
-        showLoginModal.value = true;
-    }
-}
-
-function logout() {
-    useAccountStore().logout();
-}
-
-const isLoggedIn = computed(() =>store.getters['login/isLoggedIn']);
-const isNative = computed(() => store.getters['login/isNative']);
+const mobileMenuIsOpen = ref(false);
+const showLoginModal = ref(false);
+const showLanguageSwitcher = ref(false);
+const advancedMenuExpanded = ref(false);
+const menuHiddenDesktop = ref(false);
+const searchHiddenMobile = ref(true);
 
 onMounted(async () => {
     const health = await indexerApi.get('/health');
@@ -113,6 +75,46 @@ onMounted(async () => {
         providerManager.setProvider(null);
     });
 });
+
+function scrollHandler(info: { direction: string; }) {
+    menuHiddenDesktop.value = info.direction === 'down';
+}
+
+function goTo(to: RouteLocationRaw) {
+    mobileMenuIsOpen.value = false;
+    advancedMenuExpanded.value = false;
+    const httpsRegex = /^https/;
+    if (typeof to === 'string' && httpsRegex.test(to)) {
+        window.location.href = to;
+        return;
+    }
+    router.push(to);
+}
+
+function handleClickaway() {
+    mobileMenuIsOpen.value = false;
+    advancedMenuExpanded.value = false;
+}
+
+function toggleDarkMode() {
+    $q.dark.toggle();
+    localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
+}
+
+function handleLoginLogout(){
+    if (isLoggedIn.value) {
+        logout();
+    } else {
+        showLoginModal.value = true;
+    }
+}
+
+function logout() {
+    useAccountStore().logout();
+}
+
+const isLoggedIn = computed(() =>store.getters['login/isLoggedIn']);
+const isNative = computed(() => store.getters['login/isNative']);
 
 </script>
 

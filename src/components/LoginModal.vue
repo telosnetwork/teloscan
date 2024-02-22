@@ -1,8 +1,11 @@
 <script lang="ts" setup>
-import detectEthereumProvider from '@metamask/detect-provider';
 import { useQuasar } from 'quasar';
 import { computed, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
+import { useI18n } from 'vue-i18n';
+import detectEthereumProvider from '@metamask/detect-provider';
+import { Authenticator, UAL } from 'universal-authenticator-library';
+
 import {
     LOGIN_EVM,
     LOGIN_NATIVE,
@@ -19,9 +22,7 @@ import {
     useAccountStore,
     useChainStore,
 } from 'src/antelope/mocks';
-import { Authenticator, UAL } from 'universal-authenticator-library';
 import ual from 'src/boot/ual';
-import { useI18n } from 'vue-i18n';
 import evm, { providerManager } from 'src/boot/evm';
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 
@@ -39,12 +40,55 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(['hide']);
 
-const tab = ref<string>('web3');
-const isMobile = ref<boolean>(false);
-const browserSupportsMetaMask = ref<boolean>(true);
-const isBraveBrowser = ref<boolean>(false);
-const isIOSMobile = ref<boolean>(false);
+const tab = ref('web3');
+const isMobile = ref(false);
+const browserSupportsMetaMask = ref(true);
+const isBraveBrowser = ref(false);
+const isIOSMobile = ref(false);
+
 const authenticators = computed(() => (ual as unknown as UAL).getAuthenticators().availableAuthenticators);
+
+onMounted(async () => {
+    await detectProvider();
+    detectMobile();
+
+    // On login we must set the address and record the provider
+    getAntelope().events.onLoggedIn.subscribe((account: AccountModel) => {
+        const evm_account = account as EvmAccountModel;
+        const address = evm_account.account;
+        const pr_name = evm_account.authenticator.getName();
+        setLogin({ address });
+
+        localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
+            type: LOGIN_EVM,
+            provider: pr_name,
+            account: address,
+        }));
+    });
+
+    const loginData = localStorage.getItem(LOGIN_DATA_KEY);
+    if (!loginData) {
+        return;
+    }
+
+    const loginObj = JSON.parse(loginData);
+    if (loginObj.type === LOGIN_EVM) {
+        loginWithAntelope(loginObj.provider, loginObj.account);
+    } else if (loginObj.type === LOGIN_NATIVE) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const wallet = authenticators.value.find((a: { getName: () => any; }) => a.getName() === loginObj.provider);
+        if (wallet) {
+            ualLogin(wallet);
+        } else {
+            console.error(`Unknown login type: ${loginObj.type}`);
+            $q.notify({
+                position: 'top',
+                message: $t('components.unknown_native_login_provider', { provider: loginObj.provider }),
+                timeout: 6000,
+            });
+        }
+    }
+});
 
 async function detectProvider() {
     const provider = await detectEthereumProvider({ mustBeMetaMask: true });
@@ -172,48 +216,6 @@ function connectWalletConnect() {
 function hideDialog(){
     emit('hide');
 }
-
-onMounted(async () => {
-    await detectProvider();
-    detectMobile();
-
-    // On login we must set the address and record the provider
-    getAntelope().events.onLoggedIn.subscribe((account: AccountModel) => {
-        const evm_account = account as EvmAccountModel;
-        const address = evm_account.account;
-        const pr_name = evm_account.authenticator.getName();
-        setLogin({ address });
-
-        localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
-            type: LOGIN_EVM,
-            provider: pr_name,
-            account: address,
-        }));
-    });
-
-    const loginData = localStorage.getItem(LOGIN_DATA_KEY);
-    if (!loginData) {
-        return;
-    }
-
-    const loginObj = JSON.parse(loginData);
-    if (loginObj.type === LOGIN_EVM) {
-        loginWithAntelope(loginObj.provider, loginObj.account);
-    } else if (loginObj.type === LOGIN_NATIVE) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const wallet = authenticators.value.find((a: { getName: () => any; }) => a.getName() === loginObj.provider);
-        if (wallet) {
-            ualLogin(wallet);
-        } else {
-            console.error(`Unknown login type: ${loginObj.type}`);
-            $q.notify({
-                position: 'top',
-                message: $t('components.unknown_native_login_provider', { provider: loginObj.provider }),
-                timeout: 6000,
-            });
-        }
-    }
-});
 
 </script>
 <template>
