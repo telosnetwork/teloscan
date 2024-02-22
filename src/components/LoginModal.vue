@@ -1,224 +1,224 @@
-<!-- eslint-disable max-len -->
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
-<!-- eslint-disable no-unused-vars -->
-<script lang="ts">
+<script lang="ts" setup>
 import detectEthereumProvider from '@metamask/detect-provider';
-import { defineComponent } from 'vue';
-import { mapGetters, mapMutations } from 'vuex';
+import { useQuasar } from 'quasar';
+import { computed, onMounted, ref } from 'vue';
+import { useStore } from 'vuex';
 import {
     LOGIN_EVM,
     LOGIN_NATIVE,
-    PROVIDER_TELOS_CLOUD,
     PROVIDER_WALLET_CONNECT,
     PROVIDER_BRAVE,
     PROVIDER_METAMASK,
     LOGIN_DATA_KEY,
 } from 'src/lib/utils';
-import { AccountModel, CURRENT_CONTEXT, EvmAccountModel, getAntelope, useAccountStore, useChainStore } from 'src/antelope/mocks';
-import { Authenticator } from 'universal-authenticator-library';
+import {
+    AccountModel,
+    CURRENT_CONTEXT,
+    EvmAccountModel,
+    getAntelope,
+    useAccountStore,
+    useChainStore,
+} from 'src/antelope/mocks';
+import { Authenticator, UAL } from 'universal-authenticator-library';
+import ual from 'src/boot/ual';
+import { useI18n } from 'vue-i18n';
+import evm, { providerManager } from 'src/boot/evm';
+import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 
-export default defineComponent({
-    name: 'LoginModal',
-    props: {
-        show: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    data: () => ({
-        tab: 'web3',
-        showLogin: false,
-        isMobile: false,
-        browserSupportsMetaMask: true,
-        isBraveBrowser: false,
-        isIOSMobile: false,
-    }),
-    emits: ['hide'],
-    computed: {
-        ...mapGetters('login', [
-            'isLoggedIn',
-            'isNative',
-            'address',
-            'nativeAccount',
-        ]),
-        authenticators(): Authenticator[] {
-            return this.$ual.getAuthenticators().availableAuthenticators;
-        },
-        darkModeEnabled(): boolean {
-            return localStorage.getItem('darkModeEnabled') === 'true';
-        },
-    },
-    async mounted() {
-        await this.detectProvider();
-        this.detectMobile();
+const $q = useQuasar();
+const store = useStore();
+const { t: $t } = useI18n();
 
-        // On login we must set the address and record the provider
-        getAntelope().events.onLoggedIn.subscribe((account: AccountModel) => {
-            const evm_account = account as EvmAccountModel;
-            const address = evm_account.account;
-            const pr_name = evm_account.authenticator.getName();
-            this.setLogin({ address });
+export interface Props {
+    show?: boolean
+}
 
-            localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
-                type: LOGIN_EVM,
-                provider: pr_name,
-                account: address,
-            }));
-        });
+const props = withDefaults(defineProps<Props>(), {
+    show: false,
+});
 
-        const loginData = localStorage.getItem(LOGIN_DATA_KEY);
-        if (!loginData) {
+const emit = defineEmits(['hide']);
+
+const tab = ref<string>('web3');
+const isMobile = ref<boolean>(false);
+const browserSupportsMetaMask = ref<boolean>(true);
+const isBraveBrowser = ref<boolean>(false);
+const isIOSMobile = ref<boolean>(false);
+const authenticators = computed(() => (ual as unknown as UAL).getAuthenticators().availableAuthenticators);
+
+async function detectProvider() {
+    const provider = await detectEthereumProvider({ mustBeMetaMask: true });
+    browserSupportsMetaMask.value = provider?.isMetaMask || false;
+    isBraveBrowser.value = navigator.brave && await navigator.brave.isBrave() || false;
+}
+
+function detectMobile() {
+    // eslint-disable-next-line max-len
+    const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i;
+    isMobile.value = mobileRegex.test(navigator.userAgent);
+    /* used for temp exclusion from Brave Browser wallet.
+    See https://github.com/telosnetwork/teloscan/issues/335 */
+    isIOSMobile.value = (/iPhone|iPad|iPod/i).test(navigator.userAgent);
+}
+
+function setLogin(account: { address?: string, nativeAccount?: string}){
+    store.commit('login/setLogin', account);
+}
+
+async function ualLogin(wallet: Authenticator, account?: string) {
+    await wallet.init();
+    const users = await wallet.login(account);
+    if (users.length) {
+        const account = users[0];
+        const accountName = await account.getAccountName();
+        let evmAccount;
+        try {
+            evmAccount = await (evm as unknown as TelosEvmApi).telos.getEthAccountByTelosAccount(accountName);
+        } catch (e) {
+            $q.notify({
+                position: 'top',
+                message: $t('components.search_evm_address_failed', { accountName }),
+                timeout: 6000,
+            });
+            wallet.logout();
             return;
         }
+        setLogin({
+            address: evmAccount.address,
+            nativeAccount: accountName,
+        });
+        providerManager.setProvider(account);
+        localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
+            type: LOGIN_NATIVE,
+            provider: wallet.getName(),
+            account: evmAccount.address,
+        }));
+    }
+    emit('hide');
+}
 
-        const loginObj = JSON.parse(loginData);
-        if (loginObj.type === LOGIN_EVM) {
-            this.loginWithAntelope(loginObj.provider, loginObj.account);
-        } else if (loginObj.type === LOGIN_NATIVE) {
-            const wallet = this.authenticators.find((a: { getName: () => any; }) => a.getName() === loginObj.provider);
-            if (wallet) {
-                this.ualLogin(wallet);
-            } else {
-                console.error(`Unknown login type: ${loginObj.type}`);
-                this.$q.notify({
-                    position: 'top',
-                    message: this.$t('components.unknown_native_login_provider', { provider: loginObj.provider }),
-                    timeout: 6000,
-                });
-            }
-        }
-    },
-    methods: {
-        ...mapMutations('login', [
-            'setLogin',
-        ]),
+function getIconForWallet(wallet: { getName: () => string; getStyle: () => { icon: string; }; }) {
+    if (wallet.getName() === 'wombat') {
+        // Wombat UAL logo is 32x32px; substitute for higher res
+        return '/assets/wombat-logo.png';
+    }
+    return wallet.getStyle().icon;
+}
 
-        async detectProvider() {
-            const provider = await detectEthereumProvider({ mustBeMetaMask: true });
-            this.browserSupportsMetaMask = provider?.isMetaMask || false;
-            this.isBraveBrowser = navigator.brave && await navigator.brave.isBrave() || false;
-        },
+async function loginWithAntelope(name:string, autoLogAccount?: string) {
+    const label = CURRENT_CONTEXT;
+    const auth = getAntelope().wallets.getAuthenticator(name);
+    if (!auth) {
+        console.error(`${name} authenticator not found`);
+        return;
+    }
+    const authenticator = auth.newInstance(label);
+    const network = useChainStore().currentChain.settings.getNetwork();
+    useAccountStore().loginEVM({ authenticator, network, autoLogAccount }, true).then(() => {
+        const address = useAccountStore().getAccount(label).account;
+        setLogin({ address });
+        localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
+            type: LOGIN_EVM,
+            provider: name,
+            account: address,
+        }));
+    });
+    emit('hide');
+}
 
-        detectMobile() {
-            // eslint-disable-next-line max-len
-            const mobileRegex = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i;
-            this.isMobile = mobileRegex.test(navigator.userAgent);
-            /* used for temp exclusion from Brave Browser wallet.
-               See https://github.com/telosnetwork/teloscan/issues/335 */
-            this.isIOSMobile = (/iPhone|iPad|iPod/i).test(navigator.userAgent);
-        },
+async function connectMetaMask() {
+    if (isBraveBrowser.value && window.ethereum.isBraveWallet && !isMobile.value){
+        $q.notify({
+            position: 'top',
+            message: $t('components.enable_wallet_extensions'),
+            timeout: 6000,
+        });
+        return;
+    }
 
-        getLoginDisplay() {
-            return this.isNative ? this.nativeAccount : `0x...${this.address.slice(this.address.length - 4)}`;
-        },
-        goToAddress() {
-            this.$router.push(`/address/${this.address}`);
-        },
-        async ualLogin(wallet: Authenticator, account?: string) {
-            await wallet.init();
-            const users = await wallet.login(account);
-            if (users.length) {
-                const account = users[0];
-                const accountName = await account.getAccountName();
-                let evmAccount;
-                try {
-                    evmAccount = await this.$evm.telos.getEthAccountByTelosAccount(accountName);
-                } catch (e) {
-                    this.$q.notify({
-                        position: 'top',
-                        message: this.$t('components.search_evm_address_failed', { accountName }),
-                        timeout: 6000,
-                    });
-                    wallet.logout();
-                    return;
-                }
-                this.setLogin({
-                    address: evmAccount.address,
-                    nativeAccount: accountName,
-                });
-                this.$providerManager.setProvider(account);
-                localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({ type: LOGIN_NATIVE, provider: wallet.getName(), account: evmAccount.address }));
-            }
-            this.$emit('hide');
-        },
-        getIconForWallet(wallet: { getName: () => string; getStyle: () => { icon: string; }; }) {
-            if (wallet.getName() === 'wombat') {
-                // Wombat UAL logo is 32x32px; substitute for higher res
-                return '/assets/wombat-logo.png';
-            }
-
-            return wallet.getStyle().icon;
-        },
-        async loginWithAntelope(name:string, autoLogAccount?: string) {
-            const label = CURRENT_CONTEXT;
-            const auth = getAntelope().wallets.getAuthenticator(name);
-            if (!auth) {
-                console.error(`${name} authenticator not found`);
-                return;
-            }
-            const authenticator = auth.newInstance(label);
-            const network = useChainStore().currentChain.settings.getNetwork();
-            useAccountStore().loginEVM({ authenticator, network, autoLogAccount }, true).then(() => {
-                const address = useAccountStore().getAccount(label).account;
-                this.setLogin({ address });
-                localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
-                    type: LOGIN_EVM,
-                    provider: name,
-                    account: address,
-                }));
+    if (!browserSupportsMetaMask.value || !window.ethereum || (isMobile.value && isBraveBrowser.value)){
+        try {
+            window.open('https://metamask.app.link/dapp/teloscan.io');
+        } catch {
+            $q.notify({
+                position: 'top',
+                message: $t('components.enable_wallet_extensions'),
+                timeout: 6000,
             });
-            this.$emit('hide');
-        },
-        async connectMetaMask() {
-            if (this.isBraveBrowser && window.ethereum.isBraveWallet && !this.isMobile){
-                this.$q.notify({
-                    position: 'top',
-                    message: this.$t('components.enable_wallet_extensions'),
-                    timeout: 6000,
-                });
-                return;
-            }
+        }
+        return;
+    }
 
-            if (!this.browserSupportsMetaMask || !window.ethereum || (this.isMobile && this.isBraveBrowser)){
-                try {
-                    window.open('https://metamask.app.link/dapp/teloscan.io');
-                } catch {
+    loginWithAntelope(PROVIDER_METAMASK);
+}
 
-                    this.$q.notify({
-                        position: 'top',
-                        message: this.$t('components.enable_wallet_extensions'),
-                        timeout: 6000,
-                    });
-                }
-                return;
-            }
+async function connectBraveWallet() {
+    // Brave Wallet is not set as default and/or has other extensions enabled
+    if (!window.ethereum.isBraveWallet){
+        $q.notify({
+            position: 'top',
+            message: $t('components.disable_wallet_extensions'),
+            timeout: 6000,
+        });
+        return;
+    }
+    loginWithAntelope(PROVIDER_BRAVE);
+}
 
-            this.loginWithAntelope(PROVIDER_METAMASK);
-        },
-        async connectTelosCloud() {
-            this.loginWithAntelope(PROVIDER_TELOS_CLOUD);
-        },
-        async connectBraveWallet() {
-            // Brave Wallet is not set as default and/or has other extensions enabled
-            if (!window.ethereum.isBraveWallet){
-                this.$q.notify({
-                    position: 'top',
-                    message: this.$t('components.disable_wallet_extensions'),
-                    timeout: 6000,
-                });
-                return;
-            }
-            this.loginWithAntelope(PROVIDER_BRAVE);
-        },
-        connectWalletConnect() {
-            this.loginWithAntelope(PROVIDER_WALLET_CONNECT);
-        },
-    },
+function connectWalletConnect() {
+    loginWithAntelope(PROVIDER_WALLET_CONNECT);
+}
+
+function hideDialog(){
+    emit('hide');
+}
+
+onMounted(async () => {
+    await detectProvider();
+    detectMobile();
+
+    // On login we must set the address and record the provider
+    getAntelope().events.onLoggedIn.subscribe((account: AccountModel) => {
+        const evm_account = account as EvmAccountModel;
+        const address = evm_account.account;
+        const pr_name = evm_account.authenticator.getName();
+        setLogin({ address });
+
+        localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
+            type: LOGIN_EVM,
+            provider: pr_name,
+            account: address,
+        }));
+    });
+
+    const loginData = localStorage.getItem(LOGIN_DATA_KEY);
+    if (!loginData) {
+        return;
+    }
+
+    const loginObj = JSON.parse(loginData);
+    if (loginObj.type === LOGIN_EVM) {
+        loginWithAntelope(loginObj.provider, loginObj.account);
+    } else if (loginObj.type === LOGIN_NATIVE) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const wallet = authenticators.value.find((a: { getName: () => any; }) => a.getName() === loginObj.provider);
+        if (wallet) {
+            ualLogin(wallet);
+        } else {
+            console.error(`Unknown login type: ${loginObj.type}`);
+            $q.notify({
+                position: 'top',
+                message: $t('components.unknown_native_login_provider', { provider: loginObj.provider }),
+                timeout: 6000,
+            });
+        }
+    }
 });
+
 </script>
 <template>
 <div class="c-login-modal">
-    <q-dialog :model-value="show" @hide="() => $emit('hide')">
+    <q-dialog :model-value="props.show" @hide="hideDialog">
         <q-card rounded class="c-login-modal__modal-inner">
             <q-tabs v-model="tab">
                 <q-tab name="web3" :label="$t('components.evm_wallets')" />
