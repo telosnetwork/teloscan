@@ -33,9 +33,10 @@ function nextBlock() {
     router.push({ name: 'block', params: { block: parseInt(block.value) + 1 } });
 }
 
-function visitNativeBlockExplorer(extraData) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function visitNativeBlockExplorer(extraData: any) {
     console.log('visitNativeBlockExplorer()', extraData);
-    window.open(`https://explorer-test.telos.net/block/${extraData}`, '_blank');
+    window.open(`${process.env.NETWORK_EXPLORER}/block/${extraData}`, '_blank');
 }
 
 const loadBlockData = async () => {

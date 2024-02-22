@@ -18,7 +18,7 @@ const route = useRoute();
 const router = useRouter();
 const { t: $t } = useI18n();
 
-export interface Props {
+interface Props {
     title: string;
     filter?: object
     initialPageSize?: number,
