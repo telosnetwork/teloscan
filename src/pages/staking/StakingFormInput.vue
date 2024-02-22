@@ -326,7 +326,7 @@ export default {
         width: 100%;
         margin: auto;
 
-        color: $white;
+        color: white;
         background: none;
         border: none;
         outline: none;

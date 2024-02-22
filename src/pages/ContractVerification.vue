@@ -284,6 +284,11 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.pageContainer
+    flex: 0 1 1200px
+    margin: auto
+    max-width: 1200px
+
 .uploader
   max-width: 300px
 

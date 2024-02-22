@@ -1,0 +1,149 @@
+// Mocking external dependencies ---
+$notify-success: #255B00;
+$notify-error: #880000;
+$notify-neutral: #4D4D4D;
+$notify-info: #008888;
+
+@mixin regular {
+  font-family: 'silka-regular', 'Roboto', sans-serif;
+}
+
+@mixin text--paragraph {
+  @include regular;
+  font-size: 1rem !important;
+  line-height: 150%;
+}
+
+// --------------
+
+.c-notify {
+  --q-positive: #{$notify-success};
+  width: 100%;
+  max-width: 400px;
+  margin: 1rem;
+  padding: 0;
+  border-radius: 4px;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
+  background-color: var(--bg-color, #fff);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  // we remove parent padding
+  .q-notification__message {
+    padding: 0;
+  }
+  // we need to style the action buttons
+  .q-notification__actions {
+    justify-content: space-around;
+    padding: 24px;
+    .q-btn {
+      font-weight: bold;
+      &.text-positive {
+        i {
+          margin-left: 0px;
+          margin-top: -5px;
+          transform: scale(0.5);
+        }
+      }
+    }
+  }
+  // container will say if this notification is success or error and set the color
+  &__container {
+    --c-notify__checkbox--display: none;
+    --c-notify__message--align: center;
+    &--success {
+      --notify-color: #{$notify-success};
+      --c-notify__title--display: flex;
+      --c-notify__message--padding: 0 2rem;
+      --c-notify__header--animation: consuming-bar 5s linear forwards;
+    }
+    &--error {
+      --notify-color: #{$notify-error};
+      --c-notify__title--display: flex;
+      --c-notify__message--padding: 0 2rem;
+    }
+    &--info {
+      --notify-color: #{$notify-info};
+      --c-notify__title--display: flex;
+      --c-notify__message--padding: 0 2rem;
+      --c-notify__checkbox--display: block;
+      --c-notify__message--align: left;
+    }
+    &--neutral {
+      --notify-color: #{$notify-neutral};
+      --c-notify__title--display: none;
+      --c-notify__message--padding: 1.2rem 2rem;
+      --c-notify__header--animation: consuming-bar 5s linear forwards;
+    }
+    display: flex;
+    flex-direction: column;
+  }
+  &__checkbox-container {
+    display: var(--c-notify__checkbox--display);
+    margin: 2rem 0 0 2rem;
+    input {
+      margin-right: 0.5rem;
+    }
+    label {
+      color: var(--text-color, #000);
+      @include text--paragraph;
+    }
+  }
+  &__header {
+    height: 8px;
+    background-color: var(--notify-color);
+    // we need to animate the width from 100% 100% to 0% in 5s and stay there
+    animation: var(--c-notify__header--animation);
+  }
+  &__title {
+    display: var(--c-notify__title--display);
+    align-items: center;
+    padding: 1rem;
+    justify-content: center;
+    font-size: 24px;
+    img {
+      width: 2.1rem;
+      height: 2.1rem;
+      margin-right: 0.3rem;
+    }
+    span {
+      color: var(--notify-color);
+      font-weight: 600;
+    }
+    &--neutral {
+      display: none;
+    }
+  }
+  &__message {
+    color: var(--text-color, #000);
+    padding: var(--c-notify__message--padding);
+    text-align: var(--c-notify__message--align, center);
+    span {
+      @include text--paragraph;
+    }
+    &--subtitle {
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+  }
+  &__action-btn {
+    color: var(--text-color, #000);
+    &--hide {
+      color: transparent;
+      background-color: transparent;
+      pointer-events: none;
+    }
+  }
+  &__dialog {
+    width: 900px;
+    max-width: calc(100vw - 48px) !important;
+  }
+}
+
+@keyframes consuming-bar {
+  0% {
+    width: 100%;
+  }
+  100% {
+    width: 0%;
+  }
+}

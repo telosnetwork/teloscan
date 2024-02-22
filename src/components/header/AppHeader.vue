@@ -518,7 +518,7 @@ onMounted(async () => {
         padding: 0 16px;
         width: 100%;
         box-shadow:
-            0 4px 5px rgba(0, 0, 0, 0.2),
+            0 3px 5px rgba(0, 0, 0, 0.2),
             0 2px 2px rgba(0, 0, 0, 0.14),
             0 3px 1px -2px rgba(0, 0, 0, 0.12);
 
@@ -568,7 +568,6 @@ onMounted(async () => {
         border-radius: 4px;
 
         &:hover,
-        &:focus,
         &:active {
             @media screen and (min-width: $breakpoint-lg-min) {
                 background-color: var(--highlight-color);
@@ -576,7 +575,7 @@ onMounted(async () => {
 
             & > #{$this}__menu-item-icon:not(#{$this}__menu-item-icon--chevron) {
                 filter: grayscale(0);
-                color: $secondary;
+                color: $primary;
             }
         }
 
