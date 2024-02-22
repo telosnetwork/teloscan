@@ -1,127 +1,123 @@
-<!-- eslint-disable max-len -->
-<script lang="ts">
-import { mapGetters, mapMutations } from 'vuex';
-import { stlos as stlosLogo } from 'src/lib/logos.js';
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+import { useI18n } from 'vue-i18n';
+import { useQuasar } from 'quasar';
 import { directive as clickaway } from 'vue3-click-away';
-import HeaderSearch from 'components/header/HeaderSearch.vue';
+import moment from 'moment';
+
+import { getAntelope, useAccountStore } from 'src/antelope';
+import { stlos as stlosLogo } from 'src/lib/logos.js';
+import { indexerApi } from 'src/boot/telosApi';
+import { ual } from 'src/boot/ual';
+import { providerManager } from 'src/boot/evm';
+
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import LoginModal from 'components/LoginModal.vue';
 import LoginStatus from 'components/header/LoginStatus.vue';
-import { RouteLocationRaw } from 'vue-router';
-import { getAntelope, useAccountStore } from 'src/antelope';
-import { defineComponent } from 'vue';
-import moment from 'moment';
+import HeaderSearch from 'components/header/HeaderSearch.vue';
 
-export default defineComponent({
-    name: 'AppHeader',
-    components: {
-        LanguageSwitcherModal,
-        LoginModal,
-        HeaderSearch,
-        LoginStatus,
-    },
-    directives: {
-        clickaway,
-    },
-    async mounted () {
-        const health = await this.$indexerApi.get('/health');
-        if (health.data?.secondsBehind > 3) {
-            let behindBy = moment(health.data.secondsBehind*1000).utc().format('HH:mm:ss');
-            if(health.data?.secondsBehind > 86400){
-                const behindByHours = Math.round(health.data.secondsBehind / 60 / 60);
-                const behindByDays = Math.floor(health.data.secondsBehind / 60 / 60 / 24);
-                const behindByLeft = behindByHours - (behindByDays * 24);
-                const behindByLeftStr = (behindByLeft === 0)
-                    ? ''
-                    :  this.$t('global.and') +  ' ' + behindByLeft + ' ' + this.$t('global.hours');
-                behindBy = (behindByDays > 0)
-                    ? behindByDays + ' ' + this.$t('global.days') + ' ' + behindByLeftStr
-                    : behindByHours + ' ' + this.$t('global.hours')
-                ;
-            }
-            this.$q.notify({
-                type: 'negative',
-                timeout: 12000,
-                progress: true,
-                message: this.$t('global.not_synced'),
-                caption: this.$t('global.data_behind_by') + ' <strong>' +
-                    behindBy + '</strong>. <br>' + this.$t('global.try_reloading'),
-                html: true,
-            });
+const router = useRouter();
+const store = useStore();
+const { t: $t } = useI18n();
+const $q = useQuasar();
+
+// data
+const mobileMenuIsOpen = ref(false);
+const showLoginModal = ref(false);
+const showLanguageSwitcher = ref(false);
+const advancedMenuExpanded = ref(false);
+const menuHiddenDesktop = ref(false);
+const searchHiddenMobile = ref(true);
+const isTestnet = ref(Number(process.env.NETWORK_EVM_CHAIN_ID) !== 40);
+
+// computed
+const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
+const isNative = computed(() => store.getters['login/isNative']);
+
+// methods
+onMounted(async () => {
+    const health = await indexerApi.get('/health');
+    if (health.data?.secondsBehind > 3) {
+        let behindBy = moment(health.data.secondsBehind * 1000).utc().format('HH:mm:ss');
+        if (health.data?.secondsBehind > 86400) {
+            const behindByHours = Math.round(health.data.secondsBehind / 60 / 60);
+            const behindByDays = Math.floor(health.data.secondsBehind / 60 / 60 / 24);
+            const behindByLeft = behindByHours - (behindByDays * 24);
+            const behindByLeftStr = (behindByLeft === 0)
+                ? ''
+                : $t('global.and') + ' ' + behindByLeft + ' ' + $t('global.hours');
+            behindBy = (behindByDays > 0)
+                ? behindByDays + ' ' + $t('global.days') + ' ' + behindByLeftStr
+                : behindByHours + ' ' + $t('global.hours');
         }
-
-        // On login we must set the address and record the provider
-        getAntelope().events.onLoggedOut.subscribe(() => {
-            const loginData = localStorage.getItem('loginData');
-            if (this.isNative) {
-                if (!loginData) {
-                    return;
-                }
-                const loginObj = JSON.parse(loginData);
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const wallet = this.$ual.getAuthenticators().availableAuthenticators.find(a => a.getName() === loginObj.provider);
-                wallet?.logout();
-            }
-            this.setLogin({});
-            localStorage.removeItem('loginData');
-            this.$providerManager.setProvider(null);
+        $q.notify({
+            type: 'negative',
+            timeout: 12000,
+            progress: true,
+            message: $t('global.not_synced'),
+            caption: $t('global.data_behind_by') + ' <strong>' +
+                behindBy + '</strong>. <br>' + $t('global.try_reloading'),
+            html: true,
         });
-    },
-    data: () => ({
-        stlosLogo,
-        mobileMenuIsOpen: false,
-        showLoginModal: false,
-        showLanguageSwitcher: false,
-        advancedMenuExpanded: false,
-        menuHiddenDesktop: false,
-        searchHiddenMobile: true,
-        isTestnet: Number(process.env.NETWORK_EVM_CHAIN_ID) !== 40,
+    }
 
-    }),
-    computed: {
-        ...mapGetters('login', [
-            'isLoggedIn',
-            'isNative',
-        ]),
-    },
-    methods: {
-        ...mapMutations('login', [
-            'setLogin',
-        ]),
-        scrollHandler(info: { direction: string; }) {
-            this.menuHiddenDesktop = info.direction === 'down';
-        },
-        goTo(to: RouteLocationRaw) {
-            this.mobileMenuIsOpen = false;
-            this.advancedMenuExpanded = false;
-            const httpsRegex = /^https/;
-            if (typeof to === 'string' && httpsRegex.test(to)) {
-                window.location.href = to;
+    // On login we must set the address and record the provider
+    getAntelope().events.onLoggedOut.subscribe(() => {
+        const loginData = localStorage.getItem('loginData');
+        if (isNative.value) {
+            if (!loginData) {
                 return;
             }
-            this.$router.push(to);
-        },
-        handleClickaway() {
-            this.mobileMenuIsOpen = false;
-            this.advancedMenuExpanded = false;
-        },
-        toggleDarkMode() {
-            this.$q.dark.toggle();
-            localStorage.setItem('darkModeEnabled', this.$q.dark.isActive.toString());
-
-        },
-        handleLoginLogout() {
-            if (this.isLoggedIn) {
-                this.logout();
-            } else {
-                this.showLoginModal = true;
-            }
-        },
-        logout() {
-            useAccountStore().logout();
-        },
-    },
+            const loginObj = JSON.parse(loginData);
+            const wallet = ual.getAuthenticators().availableAuthenticators.find(a => a.getName() === loginObj.provider);
+            wallet?.logout();
+        }
+        store.commit('login/setLogin', {});
+        localStorage.removeItem('loginData');
+        providerManager.setProvider(null);
+    });
 });
+
+const vClickaway = clickaway;
+
+function scrollHandler(info: { direction: string; }) {
+    menuHiddenDesktop.value = info.direction === 'down';
+}
+
+function goTo(to: string) {
+    mobileMenuIsOpen.value = false;
+    advancedMenuExpanded.value = false;
+    const httpsRegex = /^https/;
+    if (typeof to === 'string' && httpsRegex.test(to)) {
+        window.location.href = to;
+        return;
+    }
+    router.push(to);
+}
+
+function handleClickaway() {
+    mobileMenuIsOpen.value = false;
+    advancedMenuExpanded.value = false;
+}
+
+function toggleDarkMode() {
+    $q.dark.toggle();
+    localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
+
+}
+
+function handleLoginLogout() {
+    if (isLoggedIn.value) {
+        logout();
+    } else {
+        showLoginModal.value = true;
+    }
+}
+function logout() {
+    useAccountStore().logout();
+}
 </script>
 
 <template>
