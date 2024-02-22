@@ -4,7 +4,7 @@ import { computed, onMounted, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import detectEthereumProvider from '@metamask/detect-provider';
-import { Authenticator, UAL } from 'universal-authenticator-library';
+import { Authenticator } from 'universal-authenticator-library';
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 
 import {
@@ -23,7 +23,7 @@ import {
     useAccountStore,
     useChainStore,
 } from 'src/antelope/mocks';
-import ual from 'src/boot/ual';
+import { ual } from 'src/boot/ual';
 import evm, { providerManager } from 'src/boot/evm';
 
 const $q = useQuasar();
@@ -46,7 +46,7 @@ const browserSupportsMetaMask = ref(true);
 const isBraveBrowser = ref(false);
 const isIOSMobile = ref(false);
 
-const authenticators = computed(() => (ual as unknown as UAL).getAuthenticators().availableAuthenticators);
+const authenticators = computed(() => ual.getAuthenticators().availableAuthenticators);
 
 onMounted(async () => {
     await detectProvider();
