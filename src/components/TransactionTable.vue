@@ -119,7 +119,7 @@ function setPagination(page: number, size: number, desc: boolean) {
 
 async function onPaginationChange(settings: { pagination: Pagination}) {
     const { page, rowsPerPage, descending } = settings.pagination;
-    // we need to change the URL to keep the pagination state by changing the this.$route.query.page
+    // we need to change the URL to keep the pagination state by changing the route.query.page
     // with a string like 'page,rowsPerPage'
     router.push({
         // taking care to preserve the current #hash anchor and the current query parameters

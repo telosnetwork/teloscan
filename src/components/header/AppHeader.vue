@@ -1,4 +1,3 @@
-<!-- eslint-disable max-len -->
 <script lang="ts" setup>
 import { useQuasar } from 'quasar';
 import { computed, onMounted, ref } from 'vue';
@@ -105,10 +104,10 @@ onMounted(async () => {
                 return;
             }
             const loginObj = JSON.parse(loginData);
+            // eslint-disable-next-line max-len
             const wallet = (ual as unknown as UAL).getAuthenticators().availableAuthenticators.find(a => a.getName() === loginObj.provider);
             wallet?.logout();
         }
-        // store. setLogin({});
         store.commit('login/setLogin', {});
         localStorage.removeItem('loginData');
         providerManager.setProvider(null);
