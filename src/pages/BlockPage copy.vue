@@ -1,123 +1,154 @@
-<script setup lang="ts">
+<script lang="ts">
 
-import { ref, watch, computed, onMounted } from 'vue';
-
-import { useRoute, useRouter } from 'vue-router';
-import { useI18n } from 'vue-i18n';
-import { indexerApi } from 'src/boot/telosApi';
-
-import { ethers } from 'ethers';
+import { defineComponent } from 'vue';
 import DateField from 'components/DateField.vue';
 import TransactionTable from 'components/TransactionTable.vue';
 import { BlockData } from 'src/types';
-
-
-const router = useRouter();
-const route = useRoute();
-const { t: $t } = useI18n();
+import { ethers } from 'ethers';
 
 const defaultTab = 'overview';
 const tabs = ['overview', 'transactions'];
 
-const tab = ref(defaultTab);
-const block = ref('');
-const blockData = ref<BlockData | null>(null);
-const error = ref('');
-const showDateAge = ref(false);
-
-// Computed properties
-const blockHeight = computed(() => parseInt(block.value));
-const timestamp = computed(() => blockData.value ? blockData.value.timestamp : 0);
-const transactionsCount = computed(() => blockData.value ? blockData.value.transactionsCount : 0);
-const internalTrxCount = ref(0); // Assuming this remains static for now
-const size = computed(() => {
-    if (blockData.value) {
-        const size = ethers.BigNumber.from(blockData.value.size).toNumber();
-        return `${size.toLocaleString()} bytes`;
-    }
-    return '0';
+export default defineComponent({
+    name: 'BlockPage',
+    components: {
+        DateField,
+        TransactionTable,
+    },
+    data: () => ({
+        tab: '',
+        block: '',
+        blockData: null as BlockData | null,
+        error: '',
+        showDateAge: false,
+    }),
+    async mounted() {
+        this.checkTabFromUrl();
+        await this.loadBlock();
+    },
+    computed: {
+        blockHeight() {
+            return parseInt(this.block);
+        },
+        timestamp() {
+            if (this.blockData) {
+                return this.blockData.timestamp;
+            }
+            return 0;
+        },
+        transactionsCount() {
+            if (this.blockData) {
+                return this.blockData.transactionsCount;
+            }
+            return 0;
+        },
+        internalTrxCount() {
+            return 0;
+        },
+        size() {
+            if (this.blockData) {
+                const size = ethers.BigNumber.from(this.blockData.size).toNumber();
+                return `${size.toLocaleString()} bytes`;
+            }
+            return 0;
+        },
+        gasUsed() {
+            if (this.blockData) {
+                console.log('this.blockData.gasUsed', typeof this.blockData.gasUsed, this.blockData.gasUsed);
+                const gas = ethers.BigNumber.from(this.blockData.gasUsed);
+                try {
+                    return gas.toNumber().toLocaleString();
+                } catch (e) {
+                    console.error(e);
+                    return gas.toString();
+                }
+            }
+            return 0;
+        },
+        gasLimit() {
+            if (this.blockData) {
+                const gas = ethers.BigNumber.from(this.blockData.gasLimit);
+                try {
+                    return gas.toNumber().toLocaleString();
+                } catch (e) {
+                    console.error(e);
+                    return gas.toString();
+                }
+            }
+            return 0;
+        },
+        nonce() {
+            if (this.blockData) {
+                return this.blockData.nonce;
+            }
+            return '';
+        },
+        hash() {
+            if (this.blockData) {
+                return this.blockData.hash;
+            }
+            return '';
+        },
+        parentHash() {
+            if (this.blockData) {
+                return this.blockData.parentHash;
+            }
+            return '';
+        },
+    },
+    watch: {
+        '$route.params.block': {
+            handler(newBlock) {
+                if (this.block === newBlock) {
+                    return;
+                }
+                this.block = newBlock;
+                this.loadBlock();
+            },
+            immediate: true,
+        },
+        '$route.query.tab'(newTab) {
+            this.tab = newTab || defaultTab;
+        },
+        tab(newTab) {
+            this.$router.push({ query: { tab: newTab } });
+        },
+    },
+    methods: {
+        checkTabFromUrl() {
+            const tabQueryParam = this.$route.query.tab as string;
+            if (tabQueryParam && tabs.includes(tabQueryParam)) {
+                this.tab = tabQueryParam;
+            } else {
+                this.tab = defaultTab;
+            }
+        },
+        async loadBlock() {
+            try {
+                const blockResponse = await this.$indexerApi.get(`/block/${this.block}?includeAbi=true`);
+                if(blockResponse){
+                    this.blockData = blockResponse.data.results[0];
+                }
+            } catch (e) {
+                this.error = this.$t('components.failed_to_fetch_transactions');
+                console.error(e);
+            }
+        },
+        prevBlock() {
+            this.resetBlockData();
+            this.$router.push({ name: 'block', params: { block: parseInt(this.block) - 1 } });
+        },
+        nextBlock() {
+            this.resetBlockData();
+            this.$router.push({ name: 'block', params: { block: parseInt(this.block) + 1 } });
+        },
+        resetBlockData() {
+            this.blockData = null;
+        },
+    },
 });
-const gasUsed = computed(() => {
-    if (blockData.value) {
-        const gas = ethers.BigNumber.from(blockData.value.gasUsed);
-        try {
-            return gas.toNumber().toLocaleString();
-        } catch (e) {
-            console.error(e);
-            return gas.toString();
-        }
-    }
-    return '0';
-});
-const gasLimit = computed(() => {
-    if (blockData.value) {
-        const gas = ethers.BigNumber.from(blockData.value.gasLimit);
-        try {
-            return gas.toNumber().toLocaleString();
-        } catch (e) {
-            console.error(e);
-            return gas.toString();
-        }
-    }
-    return '0';
-});
-const nonce = computed(() => blockData.value ? blockData.value.nonce : '');
-const hash = computed(() => blockData.value ? blockData.value.hash : '');
-const parentHash = computed(() => blockData.value ? blockData.value.parentHash : '');
 
-// Methods
-async function loadBlock() {
-    try {
-        const blockResponse = await indexerApi.get(`/block/${block.value}?includeAbi=true`);
-        if (blockResponse) {
-            blockData.value = blockResponse.data.results[0];
-        }
-    } catch (e) {
-        error.value = $t('components.failed_to_fetch_transactions');
-        console.error(e);
-    }
-}
-
-function resetBlockData() {
-    blockData.value = null;
-}
-
-function prevBlock() {
-    resetBlockData();
-    router.push({ name: 'block', params: { block: blockHeight.value - 1 } });
-}
-
-function nextBlock() {
-    resetBlockData();
-    router.push({ name: 'block', params: { block: blockHeight.value + 1 } });
-}
-
-// Watchers
-watch(() => route.params.block, (newBlock) => {
-    if (block.value === newBlock) {
-        return;
-    }
-    block.value = newBlock as string;
-    loadBlock();
-}, { immediate: true });
-
-watch(() => route.query.tab, (newTab) => {
-    const str = newTab as string;
-    tab.value = tabs.includes(str) ? str : defaultTab;
-});
-
-watch(tab, (newTab) => {
-    router.push({ query: { tab: newTab } });
-});
-
-// Mounted lifecycle hook
-onMounted(() => {
-    const tabQueryParam = route.query.tab as string;
-    tab.value = tabs.includes(tabQueryParam) ? tabQueryParam : defaultTab;
-    loadBlock();
-});
 </script>
-
 <template>
 <div class="p-block">
     <div class="p-block__header">
