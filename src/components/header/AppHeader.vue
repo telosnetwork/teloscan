@@ -23,13 +23,17 @@ const router = useRouter();
 const store = useStore();
 const { t: $t } = useI18n();
 
-const isTestnet =  Number(process.env.NETWORK_EVM_CHAIN_ID) !== 40;
 const mobileMenuIsOpen = ref(false);
 const showLoginModal = ref(false);
 const showLanguageSwitcher = ref(false);
 const advancedMenuExpanded = ref(false);
 const menuHiddenDesktop = ref(false);
 const searchHiddenMobile = ref(true);
+
+const isLoggedIn = computed(() =>store.getters['login/isLoggedIn']);
+const isNative = computed(() => store.getters['login/isNative']);
+
+const isTestnet =  Number(process.env.NETWORK_EVM_CHAIN_ID) !== 40;
 
 onMounted(async () => {
     const health = await indexerApi.get('/health');
@@ -111,9 +115,6 @@ function handleLoginLogout(){
 function logout() {
     useAccountStore().logout();
 }
-
-const isLoggedIn = computed(() =>store.getters['login/isLoggedIn']);
-const isNative = computed(() => store.getters['login/isNative']);
 
 </script>
 
