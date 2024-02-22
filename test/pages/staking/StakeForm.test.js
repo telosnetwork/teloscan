@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 it('placeholder to retain commented tests', () => {
     expect(true).toBe(true);
 });
