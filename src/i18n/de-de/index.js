@@ -222,6 +222,7 @@ export default {
             hash_tooltip: 'Der Hash des Blockheaders',
             parent_hash_tooltip: 'Der Hash des Elternblock',
             count_transactions: '{count} Transaktionen',
+            count_transaction: '1 Transaktion',
             in_this_block: 'in diesem Block',
             transactions: 'Transaktionen',
         },

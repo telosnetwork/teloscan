@@ -143,7 +143,11 @@ watch(() => props.data, (newData) => {
         <div class="c-block-data__col-val">
             <div class="c-block-data__row-value">
                 <span class="c-block-data__row-value-link" @click="emitClickOnTransactions">
-                    {{ $t('components.blockoverview.count_transactions', { count: transactionsCount }) }}
+                    {{
+                        transactionsCount === 1
+                            ? $t('components.blockoverview.count_transaction')
+                            : $t('components.blockoverview.count_transactions', { count: transactionsCount })
+                    }}
                 </span>
                 {{ $t('components.blockoverview.in_this_block') }}
             </div>
@@ -257,7 +261,7 @@ watch(() => props.data, (newData) => {
         display: flex;
         flex-direction: row;
         justify-content: left;
-        align-items: center;
+        align-items: baseline;
         gap: 5px;
     }
     &__row {
@@ -318,6 +322,9 @@ watch(() => props.data, (newData) => {
     &__separator {
         border: 1px solid #909090;
         margin: 1rem 0;
+    }
+    &__row-tooltip-icon {
+        color: #999;
     }
 
     @media screen and (max-width: 900px) {

@@ -221,6 +221,7 @@ export default {
             hash_tooltip: 'Le hachage de l\'en-tête du bloc',
             parent_hash_tooltip: 'Le hachage du bloc parent',
             count_transactions: '{count} transactions',
+            count_transaction: '1 transaction',
             in_this_block: 'dans ce bloc',
             transactions: 'Transactions',
         },

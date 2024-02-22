@@ -221,6 +221,7 @@ export default {
             hash_tooltip: 'The hash of the block header',
             parent_hash_tooltip: 'The hash of the parent block',
             count_transactions: '{count} transactions',
+            count_transaction: '1 transaction',
             in_this_block: 'in this block',
             transactions: 'Transactions',
         },

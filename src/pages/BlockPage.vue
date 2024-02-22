@@ -79,30 +79,30 @@ onMounted(() => {
 </script>
 
 <template>
-<div class="p-block">
-    <div class="p-block__header">
-        <span class="p-block__header-title">{{ $t('pages.blockpage.block') }}</span>
-        <span class="p-block__header-block-num">#{{ block }}</span>
+<div class="c-block">
+    <div class="c-block__header">
+        <span class="c-block__header-title">{{ $t('pages.blockpage.block') }}</span>
+        <span class="c-block__header-block-num">#{{ block }}</span>
     </div>
 
     <q-tabs
         v-model="tab"
-        class="p-block__tabs-tabs text-blue shadow-2"
+        class="c-block__tabs-tabs text-blue shadow-2"
         align="left"
     >
-        <q-tab class="p-block__tabs-tab" name="overview" :label="$t('pages.blockpage.overview')" />
+        <q-tab class="c-block__tabs-tab" name="overview" :label="$t('pages.blockpage.overview')" />
         <q-tab
             v-if="transactionsCount > 0"
-            class="p-block__tabs-tab"
+            class="c-block__tabs-tab"
             name="transactions"
             :label="$t('pages.blockpage.transactions')"
         />
     </q-tabs>
 
-    <div class="p-block__main-container">
-        <div class="p-block__main-content">
-            <q-tab-panels v-model="tab" class="p-block__panels">
-                <q-tab-panel class="p-block__panel" name="overview">
+    <div class="c-block__main-container">
+        <div class="c-block__main-content">
+            <q-tab-panels v-model="tab" class="c-block__panels">
+                <q-tab-panel class="c-block__panel" name="overview">
                     <BlockOverview
                         :data="blockData"
                         @prev-block="prevBlock"
@@ -110,7 +110,7 @@ onMounted(() => {
                         @trx-table="tab = 'transactions'"
                     />
                 </q-tab-panel>
-                <q-tab-panel class="p-block__panel" name="transactions">
+                <q-tab-panel class="c-block__panel" name="transactions">
                     <TransactionTable :title="block" :filter="`block/${block}`"/>
                 </q-tab-panel>
             </q-tab-panels>
@@ -121,7 +121,7 @@ onMounted(() => {
 </template>
 
 <style lang="scss">
-.p-block {
+.c-block {
     --bs-gutter-x: 1.5rem;
     --bs-gutter-y: 0;
     padding-top: 35px;
