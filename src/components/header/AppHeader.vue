@@ -105,7 +105,6 @@ function handleClickaway() {
 function toggleDarkMode() {
     $q.dark.toggle();
     localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
-
 }
 
 function handleLoginLogout() {
@@ -115,6 +114,7 @@ function handleLoginLogout() {
         showLoginModal.value = true;
     }
 }
+
 function logout() {
     useAccountStore().logout();
 }
