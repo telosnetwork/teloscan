@@ -4,14 +4,14 @@ import { useRoute, useRouter } from 'vue-router';
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import { contractManager, indexerApi } from 'src/boot/telosApi';
+
 import TokenValueField from 'components/Token/TokenValueField.vue';
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import TransactionField from 'components/TransactionField.vue';
 import MethodField from 'components/MethodField.vue';
-
-import { contractManager, indexerApi } from 'src/boot/telosApi';
 
 const $q = useQuasar();
 const route = useRoute();
