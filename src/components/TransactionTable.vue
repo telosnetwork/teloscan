@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from 'vue-router';
-import { inject, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import TokenValueField from 'components/Token/TokenValueField.vue';
@@ -9,14 +9,12 @@ import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import TransactionField from 'components/TransactionField.vue';
 import MethodField from 'components/MethodField.vue';
+import { contractManager, indexerApi } from 'src/boot/telosApi';
 
 const route = useRoute();
 const router = useRouter();
 const $q = useQuasar();
 const { t: $t } = useI18n();
-
-const $contractManager=inject('$contractManager') as any;
-const $indexerApi = inject('$indexerApi') as any;
 
 export interface Props {
     title: string;
@@ -30,11 +28,13 @@ const props = withDefaults(defineProps<Props>(), {
     initialPageSize: 1,
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const rows = ref<Array<any>>([]);
 const filterUpdated = ref<boolean>(false);
 const loading =  ref<boolean>(false);
 const showDateAge = ref<boolean>(true);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const transactions: any[] = [];
 const page_size_options = [10, 20, 50];
 
@@ -136,18 +136,18 @@ async function parseTransactions() {
         return;
     }
     loading.value = true;
-    // const { page, rowsPerPage, sortBy, descending } = pagination.value;
+    const { page, rowsPerPage, sortBy, descending } = pagination.value;
 
     try {
-        let response = await $indexerApi.get(getPath());
+        let response = await indexerApi.get(getPath());
         if (pagination.value.rowsNumber === 0) {
             pagination.value.rowsNumber = response.data?.total_count;
         }
 
-        // pagination.value.page = page;
-        // pagination.value.rowsPerPage = rowsPerPage;
-        // pagination.value.sortBy = sortBy;
-        // pagination.value.descending = descending;
+        pagination.value.page = page;
+        pagination.value.rowsPerPage = rowsPerPage;
+        pagination.value.sortBy = sortBy;
+        pagination.value.descending = descending;
 
         transactions.splice(
             0,
@@ -166,19 +166,20 @@ async function parseTransactions() {
 
                 addEmptyToCache(response.data.contracts, transaction);
 
-                const contract = await $contractManager.getContract(transaction.to);
+                const contract = await contractManager.getContract(transaction.to);
 
                 if (!contract) {
                     continue;
                 }
 
-                const parsedTransaction = await $contractManager.parseContractTransaction(
+                const parsedTransaction = await contractManager.parseContractTransaction(
                     transaction, transaction.input, contract, true,
                 );
                 if (parsedTransaction) {
                     transaction.parsedTransaction = parsedTransaction;
                 }
                 transaction.contract = contract;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (e: any) {
                 console.error(
                     `Failed to parse data for transaction, error was: ${e.message}`,
@@ -193,6 +194,7 @@ async function parseTransactions() {
         }
         loading.value = false;
         rows.value = transactions;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         $q.notify({
             type: 'negative',
@@ -203,6 +205,7 @@ async function parseTransactions() {
     }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function addEmptyToCache(contracts: any, transaction: any){
     let found_to = 0;
     let found_from = 0;
@@ -215,10 +218,10 @@ function addEmptyToCache(contracts: any, transaction: any){
         }
     }
     if(found_from === 0){
-        $contractManager.addContractToCache(transaction.from, { 'address': transaction.from });
+        contractManager.addContractToCache(transaction.from, { 'address': transaction.from });
     }
     if(found_to === 0){
-        $contractManager.addContractToCache(transaction.to, { 'address': transaction.to });
+        contractManager.addContractToCache(transaction.to, { 'address': transaction.to });
     }
 }
 

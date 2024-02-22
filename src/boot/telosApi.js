@@ -22,7 +22,6 @@ export default boot(({ app, store }) => {
     app.config.globalProperties.$telosApi =  telosApi;
     app.config.globalProperties.$indexerApi = indexerApi;
     app.config.globalProperties.$fragmentParser = fragmentParser;
-    app.config.globalProperties.$contractManager = contractManager;
     store.$contractManager = app.config.globalProperties.$contractManager = markRaw(contractManager);
     store.$indexerApi = indexerApi;
     // Intercept API answer to set contracts & abi in cache directly
@@ -41,11 +40,6 @@ export default boot(({ app, store }) => {
         return Promise.reject(error);
     });
 
-    // TODO remove global property assignments above after full migration to composition
-    app.provide('$telosApi', telosApi);
-    app.provide('$contractManager', markRaw(contractManager));
-    app.provide('$indexerApi', indexerApi);
-    app.provide('$fragmentParser', fragmentParser);
 });
 
-export { telosApi, indexerApi };
+export { telosApi, indexerApi, contractManager, fragmentParser };
