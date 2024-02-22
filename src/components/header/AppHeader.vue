@@ -6,12 +6,11 @@ import { RouteLocationRaw, useRouter } from 'vue-router';
 import vClickaway from 'vue3-click-away';
 import { useI18n } from 'vue-i18n';
 import moment from 'moment';
-import { UAL } from 'universal-authenticator-library';
 
 import { stlos as stlosLogo } from 'src/lib/logos.js';
 import { getAntelope, useAccountStore } from 'src/antelope';
 import { indexerApi } from 'src/boot/telosApi';
-import ual from 'src/boot/ual';
+import { ual } from 'src/boot/ual';
 import { providerManager } from 'src/boot/evm';
 
 import HeaderSearch from 'components/header/HeaderSearch.vue';
@@ -67,7 +66,7 @@ onMounted(async () => {
             }
             const loginObj = JSON.parse(loginData);
             // eslint-disable-next-line max-len
-            const wallet = (ual as unknown as UAL).getAuthenticators().availableAuthenticators.find(a => a.getName() === loginObj.provider);
+            const wallet = ual.getAuthenticators().availableAuthenticators.find(a => a.getName() === loginObj.provider);
             wallet?.logout();
         }
         store.commit('login/setLogin', {});
