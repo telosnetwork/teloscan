@@ -117,8 +117,8 @@ function setPagination(page: number, size: number, desc: boolean) {
     parseTransactions();
 }
 
-async function onPaginationChange() {
-    const { page, rowsPerPage, descending } = pagination.value;
+async function onPaginationChange(settings: { pagination: Pagination}) {
+    const { page, rowsPerPage, descending } = settings.pagination;
     // we need to change the URL to keep the pagination state by changing the this.$route.query.page
     // with a string like 'page,rowsPerPage'
     router.push({
@@ -248,7 +248,6 @@ function toggleDateFormat() {
 
 watch(() => route.query.page,
     (pageParam) => {
-
         let page = 1;
         let desc = true;
         let size = page_size_options[0];

@@ -50,5 +50,4 @@ export default boot(({ app }) => {
     app.config.globalProperties.$setLocale = setLocale;
     app.config.globalProperties.$i18n = i18n;
     app.config.globalProperties.$t = i18n.global.t;
-    // app.provide('$t', i18n.global.t);
 });
