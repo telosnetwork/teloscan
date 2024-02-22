@@ -30,11 +30,7 @@ const $q = useQuasar();
 const store = useStore();
 const { t: $t } = useI18n();
 
-export interface Props {
-    show?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<{show?: boolean}>(), {
     show: false,
 });
 
