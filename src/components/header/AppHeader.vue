@@ -1,44 +1,68 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref } from 'vue';
+// import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
-import { directive as clickaway } from 'vue3-click-away';
 import moment from 'moment';
+import { formatUnits } from 'ethers/lib/utils';
 
-import { getAntelope, useAccountStore } from 'src/antelope';
-import { stlos as stlosLogo } from 'src/lib/logos.js';
+import { getAntelope } from 'src/antelope';
+// import { getAntelope, useAccountStore } from 'src/antelope';
+// import { stlos as stlosLogo } from 'src/lib/logos.js';
 import { indexerApi } from 'src/boot/telosApi';
 import { ual } from 'src/boot/ual';
 import { providerManager } from 'src/boot/evm';
 
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import LoginModal from 'components/LoginModal.vue';
-import LoginStatus from 'components/header/LoginStatus.vue';
-import HeaderSearch from 'components/header/HeaderSearch.vue';
+// import LoginStatus from 'components/header/LoginStatus.vue';
+// import HeaderSearch from 'components/header/HeaderSearch.vue';
 
-const router = useRouter();
+// const router = useRouter();
 const store = useStore();
 const { t: $t } = useI18n();
 const $q = useQuasar();
 
 // data
-const mobileMenuIsOpen = ref(false);
+// const mobileMenuIsOpen = ref(false);
 const showLoginModal = ref(false);
 const showLanguageSwitcher = ref(false);
-const advancedMenuExpanded = ref(false);
+// const advancedMenuExpanded = ref(false);
 const menuHiddenDesktop = ref(false);
 const searchHiddenMobile = ref(true);
 const isTestnet = ref(Number(process.env.NETWORK_EVM_CHAIN_ID) !== 40);
+const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
+const blockchainMenuOpen = ref(false);
 
 // computed
-const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
+// const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
 const isNative = computed(() => store.getters['login/isNative']);
+const isDarkMode = computed(() => $q.dark.isActive);
+const gasPriceInGwei = computed(() => {
+    const gasPrice = store.getters['chain/gasPrice'];
+
+    if (!gasPrice) {
+        return '';
+    }
+
+    const gasGwei = Number(formatUnits(gasPrice, 'gwei'));
+    return gasGwei.toFixed(0);
+});
+const tlosPrice = computed(() => {
+    const price = store.getters['chain/tlosPrice'];
+    return Number(price).toFixed(2);
+});
 
 // methods
+onBeforeMount(() => {
+    fetchTlosPrice();
+    fetchGasPrice();
+});
+
 onMounted(async () => {
     const health = await indexerApi.get('/health');
+
     if (health.data?.secondsBehind > 3) {
         let behindBy = moment(health.data.secondsBehind * 1000).utc().format('HH:mm:ss');
         if (health.data?.secondsBehind > 86400) {
@@ -78,50 +102,152 @@ onMounted(async () => {
         localStorage.removeItem('loginData');
         providerManager.setProvider(null);
     });
+
+    pricesInterval.value = setInterval(() => {
+        fetchTlosPrice();
+        fetchGasPrice();
+    }, 6000);
 });
 
-const vClickaway = clickaway;
+onBeforeUnmount(() => {
+    if (pricesInterval.value) {
+        clearInterval(pricesInterval.value);
+    }
+});
+
+const fetchTlosPrice = () => store.dispatch('chain/fetchTlosPrice');
+const fetchGasPrice = () => store.dispatch('chain/fetchGasPrice');
 
 function scrollHandler(info: { direction: string; }) {
     menuHiddenDesktop.value = info.direction === 'down';
 }
 
-function goTo(to: string | { name: string }) {
-    mobileMenuIsOpen.value = false;
-    advancedMenuExpanded.value = false;
-    const httpsRegex = /^https/;
-    if (typeof to === 'string' && httpsRegex.test(to)) {
-        window.location.href = to;
-        return;
-    }
-    router.push(to);
-}
-
-function handleClickaway() {
-    mobileMenuIsOpen.value = false;
-    advancedMenuExpanded.value = false;
-}
+// function goTo(to: string | { name: string }) {
+//     mobileMenuIsOpen.value = false;
+//     advancedMenuExpanded.value = false;
+//     const httpsRegex = /^https/;
+//     if (typeof to === 'string' && httpsRegex.test(to)) {
+//         window.location.href = to;
+//         return;
+//     }
+//     router.push(to);
+// }
 
 function toggleDarkMode() {
     $q.dark.toggle();
     localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
 }
 
-function handleLoginLogout() {
-    if (isLoggedIn.value) {
-        logout();
-    } else {
-        showLoginModal.value = true;
-    }
-}
+// function handleLoginLogout() {
+//     if (isLoggedIn.value) {
+//         logout();
+//     } else {
+//         showLoginModal.value = true;
+//     }
+// }
 
-function logout() {
-    useAccountStore().logout();
-}
+// function logout() {
+//     useAccountStore().logout();
+// }
 </script>
 
 <template>
-<header v-clickaway="handleClickaway" class="c-header shadow-2">
+<!-- eztodo i18n -->
+<header class="c-header">
+    <div class="c-header__top-bar">
+        <div class="c-header__top-bar-inner">
+            <div class="c-header__top-bar-left-container">
+                <div class="text-caption q-mr-md">
+                    <span class="text-grey-7">TLOS price:</span> ${{  tlosPrice }}
+                </div>
+                <div class="text-caption u-flex--center-y">
+                    <q-icon name="fas fa-gas-pump" class="text-grey-7 q-mr-xs" />
+                    <span class="text-grey-7">Gas:</span>&nbsp;{{ gasPriceInGwei }} gwei
+                </div>
+            </div>
+
+            <div>
+                <q-btn
+                    outline
+                    dense
+                    :color="isDarkMode ? 'grey-7' : 'grey-5'"
+                    class="q-px-sm"
+                    @click="toggleDarkMode"
+                >
+                    <q-icon name="fas fa-moon" color="primary" size="15px" />
+                </q-btn>
+            </div>
+        </div>
+    </div>
+
+    <div class="c-header__bottom-bar">
+        <router-link to="/" class="c-header__logo-container">
+            <div class="c-header__logo-image-container">
+                <img
+                    alt="Telos EVM logo"
+                    src="/branding/telos-scan.png"
+                    height="32"
+                >
+                <div v-if="isTestnet" class="c-header__testnet-indicator">
+                    Testnet
+                </div>
+            </div>
+
+            <span
+                :class="{
+                    'c-header__logo-text text-weight-bolder': true,
+                    'c-header__logo-text--hidden-mobile': !searchHiddenMobile,
+                }"
+            >
+                Teloscan
+            </span>
+        </router-link>
+
+        <nav class="c-header__bottom-bar-right-container">
+            <ul class="c-header__menu-ul">
+                <li
+                    class="q-pa-sm"
+                    @mouseenter="blockchainMenuOpen = true"
+                    @mouseleave="blockchainMenuOpen = false"
+                >
+                    <div class="u-flex--center-y cursor-pointer">
+                        Blockchain
+                        <q-icon name="fas fa-chevron-down" size="12px" class="q-ml-xs" />
+                    </div>
+
+                    <q-menu
+                        v-model="blockchainMenuOpen"
+                        transition-show="jump-down"
+                        transition-hide="jump-up"
+                    >
+                        <q-list>
+                            <q-item clickable>
+                                <q-item-section>Transactions</q-item-section>
+                            </q-item>
+                            <q-item clickable>
+                                <q-item-section>Blocks</q-item-section>
+                            </q-item>
+                        </q-list>
+                    </q-menu>
+                </li>
+
+                <li>
+                    Developers
+                </li>
+
+                <li>
+                    Telos Wallet
+                </li>
+
+                <li>
+                    More
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<!-- <header v-if="false" v-clickaway="handleClickaway" class="c-header shadow-2">
     <router-link to="/" class="c-header__logo-container u-flex--left">
         <div class="c-header__logo-image-container">
             <img
@@ -383,11 +509,12 @@ function logout() {
             </li>
         </ul>
     </div>
-</header>
+</header> -->
 <LoginModal :show="showLoginModal" @hide="showLoginModal = false" />
 <LanguageSwitcherModal :show="showLanguageSwitcher" @hide="showLanguageSwitcher = false" />
 <q-scroll-observer @scroll="scrollHandler" />
 </template>
+
 <style lang="scss">
 .c-header {
     $this: &;
@@ -395,42 +522,57 @@ function logout() {
     --background-color: white;
     --text-color: #{$dark};
     --highlight-color: #{$grey-3};
+    --border-color: #{$grey-5};
 
     background-color: var(--background-color);
     position: fixed;
     top: 0;
     right: 0;
     left: 0;
-    height: 48px;
-    padding: 0 0 0 16px;
     z-index: 999;
     color: var(--text-color);
-
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-
-    @media screen and (min-width: $breakpoint-lg-min) {
-        height: 64px;
-        padding: 0 24px;
-    }
+    border-bottom: 1px solid var(--border-color);
 
     @at-root .body--dark & {
         --background-color: #{$dark};
         --text-color: white;
         --highlight-color: #{$grey-9};
+        --border-color: #{$grey-7};
+    }
+
+    &__top-bar {
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    &__top-bar-inner {
+        height: 48px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    &__top-bar-left-container {
+        width: max-content;
+        display: flex;
+        flex-direction: row;
+    }
+
+    &__bottom-bar {
+        height: 52px;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     &__logo-container {
-        width: 48px;
-        height: 48px;
-
-        @media screen and (min-width: $breakpoint-lg-min) {
-            height: 64px;
-            gap: 12px;
-            color: var(--text-color);
-            font-size: 18px;
-        }
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text-color);
     }
 
     &__logo-image-container {
@@ -439,6 +581,21 @@ function logout() {
         justify-content: center;
         align-items: center;
     }
+
+    &__menu-ul {
+        list-style: none;
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        margin: 0;
+        padding: 0;
+    }
+
+
+
+
+
+
 
     &__testnet-indicator {
         position: absolute;
@@ -550,16 +707,16 @@ function logout() {
         }
     }
 
-    &__menu-ul {
-        padding: 0;
-        margin: 0;
+    // &__menu-ul {
+    //     padding: 0;
+    //     margin: 0;
 
-        @media screen and (min-width: $breakpoint-lg-min) {
-            display: flex;
-            flex-direction: row-reverse;
-            gap: 16px;
-        }
-    }
+    //     @media screen and (min-width: $breakpoint-lg-min) {
+    //         display: flex;
+    //         flex-direction: row-reverse;
+    //         gap: 16px;
+    //     }
+    // }
 
     &__menu-li {
         list-style: none;

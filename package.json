@@ -52,7 +52,6 @@
     "vue-inline-svg": "^3.1.2",
     "vue-json-viewer": "3",
     "vue-router": "4",
-    "vue3-click-away": "^1.2.4",
     "vuex": "4",
     "web3": "^4.0.1"
   },
