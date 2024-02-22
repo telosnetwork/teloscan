@@ -5,6 +5,7 @@ import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { Authenticator, UAL } from 'universal-authenticator-library';
+import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 
 import {
     LOGIN_EVM,
@@ -24,7 +25,6 @@ import {
 } from 'src/antelope/mocks';
 import ual from 'src/boot/ual';
 import evm, { providerManager } from 'src/boot/evm';
-import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 
 const $q = useQuasar();
 const store = useStore();
