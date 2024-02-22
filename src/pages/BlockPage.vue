@@ -33,8 +33,12 @@ function nextBlock() {
     router.push({ name: 'block', params: { block: parseInt(block.value) + 1 } });
 }
 
+function visitNativeBlockExplorer(extraData) {
+    console.log('visitNativeBlockExplorer()', extraData);
+    window.open(`https://explorer-test.telos.net/block/${extraData}`, '_blank');
+}
+
 const loadBlockData = async () => {
-    blockData.value = null;
     try {
         if (blockHeight.value <= 0) {
             return;
@@ -43,6 +47,7 @@ const loadBlockData = async () => {
         blockData.value = toRaw(response.data?.results?.[0]) as BlockData;
     } catch (error) {
         console.error('Failed to fetch block data:', error);
+        blockData.value = null;
     }
 };
 
@@ -58,7 +63,6 @@ watch(() => route.params.block, (newBlock) => {
         return;
     }
     block.value = newBlock as string;
-    // loadBlock();
 }, { immediate: true });
 
 watch(() => route.query.tab, (newTab) => {
@@ -74,7 +78,6 @@ watch(tab, (newTab) => {
 onMounted(() => {
     const tabQueryParam = route.query.tab as string;
     tab.value = tabs.includes(tabQueryParam) ? tabQueryParam : defaultTab;
-    // loadBlock();
 });
 </script>
 
@@ -108,6 +111,7 @@ onMounted(() => {
                         @prev-block="prevBlock"
                         @next-block="nextBlock"
                         @trx-table="tab = 'transactions'"
+                        @extra-data="visitNativeBlockExplorer"
                     />
                 </q-tab-panel>
                 <q-tab-panel class="c-block__panel" name="transactions">

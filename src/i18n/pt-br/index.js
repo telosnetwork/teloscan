@@ -211,6 +211,8 @@ export default {
             hash: 'Hash',
             parent_hash: 'Hash Pai',
             nonce: 'Nonce',
+            extra_data: 'Dados Extras',
+            extra_data_tooltip: 'Dados extras incluídos no bloco',
             block_height_tooltip: 'Também chamado de "Número do Bloco". A altura do bloco representa o comprimento da blockchain, aumentando um após a adição de um novo bloco',
             timestamp_tooltip: 'O momento e data em que o bloco foi produzido',
             transactions_tooltip: 'O número de transações no bloco. Transações Internas são transações que ocorrem como resultado da execução de contrato e incluem um valor TLOS',

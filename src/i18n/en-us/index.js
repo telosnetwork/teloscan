@@ -211,6 +211,8 @@ export default {
             hash: 'Hash',
             parent_hash: 'Parent Hash',
             nonce: 'Nonce',
+            extra_data: 'Extra Data',
+            extra_data_tooltip: 'The extra data field is 32 bytes long and can be used for special purposes',
             block_height_tooltip: 'Also called "Block Number". The block height represents the length of of the blockchain, increasing by one after the addition of a new block',
             timestamp_tooltip: 'The time and date the block was produced',
             transactions_tooltip: 'The number of transactions in the block. Internal Transactions are transactions which occur as a result of contract execution and include a TLOS value',

@@ -211,6 +211,8 @@ export default {
             hash: 'Hachage',
             parent_hash: 'Hachage parent',
             nonce: 'Nonce',
+            extra_data: 'Données supplémentaires',
+            extra_data_tooltip: 'Données supplémentaires incluses dans le bloc',
             block_height_tooltip: 'Aussi appelé "Numéro de bloc". La hauteur du bloc représente la longueur de la chaîne de blocs, augmentant de un après l\'ajout d\'un nouveau bloc',
             timestamp_tooltip: 'Le moment et la date de production du bloc',
             transactions_tooltip: 'Le nombre de transactions dans le bloc. Les transactions internes sont des transactions qui se produisent à la suite de l\'exécution d\'un contrat et incluent une valeur TLOS',
