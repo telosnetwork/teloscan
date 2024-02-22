@@ -53,7 +53,7 @@ const loadBlockData = async () => {
 
 // Watchers
 
-// cuando block cambie hay que actualizar la url
+// update url on block change
 watch(block, (newBlock) => {
     router.push({ params: { block: newBlock } });
     loadBlockData();
