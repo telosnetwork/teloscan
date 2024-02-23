@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeMount, onBeforeUnmount, onMounted, ref } from 'vue';
-// import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
@@ -19,7 +19,8 @@ import LoginModal from 'components/LoginModal.vue';
 // import LoginStatus from 'components/header/LoginStatus.vue';
 // import HeaderSearch from 'components/header/HeaderSearch.vue';
 
-// const router = useRouter();
+const $router = useRouter();
+const $route = useRoute();
 const store = useStore();
 const { t: $t } = useI18n();
 const $q = useQuasar();
@@ -30,10 +31,8 @@ const showLoginModal = ref(false);
 const showLanguageSwitcher = ref(false);
 // const advancedMenuExpanded = ref(false);
 const menuHiddenDesktop = ref(false);
-const searchHiddenMobile = ref(true);
 const isTestnet = ref(Number(process.env.NETWORK_EVM_CHAIN_ID) !== 40);
 const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
-const blockchainMenuOpen = ref(false);
 
 // computed
 // const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
@@ -122,16 +121,18 @@ function scrollHandler(info: { direction: string; }) {
     menuHiddenDesktop.value = info.direction === 'down';
 }
 
-// function goTo(to: string | { name: string }) {
-//     mobileMenuIsOpen.value = false;
-//     advancedMenuExpanded.value = false;
-//     const httpsRegex = /^https/;
-//     if (typeof to === 'string' && httpsRegex.test(to)) {
-//         window.location.href = to;
-//         return;
-//     }
-//     router.push(to);
-// }
+function goTo(to: string | { name: string }) {
+    // mobileMenuIsOpen.value = false;
+    // advancedMenuExpanded.value = false;
+    const httpsRegex = /^https/;
+    if (typeof to === 'string' && httpsRegex.test(to)) {
+        window.location.href = to;
+        return;
+    }
+
+    (document.activeElement as HTMLElement | null)?.blur();
+    $router.push(to);
+}
 
 function toggleDarkMode() {
     $q.dark.toggle();
@@ -193,42 +194,58 @@ function toggleDarkMode() {
                 </div>
             </div>
 
-            <span
-                :class="{
-                    'c-header__logo-text text-weight-bolder': true,
-                    'c-header__logo-text--hidden-mobile': !searchHiddenMobile,
-                }"
-            >
+            <span class="c-header__logo-text">
                 Teloscan
             </span>
         </router-link>
-
+        <!-- eztodo aria and kb and break into components -->
         <nav class="c-header__bottom-bar-right-container">
             <ul class="c-header__menu-ul">
                 <li
-                    class="q-pa-sm"
-                    @mouseenter="blockchainMenuOpen = true"
-                    @mouseleave="blockchainMenuOpen = false"
+                    :class="{
+                        'c-header__menu-li': true,
+                        'c-header__menu-li--current': $route.name === 'home',
+                    }"
+                    tabindex="0"
+                    @click="goTo({ name: 'home' })"
+                    @keydown.enter="goTo({ name: 'home' })"
                 >
-                    <div class="u-flex--center-y cursor-pointer">
-                        Blockchain
-                        <q-icon name="fas fa-chevron-down" size="12px" class="q-ml-xs" />
-                    </div>
+                    Home
+                </li>
+                <li
+                    :class="{
+                        'c-header__menu-li c-header__menu-li--expandable': true,
+                        'c-header__menu-li--current': ['transactions', 'blocks'].includes($route.name as string),
+                    }"
+                    tabindex="0"
+                >
+                    Blockchain
+                    <q-icon name="fas fa-chevron-down" size="12px" />
 
-                    <q-menu
-                        v-model="blockchainMenuOpen"
-                        transition-show="jump-down"
-                        transition-hide="jump-up"
-                    >
-                        <q-list>
-                            <q-item clickable>
-                                <q-item-section>Transactions</q-item-section>
-                            </q-item>
-                            <q-item clickable>
-                                <q-item-section>Blocks</q-item-section>
-                            </q-item>
-                        </q-list>
-                    </q-menu>
+                    <ul class="c-header__submenu-ul shadow-2">
+                        <li
+                            :class="{
+                                'c-header__submenu-li': true,
+                                'c-header__submenu-li--current': $route.name === 'transactions',
+                            }"
+                            tabindex="0"
+                            @click="goTo({ name: 'transactions' })"
+                            @keydown.enter="goTo({ name: 'transactions' })"
+                        >
+                            Transactions
+                        </li>
+                        <li
+                            :class="{
+                                'c-header__submenu-li': true,
+                                'c-header__submenu-li--current': $route.name === 'blocks',
+                            }"
+                            tabindex="0"
+                            @click="goTo({ name: 'blocks' })"
+                            @keydown.enter="goTo({ name: 'blocks' })"
+                        >
+                            Blocks
+                        </li>
+                    </ul>
                 </li>
 
                 <li>
@@ -568,11 +585,25 @@ function toggleDarkMode() {
         align-items: center;
     }
 
+    &__bottom-bar-right-container {
+        height: 100%;
+    }
+
     &__logo-container {
         display: flex;
         align-items: center;
         gap: 8px;
         color: var(--text-color);
+    }
+
+    &__logo-text {
+        display: none;
+
+        @media screen and (min-width: $breakpoint-sm-min) {
+            display: block;
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
     }
 
     &__logo-image-container {
@@ -583,129 +614,186 @@ function toggleDarkMode() {
     }
 
     &__menu-ul {
+        height: 100%;
         list-style: none;
         display: flex;
         flex-direction: row;
-        gap: 16px;
         margin: 0;
         padding: 0;
     }
 
-
-
-
-
-
-
-    &__testnet-indicator {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        margin: auto;
-        font-size: 10px;
-        height: min-content;
-        padding: 0 2px;
-        border-radius: 2px;
-        background: rgba($dark, 0.4);
-        color: white;
-    }
-
-    &__logo-text {
-        color: var(--text-color);
-        font-size: 18px;
-        margin-left: 12px;
-
-        &--hidden-mobile {
-            display: none;
-        }
-
-        @media screen and (min-width: $breakpoint-lg-min) {
-            display: block;
-            margin-left: 0;
-        }
-    }
-
-    &__right-container {
+    &__menu-li {
+        padding: 8px;
         display: flex;
-        flex-wrap: nowrap;
-        height: 48px;
-
-        @media screen and (min-width: $breakpoint-lg-min) {
-            height: 64px;
-            gap: 16px;
-        }
-    }
-
-    &__search-container {
-        height: 48px;
-        display: flex;
-        justify-content: center;
         align-items: center;
-
-        @media screen and (min-width: $breakpoint-lg-min) {
-            height: 64px;
-        }
-    }
-
-    &__login-status-desktop {
-        display: none;
-
-        @media screen and (min-width: $breakpoint-lg-min) {
-            display: flex;
-            align-items: center;
-        }
-    }
-
-    &__menu-icon-container {
-        width: 48px;
-        height: 48px;
+        user-select: none;
         cursor: pointer;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        font-weight: 500;
 
-        @media screen and (min-width: $breakpoint-lg-min) {
-            display: none;
-        }
-    }
+        &--expandable {
+            position: relative;
+            cursor: default;
+            gap: 4px;
 
-    &__menu-container {
-        background-color: var(--background-color);
-        position: absolute;
-        top: 48px;
-        right: 0;
-        left: 0;
-        padding: 0 16px;
-        width: 100%;
-        box-shadow:
-            0 3px 5px rgba(0, 0, 0, 0.2),
-            0 2px 2px rgba(0, 0, 0, 0.14),
-            0 3px 1px -2px rgba(0, 0, 0, 0.12);
-
-        display: none;
-
-        @media screen and (min-width: $breakpoint-lg-min) {
-            display: block;
-            top: 64px;
-            transform: translateY(0);
-            transition:
-                0.3s ease transform,
-                0.3s ease box-shadow,
-                0.1s ease opacity;
-            z-index: -1;
-            opacity: 1;
-
-            &--hidden-desktop {
-                opacity: 0;
-                transform: translateY(-128px);
-                box-shadow: none;
+            &:hover,
+            &:focus,
+            &:focus-within {
+                #{$this}__submenu-ul {
+                    display: block;
+                }
             }
         }
 
-        &--expanded-mobile {
-            display: block;
+        &--current {
+            color: $primary;
         }
     }
+
+    &__submenu-ul {
+        display: none;
+        position: absolute;
+        top: calc(100% - 1px);
+        left: 0;
+        background-color: var(--background-color);
+        padding: 12px;
+        border-radius: 0 0 4px 4px;
+        z-index: 999;
+        list-style: none;
+        border-top: 2px solid $primary;
+        color: var(--text-color);
+        font-weight: normal;
+    }
+
+    &__submenu-li {
+        padding: 8px;
+        cursor: pointer;
+        user-select: none;
+        transition: 0.2s ease all;
+        border-radius: 8px;
+
+        &:hover,
+        &:active {
+            background-color: var(--highlight-color);
+        }
+
+        &--current {
+            color: $primary;
+        }
+    }
+
+
+
+
+
+    // &__testnet-indicator {
+    //     position: absolute;
+    //     top: 0;
+    //     bottom: 0;
+    //     margin: auto;
+    //     font-size: 10px;
+    //     height: min-content;
+    //     padding: 0 2px;
+    //     border-radius: 2px;
+    //     background: rgba($dark, 0.4);
+    //     color: white;
+    // }
+
+    // &__logo-text {
+    //     color: var(--text-color);
+    //     font-size: 18px;
+    //     margin-left: 12px;
+
+    //     &--hidden-mobile {
+    //         display: none;
+    //     }
+
+    //     @media screen and (min-width: $breakpoint-lg-min) {
+    //         display: block;
+    //         margin-left: 0;
+    //     }
+    // }
+
+    // &__right-container {
+    //     display: flex;
+    //     flex-wrap: nowrap;
+    //     height: 48px;
+
+    //     @media screen and (min-width: $breakpoint-lg-min) {
+    //         height: 64px;
+    //         gap: 16px;
+    //     }
+    // }
+
+    // &__search-container {
+    //     height: 48px;
+    //     display: flex;
+    //     justify-content: center;
+    //     align-items: center;
+
+    //     @media screen and (min-width: $breakpoint-lg-min) {
+    //         height: 64px;
+    //     }
+    // }
+
+    // &__login-status-desktop {
+    //     display: none;
+
+    //     @media screen and (min-width: $breakpoint-lg-min) {
+    //         display: flex;
+    //         align-items: center;
+    //     }
+    // }
+
+    // &__menu-icon-container {
+    //     width: 48px;
+    //     height: 48px;
+    //     cursor: pointer;
+    //     display: flex;
+    //     justify-content: center;
+    //     align-items: center;
+
+    //     @media screen and (min-width: $breakpoint-lg-min) {
+    //         display: none;
+    //     }
+    // }
+
+    // &__menu-container {
+    //     background-color: var(--background-color);
+    //     position: absolute;
+    //     top: 48px;
+    //     right: 0;
+    //     left: 0;
+    //     padding: 0 16px;
+    //     width: 100%;
+    //     box-shadow:
+    //         0 3px 5px rgba(0, 0, 0, 0.2),
+    //         0 2px 2px rgba(0, 0, 0, 0.14),
+    //         0 3px 1px -2px rgba(0, 0, 0, 0.12);
+
+    //     display: none;
+
+    //     @media screen and (min-width: $breakpoint-lg-min) {
+    //         display: block;
+    //         top: 64px;
+    //         transform: translateY(0);
+    //         transition:
+    //             0.3s ease transform,
+    //             0.3s ease box-shadow,
+    //             0.1s ease opacity;
+    //         z-index: -1;
+    //         opacity: 1;
+
+    //         &--hidden-desktop {
+    //             opacity: 0;
+    //             transform: translateY(-128px);
+    //             box-shadow: none;
+    //         }
+    //     }
+
+    //     &--expanded-mobile {
+    //         display: block;
+    //     }
+    // }
 
     // &__menu-ul {
     //     padding: 0;
@@ -718,89 +806,89 @@ function toggleDarkMode() {
     //     }
     // }
 
-    &__menu-li {
-        list-style: none;
-        padding: 12px 0;
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        user-select: none;
-        border-radius: 4px;
+    // &__menu-li {
+    //     list-style: none;
+    //     padding: 12px 0;
+    //     display: flex;
+    //     align-items: center;
+    //     cursor: pointer;
+    //     user-select: none;
+    //     border-radius: 4px;
 
-        &:hover,
-        &:active {
-            @media screen and (min-width: $breakpoint-lg-min) {
-                background-color: var(--highlight-color);
-            }
+    //     &:hover,
+    //     &:active {
+    //         @media screen and (min-width: $breakpoint-lg-min) {
+    //             background-color: var(--highlight-color);
+    //         }
 
-            & > #{$this}__menu-item-icon:not(#{$this}__menu-item-icon--chevron) {
-                filter: grayscale(0);
-                color: $primary;
-            }
-        }
+    //         & > #{$this}__menu-item-icon:not(#{$this}__menu-item-icon--chevron) {
+    //             filter: grayscale(0);
+    //             color: $primary;
+    //         }
+    //     }
 
-        @media screen and (min-width: $breakpoint-lg-min) {
-            padding: 12px 16px;
-        }
+    //     @media screen and (min-width: $breakpoint-lg-min) {
+    //         padding: 12px 16px;
+    //     }
 
-        &--login-status {
-            cursor: default;
+    //     &--login-status {
+    //         cursor: default;
 
-            @media screen and (min-width: $breakpoint-lg-min) {
-                display: none;
-            }
-        }
+    //         @media screen and (min-width: $breakpoint-lg-min) {
+    //             display: none;
+    //         }
+    //     }
 
-        &--advanced-menu-mobile {
-            margin-left: 24px;
+    //     &--advanced-menu-mobile {
+    //         margin-left: 24px;
 
-            @media screen and (min-width: $breakpoint-lg-min) {
-                display: none;
-            }
-        }
-    }
+    //         @media screen and (min-width: $breakpoint-lg-min) {
+    //             display: none;
+    //         }
+    //     }
+    // }
 
-    &__menu-separator {
-        @media screen and (min-width: $breakpoint-lg-min) {
-            display: none;
-        }
-    }
+    // &__menu-separator {
+    //     @media screen and (min-width: $breakpoint-lg-min) {
+    //         display: none;
+    //     }
+    // }
 
-    &__menu-item-icon {
-        margin-right: 8px;
-        transition: 0.2s ease all;
+    // &__menu-item-icon {
+    //     margin-right: 8px;
+    //     transition: 0.2s ease all;
 
-        &--stlos {
-            filter: grayscale(1);
-        }
-    }
+    //     &--stlos {
+    //         filter: grayscale(1);
+    //     }
+    // }
 
-    &__advanced-container {
-        width: 100%;
-        position: relative;
-    }
+    // &__advanced-container {
+    //     width: 100%;
+    //     position: relative;
+    // }
 
-    &__advanced-container-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-    }
+    // &__advanced-container-header {
+    //     display: flex;
+    //     justify-content: space-between;
+    //     align-items: center;
+    //     cursor: pointer;
+    // }
 
-    &__advanced-menu-desktop {
-        display: none;
+    // &__advanced-menu-desktop {
+    //     display: none;
 
-        @media screen and (min-width: $breakpoint-lg-min) {
-            padding: 0;
-            display: block;
-            position: absolute;
-            top: 36px;
-            left: -48px;
-            background-color: var(--background-color);
-            width: max-content;
-            border-radius: 0 0 4px 4px;
-            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
-        }
-    }
+    //     @media screen and (min-width: $breakpoint-lg-min) {
+    //         padding: 0;
+    //         display: block;
+    //         position: absolute;
+    //         top: 36px;
+    //         left: -48px;
+    //         background-color: var(--background-color);
+    //         width: max-content;
+    //         border-radius: 0 0 4px 4px;
+    //         box-shadow: 0 4px 5px rgba(0, 0, 0, 0.2), 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
+    //     }
+    // }
 }
 </style>
