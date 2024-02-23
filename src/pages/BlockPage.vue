@@ -17,8 +17,8 @@ const defaultTab = 'overview';
 const tabs = ['overview', 'transactions'];
 
 const tab = ref(defaultTab);
-const block = ref('');
-const blockHeight = computed(() => parseInt(block.value ?? '0'));
+const block = ref(0);
+const blockHeight = computed(() => block.value ?? 0);
 const blockData = ref<BlockData | null>(null);
 
 const transactionsCount = computed(() => blockData.value ? blockData.value.transactionsCount : 0);
@@ -26,11 +26,11 @@ const transactionsCount = computed(() => blockData.value ? blockData.value.trans
 // Methods
 
 function prevBlock() {
-    router.push({ name: 'block', params: { block: parseInt(block.value) - 1 } });
+    router.push({ name: 'block', params: { block: block.value - 1 } });
 }
 
 function nextBlock() {
-    router.push({ name: 'block', params: { block: parseInt(block.value) + 1 } });
+    router.push({ name: 'block', params: { block: block.value + 1 } });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,18 +52,18 @@ const loadBlockData = async () => {
     }
 };
 
-// Watchers
-
 // update url on block change
 watch(block, (newBlock) => {
     router.push({ params: { block: newBlock } });
     loadBlockData();
 });
+
 watch(() => route.params.block, (newBlock) => {
-    if (block.value === newBlock) {
+    const blockNumber = parseInt(newBlock as string);
+    if (block.value === blockNumber) {
         return;
     }
-    block.value = newBlock as string;
+    block.value = blockNumber;
 }, { immediate: true });
 
 watch(() => route.query.tab, (newTab) => {
@@ -75,7 +75,6 @@ watch(tab, (newTab) => {
     router.push({ query: { tab: newTab } });
 });
 
-// Mounted lifecycle hook
 onMounted(() => {
     const tabQueryParam = route.query.tab as string;
     tab.value = tabs.includes(tabQueryParam) ? tabQueryParam : defaultTab;
@@ -116,7 +115,7 @@ onMounted(() => {
                     />
                 </q-tab-panel>
                 <q-tab-panel class="c-block__panel" name="transactions">
-                    <TransactionTable :title="block" :filter="`block/${block}`"/>
+                    <TransactionTable :title="block.toString()" :block="block"/>
                 </q-tab-panel>
             </q-tab-panels>
         </div>

@@ -7,7 +7,7 @@ import { ethers } from 'ethers';
 const props = defineProps({
     data: {
         type: Object as () => BlockData | null,
-        required: true,
+        required: false,
     },
 });
 
