@@ -65,8 +65,8 @@ const setValues = async () => {
         fullName.value = props.trx.parsedTransaction.name;
     }
 
-    name.value = (props.shortenName && fullName.value.length > 11)
-        ? `${fullName.value.slice(0, 8)}...`
+    name.value = (props.shortenName && fullName.value.length > 14)
+        ? `${fullName.value.slice(0, 14)}...`
         : fullName.value;
 };
 </script>
