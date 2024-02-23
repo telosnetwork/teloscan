@@ -6,24 +6,31 @@ const { t: $t } = useI18n();
 </script>
 
 <template>
-<div class="c-block-list-page">
+<q-page class="c-block-list-page">
 
     <div class="c-block-list-page__header">
         <span class="c-block-list-page__header-title">{{ $t('pages.blocklist.title') }}</span>
     </div>
 
-    <BlockTable class="c-block-list-page__table" :title="'Block List'"/>
+    <div class="row c-block-list-page__table">
+        <div class="col-12 q-pb-lg">
+            <q-card>
+                <BlockTable class="c-block-list-page__block-table" :title="'Block List'"/>
+            </q-card>
+        </div>
+    </div>
 
-</div>
+</q-page>
 </template>
 
 <style lang="scss">
 .c-block-list-page {
+    margin: auto;
     &__header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin: 20px 0;
+        margin: 20px;
     }
 
     &__header-title {
@@ -31,8 +38,12 @@ const { t: $t } = useI18n();
         font-weight: 600;
     }
 
+    flex: 0 1 1200px;
+    margin: auto;
+    max-width: 1200px;
+
     &__table {
-        width: 100%;
+        max-width: 100vw;
     }
 }
 </style>

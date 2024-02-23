@@ -59,7 +59,6 @@ const columns = [
         name: 'block',
         label: $t('components.blocks.block'),
         align: 'left',
-        sortable: true,
     },
     {
         name: 'timestamp',
