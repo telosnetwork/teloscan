@@ -387,7 +387,7 @@ function getGasFee(gasUsed: number, gasPrice: number){
                 <TokenValueField v-else :value="'0.0'" />
             </q-td>
             <q-td key='fee' :props="props">
-                {{ getGasFee(props.row.gasused, props.row.gasPrice) }}
+                {{ getGasFee(props.row.gasused ?? props.row.gasUsed, props.row.gasPrice) }}
             </q-td>
         </q-tr>
     </template>
