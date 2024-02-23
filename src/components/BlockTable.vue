@@ -10,6 +10,7 @@ import TokenValueField from 'components/Token/TokenValueField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import { BlockData } from 'types';
+import { ethers } from 'ethers';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -33,7 +34,7 @@ const showDateAge = ref(true);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const blocks: BlockData[] = [];
-const page_size_options = [10, 20, 50];
+const page_size_options = [10, 25, 50, 100];
 
 type Pagination = {
     sortBy: string;
@@ -61,17 +62,17 @@ const columns = [
         sortable: true,
     },
     {
-        name: 'age',
+        name: 'timestamp',
         label: $t('components.blocks.age'),
         align: 'left',
     },
     {
-        name: 'transactions',
+        name: 'transactionsCount',
         label: $t('components.blocks.transactions'),
         align: 'left',
     },
     {
-        name: 'gas',
+        name: 'gasUsed',
         label: $t('components.blocks.gas_used'),
         align: 'left',
     },
@@ -124,6 +125,24 @@ async function onPaginationChange(settings: { pagination: Pagination}) {
     });
 }
 
+
+// Esta función va intentar primero retornar el valor cacheado en el local storage,
+// si no lo encuentra, va a buscarlo en la API y luego de encontrarlo lo va a guardar en el local storage
+async function fetchBlocksPage() {
+    // first try to get the data from the local storage
+    const cached_data = localStorage.getItem('blocks');
+    if (cached_data) {
+        console.log('fetchBlocksPage() - returning cached data'), JSON.parse(cached_data);
+        return JSON.parse(cached_data);
+    }
+    const path = getPath();
+    console.log('fetchBlocksPage() - fetching data from API');
+    const result = await indexerApi.get(path);
+    localStorage.setItem('blocks', JSON.stringify(result));
+    console.log('fetchBlocksPage() - returning data from API', result);
+    return result;
+}
+
 async function parseblocks() {
     if(loading.value){
         return;
@@ -132,7 +151,7 @@ async function parseblocks() {
     const { page, rowsPerPage, sortBy, descending } = pagination.value;
 
     try {
-        let response = await indexerApi.get(getPath());
+        let response = await fetchBlocksPage();
         if (pagination.value.rowsNumber === 0) {
             pagination.value.rowsNumber = response.data?.total_count;
         }
@@ -220,7 +239,7 @@ async function parseblocks() {
 
 function getPath() {
     const { page, rowsPerPage, descending } = pagination.value;
-    let path = `v1/blocks?limit=${
+    let path = `blocks?limit=${
         rowsPerPage === 0 ? 25 : rowsPerPage
     }`;
     path += `&offset=${(page - 1) * rowsPerPage}`;
@@ -231,6 +250,20 @@ function getPath() {
 
 function toggleDateFormat() {
     showDateAge.value = !showDateAge.value;
+}
+
+function getGasUsed(gasUsed: string) {
+    const gas = ethers.BigNumber.from(gasUsed);
+    try {
+        return gas.toNumber().toLocaleString();
+    } catch (e) {
+        console.error(e);
+        return gas.toString();
+    }
+}
+
+function getTransactionsCount(transactionsCount: number | undefined) {
+    return transactionsCount?.toLocaleString() ?? '0';
 }
 
 </script>
@@ -282,40 +315,28 @@ function toggleDateFormat() {
             <q-td key="block" :props="props">
                 <BlockField :block="props.row.number"/>
             </q-td>
-            <q-td key="date" :props="props">
+            <q-td key="timestamp" :props="props">
                 <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
             </q-td>
-            <q-td key='value' :props="props">
-                <TokenValueField
-                    v-if="props.row.gasUsed !== '0x0'"
-                    :value="BigInt(props.row.gasUsed).toString(10) || '0.0'"
-                />
-                <TokenValueField
-                    v-else
-                    :value="'0.0'"
-                />
+            <q-td key='transactionsCount' :props="props">
+                <span class="c-block-table__cell-trx">
+                    {{
+                        getTransactionsCount(props.row.transactionsCount) === '1'
+                            ? $t('components.blocks.count_transaction')
+                            : $t('components.blocks.count_transactions', {
+                                count: getTransactionsCount(props.row.transactionsCount)
+                            })
+                    }}
+                </span>
+            </q-td>
+            <q-td key='gasUsed' :props="props">
+                <TokenValueField :value="getGasUsed(props.row.gasUsed)" />
             </q-td>
         </q-tr>
     </template>
 </q-table>
 </template>
-<!--eslint-enable-->
-<style scoped lang="sass">
-    .direction
-        user-select: none
-        padding: 3px 6px
-        border-radius: 5px
-        font-size: 0.9em
-    .direction.in
-        color: rgb(0,161,134)
-        background: rgba(0,161,134,0.1)
-        border: 1px solid rgb(0,161,134)
-    .direction.out
-        color: #cc9a06!important
-        background: rgba(255,193,7,0.1)
-        border: 1px solid #cc9a06!important
-    .sortable
-        height: 60px
-        display: flex
-        align-items: center
+
+<style lang="sass">
+
 </style>

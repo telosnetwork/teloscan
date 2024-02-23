@@ -39,8 +39,19 @@ const routes = [
         children: [{
             path: '',
             name: 'transaction',
-            component: () => import('pages/Transaction.vue'),
+            component: () => import('pages/TransactionPage.vue'),
         }],
+    },
+    {
+        path: '/txs',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'transactions',
+                component: () => import('pages/TransactionsPage.vue'),
+            },
+        ],
     },
     {
         path: '/block/:block',
@@ -48,8 +59,19 @@ const routes = [
         children: [{
             path: '',
             name: 'block',
-            component: () => import('pages/Block.vue'),
+            component: () => import('pages/BlockPage.vue'),
         }],
+    },
+    {
+        path: '/blocks',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'blocks',
+                component: () => import('pages/BlockListPage.vue'),
+            },
+        ],
     },
     {
         path: '/holders',
@@ -59,17 +81,6 @@ const routes = [
                 path: '',
                 name: 'holders',
                 component: () => import('pages/Holders.vue'),
-            },
-        ],
-    },
-    {
-        path: '/transactions',
-        component: () => import('layouts/MainLayout.vue'),
-        children: [
-            {
-                path: '',
-                name: 'transactions',
-                component: () => import('pages/Transactions.vue'),
             },
         ],
     },
