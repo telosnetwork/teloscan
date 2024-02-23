@@ -25,6 +25,11 @@ const store = useStore();
 const { t: $t } = useI18n();
 const $q = useQuasar();
 
+const blockchainSubmenuItems = [
+    { name: 'transactions', label: 'Transactions' },
+    { name: 'blocks', label: 'Blocks' },
+];
+
 // data
 // const mobileMenuIsOpen = ref(false);
 const showLoginModal = ref(false);
@@ -38,6 +43,7 @@ const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
 // const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
 const isNative = computed(() => store.getters['login/isNative']);
 const isDarkMode = computed(() => $q.dark.isActive);
+const highlightBlockchainMenuItem = computed(() => blockchainSubmenuItems.some(item => item.name === $route.name));
 const gasPriceInGwei = computed(() => {
     const gasPrice = store.getters['chain/gasPrice'];
 
@@ -215,7 +221,7 @@ function toggleDarkMode() {
                 <li
                     :class="{
                         'c-header__menu-li c-header__menu-li--expandable': true,
-                        'c-header__menu-li--current': ['transactions', 'blocks'].includes($route.name as string),
+                        'c-header__menu-li--current': highlightBlockchainMenuItem,
                     }"
                     tabindex="0"
                 >
@@ -224,26 +230,17 @@ function toggleDarkMode() {
 
                     <ul class="c-header__submenu-ul shadow-2">
                         <li
+                            v-for="item in blockchainSubmenuItems"
+                            :key="`blockchain-submenu-item-${item.name}`"
                             :class="{
                                 'c-header__submenu-li': true,
-                                'c-header__submenu-li--current': $route.name === 'transactions',
+                                'c-header__submenu-li--current': $route.name === item.name,
                             }"
                             tabindex="0"
-                            @click="goTo({ name: 'transactions' })"
-                            @keydown.enter="goTo({ name: 'transactions' })"
+                            @click="goTo({ name: item.name })"
+                            @keydown.enter="goTo({ name: item.name })"
                         >
-                            Transactions
-                        </li>
-                        <li
-                            :class="{
-                                'c-header__submenu-li': true,
-                                'c-header__submenu-li--current': $route.name === 'blocks',
-                            }"
-                            tabindex="0"
-                            @click="goTo({ name: 'blocks' })"
-                            @keydown.enter="goTo({ name: 'blocks' })"
-                        >
-                            Blocks
+                            {{ item.label }}
                         </li>
                     </ul>
                 </li>
@@ -639,7 +636,9 @@ function toggleDarkMode() {
             &:focus,
             &:focus-within {
                 #{$this}__submenu-ul {
-                    display: block;
+                    visibility: visible;
+                    opacity: 1;
+                    transform: translateY(0);
                 }
             }
         }
@@ -650,7 +649,10 @@ function toggleDarkMode() {
     }
 
     &__submenu-ul {
-        display: none;
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(8px);
+        transition: 0.2s ease all;
         position: absolute;
         top: calc(100% - 1px);
         left: 0;
