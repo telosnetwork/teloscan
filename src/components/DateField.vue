@@ -24,7 +24,7 @@ export default {
             default: null,
         },
         // if true or not defined, the component will display the date in parentheses
-        utcUseParentheses: {
+        utc: {
             type: Boolean,
             default: true,
         },
@@ -38,10 +38,15 @@ export default {
             if (showAge) {
                 return moment.unix(this.epoch).fromNow();
             }
+            const timestamp = moment.unix(this.epoch);
+            if (this.utc){
+                return moment.utc(timestamp).format('YYYY-MM-DD HH:mm:ss');
+            }else{
+                const offset = getFormattedUtcOffset(new Date(this.epoch));
+                const offsetString = this.utcUseParentheses ? ` (UTC ${offset})` : ` - UTC ${offset}`;
+                return `${timestamp.format('YYYY-MM-DD HH:mm:ss')} ${offsetString}`;
+            }
 
-            const offset = getFormattedUtcOffset(new Date(this.epoch));
-            const utc = this.utcUseParentheses ? ` (UTC ${offset})` : ` - UTC ${offset}`;
-            return `${moment.unix(this.epoch).format('MMM D, YYYY HH:mm:ss')} ${utc}`;
         },
     },
     created() {
