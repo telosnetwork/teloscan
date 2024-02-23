@@ -306,25 +306,26 @@ function getGasFee(gasUsed: number, gasPrice: number){
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div class="u-flex--center-y">
-                    {{ (col.name === 'date' && !showDateAge) ? $t('components.date') : col.label }}
-                    <template v-if="col.name === 'date'">
-                        <q-icon
-                            class="info-icon q-ml-xs"
-                            name="fas fa-info-circle"
-                            @click="toggleDateFormat"
-                        >
-                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
-                                {{ $t('components.click_to_change_format') }}
-                            </q-tooltip>
-                        </q-icon>
-                    </template>
-                    <template v-if="col.name === 'method'">
-                        <q-icon class="info-icon" name="fas fa-info-circle q-ml-xs" />
-                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
-                            {{ $t('components.executed_based_on_decoded_data') }}
+                <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
+                    {{ showDateAge ? col.label: $t('components.date') }}
+                    <q-icon
+                        class="info-icon q-ml-xs"
+                        name="fas fa-info-circle"
+                    >
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('components.click_to_change_format') }}
                         </q-tooltip>
-                    </template>
+                    </q-icon>
+                </div>
+                <div v-else-if="col.name === 'method'" class="u-flex--center-y">
+                    {{ col.label }}
+                    <q-icon class="info-icon" name="fas fa-info-circle q-ml-xs" />
+                    <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                        {{ $t('components.executed_based_on_decoded_data') }}
+                    </q-tooltip>
+                </div>
+                <div v-else class="u-flex--center-y">
+                    {{ col.label }}
                 </div>
             </q-th>
         </q-tr>
