@@ -39,7 +39,7 @@ const showDateAge = ref(true);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const transactions: any[] = [];
-const page_size_options = [10, 20, 50];
+const page_size_options = [10, 25, 50, 100];
 
 type Pagination = {
     sortBy: string;
@@ -54,7 +54,7 @@ const pagination = ref<Pagination>(
         sortBy: 'block',
         descending: true,
         page: 1,
-        rowsPerPage: 10,
+        rowsPerPage: 50,
         rowsNumber: 0,
     },
 );
