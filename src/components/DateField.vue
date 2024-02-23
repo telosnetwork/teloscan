@@ -1,63 +1,50 @@
-<script>
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 import { getFormattedUtcOffset } from 'src/lib/utils';
-
 import moment from 'moment';
 
-export default {
-    name: 'DateField',
-    props: {
-        epoch: {
-            type: Number,
-            required: true,
-        },
-        // if true, the component will display plain-english e.g. "3 minutes ago" on initial load; if false, it will
-        // display long format e.g. "Jan 6, 2023 11:41:40 (UTC -05:00)"
-        defaultToAge: {
-            type: Boolean,
-            default: true,
-        },
-        // a value of true or false will force the component to display plain-english age or date stamp respectively;
-        // the default value of null will allow the component to toggle itself via user clicks.
-        // having a value defined for this prop will disable user click interaction
-        forceShowAge: {
-            type: Boolean,
-            default: null,
-        },
-        // if true or not defined, the component will display the date in parentheses
-        utc: {
-            type: Boolean,
-            default: true,
-        },
+// Define props
+const props = defineProps({
+    epoch: {
+        type: Number,
+        required: true,
     },
-    data: () => ({
-        showAge: false,
-    }),
-    computed: {
-        friendlyDate ()  {
-            const showAge = this.forceShowAge === true || (this.forceShowAge === null && this.showAge);
-            if (showAge) {
-                return moment.unix(this.epoch).fromNow();
-            }
-            const timestamp = moment.unix(this.epoch);
-            if (this.utc){
-                return moment.utc(timestamp).format('YYYY-MM-DD HH:mm:ss');
-            }else{
-                const offset = getFormattedUtcOffset(new Date(this.epoch));
-                const offsetString = this.utcUseParentheses ? ` (UTC ${offset})` : ` - UTC ${offset}`;
-                return `${timestamp.format('YYYY-MM-DD HH:mm:ss')} ${offsetString}`;
-            }
+    defaultToAge: {
+        type: Boolean,
+        default: true,
+    },
+    forceShowAge: {
+        type: Boolean,
+        default: null,
+    },
+    utc: {
+        type: Boolean,
+        default: true,
+    },
+});
 
-        },
-    },
-    created() {
-        this.showAge = this.defaultToAge;
-    },
-    methods: {
-        toggleDisplay() {
-            this.showAge = !this.showAge;
-        },
-    },
-};
+const showAge = ref(props.defaultToAge);
+
+const friendlyDate = computed(() => {
+    const showAgeValue = props.forceShowAge === true || (props.forceShowAge === null && showAge.value);
+    if (showAgeValue) {
+        return moment.unix(props.epoch).fromNow();
+    }
+    const timestamp = moment.unix(props.epoch);
+    if (props.utc) {
+        return moment.utc(timestamp).format('YYYY-MM-DD HH:mm:ss');
+    } else {
+        const offset = getFormattedUtcOffset(new Date(props.epoch * 1000));
+        const offsetString = ` (UTC ${offset})`;
+        return `${timestamp.format('YYYY-MM-DD HH:mm:ss')} ${offsetString}`;
+    }
+});
+
+function toggleDisplay() {
+    if (props.forceShowAge === null) {
+        showAge.value = !showAge.value;
+    }
+}
 </script>
 
 <template>
