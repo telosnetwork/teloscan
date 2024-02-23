@@ -20,7 +20,7 @@ const { t: $t } = useI18n();
 
 interface Props {
     title: string;
-    filter?: object
+    filter?: string | object;
     initialPageSize?: number,
     address?: string,
 }
