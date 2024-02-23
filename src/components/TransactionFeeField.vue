@@ -35,7 +35,7 @@ function gasPriceWei(){
 
 <template>
 <div class="transaction-fee-field-container">
-    {{ showTotalGasFee ?  totalGasFee() : gasPriceWei() }}
+    <a>{{ showTotalGasFee ?  totalGasFee() : gasPriceWei() }}</a>
     <q-tooltip>{{ showTotalGasFee ? $t('components.gas_price_tlos') : $t('components.gas_price_gwei') }}</q-tooltip>
 </div>
 </template>
