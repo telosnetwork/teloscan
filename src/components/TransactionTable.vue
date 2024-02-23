@@ -3,16 +3,16 @@ import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { formatWei } from 'src/lib/utils';
 
 import { contractManager, indexerApi } from 'src/boot/telosApi';
 
-import TokenValueField from 'components/Token/TokenValueField.vue';
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
-import TransactionField from 'components/TransactionField.vue';
 import MethodField from 'components/MethodField.vue';
+import TokenValueField from 'components/Token/TokenValueField.vue';
+import TransactionField from 'components/TransactionField.vue';
+import TransactionFeeField from 'components/TransactionFeeField.vue';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -36,6 +36,7 @@ const rows = ref<Array<any>>([]);
 const filterUpdated = ref(false);
 const loading =  ref(false);
 const showDateAge = ref(true);
+const showTotalGasFee = ref(true);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const transactions: any[] = [];
@@ -279,10 +280,8 @@ function toggleDateFormat() {
     showDateAge.value = !showDateAge.value;
 }
 
-function getGasFee(gasUsed: number, gasPrice: number){
-    const gasCost = BigInt(gasUsed * gasPrice);
-    const formatted = formatWei(gasCost, 18, 3);
-    return `${formatted} TLOS`;
+function toggleGasValue() {
+    showTotalGasFee.value = !showTotalGasFee.value;
 }
 
 </script>
@@ -322,6 +321,13 @@ function getGasFee(gasUsed: number, gasPrice: number){
                     <q-icon class="info-icon" name="fas fa-info-circle q-ml-xs" />
                     <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
                         {{ $t('components.executed_based_on_decoded_data') }}
+                    </q-tooltip>
+                </div>
+                <div v-else-if="col.name === 'fee'" class="u-flex--center-y" @click="toggleGasValue">
+                    {{ showTotalGasFee ? col.label : $t('components.gas_price') }}
+                    <q-icon class="info-icon" name="fas fa-info-circle q-ml-xs" />
+                    <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                        {{ showTotalGasFee ? $t('components.gas_price_tlos') : $t('components.gas_price_gwei') }}
                     </q-tooltip>
                 </div>
                 <div v-else class="u-flex--center-y">
@@ -387,7 +393,11 @@ function getGasFee(gasUsed: number, gasPrice: number){
                 <TokenValueField v-else :value="'0.0'" />
             </q-td>
             <q-td key='fee' :props="props">
-                {{ getGasFee(props.row.gasused ?? props.row.gasUsed, props.row.gasPrice) }}
+                <TransactionFeeField
+                    :showTotalGasFee="showTotalGasFee"
+                    :gasUsed="props.row.gasused ?? props.row.gasUsed"
+                    :gasPrice="props.row.gasPrice"
+                />
             </q-td>
         </q-tr>
     </template>

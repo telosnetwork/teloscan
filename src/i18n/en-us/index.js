@@ -259,6 +259,8 @@ export default {
         usd_value: 'USD Value',
         tlos_price: 'TLOS Price',
         gas_price: 'Gas Price',
+        gas_price_tlos: '(Gas Price * Gas Used) in TLOS',
+        gas_price_gwei: 'Gas Price in gwei',
         click_to_expand: 'Click to expand',
         click_to_fold: 'Click to fold',
         search_evm_failed: 'Search for EVM address linked to { search_term } native account failed.',

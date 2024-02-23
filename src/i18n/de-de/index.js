@@ -313,6 +313,8 @@ export default {
         usd_value: 'USD Wert',
         tlos_price: 'TLOS Preis',
         gas_price: 'Gas Preis',
+        gas_price_tlos: '(Gas Price * Gas Used) in TLOS',
+        gas_price_gwei: 'Gas Price in gwei',
         click_to_expand: 'Zum erweitern klicken',
         click_to_fold: 'Zum Falten klicken',
         search_evm_failed: 'Suche nach verlinkter EVM-Adresse für Telos Native Konto { search_term } fehlgeschlagen.',
