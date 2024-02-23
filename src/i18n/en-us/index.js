@@ -109,6 +109,9 @@ export default {
             unstake_stlos_error: 'Failed to unstake sTLOS { message }',
             withdraw_failed: 'Failed to withdraw unlocked TLOS: { message }',
         },
+        blocklist: {
+            title: 'Blocklist',
+        },
         issuer: 'Issuer',
         account_not_found: 'We could not find this account',
         approvals: 'Approvals',
@@ -442,6 +445,12 @@ export default {
             search_placeholder: 'Address, Tx, Block',
             select_language: 'Select Language',
             open_language_switcher: 'open language switcher',
+        },
+        blocks: {
+            block: 'Block',
+            age: 'Age',
+            transactions: 'Transactions',
+            gas_used: 'Gas Used',
         },
     },
     evm_wallet: {
