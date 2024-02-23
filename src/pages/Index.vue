@@ -34,7 +34,7 @@ export default {
 .c-index {
     flex: 0 1 1200px;
     margin: auto;
-    max-width: 1200px;
+    max-width: 1220px;
 
     &__table {
         max-width: 100vw;
