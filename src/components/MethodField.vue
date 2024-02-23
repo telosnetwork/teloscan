@@ -1,76 +1,73 @@
-<script>
-
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+<script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { ZERO_ADDRESSES } from 'src/lib/utils';
 
-export default {
-    name: 'MethodField',
-    props: {
-        trx: {
-            type: Object,
-            required: true,
+const props = defineProps({
+    trx: {
+        type: Object as () => {
+            parsedTransaction?: any;
+            from?: string;
+            value?: number;
+            gasPrice?: string;
+            to?: string;
+            input?: string;
+            data?: any
         },
-        contract: {
-            type: Object,
-            default: null,
-        },
-        shortenSignature: {
-            type: Boolean,
-            default: false,
-        },
-        shortenName: {
-            type: Boolean,
-            default: false,
-        },
+        required: true,
     },
-    data() {
-        return {
-            expand: false,
-            name: '',
-            fullName: '',
-            icon: false,
-            iconTooltip: false,
-        };
+    contract: {
+        type: Object,
+        default: () => null,
     },
-    async mounted() {
-        await this.setValues();
-    },
-    methods: {
-        toggle(){
-            this.expand = !this.expand;
-        },
-        async setValues() {
-            if (
-                !this.trx.parsedTransaction
-                && this.trx.from === ZERO_ADDRESSES
-                && this.trx.value > 0
-                && parseInt(this.trx.gasPrice) === 0
-            ){
-                this.icon = 'keyboard_double_arrow_down';
-                this.iconTooltip = this.$t('components.transaction.native_deposit');
-                this.fullName = 'deposit';
-            } else if(
-                !this.trx.parsedTransaction
-                && this.trx.to === ZERO_ADDRESSES
-                && this.trx.value > 0
-                && parseInt(this.trx.gasPrice) === 0
-            ) {
-                this.icon = 'keyboard_double_arrow_up';
-                this.iconTooltip = this.$t('components.transaction.native_withdraw');
-                this.fullName = 'withdraw';
-            } else if (!this.trx.parsedTransaction && this.trx.input === '0x' && this.trx.value > 0) {
-                this.fullName = this.$t('components.transaction.tlos_transfer');
-            } else if (!this.trx.parsedTransaction && this.trx.to === null && this.trx.data !== null) {
-                this.fullName = this.$t('components.transaction.contract_deployment');
-            } else if (this.trx.parsedTransaction) {
-                this.fullName = this.trx.parsedTransaction.name;
-            }
+    shortenSignature: Boolean,
+    shortenName: Boolean,
+});
 
-            this.name = (this.shortenName && this.fullName.length > 11)
-                ? `${this.fullName.slice(0, 8)}...`
-                : this.fullName
-            ;
-        },
-    },
+const expand = ref(false);
+const name = ref('');
+const fullName = ref('');
+const icon = ref('');
+const iconTooltip = ref('');
+
+onMounted(async () => {
+    await setValues();
+});
+
+const toggle = () => {
+    expand.value = !expand.value;
+};
+
+const setValues = async () => {
+    if (
+        !props.trx.parsedTransaction
+    && props.trx.from === ZERO_ADDRESSES
+    && props.trx.value
+    && parseInt(props.trx.gasPrice as string) === 0
+    ) {
+        icon.value = 'keyboard_double_arrow_down';
+        iconTooltip.value = 'Native Deposit'; // Use your translation function or method
+        fullName.value = 'deposit';
+    } else if (
+        !props.trx.parsedTransaction
+    && props.trx.to === ZERO_ADDRESSES
+    && props.trx.value
+    && parseInt(props.trx.gasPrice as string) === 0
+    ) {
+        icon.value = 'keyboard_double_arrow_up';
+        iconTooltip.value = 'Native Withdraw'; // Use your translation function or method
+        fullName.value = 'withdraw';
+    } else if (!props.trx.parsedTransaction && props.trx.input === '0x' && props.trx.value) {
+        fullName.value = 'TLOS Transfer'; // Use your translation function or method
+    } else if (!props.trx.parsedTransaction && props.trx.to === null && props.trx.data !== null) {
+        fullName.value = 'Contract Deployment'; // Use your translation function or method
+    } else if (props.trx.parsedTransaction) {
+        fullName.value = props.trx.parsedTransaction.name;
+    }
+
+    name.value = (props.shortenName && fullName.value.length > 11)
+        ? `${fullName.value.slice(0, 8)}...`
+        : fullName.value;
 };
 </script>
 
@@ -92,9 +89,14 @@ export default {
             {{ fullName }}
         </q-tooltip>
     </span>
-    <span v-else-if="trx.input !== '0x'" :class="shortenSignature && 'clickable'">
-        <span v-if="!expand" class="text-grey" v-on:click="shortenSignature && toggle()">
-            {{trx.input.length > 10 && (shortenSignature || shortenName) ? `${trx.input.slice(0,10)}` : trx.input}}
+    <span v-else-if="trx.input && trx.input !== '0x'" :class="shortenSignature && 'clickable'">
+        <span v-if="!expand" class="text-grey" @click="shortenSignature && toggle()">
+            {{
+                trx.input.length > 10
+                    && (shortenSignature || shortenName) ?
+                        `${trx.input.slice(0,10)}` :
+                        trx.input
+            }}
         </span>
         <q-tooltip v-if="shortenSignature && !expand">
             {{ $t('components.click_to_expand') }}
@@ -104,7 +106,7 @@ export default {
             class="word-break"
             anchor="center middle"
             self="center middle"
-            v-on:click="toggle()"
+            @click="toggle()"
         >
             {{ trx.input }}
         </span>
