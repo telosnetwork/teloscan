@@ -19,14 +19,14 @@ const router = useRouter();
 const { t: $t } = useI18n();
 
 interface Props {
-    title: string;
+    title?: string;
     filter?: string | object;
     initialPageSize?: number,
     address?: string,
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    title: '',
+    title: 'Recent Transactions',
     initialPageSize: 1,
 });
 

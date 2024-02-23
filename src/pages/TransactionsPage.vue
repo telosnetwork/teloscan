@@ -10,13 +10,20 @@ export default {
 </script>
 
 <template>
-<q-page class="column justify-center items-center">
-    <div class="row q-pa-lg">
-        <div class="text-h4">{{ $t('pages.explore_transactions') }}</div>
+<q-page class="c-index">
+    <div class="row justify-center q-py-lg">
+        <div class="text-h4 title q-mt-xl bold">{{ $t('pages.explore_transactions') }}</div>
     </div>
-    <div class="row">
-        <div class="col-12 q-px-sm">
-            <TransactionTable title="$t('pages.recent_transactions')"/>
+    <div class="row q-pt-xl q-pb-md tableWrapper">
+        <div class="col-12">
+            <HomeInfo/>
+        </div>
+    </div>
+    <div class="row c-index__table">
+        <div class="col-12 q-pb-lg">
+            <q-card>
+                <TransactionTable title="$t('pages.recent_transactions')"/>
+            </q-card>
         </div>
     </div>
 </q-page>
