@@ -25,16 +25,42 @@ const store = useStore();
 const { t: $t } = useI18n();
 const $q = useQuasar();
 
+// eztodo i18n
+
 const blockchainSubmenuItems = [
     { name: 'transactions', label: 'Transactions' },
     { name: 'blocks', label: 'Blocks' },
 ];
 
+// eztodo handle testnet, use chain settings for links, i18n
+const developersSubmenuItems = [
+    { url: 'https://api.teloscan.io/swagger/', label: 'API Documentation' },
+    { url: 'https://sourcify.dev/', label: 'Verify Contract (Sourcify)' },
+];
+
+// eztodo use chain settings for link, i18n
+const walletMenuItem = {
+    url: 'https://www.wallet.telos.net/',
+    label: 'Telos Wallet',
+};
+
+// eztodo use chain settings, i18n
+const moreSubmenuItems = {
+    internal: [
+        { name: 'export', label: 'CSV Export' },
+    ],
+    external: [
+        {
+            url: 'https://www.telos.net/ecosystem',
+            label: 'Telos Ecosystem',
+        },
+    ],
+};
+
 // data
 // const mobileMenuIsOpen = ref(false);
 const showLoginModal = ref(false);
 const showLanguageSwitcher = ref(false);
-// const advancedMenuExpanded = ref(false);
 const menuHiddenDesktop = ref(false);
 const isTestnet = ref(Number(process.env.NETWORK_EVM_CHAIN_ID) !== 40);
 const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
@@ -44,6 +70,7 @@ const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
 const isNative = computed(() => store.getters['login/isNative']);
 const isDarkMode = computed(() => $q.dark.isActive);
 const highlightBlockchainMenuItem = computed(() => blockchainSubmenuItems.some(item => item.name === $route.name));
+const highlightMoreMenuItem = computed(() => moreSubmenuItems.internal.some(item => item.name === $route.name));
 const gasPriceInGwei = computed(() => {
     const gasPrice = store.getters['chain/gasPrice'];
 
@@ -129,14 +156,14 @@ function scrollHandler(info: { direction: string; }) {
 
 function goTo(to: string | { name: string }) {
     // mobileMenuIsOpen.value = false;
-    // advancedMenuExpanded.value = false;
+    (document.activeElement as HTMLElement | null)?.blur();
+
     const httpsRegex = /^https/;
     if (typeof to === 'string' && httpsRegex.test(to)) {
-        window.location.href = to;
+        window.open(to, '_blank');
         return;
     }
 
-    (document.activeElement as HTMLElement | null)?.blur();
     $router.push(to);
 }
 
@@ -218,6 +245,7 @@ function toggleDarkMode() {
                 >
                     Home
                 </li>
+
                 <li
                     :class="{
                         'c-header__menu-li c-header__menu-li--expandable': true,
@@ -245,16 +273,75 @@ function toggleDarkMode() {
                     </ul>
                 </li>
 
-                <li>
+                <li class="c-header__menu-li c-header__menu-li--expandable" tabindex="0">
                     Developers
+                    <q-icon name="fas fa-chevron-down" size="12px" />
+
+                    <ul class="c-header__submenu-ul shadow-2">
+                        <li
+                            v-for="item in developersSubmenuItems"
+                            :key="`developer-submenu-item-${item.label}`"
+                            class="c-header__submenu-li"
+                            tabindex="0"
+                            @click="goTo(item.url)"
+                            @keydown.enter="goTo(item.url)"
+                        >
+                            <div class="u-flex--center-y">
+                                {{ item.label }}
+                                <q-icon name="fas fa-external-link-alt" size="12px" class="q-ml-sm" />
+                            </div>
+                        </li>
+                    </ul>
                 </li>
 
-                <li>
-                    Telos Wallet
+                <li
+                    class="c-header__menu-li"
+                    tabindex="0"
+                    @click="goTo(walletMenuItem.url)"
+                    @keydown.enter="goTo(walletMenuItem.url)"
+                >
+                    {{ walletMenuItem.label }}
                 </li>
 
-                <li>
+                <li
+                    :class="{
+                        'c-header__menu-li c-header__menu-li--expandable': true,
+                        'c-header__menu-li--current': highlightMoreMenuItem,
+                    }"
+                    tabindex="0"
+                >
                     More
+                    <q-icon name="fas fa-chevron-down" size="12px" />
+
+                    <ul class="c-header__submenu-ul shadow-2">
+                        <li
+                            v-for="item in moreSubmenuItems.internal"
+                            :key="`more-submenu-item-internal-${item.name}`"
+                            :class="{
+                                'c-header__submenu-li': true,
+                                'c-header__submenu-li--current': $route.name === item.name,
+                            }"
+                            tabindex="0"
+                            @click="goTo({ name: item.name })"
+                            @keydown.enter="goTo({ name: item.name })"
+                        >
+                            {{ item.label }}
+                        </li>
+
+                        <li
+                            v-for="item in moreSubmenuItems.external"
+                            :key="`more-submenu-item-external-${item.label}`"
+                            class="c-header__submenu-li"
+                            tabindex="0"
+                            @click="goTo(item.url)"
+                            @keydown.enter="goTo(item.url)"
+                        >
+                            <div class="u-flex--center-y">
+                                {{ item.label }}
+                                <q-icon name="fas fa-external-link-alt" size="12px" class="q-ml-sm" />
+                            </div>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </nav>
@@ -627,6 +714,10 @@ function toggleDarkMode() {
         cursor: pointer;
         font-weight: 500;
 
+        &:not(&--expandable):hover {
+            color: $primary;
+        }
+
         &--expandable {
             position: relative;
             cursor: default;
@@ -672,6 +763,7 @@ function toggleDarkMode() {
         user-select: none;
         transition: 0.2s ease all;
         border-radius: 8px;
+        min-width: max-content;
 
         &:hover,
         &:active {
