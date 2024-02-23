@@ -307,14 +307,10 @@ function toggleGasValue() {
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
                     {{ showDateAge ? col.label: $t('components.date') }}
-                    <q-icon
-                        class="info-icon q-ml-xs"
-                        name="fas fa-info-circle"
-                    >
-                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
-                            {{ $t('components.click_to_change_format') }}
-                        </q-tooltip>
-                    </q-icon>
+                    <q-icon class="info-icon q-ml-xs" name="fas fa-info-circle"/>
+                    <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                        {{ $t('components.click_to_change_format') }}
+                    </q-tooltip>
                 </div>
                 <div v-else-if="col.name === 'method'" class="u-flex--center-y">
                     {{ col.label }}
