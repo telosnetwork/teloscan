@@ -3,6 +3,7 @@ import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { formatWei } from 'src/lib/utils';
 
 import { contractManager, indexerApi } from 'src/boot/telosApi';
 
@@ -22,7 +23,6 @@ interface Props {
     title?: string;
     filter?: string | object;
     initialPageSize?: number,
-    address?: string,
     block?: number,
 }
 
@@ -66,6 +66,11 @@ const columns = [
         align: 'left',
     },
     {
+        name: 'method',
+        label: $t('components.method'),
+        align: 'left',
+    },
+    {
         name: 'block',
         label: $t('components.block'),
         align: 'left',
@@ -73,29 +78,18 @@ const columns = [
     },
     {
         name: 'date',
-        label: $t('components.date'),
+        label: $t('components.age'),
         align: 'left',
     },
-    {
-        name: 'method',
-        label: $t('components.method'),
-        align: 'left',
-    },
-];
-
-if(props.address){
-    columns.push({
-        name: 'direction',
-        label: '',
-        align: 'left',
-    });
-}
-
-columns.push(
     {
         name: 'from',
         label: $t('components.from'),
         align: 'left',
+    },
+    {
+        name: 'direction',
+        label: '',
+        align: 'center',
     },
     {
         name: 'to',
@@ -104,10 +98,15 @@ columns.push(
     },
     {
         name: 'value',
-        label: $t('components.value_transfer'),
+        label: $t('components.value'),
         align: 'left',
     },
-);
+    {
+        name: 'fee',
+        label: $t('components.txn_fee'),
+        align: 'left',
+    },
+];
 
 watch(() => route.query.page,
     (pageParam) => {
@@ -280,6 +279,12 @@ function toggleDateFormat() {
     showDateAge.value = !showDateAge.value;
 }
 
+function getGasFee(gasUsed: number, gasPrice: number){
+    const gasCost = BigInt(gasUsed * gasPrice);
+    const formatted = formatWei(gasCost, 18, 3);
+    return `${formatted} TLOS`;
+}
+
 </script>
 
 <template>
@@ -302,7 +307,7 @@ function toggleDateFormat() {
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 <div class="u-flex--center-y">
-                    {{ col.label }}
+                    {{ (col.name === 'date' && !showDateAge) ? $t('components.date') : col.label }}
                     <template v-if="col.name === 'date'">
                         <q-icon
                             class="info-icon q-ml-xs"
@@ -341,22 +346,14 @@ function toggleDateFormat() {
                     />
                 </div>
             </q-td>
-            <q-td key="block" :props="props">
-                <BlockField :block="props.row.blockNumber"/>
-            </q-td>
-            <q-td key="date" :props="props">
-                <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
-            </q-td>
             <q-td key="method" :props="props">
                 <MethodField :trx="props.row" :shortenName="true"/>
             </q-td>
-            <q-td v-if="address" key="direction" :props="props">
-                <span v-if="address === props.row.from" class="direction out">
-                    {{ $t('components.transaction.out').toUpperCase() }}
-                </span>
-                <span v-else-if="address === props.row.to" class="direction in">
-                    {{ $t('components.transaction.in').toUpperCase() }}
-                </span>
+            <q-td key="block" :props="props">
+                <BlockField :block="props.row.blockNumber"/>
+            </q-td>
+            <q-td key="date" :props="props" @click="toggleDateFormat">
+                <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
             </q-td>
             <q-td key="from" :props="props">
                 <AddressField
@@ -365,6 +362,9 @@ function toggleDateFormat() {
                     :address="props.row.from"
                     :truncate="14"
                 />
+            </q-td>
+            <q-td key="direction">
+                <q-icon size="12px" name="fas fa-arrow-right"/>
             </q-td>
             <q-td key="to" :props="props">
                 <AddressField
@@ -384,6 +384,9 @@ function toggleDateFormat() {
                     />
                 </span>
                 <TokenValueField v-else :value="'0.0'" />
+            </q-td>
+            <q-td key='fee' :props="props">
+                {{ getGasFee(props.row.gasused, props.row.gasPrice) }}
             </q-td>
         </q-tr>
     </template>

@@ -701,7 +701,6 @@ export default {
                         v-if="accountAddress"
                         :title="accountAddress"
                         :filter="'/address/' + accountAddress"
-                        :address="accountAddress"
                     />
                 </q-tab-panel>
                 <q-tab-panel
