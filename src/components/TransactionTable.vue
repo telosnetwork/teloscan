@@ -23,10 +23,11 @@ interface Props {
     filter?: string | object;
     initialPageSize?: number,
     address?: string,
+    block?: number,
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    title: 'Recent Transactions',
+    title: '',
     initialPageSize: 1,
 });
 
@@ -262,7 +263,6 @@ function addEmptyToCache(contracts: any, transaction: any){
 function getPath() {
     const { page, rowsPerPage, descending } = pagination.value;
     const filter =  props.filter  ? props.filter.toString() : '';
-    const blockNumber = route.query.block;
     let path = `${filter}/transactions?limit=${
         rowsPerPage === 0 ? 500 : rowsPerPage
     }`;
@@ -270,8 +270,8 @@ function getPath() {
     path += `&sort=${descending ? 'desc' : 'asc'}`;
     path += (pagination.value.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
     path += '&includeAbi=true';
-    if (blockNumber){
-        path += `&block=${blockNumber}`;
+    if (props.block){
+        path += `&block=${props.block}`;
     }
     return path;
 }
