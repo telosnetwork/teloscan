@@ -16,9 +16,8 @@ import { getAntelope } from 'src/antelope';
 import { indexerApi } from 'src/boot/telosApi';
 import { ual } from 'src/boot/ual';
 import { providerManager } from 'src/boot/evm';
-// import { getAntelope, useAccountStore } from 'src/antelope';
 
-import LoginModal from 'components/LoginModal.vue';
+import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 // import LoginStatus from 'components/header/LoginStatus.vue';
 // import HeaderSearch from 'components/header/HeaderSearch.vue';
 
@@ -28,11 +27,9 @@ const { t: $t } = useI18n();
 
 // data
 const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
-const showLoginModal = ref(false);
 
 
 // computed
-// const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
 const isNative = computed(() => $store.getters['login/isNative']);
 const gasPriceInGwei = computed(() => {
     // eztodo use locale number format
@@ -60,6 +57,7 @@ onBeforeMount(() => {
 onMounted(async () => {
     const health = await indexerApi.get('/health');
 
+    // eztodo move to app.vue
     if (health.data?.secondsBehind > 3) {
         let behindBy = moment(health.data.secondsBehind * 1000).utc().format('HH:mm:ss');
         if (health.data?.secondsBehind > 86400) {
@@ -153,31 +151,27 @@ function toggleDarkMode() {
             <q-btn
                 outline
                 dense
+                class="q-px-sm q-mr-sm c-header-top-bar__theme-toggle"
                 :color="$q.dark.isActive ? 'grey-7' : 'grey-5'"
-                class="q-px-sm"
                 @click="toggleDarkMode"
             >
                 <q-icon name="fas fa-moon" color="primary" size="15px" />
             </q-btn>
+
+            <AppHeaderWallet />
         </div>
     </div>
 </div>
 
-<LoginModal :show="showLoginModal" @hide="showLoginModal = false" />
 </template>
 
 <style lang="scss">
 .c-header-top-bar {
-    // other CSS vars defined in AppHeader.vue
-    --grey-text-color: #{$grey-7};
+    // CSS vars defined in AppHeader.vue
 
     border-bottom: 1px solid var(--border-color);
     height: var(--top-bar-height);
     background-color: var(--background-color);
-
-    @at-root .body--dark & {
-        --grey-text-color: #{$grey-5};
-    }
 
     &__grey-text {
         color: var(--grey-text-color);
@@ -196,6 +190,11 @@ function toggleDarkMode() {
         width: max-content;
         display: flex;
         flex-direction: row;
+    }
+
+    &__theme-toggle {
+        height: var(--button-height);
+        width: var(--button-height);
     }
 }
 </style>

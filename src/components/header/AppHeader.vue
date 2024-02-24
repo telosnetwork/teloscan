@@ -15,6 +15,7 @@ import AppHeaderTopBar from 'components/header/AppHeaderTopBar.vue';
     $this: &;
 
     --top-bar-height: 48px;
+    --button-height: 32px;
     --text-color: #{$dark};
     --background-color: white;
     --border-color: #{$grey-5};
