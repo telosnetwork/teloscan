@@ -10,7 +10,6 @@ const $route = useRoute();
 
 
 // eztodo i18n
-
 const blockchainSubmenuItems = [
     { name: 'transactions', label: 'Transactions' },
     { name: 'blocks', label: 'Blocks' },
@@ -45,11 +44,9 @@ const moreSubmenuItems = {
 const menuBottomBarHidden = ref(false);
 const showLanguageSwitcher = ref(false);
 
-
 // computed
 const highlightBlockchainMenuItem = computed(() => blockchainSubmenuItems.some(({ name }) => name === $route.name));
 const highlightMoreMenuItem = computed(() => moreSubmenuItems.internal.some(({ name }) => name === $route.name));
-
 
 
 // methods
