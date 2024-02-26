@@ -18,6 +18,7 @@ import { ual } from 'src/boot/ual';
 import { providerManager } from 'src/boot/evm';
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
+import AppHeaderButton from 'components/header/AppHeaderButton.vue';
 // import LoginStatus from 'components/header/LoginStatus.vue';
 // import HeaderSearch from 'components/header/HeaderSearch.vue';
 
@@ -148,15 +149,19 @@ function toggleDarkMode() {
         </div>
 
         <div>
-            <q-btn
-                outline
-                dense
-                class="q-px-sm q-mr-sm c-header-top-bar__theme-toggle"
-                :color="$q.dark.isActive ? 'grey-7' : 'grey-5'"
+            <AppHeaderButton
+                text-color="primary"
+                :icon-only="true"
+                class="q-mr-sm"
                 @click="toggleDarkMode"
             >
-                <q-icon name="fas fa-moon" color="primary" size="15px" />
-            </q-btn>
+                <q-icon name="fas fa-moon" size="14px" />
+
+                <q-tooltip>
+                    <!-- eztodo i18n -->
+                    Toggle light/dark theme
+                </q-tooltip>
+            </AppHeaderButton>
 
             <AppHeaderWallet />
         </div>
@@ -190,11 +195,6 @@ function toggleDarkMode() {
         width: max-content;
         display: flex;
         flex-direction: row;
-    }
-
-    &__theme-toggle {
-        height: var(--button-height);
-        width: var(--button-height);
     }
 }
 </style>

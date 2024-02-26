@@ -15,10 +15,8 @@ import AppHeaderTopBar from 'components/header/AppHeaderTopBar.vue';
     $this: &;
 
     --top-bar-height: 48px;
-    --button-height: 32px;
-    --text-color: #{$dark};
+    // --button-height: 32px;
     --background-color: white;
-    --border-color: #{$grey-5};
 
     position: fixed;
     top: 0;
@@ -29,9 +27,7 @@ import AppHeaderTopBar from 'components/header/AppHeaderTopBar.vue';
 
     @at-root .body--dark & {
         --background-color: #{$dark};
-        --text-color: white;
         --highlight-color: #{$grey-9};
-        --border-color: #{$grey-7};
     }
 }
 </style>
