@@ -37,6 +37,7 @@ const buttonColor = computed(() => $q.dark.isActive ? 'grey-7' : 'grey-5');
 
     height: var(--button-height);
     padding: 0 12px;
+    flex-shrink: 0;
 
     &--icon-only {
         width: var(--button-height);

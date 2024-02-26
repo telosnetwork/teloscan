@@ -19,8 +19,7 @@ import { providerManager } from 'src/boot/evm';
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import AppHeaderButton from 'components/header/AppHeaderButton.vue';
-// import LoginStatus from 'components/header/LoginStatus.vue';
-// import HeaderSearch from 'components/header/HeaderSearch.vue';
+import AppHeaderSearch from 'components/header/AppHeaderSearch.vue';
 
 const $q = useQuasar();
 const $store = useStore();
@@ -28,7 +27,6 @@ const { t: $t } = useI18n();
 
 // data
 const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
-
 
 // computed
 const isNative = computed(() => $store.getters['login/isNative']);
@@ -140,19 +138,23 @@ function toggleDarkMode() {
     <div class="c-header-top-bar__inner-container">
         <div class="c-header-top-bar__left-container">
             <div class="text-caption q-mr-md">
+                <!-- eztodo i18n, get symbol from chain settings -->
                 <span class="c-header-top-bar__grey-text">TLOS price:</span> ${{ tlosPrice }}
             </div>
             <div class="text-caption u-flex--center-y">
+                <!-- eztodo i18n -->
                 <q-icon name="fas fa-gas-pump" class="c-header-top-bar__grey-text q-mr-xs" />
                 <span class="c-header-top-bar__grey-text">Gas:</span>&nbsp;{{ gasPriceInGwei }} gwei
             </div>
         </div>
 
-        <div>
+        <div class="c-header-top-bar__right-container">
+            <AppHeaderSearch />
+
             <AppHeaderButton
                 text-color="primary"
                 :icon-only="true"
-                class="q-mr-sm"
+                class="c-header-top-bar__theme-toggle"
                 @click="toggleDarkMode"
             >
                 <q-icon name="fas fa-moon" size="14px" />
@@ -163,7 +165,7 @@ function toggleDarkMode() {
                 </q-tooltip>
             </AppHeaderButton>
 
-            <AppHeaderWallet />
+            <AppHeaderWallet v-if="$q.screen.gt.sm" />
         </div>
     </div>
 </div>
@@ -185,16 +187,53 @@ function toggleDarkMode() {
     &__inner-container {
         height: 48px;
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-end;
         align-items: center;
         max-width: 1200px;
         margin: 0 auto;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            justify-content: space-between;
+        }
     }
 
     &__left-container {
-        width: max-content;
+        display: none;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            width: max-content;
+            display: flex;
+            flex-direction: row;
+            padding-left: 12px;
+        }
+    }
+
+    &__right-container {
+        width: 100%;
         display: flex;
         flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 0 12px;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            width: auto;
+            padding: 0 12px 0 0;
+        }
+
+        @media screen and (min-width: $breakpoint-lg-min) {
+            width: auto;
+            padding: 0;
+        }
+    }
+
+    &__theme-toggle {
+        display: none;
+
+        @media screen and (min-width: $breakpoint-lg-min) {
+            display: inline-flex;
+        }
     }
 }
 </style>
