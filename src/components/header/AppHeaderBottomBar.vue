@@ -54,9 +54,13 @@ function scrollHandler(info: { direction: string; }) {
     menuBottomBarHidden.value = info.direction === 'down';
 }
 
+function blurActiveElement() {
+    (document.activeElement as HTMLElement | null)?.blur();
+}
+
 function goTo(to: string | { name: string }) {
     // mobileMenuIsOpen.value = false;
-    (document.activeElement as HTMLElement | null)?.blur();
+    blurActiveElement();
 
     const httpsRegex = /^https/;
     if (typeof to === 'string' && httpsRegex.test(to)) {
@@ -112,6 +116,7 @@ function goTo(to: string | { name: string }) {
                         'c-header-bottom-bar__menu-li--current': highlightBlockchainMenuItem,
                     }"
                     tabindex="0"
+                    @mouseleave="blurActiveElement"
                 >
                     Blockchain
                     <q-icon name="fas fa-chevron-down" size="12px" />
@@ -133,7 +138,11 @@ function goTo(to: string | { name: string }) {
                     </ul>
                 </li>
 
-                <li class="c-header-bottom-bar__menu-li c-header-bottom-bar__menu-li--expandable" tabindex="0">
+                <li
+                    class="c-header-bottom-bar__menu-li c-header-bottom-bar__menu-li--expandable"
+                    tabindex="0"
+                    @mouseleave="blurActiveElement"
+                >
                     Developers
                     <q-icon name="fas fa-chevron-down" size="12px" />
 
@@ -169,6 +178,7 @@ function goTo(to: string | { name: string }) {
                         'c-header-bottom-bar__menu-li--current': highlightMoreMenuItem,
                     }"
                     tabindex="0"
+                    @mouseleave="blurActiveElement"
                 >
                     More
                     <q-icon name="fas fa-chevron-down" size="12px" />
