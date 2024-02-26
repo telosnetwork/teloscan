@@ -240,6 +240,7 @@ function goTo(to: string | { name: string }) {
 <style lang="scss">
 .c-header-bottom-bar {
     $this: &;
+    padding: 0 12px;
 
     // other CSS vars defined in AppHeader.vue
     --highlight-color: #{$grey-3};
@@ -258,6 +259,10 @@ function goTo(to: string | { name: string }) {
     border-bottom: 1px solid var(--border-color);
     transition: 0.3s ease transform;
     z-index: -1;
+
+    @media screen and (min-width: $breakpoint-lg-min) {
+        padding: 0;
+    }
 
     &--hidden:not(:focus-within) {
         transform: translateY(-100%);

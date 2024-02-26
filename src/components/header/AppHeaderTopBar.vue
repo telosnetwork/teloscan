@@ -195,6 +195,10 @@ function toggleDarkMode() {
         @media screen and (min-width: $breakpoint-md-min) {
             justify-content: space-between;
         }
+
+        @media screen and (min-width: $breakpoint-lg-min) {
+            padding: 0;
+        }
     }
 
     &__left-container {
@@ -205,6 +209,10 @@ function toggleDarkMode() {
             display: flex;
             flex-direction: row;
             padding-left: 12px;
+        }
+
+        @media screen and (min-width: $breakpoint-lg-min) {
+            padding-left: 0;
         }
     }
 
@@ -219,12 +227,11 @@ function toggleDarkMode() {
 
         @media screen and (min-width: $breakpoint-md-min) {
             width: auto;
-            padding: 0 12px 0 0;
+            padding: 0;
         }
 
         @media screen and (min-width: $breakpoint-lg-min) {
             width: auto;
-            padding: 0;
         }
     }
 
