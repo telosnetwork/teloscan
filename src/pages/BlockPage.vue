@@ -33,8 +33,8 @@ function nextBlock() {
     router.push({ name: 'block', params: { block: parseInt(block.value) + 1 } });
 }
 
-function visitNativeBlockExplorer(extraData) {
-    console.log('visitNativeBlockExplorer()', extraData);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function visitNativeBlockExplorer(extraData: any) {
     const explorerLink = process.env.NETWORK_EXPLORER;
     window.open(`${explorerLink}/block/${extraData}`, '_blank');
 }
@@ -55,7 +55,7 @@ const loadBlockData = async () => {
 
 // Watchers
 
-// cuando block cambie hay que actualizar la url
+// update url on block change
 watch(block, (newBlock) => {
     router.push({ params: { block: newBlock } });
     loadBlockData();
