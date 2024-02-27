@@ -184,7 +184,7 @@ function goTo(to: string | { name: string }) {
                     tabindex="0"
                     @mouseleave="blurActiveElement"
                 >
-                    <div>
+                    <div class="c-header-bottom-bar__menu-li-text">
                         Developers
                         <q-icon name="fas fa-chevron-down" size="12px" />
                     </div>
@@ -224,8 +224,10 @@ function goTo(to: string | { name: string }) {
                     tabindex="0"
                     @mouseleave="blurActiveElement"
                 >
-                    More
-                    <q-icon name="fas fa-chevron-down" size="12px" />
+                    <div class="c-header-bottom-bar__menu-li-text">
+                        More
+                        <q-icon name="fas fa-chevron-down" size="12px" />
+                    </div>
 
                     <ul class="c-header-bottom-bar__submenu-ul shadow-2">
                         <li
@@ -456,6 +458,7 @@ function goTo(to: string | { name: string }) {
         font-weight: normal;
 
         @media screen and (min-width: $breakpoint-md-min) {
+            display: block;
             opacity: 0;
             padding: 12px;
             visibility: hidden;
