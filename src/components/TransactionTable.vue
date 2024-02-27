@@ -38,6 +38,7 @@ const filterUpdated = ref(false);
 const loading =  ref(false);
 const showDateAge = ref(true);
 const showTotalGasFee = ref(true);
+const highlightMethod = ref('');
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const transactions: any[] = [];
@@ -286,6 +287,10 @@ function toggleGasValue() {
     showTotalGasFee.value = !showTotalGasFee.value;
 }
 
+function setHighlightMethod(val: string) {
+    highlightMethod.value = val;
+}
+
 </script>
 
 <template>
@@ -347,7 +352,12 @@ function toggleGasValue() {
                 </div>
             </q-td>
             <q-td key="method" :props="props">
-                <MethodField :trx="props.row" :shortenName="true"/>
+                <MethodField
+                    :trx="props.row"
+                    :shortenName="true"
+                    :highlightMethod="highlightMethod"
+                    @highlight="setHighlightMethod"
+                />
             </q-td>
             <q-td key="block" :props="props">
                 <BlockField :block="props.row.blockNumber"/>

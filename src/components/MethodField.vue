@@ -4,6 +4,11 @@ import { ref, onMounted } from 'vue';
 import { ZERO_ADDRESSES } from 'src/lib/utils';
 
 const props = defineProps({
+    highlightMethod: {
+        type: String,
+        required: false,
+        default: '',
+    },
     trx: {
         type: Object as () => {
             parsedTransaction?: any;
@@ -23,6 +28,8 @@ const props = defineProps({
     shortenSignature: Boolean,
     shortenName: Boolean,
 });
+
+const emit = defineEmits(['highlight']);
 
 const expand = ref(false);
 const name = ref('');
@@ -65,14 +72,23 @@ const setValues = async () => {
         fullName.value = props.trx.parsedTransaction.name;
     }
 
-    name.value = (props.shortenName && fullName.value.length > 14)
-        ? `${fullName.value.slice(0, 14)}...`
+    name.value = (props.shortenName && fullName.value.length > 7)
+        ? `${fullName.value.slice(0, 7)}...`
         : fullName.value;
 };
+
+function emitHighlight(val: string) {
+    emit('highlight', val);
+}
 </script>
 
 <template>
-<div>
+<div
+    class="c-method"
+    :class="{'c-method-highlight': highlightMethod === name && highlightMethod !== ''}"
+    @mouseover="emitHighlight(name)"
+    @mouseleave="emitHighlight('')"
+>
     <span v-if="name">
         <span class="flex items-center">
             <span v-if="icon" class="c-method-icon">
@@ -92,9 +108,9 @@ const setValues = async () => {
     <span v-else-if="trx.input && trx.input !== '0x'" :class="shortenSignature && 'clickable'">
         <span v-if="!expand" class="text-grey" @click="shortenSignature && toggle()">
             {{
-                trx.input.length > 10
+                trx.input.length > 7
                     && (shortenSignature || shortenName) ?
-                        `${trx.input.slice(0,10)}` :
+                        `${trx.input.slice(0,7)}...` :
                         trx.input
             }}
         </span>
@@ -115,6 +131,18 @@ const setValues = async () => {
 </template>
 
 <style lang="scss" scoped>
+    .c-method{
+        width: 70px;
+        display: table;
+        padding: 3px 6px;
+        border-radius: 5px;
+        font-size: 0.9em;
+        border: 1px solid;
+    }
+    .c-method-highlight {
+        background: lightgoldenrodyellow;
+        border: 1px dashed orange;
+    }
     .c-method-icon i {
         margin: auto;
     }
