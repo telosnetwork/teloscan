@@ -8,6 +8,11 @@ import { toChecksumAddress } from 'src/lib/utils';
 import CopyButton from 'components/CopyButton.vue';
 
 const props = defineProps({
+    highlightAddress: {
+        type: String,
+        required: false,
+        default: '',
+    },
     address: {
         type: String,
         required: true,
@@ -24,10 +29,6 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
-    highlight: {
-        type: Boolean,
-        default: false,
-    },
     truncate: {
         type: Number,
         default: 0,
@@ -37,6 +38,8 @@ const props = defineProps({
         default: false,
     },
 });
+
+const emit = defineEmits(['highlight']);
 
 const displayName = ref('');
 const fullName = ref(toChecksumAddress(props.address));
@@ -109,14 +112,22 @@ const loadContract = async () => {
     }
 };
 
-// ... Rest of the methods code ...
+function emitHighlight(val: string) {
+    emit('highlight', val);
+}
+
 </script>
 
 <template>
-<div :key="displayName + address" :class="`c-address-field ${props.class}`">
+<div
+    :key="displayName + address"
+    class='c-address-field'
+    @mouseover="emitHighlight(address)"
+    @mouseleave="emitHighlight('')"
+>
     <router-link
         :to="`/address/${address}`"
-        :class="highlight ? 'highlighted flex items-center' : 'flex items-center'"
+        :class="{'c-address-highlight': highlightAddress === props.address && highlightAddress !== ''}"
     >
         <q-img
             v-if="logo !== null"
@@ -148,12 +159,13 @@ const loadContract = async () => {
 }
 .c-address-field {
     display: inline-flex;
-
     align-items: center;
     gap: 4px;
 }
-a.highlighted {
-    color: #bb9200;
+.c-address-highlight {
+        background: lightgoldenrodyellow;
+        border: 1px dashed orange;
+        border-radius: 5px;
 }
 body.body--dark a.highlighted {
     color: $warning;

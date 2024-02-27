@@ -39,6 +39,7 @@ const loading =  ref(false);
 const showDateAge = ref(true);
 const showTotalGasFee = ref(true);
 const highlightMethod = ref('');
+const highlightAddress = ref('');
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const transactions: any[] = [];
@@ -291,6 +292,10 @@ function setHighlightMethod(val: string) {
     highlightMethod.value = val;
 }
 
+function setHighlightAddress(val: string) {
+    highlightAddress.value = val;
+}
+
 </script>
 
 <template>
@@ -372,6 +377,8 @@ function setHighlightMethod(val: string) {
                     :address="props.row.from"
                     :truncate="14"
                     :copy="true"
+                    :highlightAddress="highlightAddress"
+                    @highlight="setHighlightAddress"
                 />
             </q-td>
             <q-td key="direction">
@@ -388,6 +395,8 @@ function setHighlightMethod(val: string) {
                     :address="props.row.to"
                     :truncate="14"
                     :copy="true"
+                    :highlightAddress="highlightAddress"
+                    @highlight="setHighlightAddress"
                 />
             </q-td>
             <q-td key='value' :props="props">
