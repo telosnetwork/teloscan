@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
 
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
-
+import AppHeaderButton from 'components/header/AppHeaderButton.vue';
 
 const $router = useRouter();
 const $route = useRoute();
+const $q = useQuasar();
 
 
 // eztodo i18n
@@ -23,7 +25,7 @@ const developersSubmenuItems = [
 
 // eztodo use chain settings for link, i18n
 const walletMenuItem = {
-    url: 'https://www.wallet.telos.net/',
+    url: 'https://wallet.telos.net/',
     label: 'Telos Wallet',
 };
 
@@ -43,6 +45,19 @@ const moreSubmenuItems = {
 // data
 const menuBottomBarHidden = ref(false);
 const showLanguageSwitcher = ref(false);
+const menuVisibleMobile = ref(false);
+const blockchainMenuExpandedMobile = ref(false);
+const developersMenuExpandedMobile = ref(false);
+const moreMenuExpandedMobile = ref(false);
+
+// watchers
+watch(() => $q.screen.gt.md, () => {
+    // eztodo fix this
+    menuVisibleMobile.value = false;
+    blockchainMenuExpandedMobile.value = false;
+    developersMenuExpandedMobile.value = false;
+    moreMenuExpandedMobile.value = false;
+});
 
 // computed
 const highlightBlockchainMenuItem = computed(() => blockchainSubmenuItems.some(({ name }) => name === $route.name));
@@ -97,7 +112,21 @@ function goTo(to: string | { name: string }) {
         </router-link>
         <!-- eztodo aria and kb and break into components -->
         <nav class="c-header-bottom-bar__right-container">
-            <ul class="c-header-bottom-bar__menu-ul">
+            <AppHeaderButton
+                text-color="default"
+                :icon-only="true"
+                class="c-header-bottom-bar__menu-button"
+                @click="menuVisibleMobile = !menuVisibleMobile"
+            >
+                <q-icon name="menu" size="24px" />
+            </AppHeaderButton>
+
+            <ul
+                :class="{
+                    'c-header-bottom-bar__menu-ul': true,
+                    'c-header-bottom-bar__menu-ul--visible-mobile shadow-2': menuVisibleMobile && $q.screen.lt.md,
+                }"
+            >
                 <li
                     :class="{
                         'c-header-bottom-bar__menu-li': true,
@@ -114,14 +143,23 @@ function goTo(to: string | { name: string }) {
                     :class="{
                         'c-header-bottom-bar__menu-li c-header-bottom-bar__menu-li--expandable': true,
                         'c-header-bottom-bar__menu-li--current': highlightBlockchainMenuItem,
+                        'c-header-bottom-bar__menu-li--expanded-mobile': blockchainMenuExpandedMobile,
                     }"
                     tabindex="0"
                     @mouseleave="blurActiveElement"
+                    @click="blockchainMenuExpandedMobile = !blockchainMenuExpandedMobile"
                 >
-                    Blockchain
-                    <q-icon name="fas fa-chevron-down" size="12px" />
+                    <div class="c-header-bottom-bar__menu-li-text">
+                        Blockchain
+                        <q-icon name="fas fa-chevron-down" size="12px" />
+                    </div>
 
-                    <ul class="c-header-bottom-bar__submenu-ul shadow-2">
+                    <ul
+                        :class="{
+                            'c-header-bottom-bar__submenu-ul': true,
+                            'shadow-2': $q.screen.gt.md,
+                        }"
+                    >
                         <li
                             v-for="item in blockchainSubmenuItems"
                             :key="`blockchain-submenu-item-${item.name}`"
@@ -139,12 +177,17 @@ function goTo(to: string | { name: string }) {
                 </li>
 
                 <li
-                    class="c-header-bottom-bar__menu-li c-header-bottom-bar__menu-li--expandable"
+                    :class="{
+                        'c-header-bottom-bar__menu-li c-header-bottom-bar__menu-li--expandable': true,
+                        'c-header-bottom-bar__menu-li--expanded-mobile': developersMenuExpandedMobile,
+                    }"
                     tabindex="0"
                     @mouseleave="blurActiveElement"
                 >
-                    Developers
-                    <q-icon name="fas fa-chevron-down" size="12px" />
+                    <div>
+                        Developers
+                        <q-icon name="fas fa-chevron-down" size="12px" />
+                    </div>
 
                     <ul class="c-header-bottom-bar__submenu-ul shadow-2">
                         <li
@@ -176,6 +219,7 @@ function goTo(to: string | { name: string }) {
                     :class="{
                         'c-header-bottom-bar__menu-li c-header-bottom-bar__menu-li--expandable': true,
                         'c-header-bottom-bar__menu-li--current': highlightMoreMenuItem,
+                        'c-header-bottom-bar__menu-li--expanded-mobile': moreMenuExpandedMobile,
                     }"
                     tabindex="0"
                     @mouseleave="blurActiveElement"
@@ -298,19 +342,56 @@ function goTo(to: string | { name: string }) {
 
     &__right-container {
         height: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+    &__menu-button {
+        @media screen and (min-width: $breakpoint-md-min) {
+            display: none;
+        }
     }
 
     &__menu-ul {
+        display: none;
         height: 100%;
         list-style: none;
-        display: flex;
         flex-direction: row;
         margin: 0;
         padding: 0;
+
+        &--visible-mobile {
+            position: absolute;
+            display: flex;
+            left: 0;
+            right: 0;
+            flex-direction: column;
+            top: 52px;
+            height: max-content;
+            background-color: var(--background-color);
+
+            #{$this}__menu-li--expandable {
+                justify-content: space-between;
+            }
+
+            #{$this}__menu-li--expanded-mobile {
+                #{$this}__submenu-ul {
+                    display: block;
+                    width: 100%;
+                    border: 1px solid var(--border-color);
+                    border-radius: 8px;
+                    padding: 12px;
+                }
+            }
+        }
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            display: flex;
+        }
     }
 
     &__menu-li {
-        padding: 8px;
+        padding: 8px 16px;
         display: flex;
         align-items: center;
         user-select: none;
@@ -321,18 +402,30 @@ function goTo(to: string | { name: string }) {
             color: $primary;
         }
 
-        &--expandable {
-            position: relative;
-            cursor: default;
-            gap: 4px;
+        @media screen and (min-width: $breakpoint-md-min) {
+            padding: 8px;
+        }
 
-            &:hover,
-            &:focus,
-            &:focus-within {
-                #{$this}__submenu-ul {
-                    visibility: visible;
-                    opacity: 1;
-                    transform: translateY(0);
+        &--expandable {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+
+            @media screen and (min-width: $breakpoint-md-min) {
+                position: relative;
+                cursor: default;
+                gap: 4px;
+                align-items: center;
+                flex-direction: row;
+
+                &:hover,
+                &:focus,
+                &:focus-within {
+                    .c-header-bottom-bar__submenu-ul {
+                        opacity: 1;
+                        visibility: visible;
+                        transform: translateY(0);
+                    }
                 }
             }
         }
@@ -342,22 +435,39 @@ function goTo(to: string | { name: string }) {
         }
     }
 
+    &__menu-li-text {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            gap: 8px;
+        }
+    }
+
     &__submenu-ul {
-        visibility: hidden;
-        opacity: 0;
-        transform: translateY(8px);
         transition: 0.2s ease all;
-        position: absolute;
-        top: calc(100% - 1px);
-        left: 0;
-        background-color: var(--background-color);
-        padding: 12px;
-        border-radius: 0 0 4px 4px;
+
+        display: none;
         z-index: 999;
         list-style: none;
-        border-top: 2px solid $primary;
         color: var(--text-color);
         font-weight: normal;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            opacity: 0;
+            padding: 12px;
+            visibility: hidden;
+            transform: translateY(8px);
+            position: absolute;
+            top: calc(100% - 1px);
+            left: 0;
+            justify-content: space-between;
+            border-radius: 0 0 4px 4px;
+            background-color: var(--background-color);
+            border-top: 2px solid $primary;
+        }
     }
 
     &__submenu-li {
