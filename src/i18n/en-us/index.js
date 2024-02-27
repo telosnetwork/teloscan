@@ -475,11 +475,10 @@ export default {
             count_transaction: '1 transaction',
             in_this_block: 'in this block',
             transactions: 'Transactions',
-
+            transactions_root: 'Transactions Root',
             block: 'Block',
             age: 'Age',
         },
-
     },
     evm_wallet: {
         send_icon_alt: 'Send icon',

@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
 import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
@@ -6,10 +7,9 @@ import { useI18n } from 'vue-i18n';
 
 import { indexerApi } from 'src/boot/telosApi';
 
-import TokenValueField from 'components/Token/TokenValueField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
-import { BlockData } from 'types';
+import { BlockData } from 'src/types';
 import { ethers } from 'ethers';
 
 const $q = useQuasar();
@@ -27,12 +27,9 @@ const props = withDefaults(defineProps<BlockTableProps>(), {
     initialPageSize: 25,
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const rows = ref<Array<BlockData>>([]);
 const loading = ref(false);
 const showDateAge = ref(true);
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const blocks: BlockData[] = [];
 const page_size_options = [10, 25, 50, 100];
 
@@ -73,7 +70,7 @@ const columns = [
     {
         name: 'gasUsed',
         label: $t('components.blocks.gas_used'),
-        align: 'left',
+        align: 'right',
     },
 ];
 
@@ -107,15 +104,12 @@ function setPagination(page: number, size: number, desc: boolean) {
         pagination.value.rowsPerPage = size;
     }
     pagination.value.descending = desc;
-    parseblocks();
+    parseBlocks();
 }
 
 async function onPaginationChange(settings: { pagination: Pagination}) {
     const { page, rowsPerPage, descending } = settings.pagination;
-    // we need to change the URL to keep the pagination state by changing the route.query.page
-    // with a string like 'page,rowsPerPage'
     router.push({
-        // taking care to preserve the current #hash anchor and the current query parameters
         hash: window.location.hash,
         query: {
             ...route.query,
@@ -125,24 +119,13 @@ async function onPaginationChange(settings: { pagination: Pagination}) {
 }
 
 
-// Esta función va intentar primero retornar el valor cacheado en el local storage,
-// si no lo encuentra, va a buscarlo en la API y luego de encontrarlo lo va a guardar en el local storage
 async function fetchBlocksPage() {
-    // first try to get the data from the local storage
-    const cached_data = localStorage.getItem('blocks');
-    if (cached_data) {
-        console.log('fetchBlocksPage() - returning cached data'), JSON.parse(cached_data);
-        return JSON.parse(cached_data);
-    }
     const path = getPath();
-    console.log('fetchBlocksPage() - fetching data from API');
     const result = await indexerApi.get(path);
-    localStorage.setItem('blocks', JSON.stringify(result));
-    console.log('fetchBlocksPage() - returning data from API', result);
     return result;
 }
 
-async function parseblocks() {
+async function parseBlocks() {
     if(loading.value){
         return;
     }
@@ -152,7 +135,7 @@ async function parseblocks() {
     try {
         let response = await fetchBlocksPage();
         if (pagination.value.rowsNumber === 0) {
-            pagination.value.rowsNumber = response.data?.total_count;
+            pagination.value.rowsNumber = response.data?.results[0]?.number ?? 0;
         }
 
         pagination.value.page = page;
@@ -166,46 +149,8 @@ async function parseblocks() {
             ...response.data.results,
         );
         rows.value = blocks;
-        //        for (const block of blocks) {
-        //            try {
-        //                if (block.input === '0x') {
-        //                    continue;
-        //                }
-        //                if(!block.to) {
-        //                    continue;
-        //                }
-        //
-        //                addEmptyToCache(response.data.contracts, block);
-        //
-        //                const contract = await contractManager.getContract(block.to);
-        //
-        //                if (!contract) {
-        //                    continue;
-        //                }
-        //
-        //                const parsedblock = await contractManager.parseContractBlock(
-        //                    block, block.input, contract, true,
-        //                );
-        //                if (parsedblock) {
-        //                    block.parsedblock = parsedblock;
-        //                }
-        //                block.contract = contract;
-        //            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        //            } catch (e: any) {
-        //                console.error(
-        //                    `Failed to parse data for block, error was: ${e.message}`,
-        //                );
-        //                $q.notify({
-        //                    message: $t('components.blocks.failed_to_parse_block', { message: e.message }),
-        //                    color: 'negative',
-        //                    position: 'top',
-        //                    timeout: 5000,
-        //                });
-        //            }
-        //        }
         loading.value = false;
         rows.value = blocks;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         $q.notify({
             type: 'negative',
@@ -216,25 +161,6 @@ async function parseblocks() {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-// function addEmptyToCache(contracts: any, transaction: any){
-//     let found_to = 0;
-//     let found_from = 0;
-//     for(const contract in contracts){
-//         if(contract.toLowerCase() === transaction.to.toLowerCase()) {
-//             found_to++;
-//         }
-//         if(contract.toLowerCase() === transaction.from.toLowerCase()) {
-//             found_from++;
-//         }
-//     }
-//     if(found_from === 0){
-//         contractManager.addContractToCache(transaction.from, { 'address': transaction.from });
-//     }
-//     if(found_to === 0){
-//         contractManager.addContractToCache(transaction.to, { 'address': transaction.to });
-//     }
-// }
 
 function getPath() {
     const { page, rowsPerPage, descending } = pagination.value;
@@ -243,7 +169,7 @@ function getPath() {
     }`;
     path += `&offset=${(page - 1) * rowsPerPage}`;
     path += `&sort=${descending ? 'desc' : 'asc'}`;
-    path += (pagination.value.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
+    path += '&includeCount=1';
     return path;
 }
 
@@ -252,14 +178,18 @@ function toggleDateFormat() {
 }
 
 function getGasUsed(gasUsed: string) {
-    const gas = ethers.BigNumber.from(gasUsed);
-    try {
-        return gas.toNumber().toLocaleString();
-    } catch (e) {
-        console.error(e);
-        return gas.toString();
+    if (gasUsed) {
+        const gas = ethers.BigNumber.from(gasUsed);
+        try {
+            return gas.toNumber().toLocaleString();
+        } catch (e) {
+            console.error(e);
+            return gas.toString();
+        }
     }
+    return '0';
 }
+
 
 function getTransactionsCount(transactionsCount: number | undefined) {
     return transactionsCount?.toLocaleString() ?? '0';
@@ -270,6 +200,7 @@ function getTransactionsCount(transactionsCount: number | undefined) {
 <template>
 <q-table
     v-model:pagination="pagination"
+    class="c-block-table"
     :rows="rows"
     :binary-state-sort="true"
     :rows-per-page-label="$t('global.records_per_page')"
@@ -316,6 +247,9 @@ function getTransactionsCount(transactionsCount: number | undefined) {
             </q-td>
             <q-td key="timestamp" :props="props">
                 <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
+                <q-tooltip anchor="center left" self="center middle" :offset="[-100, -60]">
+                    <DateField :epoch="props.row.timestamp / 1000" :force-show-age="false"/>
+                </q-tooltip>
             </q-td>
             <q-td key='transactionsCount' :props="props">
                 <span class="c-block-table__cell-trx">
@@ -328,14 +262,28 @@ function getTransactionsCount(transactionsCount: number | undefined) {
                     }}
                 </span>
             </q-td>
-            <q-td key='gasUsed' :props="props">
-                <TokenValueField :value="getGasUsed(props.row.gasUsed)" />
+            <q-td key='gasUsed' class="c-block-table__td-gas-used" :props="props">
+                {{ getGasUsed(props.row.gasUsed) }}
             </q-td>
         </q-tr>
     </template>
 </q-table>
 </template>
 
-<style lang="sass">
-
+<style lang="scss">
+.c-block-table {
+    &__td-gas-used {
+        padding-right: 12% !important;
+    }
+    @media screen and (max-width: 900px) {
+        &__td-gas-used {
+            padding-right: 7% !important;
+        }
+    }
+    @media screen and (max-width: 600px) {
+        &__td-gas-used {
+            padding-right: 3% !important;
+        }
+    }
+}
 </style>

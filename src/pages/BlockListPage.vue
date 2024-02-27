@@ -13,11 +13,9 @@ const { t: $t } = useI18n();
     </div>
 
     <div class="row c-block-list-page__table">
-        <div class="col-12 q-pb-lg">
-            <q-card>
-                <BlockTable class="c-block-list-page__block-table" :title="'Block List'"/>
-            </q-card>
-        </div>
+        <q-card>
+            <BlockTable class="c-block-list-page__block-table" :title="'Block List'"/>
+        </q-card>
     </div>
 
 </q-page>
@@ -44,6 +42,14 @@ const { t: $t } = useI18n();
 
     &__table {
         max-width: 100vw;
+        flex-direction: column;
+        margin: 20px;
+    }
+
+    @media screen and (max-width: 600px) {
+        &__table {
+            margin: 0;
+        }
     }
 }
 </style>
