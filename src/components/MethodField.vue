@@ -85,13 +85,13 @@ function emitHighlight(val: string) {
 <template>
 <div
     class="c-method"
-    :class="{'c-method-highlight': highlightMethod === name && highlightMethod !== ''}"
+    :class="{'c-method--highlight': highlightMethod === name && highlightMethod !== ''}"
     @mouseover="emitHighlight(name)"
     @mouseleave="emitHighlight('')"
 >
     <span v-if="name">
         <span class="flex items-center">
-            <span v-if="icon" class="c-method-icon">
+            <span v-if="icon" class="c-method__icon">
                 <q-icon :name="icon" />
                 <q-tooltip v-if="iconTooltip">
                     {{ iconTooltip }}
@@ -131,22 +131,22 @@ function emitHighlight(val: string) {
 </template>
 
 <style lang="scss" scoped>
-    .c-method{
-        width: 70px;
-        display: table;
-        padding: 3px 6px;
-        border-radius: 5px;
-        font-size: 0.9em;
-        border: 1px solid;
-    }
-    .c-method-highlight {
+.c-method{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    padding: 3px 6px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    border: 1px solid;
+
+    &--highlight{
         background: lightgoldenrodyellow;
         border: 1px dashed orange;
     }
-    .c-method-icon i {
-        margin: auto;
-    }
-    .c-method-icon {
+
+    &__icon {
         background: var(--q-primary);
         display: flex;
         align-items: center;
@@ -162,4 +162,8 @@ function emitHighlight(val: string) {
             margin-top: 2px;
         }
     }
+}
+body.body--dark .c-method--highlight{
+    color: $primary;
+}
 </style>

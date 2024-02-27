@@ -127,7 +127,7 @@ function emitHighlight(val: string) {
 >
     <router-link
         :to="`/address/${address}`"
-        :class="{'c-address-highlight': highlightAddress === props.address && highlightAddress !== ''}"
+        :class="{'c-address-field--highlight': highlightAddress === props.address && highlightAddress !== ''}"
     >
         <q-img
             v-if="logo !== null"
@@ -136,7 +136,7 @@ function emitHighlight(val: string) {
             width="16px"
             height="auto"
         />
-        <q-icon v-else-if="contract && contract.getName()" name="far fa-file"/>
+        <q-icon v-else-if="contract && contract.getName()" name="far fa-file" class="c-address-field__contract-icon"/>
         <span>{{ displayName }}</span>
         <q-tooltip v-if="fullName !== displayName">{{ fullName }}</q-tooltip>
     </router-link>
@@ -144,30 +144,33 @@ function emitHighlight(val: string) {
 </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .c-address-field {
     min-width: 175px;
-}
-.c-address-field .q-icon {
-    margin-right: 3px;
-}
-.c-address-field .q-img {
-    border-radius: 100%;
-}
-.c-address-field a {
-    vertical-align: middle;
-}
-.c-address-field {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-}
-.c-address-highlight {
+
+    &__contract-icon{
+        padding-bottom: 6px;
+    }
+
+    &--highlight{
         background: lightgoldenrodyellow;
         border: 1px dashed orange;
         border-radius: 5px;
-}
-body.body--dark a.highlighted {
-    color: $warning;
+    }
+
+    .q-icon {
+        margin-right: 3px;
+    }
+
+    .q-img {
+        border-radius: 100%;
+    }
+
+    a {
+        vertical-align: middle;
+    }
 }
 </style>
