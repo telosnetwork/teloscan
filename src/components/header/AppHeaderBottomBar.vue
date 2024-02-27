@@ -5,6 +5,7 @@ import { useQuasar } from 'quasar';
 
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import AppHeaderButton from 'components/header/AppHeaderButton.vue';
+import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 
 const $router = useRouter();
 const $route = useRoute();
@@ -53,10 +54,7 @@ const moreMenuExpandedMobile = ref(false);
 // watchers
 watch(() => $q.screen.gt.md, () => {
     // eztodo fix this
-    menuVisibleMobile.value = false;
-    blockchainMenuExpandedMobile.value = false;
-    developersMenuExpandedMobile.value = false;
-    moreMenuExpandedMobile.value = false;
+    closeAllMenus();
 });
 
 // computed
@@ -73,9 +71,22 @@ function blurActiveElement() {
     (document.activeElement as HTMLElement | null)?.blur();
 }
 
+function closeAllMenus() {
+    menuVisibleMobile.value = false;
+    blockchainMenuExpandedMobile.value = false;
+    developersMenuExpandedMobile.value = false;
+    moreMenuExpandedMobile.value = false;
+}
+
+function toggleDarkMode() {
+    $q.dark.toggle();
+    localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
+}
+
 function goTo(to: string | { name: string }) {
     // mobileMenuIsOpen.value = false;
     blurActiveElement();
+    closeAllMenus();
 
     const httpsRegex = /^https/;
     if (typeof to === 'string' && httpsRegex.test(to)) {
@@ -88,7 +99,7 @@ function goTo(to: string | { name: string }) {
 </script>
 
 <template>
-<!-- eztodo i18n and aria roles -->
+<!-- eztodo i18n and aria roles / labels -->
 
 <div
     :class="{
@@ -112,6 +123,8 @@ function goTo(to: string | { name: string }) {
         </router-link>
         <!-- eztodo aria and kb and break into components -->
         <nav class="c-header-bottom-bar__right-container">
+            <AppHeaderWallet v-if="$q.screen.lt.md" class="q-mr-sm" />
+
             <AppHeaderButton
                 text-color="default"
                 :icon-only="true"
@@ -148,6 +161,7 @@ function goTo(to: string | { name: string }) {
                     tabindex="0"
                     @mouseleave="blurActiveElement"
                     @click="blockchainMenuExpandedMobile = !blockchainMenuExpandedMobile"
+                    @keydown.enter="blockchainMenuExpandedMobile = !blockchainMenuExpandedMobile"
                 >
                     <div class="c-header-bottom-bar__menu-li-text">
                         Blockchain
@@ -229,7 +243,7 @@ function goTo(to: string | { name: string }) {
                         <q-icon name="fas fa-chevron-down" size="12px" />
                     </div>
 
-                    <ul class="c-header-bottom-bar__submenu-ul shadow-2">
+                    <ul class="c-header-bottom-bar__submenu-ul c-header-bottom-bar__submenu-ul--rightmost shadow-2">
                         <li
                             class="c-header-bottom-bar__submenu-li"
                             tabindex="0"
@@ -272,6 +286,23 @@ function goTo(to: string | { name: string }) {
                             </div>
                         </li>
                     </ul>
+                </li>
+
+                <li v-if="$q.screen.lt.md" class="c-header-bottom-bar__menu-li">
+                    <AppHeaderButton
+                        text-color="default"
+                        class="c-header-bottom-bar__theme-toggle"
+                        @click="toggleDarkMode"
+                    >
+                        <!-- eztodo i18n -->
+                        <q-icon
+                            :name="`far fa-${$q.dark.isActive ? 'moon' : 'sun'}`"
+                            size="14px"
+                            color="primary"
+                            class="q-mr-sm"
+                        />
+                        Switch to light theme
+                    </AppHeaderButton>
                 </li>
             </ul>
         </nav>
@@ -329,8 +360,12 @@ function goTo(to: string | { name: string }) {
     }
 
     &__logo-text {
+        font-size: 1rem;
         font-weight: 700;
-        font-size: 1.3rem;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            font-size: 1.3rem;
+        }
     }
 
     &__inner-container {
@@ -470,6 +505,11 @@ function goTo(to: string | { name: string }) {
             border-radius: 0 0 4px 4px;
             background-color: var(--background-color);
             border-top: 2px solid $primary;
+
+            &--rightmost {
+                right: 0;
+                left: unset;
+            }
         }
     }
 
@@ -489,6 +529,10 @@ function goTo(to: string | { name: string }) {
         &--current {
             color: $primary;
         }
+    }
+
+    &__theme-toggle {
+        width: 100%;
     }
 }
 </style>

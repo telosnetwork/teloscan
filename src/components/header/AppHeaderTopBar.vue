@@ -157,13 +157,14 @@ function toggleDarkMode() {
                 class="c-header-top-bar__theme-toggle"
                 @click="toggleDarkMode"
             >
-                <q-icon name="fas fa-moon" size="14px" />
+                <q-icon :name="`far fa-${$q.dark.isActive ? 'moon' : 'sun'}`" size="14px" />
 
                 <q-tooltip>
                     <!-- eztodo i18n -->
-                    Toggle light/dark theme
+                    Switch to light theme
                 </q-tooltip>
             </AppHeaderButton>
+            <!-- eztodo add network switcher -->
 
             <AppHeaderWallet v-if="$q.screen.gt.sm" />
         </div>
@@ -238,7 +239,7 @@ function toggleDarkMode() {
     &__theme-toggle {
         display: none;
 
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $breakpoint-md-min) {
             display: inline-flex;
         }
     }

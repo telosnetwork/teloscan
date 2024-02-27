@@ -110,6 +110,7 @@ async function fetchUserBalance() {
 <AppHeaderButton
     text-color="default"
     class="c-app-header-wallet__main-button"
+    v-bind="$attrs"
     @click="handleWalletButtonClick"
 >
     <template v-if="!isLoggedIn">
@@ -155,7 +156,7 @@ async function fetchUserBalance() {
                                 class="q-ml-sm"
                                 @click="goToAccountPage"
                             >
-                                <q-icon name="far fa-eye" size="14px" />
+                                <q-icon name="far fa-address-card" size="14px" />
 
                                 <q-tooltip>
                                     {{ $i18n.t('components.header.goto_address_details') }}
