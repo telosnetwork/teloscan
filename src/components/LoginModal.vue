@@ -217,78 +217,76 @@ export default defineComponent({
 });
 </script>
 <template>
-<div class="c-login-modal">
-    <q-dialog :model-value="show" @hide="() => $emit('hide')">
-        <q-card rounded class="c-login-modal__modal-inner">
-            <q-tabs v-model="tab">
-                <q-tab name="web3" :label="$t('components.evm_wallets')" />
-                <q-tab name="native" :label="$t('components.advanced')" />
-            </q-tabs>
-            <q-separator/>
-            <q-tab-panels v-model="tab" animated>
-                <q-tab-panel name="web3">
-                    <q-card class="c-login-modal__image-container" @click="connectMetaMask()">
+<q-dialog :model-value="show" @hide="() => $emit('hide')">
+    <q-card rounded class="c-login-modal__modal-inner">
+        <q-tabs v-model="tab">
+            <q-tab name="web3" :label="$t('components.evm_wallets')" />
+            <q-tab name="native" :label="$t('components.advanced')" />
+        </q-tabs>
+        <q-separator/>
+        <q-tab-panels v-model="tab" animated>
+            <q-tab-panel name="web3">
+                <q-card class="c-login-modal__image-container" @click="connectMetaMask()">
+                    <q-img
+                        :src="require('src/assets/metamask-fox.svg')"
+                        height="64px"
+                        width="64px"
+                    />
+                    <span>
+                        {{ isMobile && (!browserSupportsMetaMask || isBraveBrowser) ?
+                            $t('components.continue_on_metamask') : 'Metamask' }}</span>
+                </q-card>
+                <q-card
+                    v-if="isBraveBrowser && !isIOSMobile"
+                    class="c-login-modal__image-container"
+                    @click="connectBraveWallet()"
+                >
+                    <q-img
+                        :src="require('src/assets/brave_lion.svg')"
+                        width="50px"
+                    />
+                    <span> Brave Wallet </span>
+                </q-card>
+                <q-card
+                    class="c-login-modal__image-container"
+                    @click="connectWalletConnect()"
+                >
+                    <q-img
+                        :src="require('src/assets/logo--wallet-connect.svg')"
+                        height="64px"
+                        width="64px"
+                        fit="contain"
+                    />
+                    <span> Wallet Connect </span>
+                </q-card>
+            </q-tab-panel>
+            <q-tab-panel name="native">
+                <p>
+                    {{ $t('components.text1_native_wallets') }}
+                    <span class="text-red">
+                        {{ $t('components.text2_advanced_users') }}
+                    </span>
+                    {{ $t('components.text3_or_to_recover_assets') }}
+                </p>
+                <div class="u-flex--center">
+                    <q-card
+                        v-for="wallet in authenticators"
+                        :key="wallet.getStyle().text"
+                        class="c-login-modal__image-container"
+                        @click="ualLogin(wallet)"
+                    >
                         <q-img
-                            :src="require('src/assets/metamask-fox.svg')"
+                            :src="getIconForWallet(wallet)"
                             height="64px"
                             width="64px"
                         />
-                        <span>
-                            {{ isMobile && (!browserSupportsMetaMask || isBraveBrowser) ?
-                                $t('components.continue_on_metamask') : 'Metamask' }}</span>
+                        {{ wallet.getStyle().text }}
                     </q-card>
-                    <q-card
-                        v-if="isBraveBrowser && !isIOSMobile"
-                        class="c-login-modal__image-container"
-                        @click="connectBraveWallet()"
-                    >
-                        <q-img
-                            :src="require('src/assets/brave_lion.svg')"
-                            width="50px"
-                        />
-                        <span> Brave Wallet </span>
-                    </q-card>
-                    <q-card
-                        class="c-login-modal__image-container"
-                        @click="connectWalletConnect()"
-                    >
-                        <q-img
-                            :src="require('src/assets/logo--wallet-connect.svg')"
-                            height="64px"
-                            width="64px"
-                            fit="contain"
-                        />
-                        <span> Wallet Connect </span>
-                    </q-card>
-                </q-tab-panel>
-                <q-tab-panel name="native">
-                    <p>
-                        {{ $t('components.text1_native_wallets') }}
-                        <span class="text-red">
-                            {{ $t('components.text2_advanced_users') }}
-                        </span>
-                        {{ $t('components.text3_or_to_recover_assets') }}
-                    </p>
-                    <div class="u-flex--center">
-                        <q-card
-                            v-for="wallet in authenticators"
-                            :key="wallet.getStyle().text"
-                            class="c-login-modal__image-container"
-                            @click="ualLogin(wallet)"
-                        >
-                            <q-img
-                                :src="getIconForWallet(wallet)"
-                                height="64px"
-                                width="64px"
-                            />
-                            {{ wallet.getStyle().text }}
-                        </q-card>
-                    </div>
-                </q-tab-panel>
-            </q-tab-panels>
-        </q-card>
-    </q-dialog>
-</div>
+                </div>
+            </q-tab-panel>
+        </q-tab-panels>
+    </q-card>
+</q-dialog>
 </template>
 
 <style lang='scss'>

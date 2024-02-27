@@ -25,6 +25,9 @@ const $q = useQuasar();
 const $store = useStore();
 const { t: $t } = useI18n();
 
+const highlightTelosMainnetLink = Number(process.env.NETWORK_EVM_CHAIN_ID) === 40;
+const highlightTelosTestnetLink = Number(process.env.NETWORK_EVM_CHAIN_ID) === 41;
+
 // data
 const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
@@ -167,6 +170,38 @@ function toggleDarkMode() {
             <!-- eztodo add network switcher -->
 
             <AppHeaderWallet v-if="$q.screen.gt.sm" />
+
+            <AppHeaderButton
+                v-if="$q.screen.gt.sm"
+                text-color="primary"
+                :icon-only="true"
+            >
+                <!-- eztodo get logo from chain settings -->
+                <img src="branding/telos-circle-logo.svg" height="24" width="24">
+
+                <q-menu>
+                    <q-list>
+                        <q-item clickable>
+                            <q-item-section :class="highlightTelosMainnetLink ? 'text-primary' : ''">
+                                <!-- eztodo i18n -->
+                                Telos Mainnet
+                            </q-item-section>
+                        </q-item>
+                        <q-separator />
+                        <q-item clickable>
+                            <q-item-section :class="highlightTelosTestnetLink ? 'text-primary' : ''">
+                                <!-- eztodo i18n -->
+                                Telos Testnet
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
+                </q-menu>
+
+                <q-tooltip>
+                    <!-- eztodo i18n -->
+                    View other networks
+                </q-tooltip>
+            </AppHeaderButton>
         </div>
     </div>
 </div>
@@ -228,10 +263,11 @@ function toggleDarkMode() {
 
         @media screen and (min-width: $breakpoint-md-min) {
             width: auto;
-            padding: 0;
+            padding: 0 12px 0 0;
         }
 
         @media screen and (min-width: $breakpoint-lg-min) {
+            padding: 0;
             width: auto;
         }
     }

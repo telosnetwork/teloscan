@@ -11,6 +11,9 @@ const $router = useRouter();
 const $route = useRoute();
 const $q = useQuasar();
 
+// eztodo get these from somewhere else?
+const TELOSCAN_MAINNET_URL = 'https://teloscan.io';
+const TELOSCAN_TESTNET_URL = 'https://testnet.teloscan.io';
 
 // eztodo i18n
 const blockchainSubmenuItems = [
@@ -43,6 +46,18 @@ const moreSubmenuItems = {
     ],
 };
 
+// eztodo i18n
+const networksMenuItems = {
+    mainnet: [{
+        url: TELOSCAN_MAINNET_URL,
+        label: 'Telos Mainnet',
+    }],
+    testnet: [{
+        url: TELOSCAN_TESTNET_URL,
+        label: 'Telos Testnet',
+    }],
+};
+
 // data
 const menuBottomBarHidden = ref(false);
 const showLanguageSwitcher = ref(false);
@@ -50,6 +65,7 @@ const menuVisibleMobile = ref(false);
 const blockchainMenuExpandedMobile = ref(false);
 const developersMenuExpandedMobile = ref(false);
 const moreMenuExpandedMobile = ref(false);
+const networkMenuExpandedMobile = ref(false);
 
 // watchers
 watch(() => $q.screen.gt.md, () => {
@@ -76,11 +92,24 @@ function closeAllMenus() {
     blockchainMenuExpandedMobile.value = false;
     developersMenuExpandedMobile.value = false;
     moreMenuExpandedMobile.value = false;
+    networkMenuExpandedMobile.value = false;
 }
 
 function toggleDarkMode() {
     $q.dark.toggle();
     localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
+}
+
+function getIsCurrentNetworkMenuItem(url: string) {
+    if (url === TELOSCAN_MAINNET_URL) {
+        return Number(process.env.NETWORK_EVM_CHAIN_ID) === 40;
+    }
+
+    if (url === TELOSCAN_TESTNET_URL) {
+        return Number(process.env.NETWORK_EVM_CHAIN_ID) === 41;
+    }
+
+    return false;
 }
 
 function goTo(to: string | { name: string }) {
@@ -146,6 +175,7 @@ function goTo(to: string | { name: string }) {
                         'c-header-bottom-bar__menu-li--current': $route.name === 'home',
                     }"
                     tabindex="0"
+                    role="link"
                     @click="goTo({ name: 'home' })"
                     @keydown.enter="goTo({ name: 'home' })"
                 >
@@ -159,16 +189,21 @@ function goTo(to: string | { name: string }) {
                         'c-header-bottom-bar__menu-li--expanded-mobile': blockchainMenuExpandedMobile,
                     }"
                     tabindex="0"
+                    :aria-expanded="$q.screen.lt.md ? blockchainMenuExpandedMobile : undefined"
+                    :aria-controls="$q.screen.lt.md ? 'app-header-blockchain-submenu-ul' : undefined"
+                    :aria-labelledby="$q.screen.lt.md ? 'app-header-blockchain-submenu-label' : undefined"
                     @mouseleave="blurActiveElement"
                     @click="blockchainMenuExpandedMobile = !blockchainMenuExpandedMobile"
                     @keydown.enter="blockchainMenuExpandedMobile = !blockchainMenuExpandedMobile"
                 >
-                    <div class="c-header-bottom-bar__menu-li-text">
+                    <div id="app-header-blockchain-submenu-label" class="c-header-bottom-bar__menu-li-text">
+                        <!-- eztodo i18n -->
                         Blockchain
                         <q-icon name="fas fa-chevron-down" size="12px" />
                     </div>
 
                     <ul
+                        id="app-header-blockchain-submenu-ul"
                         :class="{
                             'c-header-bottom-bar__submenu-ul': true,
                             'shadow-2': $q.screen.gt.md,
@@ -182,6 +217,7 @@ function goTo(to: string | { name: string }) {
                                 'c-header-bottom-bar__submenu-li--current': $route.name === item.name,
                             }"
                             tabindex="0"
+                            role="link"
                             @click="goTo({ name: item.name })"
                             @keydown.enter="goTo({ name: item.name })"
                         >
@@ -196,19 +232,32 @@ function goTo(to: string | { name: string }) {
                         'c-header-bottom-bar__menu-li--expanded-mobile': developersMenuExpandedMobile,
                     }"
                     tabindex="0"
+                    :aria-expanded="$q.screen.lt.md ? developersMenuExpandedMobile : undefined"
+                    :aria-controls="$q.screen.lt.md ? 'app-header-developers-submenu-ul' : undefined"
+                    :aria-labelledby="$q.screen.lt.md ? 'app-header-developers-submenu-label' : undefined"
                     @mouseleave="blurActiveElement"
+                    @click="developersMenuExpandedMobile = !developersMenuExpandedMobile"
+                    @keydown.enter="developersMenuExpandedMobile = !developersMenuExpandedMobile"
                 >
-                    <div class="c-header-bottom-bar__menu-li-text">
+                    <div id="app-header-developers-submenu-label" class="c-header-bottom-bar__menu-li-text">
+                        <!-- eztodo i18n -->
                         Developers
                         <q-icon name="fas fa-chevron-down" size="12px" />
                     </div>
 
-                    <ul class="c-header-bottom-bar__submenu-ul shadow-2">
+                    <ul
+                        id="app-header-developers-submenu-ul"
+                        :class="{
+                            'c-header-bottom-bar__submenu-ul': true,
+                            'shadow-2': $q.screen.gt.md,
+                        }"
+                    >
                         <li
                             v-for="item in developersSubmenuItems"
                             :key="`developer-submenu-item-${item.label}`"
                             class="c-header-bottom-bar__submenu-li"
                             tabindex="0"
+                            role="link"
                             @click="goTo(item.url)"
                             @keydown.enter="goTo(item.url)"
                         >
@@ -223,6 +272,7 @@ function goTo(to: string | { name: string }) {
                 <li
                     class="c-header-bottom-bar__menu-li"
                     tabindex="0"
+                    role="link"
                     @click="goTo(walletMenuItem.url)"
                     @keydown.enter="goTo(walletMenuItem.url)"
                 >
@@ -236,18 +286,30 @@ function goTo(to: string | { name: string }) {
                         'c-header-bottom-bar__menu-li--expanded-mobile': moreMenuExpandedMobile,
                     }"
                     tabindex="0"
+                    :aria-expanded="$q.screen.lt.md ? moreMenuExpandedMobile : undefined"
+                    :aria-controls="$q.screen.lt.md ? 'app-header-more-submenu-ul' : undefined"
+                    :aria-labelledby="$q.screen.lt.md ? 'app-header-more-submenu-label' : undefined"
                     @mouseleave="blurActiveElement"
+                    @click="moreMenuExpandedMobile = !moreMenuExpandedMobile"
+                    @keydown.enter="moreMenuExpandedMobile = !moreMenuExpandedMobile"
                 >
-                    <div class="c-header-bottom-bar__menu-li-text">
+                    <div id="app-header-more-submenu-label" class="c-header-bottom-bar__menu-li-text">
+                        <!-- eztodo i18n -->
                         More
                         <q-icon name="fas fa-chevron-down" size="12px" />
                     </div>
 
-                    <ul class="c-header-bottom-bar__submenu-ul c-header-bottom-bar__submenu-ul--rightmost shadow-2">
+                    <ul
+                        id="app-header-more-submenu-ul"
+                        :class="{
+                            'c-header-bottom-bar__submenu-ul c-header-bottom-bar__submenu-ul--rightmost': true,
+                            'shadow-2': $q.screen.gt.md,
+                        }"
+                    >
                         <li
                             class="c-header-bottom-bar__submenu-li"
                             tabindex="0"
-                            role="menuitem"
+                            role="button"
                             :aria-label="'eztodo'"
                             @keydown.enter="showLanguageSwitcher = true"
                             @click="showLanguageSwitcher = true"
@@ -266,6 +328,7 @@ function goTo(to: string | { name: string }) {
                                 'c-header-bottom-bar__submenu-li--current': $route.name === item.name,
                             }"
                             tabindex="0"
+                            role="link"
                             @click="goTo({ name: item.name })"
                             @keydown.enter="goTo({ name: item.name })"
                         >
@@ -277,6 +340,7 @@ function goTo(to: string | { name: string }) {
                             :key="`more-submenu-item-external-${item.label}`"
                             class="c-header-bottom-bar__submenu-li"
                             tabindex="0"
+                            role="link"
                             @click="goTo(item.url)"
                             @keydown.enter="goTo(item.url)"
                         >
@@ -284,6 +348,67 @@ function goTo(to: string | { name: string }) {
                                 {{ item.label }}
                                 <q-icon name="fas fa-external-link-alt" size="12px" class="q-ml-sm" />
                             </div>
+                        </li>
+                    </ul>
+                </li>
+
+                <li
+                    v-if="$q.screen.lt.md"
+                    :class="{
+                        'c-header-bottom-bar__menu-li c-header-bottom-bar__menu-li--expandable': true,
+                        'c-header-bottom-bar__menu-li--expanded-mobile': networkMenuExpandedMobile,
+                    }"
+                    tabindex="0"
+                    :aria-expanded="$q.screen.lt.md ? networkMenuExpandedMobile : undefined"
+                    :aria-controls="$q.screen.lt.md ? 'app-header-network-submenu-ul' : undefined"
+                    :aria-labelledby="$q.screen.lt.md ? 'app-header-network-submenu-label' : undefined"
+                    @mouseleave="blurActiveElement"
+                    @click="networkMenuExpandedMobile = !networkMenuExpandedMobile"
+                    @keydown.enter="networkMenuExpandedMobile = !networkMenuExpandedMobile"
+                >
+                    <div id="app-header-network-submenu-label" class="c-header-bottom-bar__menu-li-text">
+                        <!-- eztodo i18n -->
+                        Network
+                        <q-icon name="fas fa-chevron-down" size="12px" />
+                    </div>
+
+                    <ul
+                        id="app-header-network-submenu-ul"
+                        :class="{
+                            'c-header-bottom-bar__submenu-ul': true,
+                            'shadow-2': $q.screen.gt.md,
+                        }"
+                    >
+                        <li
+                            v-for="item in networksMenuItems.mainnet"
+                            :key="`networks-submenu-item-mainnet-${item.label}`"
+                            :class="{
+                                'c-header-bottom-bar__submenu-li': true,
+                                'c-header-bottom-bar__submenu-li--current': getIsCurrentNetworkMenuItem(item.url),
+                            }"
+                            tabindex="0"
+                            role="link"
+                            @click="goTo(item.url)"
+                            @keydown.enter="goTo(item.url)"
+                        >
+                            {{ item.label }}
+                        </li>
+
+                        <q-separator />
+
+                        <li
+                            v-for="item in networksMenuItems.testnet"
+                            :key="`networks-submenu-item-testnet-${item.label}`"
+                            :class="{
+                                'c-header-bottom-bar__submenu-li': true,
+                                'c-header-bottom-bar__submenu-li--current': getIsCurrentNetworkMenuItem(item.url),
+                            }"
+                            tabindex="0"
+                            role="link"
+                            @click="goTo(item.url)"
+                            @keydown.enter="goTo(item.url)"
+                        >
+                            {{ item.label }}
                         </li>
                     </ul>
                 </li>
