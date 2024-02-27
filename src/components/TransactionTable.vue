@@ -10,6 +10,7 @@ import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import MethodField from 'components/MethodField.vue';
+import TransactionDialog from 'components/TransactionDialog.vue';
 import TokenValueField from 'components/Token/TokenValueField.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
@@ -61,6 +62,7 @@ const pagination = ref<Pagination>(
 );
 
 const columns = [
+
     {
         name: 'hash',
         label: $t('components.tx_hash'),
@@ -336,6 +338,7 @@ function toggleGasValue() {
         <q-tr :key="props.row.hash + props.row.parsedTransaction?.transfers?.length" :props="props">
             <q-td key="hash" :props="props">
                 <div class="flex items-center">
+                    <TransactionDialog :trx="props.row" />
                     <q-icon
                         v-if="props.row.status !== '0x1'"
                         class="q-mr-xs"
@@ -400,23 +403,27 @@ function toggleGasValue() {
 </q-table>
 </template>
 <!--eslint-enable-->
-<style scoped lang="sass">
-    .direction
-        user-select: none
-        padding: 3px 6px
-        border-radius: 5px
-        font-size: 0.9em
-    .direction.in
-        color: rgb(0,161,134)
-        background: rgba(0,161,134,0.1)
-        border: 1px solid rgb(0,161,134)
-    .direction.out
-        color: #cc9a06!important
-        background: rgba(255,193,7,0.1)
-        border: 1px solid #cc9a06!important
-    .sortable
-        height: 60px
-        display: flex
-        align-items: center
+<style scoped lang="scss">
+    .direction{
+        user-select: none;
+        padding: 3px 6px;
+        border-radius: 5px;
+        font-size: 0.9em;
+    }
+    .direction.in {
+        color: rgb(0,161,134);
+        background: rgba(0,161,134,0.1);
+        border: 1px solid rgb(0,161,134);
+    }
+    .direction.out{
+        color: #cc9a06!important;
+        background: rgba(255,193,7,0.1);
+        border: 1px solid #cc9a06!important;
+    }
+    .sortable{
+        height: 60px;
+        display: flex;
+        align-items: center;
+    }
 </style>
 
