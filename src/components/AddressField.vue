@@ -146,7 +146,7 @@ function emitHighlight(val: string) {
 
 <style lang="scss">
 .c-address-field {
-    min-width: 175px;
+    min-width: 140px;
     display: inline-flex;
     align-items: center;
     gap: 4px;

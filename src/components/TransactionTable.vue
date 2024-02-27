@@ -428,7 +428,7 @@ function setHighlightAddress(val: string) {
     align-items: center;
 }
 .hash-column{
-    min-width: 210px;
+    min-width: 180px;
 }
 </style>
 
