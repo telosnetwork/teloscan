@@ -14,7 +14,7 @@ defineProps({
     <q-btn
         size="6px"
         round
-        icon="fas fa-eye"
+        icon="far fa-eye"
     >
         <q-menu
             anchor="top right"

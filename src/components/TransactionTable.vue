@@ -64,7 +64,11 @@ const pagination = ref<Pagination>(
 );
 
 const columns = [
-
+    {
+        name: 'preview',
+        label: '',
+        align: 'center',
+    },
     {
         name: 'hash',
         label: $t('components.tx_hash'),
@@ -317,23 +321,30 @@ function setHighlightAddress(val: string) {
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
+                <div v-if="col.name === 'preview'" class="u-flex--center-y" @click="toggleDateFormat">
                     {{ showDateAge ? col.label: $t('components.date') }}
-                    <q-icon class="info-icon q-ml-xs" name="fas fa-info-circle"/>
+                    <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                    <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                        See preview of the transaction details.
+                    </q-tooltip>
+                </div>
+                <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
+                    <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
+                    <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
                     <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
                         {{ $t('components.click_to_change_format') }}
                     </q-tooltip>
                 </div>
                 <div v-else-if="col.name === 'method'" class="u-flex--center-y">
                     {{ col.label }}
-                    <q-icon class="info-icon" name="fas fa-info-circle q-ml-xs" />
+                    <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
                     <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
                         {{ $t('components.executed_based_on_decoded_data') }}
                     </q-tooltip>
                 </div>
                 <div v-else-if="col.name === 'fee'" class="u-flex--center-y" @click="toggleGasValue">
-                    {{ showTotalGasFee ? col.label : $t('components.gas_price') }}
-                    <q-icon class="info-icon" name="fas fa-info-circle q-ml-xs" />
+                    <a>{{ showTotalGasFee ? col.label : $t('components.gas_price') }}</a>
+                    <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
                     <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
                         {{ showTotalGasFee ? $t('components.gas_price_tlos') : $t('components.gas_price_gwei') }}
                     </q-tooltip>
@@ -346,9 +357,13 @@ function setHighlightAddress(val: string) {
     </template>
     <template v-slot:body="props">
         <q-tr :key="props.row.hash + props.row.parsedTransaction?.transfers?.length" :props="props">
+            <q-td key="preview" :props="props">
+                <div class="flex items-center">
+                    <TransactionDialog :trx="props.row" />
+                </div>
+            </q-td>
             <q-td key="hash" :props="props">
                 <div class="hash-column flex items-center">
-                    <TransactionDialog :trx="props.row" />
                     <TransactionField
                         color='primary'
                         :transaction-hash="props.row.hash"
