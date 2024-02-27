@@ -4,11 +4,11 @@ import { formatWei } from 'src/lib/utils';
 
 const props = defineProps({
     gasUsed: {
-        type: Number,
+        type: String,
         required: true,
     },
     gasPrice: {
-        type: Number,
+        type: String,
         required: true,
     },
     showTotalGasFee: {
@@ -21,7 +21,7 @@ const props = defineProps({
 const gasWei = ref('');
 
 function totalGasFee(){
-    const wei = BigInt(props.gasUsed * props.gasPrice);
+    const wei = BigInt(parseInt(props.gasUsed) * parseInt(props.gasPrice));
     gasWei.value = wei.toString();
     return `${formatWei(wei, 18, 3)} TLOS`;
 }

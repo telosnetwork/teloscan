@@ -337,18 +337,12 @@ function toggleGasValue() {
     <template v-slot:body="props">
         <q-tr :key="props.row.hash + props.row.parsedTransaction?.transfers?.length" :props="props">
             <q-td key="hash" :props="props">
-                <div class="flex items-center">
+                <div class="hash-column flex items-center">
                     <TransactionDialog :trx="props.row" />
-                    <q-icon
-                        v-if="props.row.status !== '0x1'"
-                        class="q-mr-xs"
-                        name="warning"
-                        color="negative"
-                    />
                     <TransactionField
-                        :color="(props.row.status !== '0x1') ? 'negative' : 'primary'"
+                        color='primary'
                         :transaction-hash="props.row.hash"
-                        :truncate="(props.row.status !== '0x1') ? 15 : 18"
+                        :truncate=18
                     />
                 </div>
             </q-td>
@@ -367,10 +361,15 @@ function toggleGasValue() {
                     :key="'trxt'+ props.row.from"
                     :address="props.row.from"
                     :truncate="14"
+                    :copy="true"
                 />
             </q-td>
             <q-td key="direction">
-                <q-icon size="12px" name="fas fa-arrow-right"/>
+                <q-icon
+                    size="12px"
+                    name="fas fa-arrow-right"
+                    :color="props.row.status === '0x1' ? 'green' : 'red'"
+                />
             </q-td>
             <q-td key="to" :props="props">
                 <AddressField
@@ -378,6 +377,7 @@ function toggleGasValue() {
                     :key="'trxt'+ props.row.to"
                     :address="props.row.to"
                     :truncate="14"
+                    :copy="true"
                 />
             </q-td>
             <q-td key='value' :props="props">
@@ -402,28 +402,14 @@ function toggleGasValue() {
     </template>
 </q-table>
 </template>
-<!--eslint-enable-->
 <style scoped lang="scss">
-    .direction{
-        user-select: none;
-        padding: 3px 6px;
-        border-radius: 5px;
-        font-size: 0.9em;
-    }
-    .direction.in {
-        color: rgb(0,161,134);
-        background: rgba(0,161,134,0.1);
-        border: 1px solid rgb(0,161,134);
-    }
-    .direction.out{
-        color: #cc9a06!important;
-        background: rgba(255,193,7,0.1);
-        border: 1px solid #cc9a06!important;
-    }
-    .sortable{
-        height: 60px;
-        display: flex;
-        align-items: center;
-    }
+.sortable{
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+.hash-column{
+    min-width: 210px;
+}
 </style>
 
