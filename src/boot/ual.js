@@ -19,9 +19,11 @@ const authenticators = [
     new Wombat([chain], { appName: process.env.APP_NAME }),
 ];
 
-export const ual = new UAL([chain], 'ual', authenticators);
+const ual = new UAL([chain], 'ual', authenticators);
 
 export default boot(async({ app, store }) => {
     store['$ual'] = ual;
     app.config.globalProperties.$ual = ual;
 });
+
+export { ual };
