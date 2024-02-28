@@ -4,6 +4,13 @@ import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
+import {
+    isTelosMainnet,
+    isTelosTestnet,
+    TELOSCAN_MAINNET_URL,
+    TELOSCAN_TESTNET_URL,
+} from 'src/lib/chain-utils';
+
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import OutlineButton from 'components/OutlineButton.vue';
 
@@ -18,28 +25,31 @@ defineProps<{
 const emit = defineEmits(['close-menu']);
 
 
-// eztodo get these from somewhere else?
-const TELOSCAN_MAINNET_URL = 'https://teloscan.io';
-const TELOSCAN_TESTNET_URL = 'https://testnet.teloscan.io';
-
 const blockchainSubmenuItems = [
     { name: 'transactions', label: $t('components.header.transactions') },
     { name: 'blocks', label: $t('components.header.blocks') },
 ];
 
-// eztodo handle testnet, use chain settings for links
+const teloscanSwaggerUrl = isTelosMainnet()
+    ? 'https://api.teloscan.io/swagger/'
+    : 'https://api.testnet.teloscan.io/swagger/';
+
 const developersSubmenuItems = [
-    { url: 'https://api.teloscan.io/swagger/', label: $t('components.header.api_documentation') },
-    { url: 'https://sourcify.dev/', label: $t('components.header.verify_contract_sourcify') },
+    {
+        url: teloscanSwaggerUrl,
+        label: $t('components.header.api_documentation'),
+    },
+    {
+        url: 'https://sourcify.dev/',
+        label: $t('components.header.verify_contract_sourcify'),
+    },
 ];
 
-// eztodo use chain settings for link
-const walletMenuItem = {
+const telosWalletMenuItem = {
     url: 'https://wallet.telos.net/',
     label: $t('components.header.telos_wallet'),
 };
 
-// eztodo use chain settings
 const moreSubmenuItems = {
     internal: [
         { name: 'export', label: $t('components.header.csv_export') },
@@ -76,10 +86,9 @@ const highlightBlockchainMenuItem = computed(() => blockchainSubmenuItems.some((
 const highlightMoreMenuItem = computed(() => moreSubmenuItems.internal.some(({ name }) => name === $route.name));
 
 // watchers
-watch(() => $q.screen.gt.md, () => {
-    // eztodo fix this
+watch(() => $q.screen, () => {
     closeAllMenus();
-});
+}, { deep: true });
 
 // methods
 function blurActiveElement() {
@@ -101,11 +110,11 @@ function toggleDarkMode() {
 
 function getIsCurrentNetworkMenuItem(url: string) {
     if (url === TELOSCAN_MAINNET_URL) {
-        return Number(process.env.NETWORK_EVM_CHAIN_ID) === 40;
+        return isTelosMainnet();
     }
 
     if (url === TELOSCAN_TESTNET_URL) {
-        return Number(process.env.NETWORK_EVM_CHAIN_ID) === 41;
+        return isTelosTestnet();
     }
 
     return false;
@@ -129,7 +138,7 @@ function goTo(to: string | { name: string }) {
 <ul
     :class="{
         'c-header-links': true,
-        'c-header-links--visible-mobile shadow-2': menuVisibleMobile && $q.screen.lt.md,
+        'c-header-links--visible-mobile shadow-4': menuVisibleMobile && $q.screen.lt.md,
     }"
 >
     <li
@@ -168,7 +177,7 @@ function goTo(to: string | { name: string }) {
             id="app-header-blockchain-submenu-ul"
             :class="{
                 'c-header-links__submenu-ul': true,
-                'shadow-2': $q.screen.gt.md,
+                'shadow-4': $q.screen.gt.md,
             }"
         >
             <li
@@ -210,7 +219,7 @@ function goTo(to: string | { name: string }) {
             id="app-header-developers-submenu-ul"
             :class="{
                 'c-header-links__submenu-ul': true,
-                'shadow-2': $q.screen.gt.md,
+                'shadow-4': $q.screen.gt.md,
             }"
         >
             <li
@@ -234,10 +243,10 @@ function goTo(to: string | { name: string }) {
         class="c-header-links__menu-li"
         tabindex="0"
         role="link"
-        @click="goTo(walletMenuItem.url)"
-        @keydown.enter="goTo(walletMenuItem.url)"
+        @click="goTo(telosWalletMenuItem.url)"
+        @keydown.enter="goTo(telosWalletMenuItem.url)"
     >
-        {{ walletMenuItem.label }}
+        {{ telosWalletMenuItem.label }}
     </li>
 
     <li
@@ -263,7 +272,7 @@ function goTo(to: string | { name: string }) {
             id="app-header-more-submenu-ul"
             :class="{
                 'c-header-links__submenu-ul c-header-links__submenu-ul--rightmost': true,
-                'shadow-2': $q.screen.gt.md,
+                'shadow-4': $q.screen.gt.md,
             }"
         >
             <li
@@ -335,7 +344,7 @@ function goTo(to: string | { name: string }) {
             id="app-header-network-submenu-ul"
             :class="{
                 'c-header-links__submenu-ul': true,
-                'shadow-2': $q.screen.gt.md,
+                'shadow-4': $q.screen.gt.md,
             }"
         >
             <li

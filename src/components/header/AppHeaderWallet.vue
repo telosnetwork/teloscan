@@ -30,7 +30,6 @@ const isLoggedIn = computed(() => $store.getters['login/isLoggedIn']);
 const isNative = computed(() => $store.getters['login/isNative']);
 const address = computed(() => $store.getters['login/address']);
 const nativeAccount = computed(() => $store.getters['login/nativeAccount']);
-// eztodo user stores and stuff
 const prettySystemTokenBalance = computed(() =>
     prettyPrintCurrency(
         BigNumber.from(userSystemTokenBalanceWei.value),
@@ -98,7 +97,6 @@ function copyAddress() {
 }
 
 async function fetchUserBalance() {
-    // eztodo refactor to use balances store?
     const response = await indexerApi.get(
         `/account/${address.value}/balances?contract=___NATIVE_CURRENCY___&includeAbi=true`,
     );

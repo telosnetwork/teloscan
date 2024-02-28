@@ -14,8 +14,6 @@ import AppHeaderTopBar from 'components/header/AppHeaderTopBar.vue';
 .c-header {
     $this: &;
 
-    // eztodo header button to just button
-    // eztodo testnet indicator
     --top-bar-height: 48px;
     --background-color: white;
 

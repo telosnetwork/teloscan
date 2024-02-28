@@ -3,6 +3,8 @@ import { ref, watchEffect } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
+import { isTestnet } from 'src/lib/chain-utils';
+
 import OutlineButton from 'components/OutlineButton.vue';
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import AppHeaderLinks from 'components/header/AppHeaderLinks.vue';
@@ -44,9 +46,14 @@ function scrollHandler(info: { direction: string; }) {
                 >
             </div>
 
-            <span class="c-header-bottom-bar__logo-text">
-                Teloscan
-            </span>
+            <div class="c-header-bottom-bar__logo-text-container">
+                <span class="c-header-bottom-bar__logo-text">
+                    Teloscan
+                </span>
+                <span v-if="() => isTestnet()" class="c-header-bottom-bar__testnet-indicator">
+                    Testnet
+                </span>
+            </div>
         </router-link>
 
         <nav class="c-header-bottom-bar__right-container">
@@ -58,7 +65,7 @@ function scrollHandler(info: { direction: string; }) {
                 class="c-header-bottom-bar__menu-button"
                 @click="menuVisibleMobile = !menuVisibleMobile"
             >
-                <q-icon name="menu" size="24px" />
+                <q-icon :name="menuVisibleMobile ? 'menu_open' : 'menu'" size="24px" />
             </OutlineButton>
 
             <AppHeaderLinks
@@ -110,12 +117,39 @@ function scrollHandler(info: { direction: string; }) {
         align-items: center;
     }
 
+    &__logo-text-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+        }
+    }
+
     &__logo-text {
         font-size: 1rem;
         font-weight: 700;
 
         @media screen and (min-width: $breakpoint-md-min) {
             font-size: 1.3rem;
+        }
+    }
+
+    &__testnet-indicator {
+        font-size: 0.6rem;
+        font-weight: 600;
+        color: var(--grey-text-color);
+        position: relative;
+        top: -4px;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            position: static;
+            top: unset;
+            align-self: self-start;
         }
     }
 

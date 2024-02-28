@@ -10,12 +10,9 @@ import { useQuasar } from 'quasar';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { formatUnits } from 'ethers/lib/utils';
-import moment from 'moment';
 
-import { getAntelope } from 'src/antelope';
-import { indexerApi } from 'src/boot/telosApi';
-import { ual } from 'src/boot/ual';
-import { providerManager } from 'src/boot/evm';
+import { useChainStore } from 'src/antelope';
+import { isTelosMainnet, isTelosTestnet } from 'src/lib/chain-utils';
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import OutlineButton from 'components/OutlineButton.vue';
@@ -24,16 +21,21 @@ import AppHeaderSearch from 'components/header/AppHeaderSearch.vue';
 const $q = useQuasar();
 const $store = useStore();
 const { t: $t } = useI18n();
+const chainStore = useChainStore();
 
-const highlightTelosMainnetLink = Number(process.env.NETWORK_EVM_CHAIN_ID) === 40;
-const highlightTelosTestnetLink = Number(process.env.NETWORK_EVM_CHAIN_ID) === 41;
+const highlightTelosMainnetLink = isTelosMainnet();
+const highlightTelosTestnetLink = isTelosTestnet();
 
 // data
 const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
 // computed
-const isNative = computed(() => $store.getters['login/isNative']);
+const systemTokenSymbol = computed(() => chainStore.currentChain.settings.getSystemToken().symbol);
 const gasPriceInGwei = computed(() => {
+    if (!isTelosMainnet()) {
+        return '';
+    }
+
     const gasPrice = $store.getters['chain/gasPrice'];
 
     if (!gasPrice) {
@@ -45,6 +47,10 @@ const gasPriceInGwei = computed(() => {
     return gasGweiNoDecimals.toLocaleString();
 });
 const tlosPrice = computed(() => {
+    if (!isTelosMainnet()) {
+        return '';
+    }
+
     const price = $store.getters['chain/tlosPrice'];
     const priceTwoDecimals = Number(Number(price).toFixed(2));
     return priceTwoDecimals.toLocaleString();
@@ -52,54 +58,13 @@ const tlosPrice = computed(() => {
 
 // methods
 onBeforeMount(() => {
-    fetchTlosPrice();
-    fetchGasPrice();
+    if (isTelosMainnet()) {
+        fetchTlosPrice();
+        fetchGasPrice();
+    }
 });
 
 onMounted(async () => {
-    const health = await indexerApi.get('/health');
-
-    // eztodo move to app.vue
-    if (health.data?.secondsBehind > 3) {
-        let behindBy = moment(health.data.secondsBehind * 1000).utc().format('HH:mm:ss');
-        if (health.data?.secondsBehind > 86400) {
-            const behindByHours = Math.round(health.data.secondsBehind / 60 / 60);
-            const behindByDays = Math.floor(health.data.secondsBehind / 60 / 60 / 24);
-            const behindByLeft = behindByHours - (behindByDays * 24);
-            const behindByLeftStr = (behindByLeft === 0)
-                ? ''
-                : $t('global.and') + ' ' + behindByLeft + ' ' + $t('global.hours');
-            behindBy = (behindByDays > 0)
-                ? behindByDays + ' ' + $t('global.days') + ' ' + behindByLeftStr
-                : behindByHours + ' ' + $t('global.hours');
-        }
-        $q.notify({
-            type: 'negative',
-            timeout: 12000,
-            progress: true,
-            message: $t('global.not_synced'),
-            caption: $t('global.data_behind_by') + ' <strong>' +
-                behindBy + '</strong>. <br>' + $t('global.try_reloading'),
-            html: true,
-        });
-    }
-
-    // On login we must set the address and record the provider
-    getAntelope().events.onLoggedOut.subscribe(() => {
-        const loginData = localStorage.getItem('loginData');
-        if (isNative.value) {
-            if (!loginData) {
-                return;
-            }
-            const loginObj = JSON.parse(loginData);
-            const wallet = ual.getAuthenticators().availableAuthenticators.find(a => a.getName() === loginObj.provider);
-            wallet?.logout();
-        }
-        $store.commit('login/setLogin', {});
-        localStorage.removeItem('loginData');
-        providerManager.setProvider(null);
-    });
-
     pricesInterval.value = setInterval(() => {
         fetchTlosPrice();
         fetchGasPrice();
@@ -125,13 +90,13 @@ function toggleDarkMode() {
 <div class="c-header-top-bar">
     <div class="c-header-top-bar__inner-container">
         <div class="c-header-top-bar__left-container">
-            <div class="text-caption q-mr-md">
-                <!-- eztodo get symbol from chain settings -->
+            <div v-if="isTelosMainnet()" class="text-caption q-mr-md">
                 <span class="c-header-top-bar__grey-text">
-                    {{ $t('components.header.system_token_price', { token: 'TLOS' }) }}
+                    {{ $t('components.header.system_token_price', { token: systemTokenSymbol }) }}
                 </span> ${{ tlosPrice }}
             </div>
-            <div class="text-caption u-flex--center-y">
+
+            <div v-if="isTelosMainnet()" class="text-caption u-flex--center-y">
                 <q-icon name="fas fa-gas-pump" class="c-header-top-bar__grey-text q-mr-xs" />
                 <span class="c-header-top-bar__grey-text">
                     {{ $t('components.header.gas') }}:
@@ -154,7 +119,6 @@ function toggleDarkMode() {
                     {{ $t(`components.header.switch_to_${$q.dark.isActive ? 'light' : 'dark'}_theme`) }}
                 </q-tooltip>
             </OutlineButton>
-            <!-- eztodo add network switcher -->
 
             <AppHeaderWallet v-if="$q.screen.gt.sm" />
 
@@ -163,7 +127,6 @@ function toggleDarkMode() {
                 text-color="primary"
                 :icon-only="true"
             >
-                <!-- eztodo get logo from chain settings -->
                 <img src="branding/telos-circle-logo.svg" height="24" width="24">
 
                 <q-menu>
