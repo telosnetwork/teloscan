@@ -87,7 +87,6 @@ watch(() => $q.screen, () => {
     closeAllMenus();
 }, { deep: true });
 
-// methods
 function blurActiveElement() {
     (document.activeElement as HTMLElement | null)?.blur();
 }
