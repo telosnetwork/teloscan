@@ -25,7 +25,6 @@ const $q = useQuasar();
 const showLoginModal = ref(false);
 const userSystemTokenBalanceWei = ref('0');
 
-// computed
 const isLoggedIn = computed(() => $store.getters['login/isLoggedIn']);
 const isNative = computed(() => $store.getters['login/isNative']);
 const address = computed(() => $store.getters['login/address']);
