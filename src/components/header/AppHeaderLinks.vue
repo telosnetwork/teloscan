@@ -42,6 +42,7 @@ const walletMenuItem = {
 const moreSubmenuItems = {
     internal: [
         { name: 'export', label: 'CSV Export' },
+        { name: 'health', label: 'Health Monitor' },
     ],
     external: [
         {
