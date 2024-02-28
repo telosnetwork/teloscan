@@ -32,6 +32,12 @@ const props = withDefaults(defineProps<Props>(), {
     initialPageSize: 1,
 });
 
+/**
+ *
+ *
+ * */
+
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const rows = ref<Array<any>>([]);
 const filterUpdated = ref(false);
@@ -94,11 +100,6 @@ const columns = [
         name: 'from',
         label: $t('components.from'),
         align: 'left',
-    },
-    {
-        name: 'direction',
-        label: '',
-        align: 'center',
     },
     {
         name: 'to',
@@ -322,7 +323,6 @@ function setHighlightAddress(val: string) {
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 <div v-if="col.name === 'preview'" class="u-flex--center-y" @click="toggleDateFormat">
-                    {{ showDateAge ? col.label: $t('components.date') }}
                     <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
                     <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
                         See preview of the transaction details.
@@ -396,13 +396,6 @@ function setHighlightAddress(val: string) {
                     @highlight="setHighlightAddress"
                 />
             </q-td>
-            <q-td key="direction">
-                <q-icon
-                    size="12px"
-                    name="fas fa-arrow-right"
-                    :color="props.row.status === '0x1' ? 'green' : 'red'"
-                />
-            </q-td>
             <q-td key="to" :props="props">
                 <AddressField
                     v-if="props.row.to"
@@ -443,7 +436,8 @@ function setHighlightAddress(val: string) {
     align-items: center;
 }
 .hash-column{
-    min-width: 180px;
+    min-width: 130px;
 }
 </style>
+
 
