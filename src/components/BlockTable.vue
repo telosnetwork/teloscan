@@ -254,10 +254,10 @@ function getTransactionsCount(transactionsCount: number | undefined) {
             <q-td key='transactionsCount' :props="props">
                 <span class="c-block-table__cell-trx">
                     {{
-                        getTransactionsCount(props.row.transactionsCount) === '1'
+                        getTransactionsCount(props.row.transactionCount) === '1'
                             ? $t('components.blocks.count_transaction')
                             : $t('components.blocks.count_transactions', {
-                                count: getTransactionsCount(props.row.transactionsCount)
+                                count: getTransactionsCount(props.row.transactionCount)
                             })
                     }}
                 </span>
