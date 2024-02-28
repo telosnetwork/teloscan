@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
@@ -13,6 +13,13 @@ const { t: $t } = useI18n();
 // data
 const menuBottomBarHidden = ref(false);
 const menuVisibleMobile = ref(false);
+
+// watchers
+watchEffect(() => {
+    if (!menuVisibleMobile.value) {
+        (document.activeElement as HTMLElement | null)?.blur();
+    }
+});
 
 // methods
 function scrollHandler(info: { direction: string; }) {
