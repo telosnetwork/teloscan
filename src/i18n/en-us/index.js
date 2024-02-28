@@ -226,6 +226,7 @@ export default {
             count_transaction: '1 transaction',
             in_this_block: 'in this block',
             transactions: 'Transactions',
+            transactions_root: 'Transactions Root',
         },
         known_tokens: 'Known tokens',
         other_tokens: 'Unknown tokens',
