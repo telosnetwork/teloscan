@@ -12,6 +12,10 @@ import AppHeaderLinks from 'components/header/AppHeaderLinks.vue';
 const $q = useQuasar();
 const { t: $t } = useI18n();
 
+defineProps<{
+    topBarHidden: boolean;
+}>();
+
 const menuBottomBarHidden = ref(false);
 const menuVisibleMobile = ref(false);
 
@@ -30,6 +34,7 @@ function scrollHandler(info: { direction: string; }) {
 <div
     :class="{
         'c-header-bottom-bar': true,
+        'c-header-bottom-bar--no-top-bar': topBarHidden,
         'c-header-bottom-bar--hidden': menuBottomBarHidden,
     }"
 >
@@ -92,6 +97,10 @@ function scrollHandler(info: { direction: string; }) {
 
     @media screen and (min-width: $breakpoint-lg-min) {
         padding: 0;
+    }
+
+    &--no-top-bar {
+        top: 0;
     }
 
     &--hidden:not(:focus-within) {

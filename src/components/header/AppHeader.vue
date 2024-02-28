@@ -1,12 +1,21 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useQuasar } from 'quasar';
+import { useRoute } from 'vue-router';
+
 import AppHeaderBottomBar from 'components/header/AppHeaderBottomBar.vue';
 import AppHeaderTopBar from 'components/header/AppHeaderTopBar.vue';
+
+const $q = useQuasar();
+const $route = useRoute();
+
+const hideNavTopBar = computed(() => $route.name === 'home' && $q.screen.lt.md);
 </script>
 
 <template>
 <header class="c-header">
-    <AppHeaderTopBar />
-    <AppHeaderBottomBar />
+    <AppHeaderTopBar v-if="!hideNavTopBar" />
+    <AppHeaderBottomBar :top-bar-hidden="hideNavTopBar" />
 </header>
 </template>
 
