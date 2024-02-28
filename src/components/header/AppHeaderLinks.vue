@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
 
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import AppHeaderButton from 'components/header/AppHeaderButton.vue';
@@ -9,6 +10,7 @@ import AppHeaderButton from 'components/header/AppHeaderButton.vue';
 const $route = useRoute();
 const $router = useRouter();
 const $q = useQuasar();
+const { t: $t } = useI18n();
 
 defineProps<{
     menuVisibleMobile: boolean;
@@ -20,39 +22,37 @@ const emit = defineEmits(['close-menu']);
 const TELOSCAN_MAINNET_URL = 'https://teloscan.io';
 const TELOSCAN_TESTNET_URL = 'https://testnet.teloscan.io';
 
-// eztodo i18n
 const blockchainSubmenuItems = [
-    { name: 'transactions', label: 'Transactions' },
-    { name: 'blocks', label: 'Blocks' },
+    { name: 'transactions', label: $t('components.header.transactions') },
+    { name: 'blocks', label: $t('components.header.blocks') },
 ];
 
-// eztodo handle testnet, use chain settings for links, i18n
+// eztodo handle testnet, use chain settings for links
 const developersSubmenuItems = [
-    { url: 'https://api.teloscan.io/swagger/', label: 'API Documentation' },
-    { url: 'https://sourcify.dev/', label: 'Verify Contract (Sourcify)' },
+    { url: 'https://api.teloscan.io/swagger/', label: $t('components.header.api_documentation') },
+    { url: 'https://sourcify.dev/', label: $t('components.header.verify_contract_sourcify') },
 ];
 
-// eztodo use chain settings for link, i18n
+// eztodo use chain settings for link
 const walletMenuItem = {
     url: 'https://wallet.telos.net/',
-    label: 'Telos Wallet',
+    label: $t('components.header.telos_wallet'),
 };
 
-// eztodo use chain settings, i18n
+// eztodo use chain settings
 const moreSubmenuItems = {
     internal: [
-        { name: 'export', label: 'CSV Export' },
-        { name: 'health', label: 'Health Monitor' },
+        { name: 'export', label: $t('components.header.csv_export') },
+        { name: 'health', label: $t('components.header.health_monitor') },
     ],
     external: [
         {
             url: 'https://www.telos.net/ecosystem',
-            label: 'Telos Ecosystem',
+            label: $t('components.header.telos_ecosystem'),
         },
     ],
 };
 
-// eztodo i18n
 const networksMenuItems = {
     mainnet: [{
         url: TELOSCAN_MAINNET_URL,
@@ -142,8 +142,7 @@ function goTo(to: string | { name: string }) {
         @click="goTo({ name: 'home' })"
         @keydown.enter="goTo({ name: 'home' })"
     >
-        <!-- eztodo i18n -->
-        Home
+        {{ $t('components.header.home') }}
     </li>
 
     <li
@@ -161,8 +160,7 @@ function goTo(to: string | { name: string }) {
         @keydown.enter="blockchainMenuExpandedMobile = !blockchainMenuExpandedMobile"
     >
         <div id="app-header-blockchain-submenu-label" class="c-header-links__menu-li-text">
-            <!-- eztodo i18n -->
-            Blockchain
+            {{ $t('components.header.blockchain') }}
             <q-icon name="fas fa-chevron-down" size="12px" />
         </div>
 
@@ -204,8 +202,7 @@ function goTo(to: string | { name: string }) {
         @keydown.enter="developersMenuExpandedMobile = !developersMenuExpandedMobile"
     >
         <div id="app-header-developers-submenu-label" class="c-header-links__menu-li-text">
-            <!-- eztodo i18n -->
-            Developers
+            {{ $t('components.header.developers') }}
             <q-icon name="fas fa-chevron-down" size="12px" />
         </div>
 
@@ -258,8 +255,7 @@ function goTo(to: string | { name: string }) {
         @keydown.enter="moreMenuExpandedMobile = !moreMenuExpandedMobile"
     >
         <div id="app-header-more-submenu-label" class="c-header-links__menu-li-text">
-            <!-- eztodo i18n -->
-            More
+            {{ $t('components.header.more') }}
             <q-icon name="fas fa-chevron-down" size="12px" />
         </div>
 
@@ -274,7 +270,7 @@ function goTo(to: string | { name: string }) {
                 class="c-header-links__submenu-li"
                 tabindex="0"
                 role="button"
-                :aria-label="'eztodo'"
+                :aria-label="$t('components.header.open_language_switcher')"
                 @keydown.enter="showLanguageSwitcher = true"
                 @click="showLanguageSwitcher = true"
             >
@@ -331,8 +327,7 @@ function goTo(to: string | { name: string }) {
         @keydown.enter="networkMenuExpandedMobile = !networkMenuExpandedMobile"
     >
         <div id="app-header-network-submenu-label" class="c-header-links__menu-li-text">
-            <!-- eztodo i18n -->
-            Network
+            {{ $t('components.header.network') }}
             <q-icon name="fas fa-chevron-down" size="12px" />
         </div>
 
@@ -383,14 +378,13 @@ function goTo(to: string | { name: string }) {
             class="c-header-links__theme-toggle"
             @click="toggleDarkMode"
         >
-            <!-- eztodo i18n -->
             <q-icon
                 :name="`far fa-${$q.dark.isActive ? 'moon' : 'sun'}`"
                 size="14px"
                 color="primary"
                 class="q-mr-sm"
             />
-            Switch to light theme
+            {{ $t(`components.header.switch_to_${$q.dark.isActive ? 'light' : 'dark'}_theme`) }}
         </AppHeaderButton>
     </li>
 </ul>

@@ -119,35 +119,23 @@ function toggleDarkMode() {
     $q.dark.toggle();
     localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
 }
-
-// function handleLoginLogout() {
-//     if (isLoggedIn.value) {
-//         logout();
-//     } else {
-//         showLoginModal.value = true;
-//     }
-// }
-
-// function logout() {
-//     useAccountStore().logout();
-// }
-
 </script>
 
 <template>
-<!-- eztodo i18n and aria roles -->
-
 <div class="c-header-top-bar">
     <div class="c-header-top-bar__inner-container">
         <div class="c-header-top-bar__left-container">
             <div class="text-caption q-mr-md">
-                <!-- eztodo i18n, get symbol from chain settings -->
-                <span class="c-header-top-bar__grey-text">TLOS price:</span> ${{ tlosPrice }}
+                <!-- eztodo get symbol from chain settings -->
+                <span class="c-header-top-bar__grey-text">
+                    {{ $t('components.header.system_token_price', { token: 'TLOS' }) }}
+                </span> ${{ tlosPrice }}
             </div>
             <div class="text-caption u-flex--center-y">
-                <!-- eztodo i18n -->
                 <q-icon name="fas fa-gas-pump" class="c-header-top-bar__grey-text q-mr-xs" />
-                <span class="c-header-top-bar__grey-text">Gas:</span>&nbsp;{{ gasPriceInGwei }} gwei
+                <span class="c-header-top-bar__grey-text">
+                    {{ $t('components.header.gas') }}:
+                </span>&nbsp;{{ gasPriceInGwei }} gwei
             </div>
         </div>
 
@@ -163,8 +151,7 @@ function toggleDarkMode() {
                 <q-icon :name="`far fa-${$q.dark.isActive ? 'moon' : 'sun'}`" size="14px" />
 
                 <q-tooltip>
-                    <!-- eztodo i18n -->
-                    Switch to light theme
+                    {{ $t(`components.header.switch_to_${$q.dark.isActive ? 'light' : 'dark'}_theme`) }}
                 </q-tooltip>
             </AppHeaderButton>
             <!-- eztodo add network switcher -->
@@ -183,14 +170,12 @@ function toggleDarkMode() {
                     <q-list>
                         <q-item clickable>
                             <q-item-section :class="highlightTelosMainnetLink ? 'text-primary' : ''">
-                                <!-- eztodo i18n -->
                                 Telos Mainnet
                             </q-item-section>
                         </q-item>
                         <q-separator />
                         <q-item clickable>
                             <q-item-section :class="highlightTelosTestnetLink ? 'text-primary' : ''">
-                                <!-- eztodo i18n -->
                                 Telos Testnet
                             </q-item-section>
                         </q-item>
@@ -198,14 +183,12 @@ function toggleDarkMode() {
                 </q-menu>
 
                 <q-tooltip>
-                    <!-- eztodo i18n -->
-                    View other networks
+                    {{ $t('components.header.view_other_networks') }}
                 </q-tooltip>
             </AppHeaderButton>
         </div>
     </div>
 </div>
-
 </template>
 
 <style lang="scss">

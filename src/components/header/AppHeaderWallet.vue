@@ -114,9 +114,7 @@ async function fetchUserBalance() {
     @click="handleWalletButtonClick"
 >
     <template v-if="!isLoggedIn">
-        <!-- eztodo i18n -->
-
-        Connect Wallet
+        {{ $t('components.header.connect_wallet') }}
 
         <q-icon
             name="far fa-circle"
@@ -137,10 +135,10 @@ async function fetchUserBalance() {
                 <q-item>
                     <div class="c-app-header-wallet__account-actions-container">
                         <div>
-                            <!-- eztodo aria label -->
                             <AppHeaderButton
                                 text-color="primary"
                                 :icon-only="true"
+                                :aria-label="$i18n.t('components.header.copy_address')"
                                 @click="copyAddress"
                             >
                                 <q-icon name="far fa-copy" size="14px" />
@@ -173,8 +171,7 @@ async function fetchUserBalance() {
                             <q-icon name="fas fa-power-off" size="14px" />
 
                             <q-tooltip>
-                                Disconnect wallet
-                                <!-- eztodo i18n -->
+                                {{ $t('components.header.disconnect_wallet_tooltip') }}
                             </q-tooltip>
                         </AppHeaderButton>
                     </div>
