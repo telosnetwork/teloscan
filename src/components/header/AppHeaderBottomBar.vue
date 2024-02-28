@@ -81,8 +81,6 @@ function scrollHandler(info: { direction: string; }) {
 
 <style lang="scss">
 .c-header-bottom-bar {
-    $this: &;
-
     padding: 0 12px;
     position: absolute;
     top: var(--top-bar-height);

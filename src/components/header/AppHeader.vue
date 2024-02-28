@@ -12,8 +12,6 @@ import AppHeaderTopBar from 'components/header/AppHeaderTopBar.vue';
 
 <style lang="scss">
 .c-header {
-    $this: &;
-
     --top-bar-height: 48px;
     --background-color: white;
 

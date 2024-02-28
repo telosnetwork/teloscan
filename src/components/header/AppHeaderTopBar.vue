@@ -12,7 +12,7 @@ import { useI18n } from 'vue-i18n';
 import { formatUnits } from 'ethers/lib/utils';
 
 import { useChainStore } from 'src/antelope';
-import { isTelosMainnet, isTelosTestnet } from 'src/lib/chain-utils';
+import { isMainnet, isTestnet } from 'src/lib/chain-utils';
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import OutlineButton from 'components/OutlineButton.vue';
@@ -23,8 +23,8 @@ const $store = useStore();
 const { t: $t } = useI18n();
 const chainStore = useChainStore();
 
-const highlightTelosMainnetLink = isTelosMainnet();
-const highlightTelosTestnetLink = isTelosTestnet();
+const highlightTelosMainnetLink = isMainnet();
+const highlightTelosTestnetLink = isTestnet();
 
 // data
 const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
@@ -32,7 +32,7 @@ const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
 // computed
 const systemTokenSymbol = computed(() => chainStore.currentChain.settings.getSystemToken().symbol);
 const gasPriceInGwei = computed(() => {
-    if (!isTelosMainnet()) {
+    if (isTestnet()) {
         return '';
     }
 
@@ -47,7 +47,7 @@ const gasPriceInGwei = computed(() => {
     return gasGweiNoDecimals.toLocaleString();
 });
 const tlosPrice = computed(() => {
-    if (!isTelosMainnet()) {
+    if (isTestnet()) {
         return '';
     }
 
@@ -58,7 +58,7 @@ const tlosPrice = computed(() => {
 
 // methods
 onBeforeMount(() => {
-    if (isTelosMainnet()) {
+    if (isMainnet()) {
         fetchTlosPrice();
         fetchGasPrice();
     }
@@ -90,13 +90,13 @@ function toggleDarkMode() {
 <div class="c-header-top-bar">
     <div class="c-header-top-bar__inner-container">
         <div class="c-header-top-bar__left-container">
-            <div v-if="isTelosMainnet()" class="text-caption q-mr-md">
+            <div v-if="isMainnet()" class="text-caption q-mr-md">
                 <span class="c-header-top-bar__grey-text">
                     {{ $t('components.header.system_token_price', { token: systemTokenSymbol }) }}
                 </span> ${{ tlosPrice }}
             </div>
 
-            <div v-if="isTelosMainnet()" class="text-caption u-flex--center-y">
+            <div v-if="isMainnet()" class="text-caption u-flex--center-y">
                 <q-icon name="fas fa-gas-pump" class="c-header-top-bar__grey-text q-mr-xs" />
                 <span class="c-header-top-bar__grey-text">
                     {{ $t('components.header.gas') }}:
