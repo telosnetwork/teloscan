@@ -74,7 +74,6 @@ const networksMenuItems = {
     }],
 };
 
-// data
 const blockchainMenuExpandedMobile = ref(false);
 const developersMenuExpandedMobile = ref(false);
 const moreMenuExpandedMobile = ref(false);
