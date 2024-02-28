@@ -1,0 +1,555 @@
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
+
+import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
+import AppHeaderButton from 'components/header/AppHeaderButton.vue';
+
+const $route = useRoute();
+const $router = useRouter();
+const $q = useQuasar();
+
+defineProps<{
+    menuVisibleMobile: boolean;
+}>();
+const emit = defineEmits(['close-menu']);
+
+
+// eztodo get these from somewhere else?
+const TELOSCAN_MAINNET_URL = 'https://teloscan.io';
+const TELOSCAN_TESTNET_URL = 'https://testnet.teloscan.io';
+
+// eztodo i18n
+const blockchainSubmenuItems = [
+    { name: 'transactions', label: 'Transactions' },
+    { name: 'blocks', label: 'Blocks' },
+];
+
+// eztodo handle testnet, use chain settings for links, i18n
+const developersSubmenuItems = [
+    { url: 'https://api.teloscan.io/swagger/', label: 'API Documentation' },
+    { url: 'https://sourcify.dev/', label: 'Verify Contract (Sourcify)' },
+];
+
+// eztodo use chain settings for link, i18n
+const walletMenuItem = {
+    url: 'https://wallet.telos.net/',
+    label: 'Telos Wallet',
+};
+
+// eztodo use chain settings, i18n
+const moreSubmenuItems = {
+    internal: [
+        { name: 'export', label: 'CSV Export' },
+    ],
+    external: [
+        {
+            url: 'https://www.telos.net/ecosystem',
+            label: 'Telos Ecosystem',
+        },
+    ],
+};
+
+// eztodo i18n
+const networksMenuItems = {
+    mainnet: [{
+        url: TELOSCAN_MAINNET_URL,
+        label: 'Telos Mainnet',
+    }],
+    testnet: [{
+        url: TELOSCAN_TESTNET_URL,
+        label: 'Telos Testnet',
+    }],
+};
+
+// data
+const blockchainMenuExpandedMobile = ref(false);
+const developersMenuExpandedMobile = ref(false);
+const moreMenuExpandedMobile = ref(false);
+const networkMenuExpandedMobile = ref(false);
+const showLanguageSwitcher = ref(false);
+
+// computed
+const highlightBlockchainMenuItem = computed(() => blockchainSubmenuItems.some(({ name }) => name === $route.name));
+const highlightMoreMenuItem = computed(() => moreSubmenuItems.internal.some(({ name }) => name === $route.name));
+
+// watchers
+watch(() => $q.screen.gt.md, () => {
+    // eztodo fix this
+    closeAllMenus();
+});
+
+// methods
+function blurActiveElement() {
+    (document.activeElement as HTMLElement | null)?.blur();
+}
+
+function closeAllMenus() {
+    emit('close-menu');
+    blockchainMenuExpandedMobile.value = false;
+    developersMenuExpandedMobile.value = false;
+    moreMenuExpandedMobile.value = false;
+    networkMenuExpandedMobile.value = false;
+}
+
+function toggleDarkMode() {
+    $q.dark.toggle();
+    localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
+}
+
+function getIsCurrentNetworkMenuItem(url: string) {
+    if (url === TELOSCAN_MAINNET_URL) {
+        return Number(process.env.NETWORK_EVM_CHAIN_ID) === 40;
+    }
+
+    if (url === TELOSCAN_TESTNET_URL) {
+        return Number(process.env.NETWORK_EVM_CHAIN_ID) === 41;
+    }
+
+    return false;
+}
+
+function goTo(to: string | { name: string }) {
+    blurActiveElement();
+    closeAllMenus();
+
+    const httpsRegex = /^https/;
+    if (typeof to === 'string' && httpsRegex.test(to)) {
+        window.open(to, '_blank');
+        return;
+    }
+
+    $router.push(to);
+}
+</script>
+
+<template>
+<ul
+    :class="{
+        'c-header-links': true,
+        'c-header-links--visible-mobile shadow-2': menuVisibleMobile && $q.screen.lt.md,
+    }"
+>
+    <li
+        :class="{
+            'c-header-links__menu-li': true,
+            'c-header-links__menu-li--current': $route.name === 'home',
+        }"
+        tabindex="0"
+        role="link"
+        @click="goTo({ name: 'home' })"
+        @keydown.enter="goTo({ name: 'home' })"
+    >
+        <!-- eztodo i18n -->
+        Home
+    </li>
+
+    <li
+        :class="{
+            'c-header-links__menu-li c-header-links__menu-li--expandable': true,
+            'c-header-links__menu-li--current': highlightBlockchainMenuItem,
+            'c-header-links__menu-li--expanded-mobile': blockchainMenuExpandedMobile,
+        }"
+        tabindex="0"
+        :aria-expanded="$q.screen.lt.md ? blockchainMenuExpandedMobile : undefined"
+        :aria-controls="$q.screen.lt.md ? 'app-header-blockchain-submenu-ul' : undefined"
+        :aria-labelledby="$q.screen.lt.md ? 'app-header-blockchain-submenu-label' : undefined"
+        @mouseleave="blurActiveElement"
+        @click="blockchainMenuExpandedMobile = !blockchainMenuExpandedMobile"
+        @keydown.enter="blockchainMenuExpandedMobile = !blockchainMenuExpandedMobile"
+    >
+        <div id="app-header-blockchain-submenu-label" class="c-header-links__menu-li-text">
+            <!-- eztodo i18n -->
+            Blockchain
+            <q-icon name="fas fa-chevron-down" size="12px" />
+        </div>
+
+        <ul
+            id="app-header-blockchain-submenu-ul"
+            :class="{
+                'c-header-links__submenu-ul': true,
+                'shadow-2': $q.screen.gt.md,
+            }"
+        >
+            <li
+                v-for="item in blockchainSubmenuItems"
+                :key="`blockchain-submenu-item-${item.name}`"
+                :class="{
+                    'c-header-links__submenu-li': true,
+                    'c-header-links__submenu-li--current': $route.name === item.name,
+                }"
+                tabindex="0"
+                role="link"
+                @click="goTo({ name: item.name })"
+                @keydown.enter="goTo({ name: item.name })"
+            >
+                {{ item.label }}
+            </li>
+        </ul>
+    </li>
+
+    <li
+        :class="{
+            'c-header-links__menu-li c-header-links__menu-li--expandable': true,
+            'c-header-links__menu-li--expanded-mobile': developersMenuExpandedMobile,
+        }"
+        tabindex="0"
+        :aria-expanded="$q.screen.lt.md ? developersMenuExpandedMobile : undefined"
+        :aria-controls="$q.screen.lt.md ? 'app-header-developers-submenu-ul' : undefined"
+        :aria-labelledby="$q.screen.lt.md ? 'app-header-developers-submenu-label' : undefined"
+        @mouseleave="blurActiveElement"
+        @click="developersMenuExpandedMobile = !developersMenuExpandedMobile"
+        @keydown.enter="developersMenuExpandedMobile = !developersMenuExpandedMobile"
+    >
+        <div id="app-header-developers-submenu-label" class="c-header-links__menu-li-text">
+            <!-- eztodo i18n -->
+            Developers
+            <q-icon name="fas fa-chevron-down" size="12px" />
+        </div>
+
+        <ul
+            id="app-header-developers-submenu-ul"
+            :class="{
+                'c-header-links__submenu-ul': true,
+                'shadow-2': $q.screen.gt.md,
+            }"
+        >
+            <li
+                v-for="item in developersSubmenuItems"
+                :key="`developer-submenu-item-${item.label}`"
+                class="c-header-links__submenu-li"
+                tabindex="0"
+                role="link"
+                @click="goTo(item.url)"
+                @keydown.enter="goTo(item.url)"
+            >
+                <div class="u-flex--center-y">
+                    {{ item.label }}
+                    <q-icon name="fas fa-external-link-alt" size="12px" class="q-ml-sm" />
+                </div>
+            </li>
+        </ul>
+    </li>
+
+    <li
+        class="c-header-links__menu-li"
+        tabindex="0"
+        role="link"
+        @click="goTo(walletMenuItem.url)"
+        @keydown.enter="goTo(walletMenuItem.url)"
+    >
+        {{ walletMenuItem.label }}
+    </li>
+
+    <li
+        :class="{
+            'c-header-links__menu-li c-header-links__menu-li--expandable': true,
+            'c-header-links__menu-li--current': highlightMoreMenuItem,
+            'c-header-links__menu-li--expanded-mobile': moreMenuExpandedMobile,
+        }"
+        tabindex="0"
+        :aria-expanded="$q.screen.lt.md ? moreMenuExpandedMobile : undefined"
+        :aria-controls="$q.screen.lt.md ? 'app-header-more-submenu-ul' : undefined"
+        :aria-labelledby="$q.screen.lt.md ? 'app-header-more-submenu-label' : undefined"
+        @mouseleave="blurActiveElement"
+        @click="moreMenuExpandedMobile = !moreMenuExpandedMobile"
+        @keydown.enter="moreMenuExpandedMobile = !moreMenuExpandedMobile"
+    >
+        <div id="app-header-more-submenu-label" class="c-header-links__menu-li-text">
+            <!-- eztodo i18n -->
+            More
+            <q-icon name="fas fa-chevron-down" size="12px" />
+        </div>
+
+        <ul
+            id="app-header-more-submenu-ul"
+            :class="{
+                'c-header-links__submenu-ul c-header-links__submenu-ul--rightmost': true,
+                'shadow-2': $q.screen.gt.md,
+            }"
+        >
+            <li
+                class="c-header-links__submenu-li"
+                tabindex="0"
+                role="button"
+                :aria-label="'eztodo'"
+                @keydown.enter="showLanguageSwitcher = true"
+                @click="showLanguageSwitcher = true"
+            >
+                <div class="u-flex--center-y">
+                    {{ $t('global.language') }}
+                    <q-icon name="fas fa-language" size="16px" class="q-ml-sm" />
+                </div>
+            </li>
+
+            <li
+                v-for="item in moreSubmenuItems.internal"
+                :key="`more-submenu-item-internal-${item.name}`"
+                :class="{
+                    'c-header-links__submenu-li': true,
+                    'c-header-links__submenu-li--current': $route.name === item.name,
+                }"
+                tabindex="0"
+                role="link"
+                @click="goTo({ name: item.name })"
+                @keydown.enter="goTo({ name: item.name })"
+            >
+                {{ item.label }}
+            </li>
+
+            <li
+                v-for="item in moreSubmenuItems.external"
+                :key="`more-submenu-item-external-${item.label}`"
+                class="c-header-links__submenu-li"
+                tabindex="0"
+                role="link"
+                @click="goTo(item.url)"
+                @keydown.enter="goTo(item.url)"
+            >
+                <div class="u-flex--center-y">
+                    {{ item.label }}
+                    <q-icon name="fas fa-external-link-alt" size="12px" class="q-ml-sm" />
+                </div>
+            </li>
+        </ul>
+    </li>
+
+    <li
+        v-if="$q.screen.lt.md"
+        :class="{
+            'c-header-links__menu-li c-header-links__menu-li--expandable': true,
+            'c-header-links__menu-li--expanded-mobile': networkMenuExpandedMobile,
+        }"
+        tabindex="0"
+        :aria-expanded="$q.screen.lt.md ? networkMenuExpandedMobile : undefined"
+        :aria-controls="$q.screen.lt.md ? 'app-header-network-submenu-ul' : undefined"
+        :aria-labelledby="$q.screen.lt.md ? 'app-header-network-submenu-label' : undefined"
+        @mouseleave="blurActiveElement"
+        @click="networkMenuExpandedMobile = !networkMenuExpandedMobile"
+        @keydown.enter="networkMenuExpandedMobile = !networkMenuExpandedMobile"
+    >
+        <div id="app-header-network-submenu-label" class="c-header-links__menu-li-text">
+            <!-- eztodo i18n -->
+            Network
+            <q-icon name="fas fa-chevron-down" size="12px" />
+        </div>
+
+        <ul
+            id="app-header-network-submenu-ul"
+            :class="{
+                'c-header-links__submenu-ul': true,
+                'shadow-2': $q.screen.gt.md,
+            }"
+        >
+            <li
+                v-for="item in networksMenuItems.mainnet"
+                :key="`networks-submenu-item-mainnet-${item.label}`"
+                :class="{
+                    'c-header-links__submenu-li': true,
+                    'c-header-links__submenu-li--current': getIsCurrentNetworkMenuItem(item.url),
+                }"
+                tabindex="0"
+                role="link"
+                @click="goTo(item.url)"
+                @keydown.enter="goTo(item.url)"
+            >
+                {{ item.label }}
+            </li>
+
+            <q-separator />
+
+            <li
+                v-for="item in networksMenuItems.testnet"
+                :key="`networks-submenu-item-testnet-${item.label}`"
+                :class="{
+                    'c-header-links__submenu-li': true,
+                    'c-header-links__submenu-li--current': getIsCurrentNetworkMenuItem(item.url),
+                }"
+                tabindex="0"
+                role="link"
+                @click="goTo(item.url)"
+                @keydown.enter="goTo(item.url)"
+            >
+                {{ item.label }}
+            </li>
+        </ul>
+    </li>
+
+    <li v-if="$q.screen.lt.md" class="c-header-links__menu-li">
+        <AppHeaderButton
+            text-color="default"
+            class="c-header-links__theme-toggle"
+            @click="toggleDarkMode"
+        >
+            <!-- eztodo i18n -->
+            <q-icon
+                :name="`far fa-${$q.dark.isActive ? 'moon' : 'sun'}`"
+                size="14px"
+                color="primary"
+                class="q-mr-sm"
+            />
+            Switch to light theme
+        </AppHeaderButton>
+    </li>
+</ul>
+
+<LanguageSwitcherModal :show="showLanguageSwitcher" @hide="showLanguageSwitcher = false" />
+</template>
+
+<style lang="scss">
+.c-header-links {
+    $this: &;
+
+    // other CSS vars defined in AppHeader.vue
+    --highlight-color: #{$grey-3};
+
+    @at-root .body--dark & {
+        --highlight-color: #{$grey-9};
+    }
+
+    display: none;
+    height: 100%;
+    list-style: none;
+    flex-direction: row;
+    margin: 0;
+    padding: 0;
+
+    @media screen and (min-width: $breakpoint-md-min) {
+        display: flex;
+    }
+
+    &--visible-mobile {
+        position: absolute;
+        display: flex;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        top: 52px;
+        height: max-content;
+        background-color: var(--background-color);
+
+        #{$this}__menu-li--expandable {
+            justify-content: space-between;
+        }
+
+        #{$this}__menu-li--expanded-mobile {
+            #{$this}__submenu-ul {
+                display: block;
+                width: 100%;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                padding: 12px;
+            }
+        }
+    }
+
+    &__menu-li {
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        user-select: none;
+        cursor: pointer;
+        font-weight: 500;
+
+        &:not(&--expandable):hover {
+            color: $primary;
+        }
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            padding: 8px;
+        }
+
+        &--expandable {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+
+            @media screen and (min-width: $breakpoint-md-min) {
+                position: relative;
+                cursor: default;
+                gap: 4px;
+                align-items: center;
+                flex-direction: row;
+
+                &:hover,
+                &:focus,
+                &:focus-within {
+                    #{$this}__submenu-ul {
+                        opacity: 1;
+                        visibility: visible;
+                        transform: translateY(0);
+                    }
+                }
+            }
+        }
+
+        &--current {
+            color: $primary;
+        }
+    }
+
+    &__menu-li-text {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            gap: 8px;
+        }
+    }
+
+    &__submenu-ul {
+        transition: 0.2s ease all;
+
+        display: none;
+        z-index: 999;
+        list-style: none;
+        color: var(--text-color);
+        font-weight: normal;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            display: block;
+            opacity: 0;
+            padding: 12px;
+            visibility: hidden;
+            transform: translateY(8px);
+            position: absolute;
+            top: calc(100% - 1px);
+            left: 0;
+            justify-content: space-between;
+            border-radius: 0 0 4px 4px;
+            background-color: var(--background-color);
+            border-top: 2px solid $primary;
+
+            &--rightmost {
+                right: 0;
+                left: unset;
+            }
+        }
+    }
+
+    &__submenu-li {
+        padding: 8px;
+        cursor: pointer;
+        user-select: none;
+        transition: 0.2s ease all;
+        border-radius: 8px;
+        min-width: max-content;
+
+        &:hover,
+        &:active {
+            background-color: var(--highlight-color);
+        }
+
+        &--current {
+            color: $primary;
+        }
+    }
+
+    &__theme-toggle {
+        width: 100%;
+    }
+}
+</style>
