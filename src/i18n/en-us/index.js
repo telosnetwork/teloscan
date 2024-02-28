@@ -5,110 +5,6 @@ export default {
         current_language_name: 'English',
     },
     pages: {
-        staking: {
-            note_unstaking_period: 'Please note that there is an unstaking period of {period}',
-            sign_in: 'Please sign in first to be able to interact with our staking interface',
-            claim_tlos: 'Claim TLOS',
-            add_stlos_to_metamask: 'Launch MetaMask dialog to add sTLOS',
-            metamask_fox_logo: 'MetaMask fox logo',
-            cancel: 'Cancel',
-            stake_tlos_confirm: 'Continuing will stake TLOS in exchange for sTLOS. ' +
-            'sTLOS can be redeemed for TLOS at any time using the Unstake tab.',
-            stake_tlos_confirm_2a: 'After TLOS has been unstaked, it will be locked for a period of', /* unstakePeriodPretty...*/
-            stake_tlos_confirm_2b: /*...unstakePeriodPretty */ 'after which it can be withdrawn to your account from the Withdraw tab.',
-            stake_tlos_confirm_3: 'Would you like to proceed?',
-            stake_tlos: 'Stake TLOS',
-            stake_tlos_subheader: 'Staking your TLOS to sTLOS grants you access to a steady income and various DeFi applications, ' +
-            'further increasing yield. As the reward pool increases, the TLOS to sTLOS conversion rate will change ' +
-            'over time. Therefore, the amount of sTLOS received is smaller than the staked TLOS. Rewards will be ' +
-            'auto-compounded. No further action is required.',
-            receive_stlos: 'Receive sTLOS',
-            available: '{balanceTlos} Available',
-            insufficient_tlos_balance: 'Insufficient TLOS balance to stake',
-            login_using_an_evm_wallet: 'Login using an EVM wallet',
-            wallet_not_connected: 'Wallet not connected',
-            click_to_input_full_wallet_balance: 'Click to input full wallet balance\n\n' +
-            'Balance displayed is reduced by 1 TLOS to keep your account actionable.\n' +
-            'Precise balance (less approximate gas fees):\n' +
-            '{prettyBalance} TLOS',
-            loading: 'Loading...',
-            get_more_tlos: 'Get more TLOS',
-            connect_wallet: 'Connect Wallet',
-            minutes: 'minutes',
-            hours: 'hours',
-            days: 'days',
-            unstake: 'Unstake',
-            stake: 'Stake',
-            withdraw: 'Withdraw',
-            telos_evm_staking: 'Telos EVM Staking',
-            stake_tlos_earn_interest: 'Stake TLOS for sTLOS to earn interest from the staking rewards pool',
-            staked: 'Staked',
-            unstaked: 'Unstaked',
-            tooltip_1: 'APY: Annual Percentage Yield\n\nThe annual rate of return after taking compound interest into account.\n\n' +
-            'Interest is compounded approximately every 30 minutes. The percentage rate is not fixed, meaning that ' +
-            'it will change over time with the total amount of TLOS staked across Telos EVM and Native. ' +
-            'Rewards are disbursed from a community rewards pool into the sTLOS contract.',
-            tooltip_2: 'TVL: Total Value Locked\n\nThe current value, in TLOS, of all assets held in the sTLOS ' +
-            '(Staked TLOS) smart contract, i.e. the sum of all TLOS staked on the Telos EVM at this moment.',
-            tooltip_3: 'Staked\n\n' +
-            'The total staked amount associated with the logged-in account, i.e. ' +
-            'your sTLOS token balance, along with its value in TLOS',
-            tooltip_4: 'Unstaked\n\n' +
-            'The total value of TLOS which you have unstaked, both locked and unlocked.\n\n' +
-            'When you unstake\u2014i.e. redeem\u2014some value of sTLOS, the equivalent amount of ' +
-            'TLOS is sent into escrow ("locked") for {unlockPeriod}; during this time, ' +
-            'you cannot interact with this TLOS.\n\n' +
-            'After the unlock period has elapsed, you can withdraw your unlocked TLOS from the Withdraw tab ' +
-            'on this page, at which point it will be added to your account TLOS balance.',
-            confirm_unstake_1a: 'Continuing will redeem sTLOS in exchange for TLOS. ' +
-            'Unstaked TLOS will remain locked for a period of', /* unstakePeriodPretty...*/
-            confirm_unstake_1b: /*...unstakePeriodPretty */ 'after which it can be withdrawn to your account from the Withdraw tab',
-            confirm_unstake_2a: 'Heads up, you may unstake ', /* remainingDeposits...*/
-            confirm_unstake_2b: /*...remainingDeposits */ 'more times before ' +
-            'you reach the maximum concurrent unstake actions. When you reach the maximum, you will need to withdraw' +
-            'unlocked TLOS to continue unstaking. If you don\'t have any withdrawable TLOS at that time, you must' +
-            'wait until the lock duration has elapsed before you can withdraw unlocked TLOS and unstake more sTLOS. -',
-            unstake_stlos_for_tlos: 'Unstake sTLOS in exchange for TLOS',
-            unstake_stlos: 'Unstake sTLOS',
-            receive_tlos: 'Receive TLOS',
-            amount: 'Amount',
-            time_remaining: 'Time Remaining',
-            full_staked_balance_tooltip: 'Click to input full staked balance\n\n' +
-            'Precise balance (less approximate gas fees):\n' +
-            '{prettyBalance} sTLOS',
-            login_using_evm_wallet: 'Login using an EVM wallet',
-            max_unstake_transactions_reached: 'You have reached the maximum number of pending unstake transactions, ' +
-            'please withdraw available TLOS or wait for pending unstaked TLOS to become withdrawable before making another deposit.',
-            click_to_change_time_format: 'Click to change time format',
-            unstaking: 'Unstaking',
-            available_to_withdraw: 'Available to withdraw',
-            withdraw_tlos: 'Withdraw TLOS',
-            withdraw_successful: 'Withdraw successful! View Transaction:',
-            no_withdrawable_positions: 'No withdrawable positions',
-            you_have_unlocked_tlos: 'You have unlocked TLOS!',
-            stake_tlos_success: 'Stake successful! View Transaction: ',
-            unstake_stlos_success: 'Unstake successful! View Transaction: ',
-            deposit_failed: 'Failed to deposit TLOS: { message }',
-            redeem_failed: 'Unable to convert STLOS to TLOS: { message }',
-            fetch_balance_error: 'Failed to fetch account: { message }',
-            fetch_stlos_balance_error: 'Failed to fetch account STLOS balance: { message }',
-            fetch_stlos_value_error: 'Failed to fetch account STLOS balance value: { message }',
-            fetch_unstaked_balance_error: 'Failed to fetch total unstaked TLOS balance: { message }',
-            fetch_unlocked_balance_error: 'Failed to fetch withdrawable STLOS balance: { message }',
-            fetch_escrow_deposits_error: 'Failed to fetch escrow deposits: { message }',
-            fetch_conversion_rate_error: 'Failed to fetch TLOS->sTLOS conversion rate: { message }',
-            fetch_stlos_contract_error: 'Failed to get STLOS contract: { message }',
-            fetch_escrow_contract_error: 'Failed to get STLOS contract: { message }',
-            fetch_unstake_period_error: 'Failed to retrieve unstaking period: { message }',
-            fetch_account_error: 'Failed to fetch account: { message }',
-            fetch_stlos_tvl_error: 'Failed to fetch sTLOS TVL: { message }',
-            fetch_stlos_apy_error: 'Failed to fetch sTLOS APY: { message }',
-            fetch_max_deposits_error: 'Failed to fetch max deposits from escrow contract { message }',
-            convert_tlos_to_stlos_error: 'Unable to convert TLOS to STLOS { message }',
-            convert_stlos_to_tlos_error: 'Unable to convert STLOS to TLOS { message }',
-            unstake_stlos_error: 'Failed to unstake sTLOS { message }',
-            withdraw_failed: 'Failed to withdraw unlocked TLOS: { message }',
-        },
         blockpage: {
             block: 'Block',
             overview: 'Overview',
@@ -455,26 +351,35 @@ export default {
             verified_contract: 'Verified contract',
         },
         header: {
-            sign_in: 'Sign in',
-            sign_out: 'Sign out',
-            liq_staking: 'Liquid Staking',
-            goto_staking: 'Go to Staking',
-            goto_health_monitor: 'go to Heath Monitor page',
-            goto_mainnet: 'Go to Mainnet',
-            goto_testnet: 'Go to Testnet',
-            health_monitor: 'Health Monitor',
-            health_status: 'Health Status',
-            advanced: 'Advanced',
-            light_mode: 'Light Mode',
-            dark_mode: 'Dark Mode',
-            address_not_found: 'Search for EVM address linked to { account } native account failed.',
-            search_failed: 'Search failed, please enter a valid search term.',
-            goto_address_details: 'Go to address details',
-            copy_address: 'Copy address',
             address_copied: 'Address copied to clipboard',
+            address_not_found: 'Search for EVM address linked to { account } native account failed.',
+            api_documentation: 'API Documentation',
+            blockchain: 'Blockchain',
+            blocks: 'Blocks',
+            connect_wallet: 'Connect Wallet',
+            copy_address: 'Copy address',
+            csv_export: 'CSV Export',
+            developers: 'Developers',
+            disconnect_wallet_tooltip: 'Disconnect wallet',
+            gas: 'Gas',
+            goto_address_details: 'Go to address details',
+            health_monitor: 'Health Monitor',
+            home: 'Home',
+            more: 'More',
+            network: 'Network',
+            open_language_switcher: 'Open language switcher',
+            search_failed: 'Search failed, please enter a valid search term.',
             search_placeholder: 'Address, Tx, Block',
             select_language: 'Select Language',
-            open_language_switcher: 'open language switcher',
+            switch_to_dark_theme: 'Switch to dark theme',
+            switch_to_light_theme: 'Switch to light theme',
+            system_token_price: '{token} price',
+            telos_ecosystem: 'Telos Ecosystem',
+            telos_evm_logo_alt: 'Telos EVM logo',
+            telos_wallet: 'Telos Wallet',
+            transactions: 'Transactions',
+            verify_contract_sourcify: 'Verify Contract (Sourcify)',
+            view_other_networks: 'View other networks',
         },
     },
     evm_wallet: {
@@ -583,16 +488,12 @@ export default {
         error_see_details_label: 'See Details',
         error_details_title: 'Error Details',
         neutral_message_sending: 'Sending <b>{quantity}</b> to <b>{address}</b>',
-        neutral_message_staking: 'Staking <b>{quantity} {symbol}</b>',
-        neutral_message_unstaking: 'Unstaking <b>{quantity} {symbol}</b>',
         neutral_message_revoking: 'Revoking  <b>{symbol}</b> allowance for <b>{address}</b>',
         neutral_message_wrapping: 'Wrapping <b>{quantity} {symbol}</b>',
         neutral_message_unwrapping: 'Unwrapping <b>{quantity} {symbol}</b>',
         neutral_message_withdrawing: 'Withdrawing <b>{quantity} {symbol}</b>',
         dont_show_message_again: 'Don\'t show me this message again',
         error_message_sending: 'An error occurred while sending <b>{quantity}</b> to <b>{address}</b>',
-        error_message_staking: 'An error occurred while staking <b>{quantity} {symbol}</b>',
-        error_message_unstaking: 'An error occurred while unstaking <b>{quantity} {symbol}</b>',
         error_message_revoking: 'An error occurred while revoking <b>{symbol}</b> allowance for <b>{address}</b>',
         error_message_wrapping: 'An error occurred while wrapping <b>{quantity} {symbol}</b>',
         error_message_unwrapping: 'An error occurred while unwrapping <b>{quantity} {symbol}</b>',
@@ -637,8 +538,6 @@ export default {
             error_unwrap_not_supported_on_native: 'Unwrap is not supported on native chain',
             error_wrap_failed: 'An unknown error occurred when wrapping tokens',
             error_unwrap_failed: 'An unknown error occurred when unwrapping tokens',
-            error_stake_failed: 'An unknown error occurred when staking tokens',
-            error_unstakes_failed: 'An unknown error occurred when unstaking tokens',
             error_withdraw_failed: 'An unknown error occurred when withdrawing tokens',
             error_fetching_token_price: 'An unknown error occurred when fetching token price data',
         },
