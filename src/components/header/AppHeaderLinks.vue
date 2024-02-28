@@ -80,7 +80,6 @@ const moreMenuExpandedMobile = ref(false);
 const networkMenuExpandedMobile = ref(false);
 const showLanguageSwitcher = ref(false);
 
-// computed
 const highlightBlockchainMenuItem = computed(() => blockchainSubmenuItems.some(({ name }) => name === $route.name));
 const highlightMoreMenuItem = computed(() => moreSubmenuItems.internal.some(({ name }) => name === $route.name));
 
