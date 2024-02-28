@@ -16,7 +16,6 @@ const { t: $t } = useI18n();
 const menuBottomBarHidden = ref(false);
 const menuVisibleMobile = ref(false);
 
-// watchers
 watchEffect(() => {
     if (!menuVisibleMobile.value) {
         (document.activeElement as HTMLElement | null)?.blur();
