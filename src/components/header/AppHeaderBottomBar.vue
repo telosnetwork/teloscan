@@ -23,7 +23,6 @@ watchEffect(() => {
     }
 });
 
-// methods
 function scrollHandler(info: { direction: string; }) {
     menuBottomBarHidden.value = info.direction === 'down';
 }
