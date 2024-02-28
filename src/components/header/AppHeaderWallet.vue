@@ -12,6 +12,7 @@ import { useAccountStore } from 'src/antelope';
 import { indexerApi } from 'src/boot/telosApi';
 import { WEI_PRECISION } from 'src/antelope/wallets/utils';
 import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
+import { isTestnet } from 'src/lib/chain-utils';
 
 import LoginModal from 'components/LoginModal.vue';
 import OutlineButton from 'components/OutlineButton.vue';
@@ -54,6 +55,9 @@ const prettyIdentity = computed(() => {
     return truncateAddress(address.value);
 });
 const prettySystemTokenBalanceFiat = computed(() => {
+    if (isTestnet()) {
+        return '';
+    }
     const price = Number($store.getters['chain/tlosPrice']);
     const userBalance = Number(formatUnits(userSystemTokenBalanceWei.value, WEI_PRECISION));
     return (price * userBalance).toFixed(2);
@@ -183,7 +187,7 @@ async function fetchUserBalance() {
                             {{ prettySystemTokenBalance }}
                         </span>
                         &nbsp;
-                        <span class="text-caption">
+                        <span v-if="prettySystemTokenBalanceFiat" class="text-caption">
                             ${{ prettySystemTokenBalanceFiat }}
                         </span>
                     </div>
