@@ -16,7 +16,6 @@ const TIME_DELAY = 6000;
 const searchTerm = ref('');
 const inputRef = ref<HTMLInputElement | null>(null);
 
-// methods
 async function search() {
     if (!searchTerm.value) {
         return;
