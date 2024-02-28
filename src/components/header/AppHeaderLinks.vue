@@ -83,7 +83,6 @@ const showLanguageSwitcher = ref(false);
 const highlightBlockchainMenuItem = computed(() => blockchainSubmenuItems.some(({ name }) => name === $route.name));
 const highlightMoreMenuItem = computed(() => moreSubmenuItems.internal.some(({ name }) => name === $route.name));
 
-// watchers
 watch(() => $q.screen, () => {
     closeAllMenus();
 }, { deep: true });
