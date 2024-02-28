@@ -61,7 +61,6 @@ const prettySystemTokenBalanceFiat = computed(() => {
     return (price * userBalance).toFixed(2);
 });
 
-// watchers
 watchEffect(() => {
     if (isLoggedIn.value) {
         fetchUserBalance();
