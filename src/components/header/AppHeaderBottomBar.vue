@@ -12,18 +12,15 @@ import AppHeaderLinks from 'components/header/AppHeaderLinks.vue';
 const $q = useQuasar();
 const { t: $t } = useI18n();
 
-// data
 const menuBottomBarHidden = ref(false);
 const menuVisibleMobile = ref(false);
 
-// watchers
 watchEffect(() => {
     if (!menuVisibleMobile.value) {
         (document.activeElement as HTMLElement | null)?.blur();
     }
 });
 
-// methods
 function scrollHandler(info: { direction: string; }) {
     menuBottomBarHidden.value = info.direction === 'down';
 }

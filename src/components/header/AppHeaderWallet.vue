@@ -22,11 +22,9 @@ const $store = useStore();
 const $i18n = useI18n();
 const $q = useQuasar();
 
-// data
 const showLoginModal = ref(false);
 const userSystemTokenBalanceWei = ref('0');
 
-// computed
 const isLoggedIn = computed(() => $store.getters['login/isLoggedIn']);
 const isNative = computed(() => $store.getters['login/isNative']);
 const address = computed(() => $store.getters['login/address']);
@@ -63,14 +61,12 @@ const prettySystemTokenBalanceFiat = computed(() => {
     return (price * userBalance).toFixed(2);
 });
 
-// watchers
 watchEffect(() => {
     if (isLoggedIn.value) {
         fetchUserBalance();
     }
 });
 
-// methods
 function handleWalletButtonClick() {
     if (!isLoggedIn.value) {
         showLoginModal.value = true;

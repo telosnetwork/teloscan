@@ -74,23 +74,19 @@ const networksMenuItems = {
     }],
 };
 
-// data
 const blockchainMenuExpandedMobile = ref(false);
 const developersMenuExpandedMobile = ref(false);
 const moreMenuExpandedMobile = ref(false);
 const networkMenuExpandedMobile = ref(false);
 const showLanguageSwitcher = ref(false);
 
-// computed
 const highlightBlockchainMenuItem = computed(() => blockchainSubmenuItems.some(({ name }) => name === $route.name));
 const highlightMoreMenuItem = computed(() => moreSubmenuItems.internal.some(({ name }) => name === $route.name));
 
-// watchers
 watch(() => $q.screen, () => {
     closeAllMenus();
 }, { deep: true });
 
-// methods
 function blurActiveElement() {
     (document.activeElement as HTMLElement | null)?.blur();
 }

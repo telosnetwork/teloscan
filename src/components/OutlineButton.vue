@@ -9,7 +9,6 @@ defineProps<{
     iconOnly?: boolean;
 }>();
 
-// computed
 const buttonColor = computed(() => $q.dark.isActive ? 'grey-7' : 'grey-5');
 
 </script>

@@ -13,11 +13,9 @@ const { t: $t } = useI18n();
 
 const TIME_DELAY = 6000;
 
-// data
 const searchTerm = ref('');
 const inputRef = ref<HTMLInputElement | null>(null);
 
-// methods
 async function search() {
     if (!searchTerm.value) {
         return;
