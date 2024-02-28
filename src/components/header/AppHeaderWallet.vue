@@ -67,7 +67,6 @@ watchEffect(() => {
     }
 });
 
-// methods
 function handleWalletButtonClick() {
     if (!isLoggedIn.value) {
         showLoginModal.value = true;
