@@ -35,8 +35,8 @@ function nextBlock() {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function visitNativeBlockExplorer(extraData: any) {
-    console.log('visitNativeBlockExplorer()', extraData);
-    window.open(`${process.env.NETWORK_EXPLORER}/block/${extraData}`, '_blank');
+    const explorerLink = process.env.NETWORK_EXPLORER;
+    window.open(`${explorerLink}/block/${extraData}`, '_blank');
 }
 
 const loadBlockData = async () => {

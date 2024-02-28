@@ -55,7 +55,7 @@ const nonce = computed(() => blockData.value ? blockData.value.nonce : '');
 const hash = computed(() => blockData.value ? blockData.value.hash : '');
 const parentHash = computed(() => blockData.value ? blockData.value.parentHash : '');
 const extraData = computed(() => blockData.value ? blockData.value.extraData : '');
-
+const transactionsRoot = computed(() => blockData.value ? blockData.value.transactionsRoot : '');
 
 // button Actions
 const trxTableClick = () => {
@@ -218,6 +218,26 @@ watch(() => props.data, (newData) => {
         </div>
     </div>
 
+    <!-- Extra Data -->
+    <div class="c-block-data__row">
+        <div class="c-block-data__col-att">
+            <div class="c-block-data__row-tooltip">
+                <q-icon class="c-block-data__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.blockoverview.extra_data_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
+            </div>
+            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.extra_data') }}</div>
+        </div>
+        <div class="c-block-data__col-val">
+            <div
+                class="c-block-data__row-value c-block-data__row-value--hash c-block-data__row-value--pointer"
+                @click="extraDataClick"
+            >{{ extraData }}</div>
+        </div>
+    </div>
+
     <!-- Hash -->
     <div class="c-block-data__row">
         <div class="c-block-data__col-att">
@@ -255,23 +275,20 @@ watch(() => props.data, (newData) => {
         </div>
     </div>
 
-    <!-- Extra Data -->
+    <!-- Transactions Root -->
     <div class="c-block-data__row">
         <div class="c-block-data__col-att">
             <div class="c-block-data__row-tooltip">
                 <q-icon class="c-block-data__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.blockoverview.extra_data_tooltip') }}
+                        {{ $t('components.blockoverview.transactions_root_tooltip') }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.extra_data') }}</div>
+            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.transactions_root') }}</div>
         </div>
         <div class="c-block-data__col-val">
-            <div
-                class="c-block-data__row-value c-block-data__row-value--hash c-block-data__row-value--pointer"
-                @click="extraDataClick"
-            >{{ extraData }}</div>
+            <div class="c-block-data__row-value c-block-data__row-value--hash">{{ transactionsRoot }}</div>
         </div>
     </div>
 
