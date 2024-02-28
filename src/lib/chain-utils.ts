@@ -13,7 +13,7 @@ export function isTelosMainnet() {
 }
 
 export function isTestnet() {
-    [TELOS_TESTNET_CHAIN_ID].includes(Number(process.env.NETWORK_EVM_CHAIN_ID));
+    return [TELOS_TESTNET_CHAIN_ID].includes(Number(process.env.NETWORK_EVM_CHAIN_ID));
 }
 
 export function isTelosTestnet() {

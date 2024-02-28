@@ -50,7 +50,7 @@ function scrollHandler(info: { direction: string; }) {
                 <span class="c-header-bottom-bar__logo-text">
                     Teloscan
                 </span>
-                <span v-if="() => isTestnet()" class="c-header-bottom-bar__testnet-indicator">
+                <span v-if="isTestnet()" class="c-header-bottom-bar__testnet-indicator">
                     Testnet
                 </span>
             </div>
