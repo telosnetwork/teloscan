@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
 
 import AppHeaderButton from 'components/header/AppHeaderButton.vue';
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import AppHeaderLinks from 'components/header/AppHeaderLinks.vue';
 
 const $q = useQuasar();
+const { t: $t } = useI18n();
 
 // data
 const menuBottomBarHidden = ref(false);
@@ -19,8 +21,6 @@ function scrollHandler(info: { direction: string; }) {
 </script>
 
 <template>
-<!-- eztodo i18n and aria roles / labels -->
-
 <div
     :class="{
         'c-header-bottom-bar': true,
@@ -31,7 +31,7 @@ function scrollHandler(info: { direction: string; }) {
         <router-link to="/" class="c-header-bottom-bar__logo-container">
             <div class="c-header-bottom-bar__logo-image-container">
                 <img
-                    alt="Telos EVM logo eztodo"
+                    :alt="$t('components.header.telos_evm_logo_alt')"
                     src="/branding/telos-scan.png"
                     height="32"
                 >

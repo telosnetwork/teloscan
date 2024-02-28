@@ -446,6 +446,7 @@ export default {
             switch_to_light_theme: 'Switch to light theme',
             system_token_price: '{token} price',
             telos_ecosystem: 'Telos Ecosystem',
+            telos_evm_logo_alt: 'Telos EVM logo',
             telos_wallet: 'Telos Wallet',
             transactions: 'Transactions',
             verify_contract_sourcify: 'Verify Contract (Sourcify)',
