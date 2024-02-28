@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 // this file contains one-time global imports
 @import './utilities';
 @import './components/json-viewer';
@@ -12,19 +14,23 @@ body.body--light {
     --grey-text-color: #{$grey-7};
     --border-color: #{$grey-5};
     --text-color: #{$dark};
+
+    a:hover {
+        color: color.scale($primary, $lightness: -50%);
+    }
 }
 
 body.body--dark {
     --grey-text-color: #{$grey-5};
     --border-color: #{$grey-7};
     --text-color: white;
+
+    a:hover {
+        color: color.scale($primary, $lightness: +30%);
+    }
 }
 
 a {
     color: var(--q-primary);
     text-decoration: none;
-
-    &:hover {
-        opacity: 0.8;
-    }
 }
