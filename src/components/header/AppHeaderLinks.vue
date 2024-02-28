@@ -5,7 +5,7 @@ import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
-import AppHeaderButton from 'components/header/AppHeaderButton.vue';
+import OutlineButton from 'components/OutlineButton.vue';
 
 const $route = useRoute();
 const $router = useRouter();
@@ -373,7 +373,7 @@ function goTo(to: string | { name: string }) {
     </li>
 
     <li v-if="$q.screen.lt.md" class="c-header-links__menu-li">
-        <AppHeaderButton
+        <OutlineButton
             text-color="default"
             class="c-header-links__theme-toggle"
             @click="toggleDarkMode"
@@ -385,7 +385,7 @@ function goTo(to: string | { name: string }) {
                 class="q-mr-sm"
             />
             {{ $t(`components.header.switch_to_${$q.dark.isActive ? 'light' : 'dark'}_theme`) }}
-        </AppHeaderButton>
+        </OutlineButton>
     </li>
 </ul>
 

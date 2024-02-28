@@ -14,7 +14,7 @@ import { WEI_PRECISION } from 'src/antelope/wallets/utils';
 import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 
 import LoginModal from 'components/LoginModal.vue';
-import AppHeaderButton from 'components/header/AppHeaderButton.vue';
+import OutlineButton from 'components/OutlineButton.vue';
 
 const $router = useRouter();
 const $store = useStore();
@@ -107,7 +107,7 @@ async function fetchUserBalance() {
 </script>
 
 <template>
-<AppHeaderButton
+<OutlineButton
     text-color="default"
     class="c-app-header-wallet__main-button"
     v-bind="$attrs"
@@ -135,7 +135,7 @@ async function fetchUserBalance() {
                 <q-item>
                     <div class="c-app-header-wallet__account-actions-container">
                         <div>
-                            <AppHeaderButton
+                            <OutlineButton
                                 text-color="primary"
                                 :icon-only="true"
                                 :aria-label="$i18n.t('components.header.copy_address')"
@@ -146,9 +146,9 @@ async function fetchUserBalance() {
                                 <q-tooltip>
                                     {{ $i18n.t('components.header.copy_address') }}
                                 </q-tooltip>
-                            </AppHeaderButton>
+                            </OutlineButton>
 
-                            <AppHeaderButton
+                            <OutlineButton
                                 text-color="primary"
                                 :icon-only="true"
                                 class="q-ml-sm"
@@ -159,10 +159,10 @@ async function fetchUserBalance() {
                                 <q-tooltip>
                                     {{ $i18n.t('components.header.goto_address_details') }}
                                 </q-tooltip>
-                            </AppHeaderButton>
+                            </OutlineButton>
                         </div>
 
-                        <AppHeaderButton
+                        <OutlineButton
                             text-color="negative"
                             :icon-only="true"
                             class="q-ml-sm"
@@ -173,7 +173,7 @@ async function fetchUserBalance() {
                             <q-tooltip>
                                 {{ $t('components.header.disconnect_wallet_tooltip') }}
                             </q-tooltip>
-                        </AppHeaderButton>
+                        </OutlineButton>
                     </div>
                 </q-item>
 
@@ -193,7 +193,7 @@ async function fetchUserBalance() {
             </q-list>
         </q-menu>
     </template>
-</AppHeaderButton>
+</OutlineButton>
 
 <LoginModal :show="showLoginModal" @hide="showLoginModal = false" />
 </template>

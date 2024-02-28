@@ -3,7 +3,7 @@ import { ref, watchEffect } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
-import AppHeaderButton from 'components/header/AppHeaderButton.vue';
+import OutlineButton from 'components/OutlineButton.vue';
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import AppHeaderLinks from 'components/header/AppHeaderLinks.vue';
 
@@ -52,14 +52,14 @@ function scrollHandler(info: { direction: string; }) {
         <nav class="c-header-bottom-bar__right-container">
             <AppHeaderWallet v-if="$q.screen.lt.md" class="q-mr-sm" />
 
-            <AppHeaderButton
+            <OutlineButton
                 text-color="default"
                 :icon-only="true"
                 class="c-header-bottom-bar__menu-button"
                 @click="menuVisibleMobile = !menuVisibleMobile"
             >
                 <q-icon name="menu" size="24px" />
-            </AppHeaderButton>
+            </OutlineButton>
 
             <AppHeaderLinks
                 :menu-visible-mobile="menuVisibleMobile"

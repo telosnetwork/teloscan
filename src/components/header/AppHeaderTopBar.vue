@@ -18,7 +18,7 @@ import { ual } from 'src/boot/ual';
 import { providerManager } from 'src/boot/evm';
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
-import AppHeaderButton from 'components/header/AppHeaderButton.vue';
+import OutlineButton from 'components/OutlineButton.vue';
 import AppHeaderSearch from 'components/header/AppHeaderSearch.vue';
 
 const $q = useQuasar();
@@ -142,7 +142,7 @@ function toggleDarkMode() {
         <div class="c-header-top-bar__right-container">
             <AppHeaderSearch />
 
-            <AppHeaderButton
+            <OutlineButton
                 text-color="primary"
                 :icon-only="true"
                 class="c-header-top-bar__theme-toggle"
@@ -153,12 +153,12 @@ function toggleDarkMode() {
                 <q-tooltip>
                     {{ $t(`components.header.switch_to_${$q.dark.isActive ? 'light' : 'dark'}_theme`) }}
                 </q-tooltip>
-            </AppHeaderButton>
+            </OutlineButton>
             <!-- eztodo add network switcher -->
 
             <AppHeaderWallet v-if="$q.screen.gt.sm" />
 
-            <AppHeaderButton
+            <OutlineButton
                 v-if="$q.screen.gt.sm"
                 text-color="primary"
                 :icon-only="true"
@@ -185,7 +185,7 @@ function toggleDarkMode() {
                 <q-tooltip>
                     {{ $t('components.header.view_other_networks') }}
                 </q-tooltip>
-            </AppHeaderButton>
+            </OutlineButton>
         </div>
     </div>
 </div>
