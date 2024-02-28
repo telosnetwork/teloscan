@@ -22,7 +22,6 @@ const $store = useStore();
 const $i18n = useI18n();
 const $q = useQuasar();
 
-// data
 const showLoginModal = ref(false);
 const userSystemTokenBalanceWei = ref('0');
 
