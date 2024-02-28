@@ -66,7 +66,6 @@ async function search() {
 
 <template>
 <div class="c-search">
-    <!-- eztodo i18n on aria label above -->
     <q-input
         ref="inputRef"
         v-model="searchTerm"

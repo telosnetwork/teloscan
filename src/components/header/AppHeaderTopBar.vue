@@ -34,7 +34,6 @@ const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
 // computed
 const isNative = computed(() => $store.getters['login/isNative']);
 const gasPriceInGwei = computed(() => {
-    // eztodo use locale number format
     const gasPrice = $store.getters['chain/gasPrice'];
 
     if (!gasPrice) {
@@ -42,12 +41,13 @@ const gasPriceInGwei = computed(() => {
     }
 
     const gasGwei = Number(formatUnits(gasPrice, 'gwei'));
-    return gasGwei.toFixed(0);
+    const gasGweiNoDecimals = Number(gasGwei.toFixed(0));
+    return gasGweiNoDecimals.toLocaleString();
 });
 const tlosPrice = computed(() => {
-    // eztodo use locale number format
     const price = $store.getters['chain/tlosPrice'];
-    return Number(price).toFixed(2);
+    const priceTwoDecimals = Number(Number(price).toFixed(2));
+    return priceTwoDecimals.toLocaleString();
 });
 
 // methods
