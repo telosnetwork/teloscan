@@ -12,7 +12,6 @@ import AppHeaderLinks from 'components/header/AppHeaderLinks.vue';
 const $q = useQuasar();
 const { t: $t } = useI18n();
 
-// data
 const menuBottomBarHidden = ref(false);
 const menuVisibleMobile = ref(false);
 
