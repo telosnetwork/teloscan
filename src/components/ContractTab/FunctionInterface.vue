@@ -56,7 +56,13 @@ export default defineComponent({
             type: String,
             default: null,
         },
+        implementationContractAddress: {
+            type: String,
+            default: null,
+        },
     },
+    // emitted when a fn on the contract is run; for proxy contracts, this is used to check if the implementation contract has changed
+    emits: ['functionRun'],
     data : () => {
         const decimalOptions = [{
             label: '18 - TLOS/ETH/etc..',
@@ -243,7 +249,7 @@ export default defineComponent({
             this.endLoading();
         },
         async getEthersFunction(provider?: ethers.providers.JsonRpcSigner | ethers.providers.JsonRpcProvider) {
-            const contractInstance = await this.contract.getContractInstance(provider);
+            const contractInstance = await (this.implementationContractAddress ? this.contract.getProxyInstance(provider, [this.abi]) : this.contract.getContractInstance(provider));
             return contractInstance[this.functionABI];
         },
         runRead() {
@@ -318,7 +324,7 @@ export default defineComponent({
         async runEVM(opts: Opts) {
             const value = opts.value ? BigNumber.from(opts.value) : undefined;
 
-            // Preparing the mesage to show while waiting for confirmation.
+            // Preparing the message to show while waiting for confirmation.
             const name = this.abi.name;
             const params = this.abi.inputs.length;
             let keyMsg = 'notification.neutral_message_custom_call';
@@ -344,6 +350,7 @@ export default defineComponent({
                 value,
             ).then((result) => {
                 this.hash = result.hash;
+                this.$emit('functionRun');
                 this.endLoading();
             }).catch((error) => {
                 this.result = this.$t(error.message);

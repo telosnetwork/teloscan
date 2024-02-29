@@ -5,6 +5,7 @@ import { markRaw } from 'vue';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 export default class Contract {
+  proxyInstance = null;
 
   constructor({address, creationInfo, name, abi, manager, token, verified = false}) {
     this.address = address
@@ -58,6 +59,15 @@ export default class Contract {
       this.contract = new ethers.Contract(this.address, this.abi, provider ? provider : this.manager.getEthersProvider());
     }
     return this.contract;
+  }
+
+  // for proxy contracts, we need to get a contract instance with the implementation ABI in order
+  // to call functions on the implementation through the proxy
+  getProxyInstance(provider, implementationAbi) {
+    if (!this.proxyInstance){
+      this.proxyInstance = new ethers.Contract(this.address, implementationAbi, provider ? provider : this.manager.getEthersProvider());
+    }
+    return this.proxyInstance;
   }
 
   async parseTransaction(data) {
