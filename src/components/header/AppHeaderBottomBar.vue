@@ -3,7 +3,7 @@ import { ref, watchEffect } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
-import { isTestnet } from 'src/lib/chain-utils';
+import { IS_TESTNET } from 'src/lib/chain-utils';
 
 import OutlineButton from 'components/OutlineButton.vue';
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
@@ -52,7 +52,7 @@ function scrollHandler(info: { direction: string; }) {
                 <span class="c-header-bottom-bar__logo-text">
                     Teloscan
                 </span>
-                <span v-if="isTestnet()" class="c-header-bottom-bar__testnet-indicator">
+                <span v-if="IS_TESTNET" class="c-header-bottom-bar__testnet-indicator">
                     Testnet
                 </span>
             </div>

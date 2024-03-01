@@ -12,7 +12,7 @@ import { useAccountStore } from 'src/antelope';
 import { indexerApi } from 'src/boot/telosApi';
 import { WEI_PRECISION } from 'src/antelope/wallets/utils';
 import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
-import { isTestnet } from 'src/lib/chain-utils';
+import { IS_TESTNET } from 'src/lib/chain-utils';
 
 import LoginModal from 'components/LoginModal.vue';
 import OutlineButton from 'components/OutlineButton.vue';
@@ -53,7 +53,7 @@ const prettyIdentity = computed(() => {
     return truncateAddress(address.value);
 });
 const prettySystemTokenBalanceFiat = computed(() => {
-    if (isTestnet()) {
+    if (IS_TESTNET) {
         return '';
     }
     const price = Number($store.getters['chain/tlosPrice']);

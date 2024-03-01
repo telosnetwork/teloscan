@@ -12,7 +12,7 @@ import { useI18n } from 'vue-i18n';
 import { formatUnits } from 'ethers/lib/utils';
 
 import { useChainStore } from 'src/antelope';
-import { isMainnet, isTestnet } from 'src/lib/chain-utils';
+import { IS_MAINNET, IS_TESTNET } from 'src/lib/chain-utils';
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import OutlineButton from 'components/OutlineButton.vue';
@@ -20,19 +20,16 @@ import AppHeaderSearch from 'components/header/AppHeaderSearch.vue';
 
 const $q = useQuasar();
 const $store = useStore();
-const { t: $t } = useI18n();
+const $i18n = useI18n();
 const chainStore = useChainStore();
 
-const highlightTelosMainnetLink = isMainnet();
-const highlightTelosTestnetLink = isTestnet();
 
-// data
 const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
 
-// computed
+const locale = computed(() => $i18n.locale.value);
 const systemTokenSymbol = computed(() => chainStore.currentChain.settings.getSystemToken().symbol);
 const gasPriceInGwei = computed(() => {
-    if (isTestnet()) {
+    if (IS_TESTNET) {
         return '';
     }
 
@@ -44,21 +41,23 @@ const gasPriceInGwei = computed(() => {
 
     const gasGwei = Number(formatUnits(gasPrice, 'gwei'));
     const gasGweiNoDecimals = Number(gasGwei.toFixed(0));
-    return gasGweiNoDecimals.toLocaleString();
+    return gasGweiNoDecimals.toLocaleString(locale.value);
 });
 const tlosPrice = computed(() => {
-    if (isTestnet()) {
+    if (IS_TESTNET) {
         return '';
     }
 
     const price = $store.getters['chain/tlosPrice'];
     const priceTwoDecimals = Number(Number(price).toFixed(2));
-    return priceTwoDecimals.toLocaleString();
+    return priceTwoDecimals.toLocaleString(locale.value, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
 });
 
-// methods
 onBeforeMount(() => {
-    if (isMainnet()) {
+    if (IS_MAINNET) {
         fetchTlosPrice();
         fetchGasPrice();
     }
@@ -84,19 +83,33 @@ function toggleDarkMode() {
     $q.dark.toggle();
     localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
 }
+
+function goToTeloscanMainnet() {
+    if (IS_MAINNET) {
+        return;
+    }
+    window.open('https://teloscan.io', '_blank');
+}
+
+function goToTeloscanTestnet() {
+    if (IS_TESTNET) {
+        return;
+    }
+    window.open('https://testnet.teloscan.io', '_blank');
+}
 </script>
 
 <template>
 <div class="c-header-top-bar">
     <div class="c-header-top-bar__inner-container">
         <div class="c-header-top-bar__left-container">
-            <div v-if="isMainnet()" class="text-caption q-mr-md">
+            <div v-if="IS_MAINNET" class="text-caption q-mr-md">
                 <span class="c-header-top-bar__grey-text">
                     {{ $t('components.header.system_token_price', { token: systemTokenSymbol }) }}
                 </span> ${{ tlosPrice }}
             </div>
 
-            <div v-if="isMainnet()" class="text-caption u-flex--center-y">
+            <div v-if="IS_MAINNET" class="text-caption u-flex--center-y">
                 <q-icon name="fas fa-gas-pump" class="c-header-top-bar__grey-text q-mr-xs" />
                 <span class="c-header-top-bar__grey-text">
                     {{ $t('components.header.gas') }}:
@@ -131,14 +144,24 @@ function toggleDarkMode() {
 
                 <q-menu>
                     <q-list>
-                        <q-item clickable>
-                            <q-item-section :class="highlightTelosMainnetLink ? 'text-primary' : ''">
+                        <q-item
+                            clickable
+                            role="link"
+                            @click="goToTeloscanMainnet"
+                            @keydown.enter="goToTeloscanMainnet"
+                        >
+                            <q-item-section :class="IS_MAINNET ? 'text-primary' : ''">
                                 Telos Mainnet
                             </q-item-section>
                         </q-item>
                         <q-separator />
-                        <q-item clickable>
-                            <q-item-section :class="highlightTelosTestnetLink ? 'text-primary' : ''">
+                        <q-item
+                            clickable
+                            role="link"
+                            @click="goToTeloscanTestnet"
+                            @keydown.enter="goToTeloscanTestnet"
+                        >
+                            <q-item-section :class="IS_TESTNET ? 'text-primary' : ''">
                                 Telos Testnet
                             </q-item-section>
                         </q-item>
