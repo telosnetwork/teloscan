@@ -5,110 +5,6 @@ export default {
         current_language_name: 'Français',
     },
     pages: {
-        staking: {
-            sign_in: 'Veuillez vous connecter à l\'aide de votre portefeuille afin de pouvoir intéragir avec notre interface de staking',
-            note_unstaking_period: 'Veuillez noter qu\'il y a une période d\'unstacking de {period}',
-            claim_tlos: 'Réclamer votre TLOS',
-            add_stlos_to_metamask: 'Ouvrez le dialogue MetaMask pour ajouter sTLOS',
-            metamask_fox_logo: 'MetaMask logo renard',
-            cancel: 'Annuler',
-            stake_tlos_confirm: 'En continuant vous miserez vos TLOS en échange de sTLOS. ' +
-                'Les sTLOS peuvent être converti en TLOS à tout moment à l\'aide de l\'onglet Unstake.',
-            stake_tlos_confirm_2a: 'Après que les TLOS sont unstake, ils seront vérouillés pour une période de', /* unstakePeriodPretty...*/
-            stake_tlos_confirm_2b: /*...unstakePeriodPretty */ ' après quoi ils seront retirable sur votre compte à partir de l\'onglet Retrait.',
-            stake_tlos_confirm_3: 'Voulez-vous continuer?',
-            stake_tlos: 'Staker vos TLOS',
-            stake_tlos_subheader: 'Staker vos TLOS contre des sTLOS vous permet d\'accèder à un revenu passif ainsi qu\'à diverses applications DeFi, ' +
-                'vous permettant d\'augmenter encore plus le rendement. Le taux de conversion de TLOS à sTLOS change au fur et à mesure que le bassin de récompense se rempli,  ' +
-                'c\'est pourquoi le montant de sTLOS reçu est moins important que le montant de Telos déposé. Les récompenses s\'accumulent ' +
-                'automatiquement et vous n\'avez donc pas besoin de les réclamer.',
-            receive_stlos: 'Recevez sTLOS',
-            available: '{balanceTlos} Disponible',
-            insufficient_tlos_balance: 'Solde de TLOS non suffisant pour stake',
-            login_using_an_evm_wallet: 'Connectez vous à l\'aide d\'un portefeuille EVM',
-            wallet_not_connected: 'Portefeuille non connecté',
-            click_to_input_full_wallet_balance: 'Cliquez pour choisir le solde entier de votre portefeuille\n\n' +
-                'Le solde montré est réduit de 1 TLOS afin de pouvoir régler les frais de gaz.\n' +
-                'Solde exact (moins les frais de gaz approximatifs):\n' +
-                '{prettyBalance} TLOS',
-            loading: 'Chargement...',
-            get_more_tlos: 'Obtenez plus de TLOS',
-            connect_wallet: 'Connectez votre portefeuille',
-            minutes: 'minutes',
-            hours: 'heures',
-            days: 'jours',
-            unstake: 'Unstaker',
-            stake: 'Staker',
-            withdraw: 'Retrait',
-            telos_evm_staking: 'Staking Telos EVM',
-            stake_tlos_earn_interest: 'Stakez votre TLOS contre des sTLOS pour gagner des interêts à partir du bassin de récompense',
-            staked: 'Staké',
-            unstaked: 'Unstaké',
-            tooltip_1: 'APY: Pourcentage annuel de rendement\n\n Ce pourcentage répresente les interêts gagnés sur un an et prend.\n\n' +
-                'Les interêts s\'accumulent automatiquement toute les 30 minutes (\'auto-compounding\'). Ce pourcentage n\'est pas fixe,' +
-                'ce qui veut dire qu\'il changera au fur et à mesure du temps suivant le total de TLOS stake à la fois sur l\'EVM et la chaîne native. ' +
-                'Les récompenses sont distribués à partir d\'un bassin de récompense communautaire directement dans le contract sTLOS.',
-            tooltip_2: 'TVL: Valeur Totale Vérouillé\n\nLa valeur actuelle, en TLOS, de tout les actifs déposés dans le contrat sTLOS ' +
-                '(Staked TLOS), c\'est à dire la somme de tout les TLOS stakés sur l\'EVM Telos à l\'instant T.',
-            tooltip_3: 'Staké\n\n' +
-                'Le montant total staké par le compte connecté, c\'est à dire ' +
-                ' votre solde de jetons sTLOS, ainsi que sa valeur en TLOS',
-            tooltip_4: 'Unstaké\n\n' +
-                'La valeur total de TLOS que vous avez unstaké, vérouillé ou non.\n\n' +
-                'Quand vous unstakez\u2014c\'est à dire récuperez\u2014 un montant de sTLOS, le montant équivalent de ' +
-                'TLOS est envoyé dans un contract de dépot fiduciare où il est verrouillé pour {unlockPeriod}; pendant cette période, ' +
-                'vous ne pourrez pas intéragir avec voc TLOS.\n\n' +
-                'Une fois la période de vérouillage finie, vous pourrez éffectuer un retrait de vos TLOS dévérouillés ' +
-                ' à partir de l\'onglet Retrait sur cette page, il sera alors ajouté au solde TLOS de votre compte.',
-            confirm_unstake_1a: 'Continuer va échanger vos sTLOS contre des TLOS. ' +
-                'Les TLOS unstaké vont rester vérouillé pour une période de', /* unstakePeriodPretty...*/
-            confirm_unstake_1b: /*...unstakePeriodPretty */ 'après quoi ils peuvent être retirer sur votre compte à partir de l\'onglet Retrait',
-            confirm_unstake_2a: 'Attention, vous pouvez unstake encore', /* remainingDeposits...*/
-            confirm_unstake_2b: /*...remainingDeposits */ 'fois avant ' +
-                'd\'atteindre le nombre d\'unstake simultané maximum. Si vous atteignez ce maximum vous devrez' +
-                'retirer vos TLOS pour continuer à unstaker. Si vous n\'avez pas encore de TLOS retirable il vous faudra' +
-                'attendre jusqu\'a que la durée de verrouillage soit écoulée avant de pouvoir les retirer et de unstake plus de sTLOS. -',
-            unstake_stlos_for_tlos: 'Unstaker vos sTLOS contre des TLOS',
-            unstake_stlos: 'Unstaker vos sTLOS',
-            receive_tlos: 'Recevez TLOS',
-            amount: 'Montant',
-            time_remaining: 'Temps restant',
-            full_staked_balance_tooltip: 'Cliquez pour saisir le solde total staké\n\n' +
-                'Solde précis (moins frais de gaz approximatifs):\n' +
-                '{prettyBalance} sTLOS',
-            login_using_evm_wallet: 'Connectez vous à l\'aide d\'un portefeuille EVM',
-            max_unstake_transactions_reached: 'Vous avez atteint le nombre maximum de unstake concurents, ' +
-                'veuillez retirer le TLOS disponible ou attendre que vos unstake en cours soit dévérouillés avant de réessayer.',
-            click_to_change_time_format: 'Cliquer pour changer le format du temps',
-            unstaking: 'Unstaking',
-            available_to_withdraw: 'Disponible pour retrait',
-            withdraw_tlos: 'Retirer vos TLOS',
-            withdraw_successful: 'Retrait effectué ! Voir la transaction:',
-            no_withdrawable_positions: 'Aucune position retirable',
-            you_have_unlocked_tlos: 'Vous avez des TLOS déverrouillés !',
-            stake_tlos_success: 'Stake effectuée ! Voir la transaction:',
-            unstake_stlos_success: 'Unstake effectuée ! Voir la transaction:',
-            deposit_failed: 'Échec lors de dépot de TLOS: { message }',
-            redeem_failed: 'Impossible de convertir vos sTLOS en TLOS: { message }',
-            fetch_balance_error: 'Impossible de récuperer le compte: { message }',
-            fetch_stlos_balance_error: 'Échec de récupération du solde sTLOS: { message }',
-            fetch_stlos_value_error: 'Échec de récupération de la valeur du solde sTLOS: { message }',
-            fetch_unstaked_balance_error: 'Échec de récupération du total de TLOS unstaked: { message }',
-            fetch_unlocked_balance_error: 'Échec de récupération du solde de sTLOS récupérable: { message }',
-            fetch_escrow_deposits_error: 'Échec de récupération des dépôts fiduciaire: { message }',
-            fetch_conversion_rate_error: 'Échec de récupération du taux de conversion TLOS->sTLOS: { message }',
-            fetch_stlos_contract_error: 'Échec de récupération du contrat sTLOS: { message }',
-            fetch_escrow_contract_error: 'Échec de récupération du contrat des dépôts fiduciaire: { message }',
-            fetch_unstake_period_error: 'Échec de récupération de la période d\'unstaking: { message }',
-            fetch_account_error: 'Échec de récupération du compte: { message }',
-            fetch_stlos_tvl_error: 'Échec de récupération de la valeur totale verouillée (VTV) de sTLOS: { message }',
-            fetch_stlos_apy_error: 'Échec de récupération de l\'APY sTLOS: { message }',
-            fetch_max_deposits_error: 'Échec de récupération du nombre de dépôts maximum sur le contract des dépôts fiduciaire: { message }',
-            convert_tlos_to_stlos_error: 'Impossible de convertir TLOS en sTLOS: { message }',
-            convert_stlos_to_tlos_error: 'Impossible de convertir sTLOS en TLOS: { message }',
-            unstake_stlos_error: 'Échec lors de l\'unstake de sTLOS { message }',
-            withdraw_failed: 'Échec du retrait des TLOS déverrouillés: { message }',
-        },
         blockpage: {
             block: 'Bloc',
             overview: 'Vue d\'ensemble',
@@ -456,26 +352,35 @@ export default {
             verified_contract: 'Contract Verifié',
         },
         header: {
-            sign_in: 'Connexion',
-            sign_out: 'Déconnexion',
-            liq_staking: 'Staking Liquide',
-            goto_staking: 'Aller au Staking',
-            goto_health_monitor: 'aller à la page Moniteur de Santé',
-            goto_mainnet: 'Aller au Mainnet',
-            goto_testnet: 'Aller au Testnet',
-            health_monitor: 'Moniteur de Santé',
-            health_status: 'Statut',
-            advanced: 'Avancé',
-            light_mode: 'Mode Clair',
-            dark_mode: 'Mode Sombre',
-            address_not_found: 'La recherche d\'une adresse EVM lié à au compte natif { account } a échoué.',
-            search_failed: 'La recherche a échoué, veuillez saisir des mots clés de recherche corrects.',
-            goto_address_details: 'Voir les détails de l\'adresse',
-            copy_address: 'Copier l\'adresse',
             address_copied: 'Adresse copiée',
+            address_not_found: 'La recherche d\'une adresse EVM lié à au compte natif { account } a échoué.',
+            api_documentation: 'Documentation API',
+            blockchain: 'Blockchain',
+            blocks: 'Blocs',
+            connect_wallet: 'Connecter Portefeuille',
+            copy_address: 'Copier l\'adresse',
+            csv_export: 'Exportation CSV',
+            developers: 'Développeurs',
+            disconnect_wallet_tooltip: 'Déconnecter le portefeuille',
+            gas: 'Gas',
+            goto_address_details: 'Voir les détails de l\'adresse',
+            health_monitor: 'Moniteur de Santé',
+            home: 'Accueil',
+            more: 'Plus',
+            network: 'Réseau',
+            open_language_switcher: 'Ouvrir le sélécteur de language',
+            search_failed: 'La recherche a échoué, veuillez saisir des mots clés de recherche corrects.',
             search_placeholder: 'Adresse, Tx, Bloc',
             select_language: 'Choisir votre language',
-            open_language_switcher: 'Ouvrir le sélécteur de language',
+            switch_to_dark_theme: 'Passer au thème sombre',
+            switch_to_light_theme: 'Passer au thème clair',
+            system_token_price: 'Prix du {token}',
+            telos_ecosystem: 'Écosystème Telos',
+            telos_evm_logo_alt: 'Logo de Telos EVM',
+            telos_wallet: 'Portefeuille Telos',
+            transactions: 'Transactions',
+            verify_contract_sourcify: 'Vérifier le Contrat (Sourcify)',
+            view_other_networks: 'Voir d\'autres réseaux',
         },
     },
     global: {
@@ -535,16 +440,12 @@ export default {
         error_see_details_label: 'Voir Détails',
         error_details_title: 'Détails de l\'Erreur',
         neutral_message_sending: 'Envoi de <b>{quantity}</b> à <b>{address}</b>',
-        neutral_message_staking: 'Dépôt de <b>{quantity} {symbol}</b>',
-        neutral_message_unstaking: 'Préparation du retrait de <b>{quantity} {symbol}</b>',
         neutral_message_revoking: 'Révocation de l\'allocation de <b>{symbol}</b> pour <b>{address}</b>',
         neutral_message_wrapping: 'Conversion de <b>{quantity} {symbol}</b> en ERC20',
         neutral_message_unwrapping: 'Restauration de <b>{quantity} {symbol}</b>',
         neutral_message_withdrawing: 'Retrait de <b>{quantity} {symbol}</b>',
         dont_show_message_again: 'Ne plus afficher ce message',
         error_message_sending: 'Une erreur s\'est produite lors de l\'envoi de <b>{quantity}</b> à <b>{address}</b>',
-        error_message_staking: 'Une erreur s\'est produite lors du dépôt de <b>{quantity} {symbol}</b>',
-        error_message_unstaking: 'Une erreur s\'est produite lors de la préparation du retrait de <b>{quantity} {symbol}</b>',
         error_message_revoking: 'Une erreur s\'est produite lors de la révocation de l\'allocation de <b>{symbol}</b> pour <b>{address}</b>',
         error_message_wrapping: 'Une erreur s\'est produite lors de la conversion de <b>{quantity} {symbol}</b> en ERC20',
         error_message_unwrapping: 'Une erreur s\'est produite lors de la restauration de <b>{quantity} {symbol}</b>',
