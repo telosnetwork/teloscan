@@ -21,6 +21,7 @@ import AppHeaderSearch from 'components/header/AppHeaderSearch.vue';
 const $q = useQuasar();
 const $store = useStore();
 const $i18n = useI18n();
+const $t = $i18n.t;
 const chainStore = useChainStore();
 
 
