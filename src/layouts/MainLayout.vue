@@ -1,76 +1,36 @@
-<script>
-import { mapGetters } from 'vuex';
+<script setup lang="ts">
+import {
+    computed,
+    onBeforeMount,
+    ref,
+} from 'vue';
+import { useRoute } from 'vue-router';
+import { useQuasar } from 'quasar';
 
 import AppHeader from 'components/header/AppHeader.vue';
 import FooterMain from 'components/Footer.vue';
 
-import { stlos } from 'src/lib/logos.js';
+const $route = useRoute();
+const $q = useQuasar();
 
-export default {
-    name: 'MainLayout',
-    components: {
-        AppHeader,
-        FooterMain,
-    },
-    data() {
-        return {
-            stlosLogo: stlos,
-            mainnet: process.env.NETWORK_EVM_CHAIN_ID === 40,
-            accountConnected: false,
-            drawer: false,
-            scTimer: 0,
-            scY: 0,
-        };
-    },
-    computed: {
-        ...mapGetters('login', [
-            'isLoggedIn',
-            'isNative',
-            'address',
-            'nativeAccount',
-        ]),
-        onHomePage() {
-            return this.$route.name === 'home';
-        },
-    },
-    async mounted(){
-        this.removeOldAngularCache();
-        window.addEventListener('scroll', this.handleScroll);
-    },
-    created() {
-        this.$q.dark.set(localStorage.getItem('darkModeEnabled') !== 'false');
-    },
-    methods: {
-        handleScroll: function () {
-            if (this.scTimer){
-                return;
-            }
-            this.scTimer = setTimeout(() => {
-                this.scY = window.scrollY;
-                clearTimeout(this.scTimer);
-                this.scTimer = 0;
-            }, 100);
-        },
-        toTop: function () {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth',
-            });
-        },
-        removeOldAngularCache() {
-            // the old hyperion explorer hosted at teloscan.io had this stubborn cache that won't go away on it's own,
-            // this should remove it
-            if(window.navigator && navigator.serviceWorker) {
-                navigator.serviceWorker.getRegistrations()
-                    .then(function(registrations) {
-                        for(let registration of registrations) {
-                            registration.unregister();
-                        }
-                    });
-            }
-        },
-    },
-};
+const scrollY = ref(0);
+
+const onHomePage = computed(() => $route.name === 'home');
+
+onBeforeMount(() => {
+    $q.dark.set(localStorage.getItem('darkModeEnabled') !== 'false');
+});
+
+function toTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+    });
+}
+
+function scrollHandler() {
+    scrollY.value = window.scrollY;
+}
 </script>
 
 <template>
@@ -84,7 +44,12 @@ export default {
         <div class="c-main-layout__background-bottom"></div>
     </div>
 
-    <q-page-container class="flex flex-center page-container">
+    <q-page-container
+        :class="{
+            'flex flex-center c-main-layout__page-container': true,
+            'c-main-layout__page-container--home': onHomePage,
+        }"
+    >
         <router-view />
     </q-page-container>
     <FooterMain />
@@ -93,28 +58,18 @@ export default {
         enter-active-class="animated fadeIn"
         leave-active-class="animated fadeOut"
     >
-        <div
-            v-show="scY > 300"
-            id="pagetop"
-            class="fixed fixed-bottom-right clickable"
+        <q-btn
+            v-if="scrollY > 300"
+            round
+            class="c-main-layout__scroll-up shadow-4"
+            icon="fas fa-chevron-up"
+            :text-color="$q.dark.isActive ? 'white' : 'primary'"
+            :color="$q.dark.isActive ? 'primary' : 'white'"
             @click="toTop"
-        >
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="48"
-                height="48"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#8294b4"
-                stroke-width="1"
-                stroke-linecap="square"
-                stroke-linejoin="arcs"
-            >
-                <path d="M18 15l-6-6-6 6"/>
-            </svg>
-        </div>
+        />
     </transition>
 </q-layout>
+<q-scroll-observer @scroll="scrollHandler" />
 </template>
 
 <style lang="scss" scoped>
@@ -230,58 +185,25 @@ export default {
             }
         }
     }
-}
-.page-container {
-  margin-top: 48px;
-  @media screen and (min-width: $breakpoint-lg-min) {
-    margin-top: 105px;
-  }
-}
 
-.separator {
-  border-bottom: 1px solid lightgrey;
-}
+    &__page-container {
+        $stacked-header-height: calc(var(--top-bar-height) + var(--bottom-bar-height));
+        margin-top: $stacked-header-height;
 
-.connection {
-  font-size: .5rem;
-  margin-right: 0.2rem;
-}
+        &--home {
+            margin-top: var(--bottom-bar-height);
 
-.q-item {
-  .q-icon {
-    transition: 400ms color ease;
-  }
-}
-
-.q-item:hover {
-  .grayscale {
-    filter: grayscale(0);
-  }
-  .q-icon {
-    color: $secondary;
-  }
-}
-
-.account {
-  width: 96px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.q-header {
-  position: relative;
-}
-
-@media only screen and (max-width: 400px) {
-  #logo {
-    .text-h5 {
-      font-size: 1.1rem;
+            @media screen and (min-width: $breakpoint-md-min) {
+                margin-top: $stacked-header-height;
+            }
+        }
     }
-    img {
-      width: 24px;
-    }
-  }
-}
 
+    &__scroll-up {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 100;
+    }
+}
 </style>

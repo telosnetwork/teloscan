@@ -21,7 +21,6 @@ const hideNavTopBar = computed(() => $route.name === 'home' && $q.screen.lt.md);
 
 <style lang="scss">
 .c-header {
-    --top-bar-height: 48px;
     --background-color: white;
 
     position: fixed;
