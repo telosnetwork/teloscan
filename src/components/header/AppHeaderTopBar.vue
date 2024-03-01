@@ -9,14 +9,16 @@ import { useQuasar } from 'quasar';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { formatUnits } from 'ethers/lib/utils';
+import { useRoute } from 'vue-router';
 
 import { useChainStore } from 'src/antelope';
 import { IS_MAINNET, IS_TESTNET } from 'src/lib/chain-utils';
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import OutlineButton from 'components/OutlineButton.vue';
-import AppHeaderSearch from 'components/header/AppHeaderSearch.vue';
+import AppSearch from 'components/AppSearch.vue';
 
+const $route = useRoute();
 const $q = useQuasar();
 const $store = useStore();
 const $i18n = useI18n();
@@ -27,6 +29,7 @@ const chainStore = useChainStore();
 let pricesInterval: ReturnType<typeof setInterval> | null = null;
 
 const locale = computed(() => $i18n.locale.value);
+const hideSearchBar = computed(() => $route.name ==='home');
 const systemTokenSymbol = computed(() => chainStore.currentChain.settings.getSystemToken().symbol);
 const gasPriceInGwei = computed(() => {
     if (IS_TESTNET) {
@@ -118,7 +121,7 @@ function goToTeloscanTestnet() {
         </div>
 
         <div class="c-header-top-bar__right-container">
-            <AppHeaderSearch />
+            <AppSearch v-if="!hideSearchBar" />
 
             <OutlineButton
                 text-color="primary"

@@ -6,6 +6,9 @@ import { useRouter } from 'vue-router';
 
 import { evm } from 'src/boot/evm';
 
+defineProps<{
+    homepageMode?: boolean; // if true, the search bar will be styled for placement on the homepage
+}>();
 
 const $router = useRouter();
 const $q = useQuasar();
@@ -15,6 +18,14 @@ const TIME_DELAY = 6000;
 
 const searchTerm = ref('');
 const inputRef = ref<HTMLInputElement | null>(null);
+
+function handleIconClick() {
+    if (searchTerm.value) {
+        searchTerm.value = '';
+    } else {
+        inputRef?.value?.focus();
+    }
+}
 
 async function search() {
     if (!searchTerm.value) {
@@ -63,7 +74,12 @@ async function search() {
 </script>
 
 <template>
-<div class="c-search">
+<div
+    :class="{
+        'c-search': true,
+        'c-search--homepage': homepageMode,
+    }"
+>
     <q-input
         ref="inputRef"
         v-model="searchTerm"
@@ -76,16 +92,11 @@ async function search() {
     >
         <template v-slot:append>
             <q-icon
-                v-if="!searchTerm"
-                name="search"
+                :name="searchTerm ? 'clear' : 'search'"
                 size="24px"
-                @click="() => inputRef?.focus()"
-            />
-            <q-icon
-                v-else
-                name="clear"
-                size="24px"
-                @click="searchTerm = ''"
+                class="c-search__icon"
+                aria-hidden="true"
+                @click="handleIconClick"
             />
         </template>
     </q-input>
@@ -94,7 +105,10 @@ async function search() {
 
 <style lang="scss">
 .c-search {
+    $this: &;
+
     --color: #{$dark};
+
     height: 32px;
     width: 100%;
     max-width: 500px;
@@ -120,13 +134,67 @@ async function search() {
         }
     }
 
-    .q-field--dense .q-field__control,
-    .q-field--dense .q-field__marginal {
-        height: 32px;
+    .q-field--dense {
+        .q-field__control,
+        .q-field__marginal {
+            height: 32px;
+        }
     }
 
     .q-field--outlined .q-field__control:before {
         border: 1px solid var(--border-color);
+    }
+
+    &--homepage {
+        max-width: 800px;
+        width: 100%;
+
+        #{$this}__icon {
+            position: relative;
+            display: flex;
+            z-index: 1;
+            color: white;
+            height: 32px;
+            width: 32px;
+
+            &::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #8B3F98;
+                border-radius: 4px;
+                z-index: -1;
+            }
+        }
+
+        .q-field__control {
+            &::before {
+                border-radius: 8px;
+                background-color: white;
+                box-shadow:
+                    0 1px 5px rgba(0, 0, 0, 0.2),
+                    0 2px 2px rgba(0, 0, 0, 0.14),
+                    0 3px 1px -2px rgba(0, 0, 0, 0.12)
+            }
+        }
+
+        .q-field--dense {
+            .q-field__control,
+            .q-field__marginal {
+                height: 48px;
+            }
+        }
+
+        .q-field--outlined .q-field__control:before {
+            border: none;
+        }
+    }
+
+    &__icon {
+        cursor: pointer;
     }
 }
 </style>

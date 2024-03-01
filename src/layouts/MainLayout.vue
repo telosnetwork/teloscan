@@ -88,6 +88,7 @@ function scrollHandler() {
         right: 0;
         bottom: 0;
         left: 0;
+        background-color: rgba($primary, 0.04);
 
         body.body--dark & {
             background-color: darken($dark, 5%);
@@ -127,6 +128,8 @@ function scrollHandler() {
         }
 
         @media screen and (min-width: $breakpoint-md-min) {
+            height: 40vh;
+
             background-image:
                 radial-gradient(circle at 0% 150%, $primary, transparent 20%),
                 radial-gradient(circle at 100% 100%, $primary, transparent 20%),

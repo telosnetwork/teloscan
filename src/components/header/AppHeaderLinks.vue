@@ -173,7 +173,7 @@ function goTo(to: string | { name: string }) {
             id="app-header-blockchain-submenu-ul"
             :class="{
                 'c-header-links__submenu-ul': true,
-                'shadow-4': $q.screen.gt.md,
+                'shadow-4': $q.screen.gt.sm,
             }"
         >
             <li
@@ -215,7 +215,7 @@ function goTo(to: string | { name: string }) {
             id="app-header-developers-submenu-ul"
             :class="{
                 'c-header-links__submenu-ul': true,
-                'shadow-4': $q.screen.gt.md,
+                'shadow-4': $q.screen.gt.sm,
             }"
         >
             <li
@@ -268,7 +268,7 @@ function goTo(to: string | { name: string }) {
             id="app-header-more-submenu-ul"
             :class="{
                 'c-header-links__submenu-ul c-header-links__submenu-ul--rightmost': true,
-                'shadow-4': $q.screen.gt.md,
+                'shadow-4': $q.screen.gt.sm,
             }"
         >
             <li
@@ -340,7 +340,7 @@ function goTo(to: string | { name: string }) {
             id="app-header-network-submenu-ul"
             :class="{
                 'c-header-links__submenu-ul': true,
-                'shadow-4': $q.screen.gt.md,
+                'shadow-4': $q.screen.gt.sm,
             }"
         >
             <li
