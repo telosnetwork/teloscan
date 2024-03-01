@@ -4,7 +4,6 @@ import {
     onBeforeMount,
     onBeforeUnmount,
     onMounted,
-    ref,
 } from 'vue';
 import { useQuasar } from 'quasar';
 import { useStore } from 'vuex';
@@ -25,7 +24,7 @@ const $t = $i18n.t;
 const chainStore = useChainStore();
 
 
-const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
+let pricesInterval: ReturnType<typeof setInterval> | null = null;
 
 const locale = computed(() => $i18n.locale.value);
 const systemTokenSymbol = computed(() => chainStore.currentChain.settings.getSystemToken().symbol);
@@ -65,15 +64,15 @@ onBeforeMount(() => {
 });
 
 onMounted(async () => {
-    pricesInterval.value = setInterval(() => {
+    pricesInterval = setInterval(() => {
         fetchTlosPrice();
         fetchGasPrice();
     }, 6000);
 });
 
 onBeforeUnmount(() => {
-    if (pricesInterval.value) {
-        clearInterval(pricesInterval.value);
+    if (pricesInterval) {
+        clearInterval(pricesInterval);
     }
 });
 

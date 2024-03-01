@@ -1,40 +1,57 @@
-<script>
-import { mapGetters, mapActions } from 'vuex';
-import { ethers } from 'ethers';
-import exchangeImage from 'assets/exchange.png';
-import gasImage from 'assets/gas.png';
-import blockImage from 'assets/block.png';
+<script setup lang="ts">
+import { computed, onBeforeMount, onBeforeUnmount } from 'vue';
+import { useStore } from 'vuex';
+import { useI18n } from 'vue-i18n';
+import { formatUnits } from 'ethers/lib/utils';
 
-export default {
-    name: 'HomeInfo',
-    data: () => ({
-        polling: false,
-        gasImage: gasImage,
-        exchangeImage: exchangeImage,
-        blockImage: blockImage,
-    }),
-    computed: {
-        ...mapGetters('chain', ['tlosPrice', 'gasPrice', 'latestBlock']),
-        gasPriceGwei() {
-            let gweiStr = ethers.utils.formatUnits(this.gasPrice, 'gwei');
-            gweiStr = (+gweiStr).toFixed(0);
-            return gweiStr;
-        },
-    },
-    async created() {
-        this.fetchTlosPrice();
-        this.fetchGasPrice();
-        this.fetchLatestBlock();
-        this.polling = setInterval(async () => {
-            this.fetchTlosPrice();
-            this.fetchGasPrice();
-            this.fetchLatestBlock();
-        }, 6000);
-    },
-    methods: {
-        ...mapActions('chain', ['fetchTlosPrice', 'fetchGasPrice', 'fetchLatestBlock']),
-    },
-};
+
+const $store = useStore();
+const locale = useI18n().locale.value;
+
+let pollingInterval: null | ReturnType<typeof setInterval> = null;
+
+const tlosPrice = computed(() => $store.getters['chain/tlosPrice']);
+const gasPrice = computed(() => $store.getters['chain/gasPrice']);
+const latestBlock = computed(() => $store.getters['chain/latestBlock']);
+const gasPriceGwei = computed(() => {
+    if (!gasPrice.value) {
+        return '';
+    }
+    const gweiStr = formatUnits(gasPrice.value, 'gwei');
+    const gweiWholeNumber = Number(Number(gweiStr).toFixed(0));
+    return gweiWholeNumber.toLocaleString(locale);
+});
+
+onBeforeMount(() => {
+    updateFigures();
+
+    pollingInterval = setInterval(() => {
+        updateFigures();
+    }, 6000);
+});
+
+onBeforeUnmount(() => {
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+    }
+});
+
+function fetchTlosPrice() {
+    $store.dispatch('chain/fetchTlosPrice');
+}
+function fetchGasPrice() {
+    $store.dispatch('chain/fetchGasPrice');
+}
+function fetchLatestBlock() {
+    $store.dispatch('chain/fetchLatestBlock');
+}
+
+function updateFigures() {
+    fetchTlosPrice();
+    fetchGasPrice();
+    fetchLatestBlock();
+}
+
 </script>
 
 <template>
@@ -42,7 +59,9 @@ export default {
     <div class="col q-pa-md">
         <div class="row items-center">
             <div class="col-2"></div>
-            <div class="col-2"><img :src="exchangeImage" width="40"></div>
+            <div class="col-2">
+                <!-- <img :src="exchangeImage" width="40"> -->
+            </div>
             <div class="col-8 q-pl-sm">
                 <div class="col-12">
                     <div class="column text-subtitle2">{{ $t('components.tlos_price') }}</div>
@@ -56,7 +75,9 @@ export default {
     <div class="col q-pa-md">
         <div class="row items-center">
             <div class="col-2"></div>
-            <div class="col-2"><img :src="gasImage" width="40"></div>
+            <div class="col-2">
+                <!-- <img :src="gasImage" width="40"> -->
+            </div>
             <div class="col-8 q-pl-sm">
                 <div class="col-12">
                     <div class="column text-subtitle2">{{ $t('components.gas_price') }}</div>
@@ -70,7 +91,9 @@ export default {
     <div class="col q-pa-md">
         <div class="row items-center">
             <div class="col-2"></div>
-            <div class="col-2"><img :src="blockImage" width="40"></div>
+            <div class="col-2">
+                <!-- <img :src="blockImage" width="40"> -->
+            </div>
             <div class="col-8 q-pl-sm">
                 <div class="col-12">
                     <div class="column text-subtitle2">{{ $t('components.latest_block') }}</div>
