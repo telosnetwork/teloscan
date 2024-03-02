@@ -14,9 +14,9 @@ body {
 }
 
 body.body--light {
-    --grey-text-color: #{$grey-7};
     --border-color: #{$grey-5};
     --text-color: #{$dark};
+    --grey-text-color: #{$grey-7};
 
     a:hover {
         color: color.scale($primary, $lightness: -50%);
@@ -24,9 +24,9 @@ body.body--light {
 }
 
 body.body--dark {
-    --grey-text-color: #{$grey-5};
     --border-color: #{$grey-7};
     --text-color: white;
+    --grey-text-color: #{$grey-5};
 
     a:hover {
         color: color.scale($primary, $lightness: +30%);

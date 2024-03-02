@@ -148,6 +148,7 @@ async function search() {
     &--homepage {
         max-width: 800px;
         width: 100%;
+        height: 48px;
 
         #{$this}__icon {
             position: relative;

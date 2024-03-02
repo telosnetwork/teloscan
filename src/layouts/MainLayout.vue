@@ -191,7 +191,8 @@ function scrollHandler() {
 
     &__page-container {
         $stacked-header-height: calc(var(--top-bar-height) + var(--bottom-bar-height));
-        margin-top: $stacked-header-height;
+
+        margin: $stacked-header-height 12px 0;
 
         &--home {
             margin-top: var(--bottom-bar-height);

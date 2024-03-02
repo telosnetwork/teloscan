@@ -17,14 +17,14 @@ const { t: $t } = useI18n();
             </h5>
         </div>
     </div>
-    <div class="row">
-        <div class="col-12 u-flex--center q-px-md">
+    <div class="row q-mb-xl">
+        <div class="col-12 u-flex--center">
             <AppSearch :homepage-mode="true" />
         </div>
     </div>
-    <div v-if="false" class="row">
+    <div class="row q-mt-xl">
         <div class="col-12">
-            <HomeInfo/>
+            <HomeInfo />
         </div>
     </div>
 </q-page>
