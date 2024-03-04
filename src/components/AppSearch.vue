@@ -194,6 +194,10 @@ async function search() {
         .q-field--outlined .q-field__control:before {
             border: none;
         }
+
+        .q-field--outlined.q-field--highlighted .q-field__control::after {
+            border-color: $primary;
+        }
     }
 
     &__icon {
