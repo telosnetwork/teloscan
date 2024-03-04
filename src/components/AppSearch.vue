@@ -182,6 +182,10 @@ async function search() {
                     0 2px 2px rgba(0, 0, 0, 0.14),
                     0 3px 1px -2px rgba(0, 0, 0, 0.12)
             }
+
+            &::after {
+                border-radius: 8px;
+            }
         }
 
         .q-field--dense {
