@@ -1,5 +1,5 @@
 <script setup lang="ts">
-
+import InlineSvg from 'vue-inline-svg';
 import { useI18n } from 'vue-i18n';
 const { t: $t } = useI18n();
 console.log('$t', $t);
@@ -48,40 +48,48 @@ console.log('$t', $t);
             </div>
             <div class="c-footer__social-links">
                 <a class="c-footer__social-link" href="http://t.me/HelloTelos">
-                    <q-img
+                    <InlineSvg
                         :src="require('src/assets/icon-social--telegram.svg')"
-                        height="24px"
-                        width="24px"
+                        class="c-footer__social-img c-footer__social-img--telegram"
+                        height="24"
+                        width="24"
+                        aria-hidden="true"
                     />
                     <q-tooltip anchor="top middle" self="bottom middle">
                         Telegram
                     </q-tooltip>
                 </a>
                 <a class="c-footer__social-link" href="https://twitter.com/HelloTelos">
-                    <q-img
+                    <InlineSvg
                         :src="require('src/assets/icon-social--x-twitter.svg')"
+                        class="c-footer__social-img c-footer__social-img--x-twitter"
                         height="24px"
                         width="24px"
+                        aira-hidden="true"
                     />
                     <q-tooltip anchor="top middle" self="bottom middle">
                         X (Twitter)
                     </q-tooltip>
                 </a>
                 <a class="c-footer__social-link" href="https://www.youtube.com/@TheTelosNetwork">
-                    <q-img
+                    <InlineSvg
                         :src="require('src/assets/icon-social--youtube.svg')"
+                        class="c-footer__social-img c-footer__social-img--youtube"
                         height="24px"
                         width="24px"
+                        aira-hidden="true"
                     />
                     <q-tooltip anchor="top middle" self="bottom middle">
                         YouTube
                     </q-tooltip>
                 </a>
                 <a class="c-footer__social-link" href="https://discord.gg/telos">
-                    <q-img
+                    <InlineSvg
                         :src="require('src/assets/icon-social--discord.svg')"
+                        class="c-footer__social-img c-footer__social-img--discord"
                         height="24px"
                         width="24px"
+                        aira-hidden="true"
                     />
                     <q-tooltip anchor="top middle" self="bottom middle">
                         Discord
@@ -243,9 +251,19 @@ console.log('$t', $t);
     &__social-link {
         display: inline-block;
         margin-right: 1rem;
-        img {
-            width: 1.5rem;
-            height: 1.5rem;
+    }
+
+    &__social-img {
+        .st0 {
+            fill: var(--grey-text-color);
+        }
+        .st1 {
+            fill: var(--invert-text-color);
+        }
+        &:hover {
+            .st0 {
+                fill: var(--text-color);
+            }
         }
     }
 }
