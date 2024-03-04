@@ -12,6 +12,9 @@ export default {
         },
         home: {
             telos_evm_explorer: 'El Explorador Telos EVM',
+            market_cap: 'Capitalización de mercado',
+            last_finalized_block: 'Último bloque finalizado',
+            total_transactions: 'Transacciones totales',
         },
         issuer: 'Issuer',
         account_not_found: 'No pudimos encontrar esta cuenta',
