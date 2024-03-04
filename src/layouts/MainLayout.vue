@@ -2,7 +2,7 @@
 import { mapGetters } from 'vuex';
 
 import AppHeader from 'components/header/AppHeader.vue';
-import FooterMain from 'components/Footer.vue';
+import FooterMain from 'components/FooterMain.vue';
 
 import { stlos } from 'src/lib/logos.js';
 
@@ -86,6 +86,9 @@ export default {
 
     <q-page-container class="flex flex-center page-container">
         <router-view />
+        <!-- FIXME:
+            <div><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div>
+        -->
     </q-page-container>
     <FooterMain />
     <transition
