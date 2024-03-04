@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import InlineSvg from 'vue-inline-svg';
+import SocialLinks from 'components/SocialLinks';
 import { useI18n } from 'vue-i18n';
 const { t: $t } = useI18n();
 console.log('$t', $t);
@@ -11,13 +11,27 @@ console.log('$t', $t);
     <div class="c-footer__background c-footer__background--alpha"></div>
     <div class="c-footer__outer-container">
         <div class="c-footer__inner-container">
-            <a class="c-footer__header">
-                <img :src="require('src/assets/telos-new-logo.png')" alt="Telos Logo" class="c-footer__header-logo c-footer__header-logo--light">
-                <img :src="require('src/assets/telos-new-logo--dark.png')" alt="Telos Logo" class="c-footer__header-logo c-footer__header-logo--dark">
-            </a>
+            <!--
+                <div class="c-footer__header">
+                    <a class="c-footer__brand">
+                        <img :src="require('src/assets/telos-new-logo.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--light">
+                        <img :src="require('src/assets/telos-new-logo--dark.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--dark">
+                    </a>
+                    <SocialLinks />
+                </div>
+            -->
+            <div class="c-footer__header">
+                <SocialLinks />
+                <a class="c-footer__back-to-top" href="#">
+                    <q-icon name="fas fa-arrow-up" size="12px" /> Back to Top
+                </a>
+            </div>
             <div class="c-footer__columns">
                 <div class="c-footer__column c-footer__column--a">
-                    <div class="c-footer__column-title">{{$t('components.footer.telos')}}</div>
+                    <a class="c-footer__brand">
+                        <img :src="require('src/assets/telos-new-logo.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--light">
+                        <img :src="require('src/assets/telos-new-logo--dark.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--dark">
+                    </a>
                     <div class="c-footer__column-items">
                         <a class="c-footer__column-item" href="https://www.telos.net/">{{$t('components.footer.telosHomepage')}}</a>
                         <a class="c-footer__column-item" href="https://wallet.telos.net/">{{$t('components.footer.telosWallet')}}</a>
@@ -45,56 +59,6 @@ console.log('$t', $t);
                         <a class="c-footer__column-item" href="https://www.telos.net/community-resources">{{$t('components.footer.brandAssets')}}</a>
                     </div>
                 </div>
-            </div>
-            <div class="c-footer__social-links">
-                <a class="c-footer__social-link" href="http://t.me/HelloTelos">
-                    <InlineSvg
-                        :src="require('src/assets/icon-social--telegram.svg')"
-                        class="c-footer__social-img c-footer__social-img--telegram"
-                        height="24"
-                        width="24"
-                        aria-hidden="true"
-                    />
-                    <q-tooltip anchor="top middle" self="bottom middle">
-                        Telegram
-                    </q-tooltip>
-                </a>
-                <a class="c-footer__social-link" href="https://twitter.com/HelloTelos">
-                    <InlineSvg
-                        :src="require('src/assets/icon-social--x-twitter.svg')"
-                        class="c-footer__social-img c-footer__social-img--x-twitter"
-                        height="24px"
-                        width="24px"
-                        aira-hidden="true"
-                    />
-                    <q-tooltip anchor="top middle" self="bottom middle">
-                        X (Twitter)
-                    </q-tooltip>
-                </a>
-                <a class="c-footer__social-link" href="https://www.youtube.com/@TheTelosNetwork">
-                    <InlineSvg
-                        :src="require('src/assets/icon-social--youtube.svg')"
-                        class="c-footer__social-img c-footer__social-img--youtube"
-                        height="24px"
-                        width="24px"
-                        aira-hidden="true"
-                    />
-                    <q-tooltip anchor="top middle" self="bottom middle">
-                        YouTube
-                    </q-tooltip>
-                </a>
-                <a class="c-footer__social-link" href="https://discord.gg/telos">
-                    <InlineSvg
-                        :src="require('src/assets/icon-social--discord.svg')"
-                        class="c-footer__social-img c-footer__social-img--discord"
-                        height="24px"
-                        width="24px"
-                        aira-hidden="true"
-                    />
-                    <q-tooltip anchor="top middle" self="bottom middle">
-                        Discord
-                    </q-tooltip>
-                </a>
             </div>
         </div>
     </div>
@@ -135,7 +99,27 @@ console.log('$t', $t);
     }
 
     &__header {
-        padding-bottom: 20px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    &__back-to-top {
+        color: var(--grey-text-color);
+        display: flex;
+        flex-flow: row;
+        gap: 7px;
+        align-items: center;
+    }
+
+    &__brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         &-logo {
             width: 100%;
             max-width: 6rem;
@@ -151,6 +135,11 @@ console.log('$t', $t);
         }
     }
 
+    &__brand {
+        display: block;
+        margin-bottom: 10px;
+    }
+
     &__outer-container {
         flex: 1;
         width: 100%;
@@ -158,9 +147,11 @@ console.log('$t', $t);
         flex-flow: row;
         justify-content: center;
         align-items: stretch;
-        padding-left: 1.25rem;
-        padding-right: 1.25rem;
         display: flex;
+        @media screen and (max-width: 1240px) {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
     }
 
     &__inner-container {
@@ -235,35 +226,6 @@ console.log('$t', $t);
         text-decoration: none;
         &:hover {
             color: var(--q-primary) !important;
-        }
-    }
-
-    &__social-links {
-        margin-top: 1rem;
-        flex-direction: row;
-        justify-content: flex-end;
-        display: flex;
-        @media screen and (max-width: 1300px) {
-            margin-right: 20px;
-        }
-    }
-
-    &__social-link {
-        display: inline-block;
-        margin-right: 1rem;
-    }
-
-    &__social-img {
-        .st0 {
-            fill: var(--grey-text-color);
-        }
-        .st1 {
-            fill: var(--invert-text-color);
-        }
-        &:hover {
-            .st0 {
-                fill: var(--text-color);
-            }
         }
     }
 }
