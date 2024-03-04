@@ -18,12 +18,15 @@ const locale = useI18n().locale.value;
 
 let pollingInterval: null | ReturnType<typeof setInterval> = null;
 
-const marketCapStr = ref('');
+const marketCap = ref(0);
 const transactionsCount = ref(0);
 
 const tlosPrice = computed(() => $store.getters['chain/tlosPrice']); // no need to fetch TLOS price, it is already fetched on a timer in AppHeaderTopBar.vue
 const latestBlock = computed(() => $store.getters['chain/latestBlock']);
 const tlosPriceText = computed(() => `$${tlosPrice.value.toLocaleString(locale, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`);
+const marketCapText = computed(() =>
+    marketCap.value === 0 ? '--' : `$${marketCap.value.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+);
 
 onBeforeMount(() => {
     updateFigures();
@@ -52,18 +55,12 @@ async function fetchMarketCap() {
     try {
         const response = await telosApi.get('/supply/total');
         const totalSupply = response.data;
-
         const usdMarketCap = totalSupply * tlosPrice.value;
 
-        marketCapStr.value = '$'.concat(
-            usdMarketCap.toLocaleString(locale, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-            }),
-        );
+        marketCap.value = usdMarketCap;
     } catch (e) {
         console.error('Error fetching market cap', e);
-        marketCapStr.value = '--';
+        marketCap.value = 0;
     }
 }
 
@@ -94,7 +91,7 @@ function updateFigures() {
                 {{ $t('pages.home.market_cap') }}
             </span>
             <br>
-            {{ marketCapStr }}
+            {{ marketCapText }}
         </div>
     </q-card-section>
 
