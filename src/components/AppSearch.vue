@@ -108,6 +108,7 @@ async function search() {
     $this: &;
 
     --color: #{$dark};
+    --background-color: white;
 
     height: 32px;
     width: 100%;
@@ -123,6 +124,7 @@ async function search() {
 
     @at-root .body--dark & {
         --color: white;
+        --background-color: #{$dark};
     }
 
     // quasar overrides
@@ -174,7 +176,7 @@ async function search() {
         .q-field__control {
             &::before {
                 border-radius: 8px;
-                background-color: white;
+                background-color: var(--background-color);
                 box-shadow:
                     0 1px 5px rgba(0, 0, 0, 0.2),
                     0 2px 2px rgba(0, 0, 0, 0.14),

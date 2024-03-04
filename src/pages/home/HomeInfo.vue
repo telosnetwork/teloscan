@@ -9,7 +9,7 @@ import { useI18n } from 'vue-i18n';
 import { useStore } from 'vuex';
 import { useQuasar } from 'quasar';
 
-import { indexerApi } from 'src/boot/telosApi';
+import { indexerApi, telosApi } from 'src/boot/telosApi';
 
 const $store = useStore();
 const $q = useQuasar();
@@ -18,7 +18,7 @@ const locale = useI18n().locale.value;
 
 let pollingInterval: null | ReturnType<typeof setInterval> = null;
 
-const marketCap = ref('');
+const marketCapStr = ref('');
 const transactionsCount = ref(0);
 
 const tlosPrice = computed(() => $store.getters['chain/tlosPrice']); // no need to fetch TLOS price, it is already fetched on a timer in AppHeaderTopBar.vue
@@ -49,15 +49,13 @@ async function fetchTotalTransactions() {
 }
 
 async function fetchMarketCap() {
-    const tokenId = 'telos';
-    const exchangeStatsUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=USD&include_market_cap=true`;
-
     try {
-        const response = await fetch(exchangeStatsUrl);
-        const priceStats = await response.json();
-        const usdMarketCap = priceStats[tokenId].usd_market_cap as number;
+        const response = await telosApi.get('/supply/total');
+        const totalSupply = response.data;
 
-        marketCap.value = '$'.concat(
+        const usdMarketCap = totalSupply * tlosPrice.value;
+
+        marketCapStr.value = '$'.concat(
             usdMarketCap.toLocaleString(locale, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -65,7 +63,7 @@ async function fetchMarketCap() {
         );
     } catch (e) {
         console.error('Error fetching market cap', e);
-        marketCap.value = '--';
+        marketCapStr.value = '--';
     }
 }
 
@@ -96,7 +94,7 @@ function updateFigures() {
                 {{ $t('pages.home.market_cap') }}
             </span>
             <br>
-            {{ marketCap }}
+            {{ marketCapStr }}
         </div>
     </q-card-section>
 
