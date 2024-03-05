@@ -317,7 +317,7 @@ function setHighlightAddress(val: string) {
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div v-if="col.name === 'preview'" class="u-flex--center" @click="toggleDateFormat">
+                <div v-if="col.name === 'preview'" class="u-flex--center">
                     <q-icon class="info-icon" name="far fa-question-circle"/>
                     <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
                         <!-- eztodo i18n -->
