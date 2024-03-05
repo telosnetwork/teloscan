@@ -322,13 +322,13 @@ function setHighlightAddress(val: string) {
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div v-if="col.name === 'preview'" class="u-flex--center-y" @click="toggleDateFormat">
-                    <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                <div v-if="col.name === 'preview'" class="u-flex--center" @click="toggleDateFormat">
+                    <q-icon class="info-icon" name="far fa-question-circle"/>
                     <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
                         See preview of the transaction details.
                     </q-tooltip>
                 </div>
-                <div v-if="col.name === 'date'" class="u-flex--center-y cursor-pointer" @click="toggleDateFormat">
+                <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
                     <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
                     <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
                     <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
@@ -342,7 +342,7 @@ function setHighlightAddress(val: string) {
                         {{ $t('components.executed_based_on_decoded_data') }}
                     </q-tooltip>
                 </div>
-                <div v-else-if="col.name === 'fee'" class="u-flex--center-y cursor-pointer" @click="toggleGasValue">
+                <div v-else-if="col.name === 'fee'" class="u-flex--center-y" @click="toggleGasValue">
                     <a>{{ showTotalGasFee ? col.label : $t('components.gas_price') }}</a>
                     <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
                     <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
@@ -388,7 +388,7 @@ function setHighlightAddress(val: string) {
             <q-td key="from" :props="props">
                 <AddressField
                     v-if="props.row.from"
-                    :key="'trxt'+ props.row.from"
+                    :key="'trx-from-'+ props.row.from"
                     :address="props.row.from"
                     :truncate="14"
                     :copy="true"
@@ -399,7 +399,7 @@ function setHighlightAddress(val: string) {
             <q-td key="to" :props="props">
                 <AddressField
                     v-if="props.row.to"
-                    :key="'trxt'+ props.row.to"
+                    :key="'trx-to-'+ props.row.to"
                     :address="props.row.to"
                     :truncate="14"
                     :copy="true"

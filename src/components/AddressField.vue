@@ -1,6 +1,7 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
+
 import { contractManager } from 'src/boot/telosApi';
 import { getIcon } from 'src/lib/token-utils';
 import { toChecksumAddress } from 'src/lib/utils';
@@ -32,10 +33,6 @@ const props = defineProps({
     truncate: {
         type: Number,
         default: 0,
-    },
-    isContractTrx: {
-        type: Boolean,
-        default: false,
     },
 });
 

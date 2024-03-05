@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import OutlineButton from 'src/components/OutlineButton.vue';
+
 
 defineProps({
     trx: {
@@ -11,11 +13,8 @@ defineProps({
 
 <template>
 <div class="transaction-summary">
-    <q-btn
-        size="6px"
-        round
-        icon="far fa-eye"
-    >
+    <OutlineButton :icon-only="true" text-color="primary">
+        <q-icon name="far fa-eye" size="12px" />
         <q-menu
             anchor="top right"
             self="top left"
@@ -67,7 +66,7 @@ defineProps({
                 </q-card-section>
             </q-card>
         </q-menu>
-    </q-btn>
+    </OutlineButton>
 </div>
 </template>
 
