@@ -11,52 +11,44 @@ console.log('$t', $t);
     <div class="c-footer__background c-footer__background--alpha"></div>
     <div class="c-footer__outer-container">
         <div class="c-footer__inner-container">
-            <!--
-                <div class="c-footer__header">
-                    <a class="c-footer__brand">
-                        <img :src="require('src/assets/telos-new-logo.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--light">
-                        <img :src="require('src/assets/telos-new-logo--dark.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--dark">
-                    </a>
-                    <SocialLinks />
-                </div>
-            -->
             <div class="c-footer__header">
-                <SocialLinks />
-                <a class="c-footer__back-to-top" href="#">
-                    <q-icon name="fas fa-arrow-up" size="12px" /> Back to Top
+                <a class="c-footer__brand">
+                    <img :src="require('src/assets/telos-new-logo.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--light">
+                    <img :src="require('src/assets/telos-new-logo--dark.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--dark">
                 </a>
+                <a class="c-footer__back-to-top" href="#">
+                    <q-icon name="fas fa-arrow-up" size="12px" /> {{$t('components.footer.back_to_top')}}
+                </a>
+                <SocialLinks />
             </div>
             <div class="c-footer__columns">
                 <div class="c-footer__column c-footer__column--a">
-                    <a class="c-footer__brand">
-                        <img :src="require('src/assets/telos-new-logo.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--light">
-                        <img :src="require('src/assets/telos-new-logo--dark.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--dark">
-                    </a>
+                    <div class="c-footer__column-title">{{$t('components.footer.telos')}}</div>
                     <div class="c-footer__column-items">
-                        <a class="c-footer__column-item" href="https://www.telos.net/">{{$t('components.footer.telosHomepage')}}</a>
-                        <a class="c-footer__column-item" href="https://wallet.telos.net/">{{$t('components.footer.telosWallet')}}</a>
-                        <a class="c-footer__column-item" href="https://bridge.telos.net/bridge">{{$t('components.footer.telosBridge')}}</a>
-                        <a class="c-footer__column-item" href="https://explorer.telos.net/network">{{$t('components.footer.telosZeroExplorer')}}</a>
-                        <a class="c-footer__column-item" href="https://www.telos.net/buy">{{$t('components.footer.buyTelos')}}</a>
-                        <a class="c-footer__column-item" href="https://docs.telos.net/users/knowledge-base/how-to-stake-tlos/">{{$t('components.footer.stakeTelos')}}</a>
-                        <a class="c-footer__column-item" href="https://www.telos.net/ecosystem">{{$t('components.footer.telosEcosystem')}}</a>
-                        <a class="c-footer__column-item" href="https://www.teloscan.io/health">{{$t('components.footer.networkStatus')}}</a>
+                        <a class="c-footer__column-item" href="https://www.telos.net/">{{$t('components.footer.telos_homepage')}}</a>
+                        <a class="c-footer__column-item" href="https://wallet.telos.net/">{{$t('components.footer.telos_wallet')}}</a>
+                        <a class="c-footer__column-item" href="https://bridge.telos.net/bridge">{{$t('components.footer.telos_bridge')}}</a>
+                        <a class="c-footer__column-item" href="https://explorer.telos.net/network">{{$t('components.footer.telos_zero_explorer')}}</a>
+                        <a class="c-footer__column-item" href="https://www.telos.net/buy">{{$t('components.footer.buy_telos')}}</a>
+                        <a class="c-footer__column-item" href="https://docs.telos.net/users/knowledge-base/how-to-stake-tlos/">{{$t('components.footer.stake_telos')}}</a>
+                        <a class="c-footer__column-item" href="https://www.telos.net/ecosystem">{{$t('components.footer.telos_ecosystem')}}</a>
+                        <a class="c-footer__column-item" href="https://www.teloscan.io/health">{{$t('components.footer.network_status')}}</a>
                     </div>
                 </div>
                 <div class="c-footer__column c-footer__column--b">
                     <div class="c-footer__column-title">{{$t('components.footer.about')}}</div>
                     <div class="c-footer__column-items">
-                        <a class="c-footer__column-item" href="https://www.telos.net/about">{{$t('components.footer.aboutUs')}}</a>
+                        <a class="c-footer__column-item" href="https://www.telos.net/about">{{$t('components.footer.about_us')}}</a>
                         <a class="c-footer__column-item" href="http://t.me/HelloTelos">{{$t('components.footer.contactUs')}}</a>
                     </div>
                 </div>
                 <div class="c-footer__column c-footer__column--c">
                     <div class="c-footer__column-title">{{$t('components.footer.build')}}</div>
                     <div class="c-footer__column-items">
-                        <a class="c-footer__column-item" href="http://api.teloscan.io/swagger/">{{$t('components.footer.apiDocumentation')}}</a>
-                        <a class="c-footer__column-item" href="https://docs.telos.net/overview/what-is-telos/introduction/">{{$t('components.footer.telosDocumentation')}}</a>
+                        <a class="c-footer__column-item" href="http://api.teloscan.io/swagger/">{{$t('components.footer.api_documentation')}}</a>
+                        <a class="c-footer__column-item" href="https://docs.telos.net/overview/what-is-telos/introduction/">{{$t('components.footer.telos_documentation')}}</a>
                         <a class="c-footer__column-item" href="https://github.com/telosnetwork">{{$t('components.footer.github')}}</a>
-                        <a class="c-footer__column-item" href="https://www.telos.net/community-resources">{{$t('components.footer.brandAssets')}}</a>
+                        <a class="c-footer__column-item" href="https://www.telos.net/community-resources">{{$t('components.footer.brand_assets')}}</a>
                     </div>
                 </div>
             </div>
@@ -101,7 +93,7 @@ console.log('$t', $t);
     &__header {
         display: flex;
         flex-direction: row;
-        align-items: center;
+        align-items: baseline;
         justify-content: space-between;
         padding-bottom: 10px;
         margin-bottom: 20px;
@@ -114,12 +106,17 @@ console.log('$t', $t);
         flex-flow: row;
         gap: 7px;
         align-items: center;
+        @media screen and (max-width: 500px) {
+            display: none;
+        }
     }
 
     &__brand {
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
+        width: 120px;
+        margin-bottom: 12px;
         &-logo {
             width: 100%;
             max-width: 6rem;
@@ -133,11 +130,6 @@ console.log('$t', $t);
                 display: none;
             }
         }
-    }
-
-    &__brand {
-        display: block;
-        margin-bottom: 10px;
     }
 
     &__outer-container {

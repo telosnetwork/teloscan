@@ -66,7 +66,7 @@ console.log('$t', $t);
 
     &__link {
         display: inline-block;
-        margin-right: 1rem;
+        margin-left: 1rem;
     }
 
     &__img {
