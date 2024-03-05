@@ -48,18 +48,18 @@ const toggle = () => {
 const setValues = async () => {
     if (
         !props.trx.parsedTransaction
-    && props.trx.from === ZERO_ADDRESSES
-    && props.trx.value
-    && parseInt(props.trx.gasPrice as string) === 0
+        && props.trx.from === ZERO_ADDRESSES
+        && props.trx.value
+        && parseInt(props.trx.gasPrice as string) === 0
     ) {
         icon.value = 'keyboard_double_arrow_down';
         iconTooltip.value = 'Native Deposit'; // Use your translation function or method
         fullName.value = 'deposit';
     } else if (
         !props.trx.parsedTransaction
-    && props.trx.to === ZERO_ADDRESSES
-    && props.trx.value
-    && parseInt(props.trx.gasPrice as string) === 0
+        && props.trx.to === ZERO_ADDRESSES
+        && props.trx.value
+        && parseInt(props.trx.gasPrice as string) === 0
     ) {
         icon.value = 'keyboard_double_arrow_up';
         iconTooltip.value = 'Native Withdraw'; // Use your translation function or method
@@ -130,8 +130,8 @@ function emitHighlight(val: string) {
 </div>
 </template>
 
-<style lang="scss" scoped>
-.c-method{
+<style lang="scss">
+.c-method {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -139,11 +139,11 @@ function emitHighlight(val: string) {
     padding: 3px 6px;
     border-radius: 5px;
     font-size: 0.9em;
-    border: 1px solid;
+    border: 1px solid var(--border-color);
 
-    &--highlight{
-        background: lightgoldenrodyellow;
-        border: 1px dashed orange;
+    &--highlight {
+        background: rgba($secondary, 0.2);
+        outline: 1px dashed $secondary;
     }
 
     &__icon {
@@ -158,12 +158,6 @@ function emitHighlight(val: string) {
         text-align: center;
         border-radius: 100%;
         color: white;
-        .q-icon {
-            margin-top: 2px;
-        }
     }
-}
-body.body--dark .c-method--highlight{
-    color: $primary;
 }
 </style>

@@ -127,7 +127,10 @@ function emitHighlight(val: string) {
 >
     <router-link
         :to="`/address/${address}`"
-        :class="{'c-address-field--highlight': highlightAddress === props.address && highlightAddress !== ''}"
+        :class="{
+            'c-address-field__link': true,
+            'c-address-field__link--highlight': highlightAddress === props.address && highlightAddress !== ''
+        }"
     >
         <q-img
             v-if="logo !== null"
@@ -136,7 +139,7 @@ function emitHighlight(val: string) {
             width="16px"
             height="auto"
         />
-        <q-icon v-else-if="contract && contract.getName()" name="far fa-file" class="c-address-field__contract-icon"/>
+        <q-icon v-else-if="contract && contract.getName()" name="far fa-file" />
         <span>{{ displayName }}</span>
         <q-tooltip v-if="fullName !== displayName">{{ fullName }}</q-tooltip>
     </router-link>
@@ -151,15 +154,19 @@ function emitHighlight(val: string) {
     align-items: center;
     gap: 4px;
 
-    &__contract-icon{
-        padding-bottom: 6px;
+    &__link {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        position: relative;
+
+        &--highlight {
+            background: rgba($secondary, 0.2);
+            outline: 1px dashed $secondary;
+            border-radius: 5px;
+        }
     }
 
-    &--highlight{
-        background: lightgoldenrodyellow;
-        border: 1px dashed orange;
-        border-radius: 5px;
-    }
 
     .q-icon {
         margin-right: 3px;

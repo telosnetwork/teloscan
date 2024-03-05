@@ -328,7 +328,7 @@ function setHighlightAddress(val: string) {
                         See preview of the transaction details.
                     </q-tooltip>
                 </div>
-                <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
+                <div v-if="col.name === 'date'" class="u-flex--center-y cursor-pointer" @click="toggleDateFormat">
                     <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
                     <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
                     <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
@@ -342,7 +342,7 @@ function setHighlightAddress(val: string) {
                         {{ $t('components.executed_based_on_decoded_data') }}
                     </q-tooltip>
                 </div>
-                <div v-else-if="col.name === 'fee'" class="u-flex--center-y" @click="toggleGasValue">
+                <div v-else-if="col.name === 'fee'" class="u-flex--center-y cursor-pointer" @click="toggleGasValue">
                     <a>{{ showTotalGasFee ? col.label : $t('components.gas_price') }}</a>
                     <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
                     <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
