@@ -3,7 +3,7 @@ import { ref, watchEffect } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
-import { isTestnet } from 'src/lib/chain-utils';
+import { IS_TESTNET } from 'src/lib/chain-utils';
 
 import OutlineButton from 'components/OutlineButton.vue';
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
@@ -11,6 +11,10 @@ import AppHeaderLinks from 'components/header/AppHeaderLinks.vue';
 
 const $q = useQuasar();
 const { t: $t } = useI18n();
+
+defineProps<{
+    topBarHidden: boolean;
+}>();
 
 const menuBottomBarHidden = ref(false);
 const menuVisibleMobile = ref(false);
@@ -30,6 +34,7 @@ function scrollHandler(info: { direction: string; }) {
 <div
     :class="{
         'c-header-bottom-bar': true,
+        'c-header-bottom-bar--no-top-bar': topBarHidden,
         'c-header-bottom-bar--hidden': menuBottomBarHidden,
     }"
 >
@@ -47,7 +52,7 @@ function scrollHandler(info: { direction: string; }) {
                 <span class="c-header-bottom-bar__logo-text">
                     Teloscan
                 </span>
-                <span v-if="isTestnet()" class="c-header-bottom-bar__testnet-indicator">
+                <span v-if="IS_TESTNET" class="c-header-bottom-bar__testnet-indicator">
                     Testnet
                 </span>
             </div>
@@ -78,8 +83,6 @@ function scrollHandler(info: { direction: string; }) {
 
 <style lang="scss">
 .c-header-bottom-bar {
-    $this: &;
-
     padding: 0 12px;
     position: absolute;
     top: var(--top-bar-height);
@@ -94,6 +97,10 @@ function scrollHandler(info: { direction: string; }) {
 
     @media screen and (min-width: $breakpoint-lg-min) {
         padding: 0;
+    }
+
+    &--no-top-bar {
+        top: 0;
     }
 
     &--hidden:not(:focus-within) {

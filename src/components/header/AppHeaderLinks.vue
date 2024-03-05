@@ -5,8 +5,8 @@ import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
 import {
-    isTelosMainnet,
-    isTelosTestnet,
+    IS_MAINNET,
+    IS_TESTNET,
     TELOSCAN_MAINNET_URL,
     TELOSCAN_TESTNET_URL,
 } from 'src/lib/chain-utils';
@@ -30,7 +30,7 @@ const blockchainSubmenuItems = [
     { name: 'blocks', label: $t('components.header.blocks') },
 ];
 
-const teloscanSwaggerUrl = isTelosMainnet()
+const teloscanSwaggerUrl = IS_MAINNET
     ? 'https://api.teloscan.io/swagger/'
     : 'https://api.testnet.teloscan.io/swagger/';
 
@@ -106,11 +106,11 @@ function toggleDarkMode() {
 
 function getIsCurrentNetworkMenuItem(url: string) {
     if (url === TELOSCAN_MAINNET_URL) {
-        return isTelosMainnet();
+        return IS_MAINNET;
     }
 
     if (url === TELOSCAN_TESTNET_URL) {
-        return isTelosTestnet();
+        return IS_TESTNET;
     }
 
     return false;
