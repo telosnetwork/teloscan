@@ -32,11 +32,6 @@ const props = withDefaults(defineProps<Props>(), {
     initialPageSize: 1,
 });
 
-/**
- *
- *
- * */
-
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const rows = ref<Array<any>>([]);
@@ -176,7 +171,7 @@ async function onPaginationChange(settings: { pagination: Pagination}) {
 }
 
 async function parseTransactions() {
-    if(loading.value){
+    if (loading.value) {
         return;
     }
     loading.value = true;
@@ -325,6 +320,7 @@ function setHighlightAddress(val: string) {
                 <div v-if="col.name === 'preview'" class="u-flex--center" @click="toggleDateFormat">
                     <q-icon class="info-icon" name="far fa-question-circle"/>
                     <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                        <!-- eztodo i18n -->
                         See preview of the transaction details.
                     </q-tooltip>
                 </div>

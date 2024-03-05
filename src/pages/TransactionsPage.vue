@@ -5,17 +5,17 @@ import { useRoute } from 'vue-router';
 import TransactionTable from 'components/TransactionTable.vue';
 import BlockField from 'components/BlockField.vue';
 
-const route = useRoute();
+const $route = useRoute();
 
-// const block = ref(0);
-const block = ref(327366818);
+const block = ref(0);
 
-watch(() => route.query.block,
+watch(() => $route.query.block,
     (blockNumber) => {
-        if (typeof blockNumber === 'number'){
-            block.value = blockNumber;
+        if (/\d+/g.test((blockNumber as string) ?? '')) {
+            block.value = Number(blockNumber);
         }
     },
+    { immediate: true },
 );
 </script>
 
@@ -32,7 +32,7 @@ watch(() => route.query.block,
     <div class="row c-transaction__table">
         <div class="col-12 q-pb-lg">
             <q-card>
-                <TransactionTable/>
+                <TransactionTable :block="block || undefined" />
             </q-card>
         </div>
     </div>
