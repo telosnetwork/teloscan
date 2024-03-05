@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import DateField from 'components/DateField.vue';
-import { BlockData } from 'src/types';
+import { useI18n } from 'vue-i18n';
 import { ethers } from 'ethers';
+
+import type { BlockData } from 'src/types';
+
+import DateField from 'components/DateField.vue';
+
+const locale = useI18n().locale.value;
 
 const props = defineProps({
     data: {
@@ -23,7 +28,7 @@ const transactionsCount = computed(() => blockData.value ? blockData.value.trans
 const size = computed(() => {
     if (blockData.value) {
         const size = ethers.BigNumber.from(blockData.value.size).toNumber();
-        return `${size.toLocaleString()} bytes`;
+        return `${size.toLocaleString(locale)} bytes`;
     }
     return '0';
 });
@@ -31,7 +36,7 @@ const gasUsed = computed(() => {
     if (blockData.value) {
         const gas = ethers.BigNumber.from(blockData.value.gasUsed);
         try {
-            return gas.toNumber().toLocaleString();
+            return gas.toNumber().toLocaleString(locale);
         } catch (e) {
             console.error(e);
             return gas.toString();
@@ -43,7 +48,7 @@ const gasLimit = computed(() => {
     if (blockData.value) {
         const gas = ethers.BigNumber.from(blockData.value.gasLimit);
         try {
-            return gas.toNumber().toLocaleString();
+            return gas.toNumber().toLocaleString(locale);
         } catch (e) {
             console.error(e);
             return gas.toString();
@@ -72,7 +77,7 @@ const nextBlock = () => {
 };
 
 watch(() => props.data, (newData) => {
-    blockData.value = newData;
+    blockData.value = newData ?? null;
     const newNumber = Number(newData?.number);
     if (!isNaN(newNumber)) {
         blockHeight.value = newNumber;

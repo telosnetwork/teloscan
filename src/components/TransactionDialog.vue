@@ -1,17 +1,87 @@
 <script lang="ts" setup>
+import { computed } from 'vue';
+import { BigNumber } from 'ethers/lib/ethers';
+import { useI18n } from 'vue-i18n';
+
+import { truncateAddress } from 'src/antelope/wallets/utils/text-utils';
+import { WEI_PRECISION, ZERO_ADDRESSES, formatWei } from 'src/lib/utils';
+
 import OutlineButton from 'src/components/OutlineButton.vue';
 
 
-defineProps({
+const locale = useI18n().locale.value;
+
+const props = defineProps({
     trx: {
         type: Object,
         default: null,
     },
 });
 
+const actionText = computed(() => {
+    if (
+        !props.trx.parsedTransaction
+        && props.trx.from === ZERO_ADDRESSES
+        && props.trx.value
+        && parseInt(props.trx.gasPrice as string) === 0
+    ) {
+        return 'deposit'; // eztodo i18n
+    }
+    if (
+        !props.trx.parsedTransaction
+        && props.trx.to === ZERO_ADDRESSES
+        && props.trx.value
+        && parseInt(props.trx.gasPrice as string) === 0
+    ) {
+        return 'withdraw'; // eztodo i18n
+    }
+
+    if (!props.trx.parsedTransaction && props.trx.to === null && props.trx.data !== null) {
+        return 'Contract Deployment'; // eztodo i18n
+    }
+
+    if (props.trx.parsedTransaction) {
+        return props.trx.parsedTransaction.name;
+    }
+
+    if (!props.trx.parsedTransaction && props.trx.input === '0x' && props.trx.value) {
+        // action is a transfer; handle separately in the template
+        return ''; // eztodo i18n
+    }
+
+    return props.trx.input.slice(0, 10);
+});
+const gasLimit = computed(() => {
+    const gas = BigNumber.from(props.trx.gasLimit);
+
+    try {
+        return gas.toNumber().toLocaleString(locale);
+    } catch (e) {
+        console.error(e);
+        return gas.toString();
+    }
+});
+const gasUsed = computed(() => {
+    const gas = BigNumber.from(props.trx.gasUsed ?? props.trx.gasused);
+    try {
+        return gas.toNumber().toLocaleString(locale);
+    } catch (e) {
+        console.error(e);
+        return gas.toString();
+    }
+});
+const totalGasFee = computed(() => {
+    const wei = BigNumber.from(props.trx.gasUsed).mul(props.trx.gasPrice);
+    return formatWei(wei, 18, 4);
+});
+
+function formatTlos(value: string) {
+    return formatWei(value, WEI_PRECISION, 4);
+}
 </script>
 
 <template>
+<!-- eztodo i18n -->
 <div class="transaction-summary">
     <OutlineButton :icon-only="true" text-color="primary">
         <q-icon name="far fa-eye" size="12px" />
@@ -22,35 +92,38 @@ defineProps({
             <q-card>
                 <q-card-section>
                     <div>
+                        <strong>Status: </strong>
                         <p>
-                            <strong>Status: </strong>
-                            <span v-if="trx.status == 1" class="positive">
-                                <q-icon name="check"/>
-                                <span>{{ $t('pages.success') }}</span>
+                            <span v-if="trx.status == 1" class="u-flex--center-y">
+                                <q-icon name="check" color="positive" class="q-mr-xs"/>
+                                <span class="text-positive">{{ $t('pages.success') }}</span>
                             </span>
-                            <span v-else class="negative">
-                                <q-icon name="warning"/>
-                                <span>{{ $t('pages.failure') }}</span>
+                            <span v-else class="u-flex--center-y">
+                                <q-icon name="warning" color="negative" class="q-mr-xs"/>
+                                <span class="text-negative">{{ $t('pages.failure') }}</span>
                             </span>
                         </p>
                     </div>
                     <div>
                         <strong>Transaction Action:</strong>
                         <p>
-                            Transfer for {{ trx.value }} TLOS from     <router-link
-                                :to="`/address/${trx.from}`"
-                            > {{ trx.from.slice(0,7) }}...</router-link> to <router-link
-                                :to="`/address/${trx.to}`"
-                            > {{ trx.to.slice(0,7) }}...</router-link>
+                            <span v-if="actionText">{{ actionText }}</span>
+                            <template v-else>
+                                Transfer for {{ formatTlos(trx.value) }} TLOS from     <router-link
+                                    :to="`/address/${trx.from}`"
+                                > {{ truncateAddress(trx.from) }}</router-link> to <router-link
+                                    :to="`/address/${trx.to}`"
+                                > {{ truncateAddress(trx.to) }}</router-link>
+                            </template>
                         </p>
                     </div>
                     <div>
                         <strong>Transaction Fee:</strong>
-                        <p>{{ trx.gasUsed ?? trx.gasused }} TLOS </p>
+                        <p>{{ totalGasFee }} TLOS </p>
                     </div>
                     <div>
                         <strong>Gas Info:</strong>
-                        <p>{{ trx.gasUsed ?? trx.gasused }} gas used from {{ trx.gasLimit }} limit</p>
+                        <p>{{ gasUsed }} gas used from {{ gasLimit }} limit</p>
                     </div>
                     <div>
                         <strong>Nonce:</strong>
@@ -71,26 +144,4 @@ defineProps({
 </template>
 
 <style lang="scss">
-.transaction-summary {
-    .q-btn {
-        margin-right: 4px;
-    }
-    .q-card {
-        width: 330px;
-    }
-}
-
-.positive, .negative {
-    border: 1px solid;
-    border-radius: 5px;
-    padding: 5px 10px;
-}
-
-.positive {
-    background: $positive;
-}
-
-.negative {
-    background: $negative;
-}
 </style>
