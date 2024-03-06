@@ -8,8 +8,9 @@ import { WEI_PRECISION, ZERO_ADDRESSES, formatWei } from 'src/lib/utils';
 
 import OutlineButton from 'src/components/OutlineButton.vue';
 
-
-const locale = useI18n().locale.value;
+const $i18n = useI18n();
+const $t = $i18n.t;
+const locale = $i18n.locale.value;
 
 const props = defineProps({
     trx: {
@@ -25,7 +26,7 @@ const actionText = computed(() => {
         && props.trx.value
         && parseInt(props.trx.gasPrice as string) === 0
     ) {
-        return 'deposit (native)'; // eztodo i18n
+        return $t('pages.transactions.deposit_native');
     }
     if (
         !props.trx.parsedTransaction
@@ -33,11 +34,11 @@ const actionText = computed(() => {
         && props.trx.value
         && parseInt(props.trx.gasPrice as string) === 0
     ) {
-        return 'withdraw (native)'; // eztodo i18n
+        return $t('pages.transactions.withdraw_native');
     }
 
     if (!props.trx.parsedTransaction && props.trx.to === null && props.trx.data !== null) {
-        return 'Contract Deployment'; // eztodo i18n
+        return $t('pages.transactions.contract_deployment');
     }
 
     if (props.trx.parsedTransaction) {
@@ -46,7 +47,7 @@ const actionText = computed(() => {
 
     if (!props.trx.parsedTransaction && props.trx.input === '0x' && props.trx.value) {
         // action is a transfer; handle separately in the template
-        return ''; // eztodo i18n
+        return '';
     }
 
     return props.trx.input.slice(0, 10);
@@ -71,7 +72,7 @@ const gasUsed = computed(() => {
     }
 });
 const totalGasFee = computed(() => {
-    const wei = BigNumber.from(props.trx.gasUsed).mul(props.trx.gasPrice);
+    const wei = BigNumber.from(props.trx.gasUsed ?? props.trx.gasused).mul(props.trx.gasPrice);
     return formatWei(wei, 18, 4);
 });
 
@@ -81,8 +82,7 @@ function formatTlos(value: string) {
 </script>
 
 <template>
-<!-- eztodo i18n -->
-<div class="transaction-summary">
+<div>
     <OutlineButton :icon-only="true" text-color="primary">
         <q-icon name="far fa-eye" size="12px" />
         <q-menu
@@ -92,7 +92,7 @@ function formatTlos(value: string) {
             <q-card>
                 <q-card-section>
                     <div>
-                        <strong>Status: </strong>
+                        <strong>{{ $t('pages.transactions.status_label') }}:</strong>
                         <p>
                             <span v-if="trx.status == 1" class="u-flex--center-y">
                                 <q-icon name="check" color="positive" class="q-mr-xs"/>
@@ -105,34 +105,52 @@ function formatTlos(value: string) {
                         </p>
                     </div>
                     <div>
-                        <strong>Transaction Action:</strong>
+                        <strong>{{ $t('pages.transactions.transaction_action_label') }}:</strong>
                         <p>
-                            <span v-if="actionText">{{ actionText }}</span>
+                            <template v-if="actionText">{{ actionText }}</template>
                             <template v-else>
-                                Transfer for {{ formatTlos(trx.value) }} TLOS from     <router-link
-                                    :to="`/address/${trx.from}`"
-                                > {{ truncateAddress(trx.from) }}</router-link> to <router-link
-                                    :to="`/address/${trx.to}`"
-                                > {{ truncateAddress(trx.to) }}</router-link>
+                                {{
+                                    $t(
+                                        'pages.transactions.transfer_for_x_tlos_from',
+                                        { amount: formatTlos(trx.value) }
+                                    )
+                                }}
+                                <router-link :to="`/address/${trx.from}`">
+                                    {{ truncateAddress(trx.from) }}
+                                </router-link>
+                                {{  $t('pages.transactions.to')}}
+                                <router-link :to="`/address/${trx.to}`">
+                                    {{ truncateAddress(trx.to) }}
+                                </router-link>
                             </template>
                         </p>
                     </div>
                     <div>
-                        <strong>Transaction Fee:</strong>
+                        <strong>{{ $t('pages.transactions.transaction_fee_label') }}:</strong>
                         <p>{{ totalGasFee }} TLOS </p>
                     </div>
                     <div>
-                        <strong>Gas Info:</strong>
-                        <p>{{ gasUsed }} gas used from {{ gasLimit }} limit</p>
+                        <strong>{{ $t('pages.transactions.gas_info_label') }}:</strong>
+                        <p>
+                            {{
+                                $t(
+                                    'pages.transactions.x_gas_used_of_y_limit',
+                                    {
+                                        amount: gasUsed,
+                                        limit: gasLimit,
+                                    }
+                                )
+                            }}
+                        </p>
                     </div>
                     <div>
-                        <strong>Nonce:</strong>
+                        <strong>{{ $t('pages.transactions.nonce_label') }}:</strong>
                         <p>{{ trx.nonce }}</p>
                     </div>
                     <div>
                         <p>
                             <router-link :key="$route.path" :to="`/tx/${trx.hash}`">
-                                See more details
+                                {{ $t('pages.transactions.see_more_details') }}
                             </router-link>
                         </p>
                     </div>

@@ -1,11 +1,13 @@
 <script setup lang='ts'>
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 
 import TransactionTable from 'components/TransactionTable.vue';
 import BlockField from 'components/BlockField.vue';
 
 const $route = useRoute();
+const { t: $t } = useI18n();
 
 const block = ref(0);
 const address = ref('');
@@ -30,16 +32,14 @@ watch(() => $route.query.a,
 <template>
 <q-page class="c-transaction">
     <div class="q-mb-lg">
-        <span class="c-transaction__header-title">{{ $t('pages.transactions') }}</span>
+        <span class="c-transaction__header-title">{{ $t('pages.transactions.transactions') }}</span>
         <div v-if="block">
-            <!-- eztodo i18n -->
-            for block
+            {{ $t('pages.transactions.for_block') }}
             <BlockField :block="block"/>
         </div>
 
         <div v-if="address">
-            <!-- eztodo i18n -->
-            for
+            {{ $t('pages.transactions.for') }}
             <router-link :to="`/address/${address}`">{{ address }}</router-link>
         </div>
     </div>

@@ -314,8 +314,7 @@ function setHighlightAddress(val: string) {
                 <div v-if="col.name === 'preview'" class="u-flex--center">
                     <q-icon class="info-icon" name="far fa-question-circle"/>
                     <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
-                        <!-- eztodo i18n -->
-                        See preview of the transaction details.
+                        {{ $t('pages.transactions.see_tx_preview_tooltip') }}
                     </q-tooltip>
                 </div>
                 <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { computed, ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+
 import { ZERO_ADDRESSES } from 'src/lib/utils';
+
+const { t: $t } = useI18n();
 
 const props = defineProps({
     highlightMethod: {
@@ -64,20 +68,20 @@ const setValues = async () => {
         && props.trx.value
         && parseInt(props.trx.gasPrice as string) === 0
     ) {
-        nativeTooltipText.value = 'Native Deposit'; // eztodo i18n
-        methodName.value = 'deposit'; // eztodo i18n
+        nativeTooltipText.value = $t('pages.transactions.native_deposit_tooltip');
+        methodName.value = $t('pages.transactions.deposit_action_name');
     } else if (
         !props.trx.parsedTransaction
         && props.trx.to === ZERO_ADDRESSES
         && props.trx.value
         && parseInt(props.trx.gasPrice as string) === 0
     ) {
-        nativeTooltipText.value = 'Native Withdraw'; // eztodo i18n
-        methodName.value = 'withdraw'; // eztodo i18n
+        nativeTooltipText.value = $t('pages.transactions.native_withdraw_tooltip');
+        methodName.value = $t('pages.transactions.withdraw_action_name');
     } else if (!props.trx.parsedTransaction && props.trx.input === '0x' && props.trx.value) {
-        methodName.value = 'TLOS Transfer'; // eztodo i18n
+        methodName.value = $t('pages.transactions.transfer_tlos_action_name');
     } else if (!props.trx.parsedTransaction && props.trx.to === null && props.trx.data !== null) {
-        methodName.value = 'Contract Deployment'; // eztodo i18n
+        methodName.value = $t('pages.transactions.contract_deployment');
     } else if (props.trx.parsedTransaction) {
         methodName.value = props.trx.parsedTransaction.name;
     }

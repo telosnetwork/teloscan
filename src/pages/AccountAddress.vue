@@ -519,7 +519,7 @@ export default {
                 :to="{ hash: '#transactions' }"
                 exact
                 replace
-                :label="$t('pages.transactions')"
+                :label="$t('pages.transactions.transactions')"
                 @click.stop="this.toggleMenus(false)"
             />
             <q-route-tab
