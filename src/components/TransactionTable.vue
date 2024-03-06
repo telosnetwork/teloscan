@@ -3,22 +3,26 @@ import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { BigNumber } from 'ethers/lib/ethers';
 
 import { contractManager, indexerApi } from 'src/boot/telosApi';
+import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
+import { WEI_PRECISION } from 'src/lib/utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import MethodField from 'components/MethodField.vue';
 import TransactionDialog from 'components/TransactionDialog.vue';
-import TokenValueField from 'components/Token/TokenValueField.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 
 const $q = useQuasar();
 const route = useRoute();
 const router = useRouter();
-const { t: $t } = useI18n();
+const $i18n = useI18n();
+const { t: $t } = $i18n;
+const locale = $i18n.locale.value;
 
 interface Props {
     title?: string;
@@ -290,6 +294,18 @@ function setHighlightAddress(val: string) {
     highlightAddress.value = val;
 }
 
+function getValueDisplay(value: string) {
+    return prettyPrintCurrency(
+        BigNumber.from(value),
+        4,
+        locale,
+        false,
+        'TLOS',
+        false,
+        WEI_PRECISION,
+        false,
+    );
+}
 </script>
 
 <template>
@@ -397,15 +413,7 @@ function setHighlightAddress(val: string) {
                 />
             </q-td>
             <q-td key='value' :props="props">
-                <TokenValueField v-if="props.row.value > 0" :value="BigInt(props.row.value).toString(10) || '0.0'" />
-                <span v-else-if="props.row.parsedTransaction?.transfers?.length > 0">
-                    <TokenValueField
-                        v-if="props.row.parsedTransaction?.transfers?.length > 0"
-                        :value="props.row.parsedTransaction.transfers[0].value.toString(16) || '0.0'"
-                        :address="props.row.parsedTransaction.transfers[0].address"
-                    />
-                </span>
-                <TokenValueField v-else :value="'0.0'" />
+                {{ getValueDisplay(props.row.value) }}
             </q-td>
             <q-td key='fee' :props="props">
                 <TransactionFeeField
