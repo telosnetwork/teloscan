@@ -25,7 +25,7 @@ const actionText = computed(() => {
         && props.trx.value
         && parseInt(props.trx.gasPrice as string) === 0
     ) {
-        return 'deposit'; // eztodo i18n
+        return 'deposit (native)'; // eztodo i18n
     }
     if (
         !props.trx.parsedTransaction
@@ -33,7 +33,7 @@ const actionText = computed(() => {
         && props.trx.value
         && parseInt(props.trx.gasPrice as string) === 0
     ) {
-        return 'withdraw'; // eztodo i18n
+        return 'withdraw (native)'; // eztodo i18n
     }
 
     if (!props.trx.parsedTransaction && props.trx.to === null && props.trx.data !== null) {
