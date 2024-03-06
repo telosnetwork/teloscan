@@ -8,6 +8,7 @@ import BlockField from 'components/BlockField.vue';
 const $route = useRoute();
 
 const block = ref(0);
+const address = ref('');
 
 watch(() => $route.query.block,
     (blockNumber) => {
@@ -17,22 +18,36 @@ watch(() => $route.query.block,
     },
     { immediate: true },
 );
+
+watch(() => $route.query.a,
+    (addr) => {
+        address.value = addr as string;
+    },
+    { immediate: true },
+);
 </script>
 
 <template>
 <q-page class="c-transaction">
-    <div class="c-transaction__header">
+    <div class="q-mb-lg">
         <span class="c-transaction__header-title">{{ $t('pages.transactions') }}</span>
-        <div v-if="block" class="c-transaction__block">
+        <div v-if="block">
+            <!-- eztodo i18n -->
             for block
             <BlockField :block="block"/>
+        </div>
+
+        <div v-if="address">
+            <!-- eztodo i18n -->
+            for
+            <router-link :to="`/address/${address}`">{{ address }}</router-link>
         </div>
     </div>
 
     <div class="row c-transaction__table">
         <div class="col-12 q-pb-lg">
             <q-card>
-                <TransactionTable :block="block || undefined" />
+                <TransactionTable :block="block || undefined" :account-address="address" />
             </q-card>
         </div>
     </div>
@@ -50,17 +65,10 @@ watch(() => $route.query.block,
     margin-left: auto;
     width: 100%;
     max-width: 1200px;
-    &__header {
-        display: flex;
-        justify-content: left;
-        gap: 10px;
-        align-items: baseline;
-        margin-bottom: 1.5rem;
-        vertical-align: text-bottom;
-        &-title {
-            font-size: 1.4rem;
-            font-weight: bold;
-        }
+
+    &__header-title {
+        font-size: 1.4rem;
+        font-weight: bold;
     }
 }
 </style>

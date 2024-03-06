@@ -22,20 +22,20 @@ const { t: $t } = useI18n();
 
 interface Props {
     title?: string;
-    filter?: string | object;
     initialPageSize?: number,
     block?: number,
+    accountAddress?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
     title: '',
     initialPageSize: 1,
+    accountAddress: '',
 });
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const rows = ref<Array<any>>([]);
-const filterUpdated = ref(false);
 const loading =  ref(false);
 const showDateAge = ref(true);
 const showTotalGasFee = ref(true);
@@ -133,16 +133,6 @@ watch(() => route.query.page,
         setPagination(page, size, desc);
     },
     { immediate: true },
-);
-
-watch(() => props.filter,
-    async () => {
-        if (!filterUpdated.value) {
-            filterUpdated.value = true;
-            return;
-        }
-        await parseTransactions();
-    },
 );
 
 function setPagination(page: number, size: number, desc: boolean) {
@@ -266,16 +256,20 @@ function addEmptyToCache(contracts: any, transaction: any){
 
 function getPath() {
     const { page, rowsPerPage, descending } = pagination.value;
-    const filter =  props.filter  ? props.filter.toString() : '';
-    let path = `${filter}/transactions?limit=${
+    const prepend = props.accountAddress ? `address/${props.accountAddress}` : '';
+    let path = `${prepend}/transactions?limit=${
         rowsPerPage === 0 ? 500 : rowsPerPage
     }`;
     path += `&offset=${(page - 1) * rowsPerPage}`;
     path += `&sort=${descending ? 'desc' : 'asc'}`;
     path += (pagination.value.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
     path += '&includeAbi=true';
-    if (props.block){
-        path += `&block=${props.block}`;
+    if (props.block) {
+        if (props.accountAddress) {
+            path += `&startBlock=${props.block}&endBlock=${props.block}`;
+        } else {
+            path += `&block=${props.block}`;
+        }
     }
     return path;
 }

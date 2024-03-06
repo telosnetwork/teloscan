@@ -700,7 +700,7 @@ export default {
                     <TransactionTable
                         v-if="accountAddress"
                         :title="accountAddress"
-                        :filter="'/address/' + accountAddress"
+                        :account-address="accountAddress"
                     />
                 </q-tab-panel>
                 <q-tab-panel
