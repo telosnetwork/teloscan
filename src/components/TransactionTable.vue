@@ -370,9 +370,9 @@ function getValueDisplay(value: string) {
             <q-td key="hash" :props="props">
                 <div class="hash-column flex items-center">
                     <TransactionField
-                        color='primary'
+                        color="primary"
                         :transaction-hash="props.row.hash"
-                        :truncate=18
+                        :truncate="18"
                     />
                 </div>
             </q-td>
