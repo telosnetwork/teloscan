@@ -129,7 +129,8 @@ function goToTeloscanTestnet() {
                 class="c-header-top-bar__theme-toggle"
                 @click="toggleDarkMode"
             >
-                <q-icon :name="`far fa-${$q.dark.isActive ? 'moon' : 'sun'}`" size="14px" />
+                <q-icon v-if="$q.dark.isActive" name="light_mode" size="16px" />
+                <q-icon v-else name="far fa-moon" size="14px" />
 
                 <q-tooltip>
                     {{ $t(`components.header.switch_to_${$q.dark.isActive ? 'light' : 'dark'}_theme`) }}

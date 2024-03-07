@@ -384,7 +384,15 @@ function goTo(to: string | { name: string }) {
             @click="toggleDarkMode"
         >
             <q-icon
-                :name="`far fa-${$q.dark.isActive ? 'moon' : 'sun'}`"
+                v-if="$q.dark.isActive"
+                name="light_mode"
+                size="16px"
+                color="primary"
+                class="q-mr-sm"
+            />
+            <q-icon
+                v-else
+                name="far fa-moon"
                 size="14px"
                 color="primary"
                 class="q-mr-sm"
