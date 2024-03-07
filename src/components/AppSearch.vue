@@ -167,7 +167,7 @@ async function search() {
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background-color: #8B3F98;
+                background-color: $primary;
                 border-radius: 4px;
                 z-index: -1;
             }
