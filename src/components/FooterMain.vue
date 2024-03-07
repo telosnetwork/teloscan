@@ -3,6 +3,15 @@ import SocialLinks from 'components/SocialLinks';
 import { useI18n } from 'vue-i18n';
 const { t: $t } = useI18n();
 console.log('$t', $t);
+
+const toTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+    });
+};
+
+
 </script>
 
 <template>
@@ -12,14 +21,14 @@ console.log('$t', $t);
     <div class="c-footer__outer-container">
         <div class="c-footer__inner-container">
             <div class="c-footer__header">
+                <SocialLinks />
+                <a class="c-footer__back-to-top" @click="toTop">
+                    <q-icon name="fas fa-arrow-up" size="12px" /> {{$t('components.footer.back_to_top')}}
+                </a>
                 <a class="c-footer__brand">
                     <img :src="require('src/assets/telos-new-logo.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--light">
                     <img :src="require('src/assets/telos-new-logo--dark.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--dark">
                 </a>
-                <a class="c-footer__back-to-top" href="#">
-                    <q-icon name="fas fa-arrow-up" size="12px" /> {{$t('components.footer.back_to_top')}}
-                </a>
-                <SocialLinks />
             </div>
             <div class="c-footer__columns">
                 <div class="c-footer__column c-footer__column--a">
@@ -101,6 +110,7 @@ console.log('$t', $t);
     }
 
     &__back-to-top {
+        cursor: pointer;
         color: var(--grey-text-color);
         display: flex;
         flex-flow: row;
@@ -114,8 +124,8 @@ console.log('$t', $t);
     &__brand {
         display: flex;
         align-items: center;
-        justify-content: flex-start;
-        width: 120px;
+        justify-content: flex-end;
+        width: 200px;
         margin-bottom: 12px;
         &-logo {
             width: 100%;

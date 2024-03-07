@@ -20,6 +20,8 @@ export default {
             drawer: false,
             scTimer: 0,
             scY: 0,
+            footerHeight: 0,
+            margin: 50,
         };
     },
     computed: {
@@ -32,10 +34,14 @@ export default {
         onHomePage() {
             return this.$route.name === 'home';
         },
+        showBackToTop() {
+            return this.scY > 300 && this.scY < document.documentElement.scrollHeight - window.innerHeight - this.footerHeight + this.margin;
+        },
     },
     async mounted(){
         this.removeOldAngularCache();
         window.addEventListener('scroll', this.handleScroll);
+        this.footerHeight = document.getElementById('footer').offsetHeight;
     },
     created() {
         this.$q.dark.set(localStorage.getItem('darkModeEnabled') !== 'false');
@@ -86,18 +92,15 @@ export default {
 
     <q-page-container class="flex flex-center page-container">
         <router-view />
-        <!-- FIXME:
-            <div><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div>
-        -->
     </q-page-container>
-    <FooterMain />
+    <FooterMain id="footer" />
     <transition
         appear
         enter-active-class="animated fadeIn"
         leave-active-class="animated fadeOut"
     >
         <div
-            v-show="scY > 300"
+            v-show="showBackToTop"
             id="pagetop"
             class="fixed fixed-bottom-right clickable"
             @click="toTop"
