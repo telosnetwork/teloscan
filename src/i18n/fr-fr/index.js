@@ -33,6 +33,12 @@ export default {
             withdraw_native: 'Retrait (natif)',
             x_gas_used_of_y_limit: '{ amount } gaz utilisé sur une limite de { limit }',
         },
+        home: {
+            telos_evm_explorer: 'L\'exploreur Telos EVM',
+            market_cap: 'Capitalisation',
+            last_finalized_block: 'Dernier bloc finalisé',
+            total_transactions: 'Total des transactions',
+        },
         issuer: 'Émetteur',
         account_not_found: 'Nous n\'avons pas pu trouver ce compte',
         approvals: 'Permissions',
