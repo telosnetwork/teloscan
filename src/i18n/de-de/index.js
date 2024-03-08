@@ -369,7 +369,7 @@ export default {
             network: 'Netzwerk',
             open_language_switcher: 'open language switcher',
             search_failed: 'Suche fehlgeschlagen, bitte geben Sie einen gültigen Suchbegriff ein.',
-            search_placeholder: 'Adresse/Konto, Transaktion, Block',
+            search_placeholder: 'Suche alles auf Telos',
             select_language: 'Sprache wählen',
             switch_to_dark_theme: 'Wechseln Sie zum dunklen Thema',
             switch_to_light_theme: 'Wechseln Sie zum Lichtthema',

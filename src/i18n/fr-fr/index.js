@@ -375,7 +375,7 @@ export default {
             network: 'Réseau',
             open_language_switcher: 'Ouvrir le sélécteur de language',
             search_failed: 'La recherche a échoué, veuillez saisir des mots clés de recherche corrects.',
-            search_placeholder: 'Adresse, Tx, Bloc',
+            search_placeholder: 'Recherchez n\'importe quoi sur Telos',
             select_language: 'Choisir votre language',
             switch_to_dark_theme: 'Passer au thème sombre',
             switch_to_light_theme: 'Passer au thème clair',

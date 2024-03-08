@@ -369,7 +369,7 @@ export default {
             network: 'Rede',
             open_language_switcher: 'Abrir o seletor de idioma',
             search_failed: 'A busca falhou, insira um termo de pesquisa válido.',
-            search_placeholder: 'Endereço, Tx, Bloco',
+            search_placeholder: 'Pesquise qualquer coisa no Telos',
             select_language: 'Selecione o idioma',
             switch_to_dark_theme: 'Mudar para tema escuro',
             switch_to_light_theme: 'Mudar para tema claro',

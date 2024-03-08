@@ -369,7 +369,7 @@ export default {
             network: 'Red',
             open_language_switcher: 'Abrir el selector de idioma',
             search_failed: 'La búsqueda falló, ingrese un término de búsqueda válido.',
-            search_placeholder: 'Dirección, Tx, Bloque',
+            search_placeholder: 'Busca cualquier cosa en Telos',
             select_language: 'Seleccionar idioma',
             switch_to_dark_theme: 'Cambiar a tema oscuro',
             switch_to_light_theme: 'Cambiar a tema claro',
