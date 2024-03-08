@@ -20,6 +20,7 @@ let pollingInterval: null | ReturnType<typeof setInterval> = null;
 
 const marketCap = ref(0);
 const transactionsCount = ref(0);
+const initialLoadComplete = ref(false);
 
 const tlosPrice = computed(() => $store.getters['chain/tlosPrice']); // no need to fetch TLOS price, it is already fetched on a timer in AppHeaderTopBar.vue
 const latestBlock = computed(() => $store.getters['chain/latestBlock']);
@@ -27,9 +28,12 @@ const tlosPriceText = computed(() => `$${tlosPrice.value.toLocaleString(locale, 
 const marketCapText = computed(() =>
     marketCap.value === 0 ? '--' : `$${marketCap.value.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
 );
+const transactionCountText = computed(() => transactionsCount.value.toLocaleString(locale));
 
 onBeforeMount(() => {
-    updateFigures();
+    updateFigures().then(() => {
+        initialLoadComplete.value = true;
+    });
 
     pollingInterval = setInterval(() => {
         updateFigures();
@@ -65,9 +69,11 @@ async function fetchMarketCap() {
 }
 
 function updateFigures() {
-    fetchMarketCap();
-    fetchLatestBlock();
-    fetchTotalTransactions();
+    return Promise.all([
+        fetchMarketCap(),
+        fetchLatestBlock(),
+        fetchTotalTransactions(),
+    ]);
 }
 </script>
 
@@ -81,7 +87,8 @@ function updateFigures() {
                     {{ $t('components.tlos_price') }}
                 </span>
             </div>
-            {{ tlosPriceText }}
+            <q-skeleton v-if="!initialLoadComplete" type="text" class="c-home-info__skeleton" />
+            <template v-else>{{ tlosPriceText }}</template>
         </div>
 
         <q-separator class="q-my-md" />
@@ -91,7 +98,8 @@ function updateFigures() {
                 {{ $t('pages.home.market_cap') }}
             </span>
             <br>
-            {{ marketCapText }}
+            <q-skeleton v-if="!initialLoadComplete" type="text" class="c-home-info__skeleton" />
+            <template v-else>{{ marketCapText }}</template>
         </div>
     </q-card-section>
 
@@ -103,7 +111,8 @@ function updateFigures() {
                 {{ $t('pages.home.last_finalized_block') }}
             </span>
             <br>
-            {{ latestBlock }}
+            <q-skeleton v-if="!initialLoadComplete" type="text" class="c-home-info__skeleton" />
+            <template v-else>{{ latestBlock }}</template>
         </div>
 
         <q-separator class="q-my-md" />
@@ -113,7 +122,8 @@ function updateFigures() {
                 {{ $t('pages.home.total_transactions') }}
             </span>
             <br>
-            {{ transactionsCount.toLocaleString(locale) }}
+            <q-skeleton v-if="!initialLoadComplete" type="text" class="c-home-info__skeleton" />
+            <template v-else>{{ transactionCountText }}</template>
         </div>
     </q-card-section>
 </q-card>
@@ -143,6 +153,14 @@ function updateFigures() {
     &__label {
         font-weight: 600;
         font-size: 0.8rem;
+    }
+
+    &__skeleton {
+        height: 2rem;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            width: 50%;
+        }
     }
 }
 </style>
