@@ -25,7 +25,7 @@ const gasWei = ref('');
 function totalGasFee() {
     const wei = BigNumber.from(props.gasUsed).mul(props.gasPrice);
     gasWei.value = wei.toString();
-    return `${formatWei(wei, WEI_PRECISION, 4)} TLOS`;
+    return formatWei(wei, WEI_PRECISION, 4);
 }
 
 function gasPriceWei(){

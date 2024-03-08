@@ -115,7 +115,7 @@ const columns = [
     },
     {
         name: 'fee',
-        label: $t('components.txn_fee'),
+        label: `${$t('components.txn_fee')} (TLOS)`,
         align: 'left',
     },
 ];
