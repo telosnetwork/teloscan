@@ -1,5 +1,3 @@
-/* eslint-disable max-len*/
-
 export default {
     locale: {
         current_language_name: 'Português',
@@ -32,6 +30,7 @@ export default {
             withdraw_action_name: 'Saque',
             withdraw_native: 'Saque (nativo)',
             x_gas_used_of_y_limit: '{ amount } gás usado de um limite de { limit }',
+        },
         home: {
             telos_evm_explorer: 'O Explorador Telos EVM',
             market_cap: 'Capitalização de mercado',

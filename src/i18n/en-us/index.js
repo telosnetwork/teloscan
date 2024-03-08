@@ -30,6 +30,7 @@ export default {
             withdraw_action_name: 'withdraw',
             withdraw_native: 'withdraw (native)',
             x_gas_used_of_y_limit: '{ amount } gas used of { limit } limit',
+        },
         home: {
             telos_evm_explorer: 'The Telos EVM Explorer',
             market_cap: 'Market Cap',

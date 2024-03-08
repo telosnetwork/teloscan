@@ -1,5 +1,3 @@
-/* eslint-disable max-len*/
-
 export default {
     locale: {
         current_language_name: 'Français',
