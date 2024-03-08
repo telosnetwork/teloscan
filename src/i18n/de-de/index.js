@@ -12,6 +12,7 @@ export default {
             contract_deployment: 'Vertragsbereitstellung',
             deposit_action_name: 'Einzahlung',
             deposit_native: 'Einzahlung (nativ)',
+            five_hundred_k_disclaimer: 'Anzeige der letzten 500.000 Datensätze von { total }',
             for_block: 'für Block',
             for: 'für',
             gas_info_label: 'Gas-Info',

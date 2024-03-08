@@ -12,6 +12,7 @@ export default {
             contract_deployment: 'Contract Deployment',
             deposit_action_name: 'deposit',
             deposit_native: 'deposit (native)',
+            five_hundred_k_disclaimer: 'Showing the last 500K records of { total }',
             for_block: 'for block',
             for: 'for',
             gas_info_label: 'Gas Info',

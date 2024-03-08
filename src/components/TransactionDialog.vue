@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { BigNumber } from 'ethers/lib/ethers';
 import { useI18n } from 'vue-i18n';
 
@@ -18,6 +18,8 @@ const props = defineProps({
         default: null,
     },
 });
+
+const menuOpen = ref(false);
 
 const actionText = computed(() => {
     if (
@@ -83,11 +85,12 @@ function formatTlos(value: string) {
 
 <template>
 <div>
-    <OutlineButton :icon-only="true" text-color="primary">
+    <OutlineButton :icon-only="true" :highlight="menuOpen" text-color="primary">
         <q-icon name="far fa-eye" size="12px" />
         <q-menu
             anchor="top right"
             self="top left"
+            @update:model-value="menuOpen = $event"
         >
             <q-card>
                 <q-card-section>
