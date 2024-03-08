@@ -31,7 +31,7 @@ export default {
             transfer_tlos_action_name: 'Transferir TLOS',
             withdraw_action_name: 'Retirar',
             withdraw_native: 'Retirar (nativo)',
-            x_gas_used_of_y_limit: '{ amount } gas utilizado de un límite de { limit }',
+            x_gas_used_of_y_limit: '{ amount } de gas utilizado de un límite de { limit }',
         },
         issuer: 'Issuer',
         account_not_found: 'No pudimos encontrar esta cuenta',
