@@ -88,7 +88,7 @@ watch(() => props.data, (newData) => {
 
 
 <template>
-<q-card class="c-block-data__card-section">
+<q-card class="c-block-data">
 
     <!-- Block Number -->
     <div class="c-block-data__row">
@@ -137,7 +137,6 @@ watch(() => props.data, (newData) => {
                     class="c-block-data__row-value-clock-time"
                     :epoch="Math.round(timestamp / 1000)"
                     :force-show-age="false"
-                    :utc-use-parentheses="false"
                 />)</span>
             </div>
         </div>
@@ -321,12 +320,10 @@ watch(() => props.data, (newData) => {
 <style lang="scss">
 .c-block-data {
     $grey: #909090;
-    &__card-section {
-        padding: 1.25rem!important;
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 16px;
-    }
+    padding: 1.25rem!important;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
     &__row, &__col-att, &__col-val {
         display: flex;
         flex-direction: row;

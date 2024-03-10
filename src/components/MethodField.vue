@@ -18,11 +18,10 @@ const props = defineProps({
                 name: string;
             };
             from?: string;
-            value?: number;
+            value?: string;
             gasPrice?: string;
-            to?: string;
+            to?: string | null;
             input?: string;
-            data?: null | string;
         },
         required: true,
     },
@@ -56,16 +55,19 @@ const displayText = computed(() => {
 
     return '';
 });
+const propValue = computed(() => +(props.trx.value || '0x0'));
 
 onMounted(async () => {
     await setValues();
 });
 
 const setValues = async () => {
+    console.log('setValues()');
+    debugger;
     if (
         !props.trx.parsedTransaction
         && props.trx.from === ZERO_ADDRESSES
-        && props.trx.value
+        && propValue.value
         && parseInt(props.trx.gasPrice as string) === 0
     ) {
         nativeTooltipText.value = $t('pages.transactions.native_deposit_tooltip');
@@ -73,14 +75,14 @@ const setValues = async () => {
     } else if (
         !props.trx.parsedTransaction
         && props.trx.to === ZERO_ADDRESSES
-        && props.trx.value
+        && propValue.value
         && parseInt(props.trx.gasPrice as string) === 0
     ) {
         nativeTooltipText.value = $t('pages.transactions.native_withdraw_tooltip');
         methodName.value = $t('pages.transactions.withdraw_action_name');
-    } else if (!props.trx.parsedTransaction && props.trx.input === '0x' && props.trx.value) {
+    } else if (!props.trx.parsedTransaction && props.trx.input === '0x' && propValue.value) {
         methodName.value = $t('pages.transactions.transfer_tlos_action_name');
-    } else if (!props.trx.parsedTransaction && props.trx.to === null && props.trx.data !== null) {
+    } else if (!props.trx.parsedTransaction && props.trx.to === null) {
         methodName.value = $t('pages.transactions.contract_deployment');
     } else if (props.trx.parsedTransaction) {
         methodName.value = props.trx.parsedTransaction.name;

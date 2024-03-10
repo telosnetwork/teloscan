@@ -82,20 +82,26 @@ export interface EvmContractCalldata {
     symbol?: string;
 }
 
-export interface EvmContractFactoryData {
-    address: string;
-    abi?: string | EvmABI
-    block?: number;
-    calldata?: string;
-    creator?: string;
-    decimals?: number | null;
-    fromTrace?: boolean;
-    metadata?: string;
-    name?: string;
-    supportedInterfaces?: string[];
+export interface EvmContractData {
     symbol?: string;
-    traceAddress?: string;
+    creator?: string;
+    address: string;
+    fromTrace?: boolean;
+    abi?: string | EvmABI
+    trace_address?: string; // same attribute (raw)
+    traceAddress?: string;  // same attribute (processed)
+    logoURI?: string;
+    supply?: string; // string representation of number
+    calldata?: string; // string holding JSON
+    decimals?: number | null;
+    name?: string | null;
+    block?: number;
+    supportedInterfaces?: string[];
     transaction?: string;
+}
+
+export interface EvmContractFactoryData extends EvmContractData {
+    metadata?: string;
     timestamp?: string;
     manager?: EvmContractManagerI;
 }

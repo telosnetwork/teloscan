@@ -21,7 +21,7 @@ export interface EvmTransaction {
     from: string;
     gasLimit: string; // string representation of hex number
     gasPrice: string; // string representation of hex number
-    gasused: string; // string representation of hex number
+    gasUsed: string; // string representation of hex number
     hash: string;
     index: number;
     input: string;
@@ -32,9 +32,23 @@ export interface EvmTransaction {
     s: string;
     status: string; // string representation of hex number
     timestamp: number; // epoch in milliseconds
-    to: string;
+    to: string | null; // null if contract creation
     v: string;
     value: string; // string representation of hex number
+}
+
+export interface EvmTransactionParsed extends EvmTransaction {
+    gasLimitBn: ethers.BigNumber;
+    gasPriceBn: ethers.BigNumber;
+    gasUsedBn: ethers.BigNumber;
+    valueBn: ethers.BigNumber;
+}
+
+export interface EvmContractFunctionParameter {
+    name: string;
+    type: string;
+    arrayChildren: string | false;
+    value: (string | number | boolean | null | ethers.BigNumber)[];
 }
 
 export interface TransactionValueData {

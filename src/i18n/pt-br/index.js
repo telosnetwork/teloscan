@@ -268,10 +268,9 @@ export default {
         transaction: {
             in: 'in',
             out: 'out',
-            form_from: 'De : ',
-            form_to: 'Para : ',
+            from: 'De',
+            to: 'Para',
             load_error: 'Could not load transactions',
-            form_token: 'Token : ',
             show_short: 'Show short',
             show_total: 'Mostrar total',
             show_wei: 'Mostrar wei',

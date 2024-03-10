@@ -270,10 +270,9 @@ export default {
         transaction: {
             in: 'dépot',
             out: 'envoi',
-            form_from: 'De : ',
-            form_to: 'À : ',
+            from: 'De',
+            to: 'À',
             load_error: 'Erreur de chargement des transactions',
-            form_token: 'Jeton : ',
             consult_collection: 'Consultez la collection',
             consult_metadata: 'Consultez les metadonnées',
             consult_media: 'Consultez le media',

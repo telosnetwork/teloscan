@@ -43,6 +43,15 @@ const routes = [
         }],
     },
     {
+        path: '/tx2/:hash',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            name: 'transaction2',
+            component: () => import('pages/TransactionPageNew.vue'),
+        }],
+    },
+    {
         path: '/txs',
         component: () => import('layouts/MainLayout.vue'),
         children: [

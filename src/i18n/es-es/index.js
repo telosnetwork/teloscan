@@ -269,10 +269,9 @@ export default {
         transaction: {
             in: 'entra',
             out: 'sale',
-            form_from: 'De : ',
-            form_to: 'A : ',
+            from: 'De',
+            to: 'A',
             load_error: 'No se pudieron cargar las transacciones',
-            form_token: 'Token : ',
             show_short: 'Mostrar corta',
             show_total: 'Mostrar total',
             show_wei: 'Mostrar wei',
