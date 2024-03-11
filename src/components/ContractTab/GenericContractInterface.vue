@@ -1,7 +1,7 @@
 <script>
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
-import ContractFactory from 'src/lib/contract/ContractFactory';
+import Contract  from 'src/lib/contract/Contract';
 import { erc721Abi, erc1155Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
 import { sortAbiFunctionsByName } from 'src/lib/utils';
@@ -25,13 +25,13 @@ export default {
         displayWriteFunctions: false,
         customAbiDefinition: '',
         selectedAbi: null,
+        selectedContract: null,
         abiOptions: {
             erc20: 'erc20',
             erc721: 'erc721',
             erc1155: 'erc1155',
             custom: 'custom',
         },
-        factory: new ContractFactory(),
     }),
     computed: {
         showAbiFunctions() {
@@ -91,13 +91,20 @@ export default {
                     JSON.parse(json); // this will throw an error if the json is invalid
                     this.customAbiDefinition = json;
                 } catch (error) {
-                    console.error(error);
+                    console.error('Error parsing JSON file:', error);
                     this.reset();
                     this.$q.notify({
                         message: 'Invalid JSON file',
                         color: 'negative',
                     });
                 }
+            };
+            fileReader.onerror = (event) => {
+                console.error('Error reading file:', event.target.error);
+                this.$q.notify({
+                    message: 'Error reading file',
+                    color: 'negative',
+                });
             };
             fileReader.readAsText(file);
         },
@@ -130,18 +137,29 @@ export default {
             if (!Array.isArray(abi)) {
                 if (abi.abi && Array.isArray(abi.abi)) {
                     abi = abi.abi;
+                } else {
+                    console.error('Invalid ABI format');
+                    return;
                 }
             }
 
-            // abi.map function is used here:
-            // https://github.com/ethers-io/ethers.js/blob/master/packages/abi/lib.esm/interface.js#L57
-            console.assert(typeof abi.map === 'function', 'ERROR: abi is not an array');
-
-            let contract = this.factory.buildContract({
-                name: this.$t('components.contract_tab.unverified_contract'),
-                address: this.address,
-                abi: JSON.stringify(abi),
-            });
+            let contract = null;
+            try {
+                contract = new Contract({
+                    name: this.$t('components.contract_tab.unverified_contract'),
+                    address: this.address,
+                    abi,
+                    manager: this.$contractManager,
+                });
+            } catch (error) {
+                console.error('Error building contract:', error);
+                this.$q.notify({
+                    message: 'Error building contract',
+                    color: 'negative',
+                });
+                return;
+            }
+            this.selectedContract = contract;
             let read = [];
             let write = [];
 
@@ -316,7 +334,7 @@ export default {
                         <div class="q-pa-md">
                             <FunctionInterface
                                 :abi="func"
-                                :contract="contract"
+                                :contract="selectedContract"
                                 :write="true"
                                 :group="displayWriteFunctions ? 'write' : 'read'"
                                 :run-label="displayWriteFunctions ? 'Write' : 'Query'"
