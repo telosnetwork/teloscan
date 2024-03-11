@@ -267,7 +267,7 @@ export default {
             contract_deployed: 'Contract Deployed',
             contract_deployment: 'Implantação de contrato',
             contract_interaction: 'Interação de contrato',
-            deposit: 'depósito',
+            deposit: 'depositar',
             withdraw: 'retirar',
             no_internal_trxs_found: 'Nenhuma transação interna encontrada',
             human_readable: 'Legível por humanos',
