@@ -4,12 +4,13 @@ import { computed } from 'vue';
 
 const $q = useQuasar();
 
-defineProps<{
+const props = defineProps<{
     textColor: 'primary' | 'negative' | 'default';
     iconOnly?: boolean;
+    highlight?: boolean;
 }>();
 
-const buttonColor = computed(() => $q.dark.isActive ? 'grey-7' : 'grey-5');
+const buttonColor = computed(() => props.highlight ? 'primary' : ($q.dark.isActive ? 'grey-7' : 'grey-5'));
 
 </script>
 
@@ -20,10 +21,10 @@ const buttonColor = computed(() => $q.dark.isActive ? 'grey-7' : 'grey-5');
     no-caps
     :color="buttonColor"
     :class="{
-        'c-app-header-button': true,
-        'c-app-header-button--icon-only': iconOnly,
-        'c-app-header-button--primary-text': textColor === 'primary',
-        'c-app-header-button--red-text': textColor === 'negative',
+        'c-outline-button': true,
+        'c-outline-button--icon-only': iconOnly,
+        'c-outline-button--primary-text': textColor === 'primary',
+        'c-outline-button--red-text': textColor === 'negative',
     }"
 >
     <slot></slot>
@@ -31,7 +32,7 @@ const buttonColor = computed(() => $q.dark.isActive ? 'grey-7' : 'grey-5');
 </template>
 
 <style lang="scss">
-.c-app-header-button {
+.c-outline-button {
     --button-height: 32px;
 
     height: var(--button-height);

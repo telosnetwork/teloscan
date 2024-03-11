@@ -44,11 +44,9 @@ watch(() => $route.query.a,
         </div>
     </div>
 
-    <div class="row c-transaction__table">
+    <div class="row">
         <div class="col-12 q-pb-lg">
-            <q-card>
-                <TransactionTable :block="block || undefined" :account-address="address" />
-            </q-card>
+            <TransactionTable :block="block || undefined" :account-address="address" />
         </div>
     </div>
 </q-page>

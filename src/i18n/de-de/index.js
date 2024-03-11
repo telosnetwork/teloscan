@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-
 export default {
     locale: {
         current_language_name: 'Deutsch',
@@ -14,6 +12,7 @@ export default {
             contract_deployment: 'Vertragsbereitstellung',
             deposit_action_name: 'Einzahlung',
             deposit_native: 'Einzahlung (nativ)',
+            five_hundred_k_disclaimer: 'Anzeige der letzten 500.000 Datensätze von { total }',
             for_block: 'für Block',
             for: 'für',
             gas_info_label: 'Gas-Info',
@@ -33,13 +32,18 @@ export default {
             withdraw_native: 'Auszahlung (nativ)',
             x_gas_used_of_y_limit: '{ amount } Gas verwendet von { limit } Limit',
         },
+        home: {
+            telos_evm_explorer: 'Der Telos EVM Explorer',
+            market_cap: 'Marktkapitalisierung',
+            last_finalized_block: 'Letzter finalisierter Block',
+            total_transactions: 'Gesamtanzahl der Transaktionen',
+        },
         issuer: 'Issuer',
         account_not_found: 'Wir konnten dieses Konto nicht finden',
         approvals: 'Approvals',
         supported_interfaces: 'Bekannte unterstützte Schnittstellen',
         explore_transactions: 'Transaktionen prüfen',
         recent_transactions: 'Neueste Transaktionen',
-        telos_evm_explorer: 'Telos EVM Explorer',
         rpc_endpoints: 'RPC Endpunkte',
         monitor: 'Monitor',
         oops: 'Oh. Hier existiert nichts...',
@@ -387,7 +391,7 @@ export default {
             network: 'Netzwerk',
             open_language_switcher: 'open language switcher',
             search_failed: 'Suche fehlgeschlagen, bitte geben Sie einen gültigen Suchbegriff ein.',
-            search_placeholder: 'Adresse/Konto, Transaktion, Block',
+            search_placeholder: 'Suche alles auf Telos',
             select_language: 'Sprache wählen',
             switch_to_dark_theme: 'Wechseln Sie zum dunklen Thema',
             switch_to_light_theme: 'Wechseln Sie zum Lichtthema',

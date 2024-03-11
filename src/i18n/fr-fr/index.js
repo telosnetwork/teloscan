@@ -1,5 +1,3 @@
-/* eslint-disable max-len*/
-
 export default {
     locale: {
         current_language_name: 'Français',
@@ -14,6 +12,7 @@ export default {
             contract_deployment: 'Déploiement de contrat',
             deposit_action_name: 'Dépôt',
             deposit_native: 'Dépôt (natif)',
+            five_hundred_k_disclaimer: 'Affichage des 500 000 derniers enregistrements sur { total }',
             for_block: 'pour le bloc',
             for: 'pour',
             gas_info_label: 'Info gaz',
@@ -32,6 +31,12 @@ export default {
             withdraw_action_name: 'Retrait',
             withdraw_native: 'Retrait (natif)',
             x_gas_used_of_y_limit: '{ amount } gaz utilisé sur une limite de { limit }',
+        },
+        home: {
+            telos_evm_explorer: 'L\'exploreur Telos EVM',
+            market_cap: 'Capitalisation',
+            last_finalized_block: 'Dernier bloc finalisé',
+            total_transactions: 'Total des transactions',
         },
         issuer: 'Émetteur',
         account_not_found: 'Nous n\'avons pas pu trouver ce compte',

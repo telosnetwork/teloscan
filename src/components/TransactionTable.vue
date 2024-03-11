@@ -24,6 +24,8 @@ const $i18n = useI18n();
 const { t: $t } = $i18n;
 const locale = $i18n.locale.value;
 
+const FIVE_HUNDRED_K = 500000;
+
 interface Props {
     title?: string;
     initialPageSize?: number,
@@ -45,6 +47,7 @@ const showDateAge = ref(true);
 const showTotalGasFee = ref(true);
 const highlightMethod = ref('');
 const highlightAddress = ref('');
+const totalRows = ref(0);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const transactions: any[] = [];
@@ -112,27 +115,18 @@ const columns = [
     },
     {
         name: 'fee',
-        label: $t('components.txn_fee'),
+        label: `${$t('components.txn_fee')} (TLOS)`,
         align: 'left',
     },
 ];
 
-watch(() => route.query.page,
-    (pageParam) => {
-        let page = 1;
-        let desc = true;
-        let size = pagination.value.rowsPerPage;
+watch(() => route.query,
+    (query) => {
+        const { p, rowsPerPage, sort } = query;
 
-        // we also allow to pass a single number as the page number
-        if (typeof pageParam === 'number') {
-            page = pageParam;
-        } else if (typeof pageParam === 'string') {
-            // we also allow to pass a string of two numbers: 'page,rowsPerPage'
-            const [p, s, d] = pageParam.split(',');
-            page = Number(p);
-            size = Number(s);
-            desc = (!d || d.toUpperCase() !== 'ASC');
-        }
+        let page = p ? Number(p) : 1;
+        let size = rowsPerPage ? Number(rowsPerPage) : pagination.value.rowsPerPage;
+        let desc = sort ? sort === 'DESC' : true;
 
         setPagination(page, size, desc);
     },
@@ -159,7 +153,9 @@ async function onPaginationChange(settings: { pagination: Pagination}) {
         hash: window.location.hash,
         query: {
             ...route.query,
-            page: `${page},${rowsPerPage},${(descending) ? 'DESC' : 'ASC'}`,
+            p: page,
+            rowsPerPage,
+            sort: descending ? 'DESC' : 'ASC',
         },
     });
 }
@@ -171,10 +167,14 @@ async function parseTransactions() {
     loading.value = true;
     const { page, rowsPerPage, sortBy, descending } = pagination.value;
 
+
     try {
         let response = await indexerApi.get(getPath());
+        totalRows.value = response.data?.total_count;
+        const results = response.data.results.slice(0, FIVE_HUNDRED_K);
+
         if (pagination.value.rowsNumber === 0) {
-            pagination.value.rowsNumber = response.data?.total_count;
+            pagination.value.rowsNumber = response.data?.total_count > FIVE_HUNDRED_K ? FIVE_HUNDRED_K : response.data?.total_count;
         }
 
         pagination.value.page = page;
@@ -185,7 +185,7 @@ async function parseTransactions() {
         transactions.splice(
             0,
             transactions.length,
-            ...response.data.results,
+            ...results,
         );
         rows.value = transactions;
         for (const transaction of transactions) {
@@ -309,132 +309,150 @@ function getValueDisplay(value: string) {
 </script>
 
 <template>
-<q-table
-    v-model:pagination="pagination"
-    :rows="rows"
-    :binary-state-sort="true"
-    :rows-per-page-label="$t('global.records_per_page')"
-    :row-key="row => row.hash"
-    :columns="(columns as any)"
-    :loading="loading"
-    :rows-per-page-options="page_size_options"
-    flat
-    @request="onPaginationChange"
->
-    <template v-slot:loading>
-        <q-inner-loading showing color="secondary" />
-    </template>
-    <template v-slot:header="props">
-        <q-tr :props="props">
-            <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div v-if="col.name === 'preview'" class="u-flex--center">
-                    <q-icon class="info-icon" name="far fa-question-circle"/>
-                    <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
-                        {{ $t('pages.transactions.see_tx_preview_tooltip') }}
-                    </q-tooltip>
-                </div>
-                <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
-                    <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
-                    <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
-                    <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
-                        {{ $t('components.click_to_change_format') }}
-                    </q-tooltip>
-                </div>
-                <div v-else-if="col.name === 'method'" class="u-flex--center-y">
-                    {{ col.label }}
-                    <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
-                    <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
-                        {{ $t('components.executed_based_on_decoded_data') }}
-                    </q-tooltip>
-                </div>
-                <div v-else-if="col.name === 'fee'" class="u-flex--center-y" @click="toggleGasValue">
-                    <a>{{ showTotalGasFee ? col.label : $t('components.gas_price') }}</a>
-                    <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
-                    <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
-                        {{ showTotalGasFee ? $t('components.gas_price_tlos') : $t('components.gas_price_gwei') }}
-                    </q-tooltip>
-                </div>
-                <div v-else class="u-flex--center-y">
-                    {{ col.label }}
-                </div>
-            </q-th>
-        </q-tr>
-    </template>
-    <template v-slot:body="props">
-        <q-tr :key="props.row.hash + props.row.parsedTransaction?.transfers?.length" :props="props">
-            <q-td key="preview" :props="props">
-                <div class="flex items-center">
-                    <TransactionDialog :trx="props.row" />
-                </div>
-            </q-td>
-            <q-td key="hash" :props="props">
-                <div class="hash-column flex items-center">
-                    <TransactionField
-                        color="primary"
-                        :transaction-hash="props.row.hash"
-                        :truncate="18"
+<div v-if="totalRows >= FIVE_HUNDRED_K" class="c-transaction-table__limit-text">
+    {{ $t('pages.transactions.five_hundred_k_disclaimer', { total: totalRows.toLocaleString(locale) }) }}
+</div>
+
+<q-card>
+    <q-table
+        v-model:pagination="pagination"
+        :rows="rows"
+        :binary-state-sort="true"
+        :rows-per-page-label="$t('global.records_per_page')"
+        :row-key="row => row.hash"
+        :columns="(columns as any)"
+        :loading="loading"
+        :rows-per-page-options="page_size_options"
+        flat
+        @request="onPaginationChange"
+    >
+        <template v-slot:loading>
+            <q-inner-loading showing color="secondary" />
+        </template>
+        <template v-slot:header="props">
+            <q-tr :props="props">
+                <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                    <div v-if="col.name === 'preview'" class="u-flex--center">
+                        <q-icon class="info-icon" name="far fa-question-circle"/>
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('pages.transactions.see_tx_preview_tooltip') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
+                        <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
+                        <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-else-if="col.name === 'method'" class="u-flex--center-y">
+                        {{ col.label }}
+                        <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
+                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                            {{ $t('components.executed_based_on_decoded_data') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-else-if="col.name === 'fee'" class="u-flex--center-y" @click="toggleGasValue">
+                        <a>{{ showTotalGasFee ? col.label : $t('components.gas_price') }}</a>
+                        <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
+                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                            {{ showTotalGasFee ? $t('components.gas_price_tlos') : $t('components.gas_price_gwei') }}
+                        </q-tooltip>
+                    </div>
+                    <template v-else>
+                        {{ col.label }}
+                    </template>
+                </q-th>
+            </q-tr>
+        </template>
+        <template v-slot:body="props">
+            <q-tr :key="props.row.hash + props.row.parsedTransaction?.transfers?.length" :props="props">
+                <q-td key="preview" :props="props">
+                    <div class="flex items-center">
+                        <TransactionDialog :trx="props.row" />
+                    </div>
+                </q-td>
+                <q-td key="hash" :props="props">
+                    <div class="c-transaction-table__hash-column flex items-center">
+                        <TransactionField
+                            color="primary"
+                            :transaction-hash="props.row.hash"
+                            :truncate="18"
+                        />
+                    </div>
+                </q-td>
+                <q-td key="method" :props="props">
+                    <MethodField
+                        :trx="props.row"
+                        :shortenName="true"
+                        :highlightMethod="highlightMethod"
+                        @highlight="setHighlightMethod"
                     />
-                </div>
-            </q-td>
-            <q-td key="method" :props="props">
-                <MethodField
-                    :trx="props.row"
-                    :shortenName="true"
-                    :highlightMethod="highlightMethod"
-                    @highlight="setHighlightMethod"
-                />
-            </q-td>
-            <q-td key="block" :props="props">
-                <BlockField :block="props.row.blockNumber"/>
-            </q-td>
-            <q-td key="date" :props="props" @click="toggleDateFormat">
-                <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
-            </q-td>
-            <q-td key="from" :props="props">
-                <AddressField
-                    v-if="props.row.from"
-                    :key="'trx-from-'+ props.row.from"
-                    :address="props.row.from"
-                    :truncate="14"
-                    :copy="true"
-                    :highlightAddress="highlightAddress"
-                    @highlight="setHighlightAddress"
-                />
-            </q-td>
-            <q-td key="to" :props="props">
-                <AddressField
-                    v-if="props.row.to"
-                    :key="'trx-to-'+ props.row.to"
-                    :address="props.row.to"
-                    :truncate="14"
-                    :copy="true"
-                    :highlightAddress="highlightAddress"
-                    @highlight="setHighlightAddress"
-                />
-            </q-td>
-            <q-td key='value' :props="props">
-                {{ getValueDisplay(props.row.value) }}
-            </q-td>
-            <q-td key='fee' :props="props">
-                <TransactionFeeField
-                    :showTotalGasFee="showTotalGasFee"
-                    :gasUsed="props.row.gasused ?? props.row.gasUsed"
-                    :gasPrice="props.row.gasPrice"
-                />
-            </q-td>
-        </q-tr>
-    </template>
-</q-table>
+                </q-td>
+                <q-td key="block" :props="props">
+                    <BlockField :block="props.row.blockNumber"/>
+                </q-td>
+                <q-td key="date" :props="props" @click="toggleDateFormat">
+                    <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
+                </q-td>
+                <q-td key="from" :props="props">
+                    <AddressField
+                        v-if="props.row.from"
+                        :key="'trx-from-'+ props.row.from"
+                        :address="props.row.from"
+                        :truncate="14"
+                        :copy="true"
+                        :highlightAddress="highlightAddress"
+                        @highlight="setHighlightAddress"
+                    />
+                </q-td>
+                <q-td key="to" :props="props">
+                    <AddressField
+                        v-if="props.row.to"
+                        :key="'trx-to-'+ props.row.to"
+                        :address="props.row.to"
+                        :truncate="14"
+                        :copy="true"
+                        :highlightAddress="highlightAddress"
+                        @highlight="setHighlightAddress"
+                    />
+                </q-td>
+                <q-td key='value' :props="props">
+                    {{ getValueDisplay(props.row.value) }}
+                </q-td>
+                <q-td key='fee' :props="props">
+                    <TransactionFeeField
+                        :showTotalGasFee="showTotalGasFee"
+                        :gasUsed="props.row.gasused ?? props.row.gasUsed"
+                        :gasPrice="props.row.gasPrice"
+                    />
+                </q-td>
+            </q-tr>
+        </template>
+    </q-table>
+</q-card>
+
 </template>
-<style scoped lang="scss">
-.sortable{
+<style lang="scss">
+// quasar override
+.sortable {
     height: 60px;
     display: flex;
+    gap: 4px;
     align-items: center;
 }
-.hash-column{
-    min-width: 130px;
-}
-</style>
+
+.c-transaction-table {
+    &__limit-text {
+        color: var(--grey-text-color);
+        font-size: 0.8rem;
+        text-align: right;
+        margin-bottom: 12px;
+    }
+
+    &__hash-column{
+        min-width: 130px;
+    }
+}</style>
 
 
