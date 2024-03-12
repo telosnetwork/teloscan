@@ -45,7 +45,7 @@ const developersSubmenuItems = [
     },
 ];
 
-const telosWalletMenuItem = {
+const telos_walletMenuItem = {
     url: 'https://wallet.telos.net/',
     label: $t('components.header.telos_wallet'),
 };
@@ -239,10 +239,10 @@ function goTo(to: string | { name: string }) {
         class="c-header-links__menu-li"
         tabindex="0"
         role="link"
-        @click="goTo(telosWalletMenuItem.url)"
-        @keydown.enter="goTo(telosWalletMenuItem.url)"
+        @click="goTo(telos_walletMenuItem.url)"
+        @keydown.enter="goTo(telos_walletMenuItem.url)"
     >
-        {{ telosWalletMenuItem.label }}
+        {{ telos_walletMenuItem.label }}
     </li>
 
     <li
