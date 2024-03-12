@@ -334,7 +334,6 @@ export default {
                                 <AddressField
                                     :address="trx.from"
                                     :truncate="0"
-                                    :highlight="trx.logs?.length > 1"
                                     copy="copy"
                                 />
                             </div>
