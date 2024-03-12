@@ -236,7 +236,6 @@ const nextTransaction = () => {
         }
 
         &-nav-btn {
-            display: none; // remove this line to enable the buttons
             cursor: pointer;
             height: 22px;
             width: 22px;
@@ -256,6 +255,7 @@ const nextTransaction = () => {
             .q-dark & {
                 color: rgb(8, 29, 53);
             }
+            display: none; // remove this line to enable the buttons
         }
     }
 
