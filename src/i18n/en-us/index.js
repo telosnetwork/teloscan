@@ -32,6 +32,12 @@ export default {
             withdraw_native: 'withdraw (native)',
             x_gas_used_of_y_limit: '{ amount } gas used of { limit } limit',
         },
+        transaction: {
+            page_title: 'Transaction Details',
+            overview: 'Overview',
+            logs: 'Logs',
+            internal: 'Internal Transactions',
+        },
         home: {
             telos_evm_explorer: 'The Telos EVM Explorer',
             market_cap: 'Market Cap',
@@ -314,6 +320,14 @@ export default {
             more_details: 'More Details',
             show_more_details: 'click to show more',
             show_less_details: 'click to show less',
+            gas_limit_n_usage: 'Gas Limit & Usage by Txn',
+            gas_limit_n_usage_tooltip: 'The maximum amount of gas that was allowed for the transaction, and the actual amount of gas used.',
+            nonce: 'Nonce',
+            nonce_tooltip: 'A sequential number tied to every transaction made by the same address, ensuring transactions are processed in order.',
+            position_in_block: 'Position in Block',
+            position_in_block_tooltip: 'The position of this transaction in the block.',
+            input: 'Input',
+            input_tooltip: 'Data sent along with the transaction, typically used for contract interactions.',
         },
         inputs: {
             incorrect_address_array_length: 'There should be { size } addresses in the array',

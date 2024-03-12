@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import { NftTokenInterface } from 'src/antelope/types';
 
-export type EvmTransactionTopic = string[];
+export type EvmTransactionTopic = string;
 
 export interface EvmTransactionLog {
     address: string;
@@ -42,6 +42,7 @@ export interface EvmTransactionParsed extends EvmTransaction {
     gasPriceBn: ethers.BigNumber;
     gasUsedBn: ethers.BigNumber;
     valueBn: ethers.BigNumber;
+    logsArray: EvmTransactionLog[];
 }
 
 export interface EvmContractFunctionParameter {

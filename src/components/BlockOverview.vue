@@ -342,7 +342,7 @@ watch(() => props.data, (newData) => {
     &__row-attribute {
         font-weight: 500;
         max-width: 230px;
-        min-width: 160px;
+        min-width: 200px;
         width: 15vw;
         text-wrap: nowrap;
     }

@@ -22,8 +22,13 @@ const props = defineProps({
             gasPrice?: string;
             to?: string | null;
             input?: string;
+            hash?: string;
         },
         required: true,
+    },
+    fullText: {
+        type: Boolean,
+        default: false,
     },
     contract: {
         type: Object,
@@ -62,8 +67,6 @@ onMounted(async () => {
 });
 
 const setValues = async () => {
-    console.log('setValues()');
-    debugger;
     if (
         !props.trx.parsedTransaction
         && props.trx.from === ZERO_ADDRESSES
@@ -98,7 +101,8 @@ function emitHighlight(val: string) {
 <div
     :class="{
         'c-method': true,
-        'c-method--highlight': [methodName, methodSignature].includes(highlightMethod) && highlightMethod !== ''
+        'c-method--highlight': [methodName, methodSignature].includes(highlightMethod) && highlightMethod !== '',
+        'c-method--full-text': fullText,
     }"
     @mouseenter="emitHighlight(methodName || methodSignature)"
     @mouseleave="emitHighlight('')"
@@ -127,6 +131,10 @@ function emitHighlight(val: string) {
     &--highlight {
         background: rgba($secondary, 0.2);
         border: 1px dashed $secondary;
+    }
+
+    &--full-text {
+        width: auto;
     }
 }
 </style>

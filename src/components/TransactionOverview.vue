@@ -1,78 +1,38 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { EvmTransactionExtended } from 'src/types';
+import { BlockData, EvmTransactionExtended } from 'src/types';
 
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import MethodField from 'components/MethodField.vue';
-import TransactionDialog from 'components/TransactionDialog.vue';
-import TokenValueField from 'components/Token/TokenValueField.vue';
+import GasLimitAndUsage from 'components/GasLimitAndUsage.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
-import TransactionOverview from 'components/TransactionOverview.vue';
 import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 import { BigNumber } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
-
-console.log([AddressField, BlockField, DateField, MethodField, TransactionDialog, TokenValueField, TransactionField, TransactionFeeField, TransactionOverview]); // FIXME: remove this line
+import { indexerApi } from 'src/boot/telosApi';
 
 const locale = useI18n().locale.value;
 
 const props = defineProps<{
     trx: EvmTransactionExtended | null,
 }>();
-/*
-export interface EvmTransaction {
-    blockNumber: number;
-    contractAddress?: string;
-    cumulativeGasUsed: string; // string representation of hex number
-    from: string;
-    gasLimit: string; // string representation of hex number
-    gasPrice: string; // string representation of hex number
-    gasUsed: string; // string representation of hex number
-    hash: string;
-    index: number;
-    input: string;
-    nonce: number;
-    output: string;
-    logs?: string;
-    r: string;
-    s: string;
-    status: string; // string representation of hex number
-    timestamp: number; // epoch in milliseconds
-    to: string;
-    v: string;
-    value: string; // string representation of hex number
-}
-
-export interface EvmTransactionParsed extends EvmTransaction {
-    gasLimitBn: ethers.BigNumber;
-    gasPriceBn: ethers.BigNumber;
-    gasUsedBn: ethers.BigNumber;
-    valueBn: ethers.BigNumber;
-}
-
-export interface EvmTransactionExtended extends EvmTransactionParsed {
-    contract: Contract | null;
-    parsedTransaction: TransactionDescription | null;
-    functionParams: EvmContractFunctionParameter[];
-}
-*/
-
-const emit = defineEmits(['prev-trx', 'next-trx']);
-console.log([emit, props, locale, ref]); // FIXME: remove this line
 
 // attribute values
 const loading = computed(() => !props.trx);
 const hash = computed(() => props.trx?.hash);
 const statusOk = computed(() => props.trx?.status === '0x1');
-const block = computed(() => props.trx?.blockNumber);
+const blockNumber = computed(() => props.trx?.blockNumber);
 const timestamp = computed(() => props.trx?.timestamp || 0);
+const blockData = ref<BlockData | null>(null);
+const transactionIndex = ref<number>(-1);
 
-const showMoreDetails = ref(false);
+const showMoreDetails = ref(true);
+const moreDetailsHeight = ref(0);
 
 const getValueDisplay = (value: string) =>
     prettyPrintCurrency(
@@ -87,412 +47,372 @@ const getValueDisplay = (value: string) =>
     );
 
 
+const loadBlockData = async () => {
+    try {
+        if (blockNumber.value) {
+            const response = await indexerApi.get(`/block/${blockNumber.value}`);
+            blockData.value = response.data?.results?.[0] as BlockData;
+        }
+    } catch (error) {
+        console.error('Failed to fetch block data:', error);
+        blockData.value = null;
+    }
+};
+
+watch(() => props.trx, async (newTrx) => {
+    if (newTrx) {
+        loadBlockData();
+    }
+}, { immediate: true });
+
+watch(() => blockData.value, (newBlockData) => {
+    if (newBlockData) {
+        const moreDetailsContainer = document.querySelector('.c-trx-overview__more-details-container');
+        if (moreDetailsContainer) {
+            moreDetailsHeight.value = moreDetailsContainer.clientHeight;
+            showMoreDetails.value = false;
+        }
+    }
+});
+
+watch(() => showMoreDetails.value, (newShowMoreDetails) => {
+    const moreDetailsContainer = document.querySelector('.c-trx-overview__more-details-container') as HTMLDivElement;
+    if (moreDetailsContainer) {
+        moreDetailsContainer.style.setProperty('height', newShowMoreDetails ? `${moreDetailsHeight.value}px` : '0px');
+    }
+});
+
+
 </script>
 
 
 <template>
 <q-card class="c-trx-overview__card-section">
-    <template v-if="trx">
-        <!--
-            <div class="fit row wrap justify-start items-start content-start">
-                <div class="col-3">
-                    <strong class="wrapStrong">{{ $t('pages.transaction_hash') }}:&nbsp;</strong>
-                </div>
-                <div class="col-9">
-                    <span>{{ hash }}</span>
-                    <CopyButton :text="hash"/>
-                </div>
-            </div><br>
-            <div class="fit row wrap justify-start items-start content-start">
-                <div class="col-3">
-                    <strong>{{ $t('pages.block_number') }}:&nbsp;</strong>
-                </div>
-                <div class="col-9">
-                    <BlockField :block="trx.blockNumber"/>
-                </div>
-            </div><br>
-            <div
-                class="fit row wrap justify-start items-start content-start date"
-                @click="showAge = !showAge"
-            >
-                <div class="col-3">
-                    <strong>{{ $t('pages.date') }}:&nbsp;</strong>
-                </div>
-                <div class="u-flex--left">
-                    <DateField :epoch="trx.timestamp  / 1000"/>
-                </div>
-            </div><br>
-            <div class="fit row wrap justify-start items-start content-start">
-                <div class="col-3">
-                    <strong>{{ $t('pages.status') }}:&nbsp;</strong>
-                </div>
-                <div class="col-9 q-py-xs">
-                    <span v-if="trx.status == 1" class="positive">
-                        <q-icon name="check"/>
-                        <span>{{ $t('pages.success') }}</span>
-                    </span>
-                    <span v-else class="negative">
-                        <q-icon name="warning"/><span>{{ $t('pages.failure') }}</span>
-                    </span>
-                </div>
-            </div><br>
-            <div v-if="errorMessage" class="fit row wrap justify-start items-start content-start">
-                <div class="col-3">
-                    <strong>{{ $t('pages.error_message') }}:&nbsp;</strong>
-                </div>
-                <div class="col-9">
-                    <span class="text-negative">{{ errorMessage }}</span>
-                </div>
-            </div><br v-if="errorMessage">
-            <div class="fit row wrap justify-start items-start content-start">
-                <div class="col-3">
-                    <strong>{{ $t('pages.from') }}:&nbsp;</strong>
-                </div>
-                <div class="col-9 word-break">
-                    <AddressField
-                        :address="trx.from"
-                        :truncate="0"
-                        copy="copy"
-                    />
-                </div>
-            </div><br>
-            <div v-if="trx.to" class="fit row wrap justify-start items-start content-start">
-                <div class="col-3">
-                    <strong>{{ $t('pages.to') }}:&nbsp;</strong>
-                </div>
-                <div class="col-9 word-break">
-                    <AddressField
-                        :address="trx.to"
-                        :is-contract-trx="!!contract"
-                        :truncate="0"
-                        copy="copy"
-                    />
-                </div>
+    <!-- Hash -->
+    <div class="c-trx-overview__row">
+        <div class="c-trx-overview__col-att">
+            <div class="c-trx-overview__row-tooltip">
+                <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.transaction.trx_hash_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
             </div>
-            <div v-else-if="trx.contractAddress" class="fit row justify-start items-start content-start">
-                <div class="col-3">
-                    <strong>{{ $t('pages.deployed_contract') }}:&nbsp;</strong>
-                </div>
-                <div class="col-9 word-break">
-                    <AddressField :address="trx.contractAddress" :truncate="0" copy="copy" />
-                </div>
-            </div><br>
-            <div v-if="isContract" class="fit row wrap justify-start items-start content-start">
-                <div class="col-3">
-                    <strong>{{ $t('pages.contract_function') }}:&nbsp;</strong>
-                </div>
-                <div class="col-9">
-                    <MethodField :contract="contract" :trx="methodTrx" :shortenSignature="true"/>
-                </div>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.trx_hash') }}</div>
+        </div>
+        <div class="c-trx-overview__col-val">
+            <div class="c-trx-overview__row-value  c-trx-overview__row-value--hash">
+                <q-skeleton v-if="!hash" type="text" class="c-trx-overview__skeleton" />
+                <TransactionField
+                    v-else
+                    color="primary"
+                    :transaction-hash="hash"
+                    :truncate="200"
+                />
             </div>
-            <br v-if="isContract">
-            <div
-                v-if="isContract && params.length > 0"
-                class="fit row wrap justify-start items-start content-start"
-            >
-                <div class="col-3"><strong>{{ $t('pages.function_parameters') }}:&nbsp;</strong></div>
-                <div id="function-parameters" class="col">
-                    <ParameterList :params="params" :contract="contract" :trxFrom="trx.from"/>
-                </div>
-            </div><br v-if="isContract && params.length > 0">
-            <div v-if="trx.createdaddr" class="fit row wrap justify-start items-start content-start">
-                <div class="col-3"><strong>{{ $t('pages.deployed_contract') }}:&nbsp;</strong></div>
-                <div class="col-9 word-break">
-                    <AddressField :address="trx.createdaddr"/>
-                </div>
-            </div><br v-if="trx.createdaddr">
-            <div class="fit row wrap justify-start items-start content-start">
-                <div class="col-3"><strong>{{ $t('pages.value') }}:&nbsp;</strong></div>
-                <div class="col-9 clickable" @click="showWei = !showWei">
-                    <div v-if="showWei">
-                        <span>{{ trx.value }}</span>
-                    </div>
-                    <span v-else>
-                        <span>{{ $t('pages.balance_tlos', { amount: formatWei(trx.value, 18) }) }}</span>
-                        <q-tooltip>{{ $t('pages.click_to_show_in_wei') }}</q-tooltip>
-                    </span>
-                </div>
+        </div>
+    </div>
+
+    <!-- status -->
+    <div class="c-trx-overview__row">
+        <div class="c-trx-overview__col-att">
+            <div class="c-trx-overview__row-tooltip">
+                <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.transaction.status_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
             </div>
-            <br>
-            <div v-if="trx.logs?.length > 0">
-                <ApprovalList :trxFrom="trx.from" :logs="trx.logs" />
-                <ERCTransferList :trxFrom="trx.from" type="erc20" :logs="trx.logs" />
-                <ERCTransferList :trxFrom="trx.from" type="erc721" :logs="trx.logs" />
-                <ERCTransferList :trxFrom="trx.from" type="erc1155" :logs="trx.logs" />
-            </div>
-            <div class="fit row wrap justify-start items-start content-start q-border-top">
-                <div class="col-3">
-                    <strong>{{ $t('pages.gas_price_charged') }}:&nbsp;</strong>
-                </div>
-                <span>{{ $t('pages.balance_gwei', { amount: getGasChargedGWEI() }) }}</span>
-            </div>
-            <br>
-            <div class="fit row wrap justify-start items-start content-start">
-                <div class="col-3">
-                    <strong>{{ $t('pages.gas_fee') }}:&nbsp;</strong>
-                </div>
-                <span>
-                    {{ $t('pages.balance_tlos', { amount: getGasFee() }) }}
-                    <small class="q-pl-sm">(~ ${{ (getGasFee() * tlosPrice).toFixed(5) }})</small>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.status') }}</div>
+        </div>
+        <div class="c-trx-overview__col-val">
+            <div class="c-trx-overview__row-value  c-trx-overview__row-value--status">
+                <q-skeleton v-if="loading" type="text" class="c-trx-overview__skeleton" />
+                <span v-else-if="statusOk" class="u-flex--center-y">
+                    <q-icon name="check" color="positive" class="q-mr-xs"/>
+                    <span class="c-trx-overview__status-value text-positive">{{ $t('pages.success') }}</span>
+                </span>
+                <span v-else class="u-flex--center-y">
+                    <q-icon name="warning" color="negative" class="q-mr-xs"/>
+                    <span class="c-trx-overview__status-value text-negative">{{ $t('pages.failure') }}</span>
                 </span>
             </div>
-            <br>
-            <div class="fit row wrap justify-start items-start content-start">
-                <div class="col-3"><strong>{{ $t('pages.gas_used') }}:&nbsp;</strong></div>
-                <div class="col-9">{{ trx.gasUsed }}</div>
-            </div>
-            <br>
-            <div class="fit row wrap justify-start items-start content-start">
-                <div class="col-3"><strong>{{ $t('pages.gas_limit') }}:&nbsp;</strong></div>
-                <div class="col-9">{{ trx.gasLimit }}</div>
-            </div>
-            <br>
-            <div class="fit row wrap justify-start items-start content-start">
-                <div class="col-3"><strong>{{ $t('pages.nonce') }}:&nbsp;</strong></div>
-                <div class="col-9">{{ trx.nonce }}</div>
-            </div>
-        -->
+        </div>
+    </div>
 
-        <!-- Hash -->
-        <div class="c-trx-overview__row">
-            <div class="c-trx-overview__col-att">
-                <div class="c-trx-overview__row-tooltip">
-                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                        <q-tooltip anchor="bottom right" self="top start">
-                            {{ $t('components.transaction.trx_hash_tooltip') }}
-                        </q-tooltip>
-                    </q-icon>
-                </div>
-                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.trx_hash') }}</div>
+    <!-- block -->
+    <div class="c-trx-overview__row">
+        <div class="c-trx-overview__col-att">
+            <div class="c-trx-overview__row-tooltip">
+                <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.transaction.block_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
             </div>
-            <div class="c-trx-overview__col-val">
-                <div class="c-trx-overview__row-value  c-trx-overview__row-value--hash">{{ hash }}</div>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.block') }}</div>
+        </div>
+        <div class="c-trx-overview__col-val">
+            <div class="c-trx-overview__row-value">
+                <q-skeleton v-if="loading" type="text" class="c-trx-overview__skeleton" />
+                <BlockField v-else :block="blockNumber" />
             </div>
         </div>
+    </div>
 
-        <!-- status -->
-        <div class="c-trx-overview__row">
-            <div class="c-trx-overview__col-att">
-                <div class="c-trx-overview__row-tooltip">
-                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                        <q-tooltip anchor="bottom right" self="top start">
-                            {{ $t('components.transaction.status_tooltip') }}
-                        </q-tooltip>
-                    </q-icon>
-                </div>
-                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.status') }}</div>
+    <!-- Timestamp -->
+    <div class="c-trx-overview__row">
+        <div class="c-trx-overview__col-att">
+            <div class="c-trx-overview__row-tooltip">
+                <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.transaction.timestamp_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
             </div>
-            <div class="c-trx-overview__col-val">
-                <div class="c-trx-overview__row-value  c-trx-overview__row-value--status">
-                    <span v-if="statusOk" class="u-flex--center-y">
-                        <q-icon name="check" color="positive" class="q-mr-xs"/>
-                        <span class="c-trx-overview__status-value text-positive">{{ $t('pages.success') }}</span>
-                    </span>
-                    <span v-else class="u-flex--center-y">
-                        <q-icon name="warning" color="negative" class="q-mr-xs"/>
-                        <span class="c-trx-overview__status-value text-negative">{{ $t('pages.failure') }}</span>
-                    </span>
-                </div>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.timestamp') }}</div>
+        </div>
+        <div class="c-trx-overview__col-val">
+            <q-skeleton v-if="loading" type="text" class="c-trx-overview__skeleton" />
+            <div v-if="!loading" class="c-trx-overview__row-value c-trx-overview__row-value--timestamp">
+                <q-icon class="c-trx-overview__row-value-clock-icon" name="far fa-clock" />
+                <span class="c-trx-overview__row-date-field"><DateField
+                    class="c-trx-overview__row-value-clock-ago"
+                    :epoch="Math.round(timestamp / 1000)"
+                    :force-show-age="true"
+                /></span>
+                <span class="c-trx-overview__row-date-field">(<DateField
+                    class="c-trx-overview__row-value-clock-time"
+                    :epoch="Math.round(timestamp / 1000)"
+                    :force-show-age="false"
+                />)</span>
             </div>
         </div>
+    </div>
 
-        <!-- block -->
-        <div class="c-trx-overview__row">
-            <div class="c-trx-overview__col-att">
-                <div class="c-trx-overview__row-tooltip">
-                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                        <q-tooltip anchor="bottom right" self="top start">
-                            {{ $t('components.transaction.block_tooltip') }}
-                        </q-tooltip>
-                    </q-icon>
-                </div>
-                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.block') }}</div>
+    <!-- transaction action -->
+    <div class="c-trx-overview__row">
+        <div class="c-trx-overview__col-att">
+            <div class="c-trx-overview__row-tooltip">
+                <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.transaction.trx_action_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
             </div>
-            <div class="c-trx-overview__col-val">
-                <div class="c-trx-overview__row-value">{{ block }}</div>
-            </div>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.trx_action') }}</div>
         </div>
-
-        <!-- Timestamp -->
-        <div class="c-trx-overview__row">
-            <div class="c-trx-overview__col-att">
-                <div class="c-trx-overview__row-tooltip">
-                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                        <q-tooltip anchor="bottom right" self="top start">
-                            {{ $t('components.transaction.timestamp_tooltip') }}
-                        </q-tooltip>
-                    </q-icon>
-                </div>
-                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.timestamp') }}</div>
-            </div>
-            <div class="c-trx-overview__col-val">
-                <div v-if="!loading" class="c-trx-overview__row-value c-trx-overview__row-value--timestamp">
-                    <q-icon class="c-trx-overview__row-value-clock-icon" name="far fa-clock" />
-                    <span class="c-trx-overview__row-date-field"><DateField
-                        class="c-trx-overview__row-value-clock-ago"
-                        :epoch="Math.round(timestamp / 1000)"
-                        :force-show-age="true"
-                    /></span>
-                    <span class="c-trx-overview__row-date-field">(<DateField
-                        class="c-trx-overview__row-value-clock-time"
-                        :epoch="Math.round(timestamp / 1000)"
-                        :force-show-age="false"
-                    />)</span>
-                </div>
-            </div>
+        <div class="c-trx-overview__col-val">
+            <q-skeleton v-if="!trx" type="text" class="c-trx-overview__skeleton" />
+            <MethodField
+                v-else
+                :trx="trx"
+                :fullText="true"
+            />
         </div>
+    </div>
 
-        <!-- transaction action -->
-        <div class="c-trx-overview__row">
-            <div class="c-trx-overview__col-att">
-                <div class="c-trx-overview__row-tooltip">
-                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                        <q-tooltip anchor="bottom right" self="top start">
-                            {{ $t('components.transaction.trx_action_tooltip') }}
-                        </q-tooltip>
-                    </q-icon>
-                </div>
-                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.trx_action') }}</div>
+    <!-- from -->
+    <div class="c-trx-overview__row">
+        <div class="c-trx-overview__col-att">
+            <div class="c-trx-overview__row-tooltip">
+                <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.transaction.from_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
             </div>
-            <div class="c-trx-overview__col-val">
-                <MethodField
-                    :trx="trx"
-                />
-            </div>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.from') }}</div>
         </div>
-
-        <!-- from -->
-        <div class="c-trx-overview__row">
-            <div class="c-trx-overview__col-att">
-                <div class="c-trx-overview__row-tooltip">
-                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                        <q-tooltip anchor="bottom right" self="top start">
-                            {{ $t('components.transaction.from_tooltip') }}
-                        </q-tooltip>
-                    </q-icon>
-                </div>
-                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.from') }}</div>
-            </div>
-            <div class="c-trx-overview__col-val">
-                <AddressField
-                    v-if="trx.from"
-                    :key="'trx-from-'+ trx.from"
-                    :address="trx.from"
-                    :copy="true"
-                />
-            </div>
+        <div class="c-trx-overview__col-val">
+            <q-skeleton v-if="loading" type="text" class="c-trx-overview__skeleton" />
+            <AddressField
+                v-if="trx?.from"
+                :key="'trx-from-'+ trx.from"
+                :address="trx.from"
+                :copy="true"
+            />
         </div>
+    </div>
 
-        <!-- to -->
-        <div v-if="trx.to" class="c-trx-overview__row" >
-            <div class="c-trx-overview__col-att">
-                <div class="c-trx-overview__row-tooltip">
-                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                        <q-tooltip anchor="bottom right" self="top start">
-                            {{ $t('components.transaction.to_tooltip') }}
-                        </q-tooltip>
-                    </q-icon>
-                </div>
-                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.to') }}</div>
+    <!-- to -->
+    <div v-if="trx?.to" class="c-trx-overview__row" >
+        <div class="c-trx-overview__col-att">
+            <div class="c-trx-overview__row-tooltip">
+                <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.transaction.to_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
             </div>
-            <div class="c-trx-overview__col-val">
-                <AddressField
-                    :key="'trx-to-'+ trx.to"
-                    :address="trx.to"
-                    :is-contract-trx="!!trx.contract"
-                    :copy="true"
-                />
-            </div>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.to') }}</div>
         </div>
+        <div class="c-trx-overview__col-val">
+            <AddressField
+                :key="'trx-to-'+ trx.to"
+                :address="trx.to"
+                :is-contract-trx="!!trx.contract"
+                :copy="true"
+            />
+        </div>
+    </div>
 
-        <!-- value -->
-        <div class="c-trx-overview__row">
-            <div class="c-trx-overview__col-att">
-                <div class="c-trx-overview__row-tooltip">
-                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                        <q-tooltip anchor="bottom right" self="top start">
-                            {{ $t('components.transaction.value_tooltip') }}
-                        </q-tooltip>
-                    </q-icon>
-                </div>
-                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.value') }}</div>
+    <!-- value -->
+    <div class="c-trx-overview__row">
+        <div class="c-trx-overview__col-att">
+            <div class="c-trx-overview__row-tooltip">
+                <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.transaction.value_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
             </div>
-            <div class="c-trx-overview__col-val">
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.value') }}</div>
+        </div>
+        <div class="c-trx-overview__col-val">
+            <q-skeleton v-if="!trx" type="text" class="c-trx-overview__skeleton" />
+            <template v-else>
                 {{ getValueDisplay(trx.value) }}
-            </div>
+            </template>
         </div>
+    </div>
 
-        <!-- transaction fee -->
-        <div class="c-trx-overview__row">
-            <div class="c-trx-overview__col-att">
-                <div class="c-trx-overview__row-tooltip">
-                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                        <q-tooltip anchor="bottom right" self="top start">
-                            {{ $t('components.transaction.gas_fee_tooltip') }}
-                        </q-tooltip>
-                    </q-icon>
-                </div>
-                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.gas_fee') }}</div>
+    <!-- transaction fee -->
+    <div class="c-trx-overview__row">
+        <div class="c-trx-overview__col-att">
+            <div class="c-trx-overview__row-tooltip">
+                <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.transaction.gas_fee_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
             </div>
-            <div class="c-trx-overview__col-val">
-                <TransactionFeeField
-                    :showTotalGasFee="true"
-                    :gasUsed="trx.gasUsed"
-                    :gasPrice="trx.gasPrice"
-                />
-            </div>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.gas_fee') }}</div>
         </div>
-
-        <!-- gas price -->
-        <div class="c-trx-overview__row">
-            <div class="c-trx-overview__col-att">
-                <div class="c-trx-overview__row-tooltip">
-                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
-                        <q-tooltip anchor="bottom right" self="top start">
-                            {{ $t('components.transaction.gas_price_tooltip') }}
-                        </q-tooltip>
-                    </q-icon>
-                </div>
-                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.gas_price') }}</div>
-            </div>
-            <div class="c-trx-overview__col-val">
-                <TransactionFeeField
-                    :showTotalGasFee="false"
-                    :gasUsed="trx.gasUsed"
-                    :gasPrice="trx.gasPrice"
-                />
-            </div>
+        <div class="c-trx-overview__col-val">
+            <q-skeleton v-if="!trx" type="text" class="c-trx-overview__skeleton" />
+            <TransactionFeeField
+                v-else
+                :showTotalGasFee="true"
+                :gasUsed="trx.gasUsed"
+                :gasPrice="trx.gasPrice"
+            />
         </div>
+    </div>
 
-        <!-- --- -->
-        <!-- gas limit (& usage) -->
-        <!-- nonce -->
-        <!-- position in block -->
-        <!-- input -->
-    </template>
-    <template v-else>
-        <q-card-section class="q-pa-md">
-            <q-spinner-gears color="primary" size="50px"/>
-        </q-card-section>
-    </template>
+    <!-- gas price -->
+    <div class="c-trx-overview__row">
+        <div class="c-trx-overview__col-att">
+            <div class="c-trx-overview__row-tooltip">
+                <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.transaction.gas_price_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
+            </div>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.gas_price') }}</div>
+        </div>
+        <div class="c-trx-overview__col-val">
+            <q-skeleton v-if="!trx" type="text" class="c-trx-overview__skeleton" />
+            <TransactionFeeField
+                v-else
+                :showTotalGasFee="false"
+                :gasUsed="trx.gasUsed"
+                :gasPrice="trx.gasPrice"
+            />
+        </div>
+    </div>
+
 </q-card>
+
 <q-card v-if="trx" class="c-trx-overview__card-section">
     <div
         :class="{
             'c-trx-overview__more-details-container': true,
-            'c-trx-overview__more-details-container--show': showMoreDetails,
+            'c-trx-overview__more-details-container--transparent': moreDetailsHeight === 0,
         }"
     >
-        <h1>More details</h1>
+        <!-- gas limit -->
+        <div class="c-trx-overview__row">
+            <div class="c-trx-overview__col-att">
+                <div class="c-trx-overview__row-tooltip">
+                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                        <q-tooltip anchor="bottom right" self="top start">
+                            {{ $t('components.transaction.gas_limit_n_usage_tooltip') }}
+                        </q-tooltip>
+                    </q-icon>
+                </div>
+                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.gas_limit_n_usage') }}</div>
+            </div>
+            <div class="c-trx-overview__col-val">
+                <q-skeleton v-if="!blockData" type="text" class="c-trx-overview__skeleton" />
+                <GasLimitAndUsage
+                    v-if="blockData"
+                    :trx="trx"
+                    :block="blockData"
+                />
+            </div>
+        </div>
+
+        <!-- nonce -->
+        <div class="c-trx-overview__row">
+            <div class="c-trx-overview__col-att">
+                <div class="c-trx-overview__row-tooltip">
+                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                        <q-tooltip anchor="bottom right" self="top start">
+                            {{ $t('components.transaction.nonce_tooltip') }}
+                        </q-tooltip>
+                    </q-icon>
+                </div>
+                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.nonce') }}</div>
+            </div>
+            <div class="c-trx-overview__col-val">
+                <q-skeleton v-if="loading" type="text" class="c-trx-overview__skeleton" />
+                <div v-else>{{ trx.nonce }}</div>
+            </div>
+        </div>
+
+        <!-- position in block -->
+        <div v-if="transactionIndex >= 0" class="c-trx-overview__row">
+            <div class="c-trx-overview__col-att">
+                <div class="c-trx-overview__row-tooltip">
+                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                        <q-tooltip anchor="bottom right" self="top start">
+                            {{ $t('components.transaction.position_in_block_tooltip') }}
+                        </q-tooltip>
+                    </q-icon>
+                </div>
+                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.position_in_block') }}</div>
+            </div>
+            <div class="c-trx-overview__col-val">
+                {{ transactionIndex }}
+            </div>
+        </div>
+
+        <!-- input -->
+        <div class="c-trx-overview__row">
+            <div class="c-trx-overview__col-att">
+                <div class="c-trx-overview__row-tooltip">
+                    <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                        <q-tooltip anchor="bottom right" self="top start">
+                            {{ $t('components.transaction.input_tooltip') }}
+                        </q-tooltip>
+                    </q-icon>
+                </div>
+                <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.input') }}</div>
+            </div>
+            <div class="c-trx-overview__col-val">
+                <q-skeleton v-if="loading" type="text" class="c-trx-overview__skeleton" />
+                <div v-else class="c-trx-overview__row-value c-trx-overview__row-value--input">{{ trx.input }}</div>
+            </div>
+        </div>
+
     </div>
     <div class="c-trx-overview__row c-trx-overview__row--toggle-details" @click="showMoreDetails = !showMoreDetails">
         <div class="c-trx-overview__col-att">
             <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.more_details') }}</div>
         </div>
         <div class="c-trx-overview__col-val c-trx-overview__col-val--toggle-details">
-            <!--div class="c-trx-overview__row-tooltip">
-                <q-icon class="c-trx-overview__row-tooltip-icon c-trx-overview__row-tooltip-icon--toggle-details info-icon" name="fas fa-info-circle" />
-            </div-->
             <template v-if="showMoreDetails">
                 <i class="fas fa-minus"></i>
                 <span>{{ $t('components.transaction.show_less_details') }}</span>
@@ -522,6 +442,9 @@ const getValueDisplay = (value: string) =>
         align-items: baseline;
         gap: 5px;
     }
+    &__col-val {
+        flex-grow: 1;
+    }
     &__row {
         padding: 0.5rem 0;
         &--toggle-details {
@@ -536,11 +459,12 @@ const getValueDisplay = (value: string) =>
     &__row-attribute {
         font-weight: 500;
         max-width: 230px;
-        min-width: 160px;
+        min-width: 200px;
         width: 15vw;
         text-wrap: nowrap;
     }
     &__row-value {
+        width: 100%;
         &-link {
             cursor: pointer;
             color: var(--q-primary);
@@ -560,6 +484,9 @@ const getValueDisplay = (value: string) =>
         &--pointer {
             cursor: pointer;
             color: var(--q-primary);
+        }
+        &--input {
+            word-break: break-word;
         }
     }
     &__row-date-field {
@@ -597,7 +524,7 @@ const getValueDisplay = (value: string) =>
     @media screen and (max-width: 900px) {
         &__row {
             flex-direction: column;
-            align-items: flex-start;
+            align-items: stretch;
         }
         &__row-attribute {
             min-width: 100%;
@@ -618,10 +545,18 @@ const getValueDisplay = (value: string) =>
     }
 
     &__more-details-container {
-        display: none;
-        &--show {
-            display: block;
+        transition: height 0.3s ease-in-out;
+        overflow: hidden;
+        &--transparent {
+            // this avoids the container from being visible while we capture its height
+            opacity: 0;
+            position: absolute;
         }
+    }
+
+    &__skeleton {
+        height: 2rem;
+        width: 100%;
     }
 }
 </style>
