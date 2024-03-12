@@ -137,7 +137,7 @@ function emitHighlight(val: string) {
             height="auto"
         />
         <q-icon v-else-if="contract && contract.getName()" name="far fa-file" />
-        <span>{{ displayName }}</span>
+        <span class="c-address-field__text">{{ displayName }}</span>
         <q-tooltip v-if="fullName !== displayName">{{ fullName }}</q-tooltip>
     </router-link>
     <CopyButton v-if="copy && address" :text="address" description="address"/>
@@ -164,6 +164,9 @@ function emitHighlight(val: string) {
         }
     }
 
+    &__text {
+        word-break: break-word;
+    }
 
     .q-icon {
         margin-right: 3px;

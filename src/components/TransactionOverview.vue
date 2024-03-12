@@ -409,7 +409,7 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
 
     </div>
     <div class="c-trx-overview__row c-trx-overview__row--toggle-details" @click="showMoreDetails = !showMoreDetails">
-        <div class="c-trx-overview__col-att">
+        <div class="c-trx-overview__col-att c-trx-overview__col-att--toggle-details">
             <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.more_details') }}</div>
         </div>
         <div class="c-trx-overview__col-val c-trx-overview__col-val--toggle-details">
@@ -525,6 +525,10 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
         &__row {
             flex-direction: column;
             align-items: stretch;
+            &--toggle-details {
+                flex-direction: row;
+                justify-content: space-between;
+            }
         }
         &__row-attribute {
             min-width: 100%;
@@ -532,6 +536,12 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
         }
         &__row-value {
             margin-left: 0;
+        }
+        &__col-att--toggle-details {
+            flex-grow: unset;
+        }
+        &__col-val--toggle-details {
+            flex-grow: unset;
         }
     }
 
