@@ -16,6 +16,7 @@ body {
 body.body--light {
     --border-color: #{$grey-5};
     --text-color: #{$dark};
+    --invert-text-color: white;
     --grey-text-color: #{$grey-7};
 
     a:hover {
@@ -26,6 +27,7 @@ body.body--light {
 body.body--dark {
     --border-color: #{$grey-7};
     --text-color: white;
+    --invert-text-color: #{$dark};
     --grey-text-color: #{$grey-5};
 
     a:hover {
