@@ -2,23 +2,32 @@
 import {
     computed,
     onBeforeMount,
+    onMounted,
     ref,
 } from 'vue';
 import { useRoute } from 'vue-router';
 import { useQuasar } from 'quasar';
 
 import AppHeader from 'components/header/AppHeader.vue';
-import FooterMain from 'components/Footer.vue';
+import FooterMain from 'components/FooterMain.vue';
 
 const $route = useRoute();
 const $q = useQuasar();
 
 const scrollY = ref(0);
+const footerHeight = ref(0);
+const margin = ref(50);
 
 const onHomePage = computed(() => $route.name === 'home');
 
 onBeforeMount(() => {
     $q.dark.set(localStorage.getItem('darkModeEnabled') !== 'false');
+});
+
+onMounted(() => {
+    if ($q.screen.width > 500) {
+        footerHeight.value = document.getElementById('footer')?.offsetHeight || 0;
+    }
 });
 
 function toTop() {
@@ -31,6 +40,12 @@ function toTop() {
 function scrollHandler() {
     scrollY.value = window.scrollY;
 }
+
+function showBackToTop() {
+    return scrollY.value > 300 &&
+    scrollY.value < document.documentElement.scrollHeight - window.innerHeight - footerHeight.value + margin.value;
+}
+
 </script>
 
 <template>
@@ -52,14 +67,14 @@ function scrollHandler() {
     >
         <router-view />
     </q-page-container>
-    <FooterMain />
+    <FooterMain id="footer" />
     <transition
         appear
         enter-active-class="animated fadeIn"
         leave-active-class="animated fadeOut"
     >
         <q-btn
-            v-if="scrollY > 300"
+            v-if="showBackToTop()"
             round
             class="c-main-layout__scroll-up shadow-4"
             icon="fas fa-chevron-up"
