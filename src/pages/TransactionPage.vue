@@ -147,13 +147,28 @@ watch(() => route.params.hash, (newValue) => {
     loadTransaction();
 }, { immediate: true });
 
+
+const prevTransaction = () => {
+    console.error('prevTransaction() NOT IMPLEMENTED');
+};
+
+const nextTransaction = () => {
+    console.error('nextTransaction() NOT IMPLEMENTED');
+};
+
 </script>
 
 <template>
 <div class="c-trx-page">
     <div class="c-trx-page__header">
         <span class="c-trx-page__header-title">{{ $t('pages.transaction.page_title') }}</span>
-        <span class="c-trx-page__header-block-num">#</span>
+        <div class="c-trx-page__header-nav-btn c-trx-page__header-nav-btn--left" @click="prevTransaction">
+            <i class="fa fa-chevron-left small"></i>
+        </div>
+        <div class="c-trx-page__header-nav-btn c-trx-page__header-nav-btn--right" @click="nextTransaction">
+            <i class="fa fa-chevron-right small"></i>
+        </div>
+
     </div>
 
     <q-tabs
@@ -169,14 +184,14 @@ watch(() => route.params.hash, (newValue) => {
         <div class="c-trx-page__main-content">
             <q-tab-panels v-model="tab" class="c-trx-page__panels">
                 <q-tab-panel class="c-trx-page__panel c-trx-page__panel--overview" name="overview">
-                    <div class="c-trx-page__overview c-trx-page__panel-content">
+                    <div class="c-trx-page__panel-content--overview c-trx-page__panel-content">
                         <TransactionOverview
                             :trx="trx"
                         />
                     </div>
                 </q-tab-panel>
                 <q-tab-panel class="c-trx-page__panel c-trx-page__panel--logs" name="logs">
-                    <q-card class="c-trx-page__logs c-trx-page__panel-content">
+                    <q-card class="c-trx-page__panel-content--logs c-trx-page__panel-content">
                         <LogsViewer
                             :trx="trx"
                             :contract="trx?.contract"
@@ -184,8 +199,8 @@ watch(() => route.params.hash, (newValue) => {
                         />
                     </q-card>
                 </q-tab-panel>
-                <q-tab-panel class="c-trx-page__panel c-trx-page__panel--internal" name="internal">
-                    <q-card class="c-trx-page__internal c-trx-page__panel-content">
+                <q-tab-panel class="c-trx-page__panel c-trx-page__panel" name="internal">
+                    <q-card class="c-trx-page__panel-content--internal c-trx-page__panel-content">
                         <InternalTxns
                             :transaction="trx"
                         />
@@ -220,6 +235,28 @@ watch(() => route.params.hash, (newValue) => {
             font-size: 1.4rem;
             font-weight: bold;
         }
+
+        &-nav-btn {
+            cursor: pointer;
+            height: 22px;
+            width: 22px;
+            color: white;
+            background-color: $grey;
+            border: solid 1.25px $grey;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            &--left {
+                padding-right: 1px;
+            }
+            &--right {
+                padding-left: 1px;
+            }
+            .q-dark & {
+                color: rgb(8, 29, 53);
+            }
+        }
     }
 
     &__tabs-tabs {
@@ -243,6 +280,9 @@ watch(() => route.params.hash, (newValue) => {
         display: flex;
         flex-direction: column;
         justify-content: center;
+        &--internal {
+            padding-top: 20px;
+        }
     }
 }
 </style>
