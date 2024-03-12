@@ -88,7 +88,7 @@ function scrollHandler(info: { direction: string; }) {
     top: var(--top-bar-height);
     left: 0;
     right: 0;
-    height: 52px;
+    height: var(--bottom-bar-height);
 
     background: var(--background-color);
     border-bottom: 1px solid var(--border-color);

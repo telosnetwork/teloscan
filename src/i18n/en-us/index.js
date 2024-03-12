@@ -1,5 +1,3 @@
-/* eslint-disable max-len*/
-
 export default {
     locale: {
         current_language_name: 'English',
@@ -10,13 +8,18 @@ export default {
             overview: 'Overview',
             transactions: 'Transactions',
         },
+        home: {
+            telos_evm_explorer: 'The Telos EVM Explorer',
+            market_cap: 'Market Cap',
+            last_finalized_block: 'Last Finalized Block',
+            total_transactions: 'Total Transactions',
+        },
         issuer: 'Issuer',
         account_not_found: 'We could not find this account',
         approvals: 'Approvals',
         supported_interfaces: 'Known supported interface(s)',
         explore_transactions: 'Explore Transactions',
         recent_transactions: 'Recent transactions',
-        telos_evm_explorer: 'Telos EVM Explorer',
         rpc_endpoints: 'RPC Endpoints',
         monitor: 'Monitor',
         oops: 'Oops. Nothing here...',
@@ -367,7 +370,7 @@ export default {
             network: 'Network',
             open_language_switcher: 'Open language switcher',
             search_failed: 'Search failed, please enter a valid search term.',
-            search_placeholder: 'Address, Tx, Block',
+            search_placeholder: 'Search anything on Telos',
             select_language: 'Select Language',
             switch_to_dark_theme: 'Switch to dark theme',
             switch_to_light_theme: 'Switch to light theme',
