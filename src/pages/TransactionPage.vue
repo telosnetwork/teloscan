@@ -168,7 +168,6 @@ const nextTransaction = () => {
         <div class="c-trx-page__header-nav-btn c-trx-page__header-nav-btn--right" @click="nextTransaction">
             <i class="fa fa-chevron-right small"></i>
         </div>
-
     </div>
 
     <q-tabs
@@ -237,6 +236,7 @@ const nextTransaction = () => {
         }
 
         &-nav-btn {
+            display: none; // remove this line to enable the buttons
             cursor: pointer;
             height: 22px;
             width: 22px;
