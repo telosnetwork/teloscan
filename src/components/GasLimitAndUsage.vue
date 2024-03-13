@@ -64,8 +64,3 @@ const setValues = async () => {
 </div>
 </template>
 
-<style lang="scss">
-.c-gas-limit {
-    //
-}
-</style>
