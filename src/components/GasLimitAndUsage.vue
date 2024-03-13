@@ -5,8 +5,6 @@ import { BlockData } from 'src/types';
 import { EvmTransactionParsed } from 'src/antelope/types';
 import { useI18n } from 'vue-i18n';
 
-// const { t: $t } = useI18n();
-
 const props = defineProps({
     trx: {
         type: Object as () => EvmTransactionParsed,
