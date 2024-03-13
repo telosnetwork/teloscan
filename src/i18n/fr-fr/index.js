@@ -156,6 +156,8 @@ export default {
             in_this_block: 'dans ce bloc',
             transactions: 'Transactions',
         },
+        gas_limit_tooltip: 'La quantité maximale de gaz qui peut être dépensée pour cette transaction',
+        gas_used_tooltip: 'La quantité de gaz qui a été dépensée pour cette transaction',
         known_tokens: 'Jetons connus',
         other_tokens: 'Jetons inconnus',
         no_balances_found: 'Aucun jetons erc20 trouvés pour cette adresse',

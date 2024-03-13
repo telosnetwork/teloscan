@@ -156,6 +156,8 @@ export default {
             transactions: 'Transactions',
             transactions_root: 'Transactions Root',
         },
+        gas_limit_tooltip: 'The maximum amount of gas that can be spent on this transaction',
+        gas_used_tooltip: 'The amount of gas that was spent on this transaction',
         known_tokens: 'Known tokens',
         other_tokens: 'Unknown tokens',
         no_balances_found: 'No erc20 token balance was found for this address',

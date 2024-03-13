@@ -208,6 +208,8 @@ export default {
             telos_supply: 'Suministro Telos EVM',
             updated: 'Ultima actualización',
         },
+        gas_limit_tooltip: 'La cantidad máxima de gas que se puede gastar en esta transacción',
+        gas_used_tooltip: 'La cantidad de gas que se gastó en esta transacción',
         known_tokens: 'Token conocida',
         other_tokens: 'Token desconocida',
         no_balances_found: 'No se encontraron saldos de tokens erc20 para esta cuenta',

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-// import { useI18n } from 'vue-i18n';
 
 import { BlockData } from 'src/types';
 import { EvmTransactionParsed } from 'src/antelope/types';
 import { useI18n } from 'vue-i18n';
 
-// const { t: $t } = useI18n();
+const $i18n = useI18n();
+const { t: $t } = $i18n;
 
 const props = defineProps({
     trx: {
@@ -24,12 +24,11 @@ onMounted(async () => {
 });
 
 
-const limitText = ref('5,253,230');
-const usageText = ref('5,232,776 (99.61%)');
+const limitText = ref('');
+const usageText = ref('');
 
-const limitTextTooltips = ref('The maximum amount of gas that can be spent on this transaction');
-const usageTextTooltips = ref('The amount of gas that was spent on this transaction');
-
+const limitTextTooltips = ref($t('components.gas_limit_tooltip'));
+const usageTextTooltips = ref($t('components.gas_used_tooltip'));
 
 
 const setValues = async () => {
@@ -64,9 +63,3 @@ const setValues = async () => {
     </span>
 </div>
 </template>
-
-<style lang="scss">
-.c-gas-limit {
-    //
-}
-</style>
