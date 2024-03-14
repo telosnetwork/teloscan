@@ -1,7 +1,7 @@
 <script>
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
-import Contract  from 'src/lib/contract/Contract';
+import ContractFactory from 'src/lib/contract/ContractFactory';
 import { erc721Abi, erc1155Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
 import { sortAbiFunctionsByName } from 'src/lib/utils';
@@ -25,20 +25,21 @@ export default {
         displayWriteFunctions: false,
         customAbiDefinition: '',
         selectedAbi: null,
-        selectedContract: null,
         abiOptions: {
             erc20: 'erc20',
             erc721: 'erc721',
             erc1155: 'erc1155',
             custom: 'custom',
         },
+        factory: new ContractFactory(),
+        selectedContract: null,
     }),
     computed: {
         showAbiFunctions() {
             return Object.values(this.abiOptions).includes(this.selectedAbi) &&
-                ['read', 'write']
-                    .some(access => (this.functions?.[access] ?? [])
-                        .some(member => member.type === 'function'));
+                    ['read', 'write']
+                        .some(access => (this.functions?.[access] ?? [])
+                            .some(member => member.type === 'function'));
         },
         customAbiIsValidJSON() {
             try {
@@ -120,9 +121,9 @@ export default {
             const customAbiSelected = this.selectedAbi === custom;
 
             const selectedAbiIsCustomAndValid =
-                !!this.customAbiDefinition &&
-                this.customAbiIsValidJSON &&
-                customAbiSelected;
+                    !!this.customAbiDefinition &&
+                    this.customAbiIsValidJSON &&
+                    customAbiSelected;
             if (selectedAbiIsCustomAndValid) {
                 abi = JSON.parse(this.customAbiDefinition);
             } else if (this.selectedAbi === erc20) {
@@ -137,33 +138,19 @@ export default {
             if (!Array.isArray(abi)) {
                 if (abi.abi && Array.isArray(abi.abi)) {
                     abi = abi.abi;
-                } else {
-                    console.error('Invalid ABI format');
-                    return;
                 }
             }
 
-            let contract = null;
-            try {
-                contract = new Contract({
-                    name: this.$t('components.contract_tab.unverified_contract'),
-                    address: this.address,
-                    abi,
-                    manager: this.$contractManager,
-                });
-            } catch (error) {
-                console.error('Error building contract:', error);
-                this.$q.notify({
-                    message: 'Error building contract',
-                    color: 'negative',
-                });
-                return;
-            }
-            this.selectedContract = contract;
+            this.selectedContract = this.factory.buildContract({
+                name: this.$t('components.contract_tab.unverified_contract'),
+                address: this.address,
+                abi,
+                manager: this.$contractManager,
+            });
             let read = [];
             let write = [];
 
-            (contract?.abi ?? []).forEach((a) => {
+            (this.selectedContract?.abi ?? []).forEach((a) => {
                 if (a.type !== 'function') {
                     return;
                 }
@@ -347,9 +334,9 @@ export default {
     </div>
 </div>
 </template>
-<style>
-.abi-json-uploader .q-field__label {
-    text-align: center;
-    width: 100%;
-}
-</style>
+    <style>
+    .abi-json-uploader .q-field__label {
+        text-align: center;
+        width: 100%;
+    }
+    </style>
