@@ -81,7 +81,7 @@ export default {
         verify_contract: 'Verify Contract',
         reset: 'Reset',
         gas_used: 'Gas used',
-        account: 'Account',
+        account: 'Address',
         contract: 'Contract',
         transfers_title: '{ type } Transfers:',
         loading_transfers: 'Loading transfers',

@@ -32,7 +32,7 @@ export default {
             return `c-copy-button ${extraClass}`;
         },
         iconClasses() {
-            return `${this.iconClass} q-pl-xs`;
+            return `${this.iconClass}`;
         },
         defaultHint() {
             return this.$t('components.copy_to_clipboard', { text: this.description });

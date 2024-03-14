@@ -24,6 +24,7 @@ import AddressField from 'components/AddressField.vue';
 import CopyButton from 'components/CopyButton.vue';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
 import DateField from 'components/DateField.vue';
+import AddressQR from 'src/components/AddressQR.vue';
 
 const tabs = {
     transactions: '#transactions',
@@ -269,16 +270,27 @@ function disableConfirmation(){
                         v-else-if="!contract"
                         class="q-mr-xs"
                         name="account_circle"
-                        size="md"
+                        size="sm"
                     />
                     <q-icon
                         v-else
                         :name="(contract.supportedInterfaces?.includes('erc721')) ? 'perm_media' : 'source'"
                         class="q-mr-sm"
-                        size="md"
+                        size="sm"
                     />
-                    <div class="text-primary text-h4 q-pr-xs q-pb-md">
+                    <div class=" text-h6 q-pr-xs q-pb-md">
                         <span>{{ title }}</span>
+                        <CopyButton
+                            :text="accountAddress"
+                            :accompanyingText="accountAddress"
+                            description="address"
+                            class="address-copy"
+                        />
+                        <AddressQR
+                            v-if="accountAddress"
+                            :address="accountAddress"
+                            class="qr-code"
+                        />
                         <q-tooltip v-if="fullTitle">{{ fullTitle }} </q-tooltip>
                     </div>
                     <div v-if="isContract">
@@ -308,11 +320,6 @@ function disableConfirmation(){
                             :address="accountAddress"
                             :status="contract?.isVerified()"
                             @dialog="disableConfirmation"
-                        />
-                        <CopyButton
-                            :text="accountAddress"
-                            :accompanyingText="accountAddress"
-                            description="address"
                         />
                         <template v-if="contract">
                             <div v-if="contract.getCreationTrx()" class="text-white">
@@ -777,6 +784,11 @@ function disableConfirmation(){
 </template>
 
 <style scoped lang="scss">
+.address-copy{
+    display: inline;
+    font-size: 16px;
+}
+
 .tabeWrapper {
   max-width: 100vw;
 }
@@ -844,8 +856,8 @@ body.ios .q-hoverable:active .q-focus-helper {
 }
 
 .q-icon {
-  padding-bottom: .75rem;
-  vertical-align: middle;
+    padding-top: 0.45rem;
+    vertical-align: middle;
 }
 
 .cursor {
@@ -950,7 +962,7 @@ body.ios .q-hoverable:active .q-focus-helper {
     padding: 20px;
     text-align: center;
     margin-bottom: 30px;
-    .c-copy-button {
+    .c-copy-button--block {
       width: 100%;
       word-break: break-word;
     }
