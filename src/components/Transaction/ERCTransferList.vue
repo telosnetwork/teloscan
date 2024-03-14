@@ -182,7 +182,7 @@ export default {
             <div class="col-4 flex">
                 <q-icon class="list-arrow" name="arrow_right"/>
                 <strong class="q-pr-sm">
-                    {{ $t('components.transaction.form_from') }}
+                    {{ $t('components.transaction.from') }} :
                 </strong>
                 <AddressField
                     :address="transfer.from"
@@ -195,7 +195,7 @@ export default {
                 />
             </div>
             <div class="col-3 flex">
-                <strong class="q-pr-sm">{{ $t('components.transaction.form_to') }}</strong>
+                <strong class="q-pr-sm">{{ $t('components.transaction.to') }} : </strong>
                 <AddressField
                     :address="transfer.to"
                     :truncate="12"

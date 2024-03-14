@@ -870,7 +870,6 @@ body.ios .q-hoverable:active .q-focus-helper
     display: block
     height: 100%
     padding: 16px 0px
-.tabs-header .q-btn.active
 
 .tabs-header .q-btn
   background: transparent !important
