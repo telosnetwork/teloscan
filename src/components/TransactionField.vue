@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import CopyButton from 'components/CopyButton.vue';
+import { computed } from 'vue';
 
-defineProps({
+const props = defineProps({
     transactionHash: {
         type: String,
         required: true,
@@ -21,12 +22,22 @@ defineProps({
         default: false,
     },
 });
+
+const text = computed(() => {
+    if (props.transactionHash) {
+        const cropped = props.transactionHash.slice(0, props.truncate);
+        return cropped.length < props.transactionHash.length ? `${cropped}...` : cropped;
+    } else {
+        return '...';
+    }
+});
+
 </script>
 
 <template>
 <div class="transaction-field-container">
     <router-link :key="$route.path" :class="`text-${color}`" :to="`/tx/${transactionHash}`">
-        {{ transactionHash && transactionHash.slice(0,truncate) }}...
+        {{ text }}
     </router-link>
     <q-tooltip>{{ transactionHash }}</q-tooltip>
     <CopyButton v-if="copy" :text="transactionHash" accompanying-text="" />

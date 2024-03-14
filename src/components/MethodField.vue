@@ -18,13 +18,17 @@ const props = defineProps({
                 name: string;
             };
             from?: string;
-            value?: number;
+            value?: string;
             gasPrice?: string;
-            to?: string;
+            to?: string | null;
             input?: string;
-            data?: null | string;
+            hash?: string;
         },
         required: true,
+    },
+    fullText: {
+        type: Boolean,
+        default: false,
     },
     contract: {
         type: Object,
@@ -56,6 +60,7 @@ const displayText = computed(() => {
 
     return '';
 });
+const propValue = computed(() => +(props.trx.value || '0x0'));
 
 onMounted(async () => {
     await setValues();
@@ -65,7 +70,7 @@ const setValues = async () => {
     if (
         !props.trx.parsedTransaction
         && props.trx.from === ZERO_ADDRESSES
-        && props.trx.value
+        && propValue.value
         && parseInt(props.trx.gasPrice as string) === 0
     ) {
         nativeTooltipText.value = $t('pages.transactions.native_deposit_tooltip');
@@ -73,14 +78,14 @@ const setValues = async () => {
     } else if (
         !props.trx.parsedTransaction
         && props.trx.to === ZERO_ADDRESSES
-        && props.trx.value
+        && propValue.value
         && parseInt(props.trx.gasPrice as string) === 0
     ) {
         nativeTooltipText.value = $t('pages.transactions.native_withdraw_tooltip');
         methodName.value = $t('pages.transactions.withdraw_action_name');
-    } else if (!props.trx.parsedTransaction && props.trx.input === '0x' && props.trx.value) {
+    } else if (!props.trx.parsedTransaction && props.trx.input === '0x' && propValue.value) {
         methodName.value = $t('pages.transactions.transfer_tlos_action_name');
-    } else if (!props.trx.parsedTransaction && props.trx.to === null && props.trx.data !== null) {
+    } else if (!props.trx.parsedTransaction && props.trx.to === null) {
         methodName.value = $t('pages.transactions.contract_deployment');
     } else if (props.trx.parsedTransaction) {
         methodName.value = props.trx.parsedTransaction.name;
@@ -96,7 +101,8 @@ function emitHighlight(val: string) {
 <div
     :class="{
         'c-method': true,
-        'c-method--highlight': [methodName, methodSignature].includes(highlightMethod) && highlightMethod !== ''
+        'c-method--highlight': [methodName, methodSignature].includes(highlightMethod) && highlightMethod !== '',
+        'c-method--full-text': fullText,
     }"
     @mouseenter="emitHighlight(methodName || methodSignature)"
     @mouseleave="emitHighlight('')"
@@ -125,6 +131,10 @@ function emitHighlight(val: string) {
     &--highlight {
         background: rgba($secondary, 0.2);
         border: 1px dashed $secondary;
+    }
+
+    &--full-text {
+        width: auto;
     }
 }
 </style>
