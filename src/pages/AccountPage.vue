@@ -320,7 +320,7 @@ function disableConfirmation(){
                         <AddressOverview :balance="balance" class="account-card__item"/>
                     </div>
                     <div class="flex account-card">
-                        <AddressMoreInfo class="account-card__item"/>
+                        <AddressMoreInfo :address="accountAddress"  class="account-card__item"/>
                     </div>
                 </div>
                 <div class="flex">

@@ -5,18 +5,29 @@
 import { useI18n } from 'vue-i18n';
 
 import TransactionField from 'components/TransactionField.vue';
+import { onMounted, ref } from 'vue';
+import { indexerApi } from 'src/boot/telosApi';
 
 const { t: $t } = useI18n();
 
+const lastTxn = ref('...');
+
 const props = defineProps({
-    firstTxn: {
-        type: Object,
-        required: false,
+    address: {
+        type: String,
+        required: true,
     },
-    lastTxn: {
-        type: Object,
-        required: false,
-    },
+});
+
+onMounted(async () => {
+    try{
+        const txnQuery = (await indexerApi.get(`address/${props.address}/transactions?limit=1`) as any).data as any;
+        if (txnQuery.results.length){
+            lastTxn.value = txnQuery.results[0].hash;
+        }
+    }catch(e){
+        console.log(e);
+    }
 });
 
 </script>
@@ -31,7 +42,7 @@ const props = defineProps({
             <div> LAST TXN SENT </div>
             <TransactionField
                 color="primary"
-                transaction-hash="0x123456789"
+                :transaction-hash="lastTxn"
                 :truncate="18"
             />
         </q-card-section>
