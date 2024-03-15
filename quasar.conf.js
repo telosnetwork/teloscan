@@ -70,6 +70,11 @@ module.exports = function(/* ctx */) {
                 chain.plugin('node-polyfill').use(nodePolyfillWebpackPlugin);
             },
 
+            scssLoaderOptions: {
+                additionalData: '@import "~src/css/global/global-index.scss";',
+                sourceMap: false, // prevent issue where changing style in devtools breaks page styles
+            },
+
             // transpile: false,
 
             // Add dependencies for transpiling with Babel (Array of string/regex)

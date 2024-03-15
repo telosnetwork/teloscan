@@ -319,7 +319,6 @@ watch(() => props.data, (newData) => {
 
 <style lang="scss">
 .c-block-data {
-    $grey: #909090;
     padding: 1.25rem!important;
     display: flex;
     flex-direction: column;

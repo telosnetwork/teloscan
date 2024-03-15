@@ -1,0 +1,10 @@
+@use 'sass:color';
+
+@import '../quasar.variables';
+
+$a-hover-light: color.scale($primary, $lightness: -50%);
+$a-hover-dark: color.scale($primary, $lightness: +30%);
+$grey: #909090;
+
+$tab-active-light: color.scale($primary, $lightness: -20%);
+$tab-active-dark: $primary;

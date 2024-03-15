@@ -49,8 +49,7 @@ function showBackToTop() {
 </script>
 
 <template>
-<AppHeader />
-<q-layout view="lhh Lpr lFf" class="c-main-layout">
+<q-layout view="hhh lpr fff" class="c-main-layout">
     <div class="c-main-layout__background-container">
         <div class="c-main-layout__background-top">
             <div class="c-main-layout__background-circle c-main-layout__background-circle--1"></div>
@@ -58,6 +57,10 @@ function showBackToTop() {
         </div>
         <div class="c-main-layout__background-bottom"></div>
     </div>
+
+    <q-header elevated>
+        <AppHeader />
+    </q-header>
 
     <q-page-container
         :class="{
@@ -67,7 +70,11 @@ function showBackToTop() {
     >
         <router-view />
     </q-page-container>
-    <FooterMain id="footer" />
+
+    <q-footer>
+        <FooterMain id="footer" class="c-main-layout__footer" />
+    </q-footer>
+
     <transition
         appear
         enter-active-class="animated fadeIn"
@@ -218,11 +225,18 @@ function showBackToTop() {
         }
     }
 
+    &__footer {
+        margin-top: 40px;
+        @media screen and (min-width: $breakpoint-md-min) {
+            margin-top: 65px;
+        }
+    }
+
     &__scroll-up {
         position: fixed;
         bottom: 24px;
         right: 24px;
-        z-index: 100;
+        z-index: 2001;
     }
 }
 </style>
