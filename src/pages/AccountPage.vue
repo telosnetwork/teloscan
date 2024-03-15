@@ -369,12 +369,6 @@ function disableConfirmation(){
                                 </span>
                             </div>
                         </template>
-                        <small v-else>
-                            <div class="text-white">
-                                {{ $t('pages.number_used_once') }}:&nbsp;
-                                <span>{{ nonce }}</span>
-                            </div>
-                        </small>
                     </div>
                     <div class="metrics">
                         <div class="dataCardsContainer balance">
