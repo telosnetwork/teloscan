@@ -7,7 +7,7 @@ import { useI18n } from 'vue-i18n';
 import { contractManager } from 'src/boot/telosApi';
 import { indexerApi } from 'src/boot/telosApi';
 import { evm } from 'src/boot/evm';
-import { toChecksumAddress, formatWei, WEI_PRECISION } from 'src/lib/utils';
+import { toChecksumAddress, formatWei } from 'src/lib/utils';
 import { getIcon } from 'src/lib/token-utils';
 
 import TransactionTable from 'components/TransactionTable.vue';
@@ -25,6 +25,8 @@ import CopyButton from 'components/CopyButton.vue';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
 import DateField from 'components/DateField.vue';
 import AddressQR from 'src/components/AddressQR.vue';
+import AddressOverview from 'src/components/AddressOverview.vue';
+import AddressMoreInfo from 'src/components/AddressMoreInfo.vue';
 
 const tabs = {
     transactions: '#transactions',
@@ -58,7 +60,7 @@ const accountLoading = ref(false);
 const title = ref('');
 const fullTitle = ref('');
 const telosAccount = ref('');
-const balance = ref('');
+const balance = ref('0');
 const nonce = ref<number | null>(null);
 const isContract = ref(false);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -143,12 +145,16 @@ async function loadAccount() {
     accountLoading.value = true;
     isContract.value = false;
     const tokenList = await contractManager.getTokenList();
-    let account = {} as any;
     try {
         const response = await indexerApi.get(
-            `/account/${accountAddress.value}/balances?contract=___NATIVE_CURRENCY___&includeAbi=true`,
+            `/account/${accountAddress.value}/balances?includeAbi=true`,
+            // `/account/${accountAddress.value}/balances?contract=___NATIVE_CURRENCY___&includeAbi=true`,
         );
-        account.balance = (response.data?.results?.length > 0) ? response.data.results[0].balance : '0';
+        //TODO restore original api query when contract param query is fixed
+        const systemTokenResult = response.data.results.find((r:any) => r.contract === '___NATIVE_CURRENCY___');
+
+        // balance.value = (response.data?.results?.length > 0) ? response.data.results[0].balance : '0';
+        balance.value = systemTokenResult.balance;
     } catch (e) {
         console.error('Could not get balance: ', e);
     }
@@ -198,14 +204,10 @@ async function loadAccount() {
         }
     }
 
-    balance.value = getBalanceDisplay(account?.balance?.toString() || '0');
     accountLoading.value = false;
 }
 
-function getBalanceDisplay(balance: any) {
-    let strBalance = formatWei(balance, WEI_PRECISION, 4);
-    return $t('pages.tlos_balance', { balance: strBalance });
-}
+
 
 function getAddressNativeExplorerURL() {
     if (!telosAccount.value) {
@@ -314,6 +316,14 @@ function disableConfirmation(){
                     </div>
                 </div>
                 <div class="flex">
+                    <div class="flex account-card">
+                        <AddressOverview :balance="balance" class="account-card__item"/>
+                    </div>
+                    <div class="flex account-card">
+                        <AddressMoreInfo class="account-card__item"/>
+                    </div>
+                </div>
+                <div class="flex">
                     <div>
                         <ConfirmationDialog
                             :flag="confirmationDialog"
@@ -368,17 +378,6 @@ function disableConfirmation(){
                     </div>
                     <div class="metrics">
                         <div class="dataCardsContainer balance">
-                            <div
-                                v-if="balance != '0.0 TLOS'"
-                                class="dataCardItem"
-                            >
-                                <div class="dataCardTile">
-                                    {{ $t('pages.balance') }}
-                                </div>
-                                <div class="dataCardData">
-                                    {{ balance }}
-                                </div>
-                            </div>
                             <div v-if="!!telosAccount" class="dataCardItem">
                                 <div class="dataCardTile">
                                     {{ $t('pages.native_account') }}
@@ -788,6 +787,18 @@ function disableConfirmation(){
     display: inline;
     font-size: 16px;
 }
+
+.account-card{
+    width: 50%;
+    &__item{
+        width:100%;
+        margin:.5rem;
+    }
+}
+
+
+
+
 
 .tabeWrapper {
   max-width: 100vw;
