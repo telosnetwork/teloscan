@@ -1,4 +1,3 @@
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
 import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
@@ -151,11 +150,11 @@ async function parseBlocks() {
         rows.value = blocks;
         loading.value = false;
         rows.value = blocks;
-    } catch (e: any) {
+    } catch (e: unknown) {
         $q.notify({
             type: 'negative',
             message: $t('components.blocks.transaction.load_error'),
-            caption: e.message,
+            caption: (e as {message:string}).message,
         });
         loading.value = false;
     }

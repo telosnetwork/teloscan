@@ -45,6 +45,8 @@ const loadBlockData = async () => {
         }
         const response = await indexerApi.get(`/block/${blockHeight.value}`);
         blockData.value = toRaw(response.data?.results?.[0]) as BlockData;
+        // workaround to avoid using number as property name
+        blockData.value.blockHeight = blockData.value.number;
     } catch (error) {
         console.error('Failed to fetch block data:', error);
         blockData.value = null;

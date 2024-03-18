@@ -1,6 +1,7 @@
 export interface BlockData {
     transactionsCount: number;
     number: string;
+    blockHeight: string; // same as number
     logsBloom: string;
     gasLimit: string;
     gasUsed: string;
