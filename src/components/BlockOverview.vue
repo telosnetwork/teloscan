@@ -96,11 +96,11 @@ watch(() => props.data, (newData) => {
             <div class="c-block-data__row-tooltip">
                 <q-icon class="c-block-data__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.blockoverview.block_height_tooltip') }}
+                        {{ $t('components.blocks.block_height_tooltip') }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.block_height') }}</div>
+            <div class="c-block-data__row-attribute">{{ $t('components.blocks.block_height') }}</div>
         </div>
         <div class="c-block-data__col-val">
             <div class="c-block-data__row-value">{{ blockHeight }}</div>
@@ -119,11 +119,11 @@ watch(() => props.data, (newData) => {
             <div class="c-block-data__row-tooltip">
                 <q-icon class="c-block-data__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.blockoverview.timestamp_tooltip') }}
+                        {{ $t('components.blocks.timestamp_tooltip') }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.timestamp') }}</div>
+            <div class="c-block-data__row-attribute">{{ $t('components.blocks.timestamp') }}</div>
         </div>
         <div class="c-block-data__col-val">
             <div v-if="!loading" class="c-block-data__row-value c-block-data__row-value--timestamp">
@@ -148,22 +148,22 @@ watch(() => props.data, (newData) => {
             <div class="c-block-data__row-tooltip">
                 <q-icon class="c-block-data__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.blockoverview.transactions_tooltip') }}
+                        {{ $t('components.blocks.transactions_tooltip') }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.transactions') }}</div>
+            <div class="c-block-data__row-attribute">{{ $t('components.blocks.transactions') }}</div>
         </div>
         <div class="c-block-data__col-val">
             <div class="c-block-data__row-value">
                 <span class="c-block-data__row-value-link" @click="trxTableClick">
                     {{
                         transactionsCount === 1
-                            ? $t('components.blockoverview.count_transaction')
-                            : $t('components.blockoverview.count_transactions', { count: transactionsCount })
+                            ? $t('components.blocks.count_transaction')
+                            : $t('components.blocks.count_transactions', { count: transactionsCount })
                     }}
                 </span>
-                {{ $t('components.blockoverview.in_this_block') }}
+                {{ $t('components.blocks.in_this_block') }}
             </div>
         </div>
     </div>
@@ -174,11 +174,11 @@ watch(() => props.data, (newData) => {
             <div class="c-block-data__row-tooltip">
                 <q-icon class="c-block-data__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.blockoverview.size_tooltip') }}
+                        {{ $t('components.blocks.size_tooltip') }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.size') }}</div>
+            <div class="c-block-data__row-attribute">{{ $t('components.blocks.size') }}</div>
         </div>
         <div class="c-block-data__col-val">
             <div class="c-block-data__row-value">{{ size }}</div>
@@ -194,11 +194,11 @@ watch(() => props.data, (newData) => {
             <div class="c-block-data__row-tooltip">
                 <q-icon class="c-block-data__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.blockoverview.gas_used_tooltip') }}
+                        {{ $t('components.blocks.gas_used_tooltip') }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.gas_used') }}</div>
+            <div class="c-block-data__row-attribute">{{ $t('components.blocks.gas_used') }}</div>
         </div>
         <div class="c-block-data__col-val">
             <div class="c-block-data__row-value">{{ gasUsed }}</div>
@@ -211,11 +211,11 @@ watch(() => props.data, (newData) => {
             <div class="c-block-data__row-tooltip">
                 <q-icon class="c-block-data__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.blockoverview.gas_limit_tooltip') }}
+                        {{ $t('components.blocks.gas_limit_tooltip') }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.gas_limit') }}</div>
+            <div class="c-block-data__row-attribute">{{ $t('components.blocks.gas_limit') }}</div>
         </div>
         <div class="c-block-data__col-val">
             <div class="c-block-data__row-value">{{ gasLimit }}</div>
@@ -228,11 +228,11 @@ watch(() => props.data, (newData) => {
             <div class="c-block-data__row-tooltip">
                 <q-icon class="c-block-data__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.blockoverview.extra_data_tooltip') }}
+                        {{ $t('components.blocks.extra_data_tooltip') }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.extra_data') }}</div>
+            <div class="c-block-data__row-attribute">{{ $t('components.blocks.extra_data') }}</div>
         </div>
         <div class="c-block-data__col-val">
             <div
@@ -248,11 +248,11 @@ watch(() => props.data, (newData) => {
             <div class="c-block-data__row-tooltip">
                 <q-icon class="c-block-data__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.blockoverview.hash_tooltip') }}
+                        {{ $t('components.blocks.hash_tooltip') }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.hash') }}</div>
+            <div class="c-block-data__row-attribute">{{ $t('components.blocks.hash') }}</div>
         </div>
         <div class="c-block-data__col-val">
             <div class="c-block-data__row-value  c-block-data__row-value--hash">{{ hash }}</div>
@@ -265,11 +265,11 @@ watch(() => props.data, (newData) => {
             <div class="c-block-data__row-tooltip">
                 <q-icon class="c-block-data__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.blockoverview.parent_hash_tooltip') }}
+                        {{ $t('components.blocks.parent_hash_tooltip') }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.parent_hash') }}</div>
+            <div class="c-block-data__row-attribute">{{ $t('components.blocks.parent_hash') }}</div>
         </div>
         <div class="c-block-data__col-val">
             <div
@@ -285,11 +285,11 @@ watch(() => props.data, (newData) => {
             <div class="c-block-data__row-tooltip">
                 <q-icon class="c-block-data__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.blockoverview.transactions_root_tooltip') }}
+                        {{ $t('components.blocks.extra_data_tooltip') }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.transactions_root') }}</div>
+            <div class="c-block-data__row-attribute">{{ $t('components.blocks.extra_data') }}</div>
         </div>
         <div class="c-block-data__col-val">
             <div class="c-block-data__row-value c-block-data__row-value--hash">{{ transactionsRoot }}</div>
@@ -302,11 +302,11 @@ watch(() => props.data, (newData) => {
             <div class="c-block-data__row-tooltip">
                 <q-icon class="c-block-data__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.blockoverview.nonce_tooltip') }}
+                        {{ $t('components.blocks.nonce_tooltip') }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-block-data__row-attribute">{{ $t('components.blockoverview.nonce') }}</div>
+            <div class="c-block-data__row-attribute">{{ $t('components.blocks.nonce') }}</div>
         </div>
         <div class="c-block-data__col-val">
             <div class="c-block-data__row-value">{{ nonce }}</div>
@@ -319,7 +319,6 @@ watch(() => props.data, (newData) => {
 
 <style lang="scss">
 .c-block-data {
-    $grey: #909090;
     padding: 1.25rem!important;
     display: flex;
     flex-direction: column;

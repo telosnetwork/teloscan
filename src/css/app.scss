@@ -1,9 +1,9 @@
-@use 'sass:color';
-
 // this file contains one-time global imports
+@import './global/global-index';
 @import './utilities';
 @import './components/json-viewer';
 @import './components/notification';
+@import './components/q-layout';
 
 
 body {
@@ -18,9 +18,13 @@ body.body--light {
     --text-color: #{$dark};
     --invert-text-color: white;
     --grey-text-color: #{$grey-7};
+    --tab-bg-color: #{$grey-3};
+    --active-tab-bg-color: #{$tab-active-light};
+    --active-tab-text-color: white;
+    
 
     a:hover {
-        color: color.scale($primary, $lightness: -50%);
+        color: $a-hover-light;
     }
 }
 
@@ -29,9 +33,12 @@ body.body--dark {
     --text-color: white;
     --invert-text-color: #{$dark};
     --grey-text-color: #{$grey-5};
+    --tab-bg-color: #{$grey-10};
+    --active-tab-bg-color: #{#{$tab-active-dark}};
+    --active-tab-text-color: white;
 
     a:hover {
-        color: color.scale($primary, $lightness: +30%);
+        color: $a-hover-dark;
     }
 }
 
