@@ -128,6 +128,12 @@ export default {
         input: 'Entrada',
         output: 'Salida',
         value: 'Valor',
+        overview: 'visión general',
+        more_info: 'más información',
+        transaction_sent: 'txn enviado',
+        first: 'primero',
+        last: 'último',
+        contract_creator: 'creador del contrato',
     },
     components: {
         approvals: {

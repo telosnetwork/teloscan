@@ -11,6 +11,7 @@ import { indexerApi } from 'src/boot/telosApi';
 const { t: $t } = useI18n();
 
 const lastTxn = ref('...');
+const firstTxn = ref('...');
 
 const props = defineProps({
     address: {
@@ -21,10 +22,15 @@ const props = defineProps({
 
 onMounted(async () => {
     try{
-        const txnQuery = (await indexerApi.get(`address/${props.address}/transactions?limit=1`) as any).data as any;
-        if (txnQuery.results.length){
-            lastTxn.value = txnQuery.results[0].hash;
+        debugger;
+        const lastTxnQuery = (await indexerApi.get(`address/${props.address}/transactions?limit=1&includePagination=true`) as any).data as any;
+        if (lastTxnQuery.results.length){
+            lastTxn.value = lastTxnQuery.results[0].hash;
         }
+        // use total count to offset query and fetch first transaction
+        const offset = lastTxnQuery.total_count - 1;
+        const firstTxnQuery = (await indexerApi.get(`address/${props.address}/transactions?limit=1&offset=${offset}`) as any).data as any;
+        firstTxn.value = firstTxnQuery.results[0].hash;
     }catch(e){
         console.log(e);
     }
@@ -34,24 +40,30 @@ onMounted(async () => {
 
 <template>
 <div>
-    <q-card>
+    <q-card class="c-more-info">
         <q-card-section>
-            More Info
+            {{ $t('pages.more_info') }}
         </q-card-section>
         <q-card-section>
-            <div> LAST TXN SENT </div>
+            <div>
+                {{ $t('pages.last') }} {{ $t('pages.transaction_sent') }}
+            </div>
             <TransactionField
                 color="primary"
                 :transaction-hash="lastTxn"
                 :truncate="18"
+                class="c-more-info__value"
             />
         </q-card-section>
         <q-card-section>
-            <div> FIRST TXN SENT </div>
+            <div>
+                {{ $t('pages.first') }} {{ $t('pages.transaction_sent') }}
+            </div>
             <TransactionField
                 color="primary"
-                transaction-hash="0x123456789"
+                :transaction-hash="firstTxn"
                 :truncate="18"
+                class="c-more-info__value"
             />
         </q-card-section>
     </q-card>
@@ -59,4 +71,10 @@ onMounted(async () => {
 </template>
 
 <style lang="scss">
+.c-more-info{
+    text-transform: uppercase;
+    &__value{
+        font-size: 18px;
+    }
+}
 </style>

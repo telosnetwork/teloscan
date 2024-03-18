@@ -131,6 +131,12 @@ export default {
         input: 'Input',
         output: 'Output',
         value: 'Value',
+        overview: 'overview',
+        more_info: 'more info',
+        transaction_sent: 'txn sent',
+        first: 'first',
+        last: 'last',
+        contract_creator: 'contract creator',
     },
     components: {
         gas_limit_tooltip: 'The maximum amount of gas that can be spent on this transaction',

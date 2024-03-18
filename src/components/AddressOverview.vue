@@ -35,28 +35,35 @@ onMounted(() => {
 
 <template>
 <div>
-    <q-card>
+    <q-card class="c-overview">
         <q-card-section>
-            Overview
+            {{ $t('pages.overview') }}
         </q-card-section>
         <q-card-section>
             <div> TLOS {{ $t('pages.balance') }} </div>
             <div class="c-overview__balance">
-                <img :src="TLOS_LOGO" alt="TLOS" height="16">
+                <img :src="TLOS_LOGO" alt="TLOS" height="22">
                 {{ getBalanceDisplay(tokenQty) }}
             </div>
         </q-card-section>
         <q-card-section>
-            <div> TLOS VALUE </div>
-            <div> {{ prettyPrintFiatBalance(fiatValue, 'us', false) }} (@ ${{ fiatPrice }}/TLOS)</div>
+            <div>
+                TLOS {{ $t('pages.value') }}
+            </div>
+            <div class="c-overview__balance"> {{ prettyPrintFiatBalance(fiatValue, 'us', false) }} (@ ${{ fiatPrice }}/TLOS)</div>
         </q-card-section>
     </q-card>
 </div>
 </template>
 
 <style lang="scss">
-.c-overview__balance{
-    display: flex;
+.c-overview{
+    text-transform: uppercase;
+
+    &__balance{
+        display: flex;
+        font-size: 18px;
+    }
     img{
         margin-top: 2px;
         margin-right: 2px;

@@ -132,6 +132,12 @@ export default {
         input: 'Entrée',
         output: 'Sortie',
         value: 'Valeur',
+        overview: 'aperçu',
+        more_info: 'plus d\'info',
+        transaction_sent: 'txn envoyé',
+        first: 'premier',
+        last: 'dernier',
+        contract_creator: 'créateur de contrat',
     },
     components: {
         known_tokens: 'Jetons connus',
