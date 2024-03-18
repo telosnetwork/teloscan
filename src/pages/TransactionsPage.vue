@@ -30,10 +30,10 @@ watch(() => $route.query.a,
 </script>
 
 <template>
-<q-page class="c-transaction">
+<q-page class="c-transactions">
 
-    <div class="c-transaction__header">
-        <span class="c-transaction__header-title">{{ $t('pages.transactions.transactions') }}</span>
+    <div class="c-transactions__header">
+        <span class="c-transactions__header-title">{{ $t('pages.transactions.transactions') }}</span>
         <div v-if="block">
             {{ $t('pages.transactions.for_block') }}
             <BlockField :block="block"/>
@@ -46,7 +46,7 @@ watch(() => $route.query.a,
     </div>
 
     <div class="row">
-        <div class="c-transaction__body">
+        <div class="c-transactions__body">
             <TransactionTable :block="block || undefined" :account-address="address" />
         </div>
     </div>
@@ -54,7 +54,7 @@ watch(() => $route.query.a,
 </template>
 
 <style lang="scss">
-.c-transaction {
+.c-transactions {
     @include page-container;
 
     &__header {
