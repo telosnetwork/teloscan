@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import DateField from 'components/DateField.vue';
-import { BlockData } from 'src/types';
+import { useI18n } from 'vue-i18n';
 import { ethers } from 'ethers';
+
+import type { BlockData } from 'src/types';
+
+import DateField from 'components/DateField.vue';
+
+const locale = useI18n().locale.value;
 
 const props = defineProps({
     data: {
         type: Object as () => BlockData | null,
-        required: true,
+        required: false,
     },
 });
 
@@ -23,7 +28,7 @@ const transactionsCount = computed(() => blockData.value ? blockData.value.trans
 const size = computed(() => {
     if (blockData.value) {
         const size = ethers.BigNumber.from(blockData.value.size).toNumber();
-        return `${size.toLocaleString()} bytes`;
+        return `${size.toLocaleString(locale)} bytes`;
     }
     return '0';
 });
@@ -31,7 +36,7 @@ const gasUsed = computed(() => {
     if (blockData.value) {
         const gas = ethers.BigNumber.from(blockData.value.gasUsed);
         try {
-            return gas.toNumber().toLocaleString();
+            return gas.toNumber().toLocaleString(locale);
         } catch (e) {
             console.error(e);
             return gas.toString();
@@ -43,7 +48,7 @@ const gasLimit = computed(() => {
     if (blockData.value) {
         const gas = ethers.BigNumber.from(blockData.value.gasLimit);
         try {
-            return gas.toNumber().toLocaleString();
+            return gas.toNumber().toLocaleString(locale);
         } catch (e) {
             console.error(e);
             return gas.toString();
@@ -72,7 +77,7 @@ const nextBlock = () => {
 };
 
 watch(() => props.data, (newData) => {
-    blockData.value = newData;
+    blockData.value = newData ?? null;
     const newNumber = Number(newData?.number);
     if (!isNaN(newNumber)) {
         blockHeight.value = newNumber;
@@ -83,7 +88,7 @@ watch(() => props.data, (newData) => {
 
 
 <template>
-<q-card class="c-block-data__card-section">
+<q-card class="c-block-data">
 
     <!-- Block Number -->
     <div class="c-block-data__row">
@@ -132,7 +137,6 @@ watch(() => props.data, (newData) => {
                     class="c-block-data__row-value-clock-time"
                     :epoch="Math.round(timestamp / 1000)"
                     :force-show-age="false"
-                    :utc-use-parentheses="false"
                 />)</span>
             </div>
         </div>
@@ -316,12 +320,10 @@ watch(() => props.data, (newData) => {
 <style lang="scss">
 .c-block-data {
     $grey: #909090;
-    &__card-section {
-        padding: 1.25rem!important;
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 16px;
-    }
+    padding: 1.25rem!important;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
     &__row, &__col-att, &__col-val {
         display: flex;
         flex-direction: row;
@@ -340,7 +342,7 @@ watch(() => props.data, (newData) => {
     &__row-attribute {
         font-weight: 500;
         max-width: 230px;
-        min-width: 160px;
+        min-width: 200px;
         width: 15vw;
         text-wrap: nowrap;
     }

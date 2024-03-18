@@ -20,6 +20,7 @@ import OutlineButton from 'components/OutlineButton.vue';
 const $router = useRouter();
 const $store = useStore();
 const $i18n = useI18n();
+const locale = $i18n.locale.value;
 const $q = useQuasar();
 
 const showLoginModal = ref(false);
@@ -58,7 +59,12 @@ const prettySystemTokenBalanceFiat = computed(() => {
     }
     const price = Number($store.getters['chain/tlosPrice']);
     const userBalance = Number(formatUnits(userSystemTokenBalanceWei.value, WEI_PRECISION));
-    return (price * userBalance).toFixed(2);
+    return (price * userBalance).toLocaleString(locale, {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
 });
 
 watchEffect(() => {
@@ -98,9 +104,10 @@ function copyAddress() {
 
 async function fetchUserBalance() {
     const response = await indexerApi.get(
-        `/account/${address.value}/balances?contract=___NATIVE_CURRENCY___&includeAbi=true`,
+        `/account/${address.value}/balances`,
     );
-    userSystemTokenBalanceWei.value = response.data?.results?.[0]?.balance ?? '0';
+    const tlos = response.data?.results?.find(({ contract }: { contract: string }) => contract === '___NATIVE_CURRENCY___');
+    userSystemTokenBalanceWei.value = tlos?.balance ?? '0';
 }
 </script>
 
@@ -184,7 +191,7 @@ async function fetchUserBalance() {
                         </span>
                         &nbsp;
                         <span v-if="prettySystemTokenBalanceFiat" class="text-caption">
-                            ${{ prettySystemTokenBalanceFiat }}
+                            {{ prettySystemTokenBalanceFiat }}
                         </span>
                     </div>
                 </q-item>

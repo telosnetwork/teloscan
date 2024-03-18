@@ -45,7 +45,7 @@ const developersSubmenuItems = [
     },
 ];
 
-const telosWalletMenuItem = {
+const telos_walletMenuItem = {
     url: 'https://wallet.telos.net/',
     label: $t('components.header.telos_wallet'),
 };
@@ -173,7 +173,7 @@ function goTo(to: string | { name: string }) {
             id="app-header-blockchain-submenu-ul"
             :class="{
                 'c-header-links__submenu-ul': true,
-                'shadow-4': $q.screen.gt.md,
+                'shadow-4': $q.screen.gt.sm,
             }"
         >
             <li
@@ -215,7 +215,7 @@ function goTo(to: string | { name: string }) {
             id="app-header-developers-submenu-ul"
             :class="{
                 'c-header-links__submenu-ul': true,
-                'shadow-4': $q.screen.gt.md,
+                'shadow-4': $q.screen.gt.sm,
             }"
         >
             <li
@@ -239,10 +239,10 @@ function goTo(to: string | { name: string }) {
         class="c-header-links__menu-li"
         tabindex="0"
         role="link"
-        @click="goTo(telosWalletMenuItem.url)"
-        @keydown.enter="goTo(telosWalletMenuItem.url)"
+        @click="goTo(telos_walletMenuItem.url)"
+        @keydown.enter="goTo(telos_walletMenuItem.url)"
     >
-        {{ telosWalletMenuItem.label }}
+        {{ telos_walletMenuItem.label }}
     </li>
 
     <li
@@ -268,7 +268,7 @@ function goTo(to: string | { name: string }) {
             id="app-header-more-submenu-ul"
             :class="{
                 'c-header-links__submenu-ul c-header-links__submenu-ul--rightmost': true,
-                'shadow-4': $q.screen.gt.md,
+                'shadow-4': $q.screen.gt.sm,
             }"
         >
             <li
@@ -340,7 +340,7 @@ function goTo(to: string | { name: string }) {
             id="app-header-network-submenu-ul"
             :class="{
                 'c-header-links__submenu-ul': true,
-                'shadow-4': $q.screen.gt.md,
+                'shadow-4': $q.screen.gt.sm,
             }"
         >
             <li
@@ -384,7 +384,15 @@ function goTo(to: string | { name: string }) {
             @click="toggleDarkMode"
         >
             <q-icon
-                :name="`far fa-${$q.dark.isActive ? 'moon' : 'sun'}`"
+                v-if="$q.dark.isActive"
+                name="light_mode"
+                size="16px"
+                color="primary"
+                class="q-mr-sm"
+            />
+            <q-icon
+                v-else
+                name="far fa-moon"
                 size="14px"
                 color="primary"
                 class="q-mr-sm"

@@ -1,135 +1,140 @@
-<script>
+<script setup lang="ts">
+import { computed, ref, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { ZERO_ADDRESSES } from 'src/lib/utils';
 
-export default {
-    name: 'MethodField',
-    props: {
-        trx: {
-            type: Object,
-            required: true,
-        },
-        contract: {
-            type: Object,
-            default: null,
-        },
-        shortenSignature: {
-            type: Boolean,
-            default: false,
-        },
-        shortenName: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    data() {
-        return {
-            expand: false,
-            name: '',
-            fullName: '',
-            icon: false,
-            iconTooltip: false,
-        };
-    },
-    async mounted() {
-        await this.setValues();
-    },
-    methods: {
-        toggle(){
-            this.expand = !this.expand;
-        },
-        async setValues() {
-            if (
-                !this.trx.parsedTransaction
-                && this.trx.from === ZERO_ADDRESSES
-                && this.trx.value > 0
-                && parseInt(this.trx.gasPrice) === 0
-            ){
-                this.icon = 'keyboard_double_arrow_down';
-                this.iconTooltip = this.$t('components.transaction.native_deposit');
-                this.fullName = 'deposit';
-            } else if(
-                !this.trx.parsedTransaction
-                && this.trx.to === ZERO_ADDRESSES
-                && this.trx.value > 0
-                && parseInt(this.trx.gasPrice) === 0
-            ) {
-                this.icon = 'keyboard_double_arrow_up';
-                this.iconTooltip = this.$t('components.transaction.native_withdraw');
-                this.fullName = 'withdraw';
-            } else if (!this.trx.parsedTransaction && this.trx.input === '0x' && this.trx.value > 0) {
-                this.fullName = this.$t('components.transaction.tlos_transfer');
-            } else if (!this.trx.parsedTransaction && this.trx.to === null && this.trx.data !== null) {
-                this.fullName = this.$t('components.transaction.contract_deployment');
-            } else if (this.trx.parsedTransaction) {
-                this.fullName = this.trx.parsedTransaction.name;
-            }
+const { t: $t } = useI18n();
 
-            this.name = (this.shortenName && this.fullName.length > 11)
-                ? `${this.fullName.slice(0, 8)}...`
-                : this.fullName
-            ;
-        },
+const props = defineProps({
+    highlightMethod: {
+        type: String,
+        required: false,
+        default: '',
     },
+    trx: {
+        type: Object as () => {
+            parsedTransaction?: {
+                name: string;
+            };
+            from?: string;
+            value?: string;
+            gasPrice?: string;
+            to?: string | null;
+            input?: string;
+            hash?: string;
+        },
+        required: true,
+    },
+    fullText: {
+        type: Boolean,
+        default: false,
+    },
+    contract: {
+        type: Object,
+        default: () => null,
+    },
+});
+
+const emit = defineEmits(['highlight']);
+
+const methodName = ref('');
+const nativeTooltipText = ref('');
+
+const methodSignature = computed(() => {
+    if (props.trx.input && props.trx.input !== '0x') {
+        // the first 10 characters of the input data are the method signature, including leading '0x'
+        return props.trx.input.slice(0, 10);
+    }
+
+    return '';
+});
+const displayText = computed(() => {
+    if (methodName.value) {
+        return methodName.value;
+    }
+
+    if (props.trx.input && props.trx.input !== '0x') {
+        return methodSignature.value;
+    }
+
+    return '';
+});
+const propValue = computed(() => +(props.trx.value || '0x0'));
+
+onMounted(async () => {
+    await setValues();
+});
+
+const setValues = async () => {
+    if (
+        !props.trx.parsedTransaction
+        && props.trx.from === ZERO_ADDRESSES
+        && propValue.value
+        && parseInt(props.trx.gasPrice as string) === 0
+    ) {
+        nativeTooltipText.value = $t('pages.transactions.native_deposit_tooltip');
+        methodName.value = $t('pages.transactions.deposit_action_name');
+    } else if (
+        !props.trx.parsedTransaction
+        && props.trx.to === ZERO_ADDRESSES
+        && propValue.value
+        && parseInt(props.trx.gasPrice as string) === 0
+    ) {
+        nativeTooltipText.value = $t('pages.transactions.native_withdraw_tooltip');
+        methodName.value = $t('pages.transactions.withdraw_action_name');
+    } else if (!props.trx.parsedTransaction && props.trx.input === '0x' && propValue.value) {
+        methodName.value = $t('pages.transactions.transfer_tlos_action_name');
+    } else if (!props.trx.parsedTransaction && props.trx.to === null) {
+        methodName.value = $t('pages.transactions.contract_deployment');
+    } else if (props.trx.parsedTransaction) {
+        methodName.value = props.trx.parsedTransaction.name;
+    }
 };
+
+function emitHighlight(val: string) {
+    emit('highlight', val);
+}
 </script>
 
 <template>
-<div>
-    <span v-if="name">
-        <span class="flex items-center">
-            <span v-if="icon" class="c-method-icon">
-                <q-icon :name="icon" />
-                <q-tooltip v-if="iconTooltip">
-                    {{ iconTooltip }}
-                </q-tooltip>
-            </span>
-            <span>
-                {{ name }}
-            </span>
-        </span>
-        <q-tooltip v-if="shortenName && fullName.length > 11" anchor="center middle" self="center middle">
-            {{ fullName }}
-        </q-tooltip>
-    </span>
-    <span v-else-if="trx.input !== '0x'" :class="shortenSignature && 'clickable'">
-        <span v-if="!expand" class="text-grey" v-on:click="shortenSignature && toggle()">
-            {{trx.input.length > 10 && (shortenSignature || shortenName) ? `${trx.input.slice(0,10)}` : trx.input}}
-        </span>
-        <q-tooltip v-if="shortenSignature && !expand">
-            {{ $t('components.click_to_expand') }}
-        </q-tooltip>
-        <span
-            v-if="shortenSignature && expand"
-            class="word-break"
-            anchor="center middle"
-            self="center middle"
-            v-on:click="toggle()"
-        >
-            {{ trx.input }}
-        </span>
-    </span>
+<div
+    :class="{
+        'c-method': true,
+        'c-method--highlight': [methodName, methodSignature].includes(highlightMethod) && highlightMethod !== '',
+        'c-method--full-text': fullText,
+    }"
+    @mouseenter="emitHighlight(methodName || methodSignature)"
+    @mouseleave="emitHighlight('')"
+>
+    {{ displayText }}
+
+    <q-tooltip>
+        {{ nativeTooltipText || methodName || displayText }}
+    </q-tooltip>
 </div>
 </template>
 
-<style lang="scss" scoped>
-    .c-method-icon i {
-        margin: auto;
+<style lang="scss">
+.c-method {
+    width: 80px;
+    height: 24px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 3px 4px 0;
+    text-align: center;
+    border-radius: 5px;
+    font-size: 0.9em;
+    border: 1px solid var(--border-color);
+
+    &--highlight {
+        background: rgba($secondary, 0.2);
+        border: 1px dashed $secondary;
     }
-    .c-method-icon {
-        background: var(--q-primary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 4px;
-        width: 16px;
-        line-height: 16px;
-        height: 16px;
-        text-align: center;
-        border-radius: 100%;
-        color: white;
-        .q-icon {
-            margin-top: 2px;
-        }
+
+    &--full-text {
+        width: auto;
     }
+}
 </style>

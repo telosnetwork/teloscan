@@ -4,20 +4,21 @@ import {
     onBeforeMount,
     onBeforeUnmount,
     onMounted,
-    ref,
 } from 'vue';
 import { useQuasar } from 'quasar';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { formatUnits } from 'ethers/lib/utils';
+import { useRoute } from 'vue-router';
 
 import { useChainStore } from 'src/antelope';
 import { IS_MAINNET, IS_TESTNET } from 'src/lib/chain-utils';
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import OutlineButton from 'components/OutlineButton.vue';
-import AppHeaderSearch from 'components/header/AppHeaderSearch.vue';
+import AppSearch from 'components/AppSearch.vue';
 
+const $route = useRoute();
 const $q = useQuasar();
 const $store = useStore();
 const $i18n = useI18n();
@@ -25,9 +26,10 @@ const $t = $i18n.t;
 const chainStore = useChainStore();
 
 
-const pricesInterval = ref<ReturnType<typeof setInterval> | null>(null);
+let pricesInterval: ReturnType<typeof setInterval> | null = null;
 
 const locale = computed(() => $i18n.locale.value);
+const hideSearchBar = computed(() => $route.name ==='home');
 const systemTokenSymbol = computed(() => chainStore.currentChain.settings.getSystemToken().symbol);
 const gasPriceInGwei = computed(() => {
     if (IS_TESTNET) {
@@ -65,15 +67,15 @@ onBeforeMount(() => {
 });
 
 onMounted(async () => {
-    pricesInterval.value = setInterval(() => {
+    pricesInterval = setInterval(() => {
         fetchTlosPrice();
         fetchGasPrice();
     }, 6000);
 });
 
 onBeforeUnmount(() => {
-    if (pricesInterval.value) {
-        clearInterval(pricesInterval.value);
+    if (pricesInterval) {
+        clearInterval(pricesInterval);
     }
 });
 
@@ -119,7 +121,7 @@ function goToTeloscanTestnet() {
         </div>
 
         <div class="c-header-top-bar__right-container">
-            <AppHeaderSearch />
+            <AppSearch v-if="!hideSearchBar" />
 
             <OutlineButton
                 text-color="primary"
@@ -127,7 +129,8 @@ function goToTeloscanTestnet() {
                 class="c-header-top-bar__theme-toggle"
                 @click="toggleDarkMode"
             >
-                <q-icon :name="`far fa-${$q.dark.isActive ? 'moon' : 'sun'}`" size="14px" />
+                <q-icon v-if="$q.dark.isActive" name="light_mode" size="16px" />
+                <q-icon v-else name="far fa-moon" size="14px" />
 
                 <q-tooltip>
                     {{ $t(`components.header.switch_to_${$q.dark.isActive ? 'light' : 'dark'}_theme`) }}

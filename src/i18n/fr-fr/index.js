@@ -1,14 +1,51 @@
-/* eslint-disable max-len*/
-
 export default {
     locale: {
         current_language_name: 'Français',
     },
     pages: {
+        blocklist: {
+            title: 'Liste des Blocs',
+        },
         blockpage: {
             block: 'Bloc',
             overview: 'Vue d\'ensemble',
             transactions: 'Transactions',
+        },
+        transactions: {
+            contract_deployment: 'Déploiement de contrat',
+            deposit_action_name: 'dépôt',
+            deposit_native: 'dépôt (native)',
+            five_hundred_k_disclaimer: 'Affichage des derniers 500K enregistrements de { total }',
+            for_block: 'pour le bloc',
+            for: 'pour',
+            gas_info_label: 'Infos sur le gaz',
+            native_deposit_tooltip: 'Dépôt depuis le Telos natif',
+            native_withdraw_tooltip: 'Retrait vers le Telos natif',
+            nonce_label: 'Nonce',
+            see_more_details: 'Voir plus de détails',
+            see_tx_preview_tooltip: 'Voir un aperçu des détails de la transaction',
+            status_label: 'Statut',
+            to: 'à',
+            transaction_action_label: 'Action de transaction',
+            transaction_fee_label: 'Frais de transaction',
+            transactions: 'Transactions',
+            transfer_for_x_tlos_from: 'Transfert de { amount } TLOS depuis',
+            transfer_tlos_action_name: 'Transférer TLOS',
+            withdraw_action_name: 'retrait',
+            withdraw_native: 'retrait (natif)',
+            x_gas_used_of_y_limit: '{ amount } gaz utilisé sur une limite de { limit }',
+        },
+        transaction: {
+            page_title: 'Détails de la transaction',
+            overview: 'Aperçu',
+            logs: 'Journaux',
+            internal: 'Transactions internes',
+        },
+        home: {
+            telos_evm_explorer: 'L\'explorateur Telos EVM',
+            market_cap: 'Capitalisation boursière',
+            last_finalized_block: 'Dernier bloc finalisé',
+            total_transactions: 'Nombre total de transactions',
         },
         issuer: 'Émetteur',
         account_not_found: 'Nous n\'avons pas pu trouver ce compte',
@@ -48,7 +85,6 @@ export default {
         verify_contract: 'Verifier le contrat',
         reset: 'Réinitialiser',
         gas_used: 'Gaz utilisé',
-        transactions: 'Transactions',
         account: 'Compte',
         contract: 'Contrat',
         transfers_title: 'Transferts { type }:',
@@ -460,10 +496,5 @@ export default {
             error_unpredictable_gas_limit: 'Impossible d\'estimer la limite de gaz pour cette transaction',
             error_transaction_canceled: 'Vous avez annulé l\'action',
         },
-    },
-    temporal: {
-        telos_cloud_discontinued_title: 'Importante',
-        telos_cloud_discontinued_message_title: 'Attention aux utilisateurs : L\'option de compte Telos Cloud Wallet sera supprimée.',
-        telos_cloud_discontinued_message_body: 'L\'option du compte Telos Cloud Wallet (ORE ID via Google) pour se connecter et signer des transactions sera supprimée après le 31 décembre. Si vous utilisez le Telos Cloud Wallet pour accéder à votre compte, veuillez transférer vos actifs vers un autre portefeuille avant cette date. <strong>Ce changement n\'affecte pas les utilisateurs qui accèdent à leurs comptes via Metamask, WalletConnect, Anchor ou d\'autres méthodes de connexion.</strong>',
     },
 };

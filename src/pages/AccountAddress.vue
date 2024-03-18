@@ -519,7 +519,7 @@ export default {
                 :to="{ hash: '#transactions' }"
                 exact
                 replace
-                :label="$t('pages.transactions')"
+                :label="$t('pages.transactions.transactions')"
                 @click.stop="this.toggleMenus(false)"
             />
             <q-route-tab
@@ -700,8 +700,7 @@ export default {
                     <TransactionTable
                         v-if="accountAddress"
                         :title="accountAddress"
-                        :filter="'/address/' + accountAddress"
-                        :address="accountAddress"
+                        :account-address="accountAddress"
                     />
                 </q-tab-panel>
                 <q-tab-panel
@@ -871,7 +870,6 @@ body.ios .q-hoverable:active .q-focus-helper
     display: block
     height: 100%
     padding: 16px 0px
-.tabs-header .q-btn.active
 
 .tabs-header .q-btn
   background: transparent !important

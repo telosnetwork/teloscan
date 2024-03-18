@@ -18,6 +18,7 @@ export const ALLOWED_VIDEO_EXTENSIONS = [
 import keccak from 'keccak';
 
 export const WEI_PRECISION = 18;
+export const GAS_PRECISION = 9;
 export const DISPLAY_DECIMALS = 4;
 export const LOGIN_EVM = 'evm';
 export const LOGIN_NATIVE = 'native';

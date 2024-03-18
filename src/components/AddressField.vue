@@ -1,127 +1,133 @@
-<script>
-import CopyButton from 'components/CopyButton';
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+<script setup lang="ts">
+import { ref, watch, onMounted } from 'vue';
+
+import { contractManager } from 'src/boot/telosApi';
 import { getIcon } from 'src/lib/token-utils';
 import { toChecksumAddress } from 'src/lib/utils';
 
-export default {
-    name: 'AddressField',
-    components: {
-        CopyButton,
-    },
-    props: {
-        address: {
-            type: String,
-            required: true,
-        },
-        class: {
-            type: String,
-            default: '',
-        },
-        name: {
-            type: String,
-            default: '',
-        },
-        copy: {
-            type: Boolean,
-            default: false,
-        },
-        highlight: {
-            type: Boolean,
-            default: false,
-        },
-        truncate: {
-            type: Number,
-            default: 0,
-        },
-        isContractTrx: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    data: () => ({
-        contract: null,
-        logo: null,
-        tokenList: null,
-        displayName: null,
-        fullName: null,
-    }),
-    watch: {
-        address () {
-            this.loadContract();
-        },
-    },
-    async mounted() {
-        this.fullName = toChecksumAddress(this.address);
-        this.tokenList = await this.$contractManager.getTokenList();
-        await this.loadContract();
-        await this.getDisplay();
-    },
-    methods: {
-        getIcon,
-        truncateText(text, middle){
-            if(this.truncate === 0 || text.length <= this.truncate){
-                return text;
-            }
-            if(middle){
-                return `${text.slice(0, (this.truncate / 2))}...${
-                    text.slice(text.length - (this.truncate / 2), text.length)
-                }`;
-            }
-            return `${text.slice(0, this.truncate)}...`;
-        },
-        async getDisplay() {
-            if (this.name) {
-                this.displayName = this.truncateText(this.name);
-                return;
-            }
-            if(!this.address){
-                return;
-            }
-            let address = toChecksumAddress(this.address);
-            if (this.contract && this.contract.getName() && this.contract.getName().length > 0) {
-                if(this.tokenList?.tokens){
-                    this.tokenList.tokens.forEach((token) => {
-                        if(token.address.toLowerCase() === this.contract.address.toLowerCase()){
-                            this.logo = (token.logoURI);
-                        }
-                    });
-                }
-                this.logo = (this.logo === null && this.contract.getSupportedInterfaces().includes('erc20'))
-                    ? ''
-                    : this.logo
-                ;
-                const name = (this.contract.isToken() && this.contract.getProperties()?.symbol)
-                    ? this.contract.getProperties().symbol
-                    : this.contract.getName()
-                ;
-                if(!name.startsWith('0x')){
-                    this.displayName = this.truncateText(name);
-                    return;
-                }
-            }
-            // This formats the address for us and handles zero padding we get from log events
-            this.displayName = this.truncateText(address, true);
-        },
-        async loadContract() {
-            let contract = await this.$contractManager.getContract(this.address, true);
-            if (contract) {
-                this.fullName = (contract.getName() && contract.getName().startsWith('0x') === false)
-                    ? contract.getName()
-                    : this.fullName
-                ;
-                this.contract = contract;
-            }
-        },
+import CopyButton from 'components/CopyButton.vue';
 
+const props = defineProps({
+    highlightAddress: {
+        type: String,
+        required: false,
+        default: '',
     },
+    address: {
+        type: String,
+        required: true,
+    },
+    class: {
+        type: String,
+        default: '',
+    },
+    name: {
+        type: String,
+        default: '',
+    },
+    copy: {
+        type: Boolean,
+        default: false,
+    },
+    truncate: {
+        type: Number,
+        default: 0,
+    },
+});
+
+const emit = defineEmits(['highlight']);
+
+const displayName = ref('');
+const fullName = ref(toChecksumAddress(props.address));
+const contract = ref<any>(null);
+const logo = ref<any>(null);
+const tokenList = ref<any>(null);
+
+watch(() => props.address, async () => {
+    await loadContract();
+});
+
+onMounted(async () => {
+    tokenList.value = await contractManager.getTokenList();
+    await loadContract();
+    await getDisplay();
+});
+
+const truncateText = (text: string, middle?: boolean) => {
+    if (props.truncate === 0 || text.length <= props.truncate) {
+        return text;
+    }
+    if (middle) {
+        // eslint-disable-next-line max-len
+        return `${text.slice(0, (props.truncate / 2))}...${text.slice(text.length - (props.truncate / 2), text.length)}`;
+    }
+    return `${text.slice(0, props.truncate)}...`;
 };
+
+const getDisplay = async () => {
+    if (props.name) {
+        displayName.value = truncateText(props.name);
+        return;
+    }
+    if (!props.address) {
+        return;
+    }
+    let address = toChecksumAddress(props.address);
+    if (contract.value && contract.value.getName() && contract.value.getName().length > 0) {
+        if(tokenList.value?.tokens){
+            tokenList.value.tokens.forEach((token: any) => {
+                if(token.address.toLowerCase() === contract.value.address.toLowerCase()){
+                    logo.value = (token.logoURI);
+                }
+            });
+        }
+        logo.value = (logo.value === null && contract.value.getSupportedInterfaces().includes('erc20'))
+            ? ''
+            : logo.value
+        ;
+        const name = (contract.value.isToken() && contract.value.getProperties()?.symbol)
+            ? contract.value.getProperties().symbol
+            : contract.value.getName()
+                ;
+        if(!name.startsWith('0x')){
+            displayName.value = truncateText(name);
+            return;
+        }
+    }
+    // This formats the address for us and handles zero padding we get from log events
+    displayName.value = truncateText(address, true);
+};
+
+const loadContract = async () => {
+    let contractObj = await contractManager.getContract(props.address, true);
+    if (contractObj) {
+        fullName.value = (contractObj.getName() && !contractObj.getName().startsWith('0x'))
+            ? contractObj.getName()
+            : fullName.value;
+        contract.value = contractObj;
+    }
+};
+
+function emitHighlight(val: string) {
+    emit('highlight', val);
+}
+
 </script>
 
 <template>
-<div :key="displayName + address" :class="`c-address-field ${this.class}`">
+<div
+    :key="displayName + address"
+    class='c-address-field'
+    @mouseover="emitHighlight(address)"
+    @mouseleave="emitHighlight('')"
+>
     <router-link
         :to="`/address/${address}`"
-        :class="highlight ? 'highlighted flex items-center' : 'flex items-center'"
+        :class="{
+            'c-address-field__link': true,
+            'c-address-field__link--highlight': highlightAddress === props.address && highlightAddress !== ''
+        }"
     >
         <q-img
             v-if="logo !== null"
@@ -130,33 +136,48 @@ export default {
             width="16px"
             height="auto"
         />
-        <span>{{ displayName }}</span>
+        <q-icon v-else-if="contract && contract.getName()" name="far fa-file" />
+        <span class="c-address-field__text">{{ displayName }}</span>
         <q-tooltip v-if="fullName !== displayName">{{ fullName }}</q-tooltip>
     </router-link>
     <CopyButton v-if="copy && address" :text="address" description="address"/>
 </div>
 </template>
 
-<style lang="scss" scoped>
-.c-address-field .q-icon {
-    margin-right: 3px;
-}
-.c-address-field .q-img {
-    border-radius: 100%;
-}
-.c-address-field a {
-    vertical-align: middle;
-}
+<style lang="scss">
 .c-address-field {
+    min-width: 140px;
     display: inline-flex;
-
     align-items: center;
     gap: 4px;
-}
-a.highlighted {
-    color: #bb9200;
-}
-body.body--dark a.highlighted {
-    color: $warning;
+
+    &__link {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        position: relative;
+
+        &--highlight {
+            background: rgba($secondary, 0.2);
+            outline: 1px dashed $secondary;
+            border-radius: 5px;
+        }
+    }
+
+    &__text {
+        word-break: break-word;
+    }
+
+    .q-icon {
+        margin-right: 3px;
+    }
+
+    .q-img {
+        border-radius: 100%;
+    }
+
+    a {
+        vertical-align: middle;
+    }
 }
 </style>
