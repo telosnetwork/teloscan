@@ -12,7 +12,7 @@ const { t: $t } = useI18n();
         <span class="c-blocks__header-title">{{ $t('pages.blocklist.title') }}</span>
     </div>
 
-    <div class="row c-blocks__table">
+    <div class="c-blocks__body">
         <q-card>
             <BlockTable class="c-blocks__block-table" :title="'Block List'"/>
         </q-card>
@@ -36,15 +36,8 @@ const { t: $t } = useI18n();
         @include tabs-container;
     }
 
-    &__table {
-        max-width: 100vw;
-        flex-direction: column;
-    }
-
-    @media screen and (max-width: 600px) {
-        &__table {
-            margin: 0;
-        }
+    &__body {
+        @include page-body;
     }
 }
 
