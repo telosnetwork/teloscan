@@ -112,7 +112,6 @@ const { t: $t } = useI18n();
     &__table {
         max-width: 100vw;
         flex-direction: column;
-        margin: 20px;
     }
 
     @media screen and (max-width: 600px) {

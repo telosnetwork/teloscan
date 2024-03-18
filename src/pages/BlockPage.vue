@@ -8,7 +8,6 @@ import TransactionTable from 'components/TransactionTable.vue';
 import BlockOverview from 'components/BlockOverview.vue';
 import { BlockData } from 'src/types';
 
-
 const router = useRouter();
 const route = useRoute();
 const { t: $t } = useI18n();
@@ -82,7 +81,7 @@ onMounted(() => {
 </script>
 
 <template>
-<div class="c-block">
+<q-page class="c-block">
     <div class="c-block__header">
         <span class="c-block__header-title">{{ $t('pages.blockpage.block') }}</span>
         <span class="c-block__header-block-num">#{{ block }}</span>
@@ -90,8 +89,11 @@ onMounted(() => {
 
     <q-tabs
         v-model="tab"
-        class="c-block__tabs-tabs text-blue shadow-2"
-        align="left"
+        dense
+        active-class="c-block__tabs-tab--active"
+        content-class="c-block__tabs-content"
+        indicator-color="transparent"
+        class="c-block__tabs"
     >
         <q-tab class="c-block__tabs-tab" name="overview" :label="$t('pages.blockpage.overview')" />
         <q-tab
@@ -121,35 +123,23 @@ onMounted(() => {
         </div>
     </div>
 
-</div>
+</q-page>
 </template>
-
 <style lang="scss">
+
 .c-block {
-    --bs-gutter-x: 1.5rem;
-    --bs-gutter-y: 0;
-    padding-top: 35px;
-    padding-right: calc(var(--bs-gutter-x) * .5);
-    padding-left: calc(var(--bs-gutter-x) * .5);
-    margin-right: auto;
-    margin-left: auto;
-    width: 90%;
-    max-width: 1200px;
+    @include page-container;
+
     &__header {
-        display: flex;
-        justify-content: left;
-        gap: 10px;
-        align-items: baseline;
-        margin-bottom: 1.5rem;
-        vertical-align: text-bottom;
-        &-title {
-            font-size: 1.4rem;
-            font-weight: bold;
+        @include page-header;
+        &-block-num {
+            font-size: 1.5rem;
+            margin-left: 10px;
         }
     }
 
-    &__tabs-tabs {
-        display: inline-flex;
+    &__tabs {
+        @include tabs-container;
     }
 
     &__main-container {
@@ -165,5 +155,6 @@ onMounted(() => {
         padding: 0px;
     }
 }
+
 </style>
 
