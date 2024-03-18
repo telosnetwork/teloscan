@@ -35,10 +35,6 @@ export function formatWei(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);
     const formatted = ethers.utils.formatUnits(amount.toString(), (tokenDecimals || WEI_PRECISION));
     let str = formatted.toString();
-    // Use string, do not convert to number so we never loose precision
-
-
-    // tenemos que agregar una cantidad de ceros igual a displayDecimals
     str = str.padEnd(str.length + displayDecimals, '0');
     console.log('str', str);
     if(displayDecimals > 0 && str.includes('.')) {
