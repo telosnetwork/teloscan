@@ -32,13 +32,14 @@ export default {
             custom: 'custom',
         },
         factory: new ContractFactory(),
+        selectedContract: null,
     }),
     computed: {
         showAbiFunctions() {
             return Object.values(this.abiOptions).includes(this.selectedAbi) &&
-                ['read', 'write']
-                    .some(access => (this.functions?.[access] ?? [])
-                        .some(member => member.type === 'function'));
+                    ['read', 'write']
+                        .some(access => (this.functions?.[access] ?? [])
+                            .some(member => member.type === 'function'));
         },
         customAbiIsValidJSON() {
             try {
@@ -91,13 +92,20 @@ export default {
                     JSON.parse(json); // this will throw an error if the json is invalid
                     this.customAbiDefinition = json;
                 } catch (error) {
-                    console.error(error);
+                    console.error('Error parsing JSON file:', error);
                     this.reset();
                     this.$q.notify({
                         message: 'Invalid JSON file',
                         color: 'negative',
                     });
                 }
+            };
+            fileReader.onerror = (event) => {
+                console.error('Error reading file:', event.target.error);
+                this.$q.notify({
+                    message: 'Error reading file',
+                    color: 'negative',
+                });
             };
             fileReader.readAsText(file);
         },
@@ -113,9 +121,9 @@ export default {
             const customAbiSelected = this.selectedAbi === custom;
 
             const selectedAbiIsCustomAndValid =
-                !!this.customAbiDefinition &&
-                this.customAbiIsValidJSON &&
-                customAbiSelected;
+                    !!this.customAbiDefinition &&
+                    this.customAbiIsValidJSON &&
+                    customAbiSelected;
             if (selectedAbiIsCustomAndValid) {
                 abi = JSON.parse(this.customAbiDefinition);
             } else if (this.selectedAbi === erc20) {
@@ -133,19 +141,16 @@ export default {
                 }
             }
 
-            // abi.map function is used here:
-            // https://github.com/ethers-io/ethers.js/blob/master/packages/abi/lib.esm/interface.js#L57
-            console.assert(typeof abi.map === 'function', 'ERROR: abi is not an array');
-
-            let contract = this.factory.buildContract({
+            this.selectedContract = this.factory.buildContract({
                 name: this.$t('components.contract_tab.unverified_contract'),
                 address: this.address,
-                abi: JSON.stringify(abi),
+                abi,
+                manager: this.$contractManager,
             });
             let read = [];
             let write = [];
 
-            (contract?.abi ?? []).forEach((a) => {
+            (this.selectedContract?.abi ?? []).forEach((a) => {
                 if (a.type !== 'function') {
                     return;
                 }
@@ -316,7 +321,7 @@ export default {
                         <div class="q-pa-md">
                             <FunctionInterface
                                 :abi="func"
-                                :contract="contract"
+                                :contract="selectedContract"
                                 :write="true"
                                 :group="displayWriteFunctions ? 'write' : 'read'"
                                 :run-label="displayWriteFunctions ? 'Write' : 'Query'"
@@ -329,9 +334,9 @@ export default {
     </div>
 </div>
 </template>
-<style>
-.abi-json-uploader .q-field__label {
-    text-align: center;
-    width: 100%;
-}
-</style>
+    <style>
+    .abi-json-uploader .q-field__label {
+        text-align: center;
+        width: 100%;
+    }
+    </style>
