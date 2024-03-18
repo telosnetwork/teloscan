@@ -1,18 +1,16 @@
 export interface BlockData {
-    extraData: string;
+    transactionsCount: number;
+    number: string;
+    blockHeight: string; // same as number
+    logsBloom: string;
     gasLimit: string;
     gasUsed: string;
-    hash: string;
-    logsBloom: string;
-    miner: string;
-    mixHash: string;
-    nonce: string;
-    number: string;
-    parentHash: string;
-    sha3Uncles: string;
     size: string;
-    stateRoot: string;
-    timestamp: number;
-    transactionsCount: number;
+    extraData: string;
     transactionsRoot: string;
+    sha3Uncles: string;
+    parentHash: string;
+    nonce: string;
+    hash: string;
+    timestamp: number;
 }
