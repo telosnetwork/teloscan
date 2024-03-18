@@ -45,10 +45,8 @@ watch(() => $route.query.a,
         </div>
     </div>
 
-    <div class="row">
-        <div class="c-transactions__body">
-            <TransactionTable :block="block || undefined" :account-address="address" />
-        </div>
+    <div class="c-transactions__body">
+        <TransactionTable :block="block || undefined" :account-address="address" />
     </div>
 </q-page>
 </template>
@@ -62,7 +60,7 @@ watch(() => $route.query.a,
     }
 
     &__body {
-        flex-grow: 1;
+        @include page-body;
     }
 }
 </style>
