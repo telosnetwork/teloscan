@@ -8,7 +8,9 @@ import { indexerApi } from 'src/boot/telosApi';
 import { evm } from 'src/boot/evm';
 import { toChecksumAddress, formatWei } from 'src/lib/utils';
 import { getIcon } from 'src/lib/token-utils';
+import Contract from 'src/lib/contract/Contract';
 import { BalanceQueryResponse, BalanceResult } from 'src/types/BalanceResult';
+import { Token } from 'src/types/Token';
 
 import TransactionTable from 'components/TransactionTable.vue';
 import InternalTransactionTable from 'components/InternalTransactionTable.vue';
@@ -25,8 +27,6 @@ import AddressQR from 'src/components/AddressQR.vue';
 import AddressOverview from 'src/components/AddressOverview.vue';
 import AddressMoreInfo from 'src/components/AddressMoreInfo.vue';
 import ContractMoreInfo from 'src/components/ContractMoreInfo.vue';
-import { Token } from 'src/types/Token';
-import Contract from 'src/lib/contract/Contract';
 
 const tabs = {
     transactions: '#transactions',
@@ -439,6 +439,7 @@ function disableConfirmation(){
                 :to="{ hash: '#contract' }"
                 :label="$t('pages.contract')"
             />
+            <q-icon v-if="contract && contract.isVerified()" class="fas fa-check-circle text-positive c-address__verification-icon"/>
         </q-tabs>
         <div class="q-mb-md c-address__table-wrapper">
             <q-tab-panels
@@ -507,9 +508,13 @@ function disableConfirmation(){
 
     &__tabs {
         @include tabs-container;
+        height: 50px;
         margin-bottom: .5rem;
 
         &-tab{
+            height: 35px;
+            margin-top: auto;
+            margin-bottom: auto;
             margin-right:.5rem;
         }
     }
@@ -526,6 +531,11 @@ function disableConfirmation(){
     }
     &__table-wrapper{
         width: 1200px;
+    }
+    &__verification-icon{
+        position: absolute;
+        top: -0.35rem;
+        right: 0.3rem;
     }
 }
 
