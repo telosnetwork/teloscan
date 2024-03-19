@@ -149,7 +149,6 @@ export default {
             this.pagination.descending = descending;
             this.pagination.rowsNumber = response.data.total_count;
             let approvals = [];
-            console.log(approvals);
             for (let approval of response.data.results) {
                 approval.selected = (this.selected.includes(approval.spender + ':' + approval.contract));
                 approval.contract = await this.$contractManager.getContract(approval.contract);
@@ -278,7 +277,6 @@ export default {
             }
         },
         async handleCtaClick(spender, contract, single, tokenId) {
-            console.log('Clicked', single, tokenId);
             if (!this.isLoggedInAccount()) {
                 this.displayLoginModal = true;
                 return;
@@ -405,7 +403,6 @@ export default {
                 await Promise.all(
                     ctx.selected.map(async (id) => {
                         let parts = id.split(':');
-                        console.log(parts);
                         let result = await ctx.updateApproval(
                             parts[0],
                             parts[1],
@@ -425,7 +422,6 @@ export default {
             };
         },
         async handleCtaUpdate(spender, contractAddress, single, tokenId, current){
-            console.log('Update', single, tokenId);
             this.displayUpdateModal = true;
             this.modalUpdateValue = current;
             const contract  = await this.$contractManager.getContract(contractAddress);

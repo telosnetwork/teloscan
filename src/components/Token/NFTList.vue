@@ -1,208 +1,212 @@
-<script>
-import AddressField from 'components/AddressField';
-import BlockField from 'components/BlockField';
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+<script setup lang="ts">
+import { ref, watch, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { indexerApi } from 'src/boot/telosApi';
 import { ALLOWED_VIDEO_EXTENSIONS } from 'src/lib/utils';
 
-export default {
-    name: 'NFTList',
-    props: {
-        address: {
-            type: String,
-            required: true,
-        },
-        filter: {
-            type: String,
-            required: false,
-            default: 'contract',
-        },
-    },
-    components: {
-        AddressField,
-        BlockField,
-    },
+import AddressField from 'components/AddressField.vue';
+import BlockField from 'components/BlockField.vue';
 
-    async mounted() {
-        await this.onRequest({
-            pagination: this.pagination,
-        });
+const allowedFilters = ['contract', 'account'];
+
+const { t : $t } = useI18n();
+
+const props = defineProps({
+    address: {
+        type: String,
+        required: true,
     },
-    data() {
-        const columns = [
-            {
-                name: 'minted',
-                label: this.$t('components.nfts.minted'),
-                align: 'left',
-                sortable: true,
-            },
-            {
-                name: 'token_id',
-                label: this.$t('components.token_id'),
-                align: 'left',
-            },
-            {
-                name: (this.filter === 'account') ? 'contract' : 'owner',
-                label: (this.filter === 'account') ? this.$t('components.nfts.contract')
-                    : this.$t('components.nfts.owner'),
-                align: 'left',
-            },
-            {
-                name: 'name',
-                label: this.$t('components.nfts.name'),
-                align: 'left',
-            },
-            {
-                name: 'amount',
-                label: this.$t('components.nfts.amount'),
-                align: 'left',
-            },
-            {
-                name: 'minter',
-                label: this.$t('components.nfts.minter'),
-                align: 'left',
-            },
-            {
-                name: 'attributes',
-                label:  this.$t('components.nfts.attributes')[0].toUpperCase() +
-                    this.$t('components.nfts.attributes').slice(1),
-                align: 'left',
-            },
-            {
-                name: 'media',
-                label: this.$t('components.nfts.media'),
-                align: 'left',
-            },
-            {
-                name: 'metadata',
-                label: this.$t('components.nfts.metadata'),
-                align: 'center',
-            },
-        ];
-        return {
-            columns: columns,
-            loading: true,
-            showWithoutMetadata: false,
-            nfts: [],
-            allowedFilters: [
-                'contract',
-                'account',
-            ],
-            filterBy: this.filter,
-            pagination: {
-                sortBy: 'minted',
-                descending: true,
-                page: 1,
-                rowsPerPage: 10,
-                rowsNumber: 0,
-            },
-        };
+    filter: {
+        type: String,
+        required: false,
+        default: 'account',
     },
-    methods: {
-        getMedia(nft){
-            if(
-                !nft.metadata
+});
+
+const columns = ref<any[]>([]);
+const loading = ref(true);
+const showWithoutMetadata = ref(false);
+const nfts = ref<any[]>([]);
+const pagination = ref({
+    sortBy: 'minted',
+    descending: true,
+    page: 1,
+    rowsPerPage: 10,
+    rowsNumber: 0,
+});
+
+watch(() => props.filter, () => {
+    setupColumns();
+});
+
+function setupColumns() {
+    columns.value = [
+        {
+            name: 'minted',
+            label: $t('components.nfts.minted'),
+            align: 'left',
+            sortable: true,
+        },
+        {
+            name: 'token_id',
+            label: $t('components.token_id'),
+            align: 'left',
+        },
+        {
+            name: (props.filter === 'account') ? 'contract' : 'owner',
+            label: (props.filter === 'account') ? $t('components.nfts.contract')
+                : $t('components.nfts.owner'),
+            align: 'left',
+        },
+        {
+            name: 'name',
+            label: $t('components.nfts.name'),
+            align: 'left',
+        },
+        {
+            name: 'amount',
+            label: $t('components.nfts.amount'),
+            align: 'left',
+        },
+        {
+            name: 'minter',
+            label: $t('components.nfts.minter'),
+            align: 'left',
+        },
+        {
+            name: 'attributes',
+            label:  $t('components.nfts.attributes')[0].toUpperCase() +
+                    $t('components.nfts.attributes').slice(1),
+            align: 'left',
+        },
+        {
+            name: 'media',
+            label: $t('components.nfts.media'),
+            align: 'left',
+        },
+        {
+            name: 'metadata',
+            label: $t('components.nfts.metadata'),
+            align: 'center',
+        },
+    ];
+}
+
+onMounted(async () => {
+    await onRequest();
+    setupColumns();
+});
+
+function getMedia(nft: { metadata: any; tokenUri: any; }) {
+    if(
+        !nft.metadata
                 && !nft.metadata?.image
                 && !nft.metadata?.animation_url
                 && (!nft.tokenUri || nft.tokenUri.endsWith('.json'))
-            ){
-                return false;
-            }
-            let media = (nft.metadata?.animation_url && nft.metadata.animation_url.length > 0)
-                ? nft.metadata.animation_url
-                : nft.metadata?.image
+    ){
+        return false;
+    }
+    let media = (nft.metadata?.animation_url && nft.metadata.animation_url.length > 0)
+        ? nft.metadata.animation_url
+        : nft.metadata?.image
             ;
-            media = (typeof media !== 'undefined' && media) ? media : nft.metadata?.properties?.image;
-            media = (typeof media !== 'undefined' && media) ? media : nft.tokenUri;
-            if(!media){
-                return false;
-            }
-            return media;
-        },
-        hasVideo(nft){
-            let video = this.getMedia(nft);
-            let parts = video.split('.');
-            if(parts.length > 1){
-                let ext = parts[parts.length - 1].split('?')[0];
-                if(!ALLOWED_VIDEO_EXTENSIONS.includes(ext)){
-                    return nft;
-                }
-                nft.metadata = (typeof nft.metadata === 'string') ? {} : nft.metadata;
-                nft.metadata.animation = video.replace('ipfs://', 'https://ipfs.io/ipfs/');
-                nft.metadata.animationExtension = ext;
-            }
-            nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
+    media = (typeof media !== 'undefined' && media) ? media : nft.metadata?.properties?.image;
+    media = (typeof media !== 'undefined' && media) ? media : nft.tokenUri;
+    if(!media){
+        return false;
+    }
+    return media;
+}
+
+function hasVideo(nft: { metadata: { animation?: any; animationExtension?: any; }; tokenUri: string | null; }) {
+    let video = getMedia(nft);
+    let parts = video.split('.');
+    if(parts.length > 1){
+        let ext = parts[parts.length - 1].split('?')[0];
+        if(!ALLOWED_VIDEO_EXTENSIONS.includes(ext)){
             return nft;
-        },
-        isDataImage(nft){
-            let image = this.getMedia(nft);
-            const regex = new RegExp(/(data:image\/[^;]+;base64[^"]+)/);
-            return regex.test(image);
-        },
-        async onRequest(props) {
-            this.loading = true;
+        }
+        nft.metadata = (typeof nft.metadata === 'string') ? {} : nft.metadata;
+        nft.metadata.animation = video.replace('ipfs://', 'https://ipfs.io/ipfs/');
+        nft.metadata.animationExtension = ext;
+    }
+    nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
+    return nft;
+}
 
-            const { page, rowsPerPage, sortBy, descending } = props.pagination;
+function isDataImage(nft: any) {
+    let image = getMedia(nft);
+    const regex = new RegExp(/(data:image\/[^;]+;base64[^"]+)/);
+    return regex.test(image);
+}
 
-            let response = await this.$indexerApi.get(this.getPath(props));
+async function onRequest() {
+    loading.value = true;
 
-            if(response.data.total_count === 0){
-                this.showWithoutMetadata = true;
-                response = await this.$indexerApi.get(this.getPath(props));
-            }
+    const { page, rowsPerPage, sortBy, descending } = pagination.value;
 
-            this.pagination.page = page;
-            this.pagination.rowsPerPage = rowsPerPage;
-            this.pagination.sortBy = sortBy;
-            this.pagination.descending = descending;
-            if (this.pagination.rowsNumber === 0 && response.data?.total_count) {
-                this.pagination.rowsNumber = response.data.total_count;
+    let response = await indexerApi.get(getPath());
+
+    if(response.data.total_count === 0){
+        showWithoutMetadata.value = true;
+        response = await indexerApi.get(getPath());
+    }
+
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = rowsPerPage;
+    pagination.value.sortBy = sortBy;
+    pagination.value.descending = descending;
+    if (pagination.value.rowsNumber === 0 && response.data?.total_count) {
+        pagination.value.rowsNumber = response.data.total_count;
+    }
+    let nftsArr = [];
+    for (let nft of response.data.results) {
+        nft.metadata = (nft.metadata) ? JSON.parse(nft.metadata) : nft.metadata;
+        if(nft.metadata?.image){
+            nft.metadata.image = (nft.metadata.image)
+                ? nft.metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/')
+                : false
+            ;
+        }
+        if(nft.metadata?.attributes){
+            nft.metadata.attributesStr = '';
+            for(let i = 0; i < nft.metadata.attributes.length; i++){
+                nft.metadata.attributesStr += (typeof nft.metadata.attributes[i]['trait_type'] !== 'undefined')
+                    ? nft.metadata.attributes[i]['trait_type']  + ' : '
+                    : ''
+                ;
+                nft.metadata.attributesStr += nft.metadata.attributes[i]['value'] + '\n';
             }
-            let nfts = [];
-            for (let nft of response.data.results) {
-                nft.metadata = (nft.metadata) ? JSON.parse(nft.metadata) : nft.metadata;
-                if(nft.metadata?.image){
-                    nft.metadata.image = (nft.metadata.image)
-                        ? nft.metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/')
-                        : false
-                    ;
-                }
-                if(nft.metadata?.attributes){
-                    nft.metadata.attributesStr = '';
-                    for(let i = 0; i < nft.metadata.attributes.length; i++){
-                        nft.metadata.attributesStr += (typeof nft.metadata.attributes[i]['trait_type'] !== 'undefined')
-                            ? nft.metadata.attributes[i]['trait_type']  + ' : '
-                            : ''
-                        ;
-                        nft.metadata.attributesStr += nft.metadata.attributes[i]['value'] + '\n';
-                    }
-                }
-                nft = this.hasVideo(nft);
-                nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
-                nfts.push(nft);
-            }
-            this.nfts = nfts;
-            this.loading = false;
-        },
-        getPath(props) {
-            const { page, rowsPerPage, descending } = props.pagination;
-            if(!this.allowedFilters.includes(this.filterBy)){
-                this.filterBy = 'contract';
-            }
-            let path = `/${this.filterBy}/${this.address}/nfts?type=${this.type}&includeAbi=true&limit=${
-                rowsPerPage === 0 ? 10 : rowsPerPage
-            }`;
-            path += `&offset=${(page - 1) * rowsPerPage}`;
-            path = (this.pagination.rowsNumber === 0) ? path + '&includePagination=true' : path;
-            path += `&sort=${descending ? 'desc' : 'asc'}`;
-            path += `&forceMetadata=${this.showWithoutMetadata ? '0' : '1'}`;
-            debugger;
-            return path;
-        },
-    },
-};
+        }
+        nft = hasVideo(nft);
+        nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
+        nftsArr.push(nft);
+    }
+    nfts.value = nftsArr;
+    loading.value = false;
+}
+
+function getPath() {
+    const { page, rowsPerPage, descending } = pagination.value;
+    let queryFilter = props.filter;
+    if(!allowedFilters.includes(queryFilter)){
+        queryFilter = 'contract';
+    }
+    //TODO remove default type type filter to fetch all nfts at once
+    let path = `/${queryFilter}/${props.address}/nfts?type=erc721&includeAbi=true&limit=${
+        rowsPerPage === 0 ? 10 : rowsPerPage
+    }`;
+    path += `&offset=${(page - 1) * rowsPerPage}`;
+    path = (pagination.value.rowsNumber === 0) ? path + '&includePagination=true' : path;
+    path += `&sort=${descending ? 'desc' : 'asc'}`;
+    path += `&forceMetadata=${showWithoutMetadata.value ? '0' : '1'}`;
+    return path;
+}
 </script>
 
 <template>
-<div :key="this.type">
+<div :key="address">
     <q-table
         v-model:pagination="pagination"
         :rows="nfts"
@@ -243,7 +247,7 @@ export default {
                         <q-tooltip>{{ props.row.tokenId }}</q-tooltip>
                     </span>
                 </q-td>
-                <q-td v-if="this.filter !== 'account'" key="owner" :props="props">
+                <q-td v-if="filter !== 'account'" key="owner" :props="props">
                     <AddressField :key="props.row.tokenId + 'owner'"  :address="props.row.owner" :truncate="12" />
                 </q-td>
                 <q-td v-else key="contract" :props="props">
@@ -364,37 +368,42 @@ export default {
                 color="secondary"
                 checked-icon="visibility"
                 unchecked-icon="visibility_off"
-                @update:model-value="onRequest({pagination: pagination})"
+                @update:model-value="onRequest()"
             />
         </template>
     </q-table>
 </div>
 </template>
 
-<!--eslint-enable-->
-<style scoped lang="sass">
-.q-table .q-toggle.right
-    right: 20px
-.q-table .q-toggle
-    font-size: 12px
-    position: absolute
-    bottom: 4px
-.overlay
-    position: absolute
-    width: 100%
-    height: 100%
-    z-index: 55
-.q-media
-    justify-content: space-evenly
-    padding: 0
-    margin: 0
-    z-index: 1
-    max-width: 220px
-    max-height: 160px
-.q-img
-    min-width: 120px
-.sortable
-    height: 60px
-    display: flex
-    align-items: center
-</style>
+<style scoped lang="scss">
+.q-table .q-toggle.right {
+    right: 20px;
+}
+.q-table .q-toggle {
+    font-size: 12px;
+    position: absolute;
+    bottom: 4px;
+}
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 55;
+}
+.q-media {
+    justify-content: space-evenly;
+    padding: 0;
+    margin: 0;
+    z-index: 1;
+    max-width: 220px;
+    max-height: 160px;
+}
+.q-img {
+    min-width: 120px;
+}
+.sortable {
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+</style>: { metadata: { image: any; animation_url: string | any[]; properties: { image: any; }; }; tokenUri: string; }: { metadata: { animation: any; animationExtension: any; }; tokenUri: string; }: any: { pagination: any; }: { pagination: { page: any; rowsPerPage: any; descending: any; }; filter: any; address: any; }(: { contract: any; tokenId: any; }): { metadata: { image: any; animation_url: string | any[]; properties: { image: any; }; }; tokenUri: string; }: { metadata: { animation: any; animationExtension: any; }; tokenUri: string; }: { pagination: any; filter?: any; address?: any; }(: { contract: any; tokenId: any; })
