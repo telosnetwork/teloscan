@@ -444,7 +444,7 @@ function disableConfirmation(){
                 :label="$t('pages.contract')"
             />
         </q-tabs>
-        <div class="q-mb-md tableWrapper">
+        <div class="q-mb-md c-address__table-wrapper">
             <q-tab-panels
                 ref="panels"
                 :key="address"
@@ -528,11 +528,11 @@ function disableConfirmation(){
             margin:.5rem;
         }
     }
+    &__table-wrapper{
+        width: 1200px;
+    }
 }
 
-.tabeWrapper {
-  max-width: 100vw;
-}
 .dataCardsContainer .dataCardItem {
   width: fit-content;
   min-width: auto;
@@ -652,9 +652,9 @@ body.ios .q-hoverable:active .q-focus-helper {
       width: 100%;
     }
   }
-  .tableWrapper {
-    justify-content: center;
-  }
+//   .tableWrapper {
+//     justify-content: center;
+//   }
   .homeInfo {
     padding: 20px;
     text-align: center;
