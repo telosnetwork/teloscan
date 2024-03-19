@@ -2,7 +2,6 @@
 import SocialLinks from 'components/SocialLinks';
 import { useI18n } from 'vue-i18n';
 const { t: $t } = useI18n();
-console.log('$t', $t);
 
 const toTop = () => {
     window.scrollTo({

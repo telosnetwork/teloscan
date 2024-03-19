@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import InlineSvg from 'vue-inline-svg';
-import { useI18n } from 'vue-i18n';
-const { t: $t } = useI18n();
-console.log('$t', $t);
+
 </script>
 <template>
 <div class="c-social-links">

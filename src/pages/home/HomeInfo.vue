@@ -133,6 +133,7 @@ function updateFigures() {
 .c-home-info {
     max-width: 800px;
     margin: 0 auto;
+    border-radius: 12px;
 
     @media screen and (min-width: $breakpoint-md-min) {
         display: flex;
