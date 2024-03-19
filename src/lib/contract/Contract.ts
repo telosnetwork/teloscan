@@ -10,10 +10,16 @@ interface ContractCreationInfo {
 
 interface ContractProperties {
   name?: string;
-  [key: string]: any;
+  symbol?: string;
+  marketcap?: string;
+  price?: string;
+  supply?: string;
+  decimals?: number;
+  holders?: any[];
 }
 
 export default class Contract {
+  [key: string]: any;
   autoloadedAbi: boolean;
   address: string;
   name?: string;
@@ -25,6 +31,7 @@ export default class Contract {
   verified: boolean;
   sources: any[];
   creationInfo?: ContractCreationInfo;
+  logoURI: string;
 
   constructor({ address, creationInfo, name, abi, supportedInterfaces = [], properties = {}, verified = false, nfts = {}, autoloadedAbi }: { address: string; creationInfo?: ContractCreationInfo; name?: string; abi: any[]; supportedInterfaces?: string[]; properties?: ContractProperties; verified?: boolean; nfts?: { [key: string]: any }; autoloadedAbi: boolean; }) {
     this.autoloadedAbi = autoloadedAbi;
@@ -48,6 +55,7 @@ export default class Contract {
     this.verified = verified;
     this.sources = [];
     this.creationInfo = creationInfo;
+    this.logoURI = '';
   }
 
   isVerified(): boolean {

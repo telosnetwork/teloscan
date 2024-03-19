@@ -51,7 +51,6 @@ const fullTitle = ref('');
 const telosAccount = ref('');
 const balance = ref('0');
 const nonce = ref<number | null>(null);
-const isContract = ref(false);
 const contract = ref<Contract | null>(null);
 const creationDate = ref(0);
 const tab = ref('#transactions');
@@ -71,7 +70,7 @@ watch(() => route.hash, async (newHash) => {
 
     const newHashIsInvalid =
             !tabHashes.includes(newHash) ||
-            (newHash === tabs.contract && !isContract.value);
+            (newHash === tabs.contract && !contract.value);
 
     if (newHashIsInvalid) {
         router.replace({ hash: tabs.transactions });
@@ -93,7 +92,6 @@ async function loadAccount() {
         return;
     }
     accountLoading.value = true;
-    isContract.value = false;
     const tokenList = await contractManager.getTokenList();
     try {
         const response: BalanceQueryResponse = await indexerApi.get(
@@ -115,9 +113,9 @@ async function loadAccount() {
     const cachedContract = await contractManager.getContract(accountAddress.value);
     if (cachedContract?.creationInfo?.transaction || cachedContract?.supportedInterfaces?.length > 0){
         contract.value = cachedContract;
-        if(contract.value.supportedInterfaces?.includes('erc20')){
+        if(contract.value && contract.value.supportedInterfaces?.includes('erc20')){
             tokenList.tokens.forEach((token: Token) => {
-                if(token.address.toLowerCase() ===  contract.value.address.toLowerCase()){
+                if(token.address.toLowerCase() ===  contract.value?.address.toLowerCase()){
                     contract.value.issuer = token.issuer;
                     contract.value.issuer_link = token.issuer_link;
                     contract.value.logoURI = token.logoURI;
@@ -126,13 +124,12 @@ async function loadAccount() {
             });
         }
         title.value = $t('pages.contract');
-        isContract.value = true;
-        if(contract.value.getCreationBlock()){
+        if(contract.value?.getCreationBlock()){
             const response = await indexerApi.get(`/block/${contract.value.getCreationBlock()}`);
             creationDate.value = response.data.results[0]?.timestamp;
         }
-        if (contract.value.getName()) {
-            fullTitle.value = contract.value.getName();
+        if (contract.value?.getName()) {
+            fullTitle.value = contract.value.getName() ?? '';
             title.value = (fullTitle.value.length > 22)
                 ? fullTitle.value.slice(0, 22) + '..'
                 : fullTitle.value
@@ -180,7 +177,7 @@ function disableConfirmation(){
             <div class="homeInfo">
                 <div class="flex">
                     <q-img
-                        v-if="contract?.supportedInterfaces?.includes('erc20')"
+                        v-if="contract && contract.supportedInterfaces?.includes('erc20')"
                         class="coin-icon"
                         :alt="contract.getName() + ' ERC20 token'"
                         :src="getIcon(contract.logoURI)"
@@ -212,7 +209,7 @@ function disableConfirmation(){
                         />
                         <q-tooltip v-if="fullTitle">{{ fullTitle }} </q-tooltip>
                     </div>
-                    <div v-if="isContract">
+                    <div v-if="contract">
                         <q-icon
                             v-if="contract.isVerified()"
                             name="verified"
@@ -226,7 +223,7 @@ function disableConfirmation(){
                             size="1.25rem"
                             @click="confirmationDialog = true"
                         />
-                        <q-tooltip v-if="contract.isVerified()">
+                        <q-tooltip v-if="contract?.isVerified()">
                             {{ $t('components.contract_tab.verified_contract') }}
                         </q-tooltip>
                         <q-tooltip v-else>{{ $t('components.contract_tab.unverified_contract') }} </q-tooltip>
@@ -236,8 +233,8 @@ function disableConfirmation(){
                     <div class="flex c-address__overview">
                         <AddressOverview :balance="balance" class="c-address__overview--full-width"/>
                     </div>
-                    <div v-if="isContract" class="flex c-address__overview">
-                        <ContractMoreInfo :address="contract.getCreator()" :transaction="contract.getCreationTrx()"  class="c-address__overview--full-width"/>
+                    <div v-if="contract" class="flex c-address__overview">
+                        <ContractMoreInfo :address="contract?.getCreator() ?? ''" :transaction="contract?.getCreationTrx() ?? ''"  class="c-address__overview--full-width"/>
                     </div>
                     <div v-else class="flex c-address__overview">
                         <AddressMoreInfo :address="accountAddress"  class="c-address__overview--full-width"/>
@@ -271,7 +268,7 @@ function disableConfirmation(){
                                     {{ $t('components.usd_price') }}
                                 </div>
                                 <div class="dataCardData">
-                                    <span v-if="contract.properties.price < 0.0001">{{ '< 0.0001 $' }}</span>
+                                    <span v-if="parseFloat(contract.properties.price) < 0.0001">{{ '< 0.0001 $' }}</span>
                                     <span v-else>
                                         {{
                                             Number(parseFloat(contract.properties.price))
@@ -494,8 +491,8 @@ function disableConfirmation(){
                         :address="accountAddress"
                     />
                 </q-tab-panel>
-                <q-tab-panel v-if="isContract" name="contract">
-                    <ContractTab v-if="contract?.abi?.length > 0" :contract="contract"/>
+                <q-tab-panel v-if="contract" name="contract">
+                    <ContractTab v-if="contract.abi?.length > 0" :contract="contract"/>
                     <GenericContractInterface v-else  :contract="contract" />
                 </q-tab-panel>
             </q-tab-panels>
