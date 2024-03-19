@@ -59,8 +59,7 @@ const truncateText = (text: string, middle?: boolean) => {
         return text;
     }
     if (middle) {
-        // eslint-disable-next-line max-len
-        return `${text.slice(0, (props.truncate / 2))}...${text.slice(text.length - (props.truncate / 2), text.length)}`;
+        return `${text.slice(0, (props.truncate / 2 + 2))}...${text.slice(text.length - (props.truncate / 2), text.length)}`;
     }
     return `${text.slice(0, props.truncate)}...`;
 };
