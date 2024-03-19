@@ -116,7 +116,7 @@ defineProps<{
         @media screen and (min-width: $breakpoint-lg-min) {
             width: 20%;
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
             align-items: center;
         }
     }
