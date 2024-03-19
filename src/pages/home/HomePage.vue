@@ -10,12 +10,15 @@ import { LatestContainerOptions } from 'src/types';
 const { t: $t } = useI18n();
 
 
-const options = ref<LatestContainerOptions>({
+const left_options = ref<LatestContainerOptions>({
     blocks: {
         title: 'Latest Blocks',
         footer: 'View all Blocks',
         link: 'blocks',
     },
+});
+
+const right_options = ref<LatestContainerOptions>({
     transactions: {
         title: 'Latest Transactions',
         footer: 'View all Transactions',
@@ -47,23 +50,15 @@ const options = ref<LatestContainerOptions>({
     </div>
     <div class="c-home__data">
         <div class="c-home__data-col">
-            <LatestDataContainer :options="options">
+            <LatestDataContainer :options="left_options">
                 <template v-slot:blocks>
                     <div>Showing Latest Blocks</div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor odio in pretium bibendum. Fusce ac felis et ipsum aliquet bibendum.</div>
-                </template>
-                <template v-slot:transactions>
-                    <div>Showing Latest Transactions</div>
                     <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor odio in pretium bibendum. Fusce ac felis et ipsum aliquet bibendum.</div>
                 </template>
             </LatestDataContainer>
         </div>
         <div class="c-home__data-col">
-            <LatestDataContainer :options="options">
-                <template v-slot:blocks>
-                    <div>Showing Latest Blocks</div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor odio in pretium bibendum. Fusce ac felis et ipsum aliquet bibendum.</div>
-                </template>
+            <LatestDataContainer :options="right_options">
                 <template v-slot:transactions>
                     <div>Showing Latest Transactions</div>
                     <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor odio in pretium bibendum. Fusce ac felis et ipsum aliquet bibendum.</div>
