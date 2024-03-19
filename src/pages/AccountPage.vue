@@ -19,14 +19,15 @@ import HolderList from 'components/Token/HolderList.vue';
 import NFTList from 'components/Token/NFTList.vue';
 import ConfirmationDialog from 'components/ConfirmationDialog.vue';
 import ContractTab from 'components/ContractTab/ContractTab.vue';
-import TransactionField from 'components/TransactionField.vue';
-import AddressField from 'components/AddressField.vue';
+// import TransactionField from 'components/TransactionField.vue';
+// import AddressField from 'components/AddressField.vue';
 import CopyButton from 'components/CopyButton.vue';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
-import DateField from 'components/DateField.vue';
+// import DateField from 'components/DateField.vue';
 import AddressQR from 'src/components/AddressQR.vue';
 import AddressOverview from 'src/components/AddressOverview.vue';
 import AddressMoreInfo from 'src/components/AddressMoreInfo.vue';
+import ContractMoreInfo from 'src/components/ContractMoreInfo.vue';
 
 const tabs = {
     transactions: '#transactions',
@@ -236,8 +237,11 @@ function disableConfirmation(){
                     <div class="flex c-address__overview">
                         <AddressOverview :balance="balance" class="c-address__overview--full-width"/>
                     </div>
-                    <div class="flex c-address__overview">
-                        <AddressMoreInfo :address="accountAddress" class="c-address__overview--full-width"/>
+                    <div v-if="isContract" class="flex c-address__overview">
+                        <ContractMoreInfo :address="contract.getCreator()" :transaction="contract.getCreationTrx()"  class="c-address__overview--full-width"/>
+                    </div>
+                    <div v-else class="flex c-address__overview">
+                        <AddressMoreInfo :address="accountAddress"  class="c-address__overview--full-width"/>
                     </div>
                 </div>
                 <div class="flex">
@@ -248,44 +252,6 @@ function disableConfirmation(){
                             :status="contract?.isVerified()"
                             @dialog="disableConfirmation"
                         />
-                        <template v-if="contract">
-                            <div v-if="contract.getCreationTrx()" class="text-white">
-                                {{ $t('pages.created_at_trx' )}}
-                                <TransactionField :transaction-hash="contract.getCreationTrx()"/>
-                            </div>
-                            <div v-if="contract.getCreator()" :key="contract.getCreator()" class="text-white">
-                                {{ $t('pages.by_address') }}
-                                <AddressField
-                                    :address="contract.getCreator()"
-                                    :truncate="22"
-                                />
-                            </div>
-                            <div v-if="contract.issuer" class="text-white">
-                                {{ $t('pages.issuer') }}
-                                <a :href="contract.issuer_link" target="_blank">
-                                    {{ contract.issuer }}
-                                </a>
-                            </div>
-                            <div v-if="creationDate > 0" class="text-white">
-                                <DateField
-                                    :epoch="creationDate / 1000"
-                                    :default-to-age="false"
-                                    :force-show-age="false"
-                                />
-                            </div>
-                            <div v-if="contract.supportedInterfaces?.length > 0" class="q-pt-md">
-                                <span>
-                                    <span
-                                        v-for="intf in contract.supportedInterfaces"
-                                        v-bind:key="intf"
-                                        class="supported-interface bg-primary q-pa-sm"
-                                    >
-                                        {{ intf.replace('_', ' ') }}
-                                    </span>
-                                    <q-tooltip>{{ $t('pages.supported_interfaces')}}</q-tooltip>
-                                </span>
-                            </div>
-                        </template>
                     </div>
                     <div class="metrics">
                         <div class="dataCardsContainer balance">
