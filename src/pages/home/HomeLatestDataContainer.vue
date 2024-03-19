@@ -87,6 +87,9 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
 <style lang="scss">
 .c-latest-data {
     border-radius: 12px;
+    height: 550px;
+    position: relative;
+    padding-bottom: 24px;
 
     &__header {
         &-title {
@@ -103,6 +106,10 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
     }
 
     &__footer {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
         cursor: pointer;
         display: flex;
         gap: 5px;
