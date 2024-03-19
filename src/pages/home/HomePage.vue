@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
+import type { LatestContainerOptions } from 'src/types';
+
 import HomeInfo from 'src/pages/home/HomeInfo.vue';
-import LatestDataContainer from 'src/components/LatestDataContainer.vue';
+import HomeLatestDataContainer from 'src/pages/home/HomeLatestDataContainer.vue';
+import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
+import HomeLatestBlocks from 'src/pages/home/HomeLatestBlocks.vue';
 import AppSearch from 'src/components/AppSearch.vue';
-import { ref } from 'vue';
-import { LatestContainerOptions } from 'src/types';
+
 
 const { t: $t } = useI18n();
 
@@ -43,27 +47,42 @@ const right_options = ref<LatestContainerOptions>({
             <AppSearch :homepage-mode="true" />
         </div>
     </div>
-    <div class="row q-mt-xl">
+    <div class="row q-my-xl">
         <div class="col-12">
             <HomeInfo />
         </div>
     </div>
-    <div class="c-home__data">
-        <div class="c-home__data-col">
-            <LatestDataContainer :options="left_options">
+    <div class="row q-col-gutter-md">
+        <div class="col-12 col-md-6">
+            <HomeLatestDataContainer :options="left_options">
                 <template v-slot:blocks>
-                    <div>Showing Latest Blocks</div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor odio in pretium bibendum. Fusce ac felis et ipsum aliquet bibendum.</div>
+                    <HomeLatestBlocks />
                 </template>
-            </LatestDataContainer>
+            </HomeLatestDataContainer>
         </div>
-        <div class="c-home__data-col">
-            <LatestDataContainer :options="right_options">
+        <div class="col-12 col-md-6">
+            <HomeLatestDataContainer :options="right_options">
                 <template v-slot:transactions>
-                    <div>Showing Latest Transactions</div>
-                    <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor odio in pretium bibendum. Fusce ac felis et ipsum aliquet bibendum.</div>
+                    <HomeLatestDataTableRow v-for="index in [1, 2, 3, 4, 5, 6]" :key="index" :loading="false">
+                        <template v-slot:icon>
+                            <q-icon size="20px" name="far fa-file-alt" />
+                        </template>
+                        <template v-slot:column-one>
+                            <span>Some text</span>
+                            <br>
+                            <span>Some more text</span>
+                        </template>
+                        <template v-slot:column-two>
+                            <span>Some text</span>
+                            <br>
+                            <span>Some more text</span>
+                        </template>
+                        <template v-slot:column-three>
+                            <span>text</span>
+                        </template>
+                    </HomeLatestDataTableRow>
                 </template>
-            </LatestDataContainer>
+            </HomeLatestDataContainer>
         </div>
     </div>
 </q-page>
