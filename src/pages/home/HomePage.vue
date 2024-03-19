@@ -7,6 +7,7 @@ import type { LatestContainerOptions } from 'src/types';
 import HomeInfo from 'src/pages/home/HomeInfo.vue';
 import HomeLatestDataContainer from 'src/pages/home/HomeLatestDataContainer.vue';
 import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
+import HomeLatestBlocks from 'src/pages/home/HomeLatestBlocks.vue';
 import AppSearch from 'src/components/AppSearch.vue';
 
 
@@ -55,41 +56,31 @@ const right_options = ref<LatestContainerOptions>({
         <div class="col-12 col-md-6">
             <HomeLatestDataContainer :options="left_options">
                 <template v-slot:blocks>
-                    <!-- eztodo remove eslint rule, move table to own component -->
-                    <!-- eslint-disable-next-line vue/no-static-inline-styles -->
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <HomeLatestDataTableRow v-for="index in [1, 2, 3, 4, 5, 6]" :key="index" :loading="false">
-                            <template v-slot:icon>
-                                <q-icon name="view_in_ar" size="24px" />
-                            </template>
-                            <template v-slot:column-one>
-                                <span>Some text</span>
-                                <br>
-                                <span>Some more text</span>
-                            </template>
-                            <template v-slot:column-two>
-                                <span>Some text</span>
-                                <br>
-                                <span>Some more text</span>
-                            </template>
-                            <template v-slot:column-three>
-                                <span>Some text</span>
-                                <br>
-                                <span>Some more text</span>
-                            </template>
-                        </HomeLatestDataTableRow>
-                    </table>
+                    <HomeLatestBlocks />
                 </template>
             </HomeLatestDataContainer>
         </div>
         <div class="col-12 col-md-6">
             <HomeLatestDataContainer :options="right_options">
                 <template v-slot:transactions>
-                    <!-- eztodo remove eslint rule, move table to own component -->
-                    <!-- eslint-disable-next-line vue/no-static-inline-styles -->
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <HomeLatestDataTableRow v-for="index in [1, 2, 3, 4, 5, 6]" :key="index" :loading="true" />
-                    </table>
+                    <HomeLatestDataTableRow v-for="index in [1, 2, 3, 4, 5, 6]" :key="index" :loading="false">
+                        <template v-slot:icon>
+                            <q-icon size="20px" name="far fa-file-alt" />
+                        </template>
+                        <template v-slot:column-one>
+                            <span>Some text</span>
+                            <br>
+                            <span>Some more text</span>
+                        </template>
+                        <template v-slot:column-two>
+                            <span>Some text</span>
+                            <br>
+                            <span>Some more text</span>
+                        </template>
+                        <template v-slot:column-three>
+                            <span>text</span>
+                        </template>
+                    </HomeLatestDataTableRow>
                 </template>
             </HomeLatestDataContainer>
         </div>

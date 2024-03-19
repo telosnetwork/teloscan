@@ -68,7 +68,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
 
     <q-separator />
 
-    <q-card-section>
+    <q-card-section class="c-latest-data__content">
         <template v-for="(name, key) in props.options" :key="key">
             <slot v-if="selectedOption === key" :name="key"></slot>
         </template>
@@ -98,6 +98,11 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
         }
     }
 
+    &__content {
+        overflow-y: auto;
+        max-height: 485px;
+    }
+
     &__menu-opt-check {
         opacity: 0;
         &--active {
@@ -122,22 +127,4 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
         }
     }
 }
-
-
-/*
-.c-latest-data {
-    &__header {
-        display: flex;
-        justify-content: space-between;
-    }
-}
-*/
-/*
-.header button {
-  margin-right: 10px;
-}
-.header button.active {
-  font-weight: bold;
-}
-*/
 </style>
