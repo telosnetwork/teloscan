@@ -34,6 +34,10 @@ const props = defineProps({
         type: Number,
         default: 0,
     },
+    hideContractIcon: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(['highlight']);
@@ -129,13 +133,13 @@ function emitHighlight(val: string) {
         }"
     >
         <q-img
-            v-if="logo !== null"
+            v-if="logo !== null && hideContractIcon === false"
             class="q-mr-xs"
             :src="getIcon(logo)"
             width="16px"
             height="auto"
         />
-        <q-icon v-else-if="contract && contract.getName()" name="far fa-file" />
+        <q-icon v-else-if="contract && contract.getName() && hideContractIcon == false" name="far fa-file" />
         <span class="c-address-field__text">{{ displayName }}</span>
         <q-tooltip v-if="fullName !== displayName">{{ fullName }}</q-tooltip>
     </router-link>

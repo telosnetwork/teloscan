@@ -1,32 +1,41 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { BigNumber } from 'ethers/lib/ethers';
 
 import { indexerApi } from 'src/boot/telosApi';
-import { truncateAddress } from 'src/antelope/wallets/utils/text-utils';
-import { formatTimePeriod } from 'src/lib/date-utils';
+import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
+import { WEI_PRECISION } from 'src/lib/utils';
 
+import DateField from 'components/DateField.vue';
+import TransactionField from 'components/TransactionField.vue';
+import AddressField from 'src/components/AddressField.vue';
 import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
 
-const { t: $t } = useI18n();
+const locale = useI18n().locale.value;
 
 // eztodo real type
-const transactions = ref<{ from: string, to: string, hash: string, timestamp: number }[]>([]);
+const transactions = ref<{ from: string, to: string, hash: string, timestamp: number, value: string }[]>([]);
 
-const loading = computed(() => transactions.value.length === 0);
+const loading = ref(true);
 
 onBeforeMount(async () => {
     const response = await indexerApi.get('transactions?limit=6');
     transactions.value = response.data.results;
+    loading.value = false;
 });
 
-function truncateTxHash(hash: string) {
-    return hash.substring(0, 12).concat('...');
-}
-
-function formatTxTime(time: number) {
-    const difference = Date.now() - time;
-    return $t('antelope.words.time_ago', { time: formatTimePeriod(difference / 1000, $t) });
+function getTlosValue(value: string) {
+    return prettyPrintCurrency(
+        BigNumber.from(value),
+        4,
+        locale,
+        false,
+        'TLOS',
+        false,
+        WEI_PRECISION,
+        true,
+    );
 }
 </script>
 
@@ -39,29 +48,23 @@ function formatTxTime(time: number) {
         </template>
 
         <template v-slot:column-one>
-            <router-link :to="{ name: 'transaction', params: { hash: transactions[index].hash } }">
-                {{ truncateTxHash(transactions[index].hash) }}
-            </router-link>
+            <TransactionField :transaction-hash="transactions[index].hash" />
             <br>
-            {{ formatTxTime(transactions[index].timestamp) }}
+            <DateField :epoch="transactions[index].timestamp / 1000" :force-show-age="true" :muted-text="true" />
         </template>
 
         <template v-slot:column-two>
             From
-            <router-link :to="{ name: 'address', params: { address: transactions[index].from } }">
-                {{ truncateAddress(transactions[index].from) }}
-            </router-link>
+            <AddressField :address="transactions[index].from" :truncate="8" :hide-contract-icon="true" />
             <br>
             To
-            <router-link :to="{ name: 'address', params: { address: transactions[index].to } }">
-                {{ truncateAddress(transactions[index].to) }}
-            </router-link>
+            <AddressField :address="transactions[index].to" :truncate="8" :hide-contract-icon="true" />
         </template>
 
         <template v-slot:column-three>
-            <span>Some text</span>
-            <br>
-            <span>Some more text</span>
+            <div class="c-home-latest-transactions__value">
+                {{ getTlosValue(transactions[index].value) }}
+            </div>
         </template>
     </HomeLatestDataTableRow>
 </table>
@@ -87,5 +90,16 @@ function formatTxTime(time: number) {
             background-color: $grey-10;
         }
     }
-}
-</style>
+
+    &__time-ago {
+        font-size: 0.8rem;
+        color: var(--grey-text-color);
+    }
+
+    &__value {
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 4px 8px;
+        font-size: 0.8rem;
+    }
+}</style>

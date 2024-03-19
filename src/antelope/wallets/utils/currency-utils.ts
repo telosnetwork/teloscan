@@ -129,7 +129,7 @@ export function prettyPrintCurrency(
     }
 
     const decimalSeparator = getDecimalSeparatorForLocale(locale);
-    const trailingZeroesRegex = new RegExp(`\\${decimalSeparator}?0+(\\D|$)`, 'g');
+    const trailingZeroesRegex = new RegExp(`(\\d)\\${decimalSeparator}0+(\\D|$)`, 'g');
 
     const decimalOptions : Record<string, number | undefined> = {
         maximumFractionDigits: precision,
@@ -205,7 +205,7 @@ export function prettyPrintCurrency(
         }
 
         if ((trimZeroes || precision === 0) && finalFormattedValue.indexOf(decimalSeparator) > -1) {
-            finalFormattedValue = finalFormattedValue.replace(trailingZeroesRegex, '');
+            finalFormattedValue = finalFormattedValue.replace(trailingZeroesRegex, '$1');
         }
 
         if (precision === 2 && tokenDecimals === 2 && currency) {
