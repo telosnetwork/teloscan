@@ -49,7 +49,6 @@ function getTlosValue(value: string) {
 </script>
 
 <template>
-<!-- eztodo i18n -->
 <table class="c-home-latest-transactions__table">
     <HomeLatestDataTableRow v-for="index in [0, 1, 2, 3, 4, 5]" :key="index" :loading="loading">
         <template v-slot:icon>
