@@ -1,4 +1,3 @@
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -9,6 +8,7 @@ import { indexerApi } from 'src/boot/telosApi';
 import { evm } from 'src/boot/evm';
 import { toChecksumAddress, formatWei } from 'src/lib/utils';
 import { getIcon } from 'src/lib/token-utils';
+import { BalanceQueryResponse, BalanceResult } from 'src/types/BalanceResult';
 
 import TransactionTable from 'components/TransactionTable.vue';
 import InternalTransactionTable from 'components/InternalTransactionTable.vue';
@@ -19,15 +19,14 @@ import HolderList from 'components/Token/HolderList.vue';
 import NFTList from 'components/Token/NFTList.vue';
 import ConfirmationDialog from 'components/ConfirmationDialog.vue';
 import ContractTab from 'components/ContractTab/ContractTab.vue';
-// import TransactionField from 'components/TransactionField.vue';
-// import AddressField from 'components/AddressField.vue';
 import CopyButton from 'components/CopyButton.vue';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
-// import DateField from 'components/DateField.vue';
 import AddressQR from 'src/components/AddressQR.vue';
 import AddressOverview from 'src/components/AddressOverview.vue';
 import AddressMoreInfo from 'src/components/AddressMoreInfo.vue';
 import ContractMoreInfo from 'src/components/ContractMoreInfo.vue';
+import { Token } from 'src/types/Token';
+import Contract from 'src/lib/contract/Contract';
 
 const tabs = {
     transactions: '#transactions',
@@ -53,7 +52,7 @@ const telosAccount = ref('');
 const balance = ref('0');
 const nonce = ref<number | null>(null);
 const isContract = ref(false);
-const contract = ref<any | null>(null);
+const contract = ref<Contract | null>(null);
 const creationDate = ref(0);
 const tab = ref('#transactions');
 const confirmationDialog = ref(false);
@@ -97,12 +96,12 @@ async function loadAccount() {
     isContract.value = false;
     const tokenList = await contractManager.getTokenList();
     try {
-        const response = await indexerApi.get(
+        const response: BalanceQueryResponse = await indexerApi.get(
             `/account/${accountAddress.value}/balances?includeAbi=true`,
             // `/account/${accountAddress.value}/balances?contract=___NATIVE_CURRENCY___&includeAbi=true`,
         );
         //TODO restore original api query when contract param query is fixed
-        const systemTokenResult = response.data.results.find((r:any) => r.contract === '___NATIVE_CURRENCY___');
+        const systemTokenResult = response.data.results.find((r : BalanceResult) => r.contract === '___NATIVE_CURRENCY___') as BalanceResult;
 
         // balance.value = (response.data?.results?.length > 0) ? response.data.results[0].balance : '0';
         balance.value = systemTokenResult.balance;
@@ -117,7 +116,7 @@ async function loadAccount() {
     if (cachedContract?.creationInfo?.transaction || cachedContract?.supportedInterfaces?.length > 0){
         contract.value = cachedContract;
         if(contract.value.supportedInterfaces?.includes('erc20')){
-            tokenList.tokens.forEach((token: { address: string; issuer: any; issuer_link: any; logoURI: any; }) => {
+            tokenList.tokens.forEach((token: Token) => {
                 if(token.address.toLowerCase() ===  contract.value.address.toLowerCase()){
                     contract.value.issuer = token.issuer;
                     contract.value.issuer_link = token.issuer_link;

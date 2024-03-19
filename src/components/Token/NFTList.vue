@@ -1,4 +1,3 @@
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -7,6 +6,8 @@ import { ALLOWED_VIDEO_EXTENSIONS } from 'src/lib/utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
+import { NFT } from 'src/types/NFT';
+import { QTableProps } from 'quasar';
 
 const allowedFilters = ['contract', 'account'];
 
@@ -24,10 +25,10 @@ const props = defineProps({
     },
 });
 
-const columns = ref<any[]>([]);
+const columns = ref<QTableProps['columns']>([]);
 const loading = ref(true);
 const showWithoutMetadata = ref(false);
-const nfts = ref<any[]>([]);
+const nfts = ref<NFT[]>([]);
 const pagination = ref({
     sortBy: 'minted',
     descending: true,
@@ -47,48 +48,57 @@ function setupColumns() {
             label: $t('components.nfts.minted'),
             align: 'left',
             sortable: true,
+            field: '',
         },
         {
             name: 'token_id',
             label: $t('components.token_id'),
             align: 'left',
+            field: '',
         },
         {
             name: (props.filter === 'account') ? 'contract' : 'owner',
             label: (props.filter === 'account') ? $t('components.nfts.contract')
                 : $t('components.nfts.owner'),
             align: 'left',
+            field: '',
         },
         {
             name: 'name',
             label: $t('components.nfts.name'),
             align: 'left',
+            field: '',
         },
         {
             name: 'amount',
             label: $t('components.nfts.amount'),
             align: 'left',
+            field: '',
         },
         {
             name: 'minter',
             label: $t('components.nfts.minter'),
             align: 'left',
+            field: '',
         },
         {
             name: 'attributes',
-            label:  $t('components.nfts.attributes')[0].toUpperCase() +
-                    $t('components.nfts.attributes').slice(1),
+            label: $t('components.nfts.attributes')[0].toUpperCase() +
+                $t('components.nfts.attributes').slice(1),
             align: 'left',
+            field: '',
         },
         {
             name: 'media',
             label: $t('components.nfts.media'),
             align: 'left',
+            field: '',
         },
         {
             name: 'metadata',
             label: $t('components.nfts.metadata'),
             align: 'center',
+            field: '',
         },
     ];
 }
@@ -98,11 +108,11 @@ onMounted(async () => {
     setupColumns();
 });
 
-function getMedia(nft: { metadata: any; tokenUri: any; }) {
+function getMedia(nft: NFT) {
     if(
         !nft.metadata
-                && !nft.metadata?.image
-                && !nft.metadata?.animation_url
+                && !nft.metadata['image']
+                && !nft.metadata['animation_url']
                 && (!nft.tokenUri || nft.tokenUri.endsWith('.json'))
     ){
         return false;
@@ -119,7 +129,7 @@ function getMedia(nft: { metadata: any; tokenUri: any; }) {
     return media;
 }
 
-function hasVideo(nft: { metadata: { animation?: any; animationExtension?: any; }; tokenUri: string | null; }) {
+function hasVideo(nft: NFT) {
     let video = getMedia(nft);
     let parts = video.split('.');
     if(parts.length > 1){
@@ -135,7 +145,7 @@ function hasVideo(nft: { metadata: { animation?: any; animationExtension?: any; 
     return nft;
 }
 
-function isDataImage(nft: any) {
+function isDataImage(nft: NFT) {
     let image = getMedia(nft);
     const regex = new RegExp(/(data:image\/[^;]+;base64[^"]+)/);
     return regex.test(image);
@@ -406,4 +416,47 @@ function getPath() {
     display: flex;
     align-items: center;
 }
-</style>: { metadata: { image: any; animation_url: string | any[]; properties: { image: any; }; }; tokenUri: string; }: { metadata: { animation: any; animationExtension: any; }; tokenUri: string; }: any: { pagination: any; }: { pagination: { page: any; rowsPerPage: any; descending: any; }; filter: any; address: any; }(: { contract: any; tokenId: any; }): { metadata: { image: any; animation_url: string | any[]; properties: { image: any; }; }; tokenUri: string; }: { metadata: { animation: any; animationExtension: any; }; tokenUri: string; }: { pagination: any; filter?: any; address?: any; }(: { contract: any; tokenId: any; })
+</style>: { metadata: { image: any; animation_url: string | any[]; properties: { image: any; }; }; tokenUri: string; }: { metadata: { animation: any; animationExtension: any; }; tokenUri: string; }: any: { pagination: any; }: { pagination: { page: any; rowsPerPage: any; descending: any; }; filter: any; address: any; }(: { contract: any; tokenId: any; }): { metadata: { image: any; animation_url: string | any[]; properties: { image: any; }; }; tokenUri: string; }: { metadata: { animation: any; animationExtension: any; }; tokenUri: string; }: { pagination: any; filter?: any; address?: any; }(: { contract: any; tokenId: any; }){
+            name: 'minted',
+            label: $t('components.nfts.minted'),
+            align: 'left',
+            sortable: true,
+            field: ''
+        }{
+            name: 'token_id',
+            label: $t('components.token_id'),
+            align: 'left',
+            field: ''
+        }{
+            name: (props.filter === 'account') ? 'contract' : 'owner',
+            label: (props.filter === 'account') ? $t('components.nfts.contract')
+                : $t('components.nfts.owner'),
+            align: 'left',
+            field: ''
+        }{
+            name: 'name',
+            label: $t('components.nfts.name'),
+            align: 'left',
+            field: ''
+        }{
+            name: 'minter',
+            label: $t('components.nfts.minter'),
+            align: 'left',
+            field: ''
+        }{
+            name: 'attributes',
+            label: $t('components.nfts.attributes')[0].toUpperCase() +
+                $t('components.nfts.attributes').slice(1),
+            align: 'left',
+            field: ''
+        }{
+            name: 'media',
+            label: $t('components.nfts.media'),
+            align: 'left',
+            field: ''
+        }{
+            name: 'metadata',
+            label: $t('components.nfts.metadata'),
+            align: 'center',
+            field: ''
+        }

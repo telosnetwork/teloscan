@@ -1,4 +1,3 @@
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { useStore } from 'vuex';

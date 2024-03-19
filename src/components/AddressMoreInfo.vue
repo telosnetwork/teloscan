@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { indexerApi } from 'src/boot/telosApi';
+import { TransactionQueryData } from 'src/types/TransactionQueryData';
 
 import TransactionField from 'components/TransactionField.vue';
 
@@ -16,13 +17,6 @@ const props = defineProps({
         required: true,
     },
 });
-
-interface TransactionQueryData {
-    data: {
-        results: { hash: string}[];
-        total_count: number;
-    }
-}
 
 onMounted(async () => {
     try{
