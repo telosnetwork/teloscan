@@ -19,6 +19,7 @@ defineProps({
     max-height: 100% !important;
 
     &__content {
+        font-family: "silkaregular", sans-serif;
         white-space: pre-wrap;
         word-break: break-all;
         font-size: 0.75em;
