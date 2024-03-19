@@ -101,5 +101,6 @@ function getTlosValue(value: string) {
         border-radius: 8px;
         padding: 4px 8px;
         font-size: 0.8rem;
+        width: max-content;
     }
 }</style>

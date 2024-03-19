@@ -165,7 +165,7 @@ export function prettyPrintCurrency(
             }).format(amount);
 
         if ((trimZeroes || precision === 0) && finalFormattedValue.indexOf(decimalSeparator) > -1) {
-            finalFormattedValue = finalFormattedValue.replace(trailingZeroesRegex, '');
+            finalFormattedValue = finalFormattedValue.replace(trailingZeroesRegex, '$1');
         }
 
         return finalFormattedValue;
