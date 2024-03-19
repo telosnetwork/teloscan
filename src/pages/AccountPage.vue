@@ -54,7 +54,6 @@ const nonce = ref<number | null>(null);
 const isContract = ref(false);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const contract = ref<any | null>(null);
-const hash = ref('');
 const creationDate = ref(0);
 const tab = ref('#transactions');
 const confirmationDialog = ref(false);
@@ -63,31 +62,22 @@ const accountAddress = computed(() => route.params.address as string ?? '');
 const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
 const address = computed(() => store.getters['login/address']);
 
-watch(route, async (newRoute, oldRoute) => {
-    if (newRoute !== oldRoute) {
-        const { hash: newHash } = newRoute;
-        hash.value = newHash;
-        if (newRoute.name !== 'address' || !newHash) {
-            return;
-        }
+watch(() => route.hash, async (newHash) => {
+    if (accountLoading.value && newHash === tabs.contract) {
+        // wait for account to load; this.isContract will not be set immediately on first load
+        await new Promise(resolve => setTimeout(resolve, 750));
+    }
 
-        if (accountLoading.value && newHash === tabs.contract) {
-            // wait for account to load; this.isContract will not be set immediately on first load
-            await new Promise(resolve => setTimeout(resolve, 750));
-        }
+    const tabHashes = Object.values(tabs);
 
-        const tabHashes = Object.values(tabs);
-
-        const newHashIsInvalid =
+    const newHashIsInvalid =
             !tabHashes.includes(newHash) ||
             (newHash === tabs.contract && !isContract.value);
 
-        if (newHashIsInvalid) {
-            router.replace({ hash: tabs.transactions });
-        }
+    if (newHashIsInvalid) {
+        router.replace({ hash: tabs.transactions });
     }
-
-}, { deep: true, immediate: true });
+}, { immediate: true });
 
 watch(accountAddress, async (newVal, oldVal) => {
     if (newVal !== oldVal) {
