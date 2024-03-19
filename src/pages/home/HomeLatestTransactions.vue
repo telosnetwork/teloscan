@@ -12,10 +12,19 @@ import TransactionField from 'components/TransactionField.vue';
 import AddressField from 'src/components/AddressField.vue';
 import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
 
-const locale = useI18n().locale.value;
+const $i18n = useI18n();
+const locale = $i18n.locale.value;
+const { t: $t } = $i18n;
 
-// eztodo real type
-const transactions = ref<{ from: string, to: string, hash: string, timestamp: number, value: string }[]>([]);
+interface Transaction {
+    from: string;
+    to: string;
+    hash: string;
+    timestamp: number;
+    value: string;
+}
+
+const transactions = ref<Transaction[]>([]);
 
 const loading = ref(true);
 
@@ -54,10 +63,10 @@ function getTlosValue(value: string) {
         </template>
 
         <template v-slot:column-two>
-            From
+            {{ $t('pages.from') }}
             <AddressField :address="transactions[index].from" :truncate="8" :hide-contract-icon="true" />
             <br>
-            To
+            {{ $t('pages.to') }}
             <AddressField :address="transactions[index].to" :truncate="8" :hide-contract-icon="true" />
         </template>
 
