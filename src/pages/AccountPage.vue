@@ -40,17 +40,6 @@ const tabs = {
     nfts: '#nfts',
 };
 
-const subtabs = {
-    erc1155_nfts: '#erc1155_nfts',
-    erc721_nfts: '#erc721_nfts',
-    erc20_approvals: '#erc20_approvals',
-    erc721_approvals: '#erc721_approvals',
-    erc1155_approvals: '#erc1155_approvals',
-    erc20_transfers: '#erc20_transfers',
-    erc721_transfers: '#erc721_transfers',
-    erc1155_transfers: '#erc1155_transfers',
-};
-
 const { t: $t } = useI18n();
 const route = useRoute();
 const router = useRouter();
@@ -66,22 +55,8 @@ const isContract = ref(false);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const contract = ref<any | null>(null);
 const hash = ref('');
-interface Map {
-  [key: string]: boolean
-}
-const indicators = ref<Map>({
-    'approvals': false,
-    'nfts': false,
-    'transfers': false,
-});
-const menus = ref<Map>({
-    'approvals': false,
-    'nfts': false,
-    'transfers': false,
-});
 const creationDate = ref(0);
 const tab = ref('#transactions');
-const subtab = ref('#transactions');
 const confirmationDialog = ref(false);
 
 const accountAddress = computed(() => route.params.address as string ?? '');
@@ -102,23 +77,9 @@ watch(route, async (newRoute, oldRoute) => {
         }
 
         const tabHashes = Object.values(tabs);
-        const subtabHashes = Object.values(subtabs);
 
-        if(subtabHashes.includes(newHash)){
-            subtab.value = hash.value;
-            tab.value = hash.value.split('_')[1];
-            toggleMenus(tab.value);
-        } else if (['#transfers', '#nfts', '#approvals'].includes(hash.value)) {
-            if(hash.value === '#transfers' || hash.value === '#approvals'){
-                subtab.value = 'erc20_' + hash.value;
-            } else if (hash.value === '#nfts'){
-                subtab.value = 'erc721_nfts';
-            }
-            tab.value = hash.value;
-            toggleMenus(tab.value);
-        }
         const newHashIsInvalid =
-            !tabHashes.includes(newHash) && !subtabHashes.includes(newHash) ||
+            !tabHashes.includes(newHash) ||
             (newHash === tabs.contract && !isContract.value);
 
         if (newHashIsInvalid) {
@@ -217,39 +178,6 @@ function getAddressNativeExplorerURL() {
     return $t('pages.account_url', { domain: process.env.NETWORK_EXPLORER, account: telosAccount.value });
 }
 
-function tabClass(active: any){
-    if(active){
-        return 'q-tab active relative-position self-stretch flex flex-center text-center';
-    }
-    return 'q-tab relative-position self-stretch flex flex-center text-center';
-}
-
-function cancelHide(evt: { preventDefault: () => void; stopPropagation: () => void; }){
-    if(!evt) {
-        return;
-    }
-    tab.value = subtab.value.split('_')[1];
-    evt.preventDefault();
-    evt.stopPropagation();
-    // this.$refs.panels.goTo(this.subtab);
-}
-
-function toggleMenus(menu: string){
-    for(let i in menus.value){
-        menus.value[i] = false;
-        indicators.value[i] = false;
-    }
-    if(menu){
-        if(!subtab.value || !subtab.value.includes(menu)){
-            subtab.value = (menu === 'nfts') ? 'erc721_nfts' : 'erc20_' + menu;
-        }
-        hash.value = subtab.value;
-        menus.value[menu] = true;
-        indicators.value[menu] = true;
-        // $refs.panels.goTo(this.subtab);
-    }
-}
-
 function disableConfirmation(){
     confirmationDialog.value = false;
 }
@@ -257,7 +185,7 @@ function disableConfirmation(){
 </script>
 
 <template>
-<div v-if="accountAddress && !accountLoading" :key="accountAddress" class="pageContainer q-pt-xl">
+<div v-if="accountAddress && !accountLoading" :key="accountAddress" class="c-address q-pt-xl">
     <div>
         <div class="row tableWrapper justify-between q-mb-lg">
             <div class="homeInfo">
@@ -286,12 +214,12 @@ function disableConfirmation(){
                             :text="accountAddress"
                             :accompanyingText="accountAddress"
                             description="address"
-                            class="address-copy"
+                            class="c-address__copy"
                         />
                         <AddressQR
                             v-if="accountAddress"
                             :address="accountAddress"
-                            class="qr-code"
+                            class="c-address__qr-code"
                         />
                         <q-tooltip v-if="fullTitle">{{ fullTitle }} </q-tooltip>
                     </div>
@@ -316,11 +244,11 @@ function disableConfirmation(){
                     </div>
                 </div>
                 <div class="flex">
-                    <div class="flex account-card">
-                        <AddressOverview :balance="balance" class="account-card__item"/>
+                    <div class="flex c-address__overview">
+                        <AddressOverview :balance="balance" class="c-address__overview--full-width"/>
                     </div>
-                    <div class="flex account-card">
-                        <AddressMoreInfo :address="accountAddress"  class="account-card__item"/>
+                    <div class="flex c-address__overview">
+                        <AddressMoreInfo :address="accountAddress" class="c-address__overview--full-width"/>
                     </div>
                 </div>
                 <div class="flex">
@@ -489,91 +417,53 @@ function disableConfirmation(){
         </div>
         <q-tabs
             v-model="tab"
-            class="tabs-header tabsBar topRounded text-white tableWrapper"
             dense
-            active-color="secondary"
-            align="justify"
-            narrow-indicator
-            :class="{ 'q-dark': $q.dark.isActive}"
+            class="c-address__tabs"
+            active-class="c-address__tabs-tab--active"
+            content-class="c-address__tabs-content"
+            indicator-color="transparent"
         >
             <q-route-tab
                 name="transactions"
+                class="c-address__tabs-tab"
                 :to="{ hash: '#transactions' }"
-                exact
-                replace
                 :label="$t('pages.transactions.transactions')"
-                @click.stop="toggleMenus('')"
             />
             <q-route-tab
                 v-if="contract && contract.supportedInterfaces.includes('erc721')"
                 name="collection"
+                class="c-address__tabs-tab"
                 :to="{ hash: '#collection' }"
-                exact
-                replace
                 :label="$t('components.nfts.collection')"
-                @click.stop="toggleMenus('')"
             />
             <q-route-tab
                 v-if="contract && contract.isToken()"
                 name="holders"
+                class="c-address__tabs-tab"
                 :to="{ hash: '#holders' }"
-                exact
-                replace
                 :label="$t('pages.holders')"
-                @click.stop="toggleMenus('')"
             />
             <q-route-tab
                 v-if="contract && !contract.isToken()"
                 name="int_transactions"
+                class="c-address__tabs-tab"
                 :to="{ hash: '#int_transactions' }"
-                exact
-                replace
                 :label="$t('pages.internal_txns')"
-                @click.stop="toggleMenus('')"
             />
             <q-route-tab
                 name="tokens"
+                class="c-address__tabs-tab"
                 :to="{ hash: '#tokens' }"
-                exact
-                replace
                 :label="$t('pages.tokens')"
-                @click.stop="toggleMenus('')"
             />
-            <q-tab
+            <q-route-tab
                 v-if="!contract"
                 name="nfts"
-                :class="tabClass(indicators.nfts)"
-                @click="toggleMenus('nfts')"
-            >
-                <q-btn-dropdown
-                    v-model="menus.nfts"
-                    label="NFTs"
-                    class="q-tab"
-                    :autoclose="true"
-                    @hide="cancelHide"
-                >
-                    <q-list>
-                        <q-route-tab
-                            clickable
-                            name="erc721_nfts"
-                            :to="{ hash: '#erc721_nfts' }"
-                            exact
-                            replace
-                            label="erc721"
-                        />
-                        <q-route-tab
-                            clickable
-                            name="erc1155_nfts"
-                            :to="{ hash: '#erc1155_nfts' }"
-                            exact
-                            replace
-                            label="erc1155"
-                        />
-                    </q-list>
-                </q-btn-dropdown>
-                <div class="q-tab__indicator absolute-bottom"></div>
-            </q-tab>
-            <q-tab
+                class="c-address__tabs-tab"
+                :to="{ hash: '#nfts' }"
+                :label="$t('components.nfts.nfts')"
+            />
+            <q-route-tab
                 v-if="
                     !contract
                         && isLoggedIn
@@ -581,92 +471,21 @@ function disableConfirmation(){
                 "
                 v-model="tab"
                 name="approvals"
-                :class="tabClass(indicators.approvals)"
-                @click="toggleMenus('approvals')"
-            >
-                <q-btn-dropdown
-                    v-model="menus.approvals"
-                    :label="$t('pages.approvals')"
-                    :autoclose="true"
-                    class="q-tab"
-                    @hide="cancelHide"
-                >
-                    <q-list>
-                        <q-route-tab
-                            clickable
-                            name="erc20_approvals"
-                            :to="{ hash: '#erc20_approvals' }"
-                            exact
-                            replace
-                            label="erc20"
-                        />
-                        <q-route-tab
-                            clickable
-                            name="erc721_approvals"
-                            :to="{ hash: '#erc721_approvals' }"
-                            exact
-                            replace
-                            label="erc721"
-                        />
-                        <q-route-tab
-                            clickable
-                            name="erc1155_approvals"
-                            :to="{ hash: '#erc1155_approvals' }"
-                            exact
-                            replace
-                            label="erc1155"
-                        />
-                    </q-list>
-                </q-btn-dropdown>
-                <div class="q-tab__indicator absolute-bottom"></div>
-            </q-tab>
-            <q-tab
-                :class="tabClass(indicators.transfers)"
+                class="c-address__tabs-tab"
+                :to="{ hash: '#approvals' }"
+                :label="$t('pages.approvals')"
+            />
+            <q-route-tab
                 name="transfers"
-                @click="toggleMenus('transfers')"
-            >
-                <q-btn-dropdown
-                    v-model="menus.transfers"
-                    label="Transfers"
-                    class="q-tab"
-                    :autoclose="true"
-                    @hide="cancelHide"
-                >
-                    <q-list>
-                        <q-route-tab
-                            clickable
-                            name="erc20_transfers"
-                            :to="{ hash: '#erc20_transfers' }"
-                            exact
-                            replace
-                            label="erc20"
-                        />
-                        <q-route-tab
-                            clickable
-                            name="erc721_transfers"
-                            :to="{ hash: '#erc721_transfers' }"
-                            exact
-                            replace
-                            label="erc721"
-                        />
-                        <q-route-tab
-                            clickable
-                            name="erc1155_transfers"
-                            :to="{ hash: '#erc1155_transfers' }"
-                            exact
-                            replace
-                            label="erc1155"
-                        />
-                    </q-list>
-                </q-btn-dropdown>
-                <div class="q-tab__indicator absolute-bottom"></div>
-            </q-tab>
+                class="c-address__tabs-tab"
+                :to="{ hash: '#transfers' }"
+                :label="$t('pages.erc20_transfers')"
+            />
             <q-route-tab
                 v-if="contract"
                 name="contract"
+                class="c-address__tabs-tab"
                 :to="{ hash: '#contract' }"
-                exact
-                replace
                 :label="$t('pages.contract')"
             />
         </q-tabs>
@@ -703,67 +522,22 @@ function disableConfirmation(){
                             && isLoggedIn
                             && toChecksumAddress(accountAddress) === toChecksumAddress(address)
                     "
-                    v-model="subtab"
-                    name="erc20_approvals"
+                    name="approvals"
                 >
                     <ApprovalList type="erc20" :accountAddress="accountAddress" />
                 </q-tab-panel>
-                <q-tab-panel
-                    v-if="
-                        !contract
-                            && isLoggedIn
-                            && toChecksumAddress(accountAddress) === toChecksumAddress(address)
-                    "
-                    v-model="subtab"
-                    name="erc721_approvals"
-                >
-                    <ApprovalList type="erc721" :accountAddress="accountAddress" />
-                </q-tab-panel>
-                <q-tab-panel
-                    v-if="
-                        !contract
-                            && isLoggedIn
-                            && toChecksumAddress(accountAddress) === toChecksumAddress(address)
-                    "
-                    v-model="subtab"
-                    name="erc1155_approvals"
-                >
-                    <ApprovalList type="erc1155" :accountAddress="accountAddress" />
-                </q-tab-panel>
-                <q-tab-panel v-model="subtab" name="erc721_nfts">
+                <q-tab-panel name="nfts">
                     <NFTList type="erc721" :address="accountAddress" filter="account" />
-                </q-tab-panel>
-                <q-tab-panel v-model="subtab" name="erc1155_nfts">
-                    <NFTList type="erc1155" :address="accountAddress" filter="account" />
                 </q-tab-panel>
                 <q-tab-panel name="tokens">
                     <TokenList :address="accountAddress"/>
                 </q-tab-panel>
-                <q-tab-panel v-model="subtab" name="erc20_transfers">
+                <q-tab-panel name="transfers">
                     <TransferTable
                         title="ERC-20 Transfers"
                         token-type="erc20"
                         :initialPageSize="10"
                         :address="accountAddress"
-                        @before-hide="cancelHide"
-                    />
-                </q-tab-panel>
-                <q-tab-panel :v-model="subtab" name="erc1155_transfers">
-                    <TransferTable
-                        title="ERC-1155 Transfers"
-                        token-type="erc1155"
-                        :initialPageSize="10"
-                        :address="accountAddress"
-                        @before-hide="cancelHide"
-                    />
-                </q-tab-panel>
-                <q-tab-panel :v-model="subtab" name="erc721_transfers">
-                    <TransferTable
-                        title="ERC-721 Transfers"
-                        token-type="erc721"
-                        :initialPageSize="10"
-                        :address="accountAddress"
-                        @before-hide="cancelHide"
                     />
                 </q-tab-panel>
                 <q-tab-panel v-if="isContract" name="contract">
@@ -777,22 +551,29 @@ function disableConfirmation(){
 </template>
 
 <style scoped lang="scss">
-.address-copy{
-    display: inline;
-    font-size: 16px;
-}
+.c-address{
+    padding-top: 30px;
 
-.account-card{
-    width: 50%;
-    &__item{
-        width:100%;
-        margin:.5rem;
+    &__tabs {
+        @include tabs-container;
+        margin-bottom: .5rem;
+
+        &-tab{
+            margin-right:.5rem;
+        }
+    }
+    &__copy{
+        display: inline;
+        font-size: 16px;
+    }
+    &__overview{
+        width: 50%;
+        &--full-width{
+            width:100%;
+            margin:.5rem;
+        }
     }
 }
-
-
-
-
 
 .tabeWrapper {
   max-width: 100vw;
@@ -878,43 +659,6 @@ body.ios .q-hoverable:active .q-focus-helper {
   margin-bottom: 5px;
 }
 
-.q-tab:hover {
-  color: $secondary;
-}
-.q-tab.active .q-tab__indicator {
-  opacity: 1;
-  color: $secondary;
-}
-.tabs-header .q-btn {
-  display: block;
-  height: 100%;
-  padding: 16px 0px;
-}
-.tabs-header .q-btn.active {
-    //
-    background: transparent !important;
-}
-
-.tabs-header .q-btn {
-  background: transparent !important;
-}
-.tabs-header .q-btn:hover {
-  color: $secondary;
-  background: transparent !important;
-}
-.tabs-header .q-btn:before, .tabs-header .q-btn:focus {
-  box-shadow: none;
-  background: transparent !important;
-}
-.tabs-header {
-  background: white;
-  color: black !important;
-  &.q-dark {
-    background: $dark;
-    color: white !important;
-  }
-}
-
 .text-primary {
   display: inline-block;
 }
@@ -923,9 +667,6 @@ body.ios .q-hoverable:active .q-focus-helper {
   .dataCardsContainer .dataCardData span {
     font-size: 1rem;
   }
-//   .pageContainer div .tableWrapper &:first-child {
-//     padding: 20px;
-//   }
 }
 @media only screen and (max-width: 768px) {
   .dataCardsContainer .dataCardData span {
@@ -955,10 +696,6 @@ body.ios .q-hoverable:active .q-focus-helper {
     .dataCardItem {
       width: 100%;
     }
-  }
-  .pageContainer {
-    padding-top: 30px;
-    background: linear-gradient(#252a5e 17.19%, #2d4684 45.83%, transparent 65.83%);
   }
   .tableWrapper {
     justify-content: center;

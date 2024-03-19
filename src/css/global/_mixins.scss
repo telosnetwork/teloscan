@@ -38,7 +38,7 @@
     }
     .q-dark & {
         color: rgb(8, 29, 53);
-    }    
+    }
 }
 
 @mixin tabs-container {
@@ -57,6 +57,10 @@
         text-transform: none;
         color: var(--text-color);
         background-color: var(--tab-bg-color);
+
+        &:hover{
+            color: var(--text-color);
+        }
 
         &--active {
             color: var(--active-tab-text-color);

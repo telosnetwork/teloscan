@@ -36,7 +36,7 @@ onMounted(() => {
 <template>
 <div>
     <q-card class="c-overview">
-        <q-card-section>
+        <q-card-section class="c-overview__header">
             {{ $t('pages.overview') }}
         </q-card-section>
         <q-card-section>
@@ -63,6 +63,10 @@ onMounted(() => {
     &__balance{
         display: flex;
         font-size: 18px;
+    }
+    &__header {
+        font-size: 18px;
+        font-weight: 600;
     }
     img{
         margin-top: 2px;

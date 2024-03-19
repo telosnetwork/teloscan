@@ -22,7 +22,6 @@ const props = defineProps({
 
 onMounted(async () => {
     try{
-        debugger;
         const lastTxnQuery = (await indexerApi.get(`address/${props.address}/transactions?limit=1&includePagination=true`) as any).data as any;
         if (lastTxnQuery.results.length){
             lastTxn.value = lastTxnQuery.results[0].hash;
@@ -41,7 +40,7 @@ onMounted(async () => {
 <template>
 <div>
     <q-card class="c-more-info">
-        <q-card-section>
+        <q-card-section class="c-more-info__header">
             {{ $t('pages.more_info') }}
         </q-card-section>
         <q-card-section>
@@ -73,8 +72,13 @@ onMounted(async () => {
 <style lang="scss">
 .c-more-info{
     text-transform: uppercase;
+
     &__value{
         font-size: 18px;
+    }
+    &__header {
+        font-size: 18px;
+        font-weight: 600;
     }
 }
 </style>
