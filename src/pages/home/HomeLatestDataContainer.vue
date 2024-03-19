@@ -68,7 +68,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
 
     <q-separator />
 
-    <q-card-section>
+    <q-card-section class="c-latest-data__content">
         <template v-for="(name, key) in props.options" :key="key">
             <slot v-if="selectedOption === key" :name="key"></slot>
         </template>
@@ -96,6 +96,11 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
             font-weight: 600;
             font-size: 0.8rem;
         }
+    }
+
+    &__content {
+        overflow-y: auto;
+        height: 465px;
     }
 
     &__menu-opt-check {
