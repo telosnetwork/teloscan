@@ -52,7 +52,6 @@ const telosAccount = ref('');
 const balance = ref('0');
 const nonce = ref<number | null>(null);
 const isContract = ref(false);
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const contract = ref<any | null>(null);
 const creationDate = ref(0);
 const tab = ref('#transactions');
@@ -64,7 +63,7 @@ const address = computed(() => store.getters['login/address']);
 
 watch(() => route.hash, async (newHash) => {
     if (accountLoading.value && newHash === tabs.contract) {
-        // wait for account to load; this.isContract will not be set immediately on first load
+        // wait for account to load if contract
         await new Promise(resolve => setTimeout(resolve, 750));
     }
 
@@ -517,7 +516,7 @@ function disableConfirmation(){
                     <ApprovalList type="erc20" :accountAddress="accountAddress" />
                 </q-tab-panel>
                 <q-tab-panel name="nfts">
-                    <NFTList type="erc721" :address="accountAddress" filter="account" />
+                    <NFTList :address="accountAddress" filter="account" />
                 </q-tab-panel>
                 <q-tab-panel name="tokens">
                     <TokenList :address="accountAddress"/>
