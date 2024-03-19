@@ -100,7 +100,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
 
     &__content {
         overflow-y: auto;
-        height: 465px;
+        max-height: 485px;
     }
 
     &__menu-opt-check {
@@ -128,21 +128,4 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
     }
 }
 
-
-/*
-.c-latest-data {
-    &__header {
-        display: flex;
-        justify-content: space-between;
-    }
-}
-*/
-/*
-.header button {
-  margin-right: 10px;
-}
-.header button.active {
-  font-weight: bold;
-}
-*/
 </style>
