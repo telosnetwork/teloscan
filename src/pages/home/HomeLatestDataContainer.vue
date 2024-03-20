@@ -118,10 +118,10 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
         cursor: pointer;
         display: flex;
         gap: 5px;
-        background-color: white;
+        background-color: color-mix(in srgb, white, black 5%);
 
         body.body--dark & {
-            background-color: $dark;
+            background-color: color-mix(in srgb, $dark, white 5%);
         }
 
         &-text {
