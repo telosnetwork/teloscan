@@ -205,12 +205,14 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-<div class="pageContainer q-pt-lg">
-    <h1 class="text-primary text-h4 q-pb-md">
-        {{ $t('components.export.page_header') }}
-    </h1>
+<div class="c-export-page">
+    <div class="c-export-page__header">
+        <h1 class="c-export-page__header-title">
+            {{ $t('components.export.page_header') }}
+        </h1>
+    </div>
 
-    <q-card>
+    <q-card class="c-export-page__content">
         <div class="q-pa-lg">
             <div class="row q-mb-md">
                 <div class="col-12 col-md-6 col-lg-2">
@@ -354,6 +356,21 @@ onBeforeUnmount(() => {
 
 <style lang="scss">
 .c-export-page {
+    @include page-container;
+
+    &__header {
+        @include page-header;
+    }
+
+    &__header-title {
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    &__content {
+        width: 100%;
+    }
+
     &__captcha-container {
         position: relative;
         display: flex;
