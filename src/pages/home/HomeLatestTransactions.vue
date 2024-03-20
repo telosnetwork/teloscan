@@ -11,7 +11,6 @@ import DateField from 'components/DateField.vue';
 import TransactionField from 'components/TransactionField.vue';
 import AddressField from 'src/components/AddressField.vue';
 import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
-import ToolTip from 'components/ToolTip.vue';
 
 const $i18n = useI18n();
 const locale = $i18n.locale.value;
