@@ -73,7 +73,9 @@ function getTlosValue(value: string) {
         <template v-slot:column-three>
             <div class="c-home-latest-transactions__value">
                 {{ getTlosValue(transactions[index].value) }}
-                <ToolTip :content="$t('components.contract_tab.amount')" />
+                <q-tooltip anchor="bottom right" self="top end">
+                    {{ $t('components.contract_tab.amount') }}
+                </q-tooltip>
             </div>
         </template>
     </HomeLatestDataTableRow>
