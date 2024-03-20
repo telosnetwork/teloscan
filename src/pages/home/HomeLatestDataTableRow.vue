@@ -77,6 +77,10 @@ defineProps<{
         padding-top: 0;
     }
 
+    &:last-of-type {
+        border-bottom: none;
+    }
+
     &__icon-container {
         display: none;
         justify-content: center;

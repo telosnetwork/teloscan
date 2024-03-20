@@ -2,9 +2,9 @@
 
 @import '../quasar.variables';
 
-$a-hover-light: color.scale($primary, $lightness: -50%);
-$a-hover-dark: color.scale($primary, $lightness: +30%);
+$a-hover-light: color-mix(in srgb, var(--q-primary), black 50%);
+$a-hover-dark: color-mix(in srgb, var(--q-primary), white 30%);
 $grey: #909090;
 
-$tab-active-light: color.scale($primary, $lightness: +20%);
-$tab-active-dark: $primary;
+$tab-active-light: color-mix(in srgb, var(--q-primary), white 20%);
+$tab-active-dark: var(--q-primary);

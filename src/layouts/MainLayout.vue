@@ -110,7 +110,7 @@ function showBackToTop() {
         right: 0;
         bottom: 0;
         left: 0;
-        background-color: rgba($primary, 0.04);
+        background-color: rgba(var(--q-primary), 0.04);
 
         body.body--dark & {
             background-color: darken($dark, 5%);
@@ -136,15 +136,15 @@ function showBackToTop() {
         height: 30vh;
         overflow: hidden;
         background-image:
-            radial-gradient(circle at 0% 150%, $primary, transparent 40%),
-            radial-gradient(circle at 100% 100%, $primary, transparent 39%),
+            radial-gradient(circle at 0% 150%, var(--q-primary), transparent 40%),
+            radial-gradient(circle at 100% 100%, var(--q-primary), transparent 39%),
             radial-gradient(circle at 100% 0%, $secondary, transparent 40%),
             radial-gradient(circle at 65% 21%, $accent, transparent 40%);
 
         @media screen and (min-width: $breakpoint-sm-min) {
             background-image:
-                radial-gradient(circle at 0% 120%, $primary, transparent 25%),
-                radial-gradient(circle at 100% 100%, $primary, transparent 25%),
+                radial-gradient(circle at 0% 120%, var(--q-primary), transparent 25%),
+                radial-gradient(circle at 100% 100%, var(--q-primary), transparent 25%),
                 radial-gradient(circle at 100% 0%, $secondary, transparent 25%),
                 radial-gradient(circle at 75% 10%, $accent, transparent 25%);
         }
@@ -153,16 +153,16 @@ function showBackToTop() {
             height: 40vh;
 
             background-image:
-                radial-gradient(circle at 0% 150%, $primary, transparent 20%),
-                radial-gradient(circle at 100% 100%, $primary, transparent 20%),
+                radial-gradient(circle at 0% 150%, var(--q-primary), transparent 20%),
+                radial-gradient(circle at 100% 100%, var(--q-primary), transparent 20%),
                 radial-gradient(circle at 100% 0%, $secondary, transparent 25%),
                 radial-gradient(circle at 70% -10%, $accent, transparent 30%);
         }
 
         @media screen and (min-width: $breakpoint-lg-min) {
             background-image:
-                radial-gradient(circle at 0% 150%, $primary, transparent 20%),
-                radial-gradient(circle at 100% 100%, $primary, transparent 18%),
+                radial-gradient(circle at 0% 150%, var(--q-primary), transparent 20%),
+                radial-gradient(circle at 100% 100%, var(--q-primary), transparent 18%),
                 radial-gradient(circle at 100% 0%, $secondary, transparent 22%),
                 radial-gradient(circle at 75% -10%, $accent, transparent 20%)
         }
