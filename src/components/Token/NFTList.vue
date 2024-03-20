@@ -6,7 +6,7 @@ import { ALLOWED_VIDEO_EXTENSIONS } from 'src/lib/utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
-import { NFT } from 'src/types/NFT';
+import { NFT, NFT_TYPE } from 'src/types/NFT';
 import { QTableProps } from 'quasar';
 
 const allowedFilters = ['contract', 'account'];
@@ -30,11 +30,10 @@ const loading = ref(true);
 const showWithoutMetadata = ref(false);
 const nfts = ref<NFT[]>([]);
 const pagination = ref({
-    sortBy: 'minted',
+    sortBy: '',
     descending: true,
     page: 1,
     rowsPerPage: 10,
-    rowsNumber: 0,
 });
 
 watch(() => props.filter, () => {
@@ -70,14 +69,14 @@ function setupColumns() {
             field: '',
         },
         {
-            name: 'amount',
-            label: $t('components.nfts.amount'),
+            name: 'minter',
+            label: $t('components.nfts.minter'),
             align: 'left',
             field: '',
         },
         {
-            name: 'minter',
-            label: $t('components.nfts.minter'),
+            name: 'amount',
+            label: $t('components.nfts.amount'),
             align: 'left',
             field: '',
         },
@@ -156,20 +155,19 @@ async function onRequest() {
 
     const { page, rowsPerPage, sortBy, descending } = pagination.value;
 
-    let response = await indexerApi.get(getPath());
+    const erc721 = await indexerApi.get(getPath(NFT_TYPE.ERC721));
+    const erc1155 = await indexerApi.get(getPath(NFT_TYPE.ERC1155));
 
-    if(response.data.total_count === 0){
-        showWithoutMetadata.value = true;
-        response = await indexerApi.get(getPath());
-    }
+    // merge erc1155 data into erc721 results
+    const response = erc721;
+    response.data.total_count += erc1155.data.total_count;
+    response.data.results = [...response.data.results, ...erc1155.data.results];
 
     pagination.value.page = page;
     pagination.value.rowsPerPage = rowsPerPage;
     pagination.value.sortBy = sortBy;
     pagination.value.descending = descending;
-    if (pagination.value.rowsNumber === 0 && response.data?.total_count) {
-        pagination.value.rowsNumber = response.data.total_count;
-    }
+
     let nftsArr = [];
     for (let nft of response.data.results) {
         nft.metadata = (nft.metadata) ? JSON.parse(nft.metadata) : nft.metadata;
@@ -197,21 +195,12 @@ async function onRequest() {
     loading.value = false;
 }
 
-function getPath() {
-    const { page, rowsPerPage, descending } = pagination.value;
+function getPath(type: string) {
     let queryFilter = props.filter;
     if(!allowedFilters.includes(queryFilter)){
         queryFilter = 'contract';
     }
-    //TODO remove default type type filter to fetch all nfts at once
-    let path = `/${queryFilter}/${props.address}/nfts?type=erc721&includeAbi=true&limit=${
-        rowsPerPage === 0 ? 10 : rowsPerPage
-    }`;
-    path += `&offset=${(page - 1) * rowsPerPage}`;
-    path = (pagination.value.rowsNumber === 0) ? path + '&includePagination=true' : path;
-    path += `&sort=${descending ? 'desc' : 'asc'}`;
-    path += `&forceMetadata=${showWithoutMetadata.value ? '0' : '1'}`;
-    return path;
+    return `/${queryFilter}/${props.address}/nfts?type=${type}&includeAbi=true&limit=10000&forceMetadata=1&includePagination=true`;
 }
 </script>
 
@@ -227,7 +216,6 @@ function getPath() {
         :columns="columns"
         :rows-per-page-options="[10, 20, 50]"
         flat
-        @request="onRequest"
     >
         <template v-slot:loading>
             <q-inner-loading showing color="secondary" />
@@ -278,9 +266,8 @@ function getPath() {
                 </q-td>
                 <q-td key="minter" :props="props">
                     <AddressField
-                        v-if="props.row.minter"
                         :key="props.row.tokenId + 'minter'"
-                        :address="props.row.minter"
+                        :address="props.row.minter ?? props.row.owner"
                         :truncate="12"
                     />
                 </q-td>
@@ -416,47 +403,4 @@ function getPath() {
     display: flex;
     align-items: center;
 }
-</style>: { metadata: { image: any; animation_url: string | any[]; properties: { image: any; }; }; tokenUri: string; }: { metadata: { animation: any; animationExtension: any; }; tokenUri: string; }: any: { pagination: any; }: { pagination: { page: any; rowsPerPage: any; descending: any; }; filter: any; address: any; }(: { contract: any; tokenId: any; }): { metadata: { image: any; animation_url: string | any[]; properties: { image: any; }; }; tokenUri: string; }: { metadata: { animation: any; animationExtension: any; }; tokenUri: string; }: { pagination: any; filter?: any; address?: any; }(: { contract: any; tokenId: any; }){
-            name: 'minted',
-            label: $t('components.nfts.minted'),
-            align: 'left',
-            sortable: true,
-            field: ''
-        }{
-            name: 'token_id',
-            label: $t('components.token_id'),
-            align: 'left',
-            field: ''
-        }{
-            name: (props.filter === 'account') ? 'contract' : 'owner',
-            label: (props.filter === 'account') ? $t('components.nfts.contract')
-                : $t('components.nfts.owner'),
-            align: 'left',
-            field: ''
-        }{
-            name: 'name',
-            label: $t('components.nfts.name'),
-            align: 'left',
-            field: ''
-        }{
-            name: 'minter',
-            label: $t('components.nfts.minter'),
-            align: 'left',
-            field: ''
-        }{
-            name: 'attributes',
-            label: $t('components.nfts.attributes')[0].toUpperCase() +
-                $t('components.nfts.attributes').slice(1),
-            align: 'left',
-            field: ''
-        }{
-            name: 'media',
-            label: $t('components.nfts.media'),
-            align: 'left',
-            field: ''
-        }{
-            name: 'metadata',
-            label: $t('components.nfts.metadata'),
-            align: 'center',
-            field: ''
-        }
+</style>
