@@ -224,7 +224,7 @@ pre
     left: 0
     z-index: 111111
     height: 50px
-    background: $primary
+    background: var(--q-primary)
     cursor: pointer
     line-height: 50px
 .contract-source .q-expansion-item  .fullscreen .q-card__section
