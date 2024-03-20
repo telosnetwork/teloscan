@@ -37,7 +37,7 @@ onBeforeMount(async () => {
 function getTlosValue(value: string) {
     return prettyPrintCurrency(
         BigNumber.from(value),
-        4,
+        0,
         locale,
         false,
         'TLOS',
