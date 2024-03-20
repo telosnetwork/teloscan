@@ -10,11 +10,14 @@ import { useI18n } from 'vue-i18n';
 import { ethers } from 'ethers';
 import { WEI_PRECISION, formatWei } from 'src/lib/utils';
 
+// variables
 const $q = useQuasar();
 const { t: $t } = useI18n();
 const loading = ref(true);
 const blocks = ref<BlockData[]>([1, 2, 3, 4, 5, 6] as unknown as BlockData[]);
+const gasPrice = '0x754d490126';
 
+// functions
 async function fetchBlocksPage() {
     const path = getPath();
     const result = await indexerApi.get(path);
@@ -50,10 +53,6 @@ function getPath() {
     return path;
 }
 
-onMounted(() => {
-    parseBlocks();
-});
-
 const gasUsedFor = (block: BlockData) => {
     if (block) {
         try {
@@ -66,7 +65,10 @@ const gasUsedFor = (block: BlockData) => {
     return '0.0000 TLOS';
 };
 
-const gasPrice = '0x754d490126';
+// lifecycle
+onMounted(() => {
+    parseBlocks();
+});
 
 </script>
 
