@@ -63,24 +63,7 @@ const right_options = ref<LatestContainerOptions>({
         <div class="col-12 col-md-6">
             <HomeLatestDataContainer :options="right_options">
                 <template v-slot:transactions>
-                    <HomeLatestDataTableRow v-for="index in [1, 2, 3, 4, 5, 6]" :key="index" :loading="false">
-                        <template v-slot:icon>
-                            <q-icon size="20px" name="far fa-file-alt" />
-                        </template>
-                        <template v-slot:column-one>
-                            <span>Some text</span>
-                            <br>
-                            <span>Some more text</span>
-                        </template>
-                        <template v-slot:column-two>
-                            <span>Some text</span>
-                            <br>
-                            <span>Some more text</span>
-                        </template>
-                        <template v-slot:column-three>
-                            <span>text</span>
-                        </template>
-                    </HomeLatestDataTableRow>
+                    <HomeLatestDataTableRow v-for="index in [1, 2, 3, 4, 5, 6]" :key="index" :loading="true" />
                 </template>
             </HomeLatestDataContainer>
         </div>

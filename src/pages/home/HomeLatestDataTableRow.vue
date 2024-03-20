@@ -11,41 +11,39 @@ defineProps<{
         'c-latest-data-row--loading': loading
     }"
 >
-    <template v-if="loading">
-        <div>
+    <div class="c-latest-data-row__column-one">
+        <div v-if="loading" class="c-latest-data-row__skeleton">
             <q-skeleton type="rect" size="48px" />
         </div>
-        <div>
-            <q-skeleton type="rect" height="22px" class="q-mb-xs" />
-            <q-skeleton type="rect" height="22px" />
-        </div>
-        <div>
-            <q-skeleton type="rect" height="22px" class="q-mb-xs" />
-            <q-skeleton type="rect" height="22px" />
-        </div>
-        <div>
-            <q-skeleton type="rect" height="22px" class="q-mb-xs" />
-            <q-skeleton type="rect" height="22px" />
-        </div>
-    </template>
-    <template v-else>
-        <div class="c-latest-data-row__column-one">
+        <div v-else class="c-latest-data-row__icon-container">
             <slot name="icon">
             </slot>
         </div>
-        <div class="c-latest-data-row__column-two">
-            <slot name="column-one">
-            </slot>
+    </div>
+    <div class="c-latest-data-row__column-two">
+        <div v-if="loading" class="c-latest-data-row__skeleton">
+            <q-skeleton type="rect" height="22px" class="q-mb-xs" />
+            <q-skeleton type="rect" height="22px" />
         </div>
-        <div class="c-latest-data-row__column-three">
-            <slot name="column-two">
-            </slot>
+        <slot v-else name="column-one">
+        </slot>
+    </div>
+    <div class="c-latest-data-row__column-three">
+        <div v-if="loading" class="c-latest-data-row__skeleton">
+            <q-skeleton type="rect" height="22px" class="q-mb-xs" />
+            <q-skeleton type="rect" height="22px" />
         </div>
-        <div class="c-latest-data-row__column-four">
-            <slot name="column-three">
-            </slot>
+        <slot v-else name="column-two">
+        </slot>
+    </div>
+    <div class="c-latest-data-row__column-four">
+        <div v-if="loading" class="c-latest-data-row__skeleton">
+            <q-skeleton type="rect" height="22px" class="q-mb-xs" />
+            <q-skeleton type="rect" height="22px" />
         </div>
-    </template>
+        <slot v-else name="column-three">
+        </slot>
+    </div>
 </div>
 
 </template>
@@ -65,7 +63,21 @@ defineProps<{
         align-items: center;
     }
 
-    &__column-one {
+    &--loading {
+        #{$this}__column-one {
+            display: none;
+
+            @media screen and (min-width: $breakpoint-lg-min) {
+                display: block;
+            }
+        }
+    }
+
+    &:first-of-type {
+        padding-top: 0;
+    }
+
+    &__icon-container {
         display: none;
         justify-content: center;
         align-items: center;
@@ -81,6 +93,10 @@ defineProps<{
         @media screen and (min-width: $breakpoint-lg-min) {
             display: flex;
         }
+    }
+
+    &__skeleton {
+        width: 100%;
     }
 
     &__column-two {
@@ -100,7 +116,7 @@ defineProps<{
         @media screen and (min-width: $breakpoint-lg-min) {
             width: 20%;
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
             align-items: center;
         }
     }

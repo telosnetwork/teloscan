@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { LatestContainerOptions } from 'src/types';
-import { ref, defineProps, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 
@@ -100,7 +100,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
 
     &__content {
         overflow-y: auto;
-        max-height: 485px;
+        max-height: 470px;
     }
 
     &__menu-opt-check {
@@ -118,6 +118,12 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
         cursor: pointer;
         display: flex;
         gap: 5px;
+        background-color: white;
+
+        body.body--dark & {
+            background-color: $dark;
+        }
+
         &-text {
             font-size: 0.7rem;
             text-transform: uppercase;

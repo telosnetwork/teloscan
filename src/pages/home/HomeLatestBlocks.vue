@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
-import TransactionFeeField from 'components/TransactionFeeField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import { indexerApi } from 'src/boot/telosApi';
@@ -8,17 +7,15 @@ import { onMounted, ref } from 'vue';
 import { BlockData } from 'src/types';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
-// import { ethers } from 'ethers'; // FIXME: remove
+import { ethers } from 'ethers';
+import { WEI_PRECISION, formatWei } from 'src/lib/utils';
 
 const $q = useQuasar();
 const { t: $t } = useI18n();
-// const locale = useI18n().locale.value; // FIXME: remove
 const loading = ref(true);
-// const blocks = ref<BlockData[]>([] as unknown as BlockData[]); // FIXME: remove
 const blocks = ref<BlockData[]>([1, 2, 3, 4, 5, 6] as unknown as BlockData[]);
 
 async function fetchBlocksPage() {
-    console.log('fetchBlocksPage()', loading.value); // FIXME: remove
     const path = getPath();
     const result = await indexerApi.get(path);
 
@@ -31,15 +28,12 @@ async function fetchBlocksPage() {
 }
 
 async function parseBlocks() {
-    console.log('parseBlocks()', loading.value); // FIXME: remove
     loading.value = true;
 
     try {
         let response = await fetchBlocksPage();
         blocks.value = response.data.results;
         loading.value = false;
-        console.log('blocks.value', blocks.value); // FIXME: remove
-        console.log('loading.value', loading.value); // FIXME: remove
     } catch (e: unknown) {
         $q.notify({
             type: 'negative',
@@ -57,25 +51,20 @@ function getPath() {
 }
 
 onMounted(() => {
-    // eslint-disable-next-line no-constant-condition
-    //if (1 > 0) { // FIXME: remove
     parseBlocks();
-    //}
 });
 
-// FIXME: remove
-// const gasUsedFor = (block: BlockData) => {
-//     if (block) {
-//         const gas = ethers.BigNumber.from(block.gasUsed);
-//         try {
-//             return gas.toNumber().toLocaleString(locale);
-//         } catch (e) {
-//             console.error(e);
-//             return gas.toString();
-//         }
-//     }
-//     return '0';
-// };
+const gasUsedFor = (block: BlockData) => {
+    if (block) {
+        try {
+            const wei = ethers.BigNumber.from(block.gasUsed).mul(gasPrice);
+            return `${formatWei(wei, WEI_PRECISION, 4)} TLOS`;
+        } catch (e) {
+            console.error(e);
+        }
+    }
+    return '0.0000 TLOS';
+};
 
 const gasPrice = '0x754d490126';
 
@@ -117,13 +106,11 @@ const gasPrice = '0x754d490126';
 
         </template>
         <template v-slot:column-three>
-            <div>
-                <TransactionFeeField
-                    :showTotalGasFee="true"
-                    :gasUsed="block.gasUsed"
-                    :gasPrice="gasPrice"
-                />
-                TLOS
+            <div class="c-latest-blocks__gas-used">
+                {{ gasUsedFor(block) }}
+                <q-tooltip anchor="bottom right" self="top end">
+                    {{ $t('components.blocks.gas_used_tooltip') }}
+                </q-tooltip>
             </div>
         </template>
     </HomeLatestDataTableRow>
@@ -135,5 +122,14 @@ const gasPrice = '0x754d490126';
     width: 100%;
     border-collapse: collapse;
     max-height: 100px;
+
+    &__gas-used {
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 4px 8px;
+        font-size: 0.65rem;
+        font-weight: bold;
+        width: max-content;
+    }
 }
 </style>
