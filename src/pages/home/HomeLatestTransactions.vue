@@ -108,11 +108,6 @@ function getTlosValue(value: string) {
     }
 
     &__value {
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 4px 8px;
-        font-size: 0.65rem;
-        font-weight: bold;
-        width: max-content;
+        @include token-value;
     }
 }</style>
