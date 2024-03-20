@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
@@ -28,18 +28,6 @@ import AddressOverview from 'src/components/AddressOverview.vue';
 import AddressMoreInfo from 'src/components/AddressMoreInfo.vue';
 import ContractMoreInfo from 'src/components/ContractMoreInfo.vue';
 
-const tabs = {
-    transactions: '#transactions',
-    holders: '#holders',
-    collection: '#collection',
-    int_transactions: '#int_transactions',
-    tokens: '#tokens',
-    contract: '#contract',
-    transfers: '#transfers',
-    approvals: '#approvals',
-    nfts: '#nfts',
-};
-
 const { t: $t } = useI18n();
 const route = useRoute();
 const router = useRouter();
@@ -53,29 +41,12 @@ const balance = ref('0');
 const nonce = ref<number | null>(null);
 const contract = ref<Contract | null>(null);
 const creationDate = ref(0);
-const tab = ref('#transactions');
+const tab = ref('transactions');
 const confirmationDialog = ref(false);
 
 const accountAddress = computed(() => route.params.address as string ?? '');
 const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
 const address = computed(() => store.getters['login/address']);
-
-watch(() => route.hash, async (newHash) => {
-    if (accountLoading.value && newHash === tabs.contract) {
-        // wait for account to load if contract
-        await new Promise(resolve => setTimeout(resolve, 750));
-    }
-
-    const tabHashes = Object.values(tabs);
-
-    const newHashIsInvalid =
-            !tabHashes.includes(newHash) ||
-            (newHash === tabs.contract && !contract.value);
-
-    if (newHashIsInvalid) {
-        router.replace({ hash: tabs.transactions });
-    }
-}, { immediate: true });
 
 watch(accountAddress, async (newVal, oldVal) => {
     if (newVal !== oldVal) {
@@ -86,6 +57,12 @@ watch(accountAddress, async (newVal, oldVal) => {
         await loadAccount();
     }
 }, { deep: true, immediate: true });
+
+onMounted(() => {
+    if (route.hash !== `#${tab.value}`){
+        router.replace({ hash: '#transactions' });
+    }
+});
 
 async function loadAccount() {
     if(!accountAddress.value || accountLoading.value){
@@ -396,9 +373,9 @@ function disableConfirmation(){
             />
             <q-route-tab
                 v-if="contract && !contract.isToken()"
-                name="int_transactions"
+                name="internaltx"
                 class="c-address__tabs-tab"
-                :to="{ hash: '#int_transactions' }"
+                :to="{ hash: '#internaltx' }"
                 :label="$t('pages.internal_txns')"
             />
             <q-route-tab
@@ -420,16 +397,15 @@ function disableConfirmation(){
                         && isLoggedIn
                         && toChecksumAddress(accountAddress) === toChecksumAddress(address)
                 "
-                v-model="tab"
                 name="approvals"
                 class="c-address__tabs-tab"
                 :to="{ hash: '#approvals' }"
                 :label="$t('pages.approvals')"
             />
             <q-route-tab
-                name="transfers"
+                name="tokentxns"
                 class="c-address__tabs-tab"
-                :to="{ hash: '#transfers' }"
+                :to="{ hash: '#tokentxns' }"
                 :label="$t('pages.erc20_transfers')"
             />
             <q-route-tab
@@ -465,7 +441,7 @@ function disableConfirmation(){
                 <q-tab-panel v-if="contract && contract.isToken()" name="holders">
                     <HolderList :contract="contract" />
                 </q-tab-panel>
-                <q-tab-panel v-else name="int_transactions">
+                <q-tab-panel v-else name="internaltx">
                     <InternalTransactionTable :title="accountAddress" :filter="{accountAddress}"/>
                 </q-tab-panel>
                 <q-tab-panel
@@ -484,7 +460,7 @@ function disableConfirmation(){
                 <q-tab-panel name="tokens">
                     <TokenList :address="accountAddress"/>
                 </q-tab-panel>
-                <q-tab-panel name="transfers">
+                <q-tab-panel name="tokentxns">
                     <TransferTable
                         title="ERC-20 Transfers"
                         token-type="erc20"
