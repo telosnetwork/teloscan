@@ -19,7 +19,6 @@ import TokenList from 'components/Token/TokenList.vue';
 import ApprovalList from 'components/Token/ApprovalList.vue';
 import HolderList from 'components/Token/HolderList.vue';
 import NFTList from 'components/Token/NFTList.vue';
-import ConfirmationDialog from 'components/ConfirmationDialog.vue';
 import ContractTab from 'components/ContractTab/ContractTab.vue';
 import CopyButton from 'components/CopyButton.vue';
 import GenericContractInterface from 'components/ContractTab/GenericContractInterface.vue';
@@ -40,9 +39,7 @@ const telosAccount = ref('');
 const balance = ref('0');
 const nonce = ref<number | null>(null);
 const contract = ref<Contract | null>(null);
-const creationDate = ref(0);
 const tab = ref('transactions');
-const confirmationDialog = ref(false);
 
 const accountAddress = computed(() => route.params.address as string ?? '');
 const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
@@ -101,22 +98,6 @@ async function loadAccount() {
             });
         }
         title.value = $t('pages.contract');
-        if(contract.value?.getCreationBlock()){
-            const response = await indexerApi.get(`/block/${contract.value.getCreationBlock()}`);
-            creationDate.value = response.data.results[0]?.timestamp;
-        }
-        if (contract.value?.getName()) {
-            fullTitle.value = contract.value.getName() ?? '';
-            title.value = (fullTitle.value.length > 22)
-                ? fullTitle.value.slice(0, 22) + '..'
-                : fullTitle.value
-            ;
-            if(contract.value.properties?.symbol){
-                title.value = title.value + ' (' + contract.value.properties.symbol + ')';
-            }
-        } else {
-            title.value = $t('pages.contract');
-        }
     } else {
         contractManager.addContractToCache(accountAddress.value, { address: accountAddress.value });
         try {
@@ -139,10 +120,6 @@ function getAddressNativeExplorerURL() {
     }
 
     return $t('pages.account_url', { domain: process.env.NETWORK_EXPLORER, account: telosAccount.value });
-}
-
-function disableConfirmation(){
-    confirmationDialog.value = false;
 }
 
 </script>
@@ -186,25 +163,6 @@ function disableConfirmation(){
                         />
                         <q-tooltip v-if="fullTitle">{{ fullTitle }} </q-tooltip>
                     </div>
-                    <div v-if="contract">
-                        <q-icon
-                            v-if="contract.isVerified()"
-                            name="verified"
-                            class="text-positive"
-                            size="1.25rem"
-                        />
-                        <q-icon
-                            v-else
-                            class="cursor text-negative"
-                            name="warning"
-                            size="1.25rem"
-                            @click="confirmationDialog = true"
-                        />
-                        <q-tooltip v-if="contract?.isVerified()">
-                            {{ $t('components.contract_tab.verified_contract') }}
-                        </q-tooltip>
-                        <q-tooltip v-else>{{ $t('components.contract_tab.unverified_contract') }} </q-tooltip>
-                    </div>
                 </div>
                 <div class="flex">
                     <div class="flex c-address__overview">
@@ -218,14 +176,6 @@ function disableConfirmation(){
                     </div>
                 </div>
                 <div class="flex">
-                    <div>
-                        <ConfirmationDialog
-                            :flag="confirmationDialog"
-                            :address="accountAddress"
-                            :status="contract?.isVerified()"
-                            @dialog="disableConfirmation"
-                        />
-                    </div>
                     <div class="metrics">
                         <div class="dataCardsContainer balance">
                             <div v-if="!!telosAccount" class="dataCardItem">

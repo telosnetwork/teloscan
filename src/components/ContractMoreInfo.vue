@@ -26,13 +26,14 @@ const props = defineProps({
         <q-card-section class="c-more-info__header">
             {{ $t('pages.more_info') }}
         </q-card-section>
-        <q-card-section>
+        <q-card-section class="c-more-info__section">
             <div>
                 {{ $t('pages.contract_creator') }}
             </div>
             <AddressField
                 :address="props.address"
-                :truncate="22"
+                :truncate="18"
+                class="c-more-info__value"
             />
             <CopyButton
                 :text="props.address"
@@ -40,8 +41,11 @@ const props = defineProps({
                 description="creator address"
                 class="c-more-info__copy"
             />
-            at txn
-            <TransactionField :transaction-hash="props.transaction"/>
+            <div class="c-more-info__at-txn c-more-info__value">at txn</div>
+            <TransactionField
+                :transaction-hash="props.transaction"
+                class="c-more-info__value"
+            />
         </q-card-section>
     </q-card>
 </div>
@@ -52,6 +56,10 @@ const props = defineProps({
     height:100%;
     text-transform: uppercase;
 
+    .c-address-field__text{
+        font-size: 18px;
+    }
+
     &__copy{
         display: inline;
         font-size: 16px;
@@ -59,6 +67,12 @@ const props = defineProps({
     &__header {
         font-size: 18px;
         font-weight: 600;
+    }
+    &__at-txn{
+        display: inline-flex;
+        text-transform: lowercase;
+        margin-right: .25rem;
+        margin-left: .25rem;
     }
 }
 </style>

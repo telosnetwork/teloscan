@@ -9,8 +9,10 @@ import json from 'highlight.js/lib/languages/json';
 import hljsDefineSolidity from 'highlightjs-solidity';
 import 'highlight.js/styles/default.css';
 import { toChecksumAddress } from 'src/lib/utils';
-import CopyButton from 'src/components/CopyButton.vue';
 import { useRoute } from 'vue-router';
+
+import CopyButton from 'src/components/CopyButton.vue';
+import ContractHeader from 'components/ContractHeader.vue';
 
 hljs.registerLanguage('json', json);
 hljsDefineSolidity(hljs);
@@ -108,6 +110,7 @@ const isJson = (fileName: string) => {
 </script>
 
 <template>
+<ContractHeader :contract="contract"/>
 <div :class="(fullscreen) ? 'contract-source abs' : 'contract-source'">
     <div v-if="loading" class="q-pa-lg justify-center"><q-spinner size="md" /></div>
     <div v-else-if="!sources" class="q-pt-md q-pb-xl">
