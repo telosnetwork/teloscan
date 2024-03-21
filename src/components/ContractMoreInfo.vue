@@ -21,34 +21,32 @@ const props = defineProps({
 </script>
 
 <template>
-<div>
-    <q-card class="c-more-info">
-        <q-card-section class="c-more-info__header">
-            {{ $t('pages.more_info') }}
-        </q-card-section>
-        <q-card-section class="c-more-info__section">
-            <div>
-                {{ $t('pages.contract_creator') }}
-            </div>
-            <AddressField
-                :address="props.address"
-                :truncate="18"
-                class="c-more-info__value"
-            />
-            <CopyButton
-                :text="props.address"
-                accompanyingText=""
-                description="creator address"
-                class="c-more-info__copy"
-            />
-            <div class="c-more-info__at-txn c-more-info__value">at txn</div>
-            <TransactionField
-                :transaction-hash="props.transaction"
-                class="c-more-info__value"
-            />
-        </q-card-section>
-    </q-card>
-</div>
+<q-card class="c-more-info">
+    <q-card-section class="c-more-info__header">
+        {{ $t('pages.more_info') }}
+    </q-card-section>
+    <q-card-section class="c-more-info__section">
+        <div>
+            {{ $t('pages.contract_creator') }}
+        </div>
+        <AddressField
+            :address="props.address"
+            :truncate="18"
+            class="c-more-info__value"
+        />
+        <CopyButton
+            :text="props.address"
+            accompanyingText=""
+            description="creator address"
+            class="c-more-info__copy"
+        />
+        <div class="c-more-info__at-txn c-more-info__value">at txn</div>
+        <TransactionField
+            :transaction-hash="props.transaction"
+            class="c-more-info__value"
+        />
+    </q-card-section>
+</q-card>
 </template>
 
 <style lang="scss">

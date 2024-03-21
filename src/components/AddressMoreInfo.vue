@@ -36,39 +36,37 @@ onMounted(async () => {
 </script>
 
 <template>
-<div>
-    <q-card class="c-more-info">
-        <q-card-section class="c-more-info__header">
-            {{ $t('pages.more_info') }}
-        </q-card-section>
-        <q-card-section>
-            <div>
-                {{ $t('pages.last') }} {{ $t('pages.transaction_sent') }}
-            </div>
-            <TransactionField
-                color="primary"
-                :transaction-hash="lastTxn"
-                :truncate="18"
-                class="c-more-info__value"
-            />
-        </q-card-section>
-        <q-card-section>
-            <div>
-                {{ $t('pages.first') }} {{ $t('pages.transaction_sent') }}
-            </div>
-            <TransactionField
-                color="primary"
-                :transaction-hash="firstTxn"
-                :truncate="18"
-                class="c-more-info__value"
-            />
-        </q-card-section>
-    </q-card>
-</div>
+<q-card class="c-more-info">
+    <q-card-section class="c-more-info__header">
+        {{ $t('pages.more_info') }}
+    </q-card-section>
+    <q-card-section>
+        <div>
+            {{ $t('pages.last') }} {{ $t('pages.transaction_sent') }}
+        </div>
+        <TransactionField
+            color="primary"
+            :transaction-hash="lastTxn"
+            :truncate="18"
+            class="c-more-info__value"
+        />
+    </q-card-section>
+    <q-card-section>
+        <div>
+            {{ $t('pages.first') }} {{ $t('pages.transaction_sent') }}
+        </div>
+        <TransactionField
+            color="primary"
+            :transaction-hash="firstTxn"
+            :truncate="18"
+            class="c-more-info__value"
+        />
+    </q-card-section>
+</q-card>
 </template>
 
 <style lang="scss">
-.c-more-info{
+.c-more-info {
     height:100%;
     text-transform: uppercase;
 

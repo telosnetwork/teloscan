@@ -157,7 +157,7 @@ async function loadAccount() {
 
     </div>
     <div class="row q-mb-xl q-col-gutter-md">
-        <div class="col-12 col-md-6 q-mb-md q-mb-md-none">
+        <div class="col-12 col-md-6">
             <AddressOverview :balance="balance" />
         </div>
         <div class="col-12 col-md-6">
