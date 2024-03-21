@@ -28,7 +28,6 @@ const right_options = ref<LatestContainerOptions>({
     },
 });
 
-
 </script>
 
 <template>
