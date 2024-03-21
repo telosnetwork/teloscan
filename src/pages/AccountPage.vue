@@ -324,6 +324,10 @@ async function loadAccount() {
 
             &--with-icon {
                 padding-right: 32px;
+
+                @media screen and (min-width: $breakpoint-md-min) {
+                    padding-right: 16px;
+                }
             }
         }
     }
