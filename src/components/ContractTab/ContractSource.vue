@@ -23,7 +23,6 @@ const props = defineProps({
 });
 
 const route = useRoute();
-// const tab = ref('sources');
 const files = ref<any[] | {bytecode: any}>([]);
 const fullscreen = ref(false);
 const loading = ref(true);
@@ -77,8 +76,6 @@ const toggleFullscreen = (item: any) => {
     fullscreen.value = !fullscreen.value;
     item.fullscreen = !item.fullscreen;
 };
-
-// const arrowIcon = file => file.expanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down';
 
 const sortFiles = (filesToSort: any[]) => {
     for (const file of filesToSort) {
