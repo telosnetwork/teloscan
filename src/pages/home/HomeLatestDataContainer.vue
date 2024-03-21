@@ -132,5 +132,4 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
         }
     }
 }
-
 </style>
