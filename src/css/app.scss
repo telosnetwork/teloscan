@@ -21,7 +21,6 @@ body.body--light {
     --tab-bg-color: #{$grey-3};
     --active-tab-bg-color: #{$tab-active-light};
     --active-tab-text-color: white;
-    
 
     a:hover {
         color: $a-hover-light;
@@ -46,4 +45,8 @@ a {
     color: var(--q-primary);
     text-decoration: none;
     cursor: pointer;
+}
+
+.q-tab-panels {
+    background: none;
 }

@@ -37,7 +37,7 @@ onMounted(() => {
 <template>
 <q-icon
     name="fas fa-qrcode"
-    size=".75rem"
+    size="1rem"
     @click="showQrCode"
 />
 <q-dialog v-model="showCode" :no-shake='true' position="top">
