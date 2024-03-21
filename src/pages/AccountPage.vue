@@ -237,11 +237,15 @@ async function loadAccount() {
         <q-route-tab
             v-if="contract"
             name="contract"
-            class="c-address__tabs-tab"
+            :class="{
+                'c-address__tabs-tab': true,
+                'c-address__tabs-tab--with-icon': contract?.isVerified(),
+            }"
             :to="{ hash: '#contract' }"
             :label="$t('pages.contract')"
-        />
-        <q-icon v-if="contract && contract.isVerified()" class="fas fa-check-circle text-positive c-address__verification-icon"/>
+        >
+            <q-icon v-if="contract && contract.isVerified()" class="fas fa-check-circle text-positive q-ml-xs"/>
+        </q-route-tab>
     </q-tabs>
     <div class="q-mb-md">
         <q-tab-panels
@@ -317,6 +321,10 @@ async function loadAccount() {
             margin-top: auto;
             margin-bottom: auto;
             margin-right:.5rem;
+
+            &--with-icon {
+                padding-right: 32px;
+            }
         }
     }
 

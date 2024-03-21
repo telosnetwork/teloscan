@@ -47,6 +47,11 @@ a {
     cursor: pointer;
 }
 
+// quasar overrides
+.q-tabs {
+    max-width: 100%;
+}
+
 .q-tab-panels {
     background: none;
 }
