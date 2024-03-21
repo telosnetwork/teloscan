@@ -540,6 +540,17 @@ export default {
             error_unpredictable_gas_limit: 'No se pudo estimar el límite de gas para esta transacción',
             error_transaction_canceled: 'Has cancelado la acción',
         },
+        words: {
+            day: 'día',
+            days: 'días',
+            hour: 'hora',
+            hours: 'horas',
+            minute: 'minuto',
+            minutes: 'minutos',
+            second: 'segundo',
+            seconds: 'segundos',
+            time_ago: 'Hace {time}',
+        },
     },
     temporal: {
         telos_cloud_discontinued_title: 'Importante',

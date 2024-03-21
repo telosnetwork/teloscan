@@ -617,10 +617,15 @@ export default {
             error_wrap: 'An unknown error occurred while wrapping system token',
         },
         words: {
+            day: 'day',
             days: 'days',
+            hour: 'hour',
             hours: 'hours',
+            minute: 'minute',
             minutes: 'minutes',
+            second: 'second',
             seconds: 'seconds',
+            time_ago: '{time} ago',
         },
     },
 };
