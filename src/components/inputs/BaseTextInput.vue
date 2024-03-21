@@ -98,7 +98,7 @@ export default {
 </script>
 
 <template>
-<div class="c-base-input q-mx-sm">
+<div class="c-base-input">
     <q-input
         ref="input"
         :model-value="modelValue"

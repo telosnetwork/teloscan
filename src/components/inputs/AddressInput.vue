@@ -58,12 +58,16 @@ export default {
                 }
             }
         },
+        resetValidation() {
+            this.$refs.input.resetValidation();
+        },
     },
 };
 </script>
 
 <template>
 <BaseTextInput
+    ref="input"
     v-bind="$attrs"
     :model-value="modelValue"
     :label="shapedLabel"

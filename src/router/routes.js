@@ -99,6 +99,15 @@ const routes = [
         redirect: () => ({ path: '/health' }),
     },
     {
+        path: '/export',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            name: 'export',
+            component: () => import('pages/export/ExportPage.vue'),
+        }],
+    },
+    {
         path: '/:catchAll(.*)*',
         component: () => import('pages/Error404.vue'),
     },
