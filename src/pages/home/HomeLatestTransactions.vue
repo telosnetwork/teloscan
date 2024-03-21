@@ -102,11 +102,6 @@ function getTlosValue(value: string) {
         }
     }
 
-    &__time-ago {
-        font-size: 0.8rem;
-        color: var(--grey-text-color);
-    }
-
     &__value {
         @include token-value;
     }

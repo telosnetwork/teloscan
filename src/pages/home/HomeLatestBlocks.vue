@@ -81,7 +81,7 @@ onMounted(() => {
         <template v-slot:column-one>
             <BlockField :block="block.blockHeight"/>
             <br>
-            <DateField :epoch="block.timestamp / 1000" :force-show-age="true"/>
+            <DateField :epoch="block.timestamp / 1000" :force-show-age="true" :muted-text="true"/>
         </template>
         <template v-slot:column-two>
 
