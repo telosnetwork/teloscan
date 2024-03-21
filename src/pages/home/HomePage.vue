@@ -7,11 +7,10 @@ import type { LatestContainerOptions } from 'src/types';
 import HomeInfo from 'src/pages/home/HomeInfo.vue';
 import HomeLatestDataContainer from 'src/pages/home/HomeLatestDataContainer.vue';
 import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
+import HomeLatestTransactions from 'src/pages/home/HomeLatestTransactions.vue';
 import AppSearch from 'src/components/AppSearch.vue';
 
-
 const { t: $t } = useI18n();
-
 
 const left_options = ref<LatestContainerOptions>({
     blocks: {
@@ -81,9 +80,7 @@ const right_options = ref<LatestContainerOptions>({
         <div class="col-12 col-md-6">
             <HomeLatestDataContainer :options="right_options">
                 <template v-slot:transactions>
-                    <!-- eztodo remove eslint rule, move table to own component -->
-                    <!-- eslint-disable-next-line vue/no-static-inline-styles -->
-                    <HomeLatestDataTableRow v-for="index in [1, 2, 3, 4, 5, 6]" :key="index" :loading="true" />
+                    <HomeLatestTransactions />
                 </template>
             </HomeLatestDataContainer>
         </div>

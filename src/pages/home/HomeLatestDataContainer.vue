@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { LatestContainerOptions } from 'src/types';
-import { ref, defineProps, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
-
 
 const router = useRouter();
 

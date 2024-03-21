@@ -36,7 +36,6 @@ export function formatWei(bn, tokenDecimals, displayDecimals) {
     const formatted = ethers.utils.formatUnits(amount.toString(), (tokenDecimals || WEI_PRECISION));
     let str = formatted.toString();
     str = str.padEnd(str.length + displayDecimals, '0');
-    console.log('str', str);
     if(displayDecimals > 0 && str.includes('.')) {
         const parts = str.split('.');
         return parts[0] + '.' + parts[1].slice(0, displayDecimals);
