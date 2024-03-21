@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 import { contractManager } from 'src/boot/telosApi';
 import { indexerApi } from 'src/boot/telosApi';
 import { evm } from 'src/boot/evm';
-import { toChecksumAddress, formatWei } from 'src/lib/utils';
+import { toChecksumAddress } from 'src/lib/utils';
 import { getIcon } from 'src/lib/token-utils';
 import Contract from 'src/lib/contract/Contract';
 import { BalanceQueryResponse, BalanceResult } from 'src/types/BalanceResult';
@@ -76,7 +76,7 @@ async function loadAccount() {
         const systemTokenResult = response.data.results.find((r : BalanceResult) => r.contract === '___NATIVE_CURRENCY___') as BalanceResult;
 
         // balance.value = (response.data?.results?.length > 0) ? response.data.results[0].balance : '0';
-        balance.value = systemTokenResult.balance;
+        balance.value = systemTokenResult ? systemTokenResult.balance : '0';
     } catch (e) {
         console.error('Could not get balance: ', e);
     }
@@ -112,16 +112,6 @@ async function loadAccount() {
     accountLoading.value = false;
 }
 
-
-
-function getAddressNativeExplorerURL() {
-    if (!telosAccount.value) {
-        return '';
-    }
-
-    return $t('pages.account_url', { domain: process.env.NETWORK_EXPLORER, account: telosAccount.value });
-}
-
 </script>
 
 <template>
@@ -149,17 +139,17 @@ function getAddressNativeExplorerURL() {
                         size="sm"
                     />
                     <div class=" text-h6 q-pr-xs q-pb-md">
-                        <span>{{ title }}</span>
+                        <span class="c-address__title">{{ title }}</span>
+                        <span class="c-address__hex">{{ accountAddress }}</span>
                         <CopyButton
                             :text="accountAddress"
-                            :accompanyingText="accountAddress"
+                            accompanyingText=""
                             description="address"
                             class="c-address__copy"
                         />
                         <AddressQR
                             v-if="accountAddress"
                             :address="accountAddress"
-                            class="c-address__qr-code"
                         />
                         <q-tooltip v-if="fullTitle">{{ fullTitle }} </q-tooltip>
                     </div>
@@ -173,122 +163,6 @@ function getAddressNativeExplorerURL() {
                     </div>
                     <div v-else class="flex c-address__overview">
                         <AddressMoreInfo :address="accountAddress"  class="c-address__overview--full-width"/>
-                    </div>
-                </div>
-                <div class="flex">
-                    <div class="metrics">
-                        <div class="dataCardsContainer balance">
-                            <div v-if="!!telosAccount" class="dataCardItem">
-                                <div class="dataCardTile">
-                                    {{ $t('pages.native_account') }}
-                                </div>
-                                <div class="dataCardData">
-                                    <a :href="getAddressNativeExplorerURL()" target="_blank">{{ telosAccount }}</a>
-                                </div>
-                            </div>
-                            <div
-                                v-if="contract && contract.properties?.price
-                                    && parseFloat(contract.properties.price) > 0"
-                                class="dataCardItem"
-                            >
-                                <div class="dataCardTile">
-                                    {{ $t('components.usd_price') }}
-                                </div>
-                                <div class="dataCardData">
-                                    <span v-if="parseFloat(contract.properties.price) < 0.0001">{{ '< 0.0001 $' }}</span>
-                                    <span v-else>
-                                        {{
-                                            Number(parseFloat(contract.properties.price))
-                                                .toLocaleString('en-US', { minimumFractionDigits: 4 })
-                                        }} $
-                                    </span>
-                                </div>
-                                <q-tooltip> {{ $t('components.price_sources') }}</q-tooltip>
-                            </div>
-                            <div
-                                v-if="
-                                    contract && contract.properties?.marketcap
-                                        && parseFloat(contract.properties.marketcap) > 0
-                                "
-                                class="dataCardItem"
-                            >
-                                <div class="dataCardTile">
-                                    {{ $t('components.usd_marketcap') }}
-                                </div>
-                                <div class="dataCardData">
-                                    <span v-if="parseFloat(contract.properties.marketcap)< 0.0001">
-                                        {{ '< 0.0001 $' }}
-                                    </span>
-                                    <span v-else>
-                                        {{ Number(parseFloat(contract.properties.marketcap))
-                                            .toLocaleString('en-US', { minimumFractionDigits: 4 })
-                                        }} $
-                                    </span>
-                                </div>
-                                <q-tooltip> {{ $t('components.marketcap_sources') }}</q-tooltip>
-                            </div>
-                            <div
-                                v-if="
-                                    contract && contract.properties?.supply
-                                        && (contract.supportedInterfaces?.includes('erc721')
-                                            || contract.supportedInterfaces?.includes('erc20'))
-                                "
-                                class="dataCardItem"
-                            >
-                                <div
-                                    v-if="contract.supportedInterfaces?.includes('erc721')"
-                                    :key="contract.properties.supply + contract.address"
-                                >
-                                    <div class="dataCardTile text-center">
-                                        {{ $t('pages.minted') }}
-                                    </div>
-                                    <div class="dataCardData text-center">
-                                        <span>
-                                            {{ contract.properties.supply }}
-                                        </span>
-                                        <q-tooltip>{{ $t('pages.total_nfts_minted') }}</q-tooltip>
-                                    </div>
-                                </div>
-                                <div v-else>
-                                    <div class="dataCardTile text-center">
-                                        {{ $t('pages.telos_supply') }}
-                                    </div>
-                                    <div class="dataCardData text-center">
-                                        <span>
-                                            {{
-                                                Number(parseFloat(formatWei(
-                                                    contract.properties.supply,
-                                                    contract.properties.decimals
-                                                ))).toLocaleString('en-US', { minimumFractionDigits: 4 })
-                                            }}
-                                        </span>
-                                    </div>
-                                    <q-tooltip>
-                                        {{ Number(formatWei(
-                                            contract.properties.supply ,
-                                            contract.properties.decimals
-                                        )).toLocaleString('en-US', {
-                                            minimumFractionDigits: 4,
-                                            maximumFractionDigits: contract.properties?.decimals
-                                        })}}
-                                    </q-tooltip>
-                                </div>
-                            </div>
-                            <div
-                                v-if="contract && contract.properties?.holders &&
-                                    (contract.supportedInterfaces?.includes('erc20')
-                                        || contract.supportedInterfaces?.includes('erc721'))"
-                                class="dataCardItem"
-                            >
-                                <div class="dataCardTile">
-                                    {{ $t('pages.holders') }}
-                                </div>
-                                <div class="dataCardData">
-                                    {{ contract.properties?.holders }}
-                                </div>
-                                <q-tooltip>{{ $t('pages.evm_holders')  }}</q-tooltip>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -444,9 +318,15 @@ function getAddressNativeExplorerURL() {
             margin-right:.5rem;
         }
     }
+    &__hex{
+        font-size: 18px;
+        margin-right:.5rem;
+        margin-left:.5rem;
+    }
     &__copy{
         display: inline;
         font-size: 16px;
+        margin-right:.5rem;
     }
     &__overview{
         width: 50%;
@@ -538,12 +418,12 @@ body.ios .q-hoverable:active .q-focus-helper {
 }
 
 .coin-icon {
-  border-radius: 100%;
-  width: 32px;
-  height: 32px;
-  vertical-align: middle;
-  margin-right: 7px;
-  margin-bottom: 5px;
+    border-radius: 100%;
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+    margin-right: 7px;
+    margin-top: 10px;
 }
 
 .text-primary {
@@ -584,9 +464,6 @@ body.ios .q-hoverable:active .q-focus-helper {
       width: 100%;
     }
   }
-//   .tableWrapper {
-//     justify-content: center;
-//   }
   .homeInfo {
     padding: 20px;
     text-align: center;
