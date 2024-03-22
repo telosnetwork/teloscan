@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { getFormattedUtcOffset } from 'src/lib/utils';
+import { useI18n } from 'vue-i18n';
 import moment from 'moment';
 
-// Define props
+import { getFormattedUtcOffset } from 'src/lib/utils';
+import { formatTimePeriod } from 'src/lib/date-utils';
+
+const { t: $t } = useI18n();
+
 const props = defineProps({
     epoch: {
         type: Number,
@@ -21,6 +25,10 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    mutedText: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const showAge = ref(props.defaultToAge);
@@ -28,7 +36,8 @@ const showAge = ref(props.defaultToAge);
 const friendlyDate = computed(() => {
     const showAgeValue = props.forceShowAge === true || (props.forceShowAge === null && showAge.value);
     if (showAgeValue) {
-        return moment.unix(props.epoch).fromNow();
+        const difference = Date.now() - props.epoch * 1000;
+        return $t('antelope.words.time_ago', { time: formatTimePeriod(difference / 1000, $t) });
     }
     const timestamp = moment.unix(props.epoch);
     if (props.utc) {
@@ -52,6 +61,7 @@ function toggleDisplay() {
     :class="{
         'c-date-field': true,
         'c-date-field--clickable': forceShowAge === null,
+        'c-date-field--muted': mutedText,
     }"
     @click="toggleDisplay"
 >
@@ -73,6 +83,11 @@ function toggleDisplay() {
 
     &--clickable {
         cursor: pointer;
+    }
+
+    &--muted {
+        color: var(--grey-text-color);
+        font-size: 0.8rem;
     }
 }
 </style>

@@ -461,7 +461,7 @@ function goTo(to: string | { name: string }) {
         font-weight: 500;
 
         &:not(&--expandable):hover {
-            color: $primary;
+            color: var(--q-primary);
         }
 
         @media screen and (min-width: $breakpoint-md-min) {
@@ -493,7 +493,7 @@ function goTo(to: string | { name: string }) {
         }
 
         &--current {
-            color: $primary;
+            color: var(--q-primary);
         }
     }
 
@@ -529,7 +529,7 @@ function goTo(to: string | { name: string }) {
             justify-content: space-between;
             border-radius: 0 0 4px 4px;
             background-color: var(--background-color);
-            border-top: 2px solid $primary;
+            border-top: 2px solid var(--q-primary);
 
             &--rightmost {
                 right: 0;
@@ -552,7 +552,7 @@ function goTo(to: string | { name: string }) {
         }
 
         &--current {
-            color: $primary;
+            color: var(--q-primary);
         }
     }
 

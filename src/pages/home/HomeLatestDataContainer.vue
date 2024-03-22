@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { LatestContainerOptions } from 'src/types';
-import { ref, defineProps, computed } from 'vue';
-import { useRouter } from 'vue-router';
 
+import { LatestContainerOptions } from 'src/types';
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
@@ -10,7 +10,7 @@ const props = defineProps<{
   options: LatestContainerOptions
 }>();
 
-const selectedOption = ref(Object.keys(props.options)[0]);
+const selectedOption = ref<string>(Object.keys(props.options)[0]);
 
 const selectOption = (option: string) => {
     selectedOption.value = option;
@@ -54,7 +54,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
                                     name="check"
                                     :class="{
                                         'c-latest-data__menu-opt-check': true,
-                                        'c-latest-data__menu-opt-check--active': selectedOption === key
+                                        'c-latest-data__menu-opt-check--active': selectedOption === key.toString()
                                     }"
                                 />
                             </q-item-section>
@@ -70,22 +70,20 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
 
     <q-card-section class="c-latest-data__content">
         <template v-for="(name, key) in props.options" :key="key">
-            <slot v-if="selectedOption === key" :name="key"></slot>
+            <slot v-if="selectedOption === key.toString()" :name="key"></slot>
         </template>
     </q-card-section>
-
 
     <q-card-actions align="center" class="c-latest-data__footer" @click="goToPage(props.options[selectedOption].link)">
         <span class="c-latest-data__footer-text"> {{  props.options[selectedOption].footer  }} </span>
         <q-icon name="arrow_forward" class="c-latest-data__footer-icon" />
     </q-card-actions>
-
 </q-card>
-
 </template>
 
 <style lang="scss">
 .c-latest-data {
+
     border-radius: 12px;
     height: 550px;
     position: relative;
@@ -94,13 +92,27 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
     &__header {
         &-title {
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
         }
     }
 
     &__content {
         overflow-y: auto;
-        max-height: 485px;
+        max-height: 470px;
+
+        &::-webkit-scrollbar {
+            width: 0.5rem;
+            height: 0.5rem;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: var(--scrollbar-track-bg-color);
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: var(--scrollbar-thumb-bg-color);
+            border-radius: 0.375rem;
+        }
     }
 
     &__menu-opt-check {
@@ -118,6 +130,12 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
         cursor: pointer;
         display: flex;
         gap: 5px;
+        background-color: color-mix(in srgb, white, black 5%);
+
+        body.body--dark & {
+            background-color: color-mix(in srgb, $dark, white 5%);
+        }
+
         &-text {
             font-size: 0.7rem;
             text-transform: uppercase;
@@ -128,3 +146,4 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
     }
 }
 </style>
+

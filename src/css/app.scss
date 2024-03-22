@@ -21,7 +21,12 @@ body.body--light {
     --tab-bg-color: #{$grey-3};
     --active-tab-bg-color: #{$tab-active-light};
     --active-tab-text-color: white;
-    
+
+    --q-primary: #2a8de3 !important;
+    --q-secondary: #8B3F98 !important;
+
+    --scrollbar-track-bg-color: #{$grey-5};
+    --scrollbar-thumb-bg-color: #{$grey-7};
 
     a:hover {
         color: $a-hover-light;
@@ -36,6 +41,14 @@ body.body--dark {
     --tab-bg-color: #{$grey-10};
     --active-tab-bg-color: #{#{$tab-active-dark}};
     --active-tab-text-color: white;
+
+    --q-primary: #2a8de3 !important;
+    --q-secondary: #8B3F98 !important;
+
+    --scrollbar-track-bg-color: #{$grey-10};
+    --scrollbar-thumb-bg-color: #{$grey-7};
+
+    --q-dark: #181818;
 
     a:hover {
         color: $a-hover-dark;

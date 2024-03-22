@@ -38,7 +38,7 @@
     }
     .q-dark & {
         color: rgb(8, 29, 53);
-    }    
+    }
 }
 
 @mixin tabs-container {
@@ -68,4 +68,13 @@
 @mixin page-body {
     display: flex;
     flex-direction: column;
+}
+
+@mixin token-value {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 0.65rem;
+    font-weight: bold;
+    width: max-content;
 }
