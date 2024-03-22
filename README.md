@@ -8,6 +8,12 @@ Test Net: [testnet.teloscan.io](https://testnet.teloscan.io/) [![Netlify Status]
 
 ![License](https://img.shields.io/github/license/telosnetwork/teloscan?style=for-the-badge)
 
+Dev Branch Deployments:
+
+- Main Net: [dev-mainnet-teloscan.netlify.app/](https://dev-mainnet-teloscan.netlify.app/) 
+
+- Test Net: [stage.teloscan.io](https://stage.teloscan.io/)
+
 ## About
 Teloscan is the official Telos EVM block explorer. Explore accounts, transactions, and blocks. View and interact with verified contract ABIs. Connect MetaMask wallet to stake TLOS for sTLOS.
 
