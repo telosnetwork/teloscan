@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 import { LatestContainerOptions } from 'src/types';
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
@@ -9,7 +10,7 @@ const props = defineProps<{
   options: LatestContainerOptions
 }>();
 
-const selectedOption = ref(Object.keys(props.options)[0]);
+const selectedOption = ref<string>(Object.keys(props.options)[0]);
 
 const selectOption = (option: string) => {
     selectedOption.value = option;
@@ -53,7 +54,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
                                     name="check"
                                     :class="{
                                         'c-latest-data__menu-opt-check': true,
-                                        'c-latest-data__menu-opt-check--active': selectedOption === key
+                                        'c-latest-data__menu-opt-check--active': selectedOption === key.toString()
                                     }"
                                 />
                             </q-item-section>
@@ -69,18 +70,15 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
 
     <q-card-section class="c-latest-data__content">
         <template v-for="(name, key) in props.options" :key="key">
-            <slot v-if="selectedOption === key" :name="key"></slot>
+            <slot v-if="selectedOption === key.toString()" :name="key"></slot>
         </template>
     </q-card-section>
-
 
     <q-card-actions align="center" class="c-latest-data__footer" @click="goToPage(props.options[selectedOption].link)">
         <span class="c-latest-data__footer-text"> {{  props.options[selectedOption].footer  }} </span>
         <q-icon name="arrow_forward" class="c-latest-data__footer-icon" />
     </q-card-actions>
-
 </q-card>
-
 </template>
 
 <style lang="scss">
@@ -93,7 +91,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
     &__header {
         &-title {
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
         }
     }
 
@@ -133,3 +131,4 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
     }
 }
 </style>
+

@@ -2,26 +2,116 @@
 import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
+import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 import { indexerApi } from 'src/boot/telosApi';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, toRaw } from 'vue';
 import { BlockData } from 'src/types';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { ethers } from 'ethers';
-import { WEI_PRECISION, formatWei } from 'src/lib/utils';
+import { WEI_PRECISION } from 'src/lib/utils';
+
+type BlockDataOrLoading = BlockData | null;
 
 // variables
 const $q = useQuasar();
-const { t: $t } = useI18n();
-const loading = ref(true);
-const blocks = ref<BlockData[]>([1, 2, 3, 4, 5, 6] as unknown as BlockData[]);
+const $i18n = useI18n();
+const { t: $t } = $i18n;
+const locale = $i18n.locale.value;
+const blocks = ref<BlockDataOrLoading[]>([null, null, null, null, null, null]);
 const gasPrice = '0x754d490126';
+const CACHE_KEY = 'latest-blocks';
+const blocksCache = ref<{
+    range: { start: number },
+    relevantBlocks: BlockData[],
+}>({
+    range: { start: 0 },
+    relevantBlocks: [],
+});
 
 // functions
-async function fetchBlocksPage() {
-    const path = getPath();
-    const result = await indexerApi.get(path);
 
+function saveCache() {
+    try {
+        const relevantBlocks = toRaw(blocks.value);
+        // if the first block has no transactions, we need to remove it
+        if (relevantBlocks[0]?.transactionsCount === 0) {
+            relevantBlocks.shift();
+        }
+        blocksCache.value.relevantBlocks = relevantBlocks;
+        localStorage.setItem(CACHE_KEY, JSON.stringify(blocksCache.value));
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function loadCache() {
+    const cache = localStorage.getItem(CACHE_KEY);
+    if (cache) {
+        try {
+            blocksCache.value = JSON.parse(cache);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+}
+
+
+async function fetchBlocksWithTransactions(firstPage: BlockData[]) {
+    let currentPage = 1;
+    const maxBlocksToShow = 6;
+    const start = firstPage[0].blockHeight;
+    let end = firstPage[firstPage.length - 1].blockHeight;
+
+    // verify if we have enough blocks in the first page
+    let notEmptyBlocks = firstPage.filter(b => b.transactionsCount > 0);
+
+    // we need to overwrite the indexes from 1 to 5 of the blocks array
+    notEmptyBlocks.forEach((block, index) => {
+        if (index < maxBlocksToShow - 1) {
+            blocks.value[index + 1] = block;
+        }
+    });
+
+
+    while (blocks.value.filter(b => b !== null).length < maxBlocksToShow) {
+        let response = await fetchBlocksPage(currentPage);
+        end = response.data.results[response.data.results.length - 1].blockHeight;
+        notEmptyBlocks = response.data.results.filter(b => b.transactionsCount > 0);
+
+        // we need to overwrite the indexes from 1 to 5 of the blocks array
+        let index = blocks.value.filter(b => b !== null).length;
+        notEmptyBlocks.forEach((block) => {
+            if (index < maxBlocksToShow) {
+                blocks.value[index++] = block;
+            }
+        });
+
+        if (index === maxBlocksToShow) {
+            // we have enough blocks
+            break;
+        }
+
+        // Verify if next page is in cache
+        if (end <= blocksCache.value.range.start) {
+            // complete the blocks array with the cached blocks
+            blocksCache.value.relevantBlocks.forEach((block) => {
+                if (index < maxBlocksToShow) {
+                    blocks.value[index++] = block;
+                }
+            });
+            break;
+        }
+
+        currentPage++;
+    }
+
+    blocksCache.value.range.start = start;
+}
+
+async function fetchBlocksPage(page: number) {
+    const path = getPath(page);
+    const result = await indexerApi.get(path);
     result.data.results = result.data.results.map((block: BlockData) => {
         block.blockHeight = +(block.number ?? 0);
         block.transactionsCount = +(block.transactionCount ?? 0);
@@ -30,26 +120,27 @@ async function fetchBlocksPage() {
     return result;
 }
 
-async function parseBlocks() {
-    loading.value = true;
-
+async function fetchBlocks() {
     try {
-        let response = await fetchBlocksPage();
-        blocks.value = response.data.results;
-        loading.value = false;
+        let response = await fetchBlocksPage(0);
+        blocks.value[0] = response.data.results[0];
+        // remove the first block to avoid repeating it
+        response.data.results.shift();
+        await fetchBlocksWithTransactions(response.data.results).then(() => {
+            saveCache();
+        });
     } catch (e: unknown) {
         $q.notify({
             type: 'negative',
             message: $t('components.blocks.transaction.load_error'),
             caption: (e as {message:string}).message,
         });
-        loading.value = false;
     }
 }
 
-
-function getPath() {
-    let path = 'blocks?limit=6&includeCount=1';
+function getPath(page = 0) {
+    const offset = page * 100;
+    let path = `blocks?limit=100&includeCount=1&offset=${offset}`;
     return path;
 }
 
@@ -57,24 +148,34 @@ const gasUsedFor = (block: BlockData) => {
     if (block) {
         try {
             const wei = ethers.BigNumber.from(block.gasUsed).mul(gasPrice);
-            return `${formatWei(wei, WEI_PRECISION, 4)} TLOS`;
+            return prettyPrintCurrency(
+                ethers.BigNumber.from(wei.toHexString()),
+                0,
+                locale,
+                false,
+                'TLOS',
+                false,
+                WEI_PRECISION,
+                false,
+            );
         } catch (e) {
             console.error(e);
         }
     }
-    return '0.0000 TLOS';
+    return 'AAAA';
 };
 
 // lifecycle
 onMounted(() => {
-    parseBlocks();
+    loadCache();
+    fetchBlocks();
 });
 
 </script>
 
 <template>
 <table class="c-latest-blocks">
-    <HomeLatestDataTableRow v-for="block in blocks" :key="block.blockHeight" :loading="loading">
+    <HomeLatestDataTableRow v-for="(block, index) in blocks" :key="index" :loading="block === null">
         <template v-slot:icon>
             <q-icon name="view_in_ar" size="24px" />
         </template>
