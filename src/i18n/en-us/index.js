@@ -44,6 +44,10 @@ export default {
             last_finalized_block: 'Last Finalized Block',
             total_transactions: 'Total Transactions',
         },
+        error: {
+            title: 'Page not found.',
+            subtitle: 'Please double-check the URL. If it looks correct, try again later.',
+        },
         issuer: 'Issuer',
         account_not_found: 'We could not find this account',
         approvals: 'Approvals',
@@ -52,7 +56,6 @@ export default {
         recent_transactions: 'Recent transactions',
         rpc_endpoints: 'RPC Endpoints',
         monitor: 'Monitor',
-        oops: 'Oops. Nothing here...',
         go_home: 'Go Home',
         minted: 'Minted',
         telos_supply: 'Telos EVM supply',

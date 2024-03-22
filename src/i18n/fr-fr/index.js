@@ -44,6 +44,10 @@ export default {
             last_finalized_block: 'Dernier bloc finalisé',
             total_transactions: 'Total des transactions',
         },
+        error: {
+            title: 'Page non trouvée.',
+            subtitle: 'Veuillez vérifier à nouveau l\'URL. Si elle semble correcte, réessayez plus tard.',
+        },
         issuer: 'Émetteur',
         account_not_found: 'Nous n\'avons pas pu trouver ce compte',
         approvals: 'Permissions',
@@ -53,7 +57,6 @@ export default {
         telos_evm_explorer: 'Exploreur Telos EVM',
         rpc_endpoints: 'RPC',
         monitor: 'Moniteur',
-        oops: 'Oops. Il n\'y a rien ici...',
         go_home: 'Accueil',
         minted: 'Frappé(s)',
         holders: 'Détenteurs',
