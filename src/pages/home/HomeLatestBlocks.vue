@@ -28,8 +28,6 @@ const blocksCache = ref<{
     relevantBlocks: [],
 });
 
-// functions
-
 function saveCache() {
     try {
         const relevantBlocks = toRaw(blocks.value);
