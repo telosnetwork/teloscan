@@ -86,7 +86,7 @@ const toTop = () => {
 
         &--colors {
             background-image:
-                radial-gradient(circle at 0% 0%, $primary, transparent 29%);
+                radial-gradient(circle at 0% 0%, var(--q-primary), transparent 29%);
         }
 
         &--alpha {

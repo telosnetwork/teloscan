@@ -69,7 +69,7 @@ const columns = [
     {
         name: 'gasUsed',
         label: $t('components.blocks.gas_used'),
-        align: 'right',
+        align: 'left',
     },
 ];
 
@@ -121,6 +121,11 @@ async function onPaginationChange(settings: { pagination: Pagination}) {
 async function fetchBlocksPage() {
     const path = getPath();
     const result = await indexerApi.get(path);
+    result.data.results = result.data.results.map((block: BlockData) => {
+        block.blockHeight = +(block.number ?? 0);
+        block.transactionsCount = +(block.transactionCount ?? 0);
+        return block;
+    });
     return result;
 }
 
@@ -189,11 +194,6 @@ function getGasUsed(gasUsed: string) {
     return '0';
 }
 
-
-function getTransactionsCount(transactionsCount: number | undefined) {
-    return transactionsCount?.toLocaleString() ?? '0';
-}
-
 </script>
 
 <template>
@@ -240,9 +240,9 @@ function getTransactionsCount(transactionsCount: number | undefined) {
         </q-tr>
     </template>
     <template v-slot:body="props">
-        <q-tr :key="props.row.number" :props="props">
+        <q-tr :key="props.row.blockHeight" :props="props">
             <q-td key="block" :props="props">
-                <BlockField :block="props.row.number"/>
+                <BlockField :block="props.row.blockHeight"/>
             </q-td>
             <q-td key="timestamp" :props="props">
                 <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
@@ -253,10 +253,10 @@ function getTransactionsCount(transactionsCount: number | undefined) {
             <q-td key='transactionsCount' :props="props">
                 <span class="c-block-table__cell-trx">
                     {{
-                        getTransactionsCount(props.row.transactionCount) === '1'
+                        props.row.transactionsCount === 1
                             ? $t('components.blocks.count_transaction')
                             : $t('components.blocks.count_transactions', {
-                                count: getTransactionsCount(props.row.transactionCount)
+                                count: props.row.transactionsCount
                             })
                     }}
                 </span>

@@ -1,16 +1,38 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import HomeInfo from 'pages/home/HomeInfo.vue';
+import type { LatestContainerOptions } from 'src/types';
+
+import HomeInfo from 'src/pages/home/HomeInfo.vue';
+import HomeLatestDataContainer from 'src/pages/home/HomeLatestDataContainer.vue';
+import HomeLatestBlocks from 'src/pages/home/HomeLatestBlocks.vue';
+import HomeLatestTransactions from 'src/pages/home/HomeLatestTransactions.vue';
 import AppSearch from 'src/components/AppSearch.vue';
 
 const { t: $t } = useI18n();
 
+const left_options = ref<LatestContainerOptions>({
+    blocks: {
+        title: 'Latest Blocks',
+        footer: 'View all Blocks',
+        link: 'blocks',
+    },
+});
+
+const right_options = ref<LatestContainerOptions>({
+    transactions: {
+        title: 'Latest Transactions',
+        footer: 'View all Transactions',
+        link: 'transactions',
+    },
+});
+
 </script>
 
 <template>
-<q-page class="c-home-page">
-    <div class="row c-home-page__top-text-row">
+<q-page class="c-home">
+    <div class="c-home__top-text-row row">
         <div class="col-12 text-center">
             <h5 class="text-weight-bolder q-my-none">
                 {{ $t('pages.home.telos_evm_explorer') }}
@@ -22,23 +44,33 @@ const { t: $t } = useI18n();
             <AppSearch :homepage-mode="true" />
         </div>
     </div>
-    <div class="row q-mt-xl">
+    <div class="row q-my-xl">
         <div class="col-12">
             <HomeInfo />
+        </div>
+    </div>
+    <div class="row q-col-gutter-md">
+        <div class="col-12 col-md-6">
+            <HomeLatestDataContainer :options="left_options">
+                <template v-slot:blocks>
+                    <HomeLatestBlocks />
+                </template>
+            </HomeLatestDataContainer>
+        </div>
+        <div class="col-12 col-md-6">
+            <HomeLatestDataContainer :options="right_options">
+                <template v-slot:transactions>
+                    <HomeLatestTransactions />
+                </template>
+            </HomeLatestDataContainer>
         </div>
     </div>
 </q-page>
 </template>
 
 <style lang="scss">
-.c-home-page {
-    flex: 0 1 1200px;
-    margin: auto;
-    max-width: 1200px;
-
-    &__table {
-        max-width: 100vw;
-    }
+.c-home {
+    @include page-container;
 
     &__top-text-row {
         margin-top: 32px;
@@ -47,6 +79,13 @@ const { t: $t } = useI18n();
         @media screen and (min-width: $breakpoint-md-min) {
             margin-top: 48px;
         }
+    }
+
+    &__data {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 32px;
+        gap: 16px;
     }
 }
 </style>

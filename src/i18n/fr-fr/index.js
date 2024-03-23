@@ -505,5 +505,16 @@ export default {
             error_unpredictable_gas_limit: 'Impossible d\'estimer la limite de gaz pour cette transaction',
             error_transaction_canceled: 'Vous avez annulé l\'action',
         },
+        words: {
+            day: 'jour',
+            days: 'jours',
+            hour: 'heure',
+            hours: 'heures',
+            minute: 'minute',
+            minutes: 'minutes',
+            second: 'seconde',
+            seconds: 'secondes',
+            time_ago: 'Il y a {time}',
+        },
     },
 };

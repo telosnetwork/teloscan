@@ -236,7 +236,7 @@ pre {
     left: 0;
     z-index: 111111;
     height: 50px;
-    background: $primary;
+    background: var(--q-primary);
     cursor: pointer;
     line-height: 50px;
 }
@@ -248,7 +248,6 @@ pre {
     height: 100%;
     padding-bottom: 80px !important;
 }
-
 .contract-source .q-expansion-item .q-item > .flex{
     width: 100%;
 }
@@ -260,7 +259,6 @@ pre {
     display: flex;
     justify-content: space-between;
 }
-
 .contract-source .q-focus-helper{
     display: none;
 }
@@ -276,7 +274,6 @@ pre {
     overflow-y: auto;
     margin-bottom: 2rem;
 }
-
 body.body--dark .q-card{
     border-radius: 0;
 }

@@ -34,6 +34,10 @@ const props = defineProps({
         type: Number,
         default: 0,
     },
+    hideContractIcon: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(['highlight']);
@@ -59,8 +63,7 @@ const truncateText = (text: string, middle?: boolean) => {
         return text;
     }
     if (middle) {
-        // eslint-disable-next-line max-len
-        return `${text.slice(0, (props.truncate / 2))}...${text.slice(text.length - (props.truncate / 2), text.length)}`;
+        return `${text.slice(0, (props.truncate / 2 + 2))}...${text.slice(text.length - (props.truncate / 2), text.length)}`;
     }
     return `${text.slice(0, props.truncate)}...`;
 };
@@ -118,7 +121,7 @@ function emitHighlight(val: string) {
 <template>
 <div
     :key="displayName + address"
-    class='c-address-field'
+    :class="['c-address-field', props.class]"
     @mouseover="emitHighlight(address)"
     @mouseleave="emitHighlight('')"
 >
@@ -130,13 +133,13 @@ function emitHighlight(val: string) {
         }"
     >
         <q-img
-            v-if="logo !== null"
+            v-if="logo !== null && hideContractIcon === false"
             class="q-mr-xs"
             :src="getIcon(logo)"
             width="16px"
             height="auto"
         />
-        <q-icon v-else-if="contract && contract.getName()" name="far fa-file-code" />
+        <q-icon v-else-if="contract && contract.getName() && hideContractIcon == false" name="far fa-file-code" />
         <span class="c-address-field__text">{{ displayName }}</span>
         <q-tooltip v-if="fullName !== displayName">{{ fullName }}</q-tooltip>
     </router-link>

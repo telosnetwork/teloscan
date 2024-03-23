@@ -548,6 +548,17 @@ export default {
             error_unpredictable_gas_limit: 'Das Gaslimit für diese Transaktion konnte nicht geschätzt werden',
             error_transaction_canceled: 'Sie haben die Aktion abgebrochen',
         },
+        words: {
+            day: 'Tag',
+            days: 'Tage',
+            hour: 'Stunde',
+            hours: 'Stunden',
+            minute: 'Minute',
+            minutes: 'Minuten',
+            second: 'Sekunde',
+            seconds: 'Sekunden',
+            time_ago: 'Vor {time}',
+        },
     },
     temporal: {
         telos_cloud_discontinued_title: 'Wichtig',

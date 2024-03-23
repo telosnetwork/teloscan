@@ -50,7 +50,7 @@ const buttonColor = computed(() => props.highlight ? 'primary' : ($q.dark.isActi
 
     &--primary-text {
         .q-btn__content {
-            color: $primary !important;
+            color: var(--q-primary) !important;
         }
     }
 
