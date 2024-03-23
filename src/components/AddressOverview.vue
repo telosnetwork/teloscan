@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { WEI_PRECISION, formatWei } from 'src/lib/utils';
@@ -14,6 +14,10 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    loadingComplete: {
+        type: Boolean,
+        required: true,
+    },
 });
 
 const fiatPrice = $store.getters['chain/tlosPrice'];
@@ -25,7 +29,7 @@ function getBalanceDisplay(quantity: string) {
     return $t('pages.tlos_balance', { balance: quantity });
 }
 
-onMounted(() => {
+onBeforeMount(() => {
     tokenQty.value = formatWei(props.balance, WEI_PRECISION, 4);
     fiatValue.value = parseFloat(tokenQty.value) * parseFloat(fiatPrice);
 });
@@ -38,14 +42,20 @@ onMounted(() => {
         <q-card-section class="c-overview__header">
             {{ $t('pages.overview') }}
         </q-card-section>
-        <q-card-section>
+        <q-card-section v-if="!loadingComplete" >
+            <q-skeleton type="text" class="c-overview__skeleton" />
+        </q-card-section>
+        <q-card-section v-else>
             <div> TLOS {{ $t('pages.balance') }} </div>
             <div class="c-overview__balance">
                 <img :src="TLOS_LOGO" alt="TLOS" height="22">
                 {{ getBalanceDisplay(tokenQty) }}
             </div>
         </q-card-section>
-        <q-card-section>
+        <q-card-section v-if="!loadingComplete" >
+            <q-skeleton type="text" class="c-overview__skeleton" />
+        </q-card-section>
+        <q-card-section v-else>
             <div>
                 TLOS {{ $t('pages.value') }}
             </div>
@@ -66,6 +76,13 @@ onMounted(() => {
     &__header {
         font-size: 18px;
         font-weight: 600;
+    }
+    &__skeleton {
+        height: 2rem;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            width: 50%;
+        }
     }
     img{
         margin-top: 2px;

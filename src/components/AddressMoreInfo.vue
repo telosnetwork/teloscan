@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { indexerApi } from 'src/boot/telosApi';
 import { TransactionQueryData } from 'src/types/TransactionQueryData';
@@ -10,6 +10,7 @@ const { t: $t } = useI18n();
 
 const lastTxn = ref('...');
 const firstTxn = ref('...');
+const loadingComplete = ref(false);
 
 const props = defineProps({
     address: {
@@ -18,7 +19,7 @@ const props = defineProps({
     },
 });
 
-onMounted(async () => {
+onBeforeMount(async () => {
     try{
         const lastTxnQuery = (await indexerApi.get(`address/${props.address}/transactions?limit=1&includePagination=true`) as TransactionQueryData).data;
         if (lastTxnQuery.results.length){
@@ -28,6 +29,7 @@ onMounted(async () => {
         const offset = lastTxnQuery.total_count - 1;
         const firstTxnQuery = (await indexerApi.get(`address/${props.address}/transactions?limit=1&offset=${offset}`) as TransactionQueryData).data;
         firstTxn.value = firstTxnQuery.results[0].hash;
+        loadingComplete.value = true;
     }catch(e){
         console.log(e);
     }
@@ -40,7 +42,10 @@ onMounted(async () => {
     <q-card-section class="c-more-info__header">
         {{ $t('pages.more_info') }}
     </q-card-section>
-    <q-card-section>
+    <q-card-section v-if="!loadingComplete" >
+        <q-skeleton type="text" class="c-overview__skeleton" />
+    </q-card-section>
+    <q-card-section v-else>
         <div>
             {{ $t('pages.last') }} {{ $t('pages.transaction_sent') }}
         </div>
@@ -51,7 +56,10 @@ onMounted(async () => {
             class="c-more-info__value"
         />
     </q-card-section>
-    <q-card-section>
+    <q-card-section v-if="!loadingComplete" >
+        <q-skeleton type="text" class="c-overview__skeleton" />
+    </q-card-section>
+    <q-card-section v-else>
         <div>
             {{ $t('pages.first') }} {{ $t('pages.transaction_sent') }}
         </div>
@@ -76,6 +84,13 @@ onMounted(async () => {
     &__header {
         font-size: 18px;
         font-weight: 600;
+    }
+    &__skeleton {
+        height: 2rem;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            width: 50%;
+        }
     }
 }
 </style>

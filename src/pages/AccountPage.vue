@@ -42,18 +42,21 @@ const balance = ref('0');
 const nonce = ref<number | null>(null);
 const contract = ref<Contract | null>(null);
 const tab = ref(tabs[0]);
+const initialLoadComplete = ref(false);
 
 const accountAddress = computed(() => route.params.address as string ?? '');
 const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
 const address = computed(() => store.getters['login/address']);
 
-watch(accountAddress, async (newVal, oldVal) => {
+watch(accountAddress, (newVal, oldVal) => {
     if (newVal !== oldVal) {
         const newAsChecksum = toChecksumAddress(newVal);
         if (newAsChecksum !== newVal) {
             router.replace({ params: { address: newAsChecksum } });
         }
-        await loadAccount();
+        loadAccount().then(() => {
+            initialLoadComplete.value = true;
+        });
     }
 }, { deep: true, immediate: true });
 
@@ -132,7 +135,7 @@ async function loadAccount() {
                 <div class="c-address__header-text-container">
                     <q-img
                         v-if="contract && contract.supportedInterfaces?.includes('erc20')"
-                        class="coin-icon"
+                        class="c-address__coin-icon"
                         :alt="contract.getName() + ' ERC20 token'"
                         :src="getIcon(contract.logoURI)"
                     />
@@ -168,15 +171,23 @@ async function loadAccount() {
     </div>
     <div class="row q-mb-xl q-col-gutter-md">
         <div class="col-12 col-md-6">
-            <AddressOverview :balance="balance" />
+            <AddressOverview
+                :balance="balance"
+                :loadingComplete="initialLoadComplete"
+            />
         </div>
         <div class="col-12 col-md-6">
             <ContractMoreInfo
                 v-if="contract"
                 :address="contract?.getCreator() ?? ''"
                 :transaction="contract?.getCreationTrx() ?? ''"
+                :loadingComplete="initialLoadComplete"
             />
-            <AddressMoreInfo v-else :address="accountAddress" />
+            <AddressMoreInfo
+                v-else
+                :address="accountAddress"
+                :loadingComplete="initialLoadComplete"
+            />
         </div>
     </div>
     <q-tabs
@@ -367,6 +378,11 @@ async function loadAccount() {
         position: absolute;
         top: -0.35rem;
         right: 0.3rem;
+    }
+
+    &__coin-icon {
+        width: 24px;
+        height: 24px;
     }
 
     // quasar overrides

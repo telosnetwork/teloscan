@@ -16,6 +16,10 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    loadingComplete: {
+        type: Boolean,
+        required: true,
+    },
 });
 
 </script>
@@ -25,7 +29,10 @@ const props = defineProps({
     <q-card-section class="c-more-info__header">
         {{ $t('pages.more_info') }}
     </q-card-section>
-    <q-card-section class="c-more-info__section">
+    <q-card-section v-if="!loadingComplete" >
+        <q-skeleton type="text" class="c-overview__skeleton" />
+    </q-card-section>
+    <q-card-section v-else class="c-more-info__section">
         <div>
             {{ $t('pages.contract_creator') }}
         </div>
@@ -71,6 +78,13 @@ const props = defineProps({
         text-transform: lowercase;
         margin-right: .25rem;
         margin-left: .25rem;
+    }
+    &__skeleton {
+        height: 2rem;
+
+        @media screen and (min-width: $breakpoint-md-min) {
+            width: 50%;
+        }
     }
 }
 </style>
