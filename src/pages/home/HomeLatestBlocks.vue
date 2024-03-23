@@ -13,7 +13,6 @@ import { WEI_PRECISION } from 'src/lib/utils';
 
 type BlockDataOrLoading = BlockData | null;
 
-// variables
 const $q = useQuasar();
 const $i18n = useI18n();
 const { t: $t } = $i18n;
