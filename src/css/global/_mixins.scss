@@ -58,6 +58,10 @@
         color: var(--text-color);
         background-color: var(--tab-bg-color);
 
+        &:hover{
+            color: var(--text-color);
+        }
+
         &--active {
             color: var(--active-tab-text-color);
             background-color: var(--active-tab-bg-color);

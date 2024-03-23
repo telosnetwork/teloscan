@@ -183,7 +183,7 @@ export default {
                     <q-icon
                         v-else-if="props.row.type === 2"
                         name="info"
-                        color="secondary"
+                        color="primary"
                         size="1.15em"
                     />
                     <q-icon

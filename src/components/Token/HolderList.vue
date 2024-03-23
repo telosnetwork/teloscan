@@ -239,7 +239,7 @@ export default {
         <q-toggle
             v-model="showSystemContracts"
             :label="$t('components.holders.show_system_contracts')"
-            color="secondary"
+            color="primary"
             checked-icon="visibility"
             unchecked-icon="visibility_off"
             @update:model-value="onRequest({pagination: pagination})"

@@ -99,7 +99,7 @@ export default {
                 <q-toggle
                     v-model="human_readable"
                     icon="visibility"
-                    color="secondary"
+                    color="primary"
                     size="lg"
                 />
                 {{ $t('components.transaction.human_readable') }}
@@ -117,7 +117,7 @@ export default {
                     :false-value="1"
                     checked-icon="unfold_more"
                     unchecked-icon="unfold_less"
-                    color="secondary"
+                    color="primary"
                     size="lg"
                 />
                 <span v-if="depth === 2">{{ $t('components.click_to_fold') }}</span>

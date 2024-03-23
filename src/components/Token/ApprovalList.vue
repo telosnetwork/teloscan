@@ -149,7 +149,6 @@ export default {
             this.pagination.descending = descending;
             this.pagination.rowsNumber = response.data.total_count;
             let approvals = [];
-            console.log(approvals);
             for (let approval of response.data.results) {
                 approval.selected = (this.selected.includes(approval.spender + ':' + approval.contract));
                 approval.contract = await this.$contractManager.getContract(approval.contract);
@@ -278,7 +277,6 @@ export default {
             }
         },
         async handleCtaClick(spender, contract, single, tokenId) {
-            console.log('Clicked', single, tokenId);
             if (!this.isLoggedInAccount()) {
                 this.displayLoginModal = true;
                 return;
@@ -405,7 +403,6 @@ export default {
                 await Promise.all(
                     ctx.selected.map(async (id) => {
                         let parts = id.split(':');
-                        console.log(parts);
                         let result = await ctx.updateApproval(
                             parts[0],
                             parts[1],
@@ -425,7 +422,6 @@ export default {
             };
         },
         async handleCtaUpdate(spender, contractAddress, single, tokenId, current){
-            console.log('Update', single, tokenId);
             this.displayUpdateModal = true;
             this.modalUpdateValue = current;
             const contract  = await this.$contractManager.getContract(contractAddress);
@@ -474,7 +470,7 @@ export default {
         @request="onRequest"
     >
         <template v-slot:loading>
-            <q-inner-loading showing color="secondary" />
+            <q-inner-loading showing color="primary" />
         </template>
         <template v-slot:header="props">
             <q-tr :props="props">
@@ -577,7 +573,7 @@ export default {
                                 + props.row.tokenId"
                             :true-val="props.row.spender + ':' + props.row.contract.address + ':' + props.row.single
                                 + ':' + props.row.tokenId"
-                            color="secondary"
+                            color="primary"
                             size="xs"
                         />
                         <q-tooltip v-if="selected.includes(props.row.spender + ':' + props.row.contract.address)">
@@ -598,7 +594,7 @@ export default {
                     <div class="flex justify-end">
                         <div v-if="selected.length > 0" class="flex justify-end">
                             <div>
-                                <q-btn class="items-center q-mr-sm" color="secondary" @click="toggleAll(false)">
+                                <q-btn class="items-center q-mr-sm" color="primary" @click="toggleAll(false)">
                                     <q-icon
                                         name="highlight_off"
                                         class="q-mr-xs"
@@ -688,7 +684,7 @@ export default {
                     id="updateBtn"
                     :disabled="!modalUpdateValue"
                     :label="$t('global.sign')"
-                    color="secondary"
+                    color="primary"
                     text-color="black"
                     @click="this.$refs.input.validate() && this.confirmModalUpdate()"
                 />
@@ -722,7 +718,7 @@ export default {
                 <q-btn
                     v-close-popup
                     :label="$t('global.sign')"
-                    color="secondary"
+                    color="primary"
                     text-color="black"
                     @click="confirmModal()"
                 />

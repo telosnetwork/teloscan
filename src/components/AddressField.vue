@@ -139,7 +139,7 @@ function emitHighlight(val: string) {
             width="16px"
             height="auto"
         />
-        <q-icon v-else-if="contract && contract.getName() && hideContractIcon == false" name="far fa-file" />
+        <q-icon v-else-if="contract && contract.getName() && hideContractIcon == false" name="far fa-file-code" />
         <span class="c-address-field__text">{{ displayName }}</span>
         <q-tooltip v-if="fullName !== displayName">{{ fullName }}</q-tooltip>
     </router-link>

@@ -197,13 +197,13 @@ export default {
                                     v-model="inputMethod"
                                     :label="$t('pages.upload_file')"
                                     :val="true"
-                                    color="secondary"
+                                    color="primary"
                                 />
                                 <q-radio
                                     v-model="inputMethod"
                                     :label="$t('pages.text_input')"
                                     :val="false"
-                                    color="secondary"
+                                    color="primary"
                                 />
                             </div>
                         </div>
@@ -232,14 +232,14 @@ export default {
                                     v-model="fileType"
                                     label=".sol"
                                     :val="true"
-                                    color="secondary"
+                                    color="primary"
                                 />
                                 <q-radio
                                     v-if="inputMethod"
                                     v-model="fileType"
                                     label=".json"
                                     :val="false"
-                                    color="secondary"
+                                    color="primary"
                                 />
                             </div>
                         </div>
@@ -272,8 +272,8 @@ export default {
                             @rejected="onNotify"
                         />
                         <div class="button-container">
-                            <q-btn :label="$t('pages.verify_contract')" type="submit" color="secondary"/>
-                            <q-btn :label="$t('pages.reset')" type="reset" color="secondary"/>
+                            <q-btn :label="$t('pages.verify_contract')" type="submit" color="primary"/>
+                            <q-btn :label="$t('pages.reset')" type="reset" color="primary"/>
                         </div>
                     </div>
                 </q-form>
