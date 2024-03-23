@@ -470,7 +470,7 @@ export default {
         @request="onRequest"
     >
         <template v-slot:loading>
-            <q-inner-loading showing color="secondary" />
+            <q-inner-loading showing color="primary" />
         </template>
         <template v-slot:header="props">
             <q-tr :props="props">
@@ -573,7 +573,7 @@ export default {
                                 + props.row.tokenId"
                             :true-val="props.row.spender + ':' + props.row.contract.address + ':' + props.row.single
                                 + ':' + props.row.tokenId"
-                            color="secondary"
+                            color="primary"
                             size="xs"
                         />
                         <q-tooltip v-if="selected.includes(props.row.spender + ':' + props.row.contract.address)">
@@ -594,7 +594,7 @@ export default {
                     <div class="flex justify-end">
                         <div v-if="selected.length > 0" class="flex justify-end">
                             <div>
-                                <q-btn class="items-center q-mr-sm" color="secondary" @click="toggleAll(false)">
+                                <q-btn class="items-center q-mr-sm" color="primary" @click="toggleAll(false)">
                                     <q-icon
                                         name="highlight_off"
                                         class="q-mr-xs"
@@ -684,7 +684,7 @@ export default {
                     id="updateBtn"
                     :disabled="!modalUpdateValue"
                     :label="$t('global.sign')"
-                    color="secondary"
+                    color="primary"
                     text-color="black"
                     @click="this.$refs.input.validate() && this.confirmModalUpdate()"
                 />
@@ -718,7 +718,7 @@ export default {
                 <q-btn
                     v-close-popup
                     :label="$t('global.sign')"
-                    color="secondary"
+                    color="primary"
                     text-color="black"
                     @click="confirmModal()"
                 />

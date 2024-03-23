@@ -434,7 +434,7 @@ export default defineComponent({
         :label="runLabel"
         :disabled="missingInputs"
         class="run-button q-mb-md"
-        color="secondary"
+        color="primary"
         icon="send"
         @click="run"
     />

@@ -209,7 +209,7 @@ export default {
     @request="onRequest"
 >
     <template v-slot:loading>
-        <q-inner-loading showing color="secondary" />
+        <q-inner-loading showing color="primary" />
     </template>
     <template v-slot:header="props">
         <q-tr :props="props">

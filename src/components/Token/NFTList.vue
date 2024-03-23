@@ -218,7 +218,7 @@ function getPath(type: string) {
         flat
     >
         <template v-slot:loading>
-            <q-inner-loading showing color="secondary" />
+            <q-inner-loading showing color="primary" />
         </template>
         <template v-slot:header="props">
             <q-tr :props="props">
@@ -362,7 +362,7 @@ function getPath(type: string) {
                 v-model="showWithoutMetadata"
                 :label="$t('components.nfts.show_without_metadata')"
                 :class="(nfts.length > 0) ? '' : 'right'"
-                color="secondary"
+                color="primary"
                 checked-icon="visibility"
                 unchecked-icon="visibility_off"
                 @update:model-value="onRequest()"
