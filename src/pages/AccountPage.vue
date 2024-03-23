@@ -32,6 +32,8 @@ const route = useRoute();
 const router = useRouter();
 const store = useStore();
 
+const tabs = ['transactions', 'collection', 'holders', 'internaltx', 'tokens', 'nfts', 'approvals', 'tokentxns', 'contract'];
+
 const accountLoading = ref(false);
 const title = ref('');
 const fullTitle = ref('');
@@ -39,7 +41,7 @@ const telosAccount = ref('');
 const balance = ref('0');
 const nonce = ref<number | null>(null);
 const contract = ref<Contract | null>(null);
-const tab = ref('transactions');
+const tab = ref(tabs[0]);
 
 const accountAddress = computed(() => route.params.address as string ?? '');
 const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
@@ -55,10 +57,18 @@ watch(accountAddress, async (newVal, oldVal) => {
     }
 }, { deep: true, immediate: true });
 
+watch(() => route.query.tab, (newTab) => {
+    const str = newTab as string;
+    tab.value = tabs.includes(str) ? str : tabs[0];
+});
+
+watch(tab, (newTab) => {
+    router.push({ query: { tab: newTab } });
+});
+
 onMounted(() => {
-    if (route.hash !== `#${tab.value}`){
-        router.replace({ hash: '#transactions' });
-    }
+    const tabQueryParam = route.query.tab as string;
+    tab.value = tabs.includes(tabQueryParam) ? tabQueryParam : tabs[0];
 });
 
 async function loadAccount() {
@@ -177,47 +187,42 @@ async function loadAccount() {
         content-class="c-address__tabs-content"
         indicator-color="transparent"
     >
-        <q-route-tab
+        <q-tab
             name="transactions"
             class="c-address__tabs-tab"
-            :to="{ hash: '#transactions' }"
             :label="$t('pages.transactions.transactions')"
         />
-        <q-route-tab
+        <q-tab
             v-if="contract && contract.supportedInterfaces.includes('erc721')"
             name="collection"
             class="c-address__tabs-tab"
-            :to="{ hash: '#collection' }"
             :label="$t('components.nfts.collection')"
         />
-        <q-route-tab
+        <q-tab
             v-if="contract && contract.isToken()"
             name="holders"
             class="c-address__tabs-tab"
-            :to="{ hash: '#holders' }"
+            :to="{ query: {tab: 'holders' }}"
             :label="$t('pages.holders')"
         />
-        <q-route-tab
+        <q-tab
             v-if="contract && !contract.isToken()"
             name="internaltx"
             class="c-address__tabs-tab"
-            :to="{ hash: '#internaltx' }"
             :label="$t('pages.internal_txns')"
         />
-        <q-route-tab
+        <q-tab
             name="tokens"
             class="c-address__tabs-tab"
-            :to="{ hash: '#tokens' }"
             :label="$t('pages.tokens')"
         />
-        <q-route-tab
+        <q-tab
             v-if="!contract"
             name="nfts"
             class="c-address__tabs-tab"
-            :to="{ hash: '#nfts' }"
             :label="$t('components.nfts.nfts')"
         />
-        <q-route-tab
+        <q-tab
             v-if="
                 !contract
                     && isLoggedIn
@@ -225,27 +230,24 @@ async function loadAccount() {
             "
             name="approvals"
             class="c-address__tabs-tab"
-            :to="{ hash: '#approvals' }"
             :label="$t('pages.approvals')"
         />
-        <q-route-tab
+        <q-tab
             name="tokentxns"
             class="c-address__tabs-tab"
-            :to="{ hash: '#tokentxns' }"
             :label="$t('pages.erc20_transfers')"
         />
-        <q-route-tab
+        <q-tab
             v-if="contract"
             name="contract"
             :class="{
                 'c-address__tabs-tab': true,
                 'c-address__tabs-tab--with-icon': contract?.isVerified(),
             }"
-            :to="{ hash: '#contract' }"
             :label="$t('pages.contract')"
         >
             <q-icon v-if="contract && contract.isVerified()" class="fas fa-check-circle text-positive q-ml-xs"/>
-        </q-route-tab>
+        </q-tab>
     </q-tabs>
     <div class="q-mb-md">
         <q-tab-panels
