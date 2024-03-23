@@ -69,7 +69,7 @@ const columns = [
     {
         name: 'gasUsed',
         label: $t('components.blocks.gas_used'),
-        align: 'right',
+        align: 'left',
     },
 ];
 
