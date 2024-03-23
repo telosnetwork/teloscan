@@ -236,7 +236,7 @@ function goToTeloscanTestnet() {
 
         @media screen and (min-width: $breakpoint-md-min) {
             width: auto;
-            padding: 0 12px 0 0;
+            padding: 0;
         }
 
         @media screen and (min-width: $breakpoint-lg-min) {

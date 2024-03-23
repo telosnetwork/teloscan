@@ -1,9 +1,9 @@
-@use 'sass:color';
-
 // this file contains one-time global imports
+@import './global/global-index';
 @import './utilities';
 @import './components/json-viewer';
 @import './components/notification';
+@import './components/q-layout';
 
 
 body {
@@ -18,9 +18,18 @@ body.body--light {
     --text-color: #{$dark};
     --invert-text-color: white;
     --grey-text-color: #{$grey-7};
+    --tab-bg-color: #{$grey-3};
+    --active-tab-bg-color: #{$tab-active-light};
+    --active-tab-text-color: white;
+
+    --q-primary: #2a8de3 !important;
+    --q-secondary: #8B3F98 !important;
+
+    --scrollbar-track-bg-color: #{$grey-5};
+    --scrollbar-thumb-bg-color: #{$grey-7};
 
     a:hover {
-        color: color.scale($primary, $lightness: -50%);
+        color: $a-hover-light;
     }
 }
 
@@ -29,9 +38,20 @@ body.body--dark {
     --text-color: white;
     --invert-text-color: #{$dark};
     --grey-text-color: #{$grey-5};
+    --tab-bg-color: #{$grey-10};
+    --active-tab-bg-color: #{#{$tab-active-dark}};
+    --active-tab-text-color: white;
+
+    --q-primary: #2a8de3 !important;
+    --q-secondary: #8B3F98 !important;
+
+    --scrollbar-track-bg-color: #{$grey-10};
+    --scrollbar-thumb-bg-color: #{$grey-7};
+
+    --q-dark: #181818;
 
     a:hover {
-        color: color.scale($primary, $lightness: +30%);
+        color: $a-hover-dark;
     }
 }
 

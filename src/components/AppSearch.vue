@@ -167,7 +167,7 @@ async function search() {
                 left: 0;
                 right: 0;
                 bottom: 0;
-                background-color: $primary;
+                background-color: var(--q-primary);
                 border-radius: 4px;
                 z-index: -1;
             }
@@ -200,7 +200,7 @@ async function search() {
         }
 
         .q-field--outlined.q-field--highlighted .q-field__control::after {
-            border-color: $primary;
+            border-color: var(--q-primary);
         }
     }
 

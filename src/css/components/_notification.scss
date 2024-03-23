@@ -84,7 +84,7 @@ $notify-info: #008888;
       margin-right: 0.5rem;
     }
     label {
-      color: var(--text-color, #000);
+      color: black;
       @include text--paragraph;
     }
   }
@@ -114,7 +114,7 @@ $notify-info: #008888;
     }
   }
   &__message {
-    color: var(--text-color, #000);
+    color: black;
     padding: var(--c-notify__message--padding);
     text-align: var(--c-notify__message--align, center);
     span {
@@ -126,7 +126,7 @@ $notify-info: #008888;
     }
   }
   &__action-btn {
-    color: var(--text-color, #000);
+    color: black;
     &--hide {
       color: transparent;
       background-color: transparent;

@@ -116,7 +116,7 @@ const columns = [
     {
         name: 'fee',
         label: `${$t('components.txn_fee')} (TLOS)`,
-        align: 'left',
+        align: 'right',
     },
 ];
 
@@ -331,7 +331,12 @@ function getValueDisplay(value: string) {
         </template>
         <template v-slot:header="props">
             <q-tr :props="props">
-                <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                    class="c-transaction-table__cell"
+                >
                     <div v-if="col.name === 'preview'" class="u-flex--center">
                         <q-icon class="info-icon" name="far fa-question-circle"/>
                         <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
@@ -367,12 +372,12 @@ function getValueDisplay(value: string) {
         </template>
         <template v-slot:body="props">
             <q-tr :key="props.row.hash + props.row.parsedTransaction?.transfers?.length" :props="props">
-                <q-td key="preview" :props="props">
+                <q-td key="preview" :props="props" class="c-transaction-table__cell">
                     <div class="flex items-center">
                         <TransactionDialog :trx="props.row" />
                     </div>
                 </q-td>
-                <q-td key="hash" :props="props">
+                <q-td key="hash" :props="props" class="c-transaction-table__cell">
                     <div class="c-transaction-table__hash-column flex items-center">
                         <TransactionField
                             color="primary"
@@ -381,7 +386,7 @@ function getValueDisplay(value: string) {
                         />
                     </div>
                 </q-td>
-                <q-td key="method" :props="props">
+                <q-td key="method" :props="props" class="c-transaction-table__cell">
                     <MethodField
                         :trx="props.row"
                         :shortenName="true"
@@ -389,13 +394,13 @@ function getValueDisplay(value: string) {
                         @highlight="setHighlightMethod"
                     />
                 </q-td>
-                <q-td key="block" :props="props">
+                <q-td key="block" :props="props" class="c-transaction-table__cell">
                     <BlockField :block="props.row.blockNumber"/>
                 </q-td>
                 <q-td key="date" :props="props" @click="toggleDateFormat">
                     <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
                 </q-td>
-                <q-td key="from" :props="props">
+                <q-td key="from" :props="props" class="c-transaction-table__cell">
                     <AddressField
                         v-if="props.row.from"
                         :key="'trx-from-'+ props.row.from"
@@ -406,7 +411,7 @@ function getValueDisplay(value: string) {
                         @highlight="setHighlightAddress"
                     />
                 </q-td>
-                <q-td key="to" :props="props">
+                <q-td key="to" :props="props" class="c-transaction-table__cell">
                     <AddressField
                         v-if="props.row.to"
                         :key="'trx-to-'+ props.row.to"
@@ -417,10 +422,10 @@ function getValueDisplay(value: string) {
                         @highlight="setHighlightAddress"
                     />
                 </q-td>
-                <q-td key='value' :props="props">
+                <q-td key='value' :props="props" class="c-transaction-table__cell">
                     {{ getValueDisplay(props.row.value) }}
                 </q-td>
-                <q-td key='fee' :props="props">
+                <q-td key='fee' :props="props" class="c-transaction-table__cell">
                     <TransactionFeeField
                         :showTotalGasFee="showTotalGasFee"
                         :gasUsed="props.row.gasused ?? props.row.gasUsed"
@@ -453,6 +458,13 @@ function getValueDisplay(value: string) {
     &__hash-column{
         min-width: 130px;
     }
-}</style>
+
+    &__cell {
+        padding: 7px 13px !important;
+    }
+}
+
+
+</style>
 
 

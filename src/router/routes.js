@@ -55,6 +55,17 @@ const routes = [
         }],
     },
     {
+        path: '/blocks',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'blocks',
+                component: () => import('pages/BlockListPage.vue'),
+            },
+        ],
+    },
+    {
         path: '/holders',
         component: () => import('layouts/MainLayout.vue'),
         children: [{

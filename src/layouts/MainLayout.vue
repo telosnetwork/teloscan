@@ -49,8 +49,7 @@ function showBackToTop() {
 </script>
 
 <template>
-<AppHeader />
-<q-layout view="lhh Lpr lFf" class="c-main-layout">
+<q-layout view="hhh lpr fff" class="c-main-layout">
     <div class="c-main-layout__background-container">
         <div class="c-main-layout__background-top">
             <div class="c-main-layout__background-circle c-main-layout__background-circle--1"></div>
@@ -58,6 +57,10 @@ function showBackToTop() {
         </div>
         <div class="c-main-layout__background-bottom"></div>
     </div>
+
+    <q-header elevated>
+        <AppHeader />
+    </q-header>
 
     <q-page-container
         :class="{
@@ -67,7 +70,11 @@ function showBackToTop() {
     >
         <router-view />
     </q-page-container>
-    <FooterMain id="footer" />
+
+    <q-footer>
+        <FooterMain id="footer" class="c-main-layout__footer" />
+    </q-footer>
+
     <transition
         appear
         enter-active-class="animated fadeIn"
@@ -103,7 +110,7 @@ function showBackToTop() {
         right: 0;
         bottom: 0;
         left: 0;
-        background-color: rgba($primary, 0.04);
+        background-color: rgba(var(--q-primary), 0.04);
 
         body.body--dark & {
             background-color: darken($dark, 5%);
@@ -129,15 +136,15 @@ function showBackToTop() {
         height: 30vh;
         overflow: hidden;
         background-image:
-            radial-gradient(circle at 0% 150%, $primary, transparent 40%),
-            radial-gradient(circle at 100% 100%, $primary, transparent 39%),
+            radial-gradient(circle at 0% 150%, var(--q-primary), transparent 40%),
+            radial-gradient(circle at 100% 100%, var(--q-primary), transparent 39%),
             radial-gradient(circle at 100% 0%, $secondary, transparent 40%),
             radial-gradient(circle at 65% 21%, $accent, transparent 40%);
 
         @media screen and (min-width: $breakpoint-sm-min) {
             background-image:
-                radial-gradient(circle at 0% 120%, $primary, transparent 25%),
-                radial-gradient(circle at 100% 100%, $primary, transparent 25%),
+                radial-gradient(circle at 0% 120%, var(--q-primary), transparent 25%),
+                radial-gradient(circle at 100% 100%, var(--q-primary), transparent 25%),
                 radial-gradient(circle at 100% 0%, $secondary, transparent 25%),
                 radial-gradient(circle at 75% 10%, $accent, transparent 25%);
         }
@@ -146,16 +153,16 @@ function showBackToTop() {
             height: 40vh;
 
             background-image:
-                radial-gradient(circle at 0% 150%, $primary, transparent 20%),
-                radial-gradient(circle at 100% 100%, $primary, transparent 20%),
+                radial-gradient(circle at 0% 150%, var(--q-primary), transparent 20%),
+                radial-gradient(circle at 100% 100%, var(--q-primary), transparent 20%),
                 radial-gradient(circle at 100% 0%, $secondary, transparent 25%),
                 radial-gradient(circle at 70% -10%, $accent, transparent 30%);
         }
 
         @media screen and (min-width: $breakpoint-lg-min) {
             background-image:
-                radial-gradient(circle at 0% 150%, $primary, transparent 20%),
-                radial-gradient(circle at 100% 100%, $primary, transparent 18%),
+                radial-gradient(circle at 0% 150%, var(--q-primary), transparent 20%),
+                radial-gradient(circle at 100% 100%, var(--q-primary), transparent 18%),
                 radial-gradient(circle at 100% 0%, $secondary, transparent 22%),
                 radial-gradient(circle at 75% -10%, $accent, transparent 20%)
         }
@@ -218,11 +225,18 @@ function showBackToTop() {
         }
     }
 
+    &__footer {
+        margin-top: 40px;
+        @media screen and (min-width: $breakpoint-md-min) {
+            margin-top: 65px;
+        }
+    }
+
     &__scroll-up {
         position: fixed;
         bottom: 24px;
         right: 24px;
-        z-index: 100;
+        z-index: 2001;
     }
 }
 </style>

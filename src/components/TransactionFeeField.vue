@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue';
 import { BigNumber } from 'ethers/lib/ethers';
 
 import { GAS_PRECISION, WEI_PRECISION, formatWei } from 'src/lib/utils';
@@ -20,11 +19,8 @@ const props = defineProps({
     },
 });
 
-const gasWei = ref('');
-
 function totalGasFee() {
     const wei = BigNumber.from(props.gasUsed).mul(props.gasPrice);
-    gasWei.value = wei.toString();
     return formatWei(wei, WEI_PRECISION, 4);
 }
 
