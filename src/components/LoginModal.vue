@@ -24,7 +24,7 @@ import {
     useChainStore,
 } from 'src/antelope/mocks';
 import { ual } from 'src/boot/ual';
-import evm, { providerManager } from 'src/boot/evm';
+import { evm, providerManager } from 'src/boot/evm';
 
 const $q = useQuasar();
 const store = useStore();
