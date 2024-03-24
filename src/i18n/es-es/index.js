@@ -44,6 +44,10 @@ export default {
             last_finalized_block: 'Último bloque finalizado',
             total_transactions: 'Transacciones totales',
         },
+        error: {
+            title: 'Página no encontrada.',
+            subtitle: 'Por favor, revise nuevamente la URL. Si parece correcta, intente de nuevo más tarde.',
+        },
         issuer: 'Issuer',
         account_not_found: 'No pudimos encontrar esta cuenta',
         approvals: 'Aprobaciones',
@@ -52,7 +56,6 @@ export default {
         recent_transactions: 'Transacciones recientes',
         rpc_endpoints: 'Puntos de entrada RPC',
         monitor: 'Monitor',
-        oops: 'Ups. Nada por aquí...',
         go_home: 'Ir a inicio',
         minted: 'Acuñado',
         holders: 'Titulares',
@@ -128,6 +131,12 @@ export default {
         input: 'Entrada',
         output: 'Salida',
         value: 'Valor',
+        overview: 'visión general',
+        more_info: 'más información',
+        transaction_sent: 'txn enviado',
+        first: 'primero',
+        last: 'último',
+        contract_creator: 'creador del contrato',
     },
     components: {
         approvals: {

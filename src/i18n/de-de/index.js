@@ -44,6 +44,10 @@ export default {
             last_finalized_block: 'Letzter finalisierter Block',
             total_transactions: 'Gesamtanzahl der Transaktionen',
         },
+        error: {
+            title: 'Seite nicht gefunden.',
+            subtitle: 'Bitte überprüfen Sie die URL erneut. Wenn sie korrekt aussieht, versuchen Sie es später noch einmal.',
+        },
         issuer: 'Issuer',
         account_not_found: 'Wir konnten dieses Konto nicht finden',
         approvals: 'Approvals',
@@ -52,7 +56,6 @@ export default {
         recent_transactions: 'Neueste Transaktionen',
         rpc_endpoints: 'RPC Endpunkte',
         monitor: 'Monitor',
-        oops: 'Oh. Hier existiert nichts...',
         go_home: 'Home',
         minted: 'Minted',
         holders: 'Holders',
@@ -128,6 +131,12 @@ export default {
         input: 'Eingabe',
         output: 'Ausgabe',
         value: 'Wert',
+        overview: 'Übersicht',
+        more_info: 'mehr Infos',
+        transaction_sent: 'txn gesendet',
+        first: 'erste',
+        last: 'zuletzt',
+        contract_creator: 'Vertragsersteller',
     },
     components: {
         approvals: {

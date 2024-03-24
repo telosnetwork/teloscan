@@ -127,7 +127,7 @@ export default {
             :label="(showGrid) ? $t('global.show_table') : $t('global.show_grid')"
             checked-icon="table_rows"
             unchecked-icon="apps"
-            color="secondary"
+            color="primary"
         />
     </div>
     <div v-if="showGrid">

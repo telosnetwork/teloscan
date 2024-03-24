@@ -20,12 +20,14 @@ const routes = [
     {
         path: '/address/:address',
         component: () => import('layouts/MainLayout.vue'),
-        children: [{
-            path: '',
-            name: 'address',
-            props: route => ({ page: route.query.page, pagesize: route.query.pagesize }),
-            component: () => import('pages/AccountAddress.vue'),
-        }],
+        children: [
+            {
+                path: '',
+                name: 'address',
+                props: route => ({ page: route.query.page, pagesize: route.query.pagesize }),
+                component: () => import('pages/AccountPage.vue'),
+            },
+        ],
     },
     {
         path: '/tx/:hash',
@@ -100,7 +102,11 @@ const routes = [
     },
     {
         path: '/:catchAll(.*)*',
-        component: () => import('pages/Error404.vue'),
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            component: () => import('pages/ErrorNotFoundPage.vue'),
+        }],
     },
 ];
 
