@@ -199,40 +199,40 @@ export default {
 
     <div class="row q-pb-lg">
         <div class="col-12">
-            <q-btn-group push>
+            <div class="c-contract__tab-container">
                 <q-btn
-                    push
-                    no-caps
-                    :outline="selectedAbi === abiOptions.erc20"
+                    :label="$t('components.contract_tab.use_erc20_abi')"
+                    :class="{
+                        'c-contract__tab': true,
+                        'c-contract__tab--active': selectedAbi === abiOptions.erc20,
+                    }"
                     @click="selectedAbi = abiOptions.erc20"
-                >
-                    {{ $t('components.contract_tab.use_erc20_abi') }}
-                </q-btn>
+                />
                 <q-btn
-                    push
-                    no-caps
-                    :outline="selectedAbi === abiOptions.erc721"
+                    :label="$t('components.contract_tab.use_erc721_abi')"
+                    :class="{
+                        'c-contract__tab': true,
+                        'c-contract__tab--active': selectedAbi === abiOptions.erc721,
+                    }"
                     @click="selectedAbi = abiOptions.erc721"
-                >
-                    {{ $t('components.contract_tab.use_erc721_abi') }}
-                </q-btn>
+                />
                 <q-btn
-                    push
-                    no-caps
-                    :outline="selectedAbi === abiOptions.erc1155"
+                    :label="$t('components.contract_tab.use_erc1155_abi')"
+                    :class="{
+                        'c-contract__tab': true,
+                        'c-contract__tab--active': selectedAbi === abiOptions.erc1155,
+                    }"
                     @click="selectedAbi = abiOptions.erc1155"
-                >
-                    {{ $t('components.contract_tab.use_erc1155_abi') }}
-                </q-btn>
+                />
                 <q-btn
-                    push
-                    no-caps
-                    :outline="selectedAbi === abiOptions.custom"
+                    :label="$t('components.contract_tab.abi_from_json')"
+                    :class="{
+                        'c-contract__tab': true,
+                        'c-contract__tab--active': selectedAbi === abiOptions.custom,
+                    }"
                     @click="selectedAbi = abiOptions.custom"
-                >
-                    {{ $t('components.contract_tab.abi_from_json') }}
-                </q-btn>
-            </q-btn-group>
+                />
+            </div>
         </div>
     </div>
 
@@ -293,22 +293,24 @@ export default {
 
     <div v-if="showAbiFunctions" class="row">
         <div class="col-12">
-            <q-btn-group class="q-mb-lg">
+            <div class="c-contract__tab-container">
                 <q-btn
-                    no-caps
-                    :outline="displayWriteFunctions === false"
+                    :label="$t('components.contract_tab.read')"
+                    :class="{
+                        'c-contract__tab': true,
+                        'c-contract__tab--active': !displayWriteFunctions,
+                    }"
                     @click="displayWriteFunctions = false"
-                >
-                    {{ $t('components.contract_tab.read_functions') }}
-                </q-btn>
+                />
                 <q-btn
-                    no-caps
-                    :outline="displayWriteFunctions === true"
+                    :label="$t('components.contract_tab.write')"
+                    :class="{
+                        'c-contract__tab': true,
+                        'c-contract__tab--active': displayWriteFunctions,
+                    }"
                     @click="displayWriteFunctions = true"
-                >
-                    {{ $t('components.contract_tab.write_functions') }}
-                </q-btn>
-            </q-btn-group>
+                />
+            </div>
 
             <q-list>
                 <q-expansion-item
@@ -334,9 +336,40 @@ export default {
     </div>
 </div>
 </template>
-    <style>
-    .abi-json-uploader .q-field__label {
-        text-align: center;
-        width: 100%;
+<style lang="scss">
+.c-contract{
+    margin-left: 2rem;
+    margin-right: 2rem;
+    padding-top: 1rem;
+
+    &__tab-container{
+        display: inline-flex;
+        gap: .5rem;
     }
-    </style>
+
+    &__tab{
+        cursor: pointer;
+        border-radius: 5px;
+        color: var(--text-color);
+        text-transform: capitalize !important;
+        background-color: var(--tab-bg-color);
+
+        &:hover{
+            color: var(--text-color);
+        }
+
+        &--active {
+            color: var(--active-tab-text-color);
+            background-color: var(--active-tab-bg-color);
+        }
+    }
+
+    .vjs-tree-list-holder-inner {
+        padding-bottom: 20px;
+    }
+}
+.abi-json-uploader .q-field__label {
+    text-align: center;
+    width: 100%;
+}
+</style>
