@@ -65,7 +65,6 @@ class AccountStore {
     }
 
     logout() {
-        console.log('AccountStore.logout()');
         currentAuthenticator.logout();
         currentAuthenticator = {} as EVMAuthenticator;
         currentAccount = null;
