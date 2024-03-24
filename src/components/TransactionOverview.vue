@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -11,10 +12,17 @@ import MethodField from 'components/MethodField.vue';
 import GasLimitAndUsage from 'components/GasLimitAndUsage.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
+
+import { contractManager } from 'src/boot/telosApi';
 import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 import { BigNumber } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { indexerApi } from 'src/boot/telosApi';
+import { TRANSFER_SIGNATURES } from 'src/antelope/types';
+import { useQuasar } from 'quasar';
+
+const $q = useQuasar();
+const { t: $t } = useI18n();
 
 const locale = useI18n().locale.value;
 
@@ -33,6 +41,41 @@ const transactionIndex = ref<number>(-1);
 
 const showMoreDetails = ref(true);
 const moreDetailsHeight = ref(0);
+
+const erc721_transfers  = ref<ERC721Transfer[]>([]);
+const erc1155_transfers = ref<ERC1155Transfer[]>([]);
+const erc20_transfers   = ref<ERC20Transfer[]>([]);
+
+
+interface TokenBasicData {
+    symbol: string;
+    address: string;
+    name: string;
+    decimals: string;
+}
+
+interface ERC721Transfer {
+    tokenId: string;
+    to: string;
+    from: string;
+    token: TokenBasicData;
+}
+
+interface ERC20Transfer {
+    value: string;
+    wei: string;
+    to: string;
+    from: string;
+    token: TokenBasicData;
+}
+
+interface ERC1155Transfer {
+    tokenId: string;
+    amount: string;
+    to: string;
+    from: string;
+    token: TokenBasicData;
+}
 
 const getValueDisplay = (value: string) =>
     prettyPrintCurrency(
@@ -53,7 +96,7 @@ const loadBlockData = async () => {
             const response = await indexerApi.get(`/block/${blockNumber.value}`);
             blockData.value = response.data?.results?.[0] as BlockData;
             // workaround to avoid using number as property name
-            blockData.value.blockHeight = blockData.value.number;
+            blockData.value.blockNumber = blockData.value.blockNumber ?? +(blockData.value.number);
         }
     } catch (error) {
         console.error('Failed to fetch block data:', error);
@@ -61,9 +104,112 @@ const loadBlockData = async () => {
     }
 };
 
+
+const loadTransfers = async () => {
+    if (!props.trx?.logs) {
+        return;
+    }
+
+    for (const log of props.trx.logsArray) {
+        // ERC20, ERC721 & ERC1155 transfers (ERC721 & ERC20 have same first topic but ERC20 has 4 topics for
+        // transfers, ERC20 has 3 log topics, ERC1155 has a different first topic)
+        let sig = log.topics[0].substring(0, 10);
+        if (TRANSFER_SIGNATURES.includes(sig)) {
+            let type = contractManager.getTokenTypeFromLog(log);
+            let contract = await contractManager.getContract(log.address, type);
+            if (typeof contract.properties !== 'undefined' && contract.properties !== null) {
+                let token: TokenBasicData = {
+                    'symbol': contract.properties.symbol,
+                    'address': log.address,
+                    'name': contract.properties.name,
+                    'decimals': contract.properties.decimals,
+                };
+                if (type === 'erc721') {
+                    console.error('NOT IMPLEMENTED: ERC721 transfers');
+                    let tokenId = BigNumber.from(log.topics[3]).toString();
+                    if (contract.token.extensions?.metadata) {
+                        try {
+                            token = await contractManager.loadTokenMetadata(
+                                log.address,
+                                contract.token,
+                                tokenId,
+                            );
+                        } catch (e: any) {
+                            console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
+                            // notify the user
+                            $q.notify({
+                                message: $t(
+                                    'pages.couldnt_retreive_metadata_for_address',
+                                    { address: contract.address, message: e.message },
+                                ),
+                                color: 'negative',
+                                position: 'top',
+                                timeout: 5000,
+                            });
+                        }
+                    }
+                    erc721_transfers.value.push({
+                        'tokenId': tokenId,
+                        'to': '0x' + log.topics[2].substring(log.topics[2].length - 40, 40),
+                        'from': '0x' + log.topics[1].substring(log.topics[1].length - 40, 40),
+                        'token': token,
+                    });
+                } else if (type === 'erc1155') {
+                    console.error('NOT IMPLEMENTED: ERC1155 transfers');
+                    let tokenId = BigNumber.from(log.data.substring(0, 66)).toString();
+                    if (contract.token.extensions?.metadata) {
+                        try {
+                            token = await contractManager.loadTokenMetadata(
+                                log.address,
+                                contract.token,
+                                tokenId,
+                            );
+                        } catch (e: any) {
+                            console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
+                            // notify the user
+                            $q.notify({
+                                message: $t(
+                                    'pages.couldnt_retreive_metadata_for_address',
+                                    { address: contract.address, message: e.message },
+                                ),
+                                color: 'negative',
+                                position: 'top',
+                                timeout: 5000,
+                            });
+                        }
+                    }
+                    erc1155_transfers.value.push({
+                        'tokenId': tokenId,
+                        'amount': BigNumber.from(log.data).toString(),
+                        'to': '0x' + log.topics[3].substring(log.topics[3].length - 40, 40),
+                        'from': '0x' + log.topics[2].substring(log.topics[2].length - 40, 40),
+                        'token': token,
+                    });
+                } else {
+                    erc20_transfers.value.push({
+                        'value': log.data,
+                        'wei': BigNumber.from(log.data).toString(),
+                        'to': '0x' + log.topics[2].substring(log.topics[2].length - 40, 40),
+                        'from': '0x' + log.topics[1].substring(log.topics[1].length - 40, 40),
+                        'token': token,
+                    });
+                    console.log('erc20_transfers:', erc20_transfers);
+                }
+            }
+        }
+    }
+};
+
+
+
 watch(() => props.trx, async (newTrx) => {
     if (newTrx) {
-        loadBlockData();
+        console.log('props.trx?.logsArray:', props.trx?.logsArray);
+        await loadBlockData();
+        await loadTransfers();
+        console.log('erc20_transfers:', erc20_transfers);
+        console.log('erc721_transfers:', erc721_transfers);
+        console.log('erc1155_transfers:', erc1155_transfers);
     }
 }, { immediate: true });
 
@@ -259,6 +405,45 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
         </div>
     </div>
 
+    <!-- ERC20 Token Tranfers -->
+    <div vif="erc20_transfers.length > 0" class="c-trx-overview__row">
+        <div class="c-trx-overview__col-att">
+            <div class="c-trx-overview__row-tooltip">
+                <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.transaction.erc20_transfers_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
+            </div>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.erc20_transfers') }}</div>
+        </div>
+        <div class="c-trx-overview__col-val c-trx-overview__col-val--erc-transfers">
+            <div
+                v-for="(transfer, index) in erc20_transfers"
+                :key="index"
+                class="c-trx-overview__col-val c-trx-overview__col-val--erc-raw"
+            >
+                <div class="c-trx-overview__col-val--erc-col">
+                    <q-icon class="list-arrow" name="arrow_right"/>
+                    <strong> {{ $t('components.transaction.from') }} </strong>
+                    <AddressField
+                        :address="transfer.from"
+                        :truncate="15"
+                        copy
+                    />
+                </div>
+                <div class="c-trx-overview__col-val--erc-col">
+                    <strong>{{ $t('components.transaction.to') }}</strong>
+                    <AddressField
+                        :address="transfer.to"
+                        :truncate="15"
+                        copy
+                    />
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- value -->
     <div class="c-trx-overview__row">
         <div class="c-trx-overview__col-att">
@@ -446,6 +631,16 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
     }
     &__col-val {
         flex-grow: 1;
+        &--erc-transfers {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        &--erc-col {
+            display: flex;
+            gap: 5px;
+            align-items: baseline;
+        }
     }
     &__row {
         padding: 0.5rem 0;
