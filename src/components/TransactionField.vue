@@ -7,6 +7,10 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    status: {
+        type: Boolean,
+        default: true,
+    },
     color: {
         type: String,
         required: false,
@@ -36,6 +40,8 @@ const text = computed(() => {
 
 <template>
 <div class="transaction-field-container">
+    <q-icon v-if="props.status" class="c-block-data__row-tooltip-icon info-icon text-positive" name="fas fa-check"/>
+    <q-icon v-else class="c-block-data__row-tooltip-icon info-icon text-negative" name="fas fa-times"/>
     <router-link :key="$route.path" :class="`text-${color}`" :to="`/tx/${transactionHash}`">
         {{ text }}
     </router-link>
