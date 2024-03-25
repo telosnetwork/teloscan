@@ -176,7 +176,7 @@ function goTo(to: string | { name: string }) {
                 'shadow-4': $q.screen.gt.sm,
             }"
         >
-            <li
+            <router-link
                 v-for="item in blockchainSubmenuItems"
                 :key="`blockchain-submenu-item-${item.name}`"
                 :class="{
@@ -185,11 +185,12 @@ function goTo(to: string | { name: string }) {
                 }"
                 tabindex="0"
                 role="link"
-                @click="goTo({ name: item.name })"
+                :to="{ name: item.name }"
+                @click="closeAllMenus"
                 @keydown.enter="goTo({ name: item.name })"
             >
                 {{ item.label }}
-            </li>
+            </router-link>
         </ul>
     </li>
 
@@ -546,8 +547,13 @@ function goTo(to: string | { name: string }) {
         border-radius: 8px;
         min-width: max-content;
 
+        display: list-item;
+        text-align: -webkit-match-parent;
+        color: var(--text-color);
+
         &:hover,
         &:active {
+            color: var(--text-color);
             background-color: var(--highlight-color);
         }
 
