@@ -247,6 +247,7 @@ watch(() => props.logs, async (newTrx) => {
         display: flex;
         flex-direction: column;
         gap: 5px;
+        overflow-x: hidden;
         &__row {
             display: flex;
             gap: 5px;
