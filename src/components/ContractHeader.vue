@@ -28,7 +28,7 @@ defineProps({
         </q-card-section>
         <q-card-section v-else class="c-contract-header__section">
             <q-icon
-                class="cursor text-negative c-contract-header__icon"
+                class="cursor text-warning c-contract-header__icon"
                 name="warning"
                 size=".75rem"
             >

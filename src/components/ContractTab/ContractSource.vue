@@ -117,7 +117,7 @@ const isJson = (fileName: string) => {
         <p class="text-h5 flex">
             <q-icon
                 name="warning"
-                class="text-negative q-mt-xs q-mr-xs"
+                class="text-warning q-mt-xs q-mr-xs"
                 size="1.5rem"
             />
             <span>{{ $t('components.contract_tab.unverified_contract_source') }}</span>
