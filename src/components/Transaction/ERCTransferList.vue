@@ -243,7 +243,7 @@ watch(() => props.logs, async (newTrx) => {
         }
     }
 
-    @media screen and (min-width: $breakpoint-lg-min) {
+    @media screen and (min-width: $breakpoint-sm-min) {
         display: flex;
         flex-direction: column;
         gap: 5px;

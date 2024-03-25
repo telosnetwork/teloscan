@@ -2,7 +2,11 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { BigNumber } from 'ethers';
 import { BlockData, EvmTransactionExtended } from 'src/types';
+import { WEI_PRECISION } from 'src/lib/utils';
+import { indexerApi } from 'src/boot/telosApi';
+import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
@@ -12,11 +16,6 @@ import GasLimitAndUsage from 'components/GasLimitAndUsage.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 import ERCTransferList from 'components/Transaction/ERCTransferList.vue';
-
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
-import { BigNumber } from 'ethers';
-import { WEI_PRECISION } from 'src/lib/utils';
-import { indexerApi } from 'src/boot/telosApi';
 
 const { t: $t } = useI18n();
 
