@@ -32,7 +32,12 @@ const transactionCountText = computed(() => transactionsCount.value.toLocaleStri
 
 onBeforeMount(() => {
     updateFigures().then(() => {
-        initialLoadComplete.value = true;
+        if (tlosPrice.value > 0 && latestBlock.value > 0 && transactionsCount.value > 0) {
+            initialLoadComplete.value = true;
+            setTimeout(() => {
+                updateFigures();
+            }, 500);
+        }
     });
 
     pollingInterval = setInterval(() => {
