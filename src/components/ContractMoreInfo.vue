@@ -33,13 +33,12 @@ const props = defineProps({
         <q-skeleton type="text" class="c-overview__skeleton" />
     </q-card-section>
     <q-card-section v-else class="c-more-info__section">
-        <div>
+        <div class="c-more-info__creator">
             {{ $t('pages.contract_creator') }}
         </div>
         <AddressField
             :address="props.address"
             :truncate="18"
-            class="c-more-info__value"
         />
         <CopyButton
             :text="props.address"
@@ -50,7 +49,6 @@ const props = defineProps({
         <div class="c-more-info__at-txn c-more-info__value">at txn</div>
         <TransactionField
             :transaction-hash="props.transaction"
-            class="c-more-info__value"
         />
     </q-card-section>
 </q-card>
@@ -59,19 +57,18 @@ const props = defineProps({
 <style lang="scss">
 .c-more-info{
     height:100%;
-    text-transform: uppercase;
-
-    .c-address-field__text{
-        font-size: 18px;
-    }
 
     &__copy{
         display: inline;
         font-size: 16px;
     }
+    &__creator{
+        text-transform: uppercase;
+    }
     &__header {
-        font-size: 18px;
         font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: capitalize;
     }
     &__at-txn{
         display: inline-flex;
