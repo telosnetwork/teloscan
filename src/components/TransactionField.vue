@@ -39,19 +39,27 @@ const text = computed(() => {
 </script>
 
 <template>
-<div class="transaction-field-container">
-    <q-icon v-if="props.status" class="c-block-data__row-tooltip-icon info-icon text-positive" name="fas fa-check"/>
-    <q-icon v-else class="c-block-data__row-tooltip-icon info-icon text-negative" name="fas fa-times"/>
+<div class="c-transaction-field">
+    <q-icon v-if="!props.status" class="c-transaction-field__icon text-negative" name="far fa-times-circle">
+        <q-tooltip anchor="bottom right" self="top start">
+            {{ $t('components.txn_failed') }}
+        </q-tooltip>
+    </q-icon>
     <router-link :key="$route.path" :class="`text-${color}`" :to="`/tx/${transactionHash}`">
         {{ text }}
+        <q-tooltip>{{ transactionHash }}</q-tooltip>
     </router-link>
-    <q-tooltip>{{ transactionHash }}</q-tooltip>
     <CopyButton v-if="copy" :text="transactionHash" accompanying-text="" />
 </div>
 </template>
 
-<style lang="sass">
-.transaction-field-container
-    display: inline-flex
-    align-items: center
+<style lang="scss">
+.c-transaction-field{
+    display: inline-flex;
+    align-items: center;
+    &__icon{
+        margin-right: .1rem;
+        padding-bottom: .05rem;
+    }
+}
 </style>
