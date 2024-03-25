@@ -100,19 +100,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
         overflow-y: auto;
         max-height: 470px;
 
-        &::-webkit-scrollbar {
-            width: 0.5rem;
-            height: 0.5rem;
-        }
-
-        &::-webkit-scrollbar-track {
-            background: var(--scrollbar-track-bg-color);
-        }
-
-        &::-webkit-scrollbar-thumb {
-            background-color: var(--scrollbar-thumb-bg-color);
-            border-radius: 0.375rem;
-        }
+        @include scroll-bar;
     }
 
     &__menu-opt-check {

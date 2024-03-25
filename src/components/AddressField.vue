@@ -47,15 +47,26 @@ const fullName = ref(toChecksumAddress(props.address));
 const contract = ref<any>(null);
 const logo = ref<any>(null);
 const tokenList = ref<any>(null);
+const checksum = ref('');
+
+const restart = async () => {
+    tokenList.value = await contractManager.getTokenList();
+    if (!props.address) {
+        return;
+    }
+    checksum.value = toChecksumAddress(props.address);
+    await loadContract();
+    await getDisplay();
+};
+
+
 
 watch(() => props.address, async () => {
-    await loadContract();
+    restart();
 });
 
 onMounted(async () => {
-    tokenList.value = await contractManager.getTokenList();
-    await loadContract();
-    await getDisplay();
+    restart();
 });
 
 const truncateText = (text: string, middle?: boolean) => {
@@ -118,16 +129,16 @@ function emitHighlight(val: string) {
 
 <template>
 <div
-    :key="displayName + address"
+    :key="displayName + checksum"
     :class="['c-address-field', props.class]"
-    @mouseover="emitHighlight(address)"
+    @mouseover="emitHighlight(checksum)"
     @mouseleave="emitHighlight('')"
 >
     <router-link
-        :to="`/address/${address}`"
+        :to="`/address/${checksum}`"
         :class="{
             'c-address-field__link': true,
-            'c-address-field__link--highlight': highlightAddress === props.address && highlightAddress !== ''
+            'c-address-field__link--highlight': highlightAddress === checksum && highlightAddress !== ''
         }"
     >
         <q-img

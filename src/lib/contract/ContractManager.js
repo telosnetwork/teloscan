@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import axios from 'axios';
 import { getTopicHash } from 'src/lib/utils';
 import { ERC1155_TRANSFER_SIGNATURE, TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures.js';
-import { erc721MetadataAbi } from 'src/lib/abi';
+import { erc1155Abi, erc721MetadataAbi } from 'src/lib/abi';
 const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 const systemContractList =
     'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json';
@@ -130,6 +130,19 @@ export default class ContractManager {
         } catch (e) {
             console.error(`Could load NFT #${tokenId} for ${address} from fallback RPC calls: ${e.message}`);
         }
+    }
+
+    async loadTokenMetadata(address, token, tokenId){
+        if(token.type === 'erc1155'){
+            const contract = await this.getContractFromAbi(address, erc1155Abi);
+            token.metadata = await contract.uri(tokenId);
+        } else {
+            const contract = await this.getContractFromAbi(address, erc721MetadataAbi);
+            token.metadata = await contract.tokenURI(tokenId);
+        }
+        token.metadata = token.metadata.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/');
+
+        return token;
     }
 
     getTokenTypeFromLog(log){
