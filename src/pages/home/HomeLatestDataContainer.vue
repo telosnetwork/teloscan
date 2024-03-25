@@ -84,10 +84,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
 <style lang="scss">
 .c-latest-data {
 
-    border-radius: 12px;
     height: 550px;
-    position: relative;
-    padding-bottom: 24px;
 
     &__header {
         &-title {
