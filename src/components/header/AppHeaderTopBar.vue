@@ -144,7 +144,7 @@ function goToTeloscanTestnet() {
                 text-color="primary"
                 :icon-only="true"
             >
-                <img src="branding/telos-circle-logo.svg" height="24" width="24">
+                <img src="branding/telos.png" height="24" width="24">
 
                 <q-menu>
                     <q-list>
