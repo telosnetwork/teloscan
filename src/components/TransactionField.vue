@@ -8,8 +8,8 @@ const props = defineProps({
         required: true,
     },
     status: {
-        type: Boolean,
-        default: true,
+        type: Boolean || null,
+        default: null,
     },
     color: {
         type: String,
@@ -40,7 +40,8 @@ const text = computed(() => {
 
 <template>
 <div class="c-transaction-field">
-    <q-icon v-if="!props.status" class="c-transaction-field__icon text-negative" name="far fa-times-circle">
+    <!-- only evaluate icon conditional if prop is passed -->
+    <q-icon v-if="props.status !== null && !props.status" class="c-transaction-field__icon text-negative" name="far fa-times-circle">
         <q-tooltip anchor="bottom right" self="top start">
             {{ $t('components.txn_failed') }}
         </q-tooltip>
