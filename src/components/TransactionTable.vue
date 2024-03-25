@@ -465,6 +465,11 @@ function getValueDisplay(value: string) {
     }
 }
 
+// quasar override
+.q-table__middle{
+    @include scroll-bar;
+}
+
 
 </style>
 
