@@ -14,7 +14,7 @@ body {
 }
 
 body.body--light {
-    --border-color: #{$grey-5};
+    --border-color: #{$grey-3};
     --text-color: #{$dark};
     --invert-text-color: white;
     --grey-text-color: #{$grey-7};
@@ -34,7 +34,7 @@ body.body--light {
 }
 
 body.body--dark {
-    --border-color: #{$grey-7};
+    --border-color: #{$grey-9};
     --text-color: white;
     --invert-text-color: #{$dark};
     --grey-text-color: #{$grey-5};
