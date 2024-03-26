@@ -31,14 +31,7 @@ const marketCapText = computed(() =>
 const transactionCountText = computed(() => transactionsCount.value.toLocaleString(locale));
 
 onBeforeMount(() => {
-    updateFigures().then(() => {
-        if (tlosPrice.value > 0 && latestBlock.value > 0 && transactionsCount.value > 0) {
-            initialLoadComplete.value = true;
-            setTimeout(() => {
-                updateFigures();
-            }, 500);
-        }
-    });
+    updateFigures();
 
     pollingInterval = setInterval(() => {
         updateFigures();
@@ -78,7 +71,16 @@ function updateFigures() {
         fetchMarketCap(),
         fetchLatestBlock(),
         fetchTotalTransactions(),
-    ]);
+    ]).then(() => {
+        console.log('tlosPrice', typeof tlosPrice.value, tlosPrice.value);
+        if (tlosPrice.value > 0 && latestBlock.value > 0 && transactionsCount.value > 0) {
+            initialLoadComplete.value = true;
+        } else {
+            setTimeout(() => {
+                updateFigures();
+            }, 500);
+        }
+    });
 }
 </script>
 
@@ -97,7 +99,7 @@ function updateFigures() {
                     {{ $t('components.tlos_price') }}
                 </span>
             </div>
-            <q-skeleton v-if="!initialLoadComplete" type="text" class="c-home-info__skeleton" />
+            <q-skeleton v-if="tlosPrice === 0" type="text" class="c-home-info__skeleton" />
             <template v-else>{{ tlosPriceText }}</template>
         </div>
 
@@ -108,7 +110,7 @@ function updateFigures() {
                 {{ $t('pages.home.market_cap') }}
             </span>
             <br>
-            <q-skeleton v-if="!initialLoadComplete" type="text" class="c-home-info__skeleton" />
+            <q-skeleton v-if="marketCap === 0" type="text" class="c-home-info__skeleton" />
             <template v-else>{{ marketCapText }}</template>
         </div>
     </q-card-section>
@@ -121,7 +123,7 @@ function updateFigures() {
                 {{ $t('pages.home.last_finalized_block') }}
             </span>
             <br>
-            <q-skeleton v-if="!initialLoadComplete" type="text" class="c-home-info__skeleton" />
+            <q-skeleton v-if="latestBlock === 0" type="text" class="c-home-info__skeleton" />
             <template v-else>{{ latestBlock }}</template>
         </div>
 
@@ -132,7 +134,7 @@ function updateFigures() {
                 {{ $t('pages.home.total_transactions') }}
             </span>
             <br>
-            <q-skeleton v-if="!initialLoadComplete" type="text" class="c-home-info__skeleton" />
+            <q-skeleton v-if="transactionsCount === 0" type="text" class="c-home-info__skeleton" />
             <template v-else>{{ transactionCountText }}</template>
         </div>
     </q-card-section>
