@@ -111,7 +111,7 @@ async function fetchBlocksPage(page: number) {
     const result = await indexerApi.get(path);
     result.data.results = result.data.results.map((block: BlockData) => {
         block.blockNumber = +(block.number ?? 0);
-        block.transactionsCount = +(block.transactionCount ?? 0);
+        block.transactionsCount = +(block.transactionsCounta ?? 0);
         return block;
     });
     return result;
@@ -137,7 +137,7 @@ async function fetchBlocks() {
 
 function getPath(page = 0) {
     const offset = page * 100;
-    let path = `blocks?limit=100&includeCount=1&offset=${offset}`;
+    let path = `blocks?limit=100&includeCount=true&offset=${offset}`;
     return path;
 }
 
