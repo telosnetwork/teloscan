@@ -381,12 +381,6 @@ async function loadAccount() {
         }
     }
 
-    &__verification-icon {
-        position: absolute;
-        top: -0.35rem;
-        right: 0.3rem;
-    }
-
     &__coin-icon {
         width: 24px;
         height: 24px;
