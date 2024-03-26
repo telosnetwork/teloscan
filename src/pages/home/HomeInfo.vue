@@ -30,6 +30,8 @@ const marketCapText = computed(() =>
 );
 const transactionCountText = computed(() => transactionsCount.value.toLocaleString(locale));
 
+const fetchTlosPrice = () => $store.dispatch('chain/fetchTlosPrice');
+
 onBeforeMount(() => {
     updateFigures().then(() => {
         initialLoadComplete.value = true;
@@ -69,6 +71,7 @@ async function fetchMarketCap() {
 }
 
 function updateFigures() {
+    fetchTlosPrice();
     return Promise.all([
         fetchMarketCap(),
         fetchLatestBlock(),
