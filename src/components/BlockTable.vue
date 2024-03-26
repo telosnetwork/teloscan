@@ -123,7 +123,7 @@ async function fetchBlocksPage() {
     const result = await indexerApi.get(path);
     // workaround to avoid indexer typos
     result.data.results = result.data.results.map((block: BlockData) => {
-        block.blockHeight = +(block.number ?? 0);
+        block.blockNumber = +(block.number ?? 0);
         block.transactionsCount = +(block.transactionCount ?? 0);
         return block;
     });
@@ -241,9 +241,9 @@ function getGasUsed(gasUsed: string) {
         </q-tr>
     </template>
     <template v-slot:body="props">
-        <q-tr :key="props.row.blockHeight" :props="props">
+        <q-tr :key="props.row.blockNumber" :props="props">
             <q-td key="block" :props="props">
-                <BlockField :block="props.row.blockHeight"/>
+                <BlockField :block="props.row.blockNumber"/>
             </q-td>
             <q-td key="timestamp" :props="props">
                 <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>

@@ -112,7 +112,7 @@ async function fetchBlocksPage(page: number) {
 
     // workaround to avoid indexer typos
     result.data.results = result.data.results.map((block: BlockData) => {
-        block.blockHeight = +(block.number ?? 0);
+        block.blockNumber = +(block.number ?? 0);
         block.transactionsCount = +(block.transactionCount ?? 0);
         return block;
     });

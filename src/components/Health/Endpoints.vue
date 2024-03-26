@@ -10,7 +10,7 @@ export default {
     data() {
         return {
             endpoints: [],
-            blockHeight: 0,
+            blockNumber: 0,
         };
     },
     mounted() {
@@ -70,8 +70,8 @@ export default {
                 });
 
                 const block = parseInt(result.data.result, 16);
-                if (this.blockHeight < block) {
-                    this.blockHeight = block;
+                if (this.blockNumber < block) {
+                    this.blockNumber = block;
                 }
 
                 this.endpoints[idx].latency = result.timings.elapsedTime;
@@ -108,7 +108,7 @@ export default {
                 </q-item-label>
                 <q-item-label v-if="endpoint.block" side top>
                     {{ $t('components.health.block_height') }}:&nbsp;
-                    <span :class="getBlockClass(blockHeight, endpoint.block)">
+                    <span :class="getBlockClass(blockNumber, endpoint.block)">
                         {{ endpoint.block }}
                     </span>
                 </q-item-label>
