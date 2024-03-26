@@ -74,8 +74,6 @@ const writeSelected = computed(() => source.value === false && write.value === t
 
 <style lang='scss' scoped>
 .c-contract{
-    margin-left: 2rem;
-    margin-right: 2rem;
     padding-top: 1rem;
 
     &__tab-container{
@@ -104,7 +102,6 @@ const writeSelected = computed(() => source.value === false && write.value === t
         padding-bottom: 20px;
     }
 }
-
 
 @media screen and (max-width: 764px) {
     .c-contract > .items-center .c-copy-button {

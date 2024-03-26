@@ -25,7 +25,6 @@ import {
 } from 'src/lib/function-interface-utils';
 
 import TransactionField from 'src/components/TransactionField.vue';
-import LoginModal from 'components/LoginModal.vue';
 
 interface Opts {
     value?: string;
@@ -40,7 +39,6 @@ export default defineComponent({
     components: {
         ...asyncInputComponents,
         TransactionField,
-        LoginModal,
     },
     props: {
         contract: {
@@ -104,7 +102,6 @@ export default defineComponent({
     computed: {
         ...mapGetters('login', [
             'address',
-            'isLoggedIn',
             'isNative',
             'nativeAccount',
         ]),
@@ -208,9 +205,6 @@ export default defineComponent({
             this.amountInput = 0;
         },
         async run() {
-            if (!this.isLoggedIn){
-                this.showLoginModal = true;
-            }
             this.loading = true;
             this.result = null;
             try {
@@ -359,7 +353,6 @@ export default defineComponent({
 
 <template>
 <div>
-    <LoginModal :show="showLoginModal" @hide="showLoginModal = false" />
     <q-dialog v-model="enterAmount">
         <q-card class="amount-dialog">
             <div class="q-pa-md">
