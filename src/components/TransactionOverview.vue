@@ -98,6 +98,7 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
 
 
 <template>
+
 <q-card class="c-trx-overview__card-section">
     <!-- Hash -->
     <div class="c-trx-overview__row">

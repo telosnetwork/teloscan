@@ -79,6 +79,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
         <q-icon name="arrow_forward" class="c-latest-data__footer-icon" />
     </q-card-actions>
 </q-card>
+
 </template>
 
 <style lang="scss">

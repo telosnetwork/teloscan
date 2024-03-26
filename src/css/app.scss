@@ -73,3 +73,8 @@ a {
 .q-card {
     border-radius: 12px;
 }
+
+// This allow the q-card to project shadow outside the tab panel container
+.q-panel.scroll {
+    overflow: var(--v-overflow, scroll);
+}

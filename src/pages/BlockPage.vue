@@ -152,6 +152,8 @@ onMounted(() => {
     }
     &__panels {
         background: transparent;
+        --v-overflow: visible;
+        overflow: visible !important;
     }
     &__panel {
         padding: 0px;

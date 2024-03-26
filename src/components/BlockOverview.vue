@@ -325,6 +325,7 @@ watch(() => props.data, (newData) => {
 
 
 <style lang="scss">
+
 .c-block-data {
     padding: 1.25rem!important;
     display: flex;
