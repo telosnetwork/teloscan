@@ -62,7 +62,10 @@ onMounted(() => {
 <style lang="scss">
 .qr-dialog {
     border-radius: 6px !important;
-    width: 13rem;
+    width: 13rem !important;
+    // q-dialog override
+    max-height: unset !important;
+    max-width: unset !important;
     margin-top: 1rem;
     text-align: center;
     &__header{
