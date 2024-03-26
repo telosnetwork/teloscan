@@ -40,6 +40,7 @@ export default defineComponent({
     components: {
         ...asyncInputComponents,
         TransactionField,
+        LoginModal,
     },
     props: {
         contract: {
