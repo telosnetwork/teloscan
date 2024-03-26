@@ -17,7 +17,7 @@ defineProps({
     <q-card class="c-contract-header">
         <q-card-section v-if="contract.isVerified()" class="c-contract-header__section c-contract-header__section--bold">
             <q-icon
-                class="fas fa-check-circle text-positive c-address__verification-icon c-contract-header__icon"
+                class="fas fa-check-circle text-positive c-contract-header__icon"
                 size=".75rem"
             >
                 <q-tooltip>
