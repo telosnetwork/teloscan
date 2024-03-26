@@ -16,7 +16,7 @@ import TransactionTable from 'components/TransactionTable.vue';
 import InternalTransactionTable from 'components/InternalTransactionTable.vue';
 import TransferTable from 'components/TransferTable.vue';
 import TokenList from 'components/Token/TokenList.vue';
-// import ApprovalList from 'components/Token/ApprovalList.vue'; // See https://github.com/telosnetwork/teloscan/issues/604
+import ApprovalList from 'components/Token/ApprovalList.vue';
 import HolderList from 'components/Token/HolderList.vue';
 import NFTList from 'components/Token/NFTList.vue';
 import ContractTab from 'components/ContractTab/ContractTab.vue';
@@ -32,7 +32,7 @@ const route = useRoute();
 const router = useRouter();
 const store = useStore();
 
-const tabs = ['transactions', 'collection', 'holders', 'internaltx', 'tokens', 'nfts', /* 'approvals',*/ 'tokentxns', 'contract'];
+const tabs = ['transactions', 'collection', 'holders', 'internaltx', 'tokens', 'nfts', 'approvals', 'tokentxns', 'contract'];
 
 const accountLoading = ref(false);
 const title = ref('');
@@ -45,7 +45,7 @@ const tab = ref(tabs[0]);
 const initialLoadComplete = ref(false);
 
 const accountAddress = computed(() => route.params.address as string ?? '');
-// const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
+const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
 const address = computed(() => store.getters['login/address']);
 
 watch(accountAddress, (newVal, oldVal) => {
@@ -233,8 +233,7 @@ async function loadAccount() {
             class="c-address__tabs-tab"
             :label="$t('components.nfts.nfts')"
         />
-        <!-- See https://github.com/telosnetwork/teloscan/issues/604 -->
-        <!-- <q-tab
+        <q-tab
             v-if="
                 !contract
                     && isLoggedIn
@@ -243,7 +242,7 @@ async function loadAccount() {
             name="approvals"
             class="c-address__tabs-tab"
             :label="$t('pages.approvals')"
-        /> -->
+        />
         <q-tab
             name="tokentxns"
             class="c-address__tabs-tab"
@@ -288,8 +287,7 @@ async function loadAccount() {
             <q-tab-panel v-else name="internaltx">
                 <InternalTransactionTable :title="accountAddress" :filter="{accountAddress}"/>
             </q-tab-panel>
-            <!-- See https://github.com/telosnetwork/teloscan/issues/604 -->
-            <!-- <q-tab-panel
+            <q-tab-panel
                 v-if="
                     !contract
                         && isLoggedIn
@@ -298,7 +296,7 @@ async function loadAccount() {
                 name="approvals"
             >
                 <ApprovalList type="erc20" :accountAddress="accountAddress" />
-            </q-tab-panel> -->
+            </q-tab-panel>
             <q-tab-panel name="nfts">
                 <NFTList :address="accountAddress" filter="account" />
             </q-tab-panel>
