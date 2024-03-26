@@ -464,13 +464,6 @@ function getValueDisplay(value: string) {
         padding: 7px 13px !important;
     }
 }
-
-// quasar override
-.q-table__middle{
-    @include scroll-bar;
-}
-
-
 </style>
 
 

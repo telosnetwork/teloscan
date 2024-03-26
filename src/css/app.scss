@@ -69,3 +69,7 @@ a {
 .q-tab-panels {
     background: none;
 }
+
+.q-table__middle{
+    @include scroll-bar;
+}
