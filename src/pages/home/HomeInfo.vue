@@ -86,8 +86,13 @@ function updateFigures() {
 <q-card class="c-home-info">
     <q-card-section class="c-home-info__section">
         <div class="c-home-info__subsection">
-            <div class="u-flex--center-y">
-                <img src="branding/telos.png" height="14" width="14">
+            <div class="c-home-info__label-container">
+                <img
+                    class="c-home-info__icon"
+                    src="branding/telos.png"
+                    height="14"
+                    width="14"
+                >
                 <span class="c-home-info__label">
                     {{ $t('components.tlos_price') }}
                 </span>
@@ -154,6 +159,16 @@ function updateFigures() {
         @media screen and (min-width: $breakpoint-md-min) {
             height: 48px;
         }
+    }
+
+    &__label-container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    &__icon {
+        margin-bottom: 2px;
     }
 
     &__label {
