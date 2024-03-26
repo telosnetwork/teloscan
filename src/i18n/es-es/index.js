@@ -242,7 +242,7 @@ export default {
         to_interacted_with: 'A',
         value: 'Valor',
         txn_fee: 'Txn Fee',
-        txn_failed: 'Txn Fallido',
+        txn_failed: 'Txn Fallida',
         gas: 'Gas Price',
         gas_price_tlos: '(Gas Price * Gas Used) in TLOS',
         gas_price_gwei: 'Gas Price in gwei',
