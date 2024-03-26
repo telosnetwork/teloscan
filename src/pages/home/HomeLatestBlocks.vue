@@ -109,6 +109,14 @@ async function fetchBlocksWithTransactions(firstPage: BlockData[]) {
 async function fetchBlocksPage(page: number) {
     const path = getPath(page);
     const result = await indexerApi.get(path);
+
+    // workaround to avoid indexer typos
+    result.data.results = result.data.results.map((block: BlockData) => {
+        block.blockHeight = +(block.number ?? 0);
+        block.transactionsCount = +(block.transactionCount ?? 0);
+        return block;
+    });
+
     return result;
 }
 
