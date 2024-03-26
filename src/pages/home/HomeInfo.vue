@@ -87,7 +87,7 @@ function updateFigures() {
     <q-card-section class="c-home-info__section">
         <div class="c-home-info__subsection">
             <div class="u-flex--center-y">
-                <img src="branding/telos-circle-logo.svg" height="24" width="24">
+                <img src="branding/telos.png" height="14" width="14">
                 <span class="c-home-info__label">
                     {{ $t('components.tlos_price') }}
                 </span>

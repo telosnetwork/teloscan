@@ -123,7 +123,7 @@ async function fetchBlocksPage() {
     const result = await indexerApi.get(path);
     result.data.results = result.data.results.map((block: BlockData) => {
         block.blockHeight = +(block.number ?? 0);
-        block.transactionsCount = +(block.transactionCount ?? 0);
+        block.transactionsCount = +(block.transactionsCount ?? 0);
         return block;
     });
     return result;
@@ -173,7 +173,7 @@ function getPath() {
     }`;
     path += `&offset=${(page - 1) * rowsPerPage}`;
     path += `&sort=${descending ? 'desc' : 'asc'}`;
-    path += '&includeCount=1';
+    path += '&includeCount=true';
     return path;
 }
 
