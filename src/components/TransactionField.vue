@@ -8,7 +8,8 @@ const props = defineProps({
         required: true,
     },
     status: {
-        type: Boolean || null,
+        type: Boolean,
+        required: false,
         default: null,
     },
     color: {
