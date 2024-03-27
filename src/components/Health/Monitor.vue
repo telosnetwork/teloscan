@@ -208,7 +208,9 @@ export default {
 </div>
 </template>
 
-<style scoped lang='sass'>
-.tableWrapper
-    width: 50vw
+<style scoped lang='scss'>
+.tableWrapper{
+    width: 100%;
+    margin: auto;
+}
 </style>
