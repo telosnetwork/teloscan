@@ -46,7 +46,7 @@ onBeforeMount(async () => {
         <q-skeleton type="text" class="c-overview__skeleton" />
     </q-card-section>
     <q-card-section v-else>
-        <div>
+        <div class="c-more-info__section-label">
             {{ $t('pages.last') }} {{ $t('pages.transaction_sent') }}
         </div>
         <TransactionField
@@ -60,7 +60,7 @@ onBeforeMount(async () => {
         <q-skeleton type="text" class="c-overview__skeleton" />
     </q-card-section>
     <q-card-section v-else>
-        <div>
+        <div class="c-more-info__section-label">
             {{ $t('pages.first') }} {{ $t('pages.transaction_sent') }}
         </div>
         <TransactionField
@@ -76,14 +76,14 @@ onBeforeMount(async () => {
 <style lang="scss">
 .c-more-info {
     height:100%;
-    text-transform: uppercase;
 
-    &__value{
-        font-size: 18px;
-    }
     &__header {
-        font-size: 18px;
         font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: capitalize;
+    }
+    &__section-label {
+        text-transform: uppercase;
     }
     &__skeleton {
         height: 2rem;

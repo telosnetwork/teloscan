@@ -48,7 +48,12 @@ onBeforeMount(() => {
         <q-card-section v-else>
             <div> TLOS {{ $t('pages.balance') }} </div>
             <div class="c-overview__balance">
-                <img :src="TLOS_LOGO" alt="TLOS" height="22">
+                <img
+                    :src="TLOS_LOGO"
+                    alt="TLOS"
+                    height="18"
+                    width="18"
+                >
                 {{ getBalanceDisplay(tokenQty) }}
             </div>
         </q-card-section>
@@ -69,13 +74,13 @@ onBeforeMount(() => {
 .c-overview{
     text-transform: uppercase;
 
+    &__header {
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: capitalize;
+    }
     &__balance{
         display: flex;
-        font-size: 18px;
-    }
-    &__header {
-        font-size: 18px;
-        font-weight: 600;
     }
     &__skeleton {
         height: 2rem;
@@ -85,7 +90,6 @@ onBeforeMount(() => {
         }
     }
     img{
-        margin-top: 2px;
         margin-right: 2px;
     }
 }
