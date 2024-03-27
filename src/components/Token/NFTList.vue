@@ -378,7 +378,6 @@ function getPath(type: string) {
         v-model:pagination="pagination"
         :rows="loadingRows"
         :rows-per-page-label="$t('global.records_per_page')"
-        :binary-state-sort="true"
         :columns="columns"
         :rows-per-page-options="[10, 20, 50]"
         flat

@@ -254,7 +254,6 @@ export default {
     v-model:pagination="pagination"
     :rows="loadingRows"
     :rows-per-page-label="$t('global.records_per_page')"
-    :binary-state-sort="true"
     :columns="columns"
     :rows-per-page-options="[10, 20, 50]"
     flat
@@ -283,7 +282,7 @@ export default {
             <q-td key="telos_supply_share">
                 <q-skeleton type="text" class="c-trx-overview__skeleton" />
             </q-td>
-            <q-td v-if="contract?.properties?.total_supply_ibc" key="supply_share" >
+            <q-td key="supply_share" >
                 <q-skeleton type="text" class="c-trx-overview__skeleton" />
             </q-td>
             <q-td key="updated">

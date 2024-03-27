@@ -442,7 +442,6 @@ onBeforeMount(() => {
         v-else
         v-model:pagination="pagination"
         :rows="loadingRows"
-        :binary-state-sort="true"
         :rows-per-page-label="$t('global.records_per_page')"
         :columns="(columns as any)"
         :rows-per-page-options="page_size_options"
