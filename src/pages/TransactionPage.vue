@@ -36,34 +36,39 @@ const trx = ref<EvmTransactionExtended | null>(null);
 
 // functions
 const loadTransaction = async () => {
-    const trxResponse = await indexerApi.get(`/transaction/${hash.value}?full=true&includeAbi=true`);
-    if (trxResponse.data.results.length === 0) {
+    try {
+        const trxResponse = await indexerApi.get(`/transaction/${hash.value}?full=true&includeAbi=true`);
+        if (trxResponse.data.results.length === 0) {
+            trxNotFound.value = true;
+            return;
+        }
+        const aux = trxResponse.data.results[0] as EvmTransaction;
+        let logsArray: EvmTransactionLog[] = [];
+        if(aux.logs){
+            const fixedStr = aux.logs.replace('transaction_hash', 'transactionHash');
+            try {
+                logsArray = JSON.parse(fixedStr) as EvmTransactionLog[];
+            } catch (e) {
+                console.error('Error parsing logs', e);
+            }
+        }
+        const _trx:EvmTransactionExtended = {
+            ...aux,
+            gasUsedBn: ethers.BigNumber.from(aux.gasUsed),
+            gasLimitBn: ethers.BigNumber.from(aux.gasLimit),
+            valueBn: ethers.BigNumber.from(aux.value),
+            gasPriceBn: ethers.BigNumber.from(aux.gasPrice),
+            contract: undefined,
+            parsedTransaction: undefined,
+            functionParams: [],
+            logsArray,
+        };
+        await loadContract(_trx);
+        setErrorMessage();
+    } catch (e) {
         trxNotFound.value = true;
         return;
     }
-    const aux = trxResponse.data.results[0] as EvmTransaction;
-    let logsArray: EvmTransactionLog[] = [];
-    if(aux.logs){
-        const fixedStr = aux.logs.replace('transaction_hash', 'transactionHash');
-        try {
-            logsArray = JSON.parse(fixedStr) as EvmTransactionLog[];
-        } catch (e) {
-            console.error('Error parsing logs', e);
-        }
-    }
-    const _trx:EvmTransactionExtended = {
-        ...aux,
-        gasUsedBn: ethers.BigNumber.from(aux.gasUsed),
-        gasLimitBn: ethers.BigNumber.from(aux.gasLimit),
-        valueBn: ethers.BigNumber.from(aux.value),
-        gasPriceBn: ethers.BigNumber.from(aux.gasPrice),
-        contract: undefined,
-        parsedTransaction: undefined,
-        functionParams: [],
-        logsArray,
-    };
-    await loadContract(_trx);
-    setErrorMessage();
 };
 
 const loadContract = async (_trx: EvmTransactionExtended) => {
