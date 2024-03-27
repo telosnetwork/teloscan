@@ -61,6 +61,7 @@ onMounted(() => {
 
 <style lang="scss">
 .qr-dialog {
+
     border-radius: 6px !important;
     width: 300px;
     margin-top: 1rem;

@@ -2,9 +2,6 @@
 
 import { LatestContainerOptions } from 'src/types';
 import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
 
 const props = defineProps<{
   options: LatestContainerOptions
@@ -14,10 +11,6 @@ const selectedOption = ref<string>(Object.keys(props.options)[0]);
 
 const selectOption = (option: string) => {
     selectedOption.value = option;
-};
-
-const goToPage = (link: string) => {
-    router.push({ name: link });
 };
 
 // only show the customize button if there are more than 1 options
@@ -74,20 +67,24 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
         </template>
     </q-card-section>
 
-    <q-card-actions align="center" class="c-latest-data__footer" @click="goToPage(props.options[selectedOption].link)">
-        <span class="c-latest-data__footer-text"> {{  props.options[selectedOption].footer  }} </span>
-        <q-icon name="arrow_forward" class="c-latest-data__footer-icon" />
+    <q-card-actions
+        align="center"
+        class="c-latest-data__footer"
+    >
+        <router-link class="c-latest-data__footer-container" :to="{ name: props.options[selectedOption].link }">
+            <span class="c-latest-data__footer-text"> {{ props.options[selectedOption].footer }} </span>
+            <q-icon name="arrow_forward" class="c-latest-data__footer-icon" />
+        </router-link>
     </q-card-actions>
+
 </q-card>
+
 </template>
 
 <style lang="scss">
 .c-latest-data {
 
-    border-radius: 12px;
     height: 550px;
-    position: relative;
-    padding-bottom: 24px;
 
     &__header {
         &-title {
@@ -119,6 +116,13 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
         display: flex;
         gap: 5px;
         background-color: color-mix(in srgb, white, black 5%);
+
+        &-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
 
         body.body--dark & {
             background-color: color-mix(in srgb, $dark, white 5%);

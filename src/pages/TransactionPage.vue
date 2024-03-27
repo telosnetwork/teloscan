@@ -159,6 +159,7 @@ const nextTransaction = () => {
 </script>
 
 <template>
+
 <q-page class="c-transactions">
 
     <div class="c-transactions__header">
@@ -241,6 +242,8 @@ const nextTransaction = () => {
     }
     &__panels {
         background: transparent;
+        --v-overflow: visible;
+        overflow: visible !important;
     }
     &__panel {
         padding: 0px;

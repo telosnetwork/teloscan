@@ -34,6 +34,7 @@ const buttonColor = computed(() => props.highlight ? 'primary' : ($q.dark.isActi
 <style lang="scss">
 .c-outline-button {
     --button-height: 32px;
+    color: var(--border-color) !important;
 
     height: var(--button-height);
     padding: 0 12px;

@@ -18,7 +18,7 @@ const props = defineProps({
 
 const emit = defineEmits(['prev-block', 'next-block', 'trx-table', 'extra-data']);
 
-const blockHeight = ref(0);
+const blockNumber = ref(0);
 const blockData = ref<BlockData | null>(null);
 
 // Computed properties
@@ -80,7 +80,7 @@ watch(() => props.data, (newData) => {
     blockData.value = newData ?? null;
     const newNumber = Number(newData?.number);
     if (!isNaN(newNumber)) {
-        blockHeight.value = newNumber;
+        blockNumber.value = newNumber;
     }
 }, { immediate: true });
 
@@ -103,7 +103,7 @@ watch(() => props.data, (newData) => {
             <div class="c-block-data__row-attribute">{{ $t('components.blocks.block_height') }}</div>
         </div>
         <div class="c-block-data__col-val">
-            <div class="c-block-data__row-value">{{ blockHeight }}</div>
+            <div class="c-block-data__row-value">{{ blockNumber }}</div>
             <div class="c-block-data__row-icon-btn c-block-data__row-icon-btn--left" @click="prevBlock">
                 <i class="fa fa-chevron-left small"></i>
             </div>
@@ -325,6 +325,7 @@ watch(() => props.data, (newData) => {
 
 
 <style lang="scss">
+
 .c-block-data {
     padding: 1.25rem!important;
     display: flex;

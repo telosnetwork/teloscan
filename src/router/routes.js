@@ -96,6 +96,15 @@ const routes = [
         }],
     },
     {
+        path: '/export',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            name: 'export',
+            component: () => import('pages/ErrorNotFoundPage.vue'),
+        }],
+    },
+    {
         path: '/endpoints',
         redirect: () => ({ path: '/health' }),
     },

@@ -109,6 +109,14 @@ async function fetchBlocksWithTransactions(firstPage: BlockData[]) {
 async function fetchBlocksPage(page: number) {
     const path = getPath(page);
     const result = await indexerApi.get(path);
+
+    // workaround to avoid indexer typos
+    result.data.results = result.data.results.map((block: BlockData) => {
+        block.blockNumber = block.blockNumber ?? +(block.number ?? 0);
+        block.transactionsCount = block.transactionsCount ?? +(block.transactionCount ?? 0);
+        return block;
+    });
+
     return result;
 }
 
@@ -142,7 +150,7 @@ const gasUsedFor = (block: BlockData) => {
             const wei = ethers.BigNumber.from(block.gasUsed).mul(gasPrice);
             return prettyPrintCurrency(
                 ethers.BigNumber.from(wei.toHexString()),
-                0,
+                wei.isZero() ? 0 : 2, // If it is Zero, then do not show decimals
                 locale,
                 false,
                 'TLOS',
@@ -154,8 +162,9 @@ const gasUsedFor = (block: BlockData) => {
             console.error(e);
         }
     }
-    return 'AAAA';
+    return '0.00 TLOS';
 };
+
 
 // lifecycle
 onMounted(() => {

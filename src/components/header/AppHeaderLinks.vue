@@ -137,19 +137,22 @@ function goTo(to: string | { name: string }) {
         'c-header-links--visible-mobile shadow-4': menuVisibleMobile && $q.screen.lt.md,
     }"
 >
-    <li
+    <!-- Home -->
+    <router-link
         :class="{
             'c-header-links__menu-li': true,
             'c-header-links__menu-li--current': $route.name === 'home',
         }"
         tabindex="0"
         role="link"
-        @click="goTo({ name: 'home' })"
+        :to="{ name: 'home' }"
+        @click="closeAllMenus"
         @keydown.enter="goTo({ name: 'home' })"
     >
         {{ $t('components.header.home') }}
-    </li>
+    </router-link>
 
+    <!-- Blockchain -->
     <li
         :class="{
             'c-header-links__menu-li c-header-links__menu-li--expandable': true,
@@ -176,7 +179,7 @@ function goTo(to: string | { name: string }) {
                 'shadow-4': $q.screen.gt.sm,
             }"
         >
-            <li
+            <router-link
                 v-for="item in blockchainSubmenuItems"
                 :key="`blockchain-submenu-item-${item.name}`"
                 :class="{
@@ -185,14 +188,16 @@ function goTo(to: string | { name: string }) {
                 }"
                 tabindex="0"
                 role="link"
-                @click="goTo({ name: item.name })"
+                :to="{ name: item.name }"
+                @click="closeAllMenus"
                 @keydown.enter="goTo({ name: item.name })"
             >
                 {{ item.label }}
-            </li>
+            </router-link>
         </ul>
     </li>
 
+    <!-- Developers -->
     <li
         :class="{
             'c-header-links__menu-li c-header-links__menu-li--expandable': true,
@@ -224,27 +229,33 @@ function goTo(to: string | { name: string }) {
                 class="c-header-links__submenu-li"
                 tabindex="0"
                 role="link"
-                @click="goTo(item.url)"
                 @keydown.enter="goTo(item.url)"
             >
-                <div class="u-flex--center-y">
+                <a
+                    class="u-flex--center-y"
+                    :href="item.url"
+                    target="_blank"
+                >
                     {{ item.label }}
                     <q-icon name="fas fa-external-link-alt" size="12px" class="q-ml-sm" />
-                </div>
+                </a>
             </li>
         </ul>
     </li>
 
+    <!-- Telos Wallet -->
     <li
         class="c-header-links__menu-li"
         tabindex="0"
         role="link"
-        @click="goTo(telos_walletMenuItem.url)"
         @keydown.enter="goTo(telos_walletMenuItem.url)"
     >
-        {{ telos_walletMenuItem.label }}
+        <a :href="telos_walletMenuItem.url" target="_blank">
+            {{ telos_walletMenuItem.label }}
+        </a>
     </li>
 
+    <!-- More -->
     <li
         :class="{
             'c-header-links__menu-li c-header-links__menu-li--expandable': true,
@@ -285,7 +296,7 @@ function goTo(to: string | { name: string }) {
                 </div>
             </li>
 
-            <li
+            <router-link
                 v-for="item in moreSubmenuItems.internal"
                 :key="`more-submenu-item-internal-${item.name}`"
                 :class="{
@@ -293,12 +304,11 @@ function goTo(to: string | { name: string }) {
                     'c-header-links__submenu-li--current': $route.name === item.name,
                 }"
                 tabindex="0"
-                role="link"
-                @click="goTo({ name: item.name })"
+                :to="{ name: item.name }"
                 @keydown.enter="goTo({ name: item.name })"
             >
                 {{ item.label }}
-            </li>
+            </router-link>
 
             <li
                 v-for="item in moreSubmenuItems.external"
@@ -309,14 +319,19 @@ function goTo(to: string | { name: string }) {
                 @click="goTo(item.url)"
                 @keydown.enter="goTo(item.url)"
             >
-                <div class="u-flex--center-y">
+                <a
+                    class="u-flex--center-y"
+                    :href="item.url"
+                    target="_blank"
+                >
                     {{ item.label }}
                     <q-icon name="fas fa-external-link-alt" size="12px" class="q-ml-sm" />
-                </div>
+                </a>
             </li>
         </ul>
     </li>
 
+    <!-- Networks -->
     <li
         v-if="$q.screen.lt.md"
         :class="{
@@ -377,6 +392,7 @@ function goTo(to: string | { name: string }) {
         </ul>
     </li>
 
+    <!-- Theme Toggle -->
     <li v-if="$q.screen.lt.md" class="c-header-links__menu-li">
         <OutlineButton
             text-color="default"
@@ -453,6 +469,7 @@ function goTo(to: string | { name: string }) {
     }
 
     &__menu-li {
+        color: var(--text-color);
         padding: 8px 16px;
         display: flex;
         align-items: center;
@@ -494,6 +511,10 @@ function goTo(to: string | { name: string }) {
 
         &--current {
             color: var(--q-primary);
+        }
+
+        & a:not(#{$this}__submenu-li--current) {
+            color: inherit;
         }
     }
 
@@ -546,13 +567,22 @@ function goTo(to: string | { name: string }) {
         border-radius: 8px;
         min-width: max-content;
 
+        display: list-item;
+        text-align: -webkit-match-parent;
+        color: var(--text-color);
+
         &:hover,
         &:active {
+            color: var(--text-color);
             background-color: var(--highlight-color);
         }
 
         &--current {
             color: var(--q-primary);
+        }
+
+        & a {
+            color: inherit;
         }
     }
 
