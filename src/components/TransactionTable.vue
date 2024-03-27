@@ -41,7 +41,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const rows = ref<Array<any>>([]);
-const loadingRows = ref<Array<any>>([1, 2, 3, 4, 5, 6, 7]);
+const loadingRows = ref<Array<number>>([]);
 const loading =  ref(false);
 const showDateAge = ref(true);
 const showTotalGasFee = ref(true);

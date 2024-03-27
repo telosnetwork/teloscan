@@ -224,7 +224,7 @@ async function loadAccount() {
             :label="$t('pages.holders')"
         />
         <q-tab
-            v-if="contract && !contract.isToken()"
+            v-else
             name="internaltx"
             class="c-address__tabs-tab"
             :label="$t('pages.internal_txns')"

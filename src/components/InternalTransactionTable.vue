@@ -67,6 +67,7 @@ export default {
 
         return {
             rows: [],
+            loadingRows: [],
             columns,
             transactions: [],
             pageSize: this.initialPageSize,
@@ -90,6 +91,10 @@ export default {
         this.columns[2].label = this.$t('components.date');
         this.columns[3].label = this.$t('components.method');
         this.columns[4].label = this.$t('components.internal_txns');
+
+        for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+            this.loadingRows.push(i);
+        }
     },
     watch: {
         '$route.query.page': {
@@ -258,18 +263,15 @@ export default {
 
 <template>
 <q-table
+    v-if="!loading"
     v-model:pagination="pagination"
     :rows="rows"
     :row-key="row => row.hash"
     :columns="columns"
-    :loading="loading"
     :rows-per-page-options="page_size_options"
     flat
     @request="onPaginationChange"
 >
-    <template v-slot:loading>
-        <q-inner-loading showing color="primary" />
-    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
@@ -336,6 +338,65 @@ export default {
         >
             <q-td colspan="100%">
                 <InternalTxns :traces="props.row.traces" :transaction="props.row" />
+            </q-td>
+        </q-tr>
+    </template>
+</q-table>
+<q-table
+    v-else
+    v-model:pagination="pagination"
+    :rows="loadingRows"
+    :row-key="row => row.hash"
+    :columns="columns"
+    :rows-per-page-options="page_size_options"
+    flat
+>
+    <template v-slot:header="props">
+        <q-tr :props="props">
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <div :class="[ 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" >
+                    {{ col.label }}
+                    <template v-if="col.name === 'date'">
+                        <q-icon
+                            class="info-icon"
+                            name="fas fa-info-circle"
+                            @click="toggleDateFormat"
+                        >
+                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                                {{ $t('components.click_to_change_format') }}
+                            </q-tooltip>
+                        </q-icon>
+                    </template>
+                    <template v-if="col.name === 'method'">
+                        <q-icon class="info-icon" name="fas fa-info-circle" />
+                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                            {{ $t('components.executed_based_on_decoded_data') }}
+                        </q-tooltip>
+                    </template>
+                </div>
+            </q-th>
+            <q-td auto-width/>
+        </q-tr>
+    </template>
+    <template v-slot:body="">
+        <q-tr >
+            <q-td key="hash" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="block" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="date" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="method" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="int_txns" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td auto-width>
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
             </q-td>
         </q-tr>
     </template>
