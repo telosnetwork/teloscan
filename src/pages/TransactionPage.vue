@@ -217,7 +217,7 @@ const nextTransaction = () => {
                                 </q-item-section>
                                 <q-item-section>
                                     <q-item-label>{{ $t('pages.transaction.not_found') }}</q-item-label>
-                                    <q-item-label caption> {{ hash }}</q-item-label>
+                                    <q-item-label class="c-transactions__panel-not-found-hash" caption> {{ hash }}</q-item-label>
                                 </q-item-section>
                             </q-item>
                         </q-card-section>
@@ -291,11 +291,18 @@ const nextTransaction = () => {
         }
     }
     &__panel-not-found {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
         padding: 30px 0px;
+        &-hash {
+            padding-top: 4px;
+            word-break: break-all;
+        }
+        @media screen and (min-width: $breakpoint-md-min) {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 30px 0px;
+        }
     }
 }
 </style>
