@@ -117,13 +117,22 @@ export default {
     </template>
 </q-table>
 </template>
-<style lang='sass' scoped>
-    tbody  tr td:first-child
-        width: 50px
-    tbody  tr td:last-child
-        width: 100px
-    .c-token-icon
-        width: 32px
-        height: auto
-        border-radius: 100%
+<style lang='scss' scoped>
+tbody {
+    tr {
+      td:first-child {
+        width: 50px;
+      }
+      td:last-child {
+        width: 100px;
+      }
+    }
+  }
+
+  .c-token-icon {
+    width: 32px;
+    height: auto;
+    border-radius: 100%;
+  }
+
 </style>
