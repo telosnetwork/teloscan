@@ -387,6 +387,10 @@ async function loadAccount() {
     }
 
     // quasar overrides
+    .q-panel.scroll{
+        overflow: unset;
+    }
+
     .q-tab-panel {
         padding: 0;
     }
