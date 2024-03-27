@@ -113,7 +113,7 @@ function showBackToTop() {
         background-color: rgba(var(--q-primary), 0.04);
 
         body.body--dark & {
-            background-color: rgb(28, 28, 28);
+            background-color: rgb(31,31,31);
             opacity: 1;
         }
     }
