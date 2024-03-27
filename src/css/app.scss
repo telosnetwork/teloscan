@@ -48,7 +48,7 @@ body.body--dark {
     --scrollbar-track-bg-color: #{$grey-10};
     --scrollbar-thumb-bg-color: #{$grey-7};
 
-    --q-dark: #181818;
+    --q-dark: #1a1a1a;
 
     a:hover {
         color: $a-hover-dark;
@@ -75,5 +75,5 @@ a {
 }
 
 .q-card--dark {
-        box-shadow: 0 0.5rem 1.2rem rgba(82, 85, 85, 0.1);
+    box-shadow: 0 0.5rem 0.8rem rgba(82, 85, 85, 0.15);
 }
