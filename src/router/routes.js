@@ -88,10 +88,10 @@ const routes = [
     },
     {
         path: '/health',
-        name: 'health',
         component: () => import('layouts/MainLayout.vue'),
         children: [{
             path: '',
+            name: 'health',
             component: () => import('pages/HealthPage.vue'),
         }],
     },

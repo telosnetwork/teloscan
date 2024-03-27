@@ -244,6 +244,7 @@ export default {
         to_interacted_with: 'An',
         value: 'Wert',
         txn_fee: 'Txn Fee',
+        txn_failed: 'Txn Gescheitert',
         token: 'Token',
         unknown_precision: 'Unbekannte Präzision/Dezimalstellen',
         click_to_change_format: 'Zum Ändern des Formats anklicken',

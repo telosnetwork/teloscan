@@ -244,6 +244,7 @@ export default {
         to_interacted_with: 'Para',
         value: 'Valor',
         txn_fee: 'Txn Fee',
+        txn_failed: 'Txn Falha',
         token: 'Token',
         unknown_precision: 'Precisão desconhecida',
         click_to_change_format: 'Clique para mudar o formato',

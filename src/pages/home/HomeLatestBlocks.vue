@@ -124,7 +124,7 @@ async function fetchBlocks() {
     } catch (e: unknown) {
         $q.notify({
             type: 'negative',
-            message: $t('components.blocks.transaction.load_error'),
+            message: $t('components.transaction.load_error'),
             caption: (e as {message:string}).message,
         });
     }
