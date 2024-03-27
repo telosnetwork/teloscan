@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
-import { ref, watch } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { indexerApi } from 'src/boot/telosApi';
@@ -27,6 +27,7 @@ const props = withDefaults(defineProps<BlockTableProps>(), {
 });
 
 const rows = ref<Array<BlockData>>([]);
+const loadingRows = ref<Array<number>>([]);
 const loading = ref(false);
 const showDateAge = ref(true);
 const blocks: BlockData[] = [];
@@ -194,10 +195,17 @@ function getGasUsed(gasUsed: string) {
     return '0';
 }
 
+onBeforeMount(() => {
+    for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
+        loadingRows.value.push(i);
+    }
+});
+
 </script>
 
 <template>
 <q-table
+    v-if="!loading"
     v-model:pagination="pagination"
     class="c-block-table"
     :rows="rows"
@@ -205,14 +213,10 @@ function getGasUsed(gasUsed: string) {
     :rows-per-page-label="$t('global.records_per_page')"
     :row-key="row => row.number"
     :columns="(columns as any)"
-    :loading="loading"
     :rows-per-page-options="page_size_options"
     flat
     @request="onPaginationChange"
 >
-    <template v-slot:loading>
-        <q-inner-loading showing color="primary" />
-    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
@@ -263,6 +267,60 @@ function getGasUsed(gasUsed: string) {
             </q-td>
             <q-td key='gasUsed' class="c-block-table__td-gas-used" :props="props">
                 {{ getGasUsed(props.row.gasUsed) }}
+            </q-td>
+        </q-tr>
+    </template>
+</q-table>
+<q-table
+    v-else
+    v-model:pagination="pagination"
+    class="c-block-table"
+    :rows="loadingRows"
+    :binary-state-sort="true"
+    :rows-per-page-label="$t('global.records_per_page')"
+    :columns="(columns as any)"
+    :rows-per-page-options="page_size_options"
+    flat
+>
+    <template v-slot:header="props">
+        <q-tr :props="props">
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <div class="u-flex--center-y">
+                    {{ col.label }}
+                    <template v-if="col.name === 'date'">
+                        <q-icon
+                            class="info-icon q-ml-xs"
+                            name="fas fa-info-circle"
+                            @click="toggleDateFormat"
+                        >
+                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                                {{ $t('components.blocks.click_to_change_format') }}
+                            </q-tooltip>
+                        </q-icon>
+                    </template>
+                    <template v-if="col.name === 'method'">
+                        <q-icon class="info-icon" name="fas fa-info-circle q-ml-xs" />
+                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                            {{ $t('components.blocks.executed_based_on_decoded_data') }}
+                        </q-tooltip>
+                    </template>
+                </div>
+            </q-th>
+        </q-tr>
+    </template>
+    <template v-slot:body="">
+        <q-tr>
+            <q-td key="block">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="timestamp">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key='transactionsCount'>
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key='gasUsed' class="c-block-table__td-gas-used">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
             </q-td>
         </q-tr>
     </template>

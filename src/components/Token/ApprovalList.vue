@@ -108,6 +108,7 @@ export default {
             approved: false,
             approvals: [],
             selected: [],
+            loadingRows: [],
             displayConfirmModal: false,
             displayUpdateModal: false,
             modalUpdateValue: false,
@@ -122,6 +123,11 @@ export default {
             signing: false,
             loading: true,
         };
+    },
+    created(){
+        for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+            this.loadingRows.push(i);
+        }
     },
     async mounted() {
         await this.onRequest({
@@ -185,7 +191,6 @@ export default {
             }
             this.approvals = approvals;
             this.loading = false;
-
         },
         isNFT(){
             return (this.type !== 'erc20');
@@ -459,9 +464,9 @@ export default {
 </div>
 <div>
     <q-table
+        v-if="!loading"
         v-model:pagination="pagination"
         :rows="approvals"
-        :loading="loading"
         :rows-per-page-label="$t('global.records_per_page')"
         :binary-state-sort="true"
         :row-key="row => row.address"
@@ -470,9 +475,6 @@ export default {
         flat
         @request="onRequest"
     >
-        <template v-slot:loading>
-            <q-inner-loading showing color="primary" />
-        </template>
         <template v-slot:header="props">
             <q-tr :props="props">
                 <q-th
@@ -645,6 +647,48 @@ export default {
                             <q-tooltip>{{ $t('components.approvals.removal_approvals') }}</q-tooltip>
                         </div>
                     </div>
+                </q-td>
+            </q-tr>
+        </template>
+    </q-table>
+    <q-table
+        v-else
+        v-model:pagination="pagination"
+        :rows="loadingRows"
+        :rows-per-page-label="$t('global.records_per_page')"
+        :columns="columns"
+        :rows-per-page-options="[10, 20, 50]"
+        flat
+    >
+        <template v-slot:header="props">
+            <q-tr :props="props">
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
+                    <div class="u-flex--center-y">
+                        {{ col.label }}
+                    </div>
+                </q-th>
+            </q-tr>
+        </template>
+        <template v-slot:body="">
+            <q-tr >
+                <q-td key="spender" :props="props">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="amount" :props="props" >
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="contract" :props="props">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="updated" :props="props">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="action">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
             </q-tr>
         </template>

@@ -15,6 +15,11 @@ export default {
             required: true,
         },
     },
+    created(){
+        for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+            this.loadingRows.push(i);
+        }
+    },
     async mounted() {
         let list = await this.$contractManager.getSystemContractsList();
         for(const contract in list.contracts){
@@ -60,6 +65,7 @@ export default {
         return {
             columns: columns,
             holders: [],
+            loadingRows: [],
             loading: true,
             systemContractsList: '',
             showSystemContracts: false,
@@ -126,9 +132,9 @@ export default {
 
 <template>
 <q-table
+    v-if="!loading"
     v-model:pagination="pagination"
     :rows="holders"
-    :loading="loading"
     :rows-per-page-label="$t('global.records_per_page')"
     :binary-state-sort="true"
     :row-key="row => row.address"
@@ -137,9 +143,6 @@ export default {
     flat
     @request="onRequest"
 >
-    <template v-slot:loading>
-        <q-inner-loading showing color="primary" />
-    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th
@@ -244,6 +247,48 @@ export default {
             unchecked-icon="visibility_off"
             @update:model-value="onRequest({pagination: pagination})"
         />
+    </template>
+</q-table>
+<q-table
+    v-else
+    v-model:pagination="pagination"
+    :rows="loadingRows"
+    :rows-per-page-label="$t('global.records_per_page')"
+    :columns="columns"
+    :rows-per-page-options="[10, 20, 50]"
+    flat
+>
+    <template v-slot:header="props">
+        <q-tr :props="props">
+            <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+            >
+                <div class="u-flex--center-y">
+                    {{ col.label }}
+                </div>
+            </q-th>
+        </q-tr>
+    </template>
+    <template v-slot:body="">
+        <q-tr>
+            <q-td key="holder">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="balance">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="telos_supply_share">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="supply_share" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="updated">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+        </q-tr>
     </template>
 </q-table>
 </template>

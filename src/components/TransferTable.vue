@@ -72,11 +72,12 @@ export default {
 
         return {
             rows: [],
+            loadingRows: [],
             columns,
             transfers: [],
             pageSize: this.initialPageSize,
             total: null,
-            loading: false,
+            loading: true,
             expectedTopicLength: 0,
             pagination: {
                 sortBy: 'date',
@@ -88,6 +89,11 @@ export default {
             showDateAge: true,
             tokenList: {},
         };
+    },
+    created(){
+        for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+            this.loadingRows.push(i);
+        }
     },
     mounted() {
         switch (this.tokenType) {
@@ -198,19 +204,16 @@ export default {
 
 <template>
 <q-table
+    v-if="!loading"
     v-model:pagination="pagination"
     :rows="rows"
     :row-key="row => row.hash"
     :columns="columns"
-    :loading="loading"
     :rows-per-page-label="$t('global.records_per_page')"
     :rows-per-page-options="[10, 20, 50]"
     flat
     @request="onRequest"
 >
-    <template v-slot:loading>
-        <q-inner-loading showing color="primary" />
-    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th
@@ -291,36 +294,108 @@ export default {
         </q-tr>
     </template>
 </q-table>
+<q-table
+    v-else
+    v-model:pagination="pagination"
+    :rows="rows"
+    :row-key="row => row.hash"
+    :columns="columns"
+    :rows-per-page-label="$t('global.records_per_page')"
+    :rows-per-page-options="[10, 20, 50]"
+    flat
+>
+    <template v-slot:header="props">
+        <q-tr :props="props">
+            <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+            >
+                <div class="u-flex--center-y">
+                    {{ col.label }}
+
+                    <q-icon
+                        v-if="col.name==='date'"
+                        class="info-icon"
+                        name="fas fa-info-circle"
+                        @click="toggleDateFormat"
+                    >
+                        <q-tooltip anchor="bottom middle" self="bottom middle">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
+                    </q-icon>
+                </div>
+
+            </q-th>
+        </q-tr>
+    </template>
+
+    <template v-slot:body="">
+        <q-tr>
+            <q-td key="hash" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="date" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="direction" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="from" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="to" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="value" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="token"  class="flex items-center">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+        </q-tr>
+    </template>
+</q-table>
 </template>
 
-<style lang='sass' scoped>
-.direction
-    user-select: none
-    padding: 3px 6px
-    border-radius: 5px
-    font-size: 0.9em
-.direction.in
-    color: rgb(0,161,134)
-    background: rgba(0,161,134,0.1)
-    border: 1px solid rgb(0,161,134)
-.direction.out
-    color: #cc9a06!important
-    background: rgba(255,193,7,0.1)
-    border: 1px solid #cc9a06!important
-.nft-icon
-    width: 32px
-    height: 32px
-    vertical-align: middle
-    border-radius: 100%
+<style lang='scss' scoped>
+.direction {
+  user-select: none;
+  padding: 3px 6px;
+  border-radius: 5px;
+  font-size: 0.9em;
 
-.coin-icon
-  width: 20px
-  height: 20px
-  margin-right: .25rem
-  vertical-align: middle
-  border-radius: 100%
+  &.in {
+    color: rgb(0, 161, 134);
+    background: rgba(0, 161, 134, 0.1);
+    border: 1px solid rgb(0, 161, 134);
+  }
 
-.token-name
-  vertical-align: middle
-  display: inline-block
+  &.out {
+    color: #cc9a06 !important;
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid #cc9a06 !important;
+  }
+}
+
+.nft-icon {
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+  border-radius: 100%;
+}
+
+.coin-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: .25rem;
+  vertical-align: middle;
+  border-radius: 100%;
+}
+
+.token-name {
+  vertical-align: middle;
+  display: inline-block;
+}
+
 </style>

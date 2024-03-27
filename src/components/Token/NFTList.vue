@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, onBeforeMount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { indexerApi } from 'src/boot/telosApi';
 import { ALLOWED_VIDEO_EXTENSIONS } from 'src/lib/utils';
@@ -29,6 +29,7 @@ const columns = ref<QTableProps['columns']>([]);
 const loading = ref(true);
 const showWithoutMetadata = ref(false);
 const nfts = ref<NFT[]>([]);
+const loadingRows = ref<Array<number>>([]);
 const pagination = ref({
     sortBy: '',
     descending: true,
@@ -101,6 +102,12 @@ function setupColumns() {
         },
     ];
 }
+
+onBeforeMount(() => {
+    for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
+        loadingRows.value.push(i);
+    }
+});
 
 onMounted(async () => {
     await onRequest();
@@ -207,9 +214,9 @@ function getPath(type: string) {
 <template>
 <div :key="address">
     <q-table
+        v-if="!loading"
         v-model:pagination="pagination"
         :rows="nfts"
-        :loading="loading"
         :rows-per-page-label="$t('global.records_per_page')"
         :binary-state-sort="true"
         :row-key="row => row.contract + row.tokenId"
@@ -217,9 +224,6 @@ function getPath(type: string) {
         :rows-per-page-options="[10, 20, 50]"
         flat
     >
-        <template v-slot:loading>
-            <q-inner-loading showing color="primary" />
-        </template>
         <template v-slot:header="props">
             <q-tr :props="props">
                 <q-th
@@ -367,6 +371,63 @@ function getPath(type: string) {
                 unchecked-icon="visibility_off"
                 @update:model-value="onRequest()"
             />
+        </template>
+    </q-table>
+    <q-table
+        v-else
+        v-model:pagination="pagination"
+        :rows="loadingRows"
+        :rows-per-page-label="$t('global.records_per_page')"
+        :columns="columns"
+        :rows-per-page-options="[10, 20, 50]"
+        flat
+    >
+        <template v-slot:header="props">
+            <q-tr :props="props">
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
+                    <div class="u-flex--center-y">
+                        {{ col.label }}
+                    </div>
+                </q-th>
+            </q-tr>
+        </template>
+        <template v-slot:body="">
+            <q-tr >
+                <q-td key="minted" >
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="token_id" >
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td v-if="filter !== 'account'" key="owner" >
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td v-else key="contract">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="name">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="minter">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td  key="amount">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="attributes">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="media">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="metadata">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+            </q-tr>
         </template>
     </q-table>
 </div>
