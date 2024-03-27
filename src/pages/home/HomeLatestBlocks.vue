@@ -150,7 +150,7 @@ const gasUsedFor = (block: BlockData) => {
             const wei = ethers.BigNumber.from(block.gasUsed).mul(gasPrice);
             return prettyPrintCurrency(
                 ethers.BigNumber.from(wei.toHexString()),
-                2,
+                wei.isZero() ? 0 : 2, // If it is Zero, then do not show decimals
                 locale,
                 false,
                 'TLOS',
@@ -164,6 +164,7 @@ const gasUsedFor = (block: BlockData) => {
     }
     return '0.00 TLOS';
 };
+
 
 // lifecycle
 onMounted(() => {

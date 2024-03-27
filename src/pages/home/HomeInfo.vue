@@ -69,13 +69,12 @@ async function fetchMarketCap() {
 }
 
 function updateFigures() {
-    fetchTlosPrice();
+    fetchTlosPrice(); // This makes the Price to load before anything else
     return Promise.all([
         fetchMarketCap(),
         fetchLatestBlock(),
         fetchTotalTransactions(),
     ]).then(() => {
-        console.log('tlosPrice', typeof tlosPrice.value, tlosPrice.value);
         if (tlosPrice.value > 0 && latestBlock.value > 0 && transactionsCount.value > 0) {
             initialLoadComplete.value = true;
         } else {
