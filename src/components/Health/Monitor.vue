@@ -47,6 +47,7 @@ export default {
 
         return {
             rows: [],
+            loadingRows: [],
             tasks: [],
             categories: [],
             columns,
@@ -67,6 +68,9 @@ export default {
         this.columns[2].label = this.$t('components.health.category');
         this.columns[3].label = this.$t('components.health.task');
         this.columns[4].label = this.$t('components.health.message');
+        for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+            this.loadingRows.push(i);
+        }
     },
     methods: {
         async getCategories(){
@@ -143,11 +147,11 @@ export default {
 <template>
 <div class="q-mb-md tableWrapper">
     <q-table
+        v-if="!loading"
         v-model:pagination="pagination"
         :rows="rows"
         :row-key="row => row.id"
         :columns="columns"
-        :loading="loading"
         :rows-per-page-options="[10, 20, 50]"
         flat
         @request="onRequest"
@@ -201,6 +205,47 @@ export default {
                 <q-td key="task" :props="props">{{ props.row.task.name }}</q-td>
                 <q-td key="message" :props="props" :class="(props.row.type === 4) ? 'text-negative' : ''">
                     {{ props.row.message }}
+                </q-td>
+            </q-tr>
+        </template>
+    </q-table>
+    <q-table
+        v-else
+        v-model:pagination="pagination"
+        :rows="loadingRows"
+        :row-key="row => row.id"
+        :columns="columns"
+        :rows-per-page-options="[10, 20, 50]"
+        flat
+    >
+        <q-tr :props="props">
+            <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+                @click="col.name==='checked_at' ? showAge =! showAge : null"
+            />
+            <q-tooltip v-if="col.name === 'checked_at'" anchor="bottom middle" self="bottom middle">
+                {{ $t('components.health.click_to_change_format') }}
+            </q-tooltip>
+            {{ col.label }}
+        </q-tr>
+        <template v-slot:body="">
+            <q-tr>
+                <q-td key="status">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="checked_at">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="category">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="task">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="message">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
             </q-tr>
         </template>

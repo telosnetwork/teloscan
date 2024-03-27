@@ -126,21 +126,30 @@ export default {
 </div>
 </template>
 
-<style scoped lang='sass'>
-.q-list
-  border-radius: 6px
-  box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%)
-.tableWrapper
-  max-width: 100vw
-  min-width: 50vw
-  max-width: 100vw
-  border-radius: 6px
-.text-primary
-  margin-left: .25rem
-@media only screen and (max-width: 600px)
-  .full-width
-    min-width: 100%
-    margin-top: .25rem
-  .no-wrap
-    flex-wrap: wrap
+<style scoped lang='scss'>
+.q-list {
+    border-radius: 6px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.20), 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
+  }
+
+  .tableWrapper {
+    max-width: 100vw;
+    border-radius: 6px;
+  }
+
+  .text-primary {
+    margin-left: .25rem;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .full-width {
+      min-width: 100%;
+      margin-top: .25rem;
+    }
+
+    .no-wrap {
+      flex-wrap: wrap;
+    }
+  }
+
 </style>
