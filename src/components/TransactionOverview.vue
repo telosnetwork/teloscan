@@ -273,7 +273,7 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
     </div>
 
     <!-- ERC20 Token Tranfers -->
-    <div vif="erc20_transfers.length > 0" class="c-trx-overview__row">
+    <div v-if="trx?.logsArray.length > 0" class="c-trx-overview__row">
         <div class="c-trx-overview__col-att">
             <div class="c-trx-overview__row-tooltip">
                 <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">

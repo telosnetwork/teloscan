@@ -180,15 +180,46 @@ const nextTransaction = () => {
         class="c-transactions__tabs"
     >
         <q-tab class="c-transactions__tabs-tab" name="overview" :label="$t('pages.transaction.overview')" />
-        <q-tab class="c-transactions__tabs-tab" name="logs" :label="$t('pages.transaction.logs')" />
-        <q-tab class="c-transactions__tabs-tab" name="internal" :label="$t('pages.transaction.internal')" />
+        <q-tab
+            v-if="trx?.logsArray"
+            class="c-transactions__tabs-tab"
+            name="logs"
+            :label="$t('pages.transaction.logs')"
+        />
+        <q-tab
+            v-if="trx"
+            class="c-transactions__tabs-tab"
+            name="internal"
+            :label="$t('pages.transaction.internal')"
+        />
     </q-tabs>
 
     <div class="c-transactions__main-container">
         <div class="c-transactions__main-content">
             <q-tab-panels v-model="tab" class="c-transactions__panels">
                 <q-tab-panel class="c-transactions__panel c-transactions__panel--overview" name="overview">
-                    <div class="c-transactions__panel-content--overview c-transactions__panel-content">
+                    <!-- Transaction not found -->
+                    <q-card
+                        v-if="trxNotFound"
+                        class="c-transactions__panel-not-found"
+                    >
+                        <q-card-section>
+                            <q-item>
+                                <q-item-section avatar>
+                                    <q-avatar>
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                    </q-avatar>
+                                </q-item-section>
+                                <q-item-section>
+                                    <q-item-label>{{ $t('pages.transaction.not_found') }}</q-item-label>
+                                    <q-item-label caption> {{ hash }}</q-item-label>
+                                </q-item-section>
+                            </q-item>
+                        </q-card-section>
+                    </q-card>
+
+                    <!-- Transaction Overview -->
+                    <div v-else class="c-transactions__panel-content--overview c-transactions__panel-content">
                         <TransactionOverview
                             :trx="trx"
                         />
@@ -253,6 +284,13 @@ const nextTransaction = () => {
         &--logs, &--internal {
             padding-top: 20px;
         }
+    }
+    &__panel-not-found {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        padding: 30px 0px;
     }
 }
 </style>
