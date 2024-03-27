@@ -4,6 +4,7 @@ import { sortAbiFunctionsByName } from 'src/lib/utils';
 import { AbiFunction } from 'src/types/AbiFunction';
 
 import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
+import AppHeaderWallet from 'src/components/header/AppHeaderWallet.vue';
 
 const props = defineProps({
     write: {
@@ -43,6 +44,7 @@ onMounted(async () => {
 
 <template>
 <div class="q-pt-md">
+    <AppHeaderWallet v-if="props.write" class="c-login-button"/>
     <q-list>
         <q-expansion-item
             v-for="func in (props.write ? functions.write : functions.read)"
@@ -68,3 +70,8 @@ onMounted(async () => {
     </small>
 </div>
 </template>
+<style lang="scss">
+.c-login-button{
+    margin-bottom: 0.5rem;
+}
+</style>
