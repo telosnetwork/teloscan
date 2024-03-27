@@ -66,6 +66,10 @@ a {
     max-width: 100%;
 }
 
+.q-tab--inactive {
+    opacity: unset;
+}
+
 .q-tab-panels {
     background: none;
 }
