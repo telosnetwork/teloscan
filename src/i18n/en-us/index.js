@@ -191,6 +191,7 @@ export default {
         to_interacted_with: 'To',
         value: 'Value',
         txn_fee: 'Txn Fee',
+        txn_failed: 'Txn Failed',
         token: 'Token',
         unknown_precision: 'Unknown Precision',
         click_to_change_format: 'Click to change format',

@@ -382,6 +382,7 @@ function getValueDisplay(value: string) {
                         <TransactionField
                             color="primary"
                             :transaction-hash="props.row.hash"
+                            :status="props.row.status === '0x1'"
                             :truncate="18"
                         />
                     </div>
@@ -463,8 +464,6 @@ function getValueDisplay(value: string) {
         padding: 7px 13px !important;
     }
 }
-
-
 </style>
 
 

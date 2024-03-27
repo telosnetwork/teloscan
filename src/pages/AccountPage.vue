@@ -69,6 +69,13 @@ watch(tab, (newTab) => {
     router.push({ query: { tab: newTab } });
 });
 
+watch(isLoggedIn, (value) => {
+    // if user logs out while on approvals tab return to transactions
+    if (!value && tab.value === 'approvals'){
+        router.push({ query: { tab: 'transactions' } });
+    }
+});
+
 onMounted(() => {
     const tabQueryParam = route.query.tab as string;
     tab.value = tabs.includes(tabQueryParam) ? tabQueryParam : tabs[0];
