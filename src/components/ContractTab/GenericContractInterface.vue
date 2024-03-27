@@ -13,6 +13,7 @@ import { sortAbiFunctionsByName } from 'src/lib/utils';
 
 import VueJsonPretty from 'vue-json-pretty';
 import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
+import AppHeaderWallet from 'src/components/header/AppHeaderWallet.vue';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -310,7 +311,7 @@ const formatAbiFunctionLists = async () => {
                     @click="displayWriteFunctions = true"
                 />
             </div>
-
+            <AppHeaderWallet v-if="displayWriteFunctions" class="c-login-button"/>
             <q-list>
                 <q-expansion-item
                     v-for="func in (displayWriteFunctions ? functions.write : functions.read)"
@@ -337,8 +338,6 @@ const formatAbiFunctionLists = async () => {
 </template>
 <style lang="scss">
 .c-contract{
-    margin-left: 2rem;
-    margin-right: 2rem;
     padding-top: 1rem;
 
     &__tab-container{
@@ -371,5 +370,8 @@ const formatAbiFunctionLists = async () => {
 .abi-json-uploader .q-field__label {
     text-align: center;
     width: 100%;
+}
+.c-login-button{
+    margin-bottom: 0.5rem;
 }
 </style>

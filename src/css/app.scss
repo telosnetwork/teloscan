@@ -66,6 +66,10 @@ a {
     max-width: 100%;
 }
 
+.q-tab--inactive {
+    opacity: unset;
+}
+
 .q-tab-panels {
     background: none;
 }
@@ -85,4 +89,14 @@ a {
 
 .q-card--dark {
     box-shadow: 0 0.5rem 1.2rem rgba(82, 85, 85, 0.1);
+}
+
+.q-expansion-item{
+    .q-item{
+        background: #fff;
+
+        &--dark{
+            background: #212121;
+        }
+    }
 }

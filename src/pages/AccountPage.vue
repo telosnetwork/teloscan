@@ -224,7 +224,7 @@ async function loadAccount() {
             :label="$t('pages.holders')"
         />
         <q-tab
-            v-if="contract && !contract.isToken()"
+            v-else
             name="internaltx"
             class="c-address__tabs-tab"
             :label="$t('pages.internal_txns')"
@@ -379,12 +379,6 @@ async function loadAccount() {
         @media screen and (min-width: $breakpoint-md-min) {
             font-size: 1rem;
         }
-    }
-
-    &__verification-icon {
-        position: absolute;
-        top: -0.35rem;
-        right: 0.3rem;
     }
 
     &__coin-icon {
