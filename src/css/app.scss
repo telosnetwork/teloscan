@@ -78,3 +78,11 @@ a {
 .q-panel.scroll {
     overflow: var(--v-overflow, scroll);
 }
+
+.q-table__middle{
+    @include scroll-bar;
+}
+
+.q-card--dark {
+    box-shadow: 0 0.5rem 1.2rem rgba(82, 85, 85, 0.1);
+}

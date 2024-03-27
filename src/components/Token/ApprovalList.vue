@@ -366,6 +366,7 @@ export default {
             return (this.accountAddress === this.address);
         },
         async handleCtaRemoveAll(){
+            this.toggleAll(true);
             if (!this.isLoggedInAccount()) {
                 this.displayLoginModal = true;
                 return;

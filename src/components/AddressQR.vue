@@ -63,7 +63,7 @@ onMounted(() => {
 .qr-dialog {
 
     border-radius: 6px !important;
-    width: 13rem;
+    width: 300px;
     margin-top: 1rem;
     text-align: center;
     &__header{
