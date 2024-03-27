@@ -316,7 +316,6 @@ function hideDialog(){
     &__panels{
         .scroll{
             overflow: unset;
-
         }
     }
 }
