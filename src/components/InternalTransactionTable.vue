@@ -88,7 +88,7 @@ export default {
         // initialization of the translated texts
         this.columns[0].label = this.$t('components.tx_hash');
         this.columns[1].label = this.$t('components.block');
-        this.columns[2].label = this.$t('components.date');
+        this.columns[2].label = this.$t('components.age');
         this.columns[3].label = this.$t('components.method');
         this.columns[4].label = this.$t('components.internal_txns');
 
@@ -275,24 +275,30 @@ export default {
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 <div :class="[ 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" >
-                    {{ col.label }}
-                    <template v-if="col.name === 'date'">
+                    <div
+                        v-if="col.name === 'date'"
+                        @click="toggleDateFormat"
+                    >
+                        <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
                         <q-icon
                             class="info-icon"
-                            name="fas fa-info-circle"
-                            @click="toggleDateFormat"
+                            name="far fa-question-circle"
                         >
                             <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
                                 {{ $t('components.click_to_change_format') }}
                             </q-tooltip>
                         </q-icon>
-                    </template>
-                    <template v-if="col.name === 'method'">
-                        <q-icon class="info-icon" name="fas fa-info-circle" />
+                    </div>
+                    <div v-else-if="col.name === 'method'">
+                        {{ col.label }}
+                        <q-icon class="info-icon" name="far fa-question-circle" />
                         <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
                             {{ $t('components.executed_based_on_decoded_data') }}
                         </q-tooltip>
-                    </template>
+                    </div>
+                    <div v-else>
+                        {{ col.label }}
+                    </div>
                 </div>
             </q-th>
             <q-td auto-width/>
@@ -353,24 +359,30 @@ export default {
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 <div :class="[ 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" >
-                    {{ col.label }}
-                    <template v-if="col.name === 'date'">
+                    <div
+                        v-if="col.name === 'date'"
+                        @click="toggleDateFormat"
+                    >
+                        <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
                         <q-icon
                             class="info-icon"
-                            name="fas fa-info-circle"
-                            @click="toggleDateFormat"
+                            name="far fa-question-circle"
                         >
                             <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
                                 {{ $t('components.click_to_change_format') }}
                             </q-tooltip>
                         </q-icon>
-                    </template>
-                    <template v-if="col.name === 'method'">
-                        <q-icon class="info-icon" name="fas fa-info-circle" />
+                    </div>
+                    <div v-else-if="col.name === 'method'">
+                        {{ col.label }}
+                        <q-icon class="info-icon" name="far fa-question-circle" />
                         <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
                             {{ $t('components.executed_based_on_decoded_data') }}
                         </q-tooltip>
-                    </template>
+                    </div>
+                    <div v-else>
+                        {{ col.label }}
+                    </div>
                 </div>
             </q-th>
             <q-td auto-width/>
@@ -400,3 +412,9 @@ export default {
     </template>
 </q-table>
 </template>
+<style lang="scss" scoped>
+.info-icon{
+    margin-left: .25rem;
+    padding-bottom: 0.2rem;
+}
+</style>
