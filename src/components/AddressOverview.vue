@@ -4,7 +4,6 @@ import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { WEI_PRECISION, formatWei } from 'src/lib/utils';
 import { prettyPrintFiatBalance } from 'src/antelope/wallets/utils';
-import TLOS_LOGO from 'assets/logo--tlos.svg';
 
 const $store = useStore();
 const { t: $t } = useI18n();
@@ -46,7 +45,7 @@ onBeforeMount(() => {
             <div class="c-overview__label"> TLOS {{ $t('pages.balance') }} </div>
             <div class="c-overview__balance">
                 <img
-                    :src="TLOS_LOGO"
+                    src="branding/telos.png"
                     alt="TLOS"
                     height="18"
                     width="18"
