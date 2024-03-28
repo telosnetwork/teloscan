@@ -39,7 +39,7 @@ export default {
             },
             {
                 name: 'date',
-                label: this.$t('components.date'),
+                label: this.$t('components.age'),
                 align: 'left',
             },
             {
@@ -159,7 +159,7 @@ export default {
                 });
                 const nTransfer = {
                     hash: transfer.transaction,
-                    timestamp: transfer.timestamp / 1000,
+                    timestamp: transfer.timestamp,
                     count: 1,
                     id: transfer.id,
                     token: transfer.token,
@@ -178,7 +178,6 @@ export default {
                 this.transfers.length,
                 ...newTransfers,
             );
-
             this.rows = this.transfers;
             this.loading = false;
         },
@@ -192,6 +191,12 @@ export default {
             path += `&sort=${descending ? 'desc' : 'asc'}`;
 
             return path;
+        },
+        convertToEpoch(dateString){
+            // convert YYYY-MM-DD hh:mm:ss format returned from api to unix epoch
+            const d = dateString.split(/\D+/);
+            const epoch = new Date(d[0], --d[1], d[1], d[3], d[4], d[5]) / 1000;
+            return epoch;
         },
         toggleDateFormat() {
             this.showDateAge = !this.showDateAge;
@@ -220,19 +225,24 @@ export default {
                 :key="col.name"
                 :props="props"
             >
-                <div class="u-flex--center-y">
-                    {{ col.label }}
+                <div
+                    v-if="col.name==='date'"
+                    class="u-flex--center-y"
+                    @click="toggleDateFormat"
+                >
+                    <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
 
                     <q-icon
-                        v-if="col.name==='date'"
                         class="info-icon"
-                        name="fas fa-info-circle"
-                        @click="toggleDateFormat"
+                        name="far fa-question-circle"
                     >
                         <q-tooltip anchor="bottom middle" self="bottom middle">
                             {{ $t('components.click_to_change_format') }}
                         </q-tooltip>
                     </q-icon>
+                </div>
+                <div v-else class="u-flex--center-y">
+                    {{ col.label }}
                 </div>
 
             </q-th>
@@ -245,7 +255,7 @@ export default {
                 <TransactionField :transaction-hash="props.row.hash"/>
             </q-td>
             <q-td key="date" :props="props">
-                <DateField :epoch="props.row.timestamp" :force-show-age="showDateAge" />
+                <DateField :epoch="convertToEpoch(props.row.timestamp)" :force-show-age="showDateAge"/>
             </q-td>
             <q-td key="direction" :props="props">
                 <span v-if="toChecksumAddress(address) === toChecksumAddress(props.row.from)" class="direction out">
@@ -309,19 +319,24 @@ export default {
                 :key="col.name"
                 :props="props"
             >
-                <div class="u-flex--center-y">
-                    {{ col.label }}
+                <div
+                    v-if="col.name==='date'"
+                    class="u-flex--center-y"
+                    @click="toggleDateFormat"
+                >
+                    <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
 
                     <q-icon
-                        v-if="col.name==='date'"
                         class="info-icon"
-                        name="fas fa-info-circle"
-                        @click="toggleDateFormat"
+                        name="far fa-question-circle"
                     >
                         <q-tooltip anchor="bottom middle" self="bottom middle">
                             {{ $t('components.click_to_change_format') }}
                         </q-tooltip>
                     </q-icon>
+                </div>
+                <div v-else class="u-flex--center-y">
+                    {{ col.label }}
                 </div>
 
             </q-th>
@@ -394,6 +409,10 @@ export default {
 .token-name {
   vertical-align: middle;
   display: inline-block;
+}
+
+.info-icon{
+    margin-left: .25rem;
 }
 
 </style>
