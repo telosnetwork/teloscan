@@ -7,8 +7,10 @@ import { useI18n } from 'vue-i18n';
 import {
     IS_MAINNET,
     IS_TESTNET,
-    TELOSCAN_MAINNET_URL,
-    TELOSCAN_TESTNET_URL,
+    // TELOSCAN_MAINNET_URL,
+    // TELOSCAN_TESTNET_URL,
+    BETA_TELOSCAN_MAINNET_URL,
+    BETA_TELOSCAN_TESTNET_URL,
 } from 'src/lib/chain-utils';
 
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
@@ -71,11 +73,11 @@ const moreSubmenuItems = {
 
 const networksMenuItems = {
     mainnet: [{
-        url: TELOSCAN_MAINNET_URL,
+        url: BETA_TELOSCAN_MAINNET_URL,
         label: 'Telos Mainnet',
     }],
     testnet: [{
-        url: TELOSCAN_TESTNET_URL,
+        url: BETA_TELOSCAN_TESTNET_URL,
         label: 'Telos Testnet',
     }],
 };
@@ -111,11 +113,11 @@ function toggleDarkMode() {
 }
 
 function getIsCurrentNetworkMenuItem(url: string) {
-    if (url === TELOSCAN_MAINNET_URL) {
+    if (url === BETA_TELOSCAN_MAINNET_URL) {
         return IS_MAINNET;
     }
 
-    if (url === TELOSCAN_TESTNET_URL) {
+    if (url === BETA_TELOSCAN_TESTNET_URL) {
         return IS_TESTNET;
     }
 
