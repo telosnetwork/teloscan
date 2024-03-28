@@ -4,7 +4,7 @@ export default {
     },
     pages: {
         blocklist: {
-            title: 'Blocklist',
+            title: 'Blocks',
         },
         blockpage: {
             block: 'Block',

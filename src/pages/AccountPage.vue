@@ -264,7 +264,7 @@ async function loadAccount() {
             }"
             :label="$t('pages.contract')"
         >
-            <q-icon v-if="contract && contract.isVerified()" class="fas fa-check-circle text-positive q-ml-xs"/>
+            <q-icon v-if="contract && contract.isVerified()" class="fas fa-check-circle text-positive q-ml-xs" />
         </q-tab>
     </q-tabs>
     <div class="q-mb-md">
@@ -344,10 +344,6 @@ async function loadAccount() {
 
             &--with-icon {
                 padding-right: 32px;
-
-                @media screen and (min-width: $breakpoint-md-min) {
-                    padding-right: 16px;
-                }
             }
         }
     }

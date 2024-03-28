@@ -535,7 +535,7 @@ onBeforeMount(() => {
 .c-transaction-table {
     &__limit-text {
         height: 26px;
-        color: var(--grey-text-color);
+        color: var(--text-color);
         font-size: 0.8rem;
         text-align: left;
         margin-bottom: 12px;
