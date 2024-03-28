@@ -193,7 +193,6 @@ export default {
             return path;
         },
         convertToEpoch(dateString){
-            debugger;
             // date may be returned as date string or epoch depending on api call
             if (typeof dateString === 'number'){
                 return dateString / 1000;
