@@ -44,8 +44,8 @@ onMounted(async () => {
 
 <template>
 <div class="q-pt-md">
-    <AppHeaderWallet v-if="props.write" class="c-login-button"/>
-    <q-list>
+    <AppHeaderWallet v-if="props.write" class="c-login-button c-contract-interface__login"/>
+    <q-list class="c-contract-interface__container">
         <q-expansion-item
             v-for="func in (props.write ? functions.write : functions.read)"
             :key="func.name"
@@ -71,7 +71,16 @@ onMounted(async () => {
 </div>
 </template>
 <style lang="scss">
-.c-login-button{
-    margin-bottom: 0.5rem;
+.c-contract-interface{
+    &__container{
+        padding-left: 1rem;
+        padding-right: 1rem;
+        padding-bottom: .5rem;
+    }
+    &__login{
+        margin-bottom: 0.75rem !important;
+        margin-left: 1rem;
+    }
 }
+
 </style>

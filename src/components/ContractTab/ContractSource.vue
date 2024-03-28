@@ -195,6 +195,29 @@ const isJson = (fileName: string) => {
 .contract-source .q-item__section--side {
     padding: 0;
 }
+
+.q-expansion-item{
+    border-radius: 12px;
+    .q-card{
+        border-radius: 12px;
+    }
+    .q-item{
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
+    }
+    &--collapsed{
+        .q-item{
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+    }
+    &--expanded{
+        .q-item{
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    }
+}
 </style>
 
 <style lang="scss" scoped>
@@ -224,7 +247,8 @@ pre {
     margin-top: 0px;
 }
 .contract-source {
-    margin-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 .body--dark .exit {
     background: $dark;
@@ -265,18 +289,14 @@ pre {
 .contract-source .q-card__section{
     padding: 0;
 }
-.body.body--dark .q-card{
-    border-radius: 0;
-}
+
 .source-container{
     height: auto;
     max-height: 20rem;
     overflow-y: auto;
     margin-bottom: 2rem;
 }
-body.body--dark .q-card{
-    border-radius: 0;
-}
+
 @media screen and (max-width: 1440px){
     .fullscreen{
         top: 48px;
