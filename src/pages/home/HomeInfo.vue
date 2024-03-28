@@ -9,6 +9,7 @@ import { useI18n } from 'vue-i18n';
 import { useStore } from 'vuex';
 import { useQuasar } from 'quasar';
 
+import BlockField from 'components/BlockField.vue';
 import { indexerApi, telosApi } from 'src/boot/telosApi';
 
 const $store = useStore();
@@ -126,7 +127,11 @@ function updateFigures() {
             </span>
             <br>
             <q-skeleton v-if="latestBlock === 0" type="text" class="c-home-info__skeleton" />
-            <template v-else>{{ latestBlock }}</template>
+            <BlockField
+                v-else
+                class="c-home-info__number"
+                :block="latestBlock"
+            />
         </div>
 
         <q-separator class="q-my-md" />

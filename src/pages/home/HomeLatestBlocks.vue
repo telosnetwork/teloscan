@@ -140,7 +140,7 @@ async function fetchBlocks() {
 
 function getPath(page = 0) {
     const offset = page * 100;
-    let path = `blocks?limit=3000&includeCount=true&offset=${offset}`;
+    let path = `blocks?limit=6&noEmpty=true&includeCount=true&offset=${offset}`;
     return path;
 }
 
@@ -242,7 +242,7 @@ onMounted(() => {
     &__number {
         margin-right:5px;
 
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $latest-data-breakpoint) {
             margin-right: 0px;
             &::after {
                 content: ' ';
@@ -253,7 +253,7 @@ onMounted(() => {
 
     &__aux-text {
         display: none;
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $latest-data-breakpoint) {
             display: block;
         }
     }
@@ -265,7 +265,7 @@ onMounted(() => {
             display: inline-block;
             margin-left: 10px;
         }
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $latest-data-breakpoint) {
             &--desktop {
                 display: block;
             }
