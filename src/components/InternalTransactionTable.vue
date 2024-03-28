@@ -269,7 +269,6 @@ export default {
     :row-key="row => row.hash"
     :columns="columns"
     :rows-per-page-options="page_size_options"
-    flat
     @request="onPaginationChange"
 >
     <template v-slot:header="props">
@@ -349,7 +348,6 @@ export default {
     :row-key="row => row.hash"
     :columns="columns"
     :rows-per-page-options="page_size_options"
-    flat
 >
     <template v-slot:header="props">
         <q-tr :props="props">

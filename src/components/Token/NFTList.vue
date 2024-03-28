@@ -222,7 +222,6 @@ function getPath(type: string) {
         :row-key="row => row.contract + row.tokenId"
         :columns="columns"
         :rows-per-page-options="[10, 20, 50]"
-        flat
     >
         <template v-slot:header="props">
             <q-tr :props="props">
@@ -380,7 +379,6 @@ function getPath(type: string) {
         :rows-per-page-label="$t('global.records_per_page')"
         :columns="columns"
         :rows-per-page-options="[10, 20, 50]"
-        flat
     >
         <template v-slot:header="props">
             <q-tr :props="props">

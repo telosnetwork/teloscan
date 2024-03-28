@@ -153,7 +153,6 @@ export default {
         :row-key="row => row.id"
         :columns="columns"
         :rows-per-page-options="[10, 20, 50]"
-        flat
         @request="onRequest"
     >
         <q-tr :props="props">
@@ -216,7 +215,6 @@ export default {
         :row-key="row => row.id"
         :columns="columns"
         :rows-per-page-options="[10, 20, 50]"
-        flat
     >
         <q-tr :props="props">
             <q-th

@@ -140,7 +140,6 @@ export default {
     :row-key="row => row.address"
     :columns="columns"
     :rows-per-page-options="[10, 20, 50]"
-    flat
     @request="onRequest"
 >
     <template v-slot:header="props">
@@ -256,7 +255,6 @@ export default {
     :rows-per-page-label="$t('global.records_per_page')"
     :columns="columns"
     :rows-per-page-options="[10, 20, 50]"
-    flat
 >
     <template v-slot:header="props">
         <q-tr :props="props">

@@ -215,7 +215,6 @@ onBeforeMount(() => {
     :row-key="row => row.number"
     :columns="(columns as any)"
     :rows-per-page-options="page_size_options"
-    flat
     @request="onPaginationChange"
 >
     <template v-slot:header="props">
@@ -281,7 +280,6 @@ onBeforeMount(() => {
     :rows-per-page-label="$t('global.records_per_page')"
     :columns="(columns as any)"
     :rows-per-page-options="page_size_options"
-    flat
 >
     <template v-slot:header="props">
         <q-tr :props="props">

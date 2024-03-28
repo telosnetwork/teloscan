@@ -60,7 +60,6 @@ export default {
     :columns="columns"
     :loading="!(rows)"
     :rows-per-page-options="[0]"
-    flat
 >
 
     <template v-slot:header="props">
