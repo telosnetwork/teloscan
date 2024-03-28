@@ -272,6 +272,7 @@ async function loadAccount() {
             ref="panels"
             :key="address"
             v-model="tab"
+            class="c-address__panels"
             animated
             keep-alive
         >
@@ -381,11 +382,13 @@ async function loadAccount() {
         height: 24px;
     }
 
-    // quasar overrides
-    .q-panel.scroll{
-        overflow: unset;
+    &__panels {
+        background: transparent;
+        --v-overflow: visible;
+        overflow: visible !important;
     }
 
+    // quasar overrides
     .q-tab-panel {
         padding: 0;
     }
