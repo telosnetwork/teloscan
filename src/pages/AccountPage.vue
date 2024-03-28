@@ -274,6 +274,8 @@ async function loadAccount() {
             v-model="tab"
             class="c-address__panels"
             animated
+            transition-next="fade"
+            transition-prev="fade"
             keep-alive
         >
             <q-tab-panel name="transactions">

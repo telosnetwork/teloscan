@@ -202,7 +202,13 @@ const nextTransaction = () => {
 
     <div class="c-transactions__main-container">
         <div class="c-transactions__main-content">
-            <q-tab-panels v-model="tab" class="c-transactions__panels">
+            <q-tab-panels
+                v-model="tab"
+                class="c-transactions__panels"
+                animated
+                transition-next="fade"
+                transition-prev="fade"
+            >
                 <q-tab-panel class="c-transactions__panel c-transactions__panel--overview" name="overview">
                     <!-- Transaction not found -->
                     <q-card

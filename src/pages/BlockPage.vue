@@ -106,7 +106,13 @@ onMounted(() => {
 
     <div class="c-block__main-container">
         <div class="c-block__main-content">
-            <q-tab-panels v-model="tab" class="c-block__panels">
+            <q-tab-panels
+                v-model="tab"
+                class="c-block__panels"
+                animated
+                transition-next="fade"
+                transition-prev="fade"
+            >
                 <q-tab-panel class="c-block__panel" name="overview">
                     <BlockOverview
                         :data="blockData"
