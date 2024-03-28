@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { nextTick, onMounted, ref } from 'vue';
 import QRious from 'qrious';
+import { watch } from 'vue';
 
 const props = defineProps({
     address: {
@@ -31,6 +32,26 @@ onMounted(() => {
         value: props.address,
     });
 });
+
+watch(showCode, (value) => {
+    // This is a workaround for the issue with the dialog not scrolling to the top
+    // https://github.com/telosnetwork/teloscan/issues/625
+    if (!value) {
+        // what for the scroll and if it moves, correct it and end
+        const timer = setInterval(() => {
+            if (window.scrollY > 0) {
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                clearInterval(timer);
+            }
+        }, 0);
+        // avoid the interval to run forever
+        setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            clearInterval(timer);
+        }, 100);
+    }
+});
+
 
 </script>
 
