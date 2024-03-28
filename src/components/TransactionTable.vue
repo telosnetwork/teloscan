@@ -312,11 +312,13 @@ onBeforeMount(() => {
 </script>
 
 <template>
-<div  class="c-transaction-table__limit-text">
-    <div v-if="totalRows >= FIVE_HUNDRED_K">
+
+<div v-if="totalRows >= FIVE_HUNDRED_K">
+    <div  class="c-transaction-table__limit-text">
         {{ $t('pages.transactions.five_hundred_k_disclaimer', { total: totalRows.toLocaleString(locale) }) }}
     </div>
 </div>
+
 
 <q-card>
     <q-table
@@ -535,7 +537,7 @@ onBeforeMount(() => {
 .c-transaction-table {
     &__limit-text {
         height: 26px;
-        color: var(--grey-text-color);
+        color: var(--text-color);
         font-size: 0.8rem;
         text-align: left;
         margin-bottom: 12px;

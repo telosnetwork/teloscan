@@ -176,7 +176,7 @@ async function loadAccount() {
         </div>
 
     </div>
-    <div class="row q-mb-xl q-col-gutter-md">
+    <div class="row q-mb-lg q-col-gutter-md">
         <div class="col-12 col-md-6">
             <AddressOverview
                 :balance="balance"
@@ -264,7 +264,7 @@ async function loadAccount() {
             }"
             :label="$t('pages.contract')"
         >
-            <q-icon v-if="contract && contract.isVerified()" class="fas fa-check-circle text-positive q-ml-xs"/>
+            <q-icon v-if="contract && contract.isVerified()" class="fas fa-check-circle text-positive q-ml-xs" />
         </q-tab>
     </q-tabs>
     <div class="q-mb-md">
@@ -334,20 +334,15 @@ async function loadAccount() {
     &__tabs {
         @include tabs-container;
         height: 50px;
-        margin-bottom: .5rem;
+        margin-bottom: .7rem;
 
         &-tab {
             height: 35px;
             margin-top: auto;
             margin-bottom: auto;
-            margin-right:.5rem;
 
             &--with-icon {
                 padding-right: 32px;
-
-                @media screen and (min-width: $breakpoint-md-min) {
-                    padding-right: 16px;
-                }
             }
         }
     }

@@ -187,7 +187,7 @@ const nextTransaction = () => {
     >
         <q-tab class="c-transactions__tabs-tab" name="overview" :label="$t('pages.transaction.overview')" />
         <q-tab
-            v-if="trx?.logsArray"
+            v-if="trx?.logsArray && Array.isArray(trx?.logsArray) && trx?.logsArray.length > 0"
             class="c-transactions__tabs-tab"
             name="logs"
             :label="$t('pages.transaction.logs')"
