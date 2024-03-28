@@ -39,9 +39,6 @@ onBeforeMount(async () => {
 
 <template>
 <q-card class="c-more-info">
-    <q-card-section class="c-more-info__header">
-        {{ $t('pages.more_info') }}
-    </q-card-section>
     <q-card-section v-if="!loadingComplete" >
         <q-skeleton type="text" class="c-overview__skeleton" />
     </q-card-section>
@@ -76,14 +73,10 @@ onBeforeMount(async () => {
 <style lang="scss">
 .c-more-info {
     height:100%;
-
-    &__header {
+    &__section-label {
         font-weight: 600;
         font-size: 0.8rem;
         text-transform: capitalize;
-    }
-    &__section-label {
-        text-transform: uppercase;
     }
     &__skeleton {
         height: 2rem;

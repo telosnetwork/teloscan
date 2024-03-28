@@ -26,9 +26,6 @@ const props = defineProps({
 
 <template>
 <q-card class="c-more-info">
-    <q-card-section class="c-more-info__header">
-        {{ $t('pages.more_info') }}
-    </q-card-section>
     <q-card-section v-if="!loadingComplete" >
         <q-skeleton type="text" class="c-overview__skeleton" />
     </q-card-section>
@@ -63,9 +60,6 @@ const props = defineProps({
         font-size: 16px;
     }
     &__creator{
-        text-transform: uppercase;
-    }
-    &__header {
         font-weight: 600;
         font-size: 0.8rem;
         text-transform: capitalize;

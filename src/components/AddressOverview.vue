@@ -39,14 +39,11 @@ onBeforeMount(() => {
 <template>
 <div>
     <q-card class="c-overview">
-        <q-card-section class="c-overview__header">
-            {{ $t('pages.overview') }}
-        </q-card-section>
         <q-card-section v-if="!loadingComplete" >
             <q-skeleton type="text" class="c-overview__skeleton" />
         </q-card-section>
         <q-card-section v-else>
-            <div> TLOS {{ $t('pages.balance') }} </div>
+            <div class="c-overview__label"> TLOS {{ $t('pages.balance') }} </div>
             <div class="c-overview__balance">
                 <img
                     :src="TLOS_LOGO"
@@ -61,7 +58,7 @@ onBeforeMount(() => {
             <q-skeleton type="text" class="c-overview__skeleton" />
         </q-card-section>
         <q-card-section v-else>
-            <div>
+            <div class="c-overview__label">
                 TLOS {{ $t('pages.value') }}
             </div>
             <div class="c-overview__balance"> {{ prettyPrintFiatBalance(fiatValue, 'us', false) }} (@ ${{ fiatPrice }}/TLOS)</div>
@@ -72,15 +69,12 @@ onBeforeMount(() => {
 
 <style lang="scss">
 .c-overview{
-    text-transform: uppercase;
-
-    &__header {
-        font-weight: 600;
-        font-size: 0.8rem;
-        text-transform: capitalize;
-    }
     &__balance{
         display: flex;
+    }
+    &__label{
+        font-weight: 600;
+        font-size: 0.8rem;
     }
     &__skeleton {
         height: 2rem;
