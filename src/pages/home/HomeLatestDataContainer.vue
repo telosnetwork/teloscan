@@ -84,7 +84,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
 <style lang="scss">
 .c-latest-data {
 
-    height: 550px;
+    height: 528px;
 
     &__header {
         &-title {
@@ -95,8 +95,6 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
 
     &__content {
         overflow-y: auto;
-        max-height: 470px;
-
         @include scroll-bar;
     }
 

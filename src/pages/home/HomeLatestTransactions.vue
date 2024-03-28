@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue';
+import { computed, onBeforeMount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { BigNumber } from 'ethers/lib/ethers';
 
@@ -11,7 +11,9 @@ import DateField from 'components/DateField.vue';
 import TransactionField from 'components/TransactionField.vue';
 import AddressField from 'src/components/AddressField.vue';
 import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
+import { useQuasar } from 'quasar';
 
+const $q = useQuasar();
 const $i18n = useI18n();
 const locale = $i18n.locale.value;
 const { t: $t } = $i18n;
@@ -27,6 +29,8 @@ interface Transaction {
 const transactions = ref<Transaction[]>([]);
 
 const loading = ref(true);
+
+const truncateHash = computed(() => $q.screen.width > 1024 && $q.screen.width <= 1240 ? 8 : 20);
 
 onBeforeMount(async () => {
     const response = await indexerApi.get('transactions?limit=6');
@@ -56,35 +60,42 @@ function getTlosValue(value: string) {
         </template>
 
         <template v-slot:column-two>
-            <TransactionField
-                class="c-home-latest-transactions__hash"
-                :transaction-hash="transactions[index].hash"
-            />
-            <DateField
-                class="c-home-latest-transactions__timestamp"
-                :epoch="transactions[index].timestamp / 1000"
-                :force-show-age="true"
-                :muted-text="true"
-            />
+            <div>
+                <TransactionField
+                    class="c-home-latest-transactions__hash"
+                    :transaction-hash="transactions[index].hash"
+                    :truncate="truncateHash"
+                />
+            </div>
+            <div>
+                <DateField
+                    class="c-home-latest-transactions__timestamp"
+                    :epoch="transactions[index].timestamp / 1000"
+                    :force-show-age="true"
+                    :muted-text="true"
+                />
+            </div>
         </template>
 
         <template v-slot:column-three>
-            {{ $t('pages.from') }}
-            <AddressField :address="transactions[index].from" :truncate="8" :hide-contract-icon="true" />
-            <br>
-            {{ $t('pages.to') }}
-            <AddressField
-                :address="transactions[index].to"
-                :truncate="8"
-                :hide-contract-icon="true"
-                :class="'c-home-latest-transactions__to-address'"
-            />
-
-            <div class="c-home-latest-transactions__value c-home-latest-transactions__value--mobile">
-                {{ getTlosValue(transactions[index].value) }}
-                <q-tooltip anchor="bottom right" self="top end">
-                    {{ $t('components.contract_tab.amount') }}
-                </q-tooltip>
+            <div class="c-home-latest-transactions__from-to">
+                {{ $t('pages.from') }}
+                <AddressField :address="transactions[index].from" :truncate="8" :hide-contract-icon="true" />
+            </div>
+            <div class="c-home-latest-transactions__from-to">
+                {{ $t('pages.to') }}
+                <AddressField
+                    :address="transactions[index].to"
+                    :truncate="8"
+                    :hide-contract-icon="true"
+                    :class="'c-home-latest-transactions__to-address'"
+                />
+                <div class="c-home-latest-transactions__value c-home-latest-transactions__value--mobile">
+                    {{ getTlosValue(transactions[index].value) }}
+                    <q-tooltip anchor="bottom right" self="top end">
+                        {{ $t('components.contract_tab.amount') }}
+                    </q-tooltip>
+                </div>
             </div>
         </template>
 
@@ -106,7 +117,7 @@ function getTlosValue(value: string) {
     &__hash {
         margin-right:5px;
 
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $latest-data-breakpoint) {
             margin-right: 0px;
             &::after {
                 content: ' ';
@@ -138,6 +149,16 @@ function getTlosValue(value: string) {
         }
     }
 
+    &__from-to {
+        // display: flex;
+        // align-items: center;
+        // gap: 5px;
+        // margin-bottom: 5px;
+
+        // no break
+        white-space: nowrap;
+    }
+
     &__value {
         @include token-value;
         display: none;
@@ -145,7 +166,7 @@ function getTlosValue(value: string) {
             display: inline-block;
             margin-left: 10px;
         }
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $latest-data-breakpoint) {
             &--desktop {
                 display: block;
             }
