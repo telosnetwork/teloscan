@@ -41,7 +41,7 @@ defineProps({
         <q-card-section class="c-contract-header__section">
             Contract Name: <div class="c-contract-header__section--bold c-contract-header__section--inline">{{ contract.getName() }}</div>
         </q-card-section>
-        <q-card-section class="c-contract-header__section c-contract-header__section--source">
+        <q-card-section class="c-contract-header__section">
             <q-icon name="far fa-file-code" size=".75rem" class="c-contract-header__icon" />
             Contract Source Code
         </q-card-section>
@@ -56,14 +56,13 @@ defineProps({
     margin-top: 12px;
     &__section {
         font-size: 18px;
+        padding-left: 0;
+        padding-right: 0;
         &--bold{
             font-weight: 600;
         }
         &--inline{
             display: inline-flex;
-        }
-        &--source{
-            margin-left: .25rem;
         }
     }
     &__icon{

@@ -246,10 +246,6 @@ pre {
 .contract-source .c-copy-button {
     margin-top: 0px;
 }
-.contract-source {
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
 .body--dark .exit {
     background: $dark;
 }

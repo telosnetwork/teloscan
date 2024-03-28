@@ -29,54 +29,57 @@ const writeSelected = computed(() => source.value === false && write.value === t
 </script>
 
 <template>
-<div v-if="abi" :key="contract.address + abi.length" class="c-contract">
-    <div class="flex justify-between items-center">
-        <div class="c-contract__tab-container">
-            <q-btn
-                :label="$t('components.contract_tab.code')"
-                :class="{
-                    'c-contract__tab': true,
-                    'c-contract__tab--active': codeSelected,
-                }"
-                @click="source = true; write = false"
-            />
-            <q-btn
-                :label="$t('components.contract_tab.read')"
-                :class="{
-                    'c-contract__tab': true,
-                    'c-contract__tab--active': readSelected,
-                }"
-                @click="source = false; write = false"
-            />
-            <q-btn
-                :label="$t('components.contract_tab.write')"
-                :class="{
-                    'c-contract__tab': true,
-                    'c-contract__tab--active': writeSelected,
-                }"
-                @click="source = false; write = true"
+<q-card>
+    <div v-if="abi" :key="contract.address + abi.length" class="c-contract">
+        <div class="flex justify-between items-center">
+            <div class="c-contract__tab-container">
+                <q-btn
+                    :label="$t('components.contract_tab.code')"
+                    :class="{
+                        'c-contract__tab': true,
+                        'c-contract__tab--active': codeSelected,
+                    }"
+                    @click="source = true; write = false"
+                />
+                <q-btn
+                    :label="$t('components.contract_tab.read')"
+                    :class="{
+                        'c-contract__tab': true,
+                        'c-contract__tab--active': readSelected,
+                    }"
+                    @click="source = false; write = false"
+                />
+                <q-btn
+                    :label="$t('components.contract_tab.write')"
+                    :class="{
+                        'c-contract__tab': true,
+                        'c-contract__tab--active': writeSelected,
+                    }"
+                    @click="source = false; write = true"
+                />
+            </div>
+            <CopyButton
+                v-if="verified && !contract?.autoloadedAbi"
+                :text="abi"
+                :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
             />
         </div>
-        <CopyButton
-            v-if="verified && !contract?.autoloadedAbi"
-            :text="abi"
-            :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
-        />
-    </div>
-    <q-card>
         <ContractSource v-if="source" :contract="contract" />
         <ContractInterface
             v-else
             :write="write"
             :contract="contract"
         />
-    </q-card>
-</div>
+    </div>
+</q-card>
+
 </template>
 
 <style lang='scss' scoped>
 .c-contract{
     padding-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
 
     &__tab-container{
         display: inline-flex;
