@@ -58,11 +58,11 @@ defineProps<{
     gap: 2px;
     padding: 12px 0;
 
-    @media screen and (min-width: $breakpoint-lg-min) {
+    @media screen and (min-width: $latest-data-breakpoint) {
         gap: 12px;
     }
 
-    @media screen and (min-width: $breakpoint-lg-min) {
+    @media screen and (min-width: $latest-data-breakpoint) {
         flex-direction: row;
         align-items: center;
     }
@@ -71,7 +71,7 @@ defineProps<{
         #{$this}__column-one {
             display: none;
 
-            @media screen and (min-width: $breakpoint-lg-min) {
+            @media screen and (min-width: $latest-data-breakpoint) {
                 display: block;
             }
         }
@@ -98,7 +98,7 @@ defineProps<{
             background-color: $grey-9;
         }
 
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $latest-data-breakpoint) {
             display: flex;
         }
     }
@@ -108,20 +108,20 @@ defineProps<{
     }
 
     &__column-two {
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $latest-data-breakpoint) {
             width: 38%;
         }
     }
 
     &__column-three {
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $latest-data-breakpoint) {
             width: 38%;
             flex-grow: 1;
         }
     }
 
     &__column-four {
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $latest-data-breakpoint) {
             width: 20%;
             display: flex;
             justify-content: flex-end;

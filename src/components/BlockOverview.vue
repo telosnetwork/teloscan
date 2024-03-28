@@ -78,7 +78,7 @@ const nextBlock = () => {
 
 watch(() => props.data, (newData) => {
     blockData.value = newData ?? null;
-    const newNumber = Number(newData?.number);
+    const newNumber = Number(newData?.blockNumber);
     if (!isNaN(newNumber)) {
         blockNumber.value = newNumber;
     }
@@ -102,7 +102,7 @@ watch(() => props.data, (newData) => {
             </div>
             <div class="c-block-data__row-attribute">{{ $t('components.blocks.block_height') }}</div>
         </div>
-        <div class="c-block-data__col-val">
+        <div class="c-block-data__col-val c-block-data__col-val--block-number">
             <div class="c-block-data__row-value">{{ blockNumber }}</div>
             <div class="c-block-data__row-icon-btn c-block-data__row-icon-btn--left" @click="prevBlock">
                 <i class="fa fa-chevron-left small"></i>
@@ -337,6 +337,12 @@ watch(() => props.data, (newData) => {
         justify-content: left;
         align-items: baseline;
         gap: 5px;
+    }
+    &__col-val {
+        &--block-number {
+            display: flex;
+            align-items: center;
+        }
     }
     &__row {
         padding: 0.5rem 0;
