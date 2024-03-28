@@ -20,7 +20,6 @@ export function initAntelope(app: App) {
     };
 
     const projectId = process.env.PROJECT_ID || '14ec76c44bae7d461fa0f5fd5f8a9da1';
-    console.log('process.env', process.env);
     const chains = [telos, telosTestnet];
 
     const { publicClient } = configureChains(chains, [w3mProvider({ projectId })]);

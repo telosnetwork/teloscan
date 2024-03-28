@@ -109,7 +109,7 @@ export default {
     :clearable="true"
     :name="name"
     :rules="rules"
-    color="secondary"
+    color="primary"
     class="q-mx-sm q-mb-md"
     @update:modelValue="handleChange"
 />

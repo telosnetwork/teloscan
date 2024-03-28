@@ -77,7 +77,6 @@ export default {
                     "
                 >
                     <AddressField
-                        :highlight="trxFrom.toLowerCase() === value.toLowerCase()"
                         :address="value"
                         copy
                     />,
@@ -109,7 +108,6 @@ export default {
                                 </div>
                                 <div v-else-if="typeof value3 === 'string' && isAddress(value3)">
                                     <AddressField
-                                        :highlight="trxFrom.toLowerCase() === value3.toLowerCase()"
                                         :address="value3"
                                         copy
                                     />,
@@ -142,7 +140,6 @@ export default {
         class="col-8 word-break"
     >
         <AddressField
-            :highlight="trxFrom?.toLowerCase() === param.value?.toLowerCase()"
             :address="param.value"
             copy
             :name="

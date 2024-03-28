@@ -40,7 +40,7 @@ export default {
                 this.dialogMessage = this.$t('pages.view_source_prompt');
             } else {
                 this.icon = 'warning';
-                this.color = 'text-negative';
+                this.color = 'text-warning';
                 this.dialogMessage = this.$t('components.verify_prompt');
             }
         },

@@ -19,6 +19,7 @@ export const i18n = createI18n({
     locale: lastChosenLanguage,
     globalInjection: true,
     messages,
+    legacy: false,
 });
 
 export default boot(({ app }) => {
@@ -29,6 +30,10 @@ export default boot(({ app }) => {
 
     // Listen for language-changed event
     const setLocale = (newLanguage) => {
+        if (!newLanguage){
+            return;
+        }
+
         const currentLanguage = localStorage.getItem('language');
 
         if (newLanguage !== currentLanguage) {

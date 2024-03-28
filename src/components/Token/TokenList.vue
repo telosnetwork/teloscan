@@ -2,7 +2,7 @@
 import { markRaw } from 'vue';
 import { formatWei } from 'src/lib/utils';
 import erc20Abi from 'erc-20-abi';
-import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
+import DEFAULT_TOKEN_LOGO from 'assets/logo--teloscan.png';
 import TokenGridElement from 'src/components/Token/TokenGridElement';
 import TokenTable from 'src/components/Token/TokenTable';
 import BigDecimal from 'js-big-decimal';
@@ -127,7 +127,7 @@ export default {
             :label="(showGrid) ? $t('global.show_table') : $t('global.show_grid')"
             checked-icon="table_rows"
             unchecked-icon="apps"
-            color="secondary"
+            color="primary"
         />
     </div>
     <div v-if="showGrid">

@@ -47,7 +47,7 @@ const MAINNET = {
     NETWORK_EVM_NAME: 'telos-evm',
     HYPERION_ENDPOINT: 'https://mainnet.telos.net',
     NETWORK_EXPLORER: 'https://explorer.telos.net',
-    TELOS_API_ENDPOINT: 'http://141.193.240.11:8802/v1',  //'http://localhost:9999/v1', //for local instance of api
+    TELOS_API_ENDPOINT: 'https://api.telos.net/v1',  //'http://localhost:9999/v1', //for local instance of api
     INDEXER_API_ENDPOINT: 'https://api.teloscan.io/v1',
     VERIFIED_CONTRACTS_BUCKET: 'verified-evm-contracts',
     STAKED_TLOS_CONTRACT_ADDRESS: '0xB4B01216a5Bc8F1C8A33CD990A1239030E60C905',

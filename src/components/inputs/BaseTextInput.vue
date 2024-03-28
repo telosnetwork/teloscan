@@ -104,7 +104,7 @@ export default {
         :model-value="modelValue"
         :reactive-rules="true"
         v-bind="binding"
-        color="secondary"
+        color="primary"
         @update:modelValue="handleChange"
     >
         <template #append>

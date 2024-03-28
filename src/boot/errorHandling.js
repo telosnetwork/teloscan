@@ -366,3 +366,18 @@ export default boot(({ app, store }) => {
     store['$t'] = app.config.globalProperties.$t;
 
 });
+
+export {
+    errorNotification,
+    unexpectedErrorNotification,
+    warningNotification,
+    successNotification,
+    notifySuccessTransaction,
+    notifySuccessMessage,
+    notifySuccessCopy,
+    notifyFailure,
+    notifyFailureWithAction,
+    notifyDisconnected,
+    notifyNeutralMessage,
+    notifyRememberInfo,
+};

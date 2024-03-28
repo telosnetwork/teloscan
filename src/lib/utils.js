@@ -18,6 +18,7 @@ export const ALLOWED_VIDEO_EXTENSIONS = [
 import keccak from 'keccak';
 
 export const WEI_PRECISION = 18;
+export const GAS_PRECISION = 9;
 export const DISPLAY_DECIMALS = 4;
 export const LOGIN_EVM = 'evm';
 export const LOGIN_NATIVE = 'native';
@@ -34,7 +35,7 @@ export function formatWei(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);
     const formatted = ethers.utils.formatUnits(amount.toString(), (tokenDecimals || WEI_PRECISION));
     let str = formatted.toString();
-    // Use string, do not convert to number so we never loose precision
+    str = str.padEnd(str.length + displayDecimals, '0');
     if(displayDecimals > 0 && str.includes('.')) {
         const parts = str.split('.');
         return parts[0] + '.' + parts[1].slice(0, displayDecimals);
