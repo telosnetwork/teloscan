@@ -36,34 +36,39 @@ const trx = ref<EvmTransactionExtended | null>(null);
 
 // functions
 const loadTransaction = async () => {
-    const trxResponse = await indexerApi.get(`/transaction/${hash.value}?full=true&includeAbi=true`);
-    if (trxResponse.data.results.length === 0) {
+    try {
+        const trxResponse = await indexerApi.get(`/transaction/${hash.value}?full=true&includeAbi=true`);
+        if (trxResponse.data.results.length === 0) {
+            trxNotFound.value = true;
+            return;
+        }
+        const aux = trxResponse.data.results[0] as EvmTransaction;
+        let logsArray: EvmTransactionLog[] = [];
+        if(aux.logs){
+            const fixedStr = aux.logs.replace('transaction_hash', 'transactionHash');
+            try {
+                logsArray = JSON.parse(fixedStr) as EvmTransactionLog[];
+            } catch (e) {
+                console.error('Error parsing logs', e);
+            }
+        }
+        const _trx:EvmTransactionExtended = {
+            ...aux,
+            gasUsedBn: ethers.BigNumber.from(aux.gasUsed),
+            gasLimitBn: ethers.BigNumber.from(aux.gasLimit),
+            valueBn: ethers.BigNumber.from(aux.value),
+            gasPriceBn: ethers.BigNumber.from(aux.gasPrice),
+            contract: undefined,
+            parsedTransaction: undefined,
+            functionParams: [],
+            logsArray,
+        };
+        await loadContract(_trx);
+        setErrorMessage();
+    } catch (e) {
         trxNotFound.value = true;
         return;
     }
-    const aux = trxResponse.data.results[0] as EvmTransaction;
-    let logsArray: EvmTransactionLog[] = [];
-    if(aux.logs){
-        const fixedStr = aux.logs.replace('transaction_hash', 'transactionHash');
-        try {
-            logsArray = JSON.parse(fixedStr) as EvmTransactionLog[];
-        } catch (e) {
-            console.error('Error parsing logs', e);
-        }
-    }
-    const _trx:EvmTransactionExtended = {
-        ...aux,
-        gasUsedBn: ethers.BigNumber.from(aux.gasUsed),
-        gasLimitBn: ethers.BigNumber.from(aux.gasLimit),
-        valueBn: ethers.BigNumber.from(aux.value),
-        gasPriceBn: ethers.BigNumber.from(aux.gasPrice),
-        contract: undefined,
-        parsedTransaction: undefined,
-        functionParams: [],
-        logsArray,
-    };
-    await loadContract(_trx);
-    setErrorMessage();
 };
 
 const loadContract = async (_trx: EvmTransactionExtended) => {
@@ -181,15 +186,46 @@ const nextTransaction = () => {
         class="c-transactions__tabs"
     >
         <q-tab class="c-transactions__tabs-tab" name="overview" :label="$t('pages.transaction.overview')" />
-        <q-tab class="c-transactions__tabs-tab" name="logs" :label="$t('pages.transaction.logs')" />
-        <q-tab class="c-transactions__tabs-tab" name="internal" :label="$t('pages.transaction.internal')" />
+        <q-tab
+            v-if="trx?.logsArray"
+            class="c-transactions__tabs-tab"
+            name="logs"
+            :label="$t('pages.transaction.logs')"
+        />
+        <q-tab
+            v-if="trx"
+            class="c-transactions__tabs-tab"
+            name="internal"
+            :label="$t('pages.transaction.internal')"
+        />
     </q-tabs>
 
     <div class="c-transactions__main-container">
         <div class="c-transactions__main-content">
             <q-tab-panels v-model="tab" class="c-transactions__panels">
                 <q-tab-panel class="c-transactions__panel c-transactions__panel--overview" name="overview">
-                    <div class="c-transactions__panel-content--overview c-transactions__panel-content">
+                    <!-- Transaction not found -->
+                    <q-card
+                        v-if="trxNotFound"
+                        class="c-transactions__panel-not-found"
+                    >
+                        <q-card-section>
+                            <q-item>
+                                <q-item-section avatar>
+                                    <q-avatar>
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                    </q-avatar>
+                                </q-item-section>
+                                <q-item-section>
+                                    <q-item-label>{{ $t('pages.transaction.not_found') }}</q-item-label>
+                                    <q-item-label class="c-transactions__panel-not-found-hash" caption> {{ hash }}</q-item-label>
+                                </q-item-section>
+                            </q-item>
+                        </q-card-section>
+                    </q-card>
+
+                    <!-- Transaction Overview -->
+                    <div v-else class="c-transactions__panel-content--overview c-transactions__panel-content">
                         <TransactionOverview
                             :trx="trx"
                         />
@@ -255,6 +291,20 @@ const nextTransaction = () => {
         justify-content: center;
         &--logs, &--internal {
             padding-top: 20px;
+        }
+    }
+    &__panel-not-found {
+        padding: 30px 0px;
+        &-hash {
+            padding-top: 4px;
+            word-break: break-all;
+        }
+        @media screen and (min-width: $breakpoint-md-min) {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 30px 0px;
         }
     }
 }

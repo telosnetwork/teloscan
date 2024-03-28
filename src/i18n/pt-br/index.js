@@ -37,6 +37,7 @@ export default {
             overview: 'Visão Geral',
             logs: 'Logs',
             internal: 'Transações Internas',
+            not_found: 'Transação não encontrada',
         },
         home: {
             telos_evm_explorer: 'O Explorador Telos EVM',

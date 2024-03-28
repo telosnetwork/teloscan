@@ -40,6 +40,7 @@ export default {
             overview: 'Overview',
             logs: 'Logs',
             internal: 'Internal Transactions',
+            not_found: 'Transaction not found',
         },
         home: {
             telos_evm_explorer: 'The Telos EVM Explorer',
