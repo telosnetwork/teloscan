@@ -32,7 +32,7 @@ const blockchainSubmenuItems = [
 
 const teloscanSwaggerUrl = IS_MAINNET
     ? 'https://api.teloscan.io/swagger/'
-    : 'https://api.testnet.teloscan.io/swagger/';
+    : 'https://api.testnet.teloscan.io/v1/docs';
 
 const developersSubmenuItems = [
     {
