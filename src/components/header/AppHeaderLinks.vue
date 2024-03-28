@@ -50,6 +50,12 @@ const telos_walletMenuItem = {
     label: $t('components.header.telos_wallet'),
 };
 
+
+const telos_bridgeMenuItem = {
+    url: 'https://bridge.telos.net/bridge',
+    label: $t('components.header.telos_bridge'),
+};
+
 const moreSubmenuItems = {
     internal: [
         // { name: 'export', label: $t('components.header.csv_export') },
@@ -252,6 +258,18 @@ function goTo(to: string | { name: string }) {
     >
         <a :href="telos_walletMenuItem.url" target="_blank">
             {{ telos_walletMenuItem.label }}
+        </a>
+    </li>
+
+    <!-- Telos Bridge -->
+    <li
+        class="c-header-links__menu-li"
+        tabindex="0"
+        role="link"
+        @keydown.enter="goTo(telos_bridgeMenuItem.url)"
+    >
+        <a :href="telos_bridgeMenuItem.url" target="_blank">
+            {{ telos_bridgeMenuItem.label }}
         </a>
     </li>
 
