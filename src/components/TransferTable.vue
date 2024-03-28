@@ -193,6 +193,11 @@ export default {
             return path;
         },
         convertToEpoch(dateString){
+            debugger;
+            // date may be returned as date string or epoch depending on api call
+            if (typeof dateString === 'number'){
+                return dateString / 1000;
+            }
             // convert YYYY-MM-DD hh:mm:ss format returned from api to unix epoch
             const d = dateString.split(/\D+/);
             const epoch = new Date(d[0], --d[1], d[1], d[3], d[4], d[5]) / 1000;
