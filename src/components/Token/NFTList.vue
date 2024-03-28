@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeMount } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -117,8 +118,8 @@ onMounted(async () => {
 function getMedia(nft: NFT) {
     if(
         !nft.metadata
-                && !nft.metadata['image']
-                && !nft.metadata['animation_url']
+                && !(nft.metadata as any)?.image
+                && !(nft.metadata as any)?.animation_url
                 && (!nft.tokenUri || nft.tokenUri.endsWith('.json'))
     ){
         return false;
@@ -136,8 +137,11 @@ function getMedia(nft: NFT) {
 }
 
 function hasVideo(nft: NFT) {
-    let video = getMedia(nft);
-    let parts = video.split('.');
+    const video = getMedia(nft);
+    let parts = [];
+    if (video){
+        parts = video?.split('.');
+    }
     if(parts.length > 1){
         let ext = parts[parts.length - 1].split('?')[0];
         if(!ALLOWED_VIDEO_EXTENSIONS.includes(ext)){
