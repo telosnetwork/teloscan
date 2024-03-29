@@ -94,6 +94,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
     }
 
     &__content {
+        padding-bottom: 33px;
         overflow-y: auto;
         @include scroll-bar;
     }
