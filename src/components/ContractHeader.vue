@@ -83,10 +83,13 @@ defineProps({
 <style lang="scss">
 .c-contract-header{
     height:100%;
-    width: 50%;
+    width: 100%;
     display: inline-block;
     box-shadow: none;
     margin-top: 12px;
+    @media screen and (min-width: $breakpoint-md-min) {
+        width: 50%;
+    }
     &__title{
         width: 100%;
     }
