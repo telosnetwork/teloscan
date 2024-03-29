@@ -182,7 +182,7 @@ const collapseAll = () => {
                 class="clickable q-mr-md"
                 @click="expandAll()"
             >
-                <q-tooltip>{{ $t('global.expand_all') }}</q-tooltip>
+                <q-tooltip>{{ $t('components.expand_all') }}</q-tooltip>
             </q-icon>
             <q-icon
                 name="expand_less"
@@ -190,7 +190,7 @@ const collapseAll = () => {
                 class="clickable"
                 @click="collapseAll()"
             >
-                <q-tooltip>{{ $t('global.collapse_all') }}</q-tooltip>
+                <q-tooltip>{{ $t('components.collapse_all') }}</q-tooltip>
             </q-icon>
         </div>
 
