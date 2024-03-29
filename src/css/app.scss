@@ -8,7 +8,7 @@
 body {
     --top-bar-height: 48px;
     --bottom-bar-height: 52px;
-
+    font-size: 16px;
     font-family: "silkaregular", sans-serif;
 }
 
@@ -100,3 +100,9 @@ a {
     }
 }
 
+
+@-moz-document url-prefix() {
+    body {
+      font-size: 16px;
+    }
+}

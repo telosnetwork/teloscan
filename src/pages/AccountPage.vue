@@ -176,7 +176,7 @@ async function loadAccount() {
         </div>
 
     </div>
-    <div class="row q-mb-lg q-col-gutter-md">
+    <div class="c-address__info-container row q-mb-lg q-col-gutter-md">
         <div class="col-12 col-md-6">
             <AddressOverview
                 :balance="balance"
@@ -334,6 +334,10 @@ async function loadAccount() {
 .c-address {
     @include page-container;
 
+    &__info-container{
+        margin-bottom: 2.5rem;
+    }
+
     &__tabs {
         @include tabs-container;
         height: 50px;
@@ -393,6 +397,27 @@ async function loadAccount() {
     // quasar overrides
     .q-tab-panel {
         padding: 0;
+    }
+}
+
+@-moz-document url-prefix() {
+    .c-address{
+        &__title {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        &__hex {
+            font-size: 1.2rem;
+            word-break: break-all;
+
+            @media screen and (min-width: $breakpoint-md-min) {
+                font-size: 1.4rem;
+            }
+        }
+        &__info-container{
+            margin-bottom: 3rem;
+        }
     }
 }
 </style>

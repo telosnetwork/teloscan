@@ -86,4 +86,13 @@ onBeforeMount(() => {
         margin-right: 2px;
     }
 }
+
+@-moz-document url-prefix() {
+    .c-overview{
+        &__label{
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+    }
+}
 </style>
