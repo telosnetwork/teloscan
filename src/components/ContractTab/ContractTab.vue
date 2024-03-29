@@ -26,6 +26,7 @@ const abi = computed(() => {
 const codeSelected = computed(() => source.value === true);
 const readSelected = computed(() => source.value === false && write.value === false);
 const writeSelected = computed(() => source.value === false && write.value === true);
+
 </script>
 
 <template>
@@ -64,7 +65,7 @@ const writeSelected = computed(() => source.value === false && write.value === t
                 :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
             />
         </div>
-        <ContractSource v-if="source" :contract="contract" />
+        <ContractSource v-if="source" :contract="contract"/>
         <ContractInterface
             v-else
             :write="write"

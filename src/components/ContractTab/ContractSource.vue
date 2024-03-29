@@ -13,6 +13,7 @@ import { useRoute } from 'vue-router';
 
 import CopyButton from 'src/components/CopyButton.vue';
 import ContractHeader from 'components/ContractHeader.vue';
+import { MetaData } from 'src/types/MetaData';
 
 hljs.registerLanguage('json', json);
 hljsDefineSolidity(hljs);
@@ -29,6 +30,7 @@ const files = ref<any[] | {bytecode: any}>([]);
 const fullscreen = ref(false);
 const loading = ref(true);
 const sources = ref(false);
+const metaData = ref<MetaData>({});
 
 onMounted(async () => {
     let sourceData;
@@ -92,6 +94,9 @@ const sortFiles = (filesToSort: any[]) => {
         } else {
             if (isJson(file.name)) {
                 file.content = JSON.parse(file.content);
+                if (file.name === 'metadata.json'){
+                    setMetaData(file.content);
+                }
             }
             (files.value as any[]).unshift(file);
         }
@@ -107,10 +112,18 @@ const isJson = (fileName: string) => {
     const ext = fileName.split('.').pop();
     return ext === 'json';
 };
+
+const setMetaData = (data: any) => {
+    metaData.value = {
+        compiler: data.compiler.version,
+        enabled: data.settings.optimizer.enabled,
+        runs: data.settings.optimizer.runs,
+    };
+};
 </script>
 
 <template>
-<ContractHeader :contract="contract"/>
+<ContractHeader :contract="contract" :metaData="metaData"/>
 <div :class="(fullscreen) ? 'contract-source abs' : 'contract-source'">
     <div v-if="loading" class="q-pa-lg justify-center"><q-spinner size="md" /></div>
     <div v-else-if="!sources" class="q-pt-md q-pb-xl">

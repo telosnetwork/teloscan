@@ -8,13 +8,17 @@ defineProps({
         type: Object,
         required: true,
     },
+    metaData: {
+        type: Object,
+        required: false,
+    },
 });
 
 </script>
 
 <template>
 <div>
-    <q-card class="c-contract-header">
+    <q-card class="c-contract-header c-contract-header__title">
         <q-card-section v-if="contract.isVerified()" class="c-contract-header__section c-contract-header__section--bold">
             <q-icon
                 class="fas fa-check-circle text-positive c-contract-header__icon"
@@ -36,24 +40,56 @@ defineProps({
                     {{ $t('components.contract_tab.unverified_contract') }}
                 </q-tooltip>
             </q-icon>
-            Unverified Contract. Verify and Publish with <a href="https://sourcify.dev/#/verifier">Sourcify</a>.
+            Unverified Contract. Verify and Publish with
+            <a href="https://sourcify.dev/#/verifier">
+                Sourcify
+            </a>.
+        </q-card-section>
+    </q-card>
+    <q-card class="c-contract-header">
+        <q-card-section class="c-contract-header__section">
+            Contract Name:
+            <div class="c-contract-header__section--bold c-contract-header__section--inline">
+                {{ contract.getName() }}
+            </div>
         </q-card-section>
         <q-card-section class="c-contract-header__section">
-            Contract Name: <div class="c-contract-header__section--bold c-contract-header__section--inline">{{ contract.getName() }}</div>
+            Compiler Version:
+            <div class="c-contract-header__section--bold c-contract-header__section--inline">
+                {{ metaData?.compiler }}
+            </div>
         </q-card-section>
+    </q-card>
+    <q-card class="c-contract-header">
+        <q-card-section class="c-contract-header__section">
+            Optimization Enabled:
+            <div class="c-contract-header__section--bold c-contract-header__section--inline">
+                {{ metaData?.enabled }}
+                <span class="c-contract-header__section--regular">&nbsp;with&nbsp;</span>
+                {{ metaData?.runs }}
+                <span class="c-contract-header__section--regular">&nbsp;runs</span>
+            </div>
+        </q-card-section>
+    </q-card>
+    <div>
         <q-card-section class="c-contract-header__section">
             <q-icon name="far fa-file-code" size=".75rem" class="c-contract-header__icon" />
             Contract Source Code
         </q-card-section>
-    </q-card>
+    </div>
 </div>
 </template>
 
 <style lang="scss">
 .c-contract-header{
     height:100%;
+    width: 50%;
+    display: inline-block;
     box-shadow: none;
     margin-top: 12px;
+    &__title{
+        width: 100%;
+    }
     &__section {
         font-size: 18px;
         padding-left: 0;
@@ -63,6 +99,9 @@ defineProps({
         }
         &--inline{
             display: inline-flex;
+        }
+        &--regular{
+            font-weight: 200;
         }
     }
     &__icon{
