@@ -673,16 +673,16 @@ export default {
         </template>
         <template v-slot:body="">
             <q-tr >
-                <q-td key="spender" :props="props">
+                <q-td key="spender">
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
-                <q-td key="amount" :props="props" >
+                <q-td key="amount">
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
-                <q-td key="contract" :props="props">
+                <q-td key="contract">
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
-                <q-td key="updated" :props="props">
+                <q-td key="updated">
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
                 <q-td key="action">
