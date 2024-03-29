@@ -31,7 +31,7 @@ onBeforeMount(async () => {
         firstTxn.value = firstTxnQuery.results[0].hash;
         loadingComplete.value = true;
     }catch(e){
-        console.log(e);
+        console.error(e);
     }
 });
 

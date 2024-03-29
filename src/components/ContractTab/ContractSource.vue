@@ -32,6 +32,11 @@ const loading = ref(true);
 const sources = ref(false);
 const metaData = ref<MetaData>({});
 
+const expanded = ref({} as {[key:string]: boolean});
+
+
+const getFileKey = (index: number) => `viewer-${index}`;
+
 onMounted(async () => {
     let sourceData;
     try {
@@ -68,6 +73,10 @@ onMounted(async () => {
                 contract: false,
             });
         }
+
+        (files.value as any[]).forEach((file, index) => {
+            expanded.value[getFileKey(index)] = true;
+        });
     } catch (e) {
         console.error(e);
     }
@@ -101,6 +110,10 @@ const sortFiles = (filesToSort: any[]) => {
             (files.value as any[]).unshift(file);
         }
     }
+
+    (files.value as any[]).forEach((file, index) => {
+        expanded.value[getFileKey(index)] = true;
+    });
 };
 
 const isContract = (fileName: string) => {
@@ -120,6 +133,19 @@ const setMetaData = (data: any) => {
         runs: data.settings.optimizer.runs,
     };
 };
+
+const expandAll = () => {
+    for (const key in expanded.value) {
+        expanded.value[key] = true;
+    }
+};
+
+const collapseAll = () => {
+    for (const key in expanded.value) {
+        expanded.value[key] = false;
+    }
+};
+
 </script>
 
 <template>
@@ -149,9 +175,29 @@ const setMetaData = (data: any) => {
         </p>
     </div>
     <div v-else>
+        <div class="flex justify-end q-mb-md">
+            <q-icon
+                name="expand_more"
+                size="sm"
+                class="clickable q-mr-md"
+                @click="expandAll()"
+            >
+                <q-tooltip>{{ $t('global.expand_all') }}</q-tooltip>
+            </q-icon>
+            <q-icon
+                name="expand_less"
+                size="sm"
+                class="clickable"
+                @click="collapseAll()"
+            >
+                <q-tooltip>{{ $t('global.collapse_all') }}</q-tooltip>
+            </q-icon>
+        </div>
+
         <q-expansion-item
             v-for="(item, index) in files as any[]"
             :key="`viewer-${index}`"
+            v-model="expanded[getFileKey(index)]"
             :default-opened="true"
             class="shadow-2 q-mb-md"
         >
@@ -204,7 +250,10 @@ const setMetaData = (data: any) => {
 </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
+body.body--light .source-container {
+    background-color: #f5f5f58f;
+}
 .contract-source .q-item__section--side {
     padding: 0;
 }
@@ -231,12 +280,6 @@ const setMetaData = (data: any) => {
         }
     }
 }
-</style>
-
-<style lang="scss" scoped>
-body.body--light .source-container {
-    background-color: #f5f5f58f;
-}
 .fullscreen {
     top: 110px;
 }
@@ -249,6 +292,9 @@ pre {
 .body--dark .q-item__section--side:not(.q-item__section--avatar) {
     color: rgba(255, 255, 255, 0.7);
 }
+.contract-source {
+    padding-bottom: 10px;
+}
 .contract-source.abs {
     height: 0px;
 }
@@ -257,7 +303,7 @@ pre {
     margin-bottom: 10px;
 }
 .contract-source .c-copy-button {
-    margin-top: 0px;
+    margin-top: 1px;
 }
 .body--dark .exit {
     background: $dark;

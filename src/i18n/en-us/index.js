@@ -181,6 +181,8 @@ export default {
         gas_price_gwei: 'Gas Price in gwei',
         click_to_expand: 'Click to expand',
         click_to_fold: 'Click to fold',
+        expand_all: 'Expand all',
+        collapse_all: 'Collapse all',
         search_evm_failed: 'Search for EVM address linked to { search_term } native account failed.',
         search_failed: 'Search failed, please enter a valid search term.',
         add_to_metamask: 'Add { symbol } to MetaMask',

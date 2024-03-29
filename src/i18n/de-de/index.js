@@ -234,6 +234,8 @@ export default {
         gas_price_gwei: 'Gas Price in gwei',
         click_to_expand: 'Zum erweitern klicken',
         click_to_fold: 'Zum Falten klicken',
+        expand_all: 'Alle erweitern',
+        collapse_all: 'Alle einklappen',
         search_evm_failed: 'Suche nach verlinkter EVM-Adresse für Telos Native Konto { search_term } fehlgeschlagen.',
         search_failed: 'Suche fehlgeschlagen, bitte geben Sie einen gültigen Suchbegriff ein.',
         add_to_metamask: '{ symbol } zu MetaMask hinzufügen',
