@@ -135,5 +135,11 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
         }
     }
 }
+
+@media screen and (max-width: $latest-data-breakpoint) {
+    .c-latest-data {
+        height: fit-content;
+    }
+}
 </style>
 
