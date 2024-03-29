@@ -81,6 +81,7 @@ const handleClick = () => {
 
 <style lang="scss">
 .c-copy-button {
+    gap: 5px;
     display: inline-flex;
     justify-content: center;
     margin-top: -2px;
