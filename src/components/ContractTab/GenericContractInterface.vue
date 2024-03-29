@@ -189,7 +189,7 @@ const formatAbiFunctionLists = async () => {
                     </a>
                     {{ $t('components.contract_tab.upload_source_files') }}
                 </p>
-                <p v-if="this.contract?.autoloadedAbi">
+                <p v-if="contract?.autoloadedAbi">
                     {{ $t('components.contract_tab.abi_autoloaded') }}
                 </p>
                 <p v-else>
