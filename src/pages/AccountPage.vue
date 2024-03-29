@@ -265,6 +265,7 @@ async function loadAccount() {
             :label="$t('pages.contract')"
         >
             <q-icon v-if="contract && contract.isVerified()" class="fas fa-check-circle text-positive q-ml-xs" />
+            <q-icon v-else name="warning" class="text-warning q-ml-xs" />
         </q-tab>
     </q-tabs>
     <div class="q-mb-md">
