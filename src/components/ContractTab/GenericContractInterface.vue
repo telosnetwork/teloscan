@@ -20,7 +20,7 @@ const route = useRoute();
 const { t: $t } = useI18n();
 const factory = new ContractFactory();
 
-defineProps({
+const props = defineProps({
     contract: Object,
 });
 
@@ -52,6 +52,8 @@ const customAbiIsValidJSON = computed(() => {
         return false;
     }
 });
+
+const autoloadedAbi = computed(() => props.contract?.autoloadedAbi);
 
 watch(selectedAbi, (newValue, oldValue) => {
     if (oldValue !== newValue) {
@@ -189,7 +191,7 @@ const formatAbiFunctionLists = async () => {
                     </a>
                     {{ $t('components.contract_tab.upload_source_files') }}
                 </p>
-                <p v-if="contract?.autoloadedAbi">
+                <p v-if="autoloadedAbi">
                     {{ $t('components.contract_tab.abi_autoloaded') }}
                 </p>
                 <p v-else>
