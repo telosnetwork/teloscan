@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import BlockTable from 'components/BlockTable.vue';
+import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+
+import BlockTable from 'components/BlockTable.vue';
+
 const { t: $t } = useI18n();
+
+const showEmptyBlocks = ref(false);
 
 </script>
 
@@ -14,7 +19,14 @@ const { t: $t } = useI18n();
 
     <div class="c-blocks__body">
         <q-card>
-            <BlockTable class="c-blocks__block-table" :title="'Block List'"/>
+            <q-toggle
+                v-model="showEmptyBlocks"
+                label="display empty blocks"
+                color="primary"
+                checked-icon="visibility"
+                unchecked-icon="visibility_off"
+            />
+            <BlockTable :showEmptyBlocks='showEmptyBlocks' class="c-blocks__block-table" :title="'Block List'"/>
         </q-card>
     </div>
 

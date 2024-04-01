@@ -19,11 +19,13 @@ const { t: $t } = useI18n();
 export interface BlockTableProps {
     title: string;
     initialPageSize?: number,
+    showEmptyBlocks?: boolean,
 }
 
 const props = withDefaults(defineProps<BlockTableProps>(), {
     title: '',
     initialPageSize: 25,
+    showEmptyBlocks: false,
 });
 
 const rows = ref<Array<BlockData>>([]);
@@ -94,6 +96,11 @@ watch(() => route.query.page,
         setPagination(page, size, desc);
     },
     { immediate: true },
+);
+
+watch(() => props.showEmptyBlocks, () => {
+    parseBlocks();
+}, { immediate: true },
 );
 
 function setPagination(page: number, size: number, desc: boolean) {
@@ -176,7 +183,9 @@ function getPath() {
     path += `&offset=${(page - 1) * rowsPerPage}`;
     path += `&sort=${descending ? 'desc' : 'asc'}`;
     path += '&includePagination=true';
-    path += '&noEmpty=true';
+    if (!props.showEmptyBlocks){
+        path += '&noEmpty=true';
+    }
 
     return path;
 }
