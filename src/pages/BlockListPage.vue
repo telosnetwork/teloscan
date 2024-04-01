@@ -21,6 +21,7 @@ const showEmptyBlocks = ref(false);
         <q-card>
             <q-toggle
                 v-model="showEmptyBlocks"
+                class="c-blocks__toggle"
                 label="display empty blocks"
                 color="primary"
                 checked-icon="visibility"
@@ -50,6 +51,10 @@ const showEmptyBlocks = ref(false);
 
     &__body {
         @include page-body;
+    }
+
+    &__toggle {
+        margin: .5rem;
     }
 }
 
