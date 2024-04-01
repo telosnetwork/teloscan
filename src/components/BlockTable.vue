@@ -176,6 +176,7 @@ function getPath() {
     path += `&offset=${(page - 1) * rowsPerPage}`;
     path += `&sort=${descending ? 'desc' : 'asc'}`;
     path += '&includePagination=true';
+    path += '&noEmpty=true';
 
     return path;
 }
