@@ -55,6 +55,8 @@ const showEmptyBlocks = ref(false);
 
     &__toggle {
         margin: .5rem;
+        text-transform: capitalize;
+        font-size: 0.8rem;
     }
 }
 
