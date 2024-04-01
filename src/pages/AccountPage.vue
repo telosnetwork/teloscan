@@ -27,6 +27,7 @@ import AddressOverview from 'src/components/AddressOverview.vue';
 import AddressMoreInfo from 'src/components/AddressMoreInfo.vue';
 import ContractMoreInfo from 'src/components/ContractMoreInfo.vue';
 
+
 const { t: $t } = useI18n();
 const route = useRoute();
 const router = useRouter();
@@ -258,14 +259,17 @@ async function loadAccount() {
         <q-tab
             v-if="contract"
             name="contract"
-            :class="{
-                'c-address__tabs-tab': true,
-                'c-address__tabs-tab--with-icon': contract?.isVerified(),
-            }"
+            class="c-address__tabs-tab c-address__tabs-tab--with-icon"
             :label="$t('pages.contract')"
         >
-            <q-icon v-if="contract && contract.isVerified()" class="fas fa-check-circle text-positive q-ml-xs" />
-            <q-icon v-else name="warning" class="text-warning q-ml-xs" />
+            <q-icon
+                :class="{
+                    'c-address__tabs-tab-icon': true,
+                    'c-address__tabs-tab-icon--selected': tab === 'contract',
+                    'c-address__tabs-tab-icon--verified fas fa-check-circle': contract?.isVerified(),
+                    'c-address__tabs-tab-icon--unverified fa fa-exclamation-triangle': !contract?.isVerified(),
+                }"
+            />
         </q-tab>
     </q-tabs>
     <div class="q-mb-md">
@@ -341,16 +345,22 @@ async function loadAccount() {
 
     &__tabs {
         @include tabs-container;
-        height: 50px;
-        margin-bottom: .7rem;
 
         &-tab {
-            height: 35px;
+            $tab: &;
+            height: 32px;
             margin-top: auto;
             margin-bottom: auto;
 
-            &--with-icon {
-                padding-right: 32px;
+            &-icon {
+                margin-left: 6px;
+                &--verified {
+                    color: var(--q-positive);
+                }
+
+                &--unverified {
+                    color: var(--q-warning);
+                }
             }
         }
     }
@@ -398,27 +408,6 @@ async function loadAccount() {
     // quasar overrides
     .q-tab-panel {
         padding: 0;
-    }
-}
-
-@-moz-document url-prefix() {
-    .c-address{
-        &__title {
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
-
-        &__hex {
-            font-size: 1.2rem;
-            word-break: break-all;
-
-            @media screen and (min-width: $breakpoint-md-min) {
-                font-size: 1.4rem;
-            }
-        }
-        &__info-container{
-            margin-bottom: 3rem;
-        }
     }
 }
 </style>

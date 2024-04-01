@@ -90,8 +90,7 @@ onBeforeMount(() => {
 @-moz-document url-prefix() {
     .c-overview{
         &__label{
-            font-size: 1.2rem;
-            font-weight: 800;
+            font-weight: 1000;
         }
     }
 }
