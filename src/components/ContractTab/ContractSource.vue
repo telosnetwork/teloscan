@@ -164,7 +164,7 @@ const collapseAll = () => {
         <p>
             <span>{{ $t('components.contract_tab.verified_contract_source') }}</span>
             <a href="https://sourcify.dev/" target="_blank">
-                {{ $t('components.contract_tab.here') }}
+                {{ $t('components.contract_tab.here') }}.
             </a>
         </p>
         <p v-if="contract?.autoloadedAbi">
@@ -205,10 +205,9 @@ const collapseAll = () => {
                 <div class="flex items-center justify-between">
                     <span>{{ item.name }}</span>
                     <span
-                        v-if="expanded[getFileKey(index)]"
                         class="q-item__section flex q-item__section--side items-center cursor-pointer"
                     >
-                        <span>
+                        <span v-if="expanded[getFileKey(index)]">
                             <q-icon
                                 name="fullscreen"
                                 size="sm"
