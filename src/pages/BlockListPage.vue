@@ -57,6 +57,8 @@ const showEmptyBlocks = ref(false);
         margin: .5rem;
         text-transform: capitalize;
         font-size: 0.8rem;
+        display: flex !important;
+        flex-flow: row-reverse;
     }
 }
 
