@@ -132,7 +132,7 @@ async function fetchBlocksPage() {
     // workaround to avoid indexer typos
     result.data.results = result.data.results.map((block: BlockData) => {
         block.blockNumber = block.blockNumber ?? +(block.number ?? 0);
-        block.transactionsCount = block.transactionsCount ?? +(block.transactionCount ?? 0);
+        block.transactionsCount = block.transactionsCount ? block.transactionsCount : block.gasUsed !== '0x0' ? 1 : +((block as any).transactionCount ?? 0);
         return block;
     });
     if (pagination.value.rowsNumber === 0) {
