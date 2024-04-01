@@ -204,7 +204,10 @@ const collapseAll = () => {
             <template v-slot:header>
                 <div class="flex items-center justify-between">
                     <span>{{ item.name }}</span>
-                    <span class="q-item__section flex q-item__section--side items-center cursor-pointer">
+                    <span
+                        v-if="expanded[getFileKey(index)]"
+                        class="q-item__section flex q-item__section--side items-center cursor-pointer"
+                    >
                         <span>
                             <q-icon
                                 name="fullscreen"
