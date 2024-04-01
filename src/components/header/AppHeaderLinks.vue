@@ -49,7 +49,7 @@ const developersSubmenuItems = [
 
 const telos_walletMenuItem = {
     url: 'https://wallet.telos.net/',
-    label: $t('components.header.telos_wallet'),
+    label: `${$t('components.header.telos_wallet')}/Staking`,
 };
 
 
