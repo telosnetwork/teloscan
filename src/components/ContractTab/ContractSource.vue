@@ -153,7 +153,7 @@ const collapseAll = () => {
 <div :class="(fullscreen) ? 'contract-source abs' : 'contract-source'">
     <div v-if="loading" class="q-pa-lg justify-center"><q-spinner size="md" /></div>
     <div v-else-if="!sources" class="q-pt-md q-pb-xl">
-        <p class="text-h5 flex">
+        <p class="flex">
             <q-icon
                 name="warning"
                 class="text-warning q-mt-xs q-mr-xs"
@@ -162,10 +162,10 @@ const collapseAll = () => {
             <span>{{ $t('components.contract_tab.unverified_contract_source') }}</span>
         </p>
         <p>
+            <span>{{ $t('components.contract_tab.verified_contract_source') }}</span>
             <a href="https://sourcify.dev/" target="_blank">
-                {{ $t('components.contract_tab.click_here') }}
+                {{ $t('components.contract_tab.here') }}
             </a>
-            {{ $t('components.contract_tab.upload_source_files') }}
         </p>
         <p v-if="contract?.autoloadedAbi">
             {{ $t('components.contract_tab.abi_autoloaded') }}

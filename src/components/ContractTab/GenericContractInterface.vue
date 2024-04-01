@@ -173,65 +173,63 @@ const formatAbiFunctionLists = async () => {
 </script>
 
 <template>
-<q-card>
-    <div class="q-pa-md">
-        <div class="row q-pb-md">
-            <div class="col-12">
-                <p class="text-h5 flex">
-                    <q-icon
-                        name="warning"
-                        class="text-warning q-mt-xs q-mr-xs"
-                        size="1.5rem"
-                    />
-                    <span>{{ $t('components.contract_tab.unverified_contract_source') }}</span>
-                </p>
-                <p>
-                    <a href="https://sourcify.dev/" target="_blank">
-                        {{ $t('components.contract_tab.click_here') }}
-                    </a>
-                    {{ $t('components.contract_tab.upload_source_files') }}
-                </p>
-                <p v-if="autoloadedAbi">
-                    {{ $t('components.contract_tab.abi_autoloaded') }}
-                </p>
-                <p v-else>
-                    {{ $t('components.contract_tab.choose_abi') }}
-                </p>
-            </div>
+<q-card class="c-gcontract-interface">
+    <div class="c-gcontract-interface__container">
+        <div class="c-gcontract-interface__header">
+            <p class="c-gcontract-interface__header-paragraph">
+                <q-icon
+                    name="warning"
+                    class="text-warning q-mt-xs q-mr-xs"
+                    size="1.5rem"
+                />
+                <span><b>{{ $t('components.contract_tab.unverified_contract_source') }}</b></span>
+            </p>
+            <p class="c-gcontract-interface__header-paragraph">
+                <span>{{ $t('components.contract_tab.verified_contract_source') }}</span>
+                <a href="https://sourcify.dev/" target="_blank">
+                    {{ $t('components.contract_tab.here') }}
+                </a>
+            </p>
+            <p v-if="autoloadedAbi" class="c-gcontract-interface__header-paragraph">
+                {{ $t('components.contract_tab.abi_autoloaded') }}
+            </p>
+            <p v-else class="c-gcontract-interface__header-paragraph">
+                {{ $t('components.contract_tab.choose_abi') }}
+            </p>
         </div>
 
         <div class="row q-pb-lg">
             <div class="col-12">
-                <div class="c-contract__tab-container">
+                <div class="c-gcontract-interface__tab-container">
                     <q-btn
                         :label="$t('components.contract_tab.use_erc20_abi')"
                         :class="{
-                            'c-contract__tab': true,
-                            'c-contract__tab--active': selectedAbi === abiOptions.erc20,
+                            'c-gcontract-interface__tab': true,
+                            'c-gcontract-interface__tab--active': selectedAbi === abiOptions.erc20,
                         }"
                         @click="selectedAbi = abiOptions.erc20"
                     />
                     <q-btn
                         :label="$t('components.contract_tab.use_erc721_abi')"
                         :class="{
-                            'c-contract__tab': true,
-                            'c-contract__tab--active': selectedAbi === abiOptions.erc721,
+                            'c-gcontract-interface__tab': true,
+                            'c-gcontract-interface__tab--active': selectedAbi === abiOptions.erc721,
                         }"
                         @click="selectedAbi = abiOptions.erc721"
                     />
                     <q-btn
                         :label="$t('components.contract_tab.use_erc1155_abi')"
                         :class="{
-                            'c-contract__tab': true,
-                            'c-contract__tab--active': selectedAbi === abiOptions.erc1155,
+                            'c-gcontract-interface__tab': true,
+                            'c-gcontract-interface__tab--active': selectedAbi === abiOptions.erc1155,
                         }"
                         @click="selectedAbi = abiOptions.erc1155"
                     />
                     <q-btn
                         :label="$t('components.contract_tab.abi_from_json')"
                         :class="{
-                            'c-contract__tab': true,
-                            'c-contract__tab--active': selectedAbi === abiOptions.custom,
+                            'c-gcontract-interface__tab': true,
+                            'c-gcontract-interface__tab--active': selectedAbi === abiOptions.custom,
                         }"
                         @click="selectedAbi = abiOptions.custom"
                     />
@@ -296,20 +294,20 @@ const formatAbiFunctionLists = async () => {
 
         <div v-if="showAbiFunctions" class="row">
             <div class="col-12">
-                <div class="c-contract__tab-container">
+                <div class="c-gcontract-interface__tab-container">
                     <q-btn
                         :label="$t('components.contract_tab.read')"
                         :class="{
-                            'c-contract__tab': true,
-                            'c-contract__tab--active': !displayWriteFunctions,
+                            'c-gcontract-interface__tab': true,
+                            'c-gcontract-interface__tab--active': !displayWriteFunctions,
                         }"
                         @click="displayWriteFunctions = false"
                     />
                     <q-btn
                         :label="$t('components.contract_tab.write')"
                         :class="{
-                            'c-contract__tab': true,
-                            'c-contract__tab--active': displayWriteFunctions,
+                            'c-gcontract-interface__tab': true,
+                            'c-gcontract-interface__tab--active': displayWriteFunctions,
                         }"
                         @click="displayWriteFunctions = true"
                     />
@@ -341,8 +339,20 @@ const formatAbiFunctionLists = async () => {
 </q-card>
 </template>
 <style lang="scss">
-.c-contract{
-    padding-top: 1rem;
+.c-gcontract-interface {
+    &__container {
+        padding: 1rem;
+    }
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+        &-paragraph {
+            display: flex;
+            gap: 5px;
+            align-items: flex-end;
+        }
+    }
 
     &__tab-container{
         display: inline-flex;
@@ -366,16 +376,12 @@ const formatAbiFunctionLists = async () => {
             background-color: var(--active-tab-bg-color);
         }
     }
-
-    .vjs-tree-list-holder-inner {
-        padding-bottom: 20px;
-    }
 }
 .abi-json-uploader .q-field__label {
     text-align: center;
     width: 100%;
 }
-.c-login-button{
+.c-login-button {
     margin-bottom: 0.5rem;
 }
 </style>
