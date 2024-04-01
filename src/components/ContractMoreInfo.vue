@@ -82,8 +82,7 @@ const props = defineProps({
 @-moz-document url-prefix() {
     .c-more-info{
         &__creator{
-            font-size: 1.2rem;
-            font-weight: 800;
+            font-weight: 1000;
         }
     }
 }

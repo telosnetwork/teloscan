@@ -392,7 +392,7 @@ export default {
             custom: 'Custom',
             unverified_contract_source: 'This contract is unverified.',
             verified_contract_source: 'Verify and Publish your contract source code',
-            here: 'here',
+            here: 'here.',
             upload_source_files: 'to upload source files which will also verify this contract. ',
             abi_autoloaded: 'In the meantime, you can interact with the contract using our automatically loaded preset ABI.',
             choose_abi: 'Alternatively, you can interact with the contract either using one of our preset ABIs or a custom JSON one:',

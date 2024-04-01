@@ -164,7 +164,7 @@ const collapseAll = () => {
         <p>
             <span>{{ $t('components.contract_tab.verified_contract_source') }}</span>
             <a href="https://sourcify.dev/" target="_blank">
-                {{ $t('components.contract_tab.here') }}.
+                {{ $t('components.contract_tab.here') }}
             </a>
         </p>
         <p v-if="contract?.autoloadedAbi">

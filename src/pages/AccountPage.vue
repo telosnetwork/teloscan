@@ -410,7 +410,7 @@ async function loadAccount() {
         padding: 0;
     }
 }
-
+/*
 @-moz-document url-prefix() {
     .c-address{
         &__title {
@@ -431,4 +431,5 @@ async function loadAccount() {
         }
     }
 }
+*/
 </style>
