@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps({
     block: {
-        type: Number,
+        type: [Number, String],
         required: true,
     },
 });
