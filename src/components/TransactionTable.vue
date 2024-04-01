@@ -263,7 +263,6 @@ function getPath() {
     path += `&offset=${(page - 1) * rowsPerPage}`;
     path += `&sort=${descending ? 'desc' : 'asc'}`;
     path += (pagination.value.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
-    path += '&includeAbi=true';
     if (props.block) {
         if (props.accountAddress) {
             path += `&startBlock=${props.block}&endBlock=${props.block}`;
