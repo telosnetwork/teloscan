@@ -130,7 +130,7 @@ function updateFigures() {
             <BlockField
                 v-else
                 class="c-home-info__number"
-                :block="latestBlock"
+                :block="latestBlock.toString()"
             />
         </div>
 

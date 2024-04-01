@@ -44,7 +44,7 @@ export default class FragmentParser {
             const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`);
             if (abiResponse) {
                 if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
-                    console.error(`Unable to find function signature for sig: ${prefix}`);
+                    console.warn(`Unable to find function signature for sig: ${prefix}`);
                     this.functionInterfaces[prefix] = '';
                     return false;
                 }
@@ -52,7 +52,7 @@ export default class FragmentParser {
                 return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
             }
         } catch (e) {
-            console.error(`Error trying to find event signature for function ${prefix}`);
+            console.warn(`Unable to find event signature for function ${prefix}`);
             this.functionInterfaces[prefix] = '';
             return false;
         }
