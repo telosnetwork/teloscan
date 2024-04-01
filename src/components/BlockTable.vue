@@ -128,6 +128,9 @@ async function fetchBlocksPage() {
         block.transactionsCount = block.transactionsCount ?? +(block.transactionCount ?? 0);
         return block;
     });
+    if (pagination.value.rowsNumber === 0) {
+        pagination.value.rowsNumber = result.data?.total_count ?? 0;
+    }
     return result;
 }
 
@@ -140,9 +143,6 @@ async function parseBlocks() {
 
     try {
         let response = await fetchBlocksPage();
-        if (pagination.value.rowsNumber === 0) {
-            pagination.value.rowsNumber = response.data?.results[0]?.number ?? 0;
-        }
 
         pagination.value.page = page;
         pagination.value.rowsPerPage = rowsPerPage;
@@ -175,7 +175,8 @@ function getPath() {
     }`;
     path += `&offset=${(page - 1) * rowsPerPage}`;
     path += `&sort=${descending ? 'desc' : 'asc'}`;
-    path += '&includeCount=true';
+    path += '&includePagination=true';
+
     return path;
 }
 
