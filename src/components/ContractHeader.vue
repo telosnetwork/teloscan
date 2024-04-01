@@ -110,7 +110,7 @@ defineProps({
             word-break: break-word;
         }
         &-divider {
-            border-color: #d3d3d378;
+            border-color: var(--muted-text-color);
             width: 100%;
             @media only screen and (min-width: $breakpoint-md-min) {
                 &--mobile {
