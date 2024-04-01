@@ -140,7 +140,7 @@ async function fetchBlocks() {
 
 function getPath(page = 0) {
     const offset = page * 100;
-    let path = `blocks?limit=6&noEmpty=true&includeCount=true&offset=${offset}`;
+    let path = `blocks?limit=6&includePagination&noEmpty=true&offset=${offset}`;
     return path;
 }
 
