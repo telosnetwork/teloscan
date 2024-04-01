@@ -410,26 +410,4 @@ async function loadAccount() {
         padding: 0;
     }
 }
-/*
-@-moz-document url-prefix() {
-    .c-address{
-        &__title {
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
-
-        &__hex {
-            font-size: 1.2rem;
-            word-break: break-all;
-
-            @media screen and (min-width: $breakpoint-md-min) {
-                font-size: 1.4rem;
-            }
-        }
-        &__info-container{
-            margin-bottom: 3rem;
-        }
-    }
-}
-*/
 </style>

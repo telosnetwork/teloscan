@@ -100,14 +100,6 @@ a {
     }
 }
 
-
-@-moz-document url-prefix() {
-    body {
-      font-size: 0.9em;
-    }
-}
-
-
 .q-tabs__arrow {
     top: 12px !important;
     &--right {
