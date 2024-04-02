@@ -85,6 +85,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
 .c-latest-data {
 
     height: 528px;
+    overflow-y: hidden;
 
     &__header {
         &-title {
