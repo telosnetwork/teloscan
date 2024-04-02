@@ -134,9 +134,7 @@ async function fetchBlocksPage() {
         block.blockNumber = block.blockNumber ?? +(block.number ?? 0);
         block.transactionsCount =
             block.transactionsCount ? block.transactionsCount :
-                block.gasUsed !== '0x0' ? 1 :
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    +((block as any).transactionCount ?? 0);
+                block.gasUsed !== '0x0' ? 1 : 0 ;
         return block;
     });
     if (pagination.value.rowsNumber === 0) {
