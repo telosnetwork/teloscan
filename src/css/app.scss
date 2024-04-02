@@ -8,13 +8,14 @@
 body {
     --top-bar-height: 48px;
     --bottom-bar-height: 52px;
-    font-size: 16px;
+    font-size: .9em;
     font-family: "silkaregular", sans-serif;
 }
 
 body.body--light {
     --border-color: #{$grey-3};
     --text-color: #{$dark};
+    --muted-text-color: #{$grey-3};
     --invert-text-color: white;
     --grey-text-color: #{$grey-7};
     --tab-bg-color: #{$grey-3};
@@ -35,6 +36,7 @@ body.body--light {
 body.body--dark {
     --border-color: #{$grey-9};
     --text-color: white;
+    --muted-text-color: #{$grey-8};
     --invert-text-color: #{$dark};
     --grey-text-color: #{$grey-5};
     --tab-bg-color: #{$grey-10};
@@ -100,9 +102,9 @@ a {
     }
 }
 
-
-@-moz-document url-prefix() {
-    body {
-      font-size: 16px;
+.q-tabs__arrow {
+    top: 12px !important;
+    &--right {
+        top: 12px !important;
     }
 }

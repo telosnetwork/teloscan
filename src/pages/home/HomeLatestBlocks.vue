@@ -110,13 +110,6 @@ async function fetchBlocksPage(page: number) {
     const path = getPath(page);
     const result = await indexerApi.get(path);
 
-    // workaround to avoid indexer typos
-    result.data.results = result.data.results.map((block: BlockData) => {
-        block.blockNumber = block.blockNumber ?? +(block.number ?? 0);
-        block.transactionsCount = block.transactionsCount ?? +(block.transactionCount ?? 0);
-        return block;
-    });
-
     return result;
 }
 

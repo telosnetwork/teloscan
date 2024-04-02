@@ -181,6 +181,8 @@ export default {
         gas_price: 'Prix gaz',
         click_to_expand: 'Cliquez pour étendre la signature de la fonction',
         click_to_fold: 'Cliquez pour réduire',
+        expand_all: 'Etendre tout',
+        collapse_all: 'Réduire tout',
         search_evm_failed: 'La recherche d\'une adresse EVM lié au compte natif { search_term } à échoué.',
         search_failed: 'La recherche à échouée, veuillez saisir des mots clés de recherche correctes.',
         add_to_metamask: 'Ajoutez { symbol } à MetaMask',

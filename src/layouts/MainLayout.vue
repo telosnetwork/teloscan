@@ -11,6 +11,8 @@ import { useQuasar } from 'quasar';
 import AppHeader from 'components/header/AppHeader.vue';
 import FooterMain from 'components/FooterMain.vue';
 
+import { getBrowserName } from 'src/lib/utils';
+
 const $route = useRoute();
 const $q = useQuasar();
 
@@ -49,7 +51,7 @@ function showBackToTop() {
 </script>
 
 <template>
-<q-layout view="hhh lpr fff" class="c-main-layout">
+<q-layout view="hhh lpr fff" :class="`c-main-layout ${getBrowserName()}`">
     <div class="c-main-layout__background-container">
         <div class="c-main-layout__background-top">
             <div class="c-main-layout__background-circle c-main-layout__background-circle--1"></div>

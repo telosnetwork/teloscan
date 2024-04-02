@@ -40,22 +40,8 @@ export default class FragmentParser {
         }
         this.processing.push(data);
 
-        try {
-            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`);
-            if (abiResponse) {
-                if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
-                    console.warn(`Unable to find function signature for sig: ${prefix}`);
-                    this.functionInterfaces[prefix] = '';
-                    return false;
-                }
-                this.functionInterfaces[prefix] = `function ${abiResponse.data.text_signature}`;
-                return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
-            }
-        } catch (e) {
-            console.warn(`Unable to find event signature for function ${prefix}`);
-            this.functionInterfaces[prefix] = '';
-            return false;
-        }
+        this.functionInterfaces[prefix] = '';
+        return false;
     }
     async getEventInterface(data) {
         if(data === '0x'){
@@ -81,20 +67,6 @@ export default class FragmentParser {
             console.debug(e);
         }
 
-        try {
-            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`);
-            if (abiResponse) {
-                if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
-                    console.error(`Unable to find event signature for event: ${data}`);
-                    return false;
-                }
-                this.eventInterfaces[data] = `event ${abiResponse.data.text_signature}`;
-                return new ethers.utils.Interface([this.eventInterfaces[data]]);
-            }
-        } catch (e) {
-            console.error(`Error trying to find event signature for event ${data}: ${e.message}`);
-            return false;
-        }
         this.eventInterfaces[data] = '';
         return false;
     }

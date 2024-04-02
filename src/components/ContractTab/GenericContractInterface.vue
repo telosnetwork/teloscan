@@ -20,7 +20,7 @@ const route = useRoute();
 const { t: $t } = useI18n();
 const factory = new ContractFactory();
 
-defineProps({
+const props = defineProps({
     contract: Object,
 });
 
@@ -52,6 +52,8 @@ const customAbiIsValidJSON = computed(() => {
         return false;
     }
 });
+
+const autoloadedAbi = computed(() => props.contract?.autoloadedAbi);
 
 watch(selectedAbi, (newValue, oldValue) => {
     if (oldValue !== newValue) {
@@ -171,174 +173,186 @@ const formatAbiFunctionLists = async () => {
 </script>
 
 <template>
-<div class="q-pa-md">
-    <div class="row q-pb-md">
-        <div class="col-12">
-            <p class="text-h5 flex">
+<q-card class="c-gcontract-interface">
+    <div class="c-gcontract-interface__container">
+        <div class="c-gcontract-interface__header">
+            <p class="c-gcontract-interface__header-paragraph">
                 <q-icon
                     name="warning"
                     class="text-warning q-mt-xs q-mr-xs"
                     size="1.5rem"
                 />
-                <span>{{ $t('components.contract_tab.unverified_contract_source') }}</span>
+                <span><b>{{ $t('components.contract_tab.unverified_contract_source') }}</b></span>
             </p>
-            <p>
+            <p class="c-gcontract-interface__header-paragraph">
+                <span>{{ $t('components.contract_tab.verified_contract_source') }}</span>
                 <a href="https://sourcify.dev/" target="_blank">
-                    {{ $t('components.contract_tab.click_here') }}
+                    {{ $t('components.contract_tab.here') }}
                 </a>
-                {{ $t('components.contract_tab.upload_source_files') }}
             </p>
-            <p v-if="this.contract?.autoloadedAbi">
+            <p v-if="autoloadedAbi" class="c-gcontract-interface__header-paragraph">
                 {{ $t('components.contract_tab.abi_autoloaded') }}
             </p>
-            <p v-else>
+            <p v-else class="c-gcontract-interface__header-paragraph">
                 {{ $t('components.contract_tab.choose_abi') }}
             </p>
         </div>
-    </div>
 
-    <div class="row q-pb-lg">
-        <div class="col-12">
-            <div class="c-contract__tab-container">
-                <q-btn
-                    :label="$t('components.contract_tab.use_erc20_abi')"
-                    :class="{
-                        'c-contract__tab': true,
-                        'c-contract__tab--active': selectedAbi === abiOptions.erc20,
-                    }"
-                    @click="selectedAbi = abiOptions.erc20"
-                />
-                <q-btn
-                    :label="$t('components.contract_tab.use_erc721_abi')"
-                    :class="{
-                        'c-contract__tab': true,
-                        'c-contract__tab--active': selectedAbi === abiOptions.erc721,
-                    }"
-                    @click="selectedAbi = abiOptions.erc721"
-                />
-                <q-btn
-                    :label="$t('components.contract_tab.use_erc1155_abi')"
-                    :class="{
-                        'c-contract__tab': true,
-                        'c-contract__tab--active': selectedAbi === abiOptions.erc1155,
-                    }"
-                    @click="selectedAbi = abiOptions.erc1155"
-                />
-                <q-btn
-                    :label="$t('components.contract_tab.abi_from_json')"
-                    :class="{
-                        'c-contract__tab': true,
-                        'c-contract__tab--active': selectedAbi === abiOptions.custom,
-                    }"
-                    @click="selectedAbi = abiOptions.custom"
-                />
-            </div>
-        </div>
-    </div>
-
-    <div v-if="selectedAbi === abiOptions.custom" class="row q-mb-lg">
-        <div class="col-12">
-            <div class="row">
-                <div class="col-12 col-sm-8 col-lg-9">
-                    <q-input
-                        v-model="customAbiDefinition"
-                        clearable
-                        name="custom-abi"
-                        label="Paste ABI JSON here"
-                        class="q-pb-lg"
-                        autocomplete="off"
-                        type="text"
+        <div class="row q-pb-lg">
+            <div class="col-12">
+                <div class="c-gcontract-interface__tab-container">
+                    <q-btn
+                        :label="$t('components.contract_tab.use_erc20_abi')"
+                        :class="{
+                            'c-gcontract-interface__tab': true,
+                            'c-gcontract-interface__tab--active': selectedAbi === abiOptions.erc20,
+                        }"
+                        @click="selectedAbi = abiOptions.erc20"
                     />
-                </div>
-                <div class="col-12 col-sm-4 col-lg-3">
-                    <q-file
-                        v-model="fileModel"
-                        outlined
-                        name="custom-abi-file"
-                        label="upload ABI JSON file"
-                        class="abi-json-uploader q-ml-md text-center"
-                        accept=".json"
-                        @input="uploadFile"
+                    <q-btn
+                        :label="$t('components.contract_tab.use_erc721_abi')"
+                        :class="{
+                            'c-gcontract-interface__tab': true,
+                            'c-gcontract-interface__tab--active': selectedAbi === abiOptions.erc721,
+                        }"
+                        @click="selectedAbi = abiOptions.erc721"
+                    />
+                    <q-btn
+                        :label="$t('components.contract_tab.use_erc1155_abi')"
+                        :class="{
+                            'c-gcontract-interface__tab': true,
+                            'c-gcontract-interface__tab--active': selectedAbi === abiOptions.erc1155,
+                        }"
+                        @click="selectedAbi = abiOptions.erc1155"
+                    />
+                    <q-btn
+                        :label="$t('components.contract_tab.abi_from_json')"
+                        :class="{
+                            'c-gcontract-interface__tab': true,
+                            'c-gcontract-interface__tab--active': selectedAbi === abiOptions.custom,
+                        }"
+                        @click="selectedAbi = abiOptions.custom"
                     />
                 </div>
             </div>
         </div>
-        <div class="col-sm-12">
-            <template v-if="!!customAbiDefinition">
-                <template v-if="customAbiIsValidJSON">
-                    <p class="q-mb-sm">
-                        {{ $t('components.contract_tab.abi_json_preview') }}
-                    </p>
-                    <VueJsonPretty
-                        :data="JSON.parse(customAbiDefinition)"
-                        :depth="1"
-                        expanded
-                    />
+
+        <div v-if="selectedAbi === abiOptions.custom" class="row q-mb-lg">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12 col-sm-8 col-lg-9">
+                        <q-input
+                            v-model="customAbiDefinition"
+                            clearable
+                            name="custom-abi"
+                            label="Paste ABI JSON here"
+                            class="q-pb-lg"
+                            autocomplete="off"
+                            type="text"
+                        />
+                    </div>
+                    <div class="col-12 col-sm-4 col-lg-3">
+                        <q-file
+                            v-model="fileModel"
+                            outlined
+                            name="custom-abi-file"
+                            label="upload ABI JSON file"
+                            class="abi-json-uploader q-ml-md text-center"
+                            accept=".json"
+                            @input="uploadFile"
+                        />
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <template v-if="!!customAbiDefinition">
+                    <template v-if="customAbiIsValidJSON">
+                        <p class="q-mb-sm">
+                            {{ $t('components.contract_tab.abi_json_preview') }}
+                        </p>
+                        <VueJsonPretty
+                            :data="JSON.parse(customAbiDefinition)"
+                            :depth="1"
+                            expanded
+                        />
+                        <p
+                            v-if="!showAbiFunctions"
+                            class="text-negative"
+                        >
+                            {{ $t('components.contract_tab.provided_abi_invalid') }}
+                        </p>
+                    </template>
                     <p
-                        v-if="!showAbiFunctions"
+                        v-else
                         class="text-negative"
                     >
-                        {{ $t('components.contract_tab.provided_abi_invalid') }}
+                        {{ $t('components.contract_tab.provided_json_invalid') }}
                     </p>
                 </template>
-                <p
-                    v-else
-                    class="text-negative"
-                >
-                    {{ $t('components.contract_tab.provided_json_invalid') }}
-                </p>
-            </template>
-        </div>
-    </div>
-
-    <div v-if="showAbiFunctions" class="row">
-        <div class="col-12">
-            <div class="c-contract__tab-container">
-                <q-btn
-                    :label="$t('components.contract_tab.read')"
-                    :class="{
-                        'c-contract__tab': true,
-                        'c-contract__tab--active': !displayWriteFunctions,
-                    }"
-                    @click="displayWriteFunctions = false"
-                />
-                <q-btn
-                    :label="$t('components.contract_tab.write')"
-                    :class="{
-                        'c-contract__tab': true,
-                        'c-contract__tab--active': displayWriteFunctions,
-                    }"
-                    @click="displayWriteFunctions = true"
-                />
             </div>
-            <AppHeaderWallet v-if="displayWriteFunctions" class="c-login-button"/>
-            <q-list>
-                <q-expansion-item
-                    v-for="func in (displayWriteFunctions ? functions.write : functions.read)"
-                    :key="(func as any).name"
-                    :label="(func as any).name"
-                    class="shadow-2 q-mb-md"
-                >
-                    <q-card>
-                        <div class="q-pa-md">
-                            <FunctionInterface
-                                :abi="func"
-                                :contract="selectedContract"
-                                :write="true"
-                                :group="displayWriteFunctions ? 'write' : 'read'"
-                                :run-label="displayWriteFunctions ? 'Write' : 'Query'"
-                            />
-                        </div>
-                    </q-card>
-                </q-expansion-item>
-            </q-list>
+        </div>
+
+        <div v-if="showAbiFunctions" class="row">
+            <div class="col-12">
+                <div class="c-gcontract-interface__tab-container">
+                    <q-btn
+                        :label="$t('components.contract_tab.read')"
+                        :class="{
+                            'c-gcontract-interface__tab': true,
+                            'c-gcontract-interface__tab--active': !displayWriteFunctions,
+                        }"
+                        @click="displayWriteFunctions = false"
+                    />
+                    <q-btn
+                        :label="$t('components.contract_tab.write')"
+                        :class="{
+                            'c-gcontract-interface__tab': true,
+                            'c-gcontract-interface__tab--active': displayWriteFunctions,
+                        }"
+                        @click="displayWriteFunctions = true"
+                    />
+                </div>
+                <AppHeaderWallet v-if="displayWriteFunctions" class="c-login-button"/>
+                <q-list>
+                    <q-expansion-item
+                        v-for="func in (displayWriteFunctions ? functions.write : functions.read)"
+                        :key="(func as any).name"
+                        :label="(func as any).name"
+                        class="shadow-2 q-mb-md"
+                    >
+                        <q-card>
+                            <div class="q-pa-md">
+                                <FunctionInterface
+                                    :abi="func"
+                                    :contract="selectedContract"
+                                    :write="true"
+                                    :group="displayWriteFunctions ? 'write' : 'read'"
+                                    :run-label="displayWriteFunctions ? 'Write' : 'Query'"
+                                />
+                            </div>
+                        </q-card>
+                    </q-expansion-item>
+                </q-list>
+            </div>
         </div>
     </div>
-</div>
+</q-card>
 </template>
 <style lang="scss">
-.c-contract{
-    padding-top: 1rem;
+.c-gcontract-interface {
+    &__container {
+        padding: 1rem;
+    }
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+        &-paragraph {
+            display: flex;
+            gap: 5px;
+            align-items: flex-end;
+        }
+    }
 
     &__tab-container{
         display: inline-flex;
@@ -362,16 +376,12 @@ const formatAbiFunctionLists = async () => {
             background-color: var(--active-tab-bg-color);
         }
     }
-
-    .vjs-tree-list-holder-inner {
-        padding-bottom: 20px;
-    }
 }
 .abi-json-uploader .q-field__label {
     text-align: center;
     width: 100%;
 }
-.c-login-button{
+.c-login-button {
     margin-bottom: 0.5rem;
 }
 </style>

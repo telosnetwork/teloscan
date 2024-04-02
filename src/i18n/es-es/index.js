@@ -232,6 +232,8 @@ export default {
         gas_price: 'Precio del gas',
         click_to_expand: 'Haga clic para expandir',
         click_to_fold: 'Haga clic para doblar',
+        expand_all: 'Expandir todo',
+        collapse_all: 'Contraer todo',
         search_evm_failed: 'La búsqueda de la dirección EVM vinculada a la cuenta nativa { search_term } falló.',
         search_failed: 'La búsqueda falló, ingrese un término de búsqueda válido.',
         add_to_metamask: 'Agregar { symbol } a MetaMask',

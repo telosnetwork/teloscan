@@ -129,9 +129,8 @@ async function onPaginationChange(settings: { pagination: Pagination}) {
 async function fetchBlocksPage() {
     const path = getPath();
     const result = await indexerApi.get(path);
-    // workaround to avoid indexer typos
+    // temp workaround for empty block transactions data
     result.data.results = result.data.results.map((block: BlockData) => {
-        block.blockNumber = block.blockNumber ?? +(block.number ?? 0);
         block.transactionsCount =
             block.transactionsCount ? block.transactionsCount :
                 block.gasUsed !== '0x0' ? 1 : 0 ;
@@ -225,7 +224,7 @@ onBeforeMount(() => {
     :rows="rows"
     :binary-state-sort="true"
     :rows-per-page-label="$t('global.records_per_page')"
-    :row-key="row => row.number"
+    :row-key="row => row.blockNumber"
     :columns="(columns as any)"
     :rows-per-page-options="page_size_options"
     @request="onPaginationChange"

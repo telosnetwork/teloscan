@@ -211,3 +211,48 @@ export function getFormattedUtcOffset(date) {
     const minutes = pad(offset % 60);
     return sign + hours + ':' + minutes;
 }
+
+/**
+ * This functions returns the name of the browser
+ */
+export function getBrowserName() {
+    const userAgent = window.navigator.userAgent;
+    const browsers = {
+        chrome: /chrome/i,
+        safari: /safari/i,
+        firefox: /firefox/i,
+        ie: /internet explorer/i,
+        edge: /edge/i,
+        opera: /opera/i,
+        ios_saf: /version\/(\d).*safari/i,
+    };
+
+    for (const key in browsers) {
+        if (browsers[key].test(userAgent)) {
+            return key;
+        }
+    }
+
+    return 'unknown';
+}
+
+/**
+ * This functions returns true if we are using Firefox
+ */
+export function isFirefox() {
+    return getBrowserName() === 'firefox';
+}
+
+/**
+ * This functions returns true if we are using Safari
+ */
+export function isSafari() {
+    return getBrowserName() === 'safari';
+}
+
+/**
+ * This functions returns true if we are using Chrome
+ */
+export function isChrome() {
+    return getBrowserName() === 'chrome';
+}
