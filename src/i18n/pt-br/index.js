@@ -234,6 +234,8 @@ export default {
         gas_price_gwei: 'Gas Price in gwei',
         click_to_expand: 'Clique para expandir',
         click_to_fold: 'Clique para dobrar',
+        expand_all: 'Expandir tudo',
+        collapse_all: 'Dobrar tudo',
         search_evm_failed: 'A busca pelo endereço EVM vinculado à conta nativa { search_term } falhou.',
         search_failed: 'A busca falhou, digite um termo de pesquisa válido.',
         add_to_metamask: 'Adicionar { symbol } ao MetaMask',

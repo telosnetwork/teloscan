@@ -50,22 +50,38 @@
         margin-bottom: 10px;
     }
     &-tab {
+        $tab: &;
         padding: 0px 20px;
-        min-height: 35px !important;
+        min-height: 32px !important;
         cursor: pointer;
         border-radius: 5px;
         text-transform: none;
         color: var(--text-color);
         background-color: var(--tab-bg-color);
 
+        #{$tab}-icon {
+            transition: color 0.3s, background-color 0.3s;
+        }
+
         &:hover{
             color: var(--text-color);
+            #{$tab}-icon {
+                color: var(--text-color);
+            }
         }
 
         &--active {
             color: var(--active-tab-text-color);
             background-color: var(--active-tab-bg-color);
+            #{$tab}-icon {
+                color: var(--active-tab-text-color);
+            }
         }
+    }
+
+    // firefox fix
+    .firefox & .q-tab__content {
+        flex-direction: row;
     }
 }
 

@@ -32,6 +32,11 @@ const loading = ref(true);
 const sources = ref(false);
 const metaData = ref<MetaData>({});
 
+const expanded = ref({} as {[key:string]: boolean});
+
+
+const getFileKey = (index: number) => `viewer-${index}`;
+
 onMounted(async () => {
     let sourceData;
     try {
@@ -68,6 +73,10 @@ onMounted(async () => {
                 contract: false,
             });
         }
+
+        (files.value as any[]).forEach((file, index) => {
+            expanded.value[getFileKey(index)] = true;
+        });
     } catch (e) {
         console.error(e);
     }
@@ -101,6 +110,10 @@ const sortFiles = (filesToSort: any[]) => {
             (files.value as any[]).unshift(file);
         }
     }
+
+    (files.value as any[]).forEach((file, index) => {
+        expanded.value[getFileKey(index)] = true;
+    });
 };
 
 const isContract = (fileName: string) => {
@@ -120,6 +133,19 @@ const setMetaData = (data: any) => {
         runs: data.settings.optimizer.runs,
     };
 };
+
+const expandAll = () => {
+    for (const key in expanded.value) {
+        expanded.value[key] = true;
+    }
+};
+
+const collapseAll = () => {
+    for (const key in expanded.value) {
+        expanded.value[key] = false;
+    }
+};
+
 </script>
 
 <template>
@@ -127,7 +153,7 @@ const setMetaData = (data: any) => {
 <div :class="(fullscreen) ? 'contract-source abs' : 'contract-source'">
     <div v-if="loading" class="q-pa-lg justify-center"><q-spinner size="md" /></div>
     <div v-else-if="!sources" class="q-pt-md q-pb-xl">
-        <p class="text-h5 flex">
+        <p class="flex">
             <q-icon
                 name="warning"
                 class="text-warning q-mt-xs q-mr-xs"
@@ -136,10 +162,10 @@ const setMetaData = (data: any) => {
             <span>{{ $t('components.contract_tab.unverified_contract_source') }}</span>
         </p>
         <p>
+            <span>{{ $t('components.contract_tab.verified_contract_source') }}</span>
             <a href="https://sourcify.dev/" target="_blank">
-                {{ $t('components.contract_tab.click_here') }}
+                {{ $t('components.contract_tab.here') }}
             </a>
-            {{ $t('components.contract_tab.upload_source_files') }}
         </p>
         <p v-if="contract?.autoloadedAbi">
             {{ $t('components.contract_tab.abi_autoloaded') }}
@@ -149,17 +175,39 @@ const setMetaData = (data: any) => {
         </p>
     </div>
     <div v-else>
+        <div class="flex justify-end q-mb-md">
+            <q-icon
+                name="expand_more"
+                size="sm"
+                class="clickable q-mr-md"
+                @click="expandAll()"
+            >
+                <q-tooltip>{{ $t('components.expand_all') }}</q-tooltip>
+            </q-icon>
+            <q-icon
+                name="expand_less"
+                size="sm"
+                class="clickable"
+                @click="collapseAll()"
+            >
+                <q-tooltip>{{ $t('components.collapse_all') }}</q-tooltip>
+            </q-icon>
+        </div>
+
         <q-expansion-item
             v-for="(item, index) in files as any[]"
             :key="`viewer-${index}`"
+            v-model="expanded[getFileKey(index)]"
             :default-opened="true"
             class="shadow-2 q-mb-md"
         >
             <template v-slot:header>
                 <div class="flex items-center justify-between">
                     <span>{{ item.name }}</span>
-                    <span class="q-item__section flex q-item__section--side items-center cursor-pointer">
-                        <span>
+                    <span
+                        class="q-item__section flex q-item__section--side items-center cursor-pointer"
+                    >
+                        <span v-if="expanded[getFileKey(index)]">
                             <q-icon
                                 name="fullscreen"
                                 size="sm"
@@ -204,7 +252,10 @@ const setMetaData = (data: any) => {
 </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
+body.body--light .source-container {
+    background-color: #f5f5f58f;
+}
 .contract-source .q-item__section--side {
     padding: 0;
 }
@@ -231,12 +282,6 @@ const setMetaData = (data: any) => {
         }
     }
 }
-</style>
-
-<style lang="scss" scoped>
-body.body--light .source-container {
-    background-color: #f5f5f58f;
-}
 .fullscreen {
     top: 110px;
 }
@@ -249,6 +294,9 @@ pre {
 .body--dark .q-item__section--side:not(.q-item__section--avatar) {
     color: rgba(255, 255, 255, 0.7);
 }
+.contract-source {
+    padding-bottom: 10px;
+}
 .contract-source.abs {
     height: 0px;
 }
@@ -257,7 +305,7 @@ pre {
     margin-bottom: 10px;
 }
 .contract-source .c-copy-button {
-    margin-top: 0px;
+    margin-top: 1px;
 }
 .body--dark .exit {
     background: $dark;
