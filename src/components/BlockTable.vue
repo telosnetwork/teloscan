@@ -201,10 +201,19 @@ function getGasUsed(gasUsed: string) {
     return '0';
 }
 
-onBeforeMount(() => {
+const updateLoadingRows = () => {
+    loadingRows.value = [];
     for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
         loadingRows.value.push(i);
     }
+};
+
+watch(() => pagination.value.rowsPerPage, () => {
+    updateLoadingRows();
+});
+
+onBeforeMount(() => {
+    updateLoadingRows();
 });
 
 </script>
