@@ -80,6 +80,8 @@ async function search() {
         color="black"
         hide-bottom-space
         :placeholder="$t('components.header.search_placeholder')"
+        type="search"
+        inputmode="search"
         @keydown.enter="search"
     >
         <template v-slot:append>
