@@ -131,9 +131,6 @@ async function loadAccount() {
     }
 
     accountLoading.value = false;
-
-
-    console.log('contract', contract.value);
 }
 
 </script>
