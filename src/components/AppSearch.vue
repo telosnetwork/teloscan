@@ -19,14 +19,6 @@ const TIME_DELAY = 6000;
 const searchTerm = ref('');
 const inputRef = ref<HTMLInputElement | null>(null);
 
-function handleIconClick() {
-    if (searchTerm.value) {
-        searchTerm.value = '';
-    } else {
-        inputRef?.value?.focus();
-    }
-}
-
 async function search() {
     if (!searchTerm.value) {
         return;
@@ -88,15 +80,17 @@ async function search() {
         color="black"
         hide-bottom-space
         :placeholder="$t('components.header.search_placeholder')"
+        type="search"
+        inputmode="search"
         @keydown.enter="search"
     >
         <template v-slot:append>
             <q-icon
-                :name="searchTerm ? 'clear' : 'search'"
+                name="search"
                 size="24px"
                 class="c-search__icon"
                 aria-hidden="true"
-                @click="handleIconClick"
+                @click="search"
             />
         </template>
     </q-input>
