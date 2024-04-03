@@ -91,9 +91,7 @@ export default {
         };
     },
     created(){
-        for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
-            this.loadingRows.push(i);
-        }
+        this.updateLoadingRows();
     },
     mounted() {
         switch (this.tokenType) {
@@ -115,6 +113,12 @@ export default {
         });
     },
     methods: {
+        async updateLoadingRows() {
+            this.loadingRows.value = [];
+            for (var i = 1; i <= this.pagination.value.rowsPerPage; i++) {
+                this.loadingRows.value.push(i);
+            }
+        },
         async onRequest(props) {
             this.loading = true;
 
@@ -131,6 +135,7 @@ export default {
             this.pagination.rowsPerPage = rowsPerPage;
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
+            this.updateLoadingRows();
 
             let newTransfers = [];
             for (const transfer of response.data.results) {

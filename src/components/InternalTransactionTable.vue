@@ -91,10 +91,7 @@ export default {
         this.columns[2].label = this.$t('components.age');
         this.columns[3].label = this.$t('components.method');
         this.columns[4].label = this.$t('components.internal_txns');
-
-        for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
-            this.loadingRows.push(i);
-        }
+        this.updateLoadingRows();
     },
     watch: {
         '$route.query.page': {
@@ -119,6 +116,13 @@ export default {
         },
     },
     methods: {
+        updateLoadingRows() {
+            console.log('updateLoadingRows()', this.pagination.rowsPerPage);
+            this.loadingRows = [];
+            for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+                this.loadingRows.push(i);
+            }
+        },
         popstate(event) {
             const page = event.state.pagination.page;
             const size = event.state.pagination.size;
@@ -131,6 +135,7 @@ export default {
             if (size) {
                 this.pagination.rowsPerPage = Number(size);
             }
+            this.updateLoadingRows();
             this.onRequest({
                 pagination: this.pagination,
             });
@@ -389,7 +394,7 @@ export default {
         </q-tr>
     </template>
     <template v-slot:body="">
-        <q-tr >
+        <q-tr>
             <q-td key="hash" >
                 <q-skeleton type="text" class="c-trx-overview__skeleton" />
             </q-td>
