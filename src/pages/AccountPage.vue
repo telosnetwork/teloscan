@@ -33,7 +33,7 @@ const route = useRoute();
 const router = useRouter();
 const store = useStore();
 
-const tabs = ['transactions', 'collection', 'holders', 'internaltx', 'tokens', 'nfts', 'approvals', 'tokentxns', 'contract'];
+const tabs = ['transactions', 'collection', 'holders', 'internaltx', 'tokens', 'nfts', 'approvals', 'tokentxns', 'erc721txns', 'erc1155txns', 'contract'];
 
 const accountLoading = ref(false);
 const title = ref('');
@@ -257,6 +257,16 @@ async function loadAccount() {
             :label="$t('pages.erc20_transfers')"
         />
         <q-tab
+            name="erc721txns"
+            class="c-address__tabs-tab"
+            :label="$t('pages.erc721_transfers')"
+        />
+        <q-tab
+            name="erc1155txns"
+            class="c-address__tabs-tab"
+            :label="$t('pages.erc1155_transfers')"
+        />
+        <q-tab
             v-if="contract"
             name="contract"
             class="c-address__tabs-tab c-address__tabs-tab--with-icon"
@@ -322,6 +332,22 @@ async function loadAccount() {
                 <TransferTable
                     title="ERC-20 Transfers"
                     token-type="erc20"
+                    :initialPageSize="10"
+                    :address="accountAddress"
+                />
+            </q-tab-panel>
+            <q-tab-panel name="erc721txns">
+                <TransferTable
+                    title="ERC-721 Transfers"
+                    token-type="erc721"
+                    :initialPageSize="10"
+                    :address="accountAddress"
+                />
+            </q-tab-panel>
+            <q-tab-panel name="erc1155txns">
+                <TransferTable
+                    title="ERC-1155 Transfers"
+                    token-type="erc1155"
                     :initialPageSize="10"
                     :address="accountAddress"
                 />
