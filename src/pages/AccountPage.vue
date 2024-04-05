@@ -14,7 +14,7 @@ import { Token } from 'src/types/Token';
 
 import TransactionTable from 'components/TransactionTable.vue';
 import InternalTransactionTable from 'components/InternalTransactionTable.vue';
-import TransferTable from 'components/TransferTable.vue';
+import NftTransfersTable from 'components/NftTransfersTable.vue';
 import TokenList from 'components/Token/TokenList.vue';
 import ApprovalList from 'components/Token/ApprovalList.vue';
 import HolderList from 'components/Token/HolderList.vue';
@@ -329,7 +329,7 @@ async function loadAccount() {
                 <TokenList :address="accountAddress"/>
             </q-tab-panel>
             <q-tab-panel name="tokentxns">
-                <TransferTable
+                <NftTransfersTable
                     title="ERC-20 Transfers"
                     token-type="erc20"
                     :initialPageSize="10"
@@ -337,7 +337,7 @@ async function loadAccount() {
                 />
             </q-tab-panel>
             <q-tab-panel name="erc721txns">
-                <TransferTable
+                <NftTransfersTable
                     title="ERC-721 Transfers"
                     token-type="erc721"
                     :initialPageSize="10"
@@ -345,7 +345,7 @@ async function loadAccount() {
                 />
             </q-tab-panel>
             <q-tab-panel name="erc1155txns">
-                <TransferTable
+                <NftTransfersTable
                     title="ERC-1155 Transfers"
                     token-type="erc1155"
                     :initialPageSize="10"

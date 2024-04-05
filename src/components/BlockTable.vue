@@ -11,6 +11,8 @@ import DateField from 'components/DateField.vue';
 import { BlockData } from 'src/types';
 import { ethers } from 'ethers';
 
+import { Pagination } from 'src/types';
+
 const $q = useQuasar();
 const route = useRoute();
 const router = useRouter();
@@ -34,14 +36,6 @@ const loading = ref(false);
 const showDateAge = ref(true);
 const blocks: BlockData[] = [];
 const page_size_options = [10, 25, 50, 100];
-
-type Pagination = {
-    sortBy: string;
-    descending: boolean;
-    page: number;
-    rowsPerPage: number;
-    rowsNumber: number;
-}
 
 const pagination = ref<Pagination>(
     {
