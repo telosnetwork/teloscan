@@ -309,12 +309,6 @@ const onRequest = async (settings: { pagination: Pagination}) => {
             } else {
                 valueDisplay = $t('components.unknown_precision');
             }
-        } else if (props.tokenType === 'erc721') {
-            valueDisplay = '#' + transfer.id.toString();
-        } else if (props.tokenType === 'erc1155') {
-            valueDisplay = transfer.amount.toString();
-        } else if(transfer.id) {
-            valueDisplay = '#' + transfer.id.toString();
         }
 
         const nTransfer = {
