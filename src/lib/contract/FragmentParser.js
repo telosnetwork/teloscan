@@ -47,7 +47,7 @@ export default class FragmentParser {
         if(data === '0x'){
             return false;
         }
-        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, data)) {
+        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, data) && this.eventInterfaces[data]) {
             return new ethers.utils.Interface([this.eventInterfaces[data]]);
         }
         if(this.processing.includes(data)){
@@ -61,6 +61,7 @@ export default class FragmentParser {
             const response = await axios.get(url);
             if(response.data){
                 this.eventInterfaces[data] = `event ${response.data}`;
+                this.processing = this.processing.filter(item => item !== data);
                 return new ethers.utils.Interface([this.eventInterfaces[data]]);
             }
         } catch (e) {
@@ -68,6 +69,7 @@ export default class FragmentParser {
         }
 
         this.eventInterfaces[data] = '';
+        this.processing = this.processing.filter(item => item !== data);
         return false;
     }
 
@@ -101,7 +103,6 @@ export default class FragmentParser {
             }
             return parsedLog;
         }
-
         parsedLog = await this.parseEvent(contract, log);
         parsedLog = this.formatLog(contract, log, parsedLog);
         if(parsedLog.name && parsedLog.eventFragment?.inputs){
