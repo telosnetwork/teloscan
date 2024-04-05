@@ -215,6 +215,8 @@ export default {
         nonce: 'Nonce',
         from: 'From',
         to: 'To',
+        item: 'Item',
+        amount: 'Amount',
         approvals: {
             token_id: 'Token ID',
             approved: 'Approved',
