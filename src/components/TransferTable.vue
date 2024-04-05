@@ -115,10 +115,8 @@ export default {
     },
     methods: {
         truncatedId(id) {
-            // only truncate if the id is longer than 7 characters
-            // we need to show the first 4 and last 3 characters
             if (id.length > 7) {
-                return id.substr(0, 4) + '...' + id.substr(id.length - 3);
+                return `${id.substring(0, 4)}...${id.substring(id.length - 3)}`;
             } else {
                 return id;
             }
