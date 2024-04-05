@@ -18,6 +18,8 @@ import TransactionDialog from 'components/TransactionDialog.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 
+import { Pagination } from 'src/types';
+
 const $q = useQuasar();
 const route = useRoute();
 const router = useRouter();
@@ -51,14 +53,6 @@ const totalRows = ref(0);
 
 const transactions: any[] = [];
 const page_size_options = [10, 25, 50, 100];
-
-type Pagination = {
-    sortBy: string;
-    descending: boolean;
-    page: number;
-    rowsPerPage: number;
-    rowsNumber: number;
-}
 
 const pagination = ref<Pagination>(
     {
