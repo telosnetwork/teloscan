@@ -39,8 +39,7 @@ export default {
             default: () => [],
         },
     },
-
-    async created() {
+    async mounted() {
         let verified = 0;
         for(let i = 0; i < this.logs?.length; i++){
             let log = this.logs[i];
