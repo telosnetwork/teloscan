@@ -41,7 +41,7 @@ export function initAntelope(app: App) {
         // SafePal
         // '0b415a746fb9ee99cce155c2ceca0c6f6061b1dbca2d722b3ba16381d0562150',
     ];
-    const explorerExcludedWalletIds = 'ALL' as const; // Web3Modal option excludes all but recomended
+    const explorerExcludedWalletIds = 'ALL' as const; // Web3Modal option excludes all but recommended
     const wagmiOptions: Web3ModalConfig = { projectId, explorerRecommendedWalletIds, explorerExcludedWalletIds };
 
     const ant = getAntelope();

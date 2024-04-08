@@ -49,12 +49,12 @@ export abstract class EVMAuthenticator {
         return true;
     }
 
-    // returns the associated account address acording to the label
+    // returns the associated account address according to the label
     getAccountAddress(): addressString {
         return useAccountStore().getAccount(this.label).account as addressString;
     }
 
-    // returns the associated chain settings acording to the label
+    // returns the associated chain settings according to the label
     getChainSettings(): EVMChainSettings {
         return (useChainStore().getChain(this.label).settings as EVMChainSettings);
     }

@@ -66,7 +66,7 @@ export class OreIdAuth extends EVMAuthenticator {
         return new OreIdAuth(this.options, label);
     }
 
-    // returns the associated account address acording to the label
+    // returns the associated account address according to the label
     getAccountAddress(): addressString {
         return this.userChainAccount?.chainAccount as addressString;
     }
