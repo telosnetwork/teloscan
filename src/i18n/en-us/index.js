@@ -430,7 +430,7 @@ export default {
             network: 'Network',
             open_language_switcher: 'Open language switcher',
             search_failed: 'Search failed, please enter a valid search term.',
-            search_placeholder: 'Search anything on Telos',
+            search_placeholder: 'Search Address/Block/TxnHash',
             select_language: 'Select Language',
             switch_to_dark_theme: 'Switch to dark theme',
             switch_to_light_theme: 'Switch to light theme',
