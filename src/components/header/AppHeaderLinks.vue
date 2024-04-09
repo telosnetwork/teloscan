@@ -36,6 +36,14 @@ const teloscanSwaggerUrl = IS_MAINNET
     ? 'https://api.teloscan.io/v1/docs'
     : 'https://api.testnet.teloscan.io/v1/docs';
 
+const telosWalletUrl = IS_MAINNET
+    ? 'https://wallet.telos.net/'
+    : 'https://wallet-dev.telos.net/';
+
+const telosBridgeUrl = IS_MAINNET
+    ? 'https://bridge.telos.net/bridge'
+    : 'https://telos-bridge-testnet.netlify.app/bridge';
+
 const developersSubmenuItems = [
     {
         url: teloscanSwaggerUrl,
@@ -48,13 +56,13 @@ const developersSubmenuItems = [
 ];
 
 const telos_walletMenuItem = {
-    url: 'https://wallet.telos.net/',
+    url: telosWalletUrl,
     label: `${$t('components.header.telos_wallet')}/Staking`,
 };
 
 
 const telos_bridgeMenuItem = {
-    url: 'https://bridge.telos.net/bridge',
+    url: telosBridgeUrl,
     label: $t('components.header.telos_bridge'),
 };
 
