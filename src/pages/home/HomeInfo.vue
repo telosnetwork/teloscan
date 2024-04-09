@@ -25,16 +25,24 @@ const initialLoadComplete = ref(false);
 
 const tlosPrice = computed(() => $store.getters['chain/tlosPrice']); // no need to fetch TLOS price, it is already fetched on a timer in AppHeaderTopBar.vue
 const latestBlock = computed(() => $store.getters['chain/latestBlock']);
-const tlosPriceText = computed(() => `$${tlosPrice.value.toLocaleString(locale, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`);
+const tlosPriceText = computed(() =>
+    tlosPrice.value === 0 ? '--' : `$${tlosPrice.value.toLocaleString(locale, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`,
+);
 const marketCapText = computed(() =>
     marketCap.value === 0 ? '--' : `$${marketCap.value.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
 );
+
+
 const transactionCountText = computed(() => transactionsCount.value.toLocaleString(locale));
 
 const fetchTlosPrice = () => $store.dispatch('chain/fetchTlosPrice');
 
 onBeforeMount(() => {
     updateFigures();
+
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+    }
 
     pollingInterval = setInterval(() => {
         updateFigures();
@@ -69,6 +77,7 @@ async function fetchMarketCap() {
     }
 }
 
+let milliseconds = 500;
 function updateFigures() {
     fetchTlosPrice(); // This makes the Price to load before anything else
     return Promise.all([
@@ -79,9 +88,15 @@ function updateFigures() {
         if (tlosPrice.value > 0 && latestBlock.value > 0 && transactionsCount.value > 0) {
             initialLoadComplete.value = true;
         } else {
+            if (milliseconds > 10000) {
+                console.error('Failed to load all data after 10 seconds');
+                initialLoadComplete.value = true;
+                return;
+            }
+            milliseconds *= 2;
             setTimeout(() => {
                 updateFigures();
-            }, 500);
+            }, milliseconds);
         }
     });
 }
@@ -102,7 +117,7 @@ function updateFigures() {
                     {{ $t('components.tlos_price') }}
                 </span>
             </div>
-            <q-skeleton v-if="tlosPrice === 0" type="text" class="c-home-info__skeleton" />
+            <q-skeleton v-if="tlosPrice === 0 && !initialLoadComplete" type="text" class="c-home-info__skeleton" />
             <template v-else>{{ tlosPriceText }}</template>
         </div>
 
@@ -113,7 +128,7 @@ function updateFigures() {
                 {{ $t('pages.home.market_cap') }}
             </span>
             <br>
-            <q-skeleton v-if="marketCap === 0" type="text" class="c-home-info__skeleton" />
+            <q-skeleton v-if="marketCap === 0 && !initialLoadComplete" type="text" class="c-home-info__skeleton" />
             <template v-else>{{ marketCapText }}</template>
         </div>
     </q-card-section>
