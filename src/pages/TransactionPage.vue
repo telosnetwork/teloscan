@@ -105,6 +105,7 @@ const loadErrorMessage = async () => {
     if (!trx.value) {
         return;
     }
+
     if(trx.value.output && REVERT_SELECTORS.includes(trx.value.output.slice(0, 10))){
         errorMessage.value = parseErrorMessage(trx.value.output);
         return;
@@ -115,6 +116,11 @@ const loadErrorMessage = async () => {
     const intrxs = response.data.results;
     for(let i = 0; i < intrxs.length; i++){
         const intrx = intrxs[i];
+
+        if (!intrx.result?.output) {
+            continue;
+        }
+
         const output = (REVERT_SELECTORS.includes(intrx.result?.output.slice(0, 10)))
             ? intrx.result?.output
             : trx.value.output
