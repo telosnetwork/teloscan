@@ -1,35 +1,67 @@
-<script>
-import CopyButton from 'components/CopyButton';
+<script setup lang="ts">
+import CopyButton from 'components/CopyButton.vue';
+import { computed } from 'vue';
 
-export default {
-    name: 'TransactionField',
-    components:{
-        CopyButton,
+const props = defineProps({
+    transactionHash: {
+        type: String,
+        required: true,
     },
-    props: {
-        transactionHash: {
-            type: String,
-            required: false,
-        },
-        copy: {
-            type: Boolean,
-            default: false,
-        },
+    status: {
+        type: Boolean,
+        required: false,
+        default: null,
     },
-};
+    color: {
+        type: String,
+        required: false,
+        default: 'primary',
+    },
+    truncate: {
+        type: Number,
+        required: false,
+        default: 20,
+    },
+    copy: {
+        type: Boolean,
+        default: false,
+    },
+});
+
+const text = computed(() => {
+    if (props.transactionHash) {
+        const cropped = props.transactionHash.slice(0, props.truncate);
+        return cropped.length < props.transactionHash.length ? `${cropped}...` : cropped;
+    } else {
+        return '...';
+    }
+});
+
 </script>
 
 <template>
-<div class="transaction-field-container">
-    <router-link :key="$route.path" :to="`/tx/${this.transactionHash}`">
-        {{ transactionHash && transactionHash.slice(0,20) }}...
+<div class="c-transaction-field">
+    <!-- only evaluate icon conditional if prop is passed -->
+    <q-icon v-if="props.status !== null && !props.status" class="c-transaction-field__icon text-negative" name="far fa-times-circle">
+        <q-tooltip anchor="bottom right" self="top start">
+            {{ $t('components.txn_failed') }}
+        </q-tooltip>
+    </q-icon>
+    <router-link :key="$route.path" :class="`text-${color}`" :to="`/tx/${transactionHash}`">
+        {{ text }}
+        <q-tooltip>{{ transactionHash }}</q-tooltip>
     </router-link>
     <CopyButton v-if="copy" :text="transactionHash" accompanying-text="" />
 </div>
 </template>
 
-<style lang="sass">
-.transaction-field-container
-    display: inline-flex
-    align-items: center
+<style lang="scss">
+.c-transaction-field{
+    display: inline-flex;
+    align-items: center;
+    &__icon{
+        margin-right: .1rem;
+        padding-bottom: .05rem;
+    }
+}
 </style>

@@ -2,14 +2,8 @@
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
-import { ethers, BigNumber } from 'ethers';
-import { formatWei, getTopicHash } from 'src/lib/utils';
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
-
-const TRANSFER_EVENT_ERC20_SIGNATURE = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
-const TRANSFER_EVENT_ERC1155_SIGNATURE = '0xc3d58168c5ae7397731d063d5bbf3d657854427343f4c083240f7aacaa2d0f62';
-const TOKEN_ID_TRUNCATE_LENGTH = 66;
-const DEFAULT_TOKEN_LOGO = '/branding/telos-scan.png';
+import { formatWei, toChecksumAddress } from 'src/lib/utils';
+import { getIcon } from 'src/lib/token-utils';
 
 export default {
     name: 'TransferTable',
@@ -37,35 +31,40 @@ export default {
         },
     },
     data() {
-        // TODO: Add icon column and render it
         const columns = [
             {
                 name: 'hash',
-                label: '',
+                label: this.$t('components.tx_hash'),
                 align: 'left',
             },
             {
                 name: 'date',
+                label: this.$t('components.age'),
+                align: 'left',
+            },
+            {
+                name: 'direction',
                 label: '',
                 align: 'left',
             },
             {
                 name: 'from',
-                label: '',
+                label: this.$t('components.from'),
                 align: 'left',
             },
             {
                 name: 'to',
-                label: '',
+                label: this.$t('components.to'),
                 align: 'left',
             },
             {
                 name: 'value',
-                label: '',
+                label: this.$t('components.value'),
                 align: 'left',
-            }, {
+            },
+            {
                 name: 'token',
-                label: '',
+                label: this.$t('components.token'),
                 align: 'left',
             },
         ];
@@ -73,11 +72,12 @@ export default {
 
         return {
             rows: [],
+            loadingRows: [],
             columns,
             transfers: [],
             pageSize: this.initialPageSize,
             total: null,
-            loading: false,
+            loading: true,
             expectedTopicLength: 0,
             pagination: {
                 sortBy: 'date',
@@ -88,27 +88,22 @@ export default {
             },
             showDateAge: true,
             tokenList: {},
+            highlightAddress: '',
         };
     },
-    async created() {
-        // initialization of the translated texts
-        this.columns[0].label = this.$t('components.tx_hash');
-        this.columns[1].label = this.$t('components.date');
-        this.columns[2].label = this.$t('components.from');
-        this.columns[3].label = this.$t('components.to');
-        this.columns[4].label = this.$t('components.value');
-        this.columns[5].label = this.$t('components.token');
+    created(){
+        this.updateLoadingRows();
     },
     mounted() {
         switch (this.tokenType) {
         case 'erc20':
-            this.expectedTopicLength = 3;
+            this.columns[5].label = this.$t('components.value');
             break;
         case 'erc721':
-            this.expectedTopicLength = 4;
+            this.columns[5].label = this.$t('components.nfts.id');
             break;
         case 'erc1155':
-            this.expectedTopicLength = 4;
+            this.columns[5].label = this.$t('components.nfts.amount');
             break;
         default:
             throw new Error(this.$t('components.unsupported_token_type', { tokenType: this.tokenType }));
@@ -119,95 +114,69 @@ export default {
         });
     },
     methods: {
+        truncatedId(id) {
+            if (id.length > 7) {
+                return `${id.substring(0, 4)}...${id.substring(id.length - 3)}`;
+            } else {
+                return id;
+            }
+        },
+        setHighlightAddress(address) {
+            this.highlightAddress = address;
+        },
+        async updateLoadingRows() {
+            this.loadingRows = [];
+            for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+                this.loadingRows.push(i);
+            }
+        },
         async onRequest(props) {
             this.loading = true;
 
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
-            let result = await this.$evmEndpoint.get(this.getPath(props));
-            if (this.total === null) {
-                this.pagination.rowsNumber = result.data.total.value;
+            let response = await this.$indexerApi.get(this.getPath(props));
+            if (this.total === null && response.data?.total_count) {
+                this.pagination.rowsNumber = response.data.total_count;
             }
 
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
+            this.updateLoadingRows();
 
             let newTransfers = [];
-            for (const transaction of result.data.transactions) {
-                try {
-                    for (const log of transaction.logs) {
-                        if (this.expectedTopicLength !== log.topics.length) {
-                            continue;
-                        }
-
-                        if (!TRANSFER_SIGNATURES.includes(log.topics[0].substr(0, 10).toLowerCase())) {
-                            continue;
-                        }
-
-                        const address = `0x${log.address.substring(log.address.length - 40)}`;
-                        let from, to;
-                        if(this.tokenType === 'erc1155'){
-                            from = getTopicHash(log.topics[2]);
-                            to = getTopicHash(log.topics[3]);
-                        } else {
-                            from = getTopicHash(log.topics[1]);
-                            to = getTopicHash(log.topics[2]);
-                        }
-                        if (
-                            to.toLowerCase() !== this.address.toLowerCase() &&
-                            from.toLowerCase() !== this.address.toLowerCase()
-                        ) {
-                            continue;
-                        }
-
-                        const contract = await this.$contractManager.getContract(
-                            ethers.utils.getAddress(address),
-                            this.tokenType,
-                        );
-
-                        const token = contract.token;
-                        let valueDisplay;
-                        if (this.tokenType === 'erc20') {
-                            if (token && typeof token.decimals === 'number') {
-                                valueDisplay = formatWei(log.data, token.decimals);
-                            } else {
-                                valueDisplay = this.$t('components.unknown_precision');
-                            }
-                        } else {
-                            let tokenId = (this.tokenType === 'erc1155') ?
-                                BigNumber.from(log.data.substr(0, TOKEN_ID_TRUNCATE_LENGTH)).toString() :
-                                BigNumber.from(log.topics[3]).toString();
-                            if(tokenId.length > 15){
-                                tokenId = tokenId.substr(0, 15) + '...';
-                            }
-                            valueDisplay = this.$t('components.token_id', { tokenId });
-                        }
-
-                        const transfer = {
-                            hash: transaction.hash,
-                            epoch: transaction.epoch,
-                            valueDisplay,
-                            address,
-                            from,
-                            to,
-                            ...contract,
-                        };
-
-                        newTransfers.push(transfer);
+            for (const transfer of response.data.results) {
+                const contractData = response.data.contracts[transfer.contract];
+                let valueDisplay;
+                if(this.tokenType === 'erc20'){
+                    if (contractData && contractData.decimals) {
+                        valueDisplay = formatWei(transfer.amount, contractData.decimals);
+                    } else {
+                        valueDisplay = this.$t('components.unknown_precision');
                     }
-
-                } catch (e) {
-                    console.error(
-                        `Failed to parse data for transaction, error was: ${e.message}`,
-                    );
-                    // notify the user
-                    this.$q.notify({
-                        message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
-                        type: 'negative',
-                    });
+                } else if (this.tokenType === 'erc721') {
+                    valueDisplay = '#' + transfer.id.toString();
+                } else if (this.tokenType === 'erc1155') {
+                    valueDisplay = transfer.amount.toString();
+                } else if(transfer.id) {
+                    valueDisplay = '#' + transfer.id.toString();
                 }
+
+                const nTransfer = {
+                    hash: transfer.transaction,
+                    timestamp: transfer.timestamp,
+                    count: transfer.amount,
+                    id: transfer.id,
+                    token: transfer.token,
+                    value: valueDisplay,
+                    contract: contractData,
+                    from: toChecksumAddress(transfer.from),
+                    to: toChecksumAddress(transfer.to),
+                };
+
+                newTransfers.push(nTransfer);
             }
 
             this.transfers.splice(
@@ -215,51 +184,48 @@ export default {
                 this.transfers.length,
                 ...newTransfers,
             );
-
             this.rows = this.transfers;
             this.loading = false;
         },
-        getIcon(row) {
-            if (row.token && row.token.logoURI) {
-                if (row.token.logoURI.startsWith('ipfs://')) {
-                    return row.token.logoURI.replace(/ipfs:\/\//, 'https://ipfs.io/ipfs/');
-                }
-                return row.token.logoURI;
-            } else {
-                return DEFAULT_TOKEN_LOGO;
-            }
-        },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/v2/evm/get_transactions?limit=${
+            let path = `/account/${this.address}/transfers?limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
-            let signature = TRANSFER_EVENT_ERC20_SIGNATURE;
-            if(this.tokenType === 'erc1155'){
-                signature = TRANSFER_EVENT_ERC1155_SIGNATURE;
-            }
-            path += `&log_topics=${signature},${this.address}`;
-            path += `&skip=${(page - 1) * rowsPerPage}`;
+            path += `&type=${this.tokenType}`;
+            path += `&offset=${(page - 1) * rowsPerPage}&includePagination=true`;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
 
             return path;
         },
+        convertToEpoch(dateString){
+            // date may be returned as date string or epoch depending on api call
+            if (typeof dateString === 'number'){
+                return dateString / 1000;
+            }
+            // convert YYYY-MM-DD hh:mm:ss format returned from api to unix epoch
+            const d = dateString.split(/\D+/);
+            const epoch = new Date(d[0], --d[1], d[1], d[3], d[4], d[5]) / 1000;
+            return epoch;
+        },
         toggleDateFormat() {
             this.showDateAge = !this.showDateAge;
         },
+        getIcon,
+        toChecksumAddress,
     },
 };
 </script>
 
 <template>
 <q-table
+    v-if="!loading"
     v-model:pagination="pagination"
     :rows="rows"
     :row-key="row => row.hash"
     :columns="columns"
-    :loading="loading"
+    :rows-per-page-label="$t('global.records_per_page')"
     :rows-per-page-options="[10, 20, 50]"
-    flat
     @request="onRequest"
 >
     <template v-slot:header="props">
@@ -269,19 +235,24 @@ export default {
                 :key="col.name"
                 :props="props"
             >
-                <div class="u-flex--center-y">
-                    {{ col.label }}
+                <div
+                    v-if="col.name==='date'"
+                    class="u-flex--center-y"
+                    @click="toggleDateFormat"
+                >
+                    <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
 
                     <q-icon
-                        v-if="col.name==='date'"
                         class="info-icon"
-                        name="fas fa-info-circle"
-                        @click="toggleDateFormat"
+                        name="far fa-question-circle"
                     >
                         <q-tooltip anchor="bottom middle" self="bottom middle">
                             {{ $t('components.click_to_change_format') }}
                         </q-tooltip>
                     </q-icon>
+                </div>
+                <div v-else class="u-flex--center-y">
+                    {{ col.label }}
                 </div>
 
             </q-th>
@@ -294,38 +265,181 @@ export default {
                 <TransactionField :transaction-hash="props.row.hash"/>
             </q-td>
             <q-td key="date" :props="props">
-                <DateField :epoch="props.row.epoch" :force-show-age="showDateAge" />
+                <DateField :epoch="convertToEpoch(props.row.timestamp)" :force-show-age="showDateAge"/>
+            </q-td>
+            <q-td key="direction" :props="props">
+                <span v-if="toChecksumAddress(address) === toChecksumAddress(props.row.from)" class="direction out">
+                    {{ $t('components.transaction.out').toUpperCase() }}
+                </span>
+                <span
+                    v-else-if="toChecksumAddress(address) === toChecksumAddress(props.row.to)"
+                    class="direction in"
+                >
+                    {{ $t('components.transaction.in').toUpperCase() }}
+                </span>
             </q-td>
             <q-td key="from" :props="props">
-                <AddressField :address="props.row.from"/>
+                <AddressField
+                    v-if="props.row.from"
+                    :key="props.row.from"
+                    :address="props.row.from"
+                    :truncate="16"
+                    :highlightAddress="highlightAddress"
+                    @highlight="setHighlightAddress"
+                />
             </q-td>
             <q-td key="to" :props="props">
-                <AddressField :address="props.row.to"/>
+                <AddressField
+                    v-if="props.row.to"
+                    :key="props.row.to"
+                    :address="props.row.to"
+                    :truncate="16"
+                    :highlightAddress="highlightAddress"
+                    @highlight="setHighlightAddress"
+                />
             </q-td>
             <q-td key="value" :props="props">
-                {{ props.row.valueDisplay }}
+                <span v-if="tokenType==='erc721' && props.row.token?.imageCache">
+                    <q-img
+                        class="nft-icon"
+                        :src="props.row.token.imageCache + '/280.webp'"
+                    />
+                    <q-tooltip>{{ props.row.value }}</q-tooltip>
+                </span>
+                <span v-else-if="tokenType==='erc721' && props.row.value.length > 7">
+                    <span>{{ props.row.value.substr(0, 7) + "..." }}</span>
+                    <q-tooltip>{{ props.row.value }}</q-tooltip>
+                </span>
+                <span v-else>
+                    {{ props.row.value }}
+                </span>
             </q-td>
-            <q-td key="token" :props="props">
-                <q-img v-if="tokenType==='erc20'" class="coin-icon" :src="getIcon(props.row)"/>
+            <q-td key="token" :props="props" class="flex items-center">
                 <AddressField
-                    class="token-name"
-                    :address="props.row.address"
-                    :name="props.row.name"
-                    :truncate="15"
+                    :key="props.row.contract.address"
+                    :address="props.row.contract.address"
+                    :truncate="16"
+                    :highlightAddress="highlightAddress"
+                    @highlight="setHighlightAddress"
                 />
+                <span v-if="tokenType === 'erc1155'" class="q-pl-xs" >
+                    #{{ truncatedId(props.row.id) }}
+                    <q-tooltip>{{ props.row.id }}</q-tooltip>
+                </span>
+            </q-td>
+        </q-tr>
+    </template>
+</q-table>
+<q-table
+    v-else
+    v-model:pagination="pagination"
+    :rows="loadingRows"
+    :row-key="row => row.hash"
+    :columns="columns"
+    :rows-per-page-label="$t('global.records_per_page')"
+    :rows-per-page-options="[10, 20, 50]"
+>
+    <template v-slot:header="props">
+        <q-tr :props="props">
+            <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+            >
+                <div
+                    v-if="col.name==='date'"
+                    class="u-flex--center-y"
+                    @click="toggleDateFormat"
+                >
+                    <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
+
+                    <q-icon
+                        class="info-icon"
+                        name="far fa-question-circle"
+                    >
+                        <q-tooltip anchor="bottom middle" self="bottom middle">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
+                    </q-icon>
+                </div>
+                <div v-else class="u-flex--center-y">
+                    {{ col.label }}
+                </div>
+
+            </q-th>
+        </q-tr>
+    </template>
+
+    <template v-slot:body="">
+        <q-tr>
+            <q-td key="hash" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="date" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="direction" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="from" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="to" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="value" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="token" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
             </q-td>
         </q-tr>
     </template>
 </q-table>
 </template>
 
-<style lang='sass' scoped>
-.coin-icon
-  width: 20px
-  margin-right: .25rem
-  vertical-align: middle
+<style lang='scss' scoped>
+.direction {
+  user-select: none;
+  padding: 3px 6px;
+  border-radius: 5px;
+  font-size: 0.9em;
 
-.token-name
-  vertical-align: middle
-  display: inline-block
+  &.in {
+    color: rgb(0, 161, 134);
+    background: rgba(0, 161, 134, 0.1);
+    border: 1px solid rgb(0, 161, 134);
+  }
+
+  &.out {
+    color: #cc9a06 !important;
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid #cc9a06 !important;
+  }
+}
+
+.nft-icon {
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+  border-radius: 100%;
+}
+
+.coin-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: .25rem;
+  vertical-align: middle;
+  border-radius: 100%;
+}
+
+.token-name {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.info-icon{
+    margin-left: .25rem;
+}
+
 </style>

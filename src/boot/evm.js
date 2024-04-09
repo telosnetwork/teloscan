@@ -1,10 +1,8 @@
 import { boot } from 'quasar/wrappers';
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';
-import ContractManager from 'src/lib/ContractManager';
 import fetch from 'node-fetch';
 import axios from 'axios';
 import { ethers } from 'ethers';
-import { markRaw } from 'vue';
 
 const evm = new TelosEvmApi({
     endpoint: process.env.NETWORK_EVM_ENDPOINT,
@@ -42,14 +40,12 @@ const hyperion = axios.create({
     baseURL: process.env.NETWORK_EVM_ENDPOINT,
 });
 
-const contractManager = new ContractManager(hyperion);
-contractManager.init();
+const providerManager = new ProviderManager();
 
 export default boot(({ app, store }) => {
-    store.$providerManager = app.config.globalProperties.$providerManager = new ProviderManager();
+    store.$providerManager = app.config.globalProperties.$providerManager = providerManager;
     store.$evm = app.config.globalProperties.$evm = evm;
     store.$evmEndpoint = app.config.globalProperties.$evmEndpoint = hyperion;
-    store.$contractManager = app.config.globalProperties.$contractManager = markRaw(contractManager);
 });
 
-export { evm };
+export { evm, providerManager };

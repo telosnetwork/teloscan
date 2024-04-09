@@ -1,335 +1,557 @@
-<script>
-import AddressField from 'components/AddressField';
-import BlockField from 'components/BlockField';
-import DateField from 'components/DateField';
-import TransactionField from 'components/TransactionField';
-import MethodField from 'components/MethodField';
-import { formatWei } from 'src/lib/utils';
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+<script lang="ts" setup>
+import { useQuasar } from 'quasar';
+import { useRoute, useRouter } from 'vue-router';
+import { onBeforeMount, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { BigNumber } from 'ethers/lib/ethers';
 
-export default {
-    name: 'TransactionTable',
-    components: {
-        TransactionField,
-        DateField,
-        BlockField,
-        AddressField,
-        MethodField,
-    },
-    props: {
-        title: {
-            type: String,
-            required: true,
-        },
-        filter: {
-            type: Object,
-            default: () => ({}),
-        },
-        initialPageSize: {
-            type: Number,
-            default: 1,
-        },
-    },
-    data() {
-        const columns = [
-            {
-                name: 'hash',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'block',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'date',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'method',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'from',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'to',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'value',
-                label: '',
-                align: 'left',
-            },
-        ];
+import { contractManager, indexerApi } from 'src/boot/telosApi';
+import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
+import { WEI_PRECISION } from 'src/lib/utils';
 
-        return {
-            rows: [],
-            columns,
-            filterUpdated: false,
-            transactions: [],
-            pageSize: this.initialPageSize,
-            total: null,
-            loading: false,
-            pagination: {
-                sortBy: 'date',
-                descending: true,
-                page: 1,
-                rowsPerPage: 10,
-                rowsNumber: 0,
-            },
-            page_size_options: [10, 20, 50],
-            showDateAge: true,
-        };
-    },
-    async created() {
-        // initialization of the translated texts
-        this.columns[0].label = this.$t('components.tx_hash');
-        this.columns[1].label = this.$t('components.block');
-        this.columns[2].label = this.$t('components.date');
-        this.columns[3].label = this.$t('components.method');
-        this.columns[4].label = this.$t('components.from');
-        this.columns[5].label = this.$t('components.to_interacted_with');
-        this.columns[6].label = this.$t('components.value_transfer');
-    },
-    watch: {
-        '$route.query.page': {
-            handler(_pag) {
-                let pag = _pag;
-                let page = 1;
-                let size = this.page_size_options[0];
+import AddressField from 'components/AddressField.vue';
+import BlockField from 'components/BlockField.vue';
+import DateField from 'components/DateField.vue';
+import MethodField from 'components/MethodField.vue';
+import TransactionDialog from 'components/TransactionDialog.vue';
+import TransactionField from 'components/TransactionField.vue';
+import TransactionFeeField from 'components/TransactionFeeField.vue';
 
-                // we also allow to pass a single number as the page number
-                if (typeof pag === 'number') {
-                    page = pag;
-                } else if (typeof pag === 'string') {
-                    // we also allow to pass a string of two numbers: 'page,rowsPerPage'
-                    const [p, s] = pag.split(',');
-                    page = p;
-                    size = s;
+import { Pagination } from 'src/types';
+
+const $q = useQuasar();
+const route = useRoute();
+const router = useRouter();
+const $i18n = useI18n();
+const { t: $t } = $i18n;
+const locale = $i18n.locale.value;
+
+const FIVE_HUNDRED_K = 500000;
+
+interface Props {
+    title?: string;
+    initialPageSize?: number,
+    block?: number,
+    accountAddress?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+    title: '',
+    initialPageSize: 1,
+    accountAddress: '',
+});
+
+const rows = ref<Array<any>>([]);
+const loadingRows = ref<Array<number>>([]);
+const loading =  ref(false);
+const showDateAge = ref(true);
+const showTotalGasFee = ref(true);
+const highlightMethod = ref('');
+const highlightAddress = ref('');
+const totalRows = ref(0);
+
+const transactions: any[] = [];
+const page_size_options = [10, 25, 50, 100];
+
+const pagination = ref<Pagination>(
+    {
+        sortBy: 'block',
+        descending: true,
+        page: 1,
+        rowsPerPage: 50,
+        rowsNumber: 0,
+    },
+);
+
+const columns = [
+    {
+        name: 'preview',
+        label: '',
+        align: 'center',
+    },
+    {
+        name: 'hash',
+        label: $t('components.tx_hash'),
+        align: 'left',
+    },
+    {
+        name: 'method',
+        label: $t('components.method'),
+        align: 'left',
+    },
+    {
+        name: 'block',
+        label: $t('components.block'),
+        align: 'left',
+        sortable: true,
+    },
+    {
+        name: 'date',
+        label: $t('components.age'),
+        align: 'left',
+    },
+    {
+        name: 'from',
+        label: $t('components.from'),
+        align: 'left',
+    },
+    {
+        name: 'to',
+        label: $t('components.to_interacted_with'),
+        align: 'left',
+    },
+    {
+        name: 'value',
+        label: $t('components.value'),
+        align: 'left',
+    },
+    {
+        name: 'fee',
+        label: `${$t('components.txn_fee')} (TLOS)`,
+        align: 'right',
+    },
+];
+
+watch(() => route.query,
+    (query) => {
+        const { p, rowsPerPage, sort } = query;
+
+        let page = p ? Number(p) : 1;
+        let size = rowsPerPage ? Number(rowsPerPage) : pagination.value.rowsPerPage;
+        let desc = sort ? sort === 'DESC' : true;
+
+        setPagination(page, size, desc);
+    },
+    { immediate: true },
+);
+
+function setPagination(page: number, size: number, desc: boolean) {
+    if (page) {
+        pagination.value.page = page;
+    }
+    if (size) {
+        pagination.value.rowsPerPage = size;
+    }
+    pagination.value.descending = desc;
+    parseTransactions();
+}
+
+async function onPaginationChange(settings: { pagination: Pagination}) {
+    const { page, rowsPerPage, descending } = settings.pagination;
+    // we need to change the URL to keep the pagination state by changing the route.query.page
+    // with a string like 'page,rowsPerPage'
+    router.push({
+        // taking care to preserve the current #hash anchor and the current query parameters
+        hash: window.location.hash,
+        query: {
+            ...route.query,
+            p: page,
+            rowsPerPage,
+            sort: descending ? 'DESC' : 'ASC',
+        },
+    });
+}
+
+async function parseTransactions() {
+    if (loading.value) {
+        return;
+    }
+    loading.value = true;
+    const { page, rowsPerPage, sortBy, descending } = pagination.value;
+
+
+    try {
+        let response = await indexerApi.get(getPath());
+        totalRows.value = response.data?.total_count;
+        const results = response.data.results.slice(0, FIVE_HUNDRED_K);
+
+        if (pagination.value.rowsNumber === 0) {
+            pagination.value.rowsNumber = response.data?.total_count > FIVE_HUNDRED_K ? FIVE_HUNDRED_K : response.data?.total_count;
+        }
+
+        pagination.value.page = page;
+        pagination.value.rowsPerPage = rowsPerPage;
+        pagination.value.sortBy = sortBy;
+        pagination.value.descending = descending;
+
+        transactions.splice(
+            0,
+            transactions.length,
+            ...results,
+        );
+        rows.value = transactions;
+        for (const transaction of transactions) {
+            try {
+                if (transaction.input === '0x') {
+                    continue;
+                }
+                if(!transaction.to) {
+                    continue;
                 }
 
-                this.setPagination(page, size);
-            },
-            immediate: true,
-        },
-        filter: {
-            async handler() {
-                if (!this.filterUpdated) {
-                    this.filterUpdated = true;
-                    return;
+                addEmptyToCache(response.data.contracts, transaction);
+
+                const contract = await contractManager.getContract(transaction.to);
+
+                if (!contract) {
+                    continue;
                 }
-                await this.onRequest({ pagination: this.pagination });
-            },
-        },
-    },
-    methods: {
-        setPagination(page, size) {
-            if (page) {
-                this.pagination.page = Number(page);
-            }
-            if (size) {
-                this.pagination.rowsPerPage = Number(size);
-            }
-            this.onRequest({
-                pagination: this.pagination,
-            });
-        },
-        async onPaginationChange(props) {
-            const { page, rowsPerPage } = props.pagination;
 
-            // we need to change the URL to keep the pagination state by changing the this.$route.query.page
-            // with a string like 'page,rowsPerPage'
-            this.$router.push({
-                // taking care to preserve the current #hash anchor and the current query parameters
-                hash: window.location.hash,
-                query: {
-                    ...this.$route.query,
-                    page: `${page},${rowsPerPage}`,
-                },
-            });
-        },
-        async onRequest(props) {
-            this.loading = true;
-
-            const { page, rowsPerPage, sortBy, descending } = props.pagination;
-            let result = await this.$evmEndpoint.get(this.getPath(props));
-
-            if (this.total === null) {
-                this.pagination.rowsNumber = result.data.total.value;
-            }
-
-            this.pagination.page = page;
-            this.pagination.rowsPerPage = rowsPerPage;
-            this.pagination.sortBy = sortBy;
-            this.pagination.descending = descending;
-            this.transactions = result.data.transactions;
-            for (const transaction of this.transactions) {
-                try {
-                    transaction.transfer = false;
-                    transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
-                    if (transaction.input_data === '0x') {
-                        continue;
-                    }
-                    if(!transaction.to) {
-                        continue;
-                    }
-
-                    const contract = await this.$contractManager.getContract(
-                        transaction.to,
-                    );
-
-                    if (!contract) {
-                        continue;
-                    }
-
-                    const parsedTransaction = await contract.parseTransaction(
-                        transaction.input_data,
-                    );
-                    if (parsedTransaction) {
-                        transaction.parsedTransaction = parsedTransaction;
-                        transaction.contract = contract;
-                    }
-                    // Get ERC20 transfer from main function call
-                    let signature = transaction.input_data.substring(0, 10);
-                    if (
-                        signature &&
-                        TRANSFER_SIGNATURES.includes(signature) &&
-                        transaction.parsedTransaction.args['amount']
-                    ) {
-                        let token = await this.$contractManager.getTokenData(transaction.to, 'erc20');
-                        if(transaction.contract && token && token.decimals){
-                            transaction.transfer = {
-                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], token.decimals)}`,
-                                'symbol': token.symbol,
-                            };
-                        }
-                    }
-                } catch (e) {
-                    console.error(
-                        `Failed to parse data for transaction, error was: ${e.message}`,
-                    );
-                    // notifiy user
-                    this.$q.notify({
-                        message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
-                        color: 'negative',
-                        position: 'top',
-                        timeout: 5000,
-                    });
+                const parsedTransaction = await contractManager.parseContractTransaction(
+                    transaction, transaction.input, contract, true,
+                );
+                if (parsedTransaction) {
+                    transaction.parsedTransaction = parsedTransaction;
                 }
+                transaction.contract = contract;
+            } catch (e: any) {
+                console.error(
+                    `Failed to parse data for transaction, error was: ${e.message}`,
+                );
+                $q.notify({
+                    message: $t('components.failed_to_parse_transaction', { message: e.message }),
+                    color: 'negative',
+                    position: 'top',
+                    timeout: 5000,
+                });
             }
-            this.rows = this.transactions;
-            this.loading = false;
-        },
-        getPath(props) {
-            const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/v2/evm/get_transactions?limit=${
-                rowsPerPage === 0 ? 500 : rowsPerPage
-            }`;
-            const filter = Object.assign({}, this.filter ? this.filter : {});
-            if (filter.address) {
-                path += `&address=${filter.address}`;
-            }
+        }
+        loading.value = false;
+        rows.value = transactions;
+    } catch (e: any) {
+        $q.notify({
+            type: 'negative',
+            message: $t('components.transaction.load_error'),
+            caption: e.message,
+        });
+        loading.value = false;
+    }
+}
 
-            if (filter.block) {
-                path += `&block=${filter.block}`;
-            }
+function addEmptyToCache(contracts: any, transaction: any){
+    let found_to = 0;
+    let found_from = 0;
+    for(const contract in contracts){
+        if(contract.toLowerCase() === transaction.to.toLowerCase()) {
+            found_to++;
+        }
+        if(contract.toLowerCase() === transaction.from.toLowerCase()) {
+            found_from++;
+        }
+    }
+    if(found_from === 0){
+        contractManager.addContractToCache(transaction.from, { 'address': transaction.from });
+    }
+    if(found_to === 0){
+        contractManager.addContractToCache(transaction.to, { 'address': transaction.to });
+    }
+}
 
-            if (filter.hash) {
-                path += `&hash=${filter.hash}`;
-            }
+function getPath() {
+    const { page, rowsPerPage, descending } = pagination.value;
+    const prepend = props.accountAddress ? `address/${props.accountAddress}` : '';
+    let path = `${prepend}/transactions?limit=${
+        rowsPerPage === 0 ? 500 : rowsPerPage
+    }`;
+    path += `&offset=${(page - 1) * rowsPerPage}`;
+    path += `&sort=${descending ? 'desc' : 'asc'}`;
+    path += (pagination.value.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
+    if (props.block) {
+        if (props.accountAddress) {
+            path += `&startBlock=${props.block}&endBlock=${props.block}`;
+        } else {
+            path += `&block=${props.block}`;
+        }
+    }
+    return path;
+}
 
-            path += `&skip=${(page - 1) * rowsPerPage}`;
-            path += `&sort=${descending ? 'desc' : 'asc'}`;
+function toggleDateFormat() {
+    showDateAge.value = !showDateAge.value;
+}
 
-            return path;
-        },
-        toggleDateFormat() {
-            this.showDateAge = !this.showDateAge;
-        },
-    },
+function toggleGasValue() {
+    showTotalGasFee.value = !showTotalGasFee.value;
+}
+
+function setHighlightMethod(val: string) {
+    highlightMethod.value = val;
+}
+
+function setHighlightAddress(val: string) {
+    highlightAddress.value = val;
+}
+
+function getValueDisplay(value: string) {
+    return prettyPrintCurrency(
+        BigNumber.from(value),
+        4,
+        locale,
+        false,
+        'TLOS',
+        false,
+        WEI_PRECISION,
+        false,
+    );
+}
+
+const updateLoadingRows = () => {
+    loadingRows.value = [];
+    for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
+        loadingRows.value.push(i);
+    }
 };
+
+watch(() => pagination.value.rowsPerPage, () => {
+    updateLoadingRows();
+});
+
+onBeforeMount(() => {
+    updateLoadingRows();
+});
+
+
 </script>
 
 <template>
-<q-table
-    v-model:pagination="pagination"
-    :rows="rows"
-    :row-key="row => row.hash"
-    :columns="columns"
-    :loading="loading"
-    :rows-per-page-options="page_size_options"
-    flat
-    @request="onPaginationChange"
->
-    <template v-slot:header="props">
-        <q-tr :props="props">
-            <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div class="u-flex--center-y">
-                    {{ col.label }}
-                    <template v-if="col.name === 'date'">
-                        <q-icon
-                            class="info-icon"
-                            name="fas fa-info-circle"
-                            @click="toggleDateFormat"
-                        >
-                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
-                                {{ $t('components.click_to_change_format') }}
-                            </q-tooltip>
-                        </q-icon>
-                    </template>
-                    <template v-if="col.name === 'method'">
-                        <q-icon class="info-icon" name="fas fa-info-circle" />
+
+<div v-if="totalRows >= FIVE_HUNDRED_K">
+    <div  class="c-transaction-table__limit-text">
+        {{ $t('pages.transactions.five_hundred_k_disclaimer', { total: totalRows.toLocaleString(locale) }) }}
+    </div>
+</div>
+
+
+<q-card>
+    <q-table
+        v-if="!loading"
+        v-model:pagination="pagination"
+        :rows="rows"
+        :binary-state-sort="true"
+        :rows-per-page-label="$t('global.records_per_page')"
+        :row-key="row => row.hash"
+        :columns="(columns as any)"
+        :rows-per-page-options="page_size_options"
+        @request="onPaginationChange"
+    >
+        <template v-slot:header="props">
+            <q-tr :props="props">
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                    class="c-transaction-table__cell"
+                >
+                    <div v-if="col.name === 'preview'" class="u-flex--center">
+                        <q-icon class="info-icon" name="far fa-question-circle"/>
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('pages.transactions.see_tx_preview_tooltip') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
+                        <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
+                        <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-else-if="col.name === 'method'" class="u-flex--center-y">
+                        {{ col.label }}
+                        <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
                         <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
                             {{ $t('components.executed_based_on_decoded_data') }}
                         </q-tooltip>
+                    </div>
+                    <div v-else-if="col.name === 'fee'" class="u-flex--center-y" @click="toggleGasValue">
+                        <a>{{ showTotalGasFee ? col.label : $t('components.gas_price') }}</a>
+                        <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
+                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                            {{ showTotalGasFee ? $t('components.gas_price_tlos') : $t('components.gas_price_gwei') }}
+                        </q-tooltip>
+                    </div>
+                    <template v-else>
+                        {{ col.label }}
                     </template>
-                </div>
-            </q-th>
-        </q-tr>
-    </template>
-    <template v-slot:body="props">
-        <q-tr :props="props">
-            <q-td key="hash" :props="props">
-                <TransactionField :transaction-hash="props.row.hash"/>
-            </q-td>
-            <q-td key="block" :props="props">
-                <BlockField :block="props.row.block"/>
-            </q-td>
-            <q-td key="date" :props="props">
-                <DateField :epoch="props.row.epoch" :force-show-age="showDateAge"/>
-            </q-td>
-            <q-td key="method" :props="props">
-                <MethodField v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"/>
-            </q-td>
-            <q-td key="from" :props="props">
-                <AddressField v-if="props.row.from" :address="props.row.from"/>
-            </q-td>
-            <q-td key="to" :props="props">
-                <AddressField
-                    v-if="props.row.to"
-                    :key="props.row.to + ((props.row.contract) ? '1' : '0')"
-                    :address="props.row.to"
-                    :isContractTrx="!!(props.row.contract)"
-                />
-            </q-td>
-            <q-td key="value" :props="props">
-                <span v-if="props.row.value > 0 ||  !props.row.transfer ">
-                    {{ props.row.value }} TLOS
-                </span>
-                <div v-else>
-                    <span v-if="props.row.transfer">
-                        {{ props.row.transfer.value }} {{ props.row.transfer.symbol }}
-                    </span>
-                </div>
-            </q-td>
-        </q-tr>
-    </template>
-</q-table>
+                </q-th>
+            </q-tr>
+        </template>
+        <template v-slot:body="props">
+            <q-tr :key="props.row.hash + props.row.parsedTransaction?.transfers?.length" :props="props">
+                <q-td key="preview" :props="props" class="c-transaction-table__cell">
+                    <div class="flex items-center">
+                        <TransactionDialog :trx="props.row" />
+                    </div>
+                </q-td>
+                <q-td key="hash" :props="props" class="c-transaction-table__cell">
+                    <div class="c-transaction-table__hash-column flex items-center">
+                        <TransactionField
+                            color="primary"
+                            :transaction-hash="props.row.hash"
+                            :status="props.row.status === '0x1'"
+                            :truncate="18"
+                        />
+                    </div>
+                </q-td>
+                <q-td key="method" :props="props" class="c-transaction-table__cell">
+                    <MethodField
+                        :trx="props.row"
+                        :shortenName="true"
+                        :highlightMethod="highlightMethod"
+                        @highlight="setHighlightMethod"
+                    />
+                </q-td>
+                <q-td key="block" :props="props" class="c-transaction-table__cell">
+                    <BlockField :block="props.row.blockNumber"/>
+                </q-td>
+                <q-td key="date" :props="props" @click="toggleDateFormat">
+                    <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
+                </q-td>
+                <q-td key="from" :props="props" class="c-transaction-table__cell">
+                    <AddressField
+                        v-if="props.row.from"
+                        :key="'trx-from-'+ props.row.from"
+                        :address="props.row.from"
+                        :truncate="12"
+                        :copy="true"
+                        :highlightAddress="highlightAddress"
+                        @highlight="setHighlightAddress"
+                    />
+                </q-td>
+                <q-td key="to" :props="props" class="c-transaction-table__cell">
+                    <AddressField
+                        v-if="props.row.to"
+                        :key="'trx-to-'+ props.row.to"
+                        :address="props.row.to"
+                        :truncate="12"
+                        :copy="true"
+                        :highlightAddress="highlightAddress"
+                        @highlight="setHighlightAddress"
+                    />
+                </q-td>
+                <q-td key='value' :props="props" class="c-transaction-table__cell">
+                    {{ getValueDisplay(props.row.value) }}
+                </q-td>
+                <q-td key='fee' :props="props" class="c-transaction-table__cell">
+                    <TransactionFeeField
+                        :showTotalGasFee="showTotalGasFee"
+                        :gasUsed="props.row.gasused ?? props.row.gasUsed"
+                        :gasPrice="props.row.gasPrice"
+                    />
+                </q-td>
+            </q-tr>
+        </template>
+    </q-table>
+    <q-table
+        v-else
+        v-model:pagination="pagination"
+        :rows="loadingRows"
+        :rows-per-page-label="$t('global.records_per_page')"
+        :columns="(columns as any)"
+        :rows-per-page-options="page_size_options"
+    >
+        <template v-slot:header="props">
+            <q-tr :props="props">
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                    class="c-transaction-table__cell"
+                >
+                    <div v-if="col.name === 'preview'" class="u-flex--center">
+                        <q-icon class="info-icon" name="far fa-question-circle"/>
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('pages.transactions.see_tx_preview_tooltip') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
+                        <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
+                        <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-else-if="col.name === 'method'" class="u-flex--center-y">
+                        {{ col.label }}
+                        <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
+                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                            {{ $t('components.executed_based_on_decoded_data') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-else-if="col.name === 'fee'" class="u-flex--center-y" @click="toggleGasValue">
+                        <a>{{ showTotalGasFee ? col.label : $t('components.gas_price') }}</a>
+                        <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
+                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                            {{ showTotalGasFee ? $t('components.gas_price_tlos') : $t('components.gas_price_gwei') }}
+                        </q-tooltip>
+                    </div>
+                    <template v-else>
+                        {{ col.label }}
+                    </template>
+                </q-th>
+            </q-tr>
+        </template>
+        <template v-slot:body="">
+            <q-tr>
+                <q-td key="preview" class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="hash" class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="method" class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="block"  class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="date">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="from"  class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="to"  class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key='value' class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key='fee' class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+            </q-tr>
+        </template>
+    </q-table>
+</q-card>
+
 </template>
+<style lang="scss">
+// quasar override
+.sortable {
+    height: 60px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.c-transaction-table {
+    &__limit-text {
+        height: 26px;
+        color: var(--text-color);
+        font-size: 0.8rem;
+        text-align: left;
+        margin-bottom: 12px;
+    }
+
+    &__hash-column{
+        min-width: 130px;
+    }
+
+    &__cell {
+        padding: 7px 13px !important;
+    }
+}
+</style>
+
+

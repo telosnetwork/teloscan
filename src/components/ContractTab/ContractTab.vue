@@ -1,168 +1,121 @@
-<script>
-import Web3 from 'web3';
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 
-import ContractSource from 'components/ContractTab/ContractSource';
-import ContractInterface from 'components/ContractTab/ContractInterface';
+import ContractSource from 'components/ContractTab/ContractSource.vue';
+import ContractInterface from 'components/ContractTab/ContractInterface.vue';
 import CopyButton from 'components/CopyButton.vue';
 
-const TABS = {
-    source: 'source',
-    read: 'read',
-    write: 'write',
-    proxyRead: 'proxyRead',
-    proxyWrite: 'proxyWrite',
-};
+const props = defineProps({
+    contract: {
+        type: Object,
+        default: () => ({}),
+    },
+});
 
-export default {
-    name: 'ContractTab',
-    components: {
-        ContractSource,
-        ContractInterface,
-        CopyButton,
-    },
-    props: {
-        contract: {
-            type: Object,
-            default: () => ({}),
-        },
-    },
-    data: () => ({
-        selectedTab: TABS.source,
-        loading: true,
-        proxyContractAddress: '',
-        TABS,
-        contractInterfaceKey: 0,
-    }),
-    mounted() {
-        this.checkIsProxy();
-    },
-    computed: {
-        contractAddress() {
-            return this.contract?.address ?? '';
-        },
-        abi() {
-            const { abi } = this.contract;
+const source = ref(props.contract.abi?.length > 0);
+const write = ref(false);
 
-            if (!Array.isArray(abi)) {
-                return '';
-            }
+const verified = computed(() => props.contract.verified);
+const abi = computed(() => {
+    if (!props.contract.abi || !Array.isArray(props.contract.abi)) {
+        return false;
+    }
+    return JSON.stringify(props.contract.abi);
+});
 
-            return JSON.stringify(this.contract.abi);
-        },
-        contractIsProxy() {
-            return !!this.proxyContractAddress;
-        },
-    },
-    watch: {
-        contractAddress() {
-            this.checkIsProxy();
-        },
-    },
-    methods: {
-        async checkEIP1967Implementation() {
-            if (!this.contractAddress) {
-                return '';
-            }
+const codeSelected = computed(() => source.value === true);
+const readSelected = computed(() => source.value === false && write.value === false);
+const writeSelected = computed(() => source.value === false && write.value === true);
 
-            const web3 = new Web3(process.env.NETWORK_EVM_RPC);
-
-            // Slot for the implementation address
-            // equivalent to `keccak256("eip1967.proxy.implementation") - 1`
-            const implementationSlot = '0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc';
-            const implementationAddressBytes = await web3.eth.getStorageAt(this.contractAddress, implementationSlot);
-            // Extract the last 40 characters (20 bytes) to get the actual address
-            return implementationAddressBytes !== '0x0' ? '0x' + implementationAddressBytes.slice(-40) : '';
-        },
-        async checkIsProxy() {
-            this.loading = true;
-            this.proxyContractAddress = await this.checkEIP1967Implementation();
-            this.loading = false;
-        },
-        getImplContractAddress() {
-            return (
-                [TABS.proxyWrite, TABS.proxyRead].includes(this.selectedTab) &&
-                this.proxyContractAddress
-            ) ? this.proxyContractAddress : null;
-        },
-        async handleFunctionRun() {
-            if (this.proxyContractAddress) {
-                await this.checkIsProxy();
-                this.contractInterfaceKey += 1;
-            }
-        },
-    },
-};
 </script>
 
 <template>
-<div class="contract-tab">
-    <div v-if="loading" class="text-center">
-        <q-spinner
-            size="md"
-            class="q-ma-xl"
-        />
-    </div>
-
-    <template v-else>
-        <CopyButton
-            v-if="abi"
-            :text="abi"
-            :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
-            class="q-mb-md"
-        />
-
-        <br>
-
-        <q-btn-group>
-            <q-btn
-                :outline="selectedTab === TABS.source"
-                :label="$t('components.contract_tab.code')"
-                push
-                @click="selectedTab = TABS.source"
+<q-card>
+    <div v-if="abi" :key="contract.address + abi.length" class="c-contract">
+        <div class="flex justify-between items-center">
+            <div class="c-contract__tab-container">
+                <q-btn
+                    :label="$t('components.contract_tab.code')"
+                    :class="{
+                        'c-contract__tab': true,
+                        'c-contract__tab--active': codeSelected,
+                    }"
+                    @click="source = true; write = false"
+                />
+                <q-btn
+                    :label="$t('components.contract_tab.read')"
+                    :class="{
+                        'c-contract__tab': true,
+                        'c-contract__tab--active': readSelected,
+                    }"
+                    @click="source = false; write = false"
+                />
+                <q-btn
+                    :label="$t('components.contract_tab.write')"
+                    :class="{
+                        'c-contract__tab': true,
+                        'c-contract__tab--active': writeSelected,
+                    }"
+                    @click="source = false; write = true"
+                />
+            </div>
+            <CopyButton
+                v-if="verified && !contract?.autoloadedAbi"
+                :text="abi"
+                :accompanying-text="$t('components.contract_tab.copy_abi_to_clipboard')"
             />
-            <q-btn
-                :outline="selectedTab === TABS.read"
-                :label="$t('components.contract_tab.read')"
-                push
-                @click="selectedTab = TABS.read"
-            />
-            <q-btn
-                :outline="selectedTab === TABS.write"
-                :label="$t('components.contract_tab.write')"
-                push
-                @click="selectedTab = TABS.write"
-            />
-            <q-btn
-                v-if="contractIsProxy"
-                :outline="selectedTab === TABS.proxyRead"
-                :label="$t('components.contract_tab.read_as_proxy')"
-                push
-                @click="selectedTab = TABS.proxyRead"
-            />
-            <q-btn
-                v-if="contractIsProxy"
-                :outline="selectedTab === TABS.proxyWrite"
-                :label="$t('components.contract_tab.write_as_proxy')"
-                push
-                @click="selectedTab = TABS.proxyWrite"
-            />
-        </q-btn-group>
-
-        <ContractSource v-if="selectedTab === TABS.source" />
+        </div>
+        <ContractSource v-if="source" :contract="contract"/>
         <ContractInterface
             v-else
-            :key="contractInterfaceKey"
-            :write="[TABS.write, TABS.proxyWrite].includes(selectedTab)"
-            :implementation-contract-address="getImplContractAddress()"
-            @function-run="handleFunctionRun"
+            :write="write"
+            :contract="contract"
         />
-    </template>
-</div>
+    </div>
+</q-card>
+
 </template>
 
-<style lang='sass'>
-.contract-tab
-    margin-left: 2rem
-    margin-right: 2rem
-    padding-top: 1rem
+<style lang='scss' scoped>
+.c-contract{
+    padding-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    &__tab-container{
+        display: inline-flex;
+        gap: .5rem;
+    }
+
+    &__tab{
+        cursor: pointer;
+        border-radius: 5px;
+        color: var(--text-color);
+        text-transform: capitalize !important;
+        background-color: var(--tab-bg-color);
+
+        &:hover{
+            color: var(--text-color);
+        }
+
+        &--active {
+            color: var(--active-tab-text-color);
+            background-color: var(--active-tab-bg-color);
+        }
+    }
+
+    .vjs-tree-list-holder-inner {
+        padding-bottom: 20px;
+    }
+}
+
+@media screen and (max-width: 764px) {
+    .c-contract > .items-center .c-copy-button {
+        margin-top: 12px;
+    }
+
+    .c-contract > .items-center {
+        display: block;
+    }
+}
 </style>

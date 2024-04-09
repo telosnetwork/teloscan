@@ -1,10 +1,11 @@
 import { WEI_PRECISION } from 'src/lib/utils';
+import DEFAULT_TOKEN_LOGO from 'assets/logo--teloscan.png';
 
 /**
  * Launches a prompt in MetaMask to add a given token as a tracked token, allowing the user to view their balance of
  * that token at a glance from MetaMask
  *
- * @param {object}    $q - a quasar instance, given from within a component at this.$q
+ * @param {object}    $q - a quasar instance, given from within a component by  useQuasar()
  * @param {string}    address - the address of the token contract
  * @param {string}    symbol - the token's ticker symbol, e.g. 'STLOS'
  * @param {string}    image - permalink url of the token's icon
@@ -39,4 +40,14 @@ export async function promptAddToMetamask(
             color: 'negative',
         });
     });
+}
+export function getIcon(logoURI) {
+    if (logoURI && logoURI !== '') {
+        if (logoURI.startsWith('ipfs://')) {
+            return logoURI.replace(/ipfs:\/\//, 'https://ipfs.io/ipfs/');
+        }
+        return logoURI;
+    } else {
+        return DEFAULT_TOKEN_LOGO;
+    }
 }

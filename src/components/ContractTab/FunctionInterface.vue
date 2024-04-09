@@ -7,8 +7,10 @@ import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
 import { LOGIN_DATA_KEY } from 'src/lib/utils';
-
-
+import { useAccountStore } from 'src/antelope';
+import { CURRENT_CONTEXT } from 'src/antelope/wallets';
+import { EvmABI, EvmFunctionParam } from 'src/antelope/types';
+import { WEI_PRECISION } from 'src/antelope/wallets/utils';
 import {
     asyncInputComponents,
     getComponentForInputType,
@@ -20,14 +22,10 @@ import {
     parameterTypeIsBoolean,
     parameterTypeIsSignedIntArray,
     parameterTypeIsUnsignedIntArray,
-} from 'components/ContractTab/function-interface-utils';
+} from 'src/lib/function-interface-utils';
 
 import TransactionField from 'src/components/TransactionField.vue';
-import { useAccountStore } from 'src/antelope';
-import { CURRENT_CONTEXT } from 'src/antelope/wallets';
-import { EvmABI, EvmFunctionParam } from 'src/antelope/types';
-import { WEI_PRECISION } from 'src/antelope/wallets/utils';
-
+import LoginModal from 'components/LoginModal.vue';
 
 interface Opts {
     value?: string;
@@ -42,6 +40,7 @@ export default defineComponent({
     components: {
         ...asyncInputComponents,
         TransactionField,
+        LoginModal,
     },
     props: {
         contract: {
@@ -56,13 +55,7 @@ export default defineComponent({
             type: String,
             default: null,
         },
-        implementationContractAddress: {
-            type: String,
-            default: null,
-        },
     },
-    // emitted when a fn on the contract is run; for proxy contracts, this is used to check if the implementation contract has changed
-    emits: ['functionRun'],
     data : () => {
         const decimalOptions = [{
             label: '18 - TLOS/ETH/etc..',
@@ -101,6 +94,7 @@ export default defineComponent({
                 'type': 'amount',
                 'internalType': 'amount',
             },
+            showLoginModal: false,
         };
     },
     async created() {
@@ -110,8 +104,8 @@ export default defineComponent({
     computed: {
         ...mapGetters('login', [
             'address',
-            'isLoggedIn',
             'isNative',
+            'isLoggedIn',
             'nativeAccount',
         ]),
         functionABI(){
@@ -175,9 +169,6 @@ export default defineComponent({
                 handleValueParsed:      (type: string, index: number, value: EvmFunctionParam) => handleValueParsed(type, index, value),
             }));
         },
-        enableRun() {
-            return this.isLoggedIn || this.abi.stateMutability === 'view';
-        },
         missingInputs() {
             if (this.abi.inputs.length !== this.params.length) {
                 return true;
@@ -216,7 +207,14 @@ export default defineComponent({
         clearAmount() {
             this.amountInput = 0;
         },
+        login() {
+            this.showLoginModal = true;
+        },
         async run() {
+            if (!this.isLoggedIn){
+                this.login();
+                return;
+            }
             this.loading = true;
             this.result = null;
             try {
@@ -249,7 +247,7 @@ export default defineComponent({
             this.endLoading();
         },
         async getEthersFunction(provider?: ethers.providers.JsonRpcSigner | ethers.providers.JsonRpcProvider) {
-            const contractInstance = await (this.implementationContractAddress ? this.contract.getProxyInstance(provider, [this.abi]) : this.contract.getContractInstance(provider));
+            const contractInstance = await this.$contractManager.getContractInstance(this.contract, provider);
             return contractInstance[this.functionABI];
         },
         runRead() {
@@ -318,13 +316,13 @@ export default defineComponent({
                 common: this.$evm.chainConfig,
             });
 
-            this.hash = `0x${tx.hash().toString('hex')}`;
+            this.hash = `0x${tx?.hash().toString('hex')}`;
             this.endLoading();
         },
         async runEVM(opts: Opts) {
             const value = opts.value ? BigNumber.from(opts.value) : undefined;
 
-            // Preparing the message to show while waiting for confirmation.
+            // Preparing the mesage to show while waiting for confirmation.
             const name = this.abi.name;
             const params = this.abi.inputs.length;
             let keyMsg = 'notification.neutral_message_custom_call';
@@ -350,7 +348,6 @@ export default defineComponent({
                 value,
             ).then((result) => {
                 this.hash = result.hash;
-                this.$emit('functionRun');
                 this.endLoading();
             }).catch((error) => {
                 this.result = this.$t(error.message);
@@ -366,6 +363,7 @@ export default defineComponent({
 
 <template>
 <div>
+    <LoginModal :show="showLoginModal" @hide="showLoginModal = false" />
     <q-dialog v-model="enterAmount">
         <q-card class="amount-dialog">
             <div class="q-pa-md">
@@ -392,14 +390,12 @@ export default defineComponent({
                         v-close-popup
                         flat
                         :label="$t('global.ok')"
-                        color="primary"
                         @click="setAmount"
                     />
                     <q-btn
                         v-close-popup
                         flat
                         :label="$t('global.cancel')"
-                        color="primary"
                         @click="clearAmount"
                     />
                 </q-card-actions>
@@ -438,12 +434,11 @@ export default defineComponent({
     </template>
 
     <q-btn
-        v-if="enableRun"
         :loading="loading"
         :label="runLabel"
         :disabled="missingInputs"
         class="run-button q-mb-md"
-        color="secondary"
+        color="primary"
         icon="send"
         @click="run"
     />
@@ -461,7 +456,3 @@ export default defineComponent({
     </div>
 </div>
 </template>
-
-<style lang="scss">
-
-</style>
