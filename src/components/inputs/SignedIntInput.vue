@@ -1,7 +1,7 @@
 <script>
 import { BigNumber } from 'ethers';
 
-import { integerSizeValidator, parseSignedIntString } from 'components/ContractTab/function-interface-utils';
+import { integerSizeValidator, parseSignedIntString } from 'src/lib/function-interface-utils';
 
 import BaseTextInput from 'components/inputs/BaseTextInput';
 

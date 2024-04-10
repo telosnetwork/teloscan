@@ -2,13 +2,20 @@ const routes = [
     {
         path: '',
         component: () => import('layouts/MainLayout.vue'),
-        children: [
-            {
-                path: '',
-                name: 'home',
-                component: () => import('pages/Index.vue'),
-            },
-        ],
+        children: [{
+            path: '',
+            name: 'home',
+            component: () => import('pages/home/HomePage.vue'),
+        }],
+    },
+    {
+        path: '/address/:address/sourcify',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            name: 'sourcify',
+            component: () => import('pages/ContractVerification.vue'),
+        }],
     },
     {
         path: '/address/:address',
@@ -18,7 +25,7 @@ const routes = [
                 path: '',
                 name: 'address',
                 props: route => ({ page: route.query.page, pagesize: route.query.pagesize }),
-                component: () => import('pages/AccountAddress.vue'),
+                component: () => import('pages/AccountPage.vue'),
             },
         ],
     },
@@ -28,7 +35,16 @@ const routes = [
         children: [{
             path: '',
             name: 'transaction',
-            component: () => import('pages/Transaction.vue'),
+            component: () => import('pages/TransactionPage.vue'),
+        }],
+    },
+    {
+        path: '/txs',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            name: 'transactions',
+            component: () => import('pages/TransactionsPage.vue'),
         }],
     },
     {
@@ -37,27 +53,27 @@ const routes = [
         children: [{
             path: '',
             name: 'block',
-            component: () => import('pages/Block.vue'),
+            component: () => import('pages/BlockPage.vue'),
         }],
     },
     {
-        path: '/transactions',
+        path: '/blocks',
         component: () => import('layouts/MainLayout.vue'),
         children: [
             {
                 path: '',
-                name: 'transactions',
-                component: () => import('pages/Transactions.vue'),
+                name: 'blocks',
+                component: () => import('pages/BlockListPage.vue'),
             },
         ],
     },
     {
-        path: '/staking',
+        path: '/holders',
         component: () => import('layouts/MainLayout.vue'),
         children: [{
             path: '',
-            name: 'staking',
-            component: () => import('pages/staking/Staking.vue'),
+            name: 'holders',
+            component: () => import('pages/Holders.vue'),
         }],
     },
     {
@@ -72,18 +88,33 @@ const routes = [
     },
     {
         path: '/health',
-        name: 'health',
         component: () => import('layouts/MainLayout.vue'),
-        children: [{ path: '', component: () => import('pages/HealthPage.vue') }],
+        children: [{
+            path: '',
+            name: 'health',
+            component: () => import('pages/HealthPage.vue'),
+        }],
+    },
+    {
+        path: '/export',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            name: 'export',
+            component: () => import('pages/ErrorNotFoundPage.vue'),
+        }],
     },
     {
         path: '/endpoints',
-        // eslint-disable-next-line no-unused-vars
         redirect: () => ({ path: '/health' }),
     },
     {
         path: '/:catchAll(.*)*',
-        component: () => import('pages/Error404.vue'),
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            component: () => import('pages/ErrorNotFoundPage.vue'),
+        }],
     },
 ];
 

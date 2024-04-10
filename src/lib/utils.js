@@ -1,10 +1,24 @@
 import { BigNumber, ethers } from 'ethers';
 import moment from 'moment';
+
+export const REVERT_FUNCTION_SELECTOR = '0x08c379a0';
+export const REVERT_PANIC_SELECTOR = '0x4e487b71';
+export const ZERO_ADDRESSES = '0x0000000000000000000000000000000000000000';
+export const DEAD_ADDRESSES = [
+    ZERO_ADDRESSES,
+    '0x00000000000000000000000000000000000xdead',
+];
+
+export const ALLOWED_IMAGE_EXTENSIONS = [
+    'svg', 'jpg', 'jpeg', 'gif', 'png', 'webp',
+];
+export const ALLOWED_VIDEO_EXTENSIONS = [
+    'mp4', 'webm', 'ogg',
+];
 import keccak from 'keccak';
-const REVERT_FUNCTION_SELECTOR = '0x08c379a0';
-const REVERT_PANIC_SELECTOR = '0x4e487b71';
 
 export const WEI_PRECISION = 18;
+export const GAS_PRECISION = 9;
 export const DISPLAY_DECIMALS = 4;
 export const LOGIN_EVM = 'evm';
 export const LOGIN_NATIVE = 'native';
@@ -21,13 +35,14 @@ export function formatWei(bn, tokenDecimals, displayDecimals) {
     const amount = BigNumber.from(bn);
     const formatted = ethers.utils.formatUnits(amount.toString(), (tokenDecimals || WEI_PRECISION));
     let str = formatted.toString();
-    // Use string, do not convert to number so we never loose precision
+    str = str.padEnd(str.length + displayDecimals, '0');
     if(displayDecimals > 0 && str.includes('.')) {
         const parts = str.split('.');
         return parts[0] + '.' + parts[1].slice(0, displayDecimals);
     }
     return str;
 }
+
 export function isValidAddressFormat(ethAddressString) {
     const pattern = /^0x[a-fA-F0-9]{40}$/;
     return pattern.test(ethAddressString);
@@ -195,4 +210,49 @@ export function getFormattedUtcOffset(date) {
     const hours = pad(Math.floor(offset / 60));
     const minutes = pad(offset % 60);
     return sign + hours + ':' + minutes;
+}
+
+/**
+ * This functions returns the name of the browser
+ */
+export function getBrowserName() {
+    const userAgent = window.navigator.userAgent;
+    const browsers = {
+        chrome: /chrome/i,
+        safari: /safari/i,
+        firefox: /firefox/i,
+        ie: /internet explorer/i,
+        edge: /edge/i,
+        opera: /opera/i,
+        ios_saf: /version\/(\d).*safari/i,
+    };
+
+    for (const key in browsers) {
+        if (browsers[key].test(userAgent)) {
+            return key;
+        }
+    }
+
+    return 'unknown';
+}
+
+/**
+ * This functions returns true if we are using Firefox
+ */
+export function isFirefox() {
+    return getBrowserName() === 'firefox';
+}
+
+/**
+ * This functions returns true if we are using Safari
+ */
+export function isSafari() {
+    return getBrowserName() === 'safari';
+}
+
+/**
+ * This functions returns true if we are using Chrome
+ */
+export function isChrome() {
+    return getBrowserName() === 'chrome';
 }
