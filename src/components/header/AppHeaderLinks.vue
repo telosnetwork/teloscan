@@ -71,6 +71,10 @@ const moreSubmenuItems = {
     ],
     external: [
         {
+            url: 'https://explorer.telos.net/',
+            label: $t('components.header.native_explorer'),
+        },
+        {
             url: 'https://www.telos.net/ecosystem',
             label: $t('components.header.telos_ecosystem'),
         },

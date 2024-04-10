@@ -391,6 +391,7 @@ export default {
             gas: 'Gas',
             goto_address_details: 'Voir les détails de l\'adresse',
             health_monitor: 'Moniteur de Santé',
+            native_explorer: 'Explorateur natif',
             home: 'Accueil',
             more: 'Plus',
             network: 'Réseau',

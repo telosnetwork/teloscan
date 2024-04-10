@@ -414,6 +414,7 @@ export default {
             gas: 'Gas',
             goto_address_details: 'Adresse/Konto Details öffnen',
             health_monitor: 'Health Monitor',
+            native_explorer: 'Eingeborener Forscher',
             home: 'Heim',
             more: 'Mehr',
             network: 'Netzwerk',

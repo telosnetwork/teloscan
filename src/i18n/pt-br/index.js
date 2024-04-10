@@ -414,6 +414,7 @@ export default {
             gas: 'Gas',
             goto_address_details: 'Ir para detalhes do endereço',
             health_monitor: 'Monitoramento de saúde',
+            native_explorer: 'Explorador Nativo',
             home: 'Início',
             more: 'Mais',
             network: 'Rede',

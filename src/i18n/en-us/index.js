@@ -425,6 +425,7 @@ export default {
             gas: 'Gas',
             goto_address_details: 'Go to address details',
             health_monitor: 'Health Monitor',
+            native_explorer: 'Native Explorer',
             home: 'Home',
             more: 'More',
             network: 'Network',
