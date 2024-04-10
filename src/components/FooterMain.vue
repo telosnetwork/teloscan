@@ -53,7 +53,7 @@ const toTop = () => {
                 <div class="c-footer__column c-footer__column--c">
                     <div class="c-footer__column-title">{{$t('components.footer.build')}}</div>
                     <div class="c-footer__column-items">
-                        <a class="c-footer__column-item" href="http://api.teloscan.io/swagger/">{{$t('components.footer.api_documentation')}}</a>
+                        <a class="c-footer__column-item" href="https://api.teloscan.io/v1/docs">{{$t('components.footer.api_documentation')}}</a>
                         <a class="c-footer__column-item" href="https://docs.telos.net/overview/what-is-telos/introduction/">{{$t('components.footer.telos_documentation')}}</a>
                         <a class="c-footer__column-item" href="https://github.com/telosnetwork">{{$t('components.footer.github')}}</a>
                         <a class="c-footer__column-item" href="https://www.telos.net/community-resources">{{$t('components.footer.brand_assets')}}</a>
