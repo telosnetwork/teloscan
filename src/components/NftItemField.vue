@@ -7,7 +7,6 @@ import { IPFS_GATEWAY, extractNftMetadata } from 'src/antelope/stores/utils/nft-
 
 
 const { t: $t } = useI18n();
-console.log([$t, useI18n]); // FIXME: remove
 
 const props = defineProps({
     id: {

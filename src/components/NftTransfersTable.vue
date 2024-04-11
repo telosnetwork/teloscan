@@ -12,9 +12,8 @@ import NftItemField from 'components/NftItemField.vue';
 import DateField from 'components/DateField.vue';
 import { formatWei, toChecksumAddress } from 'src/lib/utils';
 import { EvmTransactionExtended, Pagination } from 'src/types';
-import { EvmTransaction, EvmTransactionLog } from 'src/antelope/types';
-import { ethers } from 'ethers';
-import { TransactionDescription } from 'ethers/lib/utils';
+
+import { loadTransaction } from 'src/lib/transaction-utils';
 
 const { t: $t } = useI18n();
 
@@ -199,68 +198,11 @@ const getPath = (settings: { pagination: Pagination }) => {
     return path;
 };
 
-// Method name resolution ------------------
-// This must be refactored in the future. Follow issue #654
-// https://github.com/telosnetwork/teloscan/issues/654
-
-const tryToExtractMethod = (abi: {[hash: string]: string }, input: string) => {
-    if (!abi || !input) {
-        return undefined;
-    }
-    const methodSignature = input.slice(0, 10);
-    const functionSignature = abi[methodSignature];
-
-    // functionSignature is like "function safeTransferFrom(address,address,uint256,uint256,bytes)"
-    // we need to extract only the method name
-    const method = functionSignature?.match(/function\s+(\w+)\(/);
-    if (!method) {
-        return undefined;
-    }
-    return {
-        name: method[1],
-    } as TransactionDescription;
-};
 const resolveMethodName = async (transfer: NftTransferData) => {
-    try {
-        const trxResponse = await indexerApi.get(`/transaction/${transfer.hash}?full=true&includeAbi=true`);
-        const abi = trxResponse.data.abi;
-        if (trxResponse.data.results.length === 0) {
-            console.error(`Transaction ${transfer.hash} not found`);
-            return;
-        }
-        const aux = trxResponse.data.results[0] as EvmTransaction;
-        let logsArray: EvmTransactionLog[] = [];
-        if(aux.logs){
-            const fixedStr = aux.logs.replace('transaction_hash', 'transactionHash');
-            try {
-                logsArray = JSON.parse(fixedStr) as EvmTransactionLog[];
-            } catch (e) {
-                console.error('Error parsing logs', e);
-            }
-        }
-
-        const parsedTransaction = tryToExtractMethod(abi, aux.input);
-        const _trx:EvmTransactionExtended = {
-            ...aux,
-            gasUsedBn: ethers.BigNumber.from(aux.gasUsed),
-            gasLimitBn: ethers.BigNumber.from(aux.gasLimit),
-            valueBn: ethers.BigNumber.from(aux.value),
-            gasPriceBn: ethers.BigNumber.from(aux.gasPrice),
-            contract: undefined,
-            parsedTransaction,
-            functionParams: [],
-            logsArray,
-        };
-        transfer.trx = _trx;
-        // force the rows to update
-        rows.value = [...rows.value];
-    } catch (e) {
-        console.error('Error resolving method name', e);
-        return;
-    }
+    transfer.trx = await loadTransaction(transfer.hash);
+    // force the rows to update
+    rows.value = [...rows.value];
 };
-// ----------------------------------------------------
-
 
 const onRequest = async (settings: { pagination: Pagination}) => {
     loading.value = true;

@@ -27,7 +27,6 @@ export async function extractNftMetadata(
         try {
             _metadata = JSON.parse(_metadata);
         } catch (error) {
-            console.log('extractNftMetadata()', imageCache, tokenUri, metadata); // FIXME: remove
             _metadata = { tokenUri };
         }
     }
