@@ -105,7 +105,8 @@ async function loadAccount() {
     fullTitle.value = '';
     nonce.value = 0;
     title.value = $t('pages.account');
-    const cachedContract = await contractManager.getContract(accountAddress.value);
+    const force = true;
+    const cachedContract = await contractManager.getContract(accountAddress.value, force);
     if (cachedContract?.creationInfo?.transaction || cachedContract?.supportedInterfaces?.length > 0){
         contract.value = cachedContract;
         if(contract.value && contract.value.supportedInterfaces?.includes('erc20')){
@@ -131,6 +132,7 @@ async function loadAccount() {
     }
 
     accountLoading.value = false;
+    fullTitle.value = contract.value?.getName() ?? '';
 }
 
 </script>
@@ -159,7 +161,7 @@ async function loadAccount() {
                     />
                     <span class="c-address__title">{{ title }}</span>
                     <span class="c-address__hex">{{ accountAddress }}</span>
-                    <q-tooltip v-if="fullTitle">{{ fullTitle }} </q-tooltip>
+                    <q-tooltip v-if="fullTitle" anchor="top middle" self="bottom middle">{{ fullTitle }} </q-tooltip>
                 </div>
                 <div class="flex align-center">
                     <CopyButton
@@ -310,7 +312,7 @@ async function loadAccount() {
                 <HolderList :contract="contract" />
             </q-tab-panel>
             <q-tab-panel v-else name="internaltx">
-                <InternalTransactionTable :title="accountAddress" :filter="{accountAddress}"/>
+                <InternalTransactionTable :title="accountAddress" :filter="{address:accountAddress}"/>
             </q-tab-panel>
             <q-tab-panel
                 v-if="

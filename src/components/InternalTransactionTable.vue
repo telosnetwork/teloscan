@@ -234,6 +234,7 @@ export default {
             const { page, rowsPerPage, descending } = props.pagination;
             let path;
             const filter = Object.assign({}, this.filter ? this.filter : {});
+            console.log('filter: ', filter);
             if (filter.address) {
                 path = `/address/${filter.address}/transactions`;
             } else {
