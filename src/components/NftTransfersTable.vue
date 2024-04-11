@@ -277,7 +277,6 @@ const updateLoadingRows = () => {
 };
 
 const updateCols = () => {
-    console.log('updateCols()', props.tokenType);
     let exclude = [] as string[];
 
     switch (props.tokenType) {

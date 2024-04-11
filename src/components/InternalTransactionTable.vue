@@ -117,7 +117,6 @@ export default {
     },
     methods: {
         updateLoadingRows() {
-            console.log('updateLoadingRows()', this.pagination.rowsPerPage);
             this.loadingRows = [];
             for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
                 this.loadingRows.push(i);
@@ -234,7 +233,6 @@ export default {
             const { page, rowsPerPage, descending } = props.pagination;
             let path;
             const filter = Object.assign({}, this.filter ? this.filter : {});
-            console.log('filter: ', filter);
             if (filter.address) {
                 path = `/address/${filter.address}/transactions`;
             } else {

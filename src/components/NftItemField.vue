@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 
 import { indexerApi } from 'src/boot/telosApi';
 import { IPFS_GATEWAY, extractNftMetadata } from 'src/antelope/stores/utils/nft-utils';
-
-
-const { t: $t } = useI18n();
 
 const props = defineProps({
     id: {
@@ -42,9 +38,6 @@ onMounted(() => {
                 img.value = ((image as string) ?? '').replace('ipfs://', IPFS_GATEWAY);
                 mediatype.value = mediaType;
                 source.value = mediaSource;
-
-                console.log('NFT metadata', { image, mediaType, mediaSource, indexerData });
-
             } catch (e) {
                 console.error('Error parsing metadata', indexerData.metadata);
             }
