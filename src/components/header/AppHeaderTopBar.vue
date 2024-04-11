@@ -15,10 +15,10 @@ import { useChainStore } from 'src/antelope';
 import {
     IS_MAINNET,
     IS_TESTNET,
-    // TELOSCAN_MAINNET_URL,
-    // TELOSCAN_TESTNET_URL,
-    BETA_TELOSCAN_MAINNET_URL,
-    BETA_TELOSCAN_TESTNET_URL,
+    TELOSCAN_MAINNET_URL,
+    TELOSCAN_TESTNET_URL,
+    // BETA_TELOSCAN_MAINNET_URL,
+    // BETA_TELOSCAN_TESTNET_URL,
 } from 'src/lib/chain-utils';
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
@@ -98,14 +98,14 @@ function goToTeloscanMainnet() {
     if (IS_MAINNET) {
         return;
     }
-    window.open(BETA_TELOSCAN_MAINNET_URL, '_blank');
+    window.open(TELOSCAN_MAINNET_URL, '_blank');
 }
 
 function goToTeloscanTestnet() {
     if (IS_TESTNET) {
         return;
     }
-    window.open(BETA_TELOSCAN_TESTNET_URL, '_blank');
+    window.open(TELOSCAN_TESTNET_URL, '_blank');
 }
 </script>
 

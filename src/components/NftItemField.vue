@@ -58,10 +58,10 @@ onMounted(() => {
 <template>
 <div class="c-nft-item-field">
     <!-- image / preview -->
-    <img v-if="img" :src="img" class="c-nft-item-field__media c-nft-item-field__media--image" >
+    <q-img v-if="img" :src="img" class="c-nft-item-field__media c-nft-item-field__media--image" />
     <template v-else>
         <!-- video without controls and stopped at first frame -->
-        <div>{{ source }}</div>
+    <!--
         <video
             v-if="mediatype === 'video'"
             class="c-nft-item-field__media c-nft-item-field__media--video"
@@ -79,6 +79,18 @@ onMounted(() => {
             name="o_broken_image"
             class="c-nft-item-field__media c-nft-item-field__media--broken"
         />
+    -->
+
+
+        <q-icon
+            v-if="mediatype === 'video'"
+            name="o_broken_image"
+            class="c-nft-item-field__media c-nft-item-field__media--video"
+            :src="source"
+        />
+
+
+
     </template>
 
     <!-- data -->

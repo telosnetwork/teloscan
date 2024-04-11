@@ -107,7 +107,7 @@ export default {
                     index: itx.index,
                     type: itx.type,
                     args: args,
-                    error: (itx.error !== null && itx.result?.output.slice(0, 10) === '0x08c379a0')
+                    error: (itx.error !== null && itx.result?.output?.slice(0, 10) === '0x08c379a0')
                         ? itx.error + ': ' + parseErrorMessage(itx.result?.output)
                         : itx.error,
                     traceAddress: itx.traceAddress,

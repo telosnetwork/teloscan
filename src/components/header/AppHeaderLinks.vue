@@ -7,10 +7,8 @@ import { useI18n } from 'vue-i18n';
 import {
     IS_MAINNET,
     IS_TESTNET,
-    // TELOSCAN_MAINNET_URL,
-    // TELOSCAN_TESTNET_URL,
-    BETA_TELOSCAN_MAINNET_URL,
-    BETA_TELOSCAN_TESTNET_URL,
+    TELOSCAN_MAINNET_URL,
+    TELOSCAN_TESTNET_URL,
 } from 'src/lib/chain-utils';
 
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
@@ -36,6 +34,14 @@ const teloscanSwaggerUrl = IS_MAINNET
     ? 'https://api.teloscan.io/v1/docs'
     : 'https://api.testnet.teloscan.io/v1/docs';
 
+const telosWalletUrl = IS_MAINNET
+    ? 'https://wallet.telos.net/'
+    : 'https://wallet-dev.telos.net/';
+
+const telosBridgeUrl = IS_MAINNET
+    ? 'https://bridge.telos.net/bridge'
+    : 'https://telos-bridge-testnet.netlify.app/bridge';
+
 const developersSubmenuItems = [
     {
         url: teloscanSwaggerUrl,
@@ -48,13 +54,13 @@ const developersSubmenuItems = [
 ];
 
 const telos_walletMenuItem = {
-    url: 'https://wallet.telos.net/',
+    url: telosWalletUrl,
     label: `${$t('components.header.telos_wallet')}/Staking`,
 };
 
 
 const telos_bridgeMenuItem = {
-    url: 'https://bridge.telos.net/bridge',
+    url: telosBridgeUrl,
     label: $t('components.header.telos_bridge'),
 };
 
@@ -73,11 +79,11 @@ const moreSubmenuItems = {
 
 const networksMenuItems = {
     mainnet: [{
-        url: BETA_TELOSCAN_MAINNET_URL,
+        url: TELOSCAN_MAINNET_URL,
         label: 'Telos Mainnet',
     }],
     testnet: [{
-        url: BETA_TELOSCAN_TESTNET_URL,
+        url: TELOSCAN_TESTNET_URL,
         label: 'Telos Testnet',
     }],
 };
@@ -113,11 +119,11 @@ function toggleDarkMode() {
 }
 
 function getIsCurrentNetworkMenuItem(url: string) {
-    if (url === BETA_TELOSCAN_MAINNET_URL) {
+    if (url === TELOSCAN_MAINNET_URL) {
         return IS_MAINNET;
     }
 
-    if (url === BETA_TELOSCAN_TESTNET_URL) {
+    if (url === TELOSCAN_TESTNET_URL) {
         return IS_TESTNET;
     }
 

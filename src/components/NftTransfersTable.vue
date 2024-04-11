@@ -8,7 +8,7 @@ import { indexerApi } from 'src/boot/telosApi';
 import TransactionField from 'components/TransactionField.vue';
 import MethodField from 'components/MethodField.vue';
 import AddressField from 'components/AddressField.vue';
-import NFTItemField from 'components/NFTItemField.vue';
+import NftItemField from 'components/NftItemField.vue';
 import DateField from 'components/DateField.vue';
 import { formatWei, toChecksumAddress } from 'src/lib/utils';
 import { EvmTransactionExtended, Pagination } from 'src/types';
@@ -251,9 +251,6 @@ const resolveMethodName = async (transfer: NftTransferData) => {
             functionParams: [],
             logsArray,
         };
-        // if (!parsedTransaction) {
-        //     await loadContract(transfer, _trx);
-        // }
         transfer.trx = _trx;
         // force the rows to update
         rows.value = [...rows.value];
@@ -262,51 +259,9 @@ const resolveMethodName = async (transfer: NftTransferData) => {
         return;
     }
 };
-/*
-const loadContract = async (transfer: NftTransferData, _trx: EvmTransactionExtended) => {
-    if (!_trx || _trx.input === '0x') {
-        if (transfer) {
-            transfer.trx = _trx;
-        }
-        return;
-    }
-    _trx.contract = await contractManager.getContract(_trx.to?.toLowerCase());
-    if (!_trx.contract) {
-        if (transfer) {
-            transfer.trx = _trx;
-        }
-        return;
-    }
-
-    _trx.parsedTransaction = await contractManager.parseContractTransaction(
-        _trx,
-        _trx.input,
-        _trx.contract,
-    );
-
-    _trx.functionParams = getFunctionParams(_trx);
-
-    if (transfer) {
-        transfer.trx = _trx;
-    }
-};
-const getFunctionParams = (trx: EvmTransactionExtended) => {
-    if (!trx.parsedTransaction) {
-        return [];
-    }
-    const args:EvmContractFunctionParameter[] = [];
-    trx.parsedTransaction.functionFragment.inputs.forEach((input, i) => {
-        args.push({
-            name: input.name,
-            type: input.type,
-            arrayChildren: (input.arrayChildren !== null) ? input.arrayChildren.type : false,
-            value:  trx.parsedTransaction?.args[i],
-        });
-    });
-    return args;
-};
-*/
 // ----------------------------------------------------
+
+
 const onRequest = async (settings: { pagination: Pagination}) => {
     loading.value = true;
 
@@ -550,7 +505,7 @@ onMounted(() => {
                 />
             </q-td>
             <q-td key="item" :props="props" class="flex items-center">
-                <NFTItemField
+                <NftItemField
                     :id="props.row.id"
                     :contract="props.row.contract"
                 />
