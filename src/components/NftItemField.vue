@@ -60,37 +60,24 @@ onMounted(() => {
     <!-- image / preview -->
     <q-img v-if="img" :src="img" class="c-nft-item-field__media c-nft-item-field__media--image" />
     <template v-else>
-        <!-- video without controls and stopped at first frame -->
-    <!--
-        <video
+        <q-icon
             v-if="mediatype === 'video'"
+            name="ondemand_video"
             class="c-nft-item-field__media c-nft-item-field__media--video"
-            :src="source"
-            @loadeddata="this.currentTime=1"
-        ></video>
-        <audio
+            size="32px"
+        />
+        <q-icon
             v-else-if="mediatype === 'audio'"
-            :src="source"
+            name="volume_up"
             class="c-nft-item-field__media c-nft-item-field__media--audio"
-            controls
-        ></audio>
+            size="32px"
+        />
         <q-icon
             v-else
-            name="o_broken_image"
+            name="broken_image"
             class="c-nft-item-field__media c-nft-item-field__media--broken"
+            size="32px"
         />
-    -->
-
-
-        <q-icon
-            v-if="mediatype === 'video'"
-            name="o_broken_image"
-            class="c-nft-item-field__media c-nft-item-field__media--video"
-            :src="source"
-        />
-
-
-
     </template>
 
     <!-- data -->
@@ -103,11 +90,11 @@ onMounted(() => {
 
 <style lang="scss">
 .c-nft-item-field {
-    // Max cell with must not be bigger than 150px
-    // and all texts must be ellipsis
     display: flex;
     align-items: center;
     gap: 10px;
+    max-width: 170px;
+
     &__media {
         width: 32px;
         height: 32px;
@@ -118,6 +105,8 @@ onMounted(() => {
         display: flex;
         flex-direction: column;
         gap: 3px;
+        overflow: auto;
+
         &--name {
             white-space: nowrap;
             overflow: hidden;
