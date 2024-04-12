@@ -85,13 +85,17 @@ onMounted(() => {
     display: flex;
     align-items: center;
     gap: 10px;
-    max-width: 170px;
+    max-width: 160px;
 
     &__media {
         width: 32px;
         height: 32px;
         border-radius: 4%;
         object-fit: cover;
+
+        .q-img__loading .q-spinner {
+            font-size: 20px;
+        }
     }
     &--data {
         display: flex;
