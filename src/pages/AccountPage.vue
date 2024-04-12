@@ -381,8 +381,12 @@ async function loadAccount() {
             margin-bottom: auto;
 
             &--with-icon {
-                padding-right: 30px;
+                .q-tab__content {
+                    flex-direction: row;
+                    flex-wrap: nowrap;
+                }
             }
+
 
             &-icon {
                 margin-left: 6px;
