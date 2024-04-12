@@ -23,7 +23,7 @@ const margin = ref(50);
 const onHomePage = computed(() => $route.name === 'home');
 
 onBeforeMount(() => {
-    $q.dark.set(localStorage.getItem('darkModeEnabled') !== 'false');
+    $q.dark.set(localStorage.getItem('darkModeEnabled') === 'true');
 });
 
 onMounted(() => {
