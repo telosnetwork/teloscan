@@ -425,6 +425,7 @@ export default {
             switch_to_light_theme: 'Wechseln Sie zum Lichtthema',
             system_token_price: '{token}-Preis',
             telos_ecosystem: 'Telos-Ökosystem',
+            telos_zero_explorer: 'Telos Zero Explorer',
             telos_evm_logo_alt: 'Telos EVM-Logo',
             telos_wallet: 'Wallet',
             telos_bridge: 'Bridge',

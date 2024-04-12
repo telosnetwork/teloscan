@@ -117,7 +117,6 @@ export default {
     },
     methods: {
         updateLoadingRows() {
-            console.log('updateLoadingRows()', this.pagination.rowsPerPage);
             this.loadingRows = [];
             for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
                 this.loadingRows.push(i);

@@ -47,7 +47,7 @@ export default {
             await Promise.all(await response.data.results.map(async (result) => {
                 let token = this.checkTokenList(result.contract.toLowerCase(), tokenList);
                 if(token){
-                    const contract = await this.$contractManager.getContract(token.address);
+                    const contract = await this.$contractManager.getContract(token.address, true);
                     if(!contract || !contract.supportedInterfaces.includes('erc20')){
                         return;
                     }

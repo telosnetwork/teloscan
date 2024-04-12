@@ -45,15 +45,16 @@ const emit = defineEmits(['highlight']);
 const displayName = ref('');
 const fullName = ref(toChecksumAddress(props.address));
 const contract = ref<any>(null);
+const contractName = ref('');
 const logo = ref<any>(null);
 const tokenList = ref<any>(null);
 const checksum = ref('');
 
 const restart = async () => {
-    tokenList.value = await contractManager.getTokenList();
     if (!props.address) {
         return;
     }
+    tokenList.value = await contractManager.getTokenList();
     checksum.value = toChecksumAddress(props.address);
     await loadContract();
     await getDisplay();
@@ -88,7 +89,7 @@ const getDisplay = async () => {
         return;
     }
     let address = toChecksumAddress(props.address);
-    if (contract.value && contract.value.getName() && contract.value.getName().length > 0) {
+    if (contractName.value) {
         if(tokenList.value?.tokens){
             tokenList.value.tokens.forEach((token: any) => {
                 if(token.address.toLowerCase() === contract.value.address.toLowerCase()){
@@ -102,7 +103,7 @@ const getDisplay = async () => {
         ;
         const name = (contract.value.isToken() && contract.value.getProperties()?.symbol)
             ? contract.value.getProperties().symbol
-            : contract.value.getName()
+            : contractName.value
                 ;
         if(!name.startsWith('0x')){
             displayName.value = truncateText(name);
@@ -114,9 +115,11 @@ const getDisplay = async () => {
 };
 
 const loadContract = async () => {
-    let contractObj = await contractManager.getContract(props.address, true);
-    if (contractObj && contractObj.creationInfo.creator) {
-        fullName.value = contractObj.getName() ?? fullName.value;
+    let contractObj = await contractManager.getContract(props.address) ?? { address: props.address };
+
+    if (contractObj && contractObj.abi?.length > 0) {
+        contractName.value = contractObj.getName() ?? contractObj.name ?? '';
+        fullName.value = contractName.value || fullName.value;
         contract.value = contractObj;
     }
 };
