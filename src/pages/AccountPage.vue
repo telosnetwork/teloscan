@@ -380,6 +380,10 @@ async function loadAccount() {
             margin-top: auto;
             margin-bottom: auto;
 
+            &--with-icon {
+                padding-right: 30px;
+            }
+
             &-icon {
                 margin-left: 6px;
                 &--verified {
