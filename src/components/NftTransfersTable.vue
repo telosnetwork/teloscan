@@ -14,6 +14,9 @@ import { formatWei, toChecksumAddress } from 'src/lib/utils';
 import { EvmTransactionExtended, Pagination } from 'src/types';
 
 import { loadTransaction } from 'src/lib/transaction-utils';
+import { WEI_PRECISION } from 'src/antelope/wallets/utils';
+import { BigNumber } from 'ethers';
+import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 
 const { t: $t } = useI18n();
 
@@ -256,6 +259,46 @@ const onRequest = async (settings: { pagination: Pagination}) => {
     loading.value = false;
 };
 
+/*
+const locale = useI18n().locale.value;
+function getValueDisplay(value: string, symbol: string, decimals: number) {
+    const _decimals = typeof decimals === 'number' ? decimals : parseInt(decimals ?? WEI_PRECISION);
+    return prettyPrintCurrency(
+        BigNumber.from(value),
+        4,
+        locale,
+        false,
+        symbol ?? 'UNKNOWN',
+        false,
+        _decimals,
+        false,
+    );
+}
+*/
+
+const locale = useI18n().locale.value;
+function getValueDisplay(value: string, symbol: string, decimals: number) {
+    const _decimals = typeof decimals === 'number' ? decimals : parseInt(decimals ?? WEI_PRECISION);
+    console.log('getValueDisplay', value, symbol, decimals, '[', _decimals, ']');
+    try {
+        return prettyPrintCurrency(
+            BigNumber.from(value.split('.').join('')),
+            4,
+            locale,
+            false,
+            symbol ?? 'UNKNOWN',
+            false,
+            _decimals,
+            false,
+        );
+    } catch (e) {
+        console.error('getValueDisplay', e);
+    }
+
+    return truncatedId(value);
+}
+
+
 const convertToEpoch = (dateString: string | number) => {
     if (typeof dateString === 'number'){
         return dateString / 1000;
@@ -432,7 +475,7 @@ onMounted(() => {
             </q-td>
             <q-td key="value" :props="props">
                 <span>
-                    {{ truncatedId(props.row.value) }}
+                    {{ getValueDisplay(props.row.value, props.row.contract.symbol, props.row.contract.decimals) }}
                     <q-tooltip>{{ props.row.value }}</q-tooltip>
                 </span>
             </q-td>
