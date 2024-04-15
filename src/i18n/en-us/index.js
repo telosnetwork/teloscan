@@ -521,7 +521,7 @@ export default {
         try_reloading: 'You can try reloading the page to fix it, if the problem persist please contact a Telos team member.',
         error: 'Error',
         expand: 'See more ({more})',
-        async_error_description: 'Sorry ! An error occured trying to request resources. Please make sure your internet connection is working and try again. If the error persists, contact us directly on our Telegram channel.',
+        async_error_description: 'Sorry ! An error occurred trying to request resources. Please make sure your internet connection is working and try again. If the error persists, contact us directly on our Telegram channel.',
         language: 'Language',
         cancel: 'Cancel',
         ok: 'Ok',

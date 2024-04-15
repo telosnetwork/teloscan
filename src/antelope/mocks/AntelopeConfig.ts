@@ -34,7 +34,7 @@ export class AntelopeConfig {
         }
         const str = this.errorToStringHandler(error);
         // if it matches antelope.*.error_*
-        if (str.match(/^antelope\.[a-z0-9_]+\.error_/)) {
+        if (typeof str === 'string') {
             return new AntelopeError(str, { error });
         } else {
             return new AntelopeError(description, { error: str });
@@ -73,11 +73,29 @@ export class AntelopeConfig {
     private __transaction_error_handler: (err: AntelopeError, trxFailed: string) => void = () => void 0;
 
     // error to string handler --
-    private __error_to_string_handler: (error: unknown) => string = (error: unknown) => {
+    private __error_to_string_handler: (error: unknown) => object | string = (error: unknown) => {
         try {
-
             type EVMError = {code:string};
             const evmErr = error as EVMError;
+
+            if (typeof error === 'object') {
+                const candidates = ['message', 'reason'];
+                const deepSearch = (obj: Record<string, unknown>): string => {
+                    for (const key in obj) {
+                        if (candidates.includes(key) && typeof obj[key] === 'string') {
+                            return obj[key] as string;
+                        }
+                        if (typeof obj[key] === 'object') {
+                            return deepSearch(obj[key] as Record<string, unknown>);
+                        }
+                    }
+                    return 'unknown';
+                };
+                const messageFound = deepSearch(error as Record<string, unknown>);
+                if (messageFound !== 'unknown') {
+                    return messageFound;
+                }
+            }
 
             switch (evmErr.code) {
             case 'CALL_EXCEPTION':          return 'antelope.evm.error_call_exception';
@@ -93,32 +111,26 @@ export class AntelopeConfig {
             }
 
             if (typeof error === 'string') {
-                return error;
+                return { error };
             }
             if (typeof error === 'number') {
-                return error.toString();
+                return { error: error.toString() };
             }
             if (typeof error === 'boolean') {
-                return error.toString();
-            }
-            if (error instanceof Error) {
-                return error.message;
+                return { error: error.toString() };
             }
             if (typeof error === 'undefined') {
-                return 'undefined';
+                return { error: 'undefined' };
             }
             if (typeof error === 'object') {
                 if (error === null) {
-                    return 'null';
+                    return { error: 'null' };
                 }
-                if (Array.isArray(error)) {
-                    return error.map(a => this.__error_to_string_handler(a)).join(', ');
-                }
-                return JSON.stringify(error);
+                return { error };
             }
-            return 'unknown';
+            return { error: 'unknown' };
         } catch (er) {
-            return 'error';
+            return { error: 'unknown' };
         }
     };
 
@@ -280,7 +292,7 @@ export class AntelopeConfig {
     }
 
     // setting error to string handler --
-    public setErrorToStringHandler(handler: (catched: unknown) => string) {
+    public setErrorToStringHandler(handler: (catched: unknown) => object) {
         this.__error_to_string_handler = handler;
     }
 
