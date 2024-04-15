@@ -259,23 +259,6 @@ const onRequest = async (settings: { pagination: Pagination}) => {
     loading.value = false;
 };
 
-/*
-const locale = useI18n().locale.value;
-function getValueDisplay(value: string, symbol: string, decimals: number) {
-    const _decimals = typeof decimals === 'number' ? decimals : parseInt(decimals ?? WEI_PRECISION);
-    return prettyPrintCurrency(
-        BigNumber.from(value),
-        4,
-        locale,
-        false,
-        symbol ?? 'UNKNOWN',
-        false,
-        _decimals,
-        false,
-    );
-}
-*/
-
 const locale = useI18n().locale.value;
 function getValueDisplay(value: string, symbol: string, decimals: number) {
     const _decimals = typeof decimals === 'number' ? decimals : parseInt(decimals ?? WEI_PRECISION);
