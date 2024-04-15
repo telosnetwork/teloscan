@@ -380,6 +380,14 @@ async function loadAccount() {
             margin-top: auto;
             margin-bottom: auto;
 
+            &--with-icon {
+                .q-tab__content {
+                    flex-direction: row;
+                    flex-wrap: nowrap;
+                }
+            }
+
+
             &-icon {
                 margin-left: 6px;
                 &--verified {
