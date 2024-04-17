@@ -16,7 +16,7 @@ defineProps<{
             <q-skeleton type="rect" size="48px" />
         </div>
         <div v-else class="c-latest-data-row__icon-container">
-            <slot name="icon">
+            <slot name="column-one">
             </slot>
         </div>
     </div>
@@ -25,7 +25,7 @@ defineProps<{
             <q-skeleton type="rect" height="22px" class="q-mb-xs" />
             <q-skeleton type="rect" height="22px" />
         </div>
-        <slot v-else name="column-one">
+        <slot v-else name="column-two">
         </slot>
     </div>
     <div class="c-latest-data-row__column-three">
@@ -33,7 +33,7 @@ defineProps<{
             <q-skeleton type="rect" height="22px" class="q-mb-xs" />
             <q-skeleton type="rect" height="22px" />
         </div>
-        <slot v-else name="column-two">
+        <slot v-else name="column-three">
         </slot>
     </div>
     <div class="c-latest-data-row__column-four">
@@ -41,7 +41,7 @@ defineProps<{
             <q-skeleton type="rect" height="22px" class="q-mb-xs" />
             <q-skeleton type="rect" height="22px" />
         </div>
-        <slot v-else name="column-three">
+        <slot v-else name="column-four">
         </slot>
     </div>
 </div>
@@ -55,10 +55,14 @@ defineProps<{
     border-bottom: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 2px;
     padding: 12px 0;
 
-    @media screen and (min-width: $breakpoint-lg-min) {
+    @media screen and (min-width: $latest-data-breakpoint) {
+        gap: 12px;
+    }
+
+    @media screen and (min-width: $latest-data-breakpoint) {
         flex-direction: row;
         align-items: center;
     }
@@ -67,7 +71,7 @@ defineProps<{
         #{$this}__column-one {
             display: none;
 
-            @media screen and (min-width: $breakpoint-lg-min) {
+            @media screen and (min-width: $latest-data-breakpoint) {
                 display: block;
             }
         }
@@ -94,7 +98,7 @@ defineProps<{
             background-color: $grey-9;
         }
 
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $latest-data-breakpoint) {
             display: flex;
         }
     }
@@ -104,20 +108,20 @@ defineProps<{
     }
 
     &__column-two {
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $latest-data-breakpoint) {
             width: 38%;
         }
     }
 
     &__column-three {
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $latest-data-breakpoint) {
             width: 38%;
             flex-grow: 1;
         }
     }
 
     &__column-four {
-        @media screen and (min-width: $breakpoint-lg-min) {
+        @media screen and (min-width: $latest-data-breakpoint) {
             width: 20%;
             display: flex;
             justify-content: flex-end;

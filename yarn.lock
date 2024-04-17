@@ -6394,6 +6394,11 @@ eventemitter3@^4.0.0, eventemitter3@^4.0.7:
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-4.0.7.tgz#2de9b68f6528d5644ef5c59526a1b4a07306169f"
   integrity sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==
 
+eventemitter3@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-5.0.1.tgz#53f5ffd0a492ac800721bb42c66b841de96423c4"
+  integrity sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==
+
 events@^3.2.0, events@^3.3.0:
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/events/-/events-3.3.0.tgz#31a95ad0a924e2d2c419a813aeb2c4e878ea7400"
@@ -9772,6 +9777,11 @@ qrcode@1.5.3, qrcode@^1.5.1:
     pngjs "^5.0.0"
     yargs "^15.3.1"
 
+qrious@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/qrious/-/qrious-4.0.2.tgz#09c4d4079d2b961617f62c69cff3b9bb66a39693"
+  integrity sha512-xWPJIrK1zu5Ypn898fBp8RHkT/9ibquV2Kv24S/JY9VYEhMBMKur1gHVsOiNUh7PHP9uCgejjpZUHUIXXKoU/g==
+
 qs@6.10.3:
   version "6.10.3"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.3.tgz#d6cde1b2ffca87b5aa57889816c5f81535e22e8e"
@@ -11460,6 +11470,13 @@ web3-errors@^1.1.2:
   dependencies:
     web3-types "^1.2.0"
 
+web3-errors@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/web3-errors/-/web3-errors-1.1.4.tgz#5667a0a5f66fc936e101ef32032ccc1e8ca4d5a1"
+  integrity sha512-WahtszSqILez+83AxGecVroyZsMuuRT+KmQp4Si5P4Rnqbczno1k748PCrZTS1J4UCPmXMG2/Vt+0Bz2zwXkwQ==
+  dependencies:
+    web3-types "^1.3.1"
+
 web3-eth-abi@^4.1.2:
   version "4.1.2"
   resolved "https://registry.yarnpkg.com/web3-eth-abi/-/web3-eth-abi-4.1.2.tgz#a7b262ce0ad12aa4af1edc6f89053fb1d39010d4"
@@ -11606,15 +11623,21 @@ web3-types@^1.2.0:
   resolved "https://registry.yarnpkg.com/web3-types/-/web3-types-1.2.0.tgz#176bfe53d7e46c2488d6b95c98df8f6cb1fe1375"
   integrity sha512-ljx8mrkrOI8fRqvgOdxfpKYoso6n7I8T9LsqXl+Mz2Db0L+2H15an0xgdoWYpKndTPiU2NKRWFiopYifBQzcxQ==
 
+web3-types@^1.3.1, web3-types@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/web3-types/-/web3-types-1.5.0.tgz#35b5c0ab149b0d566efeaed8ddaa40db159c748e"
+  integrity sha512-geWuMIeegQ8AedKAO6wO4G4j1gyQ1F/AyKLMw2vud4bsfZayyzWJgCMDZtjYMm5uo2a7i8j1W3/4QFmzlSy5cw==
+
 web3-utils@^4.0.6:
-  version "4.0.6"
-  resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-4.0.6.tgz#37c30cb884e1ccfecb752269bc7ff285105f4c0a"
-  integrity sha512-nLVtMf9mWTX604XiQQkWZlHLCag9GdHfQtnGJDNaDssTLUx5SpOm1CjhKCHcVcAH/QazEsWcLqUAuyqwKST1kA==
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-4.2.2.tgz#8fb7c58cfc02d681f17d7806732ce9fb1170c338"
+  integrity sha512-z+4owWcnoB4EH8yWIL1FBeyqe+sXwaGxUDtVTNPTMf2oB5C+paCToZUdCV5Bi+M543zZEzlzNTabOD+OWNc7NA==
   dependencies:
     ethereum-cryptography "^2.0.0"
-    web3-errors "^1.1.2"
-    web3-types "^1.2.0"
-    web3-validator "^2.0.2"
+    eventemitter3 "^5.0.1"
+    web3-errors "^1.1.4"
+    web3-types "^1.5.0"
+    web3-validator "^2.0.5"
 
 web3-validator@^2.0.2:
   version "2.0.2"
@@ -11625,6 +11648,17 @@ web3-validator@^2.0.2:
     util "^0.12.5"
     web3-errors "^1.1.2"
     web3-types "^1.2.0"
+    zod "^3.21.4"
+
+web3-validator@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/web3-validator/-/web3-validator-2.0.5.tgz#de1984bdb34f292251b86400dba7169700db0849"
+  integrity sha512-2gLOSW8XqEN5pw5jVUm20EB7A8SbQiekpAtiI0JBmCIV0a2rp97v8FgWY5E3UEqnw5WFfEqvcDVW92EyynDTyQ==
+  dependencies:
+    ethereum-cryptography "^2.0.0"
+    util "^0.12.5"
+    web3-errors "^1.1.4"
+    web3-types "^1.5.0"
     zod "^3.21.4"
 
 web3@^4.0.1:

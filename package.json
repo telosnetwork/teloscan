@@ -41,6 +41,7 @@
     "moment": "^2.29.4",
     "oreid-js": "^4.7.1",
     "oreid-webpopup": "^2.4.0",
+    "qrious": "^4.0.2",
     "quasar": "2",
     "rxjs": "^7.8.0",
     "ual-anchor": "^1.0.0",

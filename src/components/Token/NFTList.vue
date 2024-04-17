@@ -1,227 +1,232 @@
-<script>
-import AddressField from 'components/AddressField';
-import BlockField from 'components/BlockField';
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+<script setup lang="ts">
+import { ref, watch, onMounted, onBeforeMount } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { indexerApi } from 'src/boot/telosApi';
 import { ALLOWED_VIDEO_EXTENSIONS } from 'src/lib/utils';
 
-export default {
-    name: 'NFTList',
-    props: {
-        type: {
-            type: String,
-            required: false,
-            default: 'erc721',
-        },
-        address: {
-            type: String,
-            required: true,
-        },
-        filter: {
-            type: String,
-            required: false,
-            default: 'contract',
-        },
-    },
-    components: {
-        AddressField,
-        BlockField,
-    },
+import AddressField from 'components/AddressField.vue';
+import BlockField from 'components/BlockField.vue';
+import { NFT, NFT_TYPE } from 'src/types/NFT';
+import { QTableProps } from 'quasar';
 
-    async mounted() {
-        await this.onRequest({
-            pagination: this.pagination,
-        });
+const allowedFilters = ['contract', 'account'];
+
+const { t : $t } = useI18n();
+
+const props = defineProps({
+    address: {
+        type: String,
+        required: true,
     },
-    data() {
-        const columns = [
-            {
-                name: 'minted',
-                label: this.$t('components.nfts.minted'),
-                align: 'left',
-                sortable: true,
-            },
-            {
-                name: 'token_id',
-                label: this.$t('components.token_id'),
-                align: 'left',
-            },
-            {
-                name: (this.filter === 'account') ? 'contract' : 'owner',
-                label: (this.filter === 'account') ? this.$t('components.nfts.contract')
-                    : this.$t('components.nfts.owner'),
-                align: 'left',
-            },
-            {
-                name: 'name',
-                label: this.$t('components.nfts.name'),
-                align: 'left',
-            },
-            {
-                name: (this.type === 'erc1155') ? 'amount' : 'minter',
-                label: (this.type === 'erc1155') ?
-                    this.$t('components.nfts.amount') :
-                    this.$t('components.nfts.minter'),
-                align: 'left',
-            },
-            {
-                name: 'attributes',
-                label:  this.$t('components.nfts.attributes')[0].toUpperCase() +
-                    this.$t('components.nfts.attributes').slice(1),
-                align: 'left',
-            },
-            {
-                name: 'media',
-                label: this.$t('components.nfts.media'),
-                align: 'left',
-            },
-            {
-                name: 'metadata',
-                label: this.$t('components.nfts.metadata'),
-                align: 'center',
-            },
-        ];
-        if(this.type === 'erc1155'){
-            columns.shift();
-        }
-        return {
-            columns: columns,
-            loading: true,
-            showWithoutMetadata: false,
-            nfts: [],
-            allowedFilters: [
-                'contract',
-                'account',
-            ],
-            filterBy: this.filter,
-            pagination: {
-                sortBy: 'minted',
-                descending: true,
-                page: 1,
-                rowsPerPage: 10,
-                rowsNumber: 0,
-            },
-        };
+    filter: {
+        type: String,
+        required: false,
+        default: 'account',
     },
-    methods: {
-        getMedia(nft){
-            if(
-                !nft.metadata
-                && !nft.metadata?.image
-                && !nft.metadata?.animation_url
+});
+
+const columns = ref<QTableProps['columns']>([]);
+const loading = ref(true);
+const showWithoutMetadata = ref(false);
+const nfts = ref<NFT[]>([]);
+const loadingRows = ref<Array<number>>([]);
+const pagination = ref({
+    sortBy: '',
+    descending: true,
+    page: 1,
+    rowsPerPage: 10,
+});
+
+watch(() => props.filter, () => {
+    setupColumns();
+});
+
+function setupColumns() {
+    columns.value = [
+        {
+            name: 'minted',
+            label: $t('components.nfts.minted'),
+            align: 'left',
+            sortable: true,
+            field: '',
+        },
+        {
+            name: 'token_id',
+            label: $t('components.token_id'),
+            align: 'left',
+            field: '',
+        },
+        {
+            name: (props.filter === 'account') ? 'contract' : 'owner',
+            label: (props.filter === 'account') ? $t('components.nfts.contract')
+                : $t('components.nfts.owner'),
+            align: 'left',
+            field: '',
+        },
+        {
+            name: 'name',
+            label: $t('components.nfts.name'),
+            align: 'left',
+            field: '',
+        },
+        {
+            name: 'minter',
+            label: $t('components.nfts.minter'),
+            align: 'left',
+            field: '',
+        },
+        {
+            name: 'amount',
+            label: $t('components.nfts.amount'),
+            align: 'left',
+            field: '',
+        },
+        {
+            name: 'attributes',
+            label: $t('components.nfts.attributes')[0].toUpperCase() +
+                $t('components.nfts.attributes').slice(1),
+            align: 'left',
+            field: '',
+        },
+        {
+            name: 'media',
+            label: $t('components.nfts.media'),
+            align: 'left',
+            field: '',
+        },
+        {
+            name: 'metadata',
+            label: $t('components.nfts.metadata'),
+            align: 'center',
+            field: '',
+        },
+    ];
+}
+
+onBeforeMount(() => {
+    for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
+        loadingRows.value.push(i);
+    }
+});
+
+onMounted(async () => {
+    await onRequest();
+    setupColumns();
+});
+
+function getMedia(nft: NFT) {
+    if(
+        !nft.metadata
+                && !(nft.metadata as any)?.image
+                && !(nft.metadata as any)?.animation_url
                 && (!nft.tokenUri || nft.tokenUri.endsWith('.json'))
-            ){
-                return false;
-            }
-            let media = (nft.metadata?.animation_url && nft.metadata.animation_url.length > 0)
-                ? nft.metadata.animation_url
-                : nft.metadata?.image
+    ){
+        return false;
+    }
+    let media = (nft.metadata?.animation_url && nft.metadata.animation_url.length > 0)
+        ? nft.metadata.animation_url
+        : nft.metadata?.image
             ;
-            media = (typeof media !== 'undefined' && media) ? media : nft.metadata?.properties?.image;
-            media = (typeof media !== 'undefined' && media) ? media : nft.tokenUri;
-            if(!media){
-                return false;
-            }
-            return media;
-        },
-        hasVideo(nft){
-            let video = this.getMedia(nft);
-            let parts = video.split('.');
-            if(parts.length > 1){
-                let ext = parts[parts.length - 1].split('?')[0];
-                if(!ALLOWED_VIDEO_EXTENSIONS.includes(ext)){
-                    return nft;
-                }
-                nft.metadata = (typeof nft.metadata === 'string') ? {} : nft.metadata;
-                nft.metadata.animation = video.replace('ipfs://', 'https://ipfs.io/ipfs/');
-                nft.metadata.animationExtension = ext;
-            }
-            nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
+    media = (typeof media !== 'undefined' && media) ? media : nft.metadata?.properties?.image;
+    media = (typeof media !== 'undefined' && media) ? media : nft.tokenUri;
+    if(!media){
+        return false;
+    }
+    return media;
+}
+
+function hasVideo(nft: NFT) {
+    const video = getMedia(nft);
+    let parts = [];
+    if (video){
+        parts = video?.split('.');
+    }
+    if(parts.length > 1){
+        let ext = parts[parts.length - 1].split('?')[0];
+        if(!ALLOWED_VIDEO_EXTENSIONS.includes(ext)){
             return nft;
-        },
-        isDataImage(nft){
-            let image = this.getMedia(nft);
-            const regex = new RegExp(/(data:image\/[^;]+;base64[^"]+)/);
-            return regex.test(image);
-        },
-        async onRequest(props) {
-            this.loading = true;
+        }
+        nft.metadata = (typeof nft.metadata === 'string') ? {} : nft.metadata;
+        nft.metadata.animation = video.replace('ipfs://', 'https://ipfs.io/ipfs/');
+        nft.metadata.animationExtension = ext;
+    }
+    nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
+    return nft;
+}
 
-            const { page, rowsPerPage, sortBy, descending } = props.pagination;
+function isDataImage(nft: NFT) {
+    let image = getMedia(nft);
+    const regex = new RegExp(/(data:image\/[^;]+;base64[^"]+)/);
+    return regex.test(image);
+}
 
-            let response = await this.$indexerApi.get(this.getPath(props));
+async function onRequest() {
+    loading.value = true;
 
-            if(response.data.total_count === 0){
-                this.showWithoutMetadata = true;
-                response = await this.$indexerApi.get(this.getPath(props));
-            }
+    const { page, rowsPerPage, sortBy, descending } = pagination.value;
 
-            this.pagination.page = page;
-            this.pagination.rowsPerPage = rowsPerPage;
-            this.pagination.sortBy = sortBy;
-            this.pagination.descending = descending;
-            if (this.pagination.rowsNumber === 0 && response.data?.total_count) {
-                this.pagination.rowsNumber = response.data.total_count;
+    const erc721 = await indexerApi.get(getPath(NFT_TYPE.ERC721));
+    const erc1155 = await indexerApi.get(getPath(NFT_TYPE.ERC1155));
+
+    // merge erc1155 data into erc721 results
+    const response = erc721;
+    response.data.total_count += erc1155.data.total_count;
+    response.data.results = [...response.data.results, ...erc1155.data.results];
+
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = rowsPerPage;
+    pagination.value.sortBy = sortBy;
+    pagination.value.descending = descending;
+
+    let nftsArr = [];
+    for (let nft of response.data.results) {
+        nft.metadata = (nft.metadata) ? JSON.parse(nft.metadata) : nft.metadata;
+        if(nft.metadata?.image){
+            nft.metadata.image = (nft.metadata.image)
+                ? nft.metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/')
+                : false
+            ;
+        }
+        if(nft.metadata?.attributes){
+            nft.metadata.attributesStr = '';
+            for(let i = 0; i < nft.metadata.attributes.length; i++){
+                nft.metadata.attributesStr += (typeof nft.metadata.attributes[i]['trait_type'] !== 'undefined')
+                    ? nft.metadata.attributes[i]['trait_type']  + ' : '
+                    : ''
+                ;
+                nft.metadata.attributesStr += nft.metadata.attributes[i]['value'] + '\n';
             }
-            let nfts = [];
-            for (let nft of response.data.results) {
-                nft.metadata = (nft.metadata) ? JSON.parse(nft.metadata) : nft.metadata;
-                if(nft.metadata?.image){
-                    nft.metadata.image = (nft.metadata.image)
-                        ? nft.metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/')
-                        : false
-                    ;
-                }
-                if(nft.metadata?.attributes){
-                    nft.metadata.attributesStr = '';
-                    for(let i = 0; i < nft.metadata.attributes.length; i++){
-                        nft.metadata.attributesStr += (typeof nft.metadata.attributes[i]['trait_type'] !== 'undefined')
-                            ? nft.metadata.attributes[i]['trait_type']  + ' : '
-                            : ''
-                        ;
-                        nft.metadata.attributesStr += nft.metadata.attributes[i]['value'] + '\n';
-                    }
-                }
-                nft = this.hasVideo(nft);
-                nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
-                nfts.push(nft);
-            }
-            this.nfts = nfts;
-            this.loading = false;
-        },
-        getPath(props) {
-            const { page, rowsPerPage, descending } = props.pagination;
-            if(!this.allowedFilters.includes(this.filterBy)){
-                this.filterBy = 'contract';
-            }
-            let path = `/${this.filterBy}/${this.address}/nfts?type=${this.type}&includeAbi=true&limit=${
-                rowsPerPage === 0 ? 10 : rowsPerPage
-            }`;
-            path += `&offset=${(page - 1) * rowsPerPage}`;
-            path = (this.pagination.rowsNumber === 0) ? path + '&includePagination=true' : path;
-            path += `&sort=${descending ? 'desc' : 'asc'}`;
-            path += `&forceMetadata=${this.showWithoutMetadata ? '0' : '1'}`;
-            return path;
-        },
-    },
-};
+        }
+        nft = hasVideo(nft);
+        nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
+        nftsArr.push(nft);
+    }
+    nfts.value = nftsArr;
+    loading.value = false;
+}
+
+function getPath(type: string) {
+    let queryFilter = props.filter;
+    if(!allowedFilters.includes(queryFilter)){
+        queryFilter = 'contract';
+    }
+    return `/${queryFilter}/${props.address}/nfts?type=${type}&includeAbi=true&limit=10000&forceMetadata=1&includePagination=true`;
+}
 </script>
 
 <template>
-<div :key="this.type">
+<div :key="address">
     <q-table
+        v-if="!loading"
         v-model:pagination="pagination"
         :rows="nfts"
-        :loading="loading"
         :rows-per-page-label="$t('global.records_per_page')"
         :binary-state-sort="true"
         :row-key="row => row.contract + row.tokenId"
         :columns="columns"
         :rows-per-page-options="[10, 20, 50]"
-        flat
-        @request="onRequest"
     >
-        <template v-slot:loading>
-            <q-inner-loading showing color="secondary" />
-        </template>
         <template v-slot:header="props">
             <q-tr :props="props">
                 <q-th
@@ -237,7 +242,7 @@ export default {
         </template>
         <template v-slot:body="props">
             <q-tr :props="props">
-                <q-td v-if="type === 'erc721'" key="minted" :props="props">
+                <q-td key="minted" :props="props">
                     <BlockField v-if="props.row.blockMinted" :block="props.row.blockMinted" />
                 </q-td>
                 <q-td key="token_id" :props="props">
@@ -247,7 +252,7 @@ export default {
                         <q-tooltip>{{ props.row.tokenId }}</q-tooltip>
                     </span>
                 </q-td>
-                <q-td v-if="this.filter !== 'account'" key="owner" :props="props">
+                <q-td v-if="filter !== 'account'" key="owner" :props="props">
                     <AddressField :key="props.row.tokenId + 'owner'"  :address="props.row.owner" :truncate="12" />
                 </q-td>
                 <q-td v-else key="contract" :props="props">
@@ -266,16 +271,15 @@ export default {
                         <q-tooltip>{{ props.row.metadata?.name }}</q-tooltip>
                     </span>
                 </q-td>
-                <q-td v-if="type === 'erc721'" key="minter" :props="props">
+                <q-td key="minter" :props="props">
                     <AddressField
-                        v-if="props.row.minter"
                         :key="props.row.tokenId + 'minter'"
-                        :address="props.row.minter"
+                        :address="props.row.minter ?? props.row.owner"
                         :truncate="12"
                     />
                 </q-td>
-                <q-td v-else key="amount" :props="props">
-                    x{{ props.row.amount }}
+                <q-td  key="amount" :props="props">
+                    x{{ props.row.amount ?? 1 }}
                 </q-td>
                 <q-td key="attributes" :props="props">
                     <div v-if="props.row.metadata?.attributes" class="flex items-center">
@@ -365,40 +369,101 @@ export default {
                 v-model="showWithoutMetadata"
                 :label="$t('components.nfts.show_without_metadata')"
                 :class="(nfts.length > 0) ? '' : 'right'"
-                color="secondary"
+                color="primary"
                 checked-icon="visibility"
                 unchecked-icon="visibility_off"
-                @update:model-value="onRequest({pagination: pagination})"
+                @update:model-value="onRequest()"
             />
+        </template>
+    </q-table>
+    <q-table
+        v-else
+        v-model:pagination="pagination"
+        :rows="loadingRows"
+        :rows-per-page-label="$t('global.records_per_page')"
+        :columns="columns"
+        :rows-per-page-options="[10, 20, 50]"
+    >
+        <template v-slot:header="props">
+            <q-tr :props="props">
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
+                    <div class="u-flex--center-y">
+                        {{ col.label }}
+                    </div>
+                </q-th>
+            </q-tr>
+        </template>
+        <template v-slot:body="">
+            <q-tr >
+                <q-td key="minted" >
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="token_id" >
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td v-if="filter !== 'account'" key="owner" >
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td v-else key="contract">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="name">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="minter">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td  key="amount">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="attributes">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="media">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="metadata">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+            </q-tr>
         </template>
     </q-table>
 </div>
 </template>
 
-<!--eslint-enable-->
-<style scoped lang="sass">
-.q-table .q-toggle.right
-    right: 20px
-.q-table .q-toggle
-    font-size: 12px
-    position: absolute
-    bottom: 4px
-.overlay
-    position: absolute
-    width: 100%
-    height: 100%
-    z-index: 55
-.q-media
-    justify-content: space-evenly
-    padding: 0
-    margin: 0
-    z-index: 1
-    max-width: 220px
-    max-height: 160px
-.q-img
-    min-width: 120px
-.sortable
-    height: 60px
-    display: flex
-    align-items: center
+<style scoped lang="scss">
+.q-table .q-toggle.right {
+    right: 20px;
+}
+.q-table .q-toggle {
+    font-size: 12px;
+    position: absolute;
+    bottom: 4px;
+}
+.overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 55;
+}
+.q-media {
+    justify-content: space-evenly;
+    padding: 0;
+    margin: 0;
+    z-index: 1;
+    max-width: 220px;
+    max-height: 160px;
+}
+.q-img {
+    min-width: 120px;
+}
+.sortable {
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
 </style>

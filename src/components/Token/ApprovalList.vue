@@ -108,6 +108,7 @@ export default {
             approved: false,
             approvals: [],
             selected: [],
+            loadingRows: [],
             displayConfirmModal: false,
             displayUpdateModal: false,
             modalUpdateValue: false,
@@ -122,6 +123,11 @@ export default {
             signing: false,
             loading: true,
         };
+    },
+    created(){
+        for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+            this.loadingRows.push(i);
+        }
     },
     async mounted() {
         await this.onRequest({
@@ -149,7 +155,6 @@ export default {
             this.pagination.descending = descending;
             this.pagination.rowsNumber = response.data.total_count;
             let approvals = [];
-            console.log(approvals);
             for (let approval of response.data.results) {
                 approval.selected = (this.selected.includes(approval.spender + ':' + approval.contract));
                 approval.contract = await this.$contractManager.getContract(approval.contract);
@@ -186,7 +191,6 @@ export default {
             }
             this.approvals = approvals;
             this.loading = false;
-
         },
         isNFT(){
             return (this.type !== 'erc20');
@@ -278,7 +282,6 @@ export default {
             }
         },
         async handleCtaClick(spender, contract, single, tokenId) {
-            console.log('Clicked', single, tokenId);
             if (!this.isLoggedInAccount()) {
                 this.displayLoginModal = true;
                 return;
@@ -368,6 +371,7 @@ export default {
             return (this.accountAddress === this.address);
         },
         async handleCtaRemoveAll(){
+            this.toggleAll(true);
             if (!this.isLoggedInAccount()) {
                 this.displayLoginModal = true;
                 return;
@@ -405,7 +409,6 @@ export default {
                 await Promise.all(
                     ctx.selected.map(async (id) => {
                         let parts = id.split(':');
-                        console.log(parts);
                         let result = await ctx.updateApproval(
                             parts[0],
                             parts[1],
@@ -425,7 +428,6 @@ export default {
             };
         },
         async handleCtaUpdate(spender, contractAddress, single, tokenId, current){
-            console.log('Update', single, tokenId);
             this.displayUpdateModal = true;
             this.modalUpdateValue = current;
             const contract  = await this.$contractManager.getContract(contractAddress);
@@ -462,20 +464,16 @@ export default {
 </div>
 <div>
     <q-table
+        v-if="!loading"
         v-model:pagination="pagination"
         :rows="approvals"
-        :loading="loading"
         :rows-per-page-label="$t('global.records_per_page')"
         :binary-state-sort="true"
         :row-key="row => row.address"
         :columns="columns"
         :rows-per-page-options="[10, 20, 50]"
-        flat
         @request="onRequest"
     >
-        <template v-slot:loading>
-            <q-inner-loading showing color="secondary" />
-        </template>
         <template v-slot:header="props">
             <q-tr :props="props">
                 <q-th
@@ -577,7 +575,7 @@ export default {
                                 + props.row.tokenId"
                             :true-val="props.row.spender + ':' + props.row.contract.address + ':' + props.row.single
                                 + ':' + props.row.tokenId"
-                            color="secondary"
+                            color="primary"
                             size="xs"
                         />
                         <q-tooltip v-if="selected.includes(props.row.spender + ':' + props.row.contract.address)">
@@ -598,7 +596,7 @@ export default {
                     <div class="flex justify-end">
                         <div v-if="selected.length > 0" class="flex justify-end">
                             <div>
-                                <q-btn class="items-center q-mr-sm" color="secondary" @click="toggleAll(false)">
+                                <q-btn class="items-center q-mr-sm" color="primary" @click="toggleAll(false)">
                                     <q-icon
                                         name="highlight_off"
                                         class="q-mr-xs"
@@ -652,6 +650,47 @@ export default {
             </q-tr>
         </template>
     </q-table>
+    <q-table
+        v-else
+        v-model:pagination="pagination"
+        :rows="loadingRows"
+        :rows-per-page-label="$t('global.records_per_page')"
+        :columns="columns"
+        :rows-per-page-options="[10, 20, 50]"
+    >
+        <template v-slot:header="props">
+            <q-tr :props="props">
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
+                    <div class="u-flex--center-y">
+                        {{ col.label }}
+                    </div>
+                </q-th>
+            </q-tr>
+        </template>
+        <template v-slot:body="">
+            <q-tr >
+                <q-td key="spender">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="amount">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="contract">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="updated">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="action">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+            </q-tr>
+        </template>
+    </q-table>
     <q-dialog v-model="displayUpdateModal" @hide="modalHide">
         <q-card v-if="!signing" class="q-pa-xl">
             <q-card-section>
@@ -688,7 +727,7 @@ export default {
                     id="updateBtn"
                     :disabled="!modalUpdateValue"
                     :label="$t('global.sign')"
-                    color="secondary"
+                    color="primary"
                     text-color="black"
                     @click="this.$refs.input.validate() && this.confirmModalUpdate()"
                 />
@@ -722,7 +761,7 @@ export default {
                 <q-btn
                     v-close-popup
                     :label="$t('global.sign')"
-                    color="secondary"
+                    color="primary"
                     text-color="black"
                     @click="confirmModal()"
                 />

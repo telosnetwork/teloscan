@@ -55,7 +55,8 @@ module.exports = {
         }],
         'no-return-assign': ['error', 'always'],
         'no-param-reassign': 'error',
-
+        'no-unused-vars': 'off',
+        '@typescript-eslint/no-unused-vars': ['error'],
 
         'vue/html-indent': ['warn', 4, { 'baseIndent': 0 }],
         'vue/max-attributes-per-line': ['warn', {

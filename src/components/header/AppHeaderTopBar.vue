@@ -12,7 +12,14 @@ import { formatUnits } from 'ethers/lib/utils';
 import { useRoute } from 'vue-router';
 
 import { useChainStore } from 'src/antelope';
-import { IS_MAINNET, IS_TESTNET } from 'src/lib/chain-utils';
+import {
+    IS_MAINNET,
+    IS_TESTNET,
+    TELOSCAN_MAINNET_URL,
+    TELOSCAN_TESTNET_URL,
+    // BETA_TELOSCAN_MAINNET_URL,
+    // BETA_TELOSCAN_TESTNET_URL,
+} from 'src/lib/chain-utils';
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import OutlineButton from 'components/OutlineButton.vue';
@@ -91,14 +98,14 @@ function goToTeloscanMainnet() {
     if (IS_MAINNET) {
         return;
     }
-    window.open('https://teloscan.io', '_blank');
+    window.open(TELOSCAN_MAINNET_URL, '_blank');
 }
 
 function goToTeloscanTestnet() {
     if (IS_TESTNET) {
         return;
     }
-    window.open('https://testnet.teloscan.io', '_blank');
+    window.open(TELOSCAN_TESTNET_URL, '_blank');
 }
 </script>
 
@@ -144,7 +151,7 @@ function goToTeloscanTestnet() {
                 text-color="primary"
                 :icon-only="true"
             >
-                <img src="branding/telos-circle-logo.svg" height="24" width="24">
+                <img src="branding/telos.png" height="24" width="24">
 
                 <q-menu>
                     <q-list>

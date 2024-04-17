@@ -24,7 +24,7 @@ import {
     useChainStore,
 } from 'src/antelope/mocks';
 import { ual } from 'src/boot/ual';
-import evm, { providerManager } from 'src/boot/evm';
+import { evm, providerManager } from 'src/boot/evm';
 
 const $q = useQuasar();
 const store = useStore();
@@ -222,7 +222,7 @@ function hideDialog(){
             <q-tab name="native" :label="$t('components.advanced')" />
         </q-tabs>
         <q-separator/>
-        <q-tab-panels v-model="tab" animated>
+        <q-tab-panels v-model="tab" animated class="c-login-modal__panels">
             <q-tab-panel name="web3">
                 <q-card class="c-login-modal__image-container" @click="connectMetaMask()">
                     <q-img
@@ -311,6 +311,11 @@ function hideDialog(){
             svg path{
                 fill: white;
             }
+        }
+    }
+    &__panels{
+        .scroll{
+            overflow: unset;
         }
     }
 }

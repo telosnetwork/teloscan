@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import axios from 'axios';
 import { getTopicHash } from 'src/lib/utils';
 import { ERC1155_TRANSFER_SIGNATURE, TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures.js';
-import { erc721MetadataAbi } from 'src/lib/abi';
+import { erc1155Abi, erc721MetadataAbi } from 'src/lib/abi';
 const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 const systemContractList =
     'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json';
@@ -63,7 +63,7 @@ export default class ContractManager {
                 transaction.transfers = await this.getTransfers(raw);
                 return transaction;
             } catch (e) {
-                console.error(`Failed to parse transaction data ${data} using abi for ${contract.address}: ${e}`);
+                console.warn(`Unable to parse transaction data ${data} using abi for ${contract.address}: ${e}`);
             }
         }
         try {
@@ -77,7 +77,7 @@ export default class ContractManager {
                 return transaction;
             }
         } catch (e) {
-            console.info(`Failed to parse transaction data using abi for ${contract.address}: ${e}`);
+            console.warn(`Unable to parse transaction data using abi for ${contract.address}: ${e}`);
         }
     }
 
@@ -130,6 +130,19 @@ export default class ContractManager {
         } catch (e) {
             console.error(`Could load NFT #${tokenId} for ${address} from fallback RPC calls: ${e.message}`);
         }
+    }
+
+    async loadTokenMetadata(address, token, tokenId){
+        if(token.type === 'erc1155'){
+            const contract = await this.getContractFromAbi(address, erc1155Abi);
+            token.metadata = await contract.uri(tokenId);
+        } else {
+            const contract = await this.getContractFromAbi(address, erc721MetadataAbi);
+            token.metadata = await contract.tokenURI(tokenId);
+        }
+        token.metadata = token.metadata.replace('ipfs://', 'https://cloudflare-ipfs.com/ipfs/');
+
+        return token;
     }
 
     getTokenTypeFromLog(log){
@@ -218,13 +231,13 @@ export default class ContractManager {
         }
         return null;
     }
-    async getContract(address, cacheEmpty) {
+    async getContract(address, force) {
         if (address === null || typeof address !== 'string') {
             return;
         }
         const addressLower = address.toLowerCase();
 
-        if (typeof this.contracts[addressLower] !== 'undefined') {
+        if (!force && typeof this.contracts[addressLower] !== 'undefined') {
             return this.contracts[addressLower];
         }
 
@@ -234,7 +247,7 @@ export default class ContractManager {
         }
 
         this.processing.push(addressLower);
-        let contract = (cacheEmpty) ? { address : address } : null;
+        let contract = null;
         try {
             let response = await this.indexerApi.get(`/contract/${address}?full=true&includeAbi=true`);
             if(response.data?.success && response.data.results.length > 0){

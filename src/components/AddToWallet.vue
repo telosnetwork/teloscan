@@ -56,15 +56,20 @@ export default {
 </div>
 </template>
 
-<style lang='sass' scoped>
-.c-metamask-prompt
-    color: $secondary
-    cursor: pointer
-.c-metamask-prompt .q-img:hover
-    filter: grayscale(0)
-.c-metamask-prompt .q-img
-    width: 32px
-    height: auto
-    filter: grayscale(1)
-    transition: 1s filter ease
+<style lang='scss' scoped>
+.c-metamask-prompt{
+    color: $secondary;
+    cursor: pointer;
+
+    .q-img:hover{
+        filter: grayscale(0);
+    }
+
+    .q-img{
+        width: 32px;
+        height: 32px;
+        filter: grayscale(1);
+        transition: 1s filter ease;
+    }
+}
 </style>

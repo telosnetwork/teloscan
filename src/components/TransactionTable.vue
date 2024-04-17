@@ -1,7 +1,8 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
 import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
-import { ref, watch } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { BigNumber } from 'ethers/lib/ethers';
 
@@ -16,6 +17,8 @@ import MethodField from 'components/MethodField.vue';
 import TransactionDialog from 'components/TransactionDialog.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
+
+import { Pagination } from 'src/types';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -39,9 +42,8 @@ const props = withDefaults(defineProps<Props>(), {
     accountAddress: '',
 });
 
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const rows = ref<Array<any>>([]);
+const loadingRows = ref<Array<number>>([]);
 const loading =  ref(false);
 const showDateAge = ref(true);
 const showTotalGasFee = ref(true);
@@ -49,17 +51,8 @@ const highlightMethod = ref('');
 const highlightAddress = ref('');
 const totalRows = ref(0);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const transactions: any[] = [];
 const page_size_options = [10, 25, 50, 100];
-
-type Pagination = {
-    sortBy: string;
-    descending: boolean;
-    page: number;
-    rowsPerPage: number;
-    rowsNumber: number;
-}
 
 const pagination = ref<Pagination>(
     {
@@ -212,7 +205,6 @@ async function parseTransactions() {
                     transaction.parsedTransaction = parsedTransaction;
                 }
                 transaction.contract = contract;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (e: any) {
                 console.error(
                     `Failed to parse data for transaction, error was: ${e.message}`,
@@ -227,7 +219,6 @@ async function parseTransactions() {
         }
         loading.value = false;
         rows.value = transactions;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
         $q.notify({
             type: 'negative',
@@ -238,7 +229,6 @@ async function parseTransactions() {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function addEmptyToCache(contracts: any, transaction: any){
     let found_to = 0;
     let found_from = 0;
@@ -267,7 +257,6 @@ function getPath() {
     path += `&offset=${(page - 1) * rowsPerPage}`;
     path += `&sort=${descending ? 'desc' : 'asc'}`;
     path += (pagination.value.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
-    path += '&includeAbi=true';
     if (props.block) {
         if (props.accountAddress) {
             path += `&startBlock=${props.block}&endBlock=${props.block}`;
@@ -306,29 +295,46 @@ function getValueDisplay(value: string) {
         false,
     );
 }
+
+const updateLoadingRows = () => {
+    loadingRows.value = [];
+    for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
+        loadingRows.value.push(i);
+    }
+};
+
+watch(() => pagination.value.rowsPerPage, () => {
+    updateLoadingRows();
+});
+
+onBeforeMount(() => {
+    updateLoadingRows();
+});
+
+
 </script>
 
 <template>
-<div v-if="totalRows >= FIVE_HUNDRED_K" class="c-transaction-table__limit-text">
-    {{ $t('pages.transactions.five_hundred_k_disclaimer', { total: totalRows.toLocaleString(locale) }) }}
+
+<div v-if="totalRows >= FIVE_HUNDRED_K">
+    <div  class="c-transaction-table__limit-text">
+        {{ $t('pages.transactions.five_hundred_k_disclaimer', { total: totalRows.toLocaleString(locale) }) }}
+    </div>
 </div>
+
 
 <q-card>
     <q-table
+        v-if="!loading"
         v-model:pagination="pagination"
         :rows="rows"
         :binary-state-sort="true"
         :rows-per-page-label="$t('global.records_per_page')"
         :row-key="row => row.hash"
         :columns="(columns as any)"
-        :loading="loading"
         :rows-per-page-options="page_size_options"
-        flat
         @request="onPaginationChange"
     >
-        <template v-slot:loading>
-            <q-inner-loading showing color="secondary" />
-        </template>
         <template v-slot:header="props">
             <q-tr :props="props">
                 <q-th
@@ -382,6 +388,7 @@ function getValueDisplay(value: string) {
                         <TransactionField
                             color="primary"
                             :transaction-hash="props.row.hash"
+                            :status="props.row.status === '0x1'"
                             :truncate="18"
                         />
                     </div>
@@ -405,7 +412,7 @@ function getValueDisplay(value: string) {
                         v-if="props.row.from"
                         :key="'trx-from-'+ props.row.from"
                         :address="props.row.from"
-                        :truncate="14"
+                        :truncate="12"
                         :copy="true"
                         :highlightAddress="highlightAddress"
                         @highlight="setHighlightAddress"
@@ -416,7 +423,7 @@ function getValueDisplay(value: string) {
                         v-if="props.row.to"
                         :key="'trx-to-'+ props.row.to"
                         :address="props.row.to"
-                        :truncate="14"
+                        :truncate="12"
                         :copy="true"
                         :highlightAddress="highlightAddress"
                         @highlight="setHighlightAddress"
@@ -435,6 +442,87 @@ function getValueDisplay(value: string) {
             </q-tr>
         </template>
     </q-table>
+    <q-table
+        v-else
+        v-model:pagination="pagination"
+        :rows="loadingRows"
+        :rows-per-page-label="$t('global.records_per_page')"
+        :columns="(columns as any)"
+        :rows-per-page-options="page_size_options"
+    >
+        <template v-slot:header="props">
+            <q-tr :props="props">
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                    class="c-transaction-table__cell"
+                >
+                    <div v-if="col.name === 'preview'" class="u-flex--center">
+                        <q-icon class="info-icon" name="far fa-question-circle"/>
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('pages.transactions.see_tx_preview_tooltip') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
+                        <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
+                        <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-else-if="col.name === 'method'" class="u-flex--center-y">
+                        {{ col.label }}
+                        <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
+                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                            {{ $t('components.executed_based_on_decoded_data') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-else-if="col.name === 'fee'" class="u-flex--center-y" @click="toggleGasValue">
+                        <a>{{ showTotalGasFee ? col.label : $t('components.gas_price') }}</a>
+                        <q-icon class="info-icon" name="far fa-question-circle q-ml-xs" />
+                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                            {{ showTotalGasFee ? $t('components.gas_price_tlos') : $t('components.gas_price_gwei') }}
+                        </q-tooltip>
+                    </div>
+                    <template v-else>
+                        {{ col.label }}
+                    </template>
+                </q-th>
+            </q-tr>
+        </template>
+        <template v-slot:body="">
+            <q-tr>
+                <q-td key="preview" class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="hash" class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="method" class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="block"  class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="date">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="from"  class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="to"  class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key='value' class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key='fee' class="c-transaction-table__cell">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+            </q-tr>
+        </template>
+    </q-table>
 </q-card>
 
 </template>
@@ -449,9 +537,10 @@ function getValueDisplay(value: string) {
 
 .c-transaction-table {
     &__limit-text {
-        color: var(--grey-text-color);
+        height: 26px;
+        color: var(--text-color);
         font-size: 0.8rem;
-        text-align: right;
+        text-align: left;
         margin-bottom: 12px;
     }
 
@@ -463,8 +552,6 @@ function getValueDisplay(value: string) {
         padding: 7px 13px !important;
     }
 }
-
-
 </style>
 
 

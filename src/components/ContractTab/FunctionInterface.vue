@@ -7,8 +7,10 @@ import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
 import { LOGIN_DATA_KEY } from 'src/lib/utils';
-
-
+import { useAccountStore } from 'src/antelope';
+import { CURRENT_CONTEXT } from 'src/antelope/wallets';
+import { EvmABI, EvmFunctionParam } from 'src/antelope/types';
+import { WEI_PRECISION } from 'src/antelope/wallets/utils';
 import {
     asyncInputComponents,
     getComponentForInputType,
@@ -23,11 +25,7 @@ import {
 } from 'src/lib/function-interface-utils';
 
 import TransactionField from 'src/components/TransactionField.vue';
-import { useAccountStore } from 'src/antelope';
-import { CURRENT_CONTEXT } from 'src/antelope/wallets';
-import { EvmABI, EvmFunctionParam } from 'src/antelope/types';
-import { WEI_PRECISION } from 'src/antelope/wallets/utils';
-
+import LoginModal from 'components/LoginModal.vue';
 
 interface Opts {
     value?: string;
@@ -42,6 +40,7 @@ export default defineComponent({
     components: {
         ...asyncInputComponents,
         TransactionField,
+        LoginModal,
     },
     props: {
         contract: {
@@ -95,6 +94,7 @@ export default defineComponent({
                 'type': 'amount',
                 'internalType': 'amount',
             },
+            showLoginModal: false,
         };
     },
     async created() {
@@ -104,8 +104,8 @@ export default defineComponent({
     computed: {
         ...mapGetters('login', [
             'address',
-            'isLoggedIn',
             'isNative',
+            'isLoggedIn',
             'nativeAccount',
         ]),
         functionABI(){
@@ -169,9 +169,6 @@ export default defineComponent({
                 handleValueParsed:      (type: string, index: number, value: EvmFunctionParam) => handleValueParsed(type, index, value),
             }));
         },
-        enableRun() {
-            return this.isLoggedIn || this.abi.stateMutability === 'view';
-        },
         missingInputs() {
             if (this.abi.inputs.length !== this.params.length) {
                 return true;
@@ -210,7 +207,14 @@ export default defineComponent({
         clearAmount() {
             this.amountInput = 0;
         },
+        login() {
+            this.showLoginModal = true;
+        },
         async run() {
+            if (!this.isLoggedIn){
+                this.login();
+                return;
+            }
             this.loading = true;
             this.result = null;
             try {
@@ -359,6 +363,7 @@ export default defineComponent({
 
 <template>
 <div>
+    <LoginModal :show="showLoginModal" @hide="showLoginModal = false" />
     <q-dialog v-model="enterAmount">
         <q-card class="amount-dialog">
             <div class="q-pa-md">
@@ -429,12 +434,11 @@ export default defineComponent({
     </template>
 
     <q-btn
-        v-if="enableRun"
         :loading="loading"
         :label="runLabel"
         :disabled="missingInputs"
         class="run-button q-mb-md"
-        color="secondary"
+        color="primary"
         icon="send"
         @click="run"
     />

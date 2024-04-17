@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
-import { ref, watch } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { indexerApi } from 'src/boot/telosApi';
@@ -11,6 +11,8 @@ import DateField from 'components/DateField.vue';
 import { BlockData } from 'src/types';
 import { ethers } from 'ethers';
 
+import { Pagination } from 'src/types';
+
 const $q = useQuasar();
 const route = useRoute();
 const router = useRouter();
@@ -19,26 +21,21 @@ const { t: $t } = useI18n();
 export interface BlockTableProps {
     title: string;
     initialPageSize?: number,
+    showEmptyBlocks?: boolean,
 }
 
 const props = withDefaults(defineProps<BlockTableProps>(), {
     title: '',
     initialPageSize: 25,
+    showEmptyBlocks: false,
 });
 
 const rows = ref<Array<BlockData>>([]);
+const loadingRows = ref<Array<number>>([]);
 const loading = ref(false);
 const showDateAge = ref(true);
 const blocks: BlockData[] = [];
 const page_size_options = [10, 25, 50, 100];
-
-type Pagination = {
-    sortBy: string;
-    descending: boolean;
-    page: number;
-    rowsPerPage: number;
-    rowsNumber: number;
-}
 
 const pagination = ref<Pagination>(
     {
@@ -69,7 +66,7 @@ const columns = [
     {
         name: 'gasUsed',
         label: $t('components.blocks.gas_used'),
-        align: 'right',
+        align: 'left',
     },
 ];
 
@@ -93,6 +90,11 @@ watch(() => route.query.page,
         setPagination(page, size, desc);
     },
     { immediate: true },
+);
+
+watch(() => props.showEmptyBlocks, () => {
+    parseBlocks();
+}, { immediate: true },
 );
 
 function setPagination(page: number, size: number, desc: boolean) {
@@ -121,6 +123,9 @@ async function onPaginationChange(settings: { pagination: Pagination}) {
 async function fetchBlocksPage() {
     const path = getPath();
     const result = await indexerApi.get(path);
+    if (pagination.value.rowsNumber === 0) {
+        pagination.value.rowsNumber = result.data?.total_count ?? 0;
+    }
     return result;
 }
 
@@ -133,9 +138,6 @@ async function parseBlocks() {
 
     try {
         let response = await fetchBlocksPage();
-        if (pagination.value.rowsNumber === 0) {
-            pagination.value.rowsNumber = response.data?.results[0]?.number ?? 0;
-        }
 
         pagination.value.page = page;
         pagination.value.rowsPerPage = rowsPerPage;
@@ -153,7 +155,7 @@ async function parseBlocks() {
     } catch (e: unknown) {
         $q.notify({
             type: 'negative',
-            message: $t('components.blocks.transaction.load_error'),
+            message: $t('components.transaction.load_error'),
             caption: (e as {message:string}).message,
         });
         loading.value = false;
@@ -168,7 +170,11 @@ function getPath() {
     }`;
     path += `&offset=${(page - 1) * rowsPerPage}`;
     path += `&sort=${descending ? 'desc' : 'asc'}`;
-    path += '&includeCount=1';
+    path += '&includePagination=true';
+    if (!props.showEmptyBlocks){
+        path += '&noEmpty=true';
+    }
+
     return path;
 }
 
@@ -189,30 +195,36 @@ function getGasUsed(gasUsed: string) {
     return '0';
 }
 
+const updateLoadingRows = () => {
+    loadingRows.value = [];
+    for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
+        loadingRows.value.push(i);
+    }
+};
 
-function getTransactionsCount(transactionsCount: number | undefined) {
-    return transactionsCount?.toLocaleString() ?? '0';
-}
+watch(() => pagination.value.rowsPerPage, () => {
+    updateLoadingRows();
+});
+
+onBeforeMount(() => {
+    updateLoadingRows();
+});
 
 </script>
 
 <template>
 <q-table
+    v-if="!loading"
     v-model:pagination="pagination"
     class="c-block-table"
     :rows="rows"
     :binary-state-sort="true"
     :rows-per-page-label="$t('global.records_per_page')"
-    :row-key="row => row.number"
+    :row-key="row => row.blockNumber"
     :columns="(columns as any)"
-    :loading="loading"
     :rows-per-page-options="page_size_options"
-    flat
     @request="onPaginationChange"
 >
-    <template v-slot:loading>
-        <q-inner-loading showing color="secondary" />
-    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
@@ -240,9 +252,9 @@ function getTransactionsCount(transactionsCount: number | undefined) {
         </q-tr>
     </template>
     <template v-slot:body="props">
-        <q-tr :key="props.row.number" :props="props">
+        <q-tr :key="props.row.blockNumber" :props="props">
             <q-td key="block" :props="props">
-                <BlockField :block="props.row.number"/>
+                <BlockField :block="props.row.blockNumber"/>
             </q-td>
             <q-td key="timestamp" :props="props">
                 <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
@@ -253,16 +265,69 @@ function getTransactionsCount(transactionsCount: number | undefined) {
             <q-td key='transactionsCount' :props="props">
                 <span class="c-block-table__cell-trx">
                     {{
-                        getTransactionsCount(props.row.transactionCount) === '1'
+                        props.row.transactionsCount === 1
                             ? $t('components.blocks.count_transaction')
                             : $t('components.blocks.count_transactions', {
-                                count: getTransactionsCount(props.row.transactionCount)
+                                count: props.row.transactionsCount
                             })
                     }}
                 </span>
             </q-td>
             <q-td key='gasUsed' class="c-block-table__td-gas-used" :props="props">
                 {{ getGasUsed(props.row.gasUsed) }}
+            </q-td>
+        </q-tr>
+    </template>
+</q-table>
+<q-table
+    v-else
+    v-model:pagination="pagination"
+    class="c-block-table"
+    :rows="loadingRows"
+    :binary-state-sort="true"
+    :rows-per-page-label="$t('global.records_per_page')"
+    :columns="(columns as any)"
+    :rows-per-page-options="page_size_options"
+>
+    <template v-slot:header="props">
+        <q-tr :props="props">
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <div class="u-flex--center-y">
+                    {{ col.label }}
+                    <template v-if="col.name === 'date'">
+                        <q-icon
+                            class="info-icon q-ml-xs"
+                            name="fas fa-info-circle"
+                            @click="toggleDateFormat"
+                        >
+                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                                {{ $t('components.blocks.click_to_change_format') }}
+                            </q-tooltip>
+                        </q-icon>
+                    </template>
+                    <template v-if="col.name === 'method'">
+                        <q-icon class="info-icon" name="fas fa-info-circle q-ml-xs" />
+                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                            {{ $t('components.blocks.executed_based_on_decoded_data') }}
+                        </q-tooltip>
+                    </template>
+                </div>
+            </q-th>
+        </q-tr>
+    </template>
+    <template v-slot:body="">
+        <q-tr>
+            <q-td key="block">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="timestamp">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key='transactionsCount'>
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key='gasUsed' class="c-block-table__td-gas-used">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
             </q-td>
         </q-tr>
     </template>

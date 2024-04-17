@@ -9,6 +9,7 @@ import { useI18n } from 'vue-i18n';
 import { useStore } from 'vuex';
 import { useQuasar } from 'quasar';
 
+import BlockField from 'components/BlockField.vue';
 import { indexerApi, telosApi } from 'src/boot/telosApi';
 
 const $store = useStore();
@@ -24,16 +25,24 @@ const initialLoadComplete = ref(false);
 
 const tlosPrice = computed(() => $store.getters['chain/tlosPrice']); // no need to fetch TLOS price, it is already fetched on a timer in AppHeaderTopBar.vue
 const latestBlock = computed(() => $store.getters['chain/latestBlock']);
-const tlosPriceText = computed(() => `$${tlosPrice.value.toLocaleString(locale, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`);
+const tlosPriceText = computed(() =>
+    tlosPrice.value === 0 ? '--' : `$${tlosPrice.value.toLocaleString(locale, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`,
+);
 const marketCapText = computed(() =>
     marketCap.value === 0 ? '--' : `$${marketCap.value.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
 );
+
+
 const transactionCountText = computed(() => transactionsCount.value.toLocaleString(locale));
 
+const fetchTlosPrice = () => $store.dispatch('chain/fetchTlosPrice');
+
 onBeforeMount(() => {
-    updateFigures().then(() => {
-        initialLoadComplete.value = true;
-    });
+    updateFigures();
+
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+    }
 
     pollingInterval = setInterval(() => {
         updateFigures();
@@ -68,12 +77,28 @@ async function fetchMarketCap() {
     }
 }
 
+let milliseconds = 500;
 function updateFigures() {
+    fetchTlosPrice(); // This makes the Price to load before anything else
     return Promise.all([
         fetchMarketCap(),
         fetchLatestBlock(),
         fetchTotalTransactions(),
-    ]);
+    ]).then(() => {
+        if (tlosPrice.value > 0 && latestBlock.value > 0 && transactionsCount.value > 0) {
+            initialLoadComplete.value = true;
+        } else {
+            if (milliseconds > 10000) {
+                console.error('Failed to load all data after 10 seconds');
+                initialLoadComplete.value = true;
+                return;
+            }
+            milliseconds *= 2;
+            setTimeout(() => {
+                updateFigures();
+            }, milliseconds);
+        }
+    });
 }
 </script>
 
@@ -81,13 +106,18 @@ function updateFigures() {
 <q-card class="c-home-info">
     <q-card-section class="c-home-info__section">
         <div class="c-home-info__subsection">
-            <div class="u-flex--center-y">
-                <img src="branding/telos-circle-logo.svg" height="24" width="24">
+            <div class="c-home-info__label-container">
+                <img
+                    class="c-home-info__icon"
+                    src="branding/telos.png"
+                    height="14"
+                    width="14"
+                >
                 <span class="c-home-info__label">
                     {{ $t('components.tlos_price') }}
                 </span>
             </div>
-            <q-skeleton v-if="!initialLoadComplete" type="text" class="c-home-info__skeleton" />
+            <q-skeleton v-if="tlosPrice === 0 && !initialLoadComplete" type="text" class="c-home-info__skeleton" />
             <template v-else>{{ tlosPriceText }}</template>
         </div>
 
@@ -98,7 +128,7 @@ function updateFigures() {
                 {{ $t('pages.home.market_cap') }}
             </span>
             <br>
-            <q-skeleton v-if="!initialLoadComplete" type="text" class="c-home-info__skeleton" />
+            <q-skeleton v-if="marketCap === 0 && !initialLoadComplete" type="text" class="c-home-info__skeleton" />
             <template v-else>{{ marketCapText }}</template>
         </div>
     </q-card-section>
@@ -111,8 +141,12 @@ function updateFigures() {
                 {{ $t('pages.home.last_finalized_block') }}
             </span>
             <br>
-            <q-skeleton v-if="!initialLoadComplete" type="text" class="c-home-info__skeleton" />
-            <template v-else>{{ latestBlock }}</template>
+            <q-skeleton v-if="latestBlock === 0" type="text" class="c-home-info__skeleton" />
+            <BlockField
+                v-else
+                class="c-home-info__number"
+                :block="latestBlock.toString()"
+            />
         </div>
 
         <q-separator class="q-my-md" />
@@ -122,7 +156,7 @@ function updateFigures() {
                 {{ $t('pages.home.total_transactions') }}
             </span>
             <br>
-            <q-skeleton v-if="!initialLoadComplete" type="text" class="c-home-info__skeleton" />
+            <q-skeleton v-if="transactionsCount === 0" type="text" class="c-home-info__skeleton" />
             <template v-else>{{ transactionCountText }}</template>
         </div>
     </q-card-section>
@@ -149,6 +183,16 @@ function updateFigures() {
         @media screen and (min-width: $breakpoint-md-min) {
             height: 48px;
         }
+    }
+
+    &__label-container {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    &__icon {
+        margin-bottom: 2px;
     }
 
     &__label {

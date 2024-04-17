@@ -1,23 +1,16 @@
 <script setup lang="ts">
+
 import { LatestContainerOptions } from 'src/types';
-import { ref, defineProps, computed } from 'vue';
-import { useRouter } from 'vue-router';
-
-
-const router = useRouter();
+import { ref, computed } from 'vue';
 
 const props = defineProps<{
   options: LatestContainerOptions
 }>();
 
-const selectedOption = ref(Object.keys(props.options)[0]);
+const selectedOption = ref<string>(Object.keys(props.options)[0]);
 
 const selectOption = (option: string) => {
     selectedOption.value = option;
-};
-
-const goToPage = (link: string) => {
-    router.push({ name: link });
 };
 
 // only show the customize button if there are more than 1 options
@@ -54,7 +47,7 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
                                     name="check"
                                     :class="{
                                         'c-latest-data__menu-opt-check': true,
-                                        'c-latest-data__menu-opt-check--active': selectedOption === key
+                                        'c-latest-data__menu-opt-check--active': selectedOption === key.toString()
                                     }"
                                 />
                             </q-item-section>
@@ -70,14 +63,18 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
 
     <q-card-section class="c-latest-data__content">
         <template v-for="(name, key) in props.options" :key="key">
-            <slot v-if="selectedOption === key" :name="key"></slot>
+            <slot v-if="selectedOption === key.toString()" :name="key"></slot>
         </template>
     </q-card-section>
 
-
-    <q-card-actions align="center" class="c-latest-data__footer" @click="goToPage(props.options[selectedOption].link)">
-        <span class="c-latest-data__footer-text"> {{  props.options[selectedOption].footer  }} </span>
-        <q-icon name="arrow_forward" class="c-latest-data__footer-icon" />
+    <q-card-actions
+        align="center"
+        class="c-latest-data__footer"
+    >
+        <router-link class="c-latest-data__footer-container" :to="{ name: props.options[selectedOption].link }">
+            <span class="c-latest-data__footer-text"> {{ props.options[selectedOption].footer }} </span>
+            <q-icon name="arrow_forward" class="c-latest-data__footer-icon" />
+        </router-link>
     </q-card-actions>
 
 </q-card>
@@ -86,21 +83,21 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
 
 <style lang="scss">
 .c-latest-data {
-    border-radius: 12px;
-    height: 550px;
-    position: relative;
-    padding-bottom: 24px;
+
+    height: 528px;
+    overflow-y: hidden;
 
     &__header {
         &-title {
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
         }
     }
 
     &__content {
+        padding-bottom: 33px;
         overflow-y: auto;
-        max-height: 470px;
+        @include scroll-bar;
     }
 
     &__menu-opt-check {
@@ -120,6 +117,13 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
         gap: 5px;
         background-color: color-mix(in srgb, white, black 5%);
 
+        &-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+
         body.body--dark & {
             background-color: color-mix(in srgb, $dark, white 5%);
         }
@@ -134,4 +138,9 @@ const showCustomize = computed(() => Object.keys(props.options).length > 1);
     }
 }
 
+@media screen and (max-width: $latest-data-breakpoint) {
+    .c-latest-data {
+        height: fit-content;
+    }
+}
 </style>

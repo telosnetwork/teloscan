@@ -39,7 +39,7 @@ export default {
             },
             {
                 name: 'date',
-                label: this.$t('components.date'),
+                label: this.$t('components.age'),
                 align: 'left',
             },
             {
@@ -72,11 +72,12 @@ export default {
 
         return {
             rows: [],
+            loadingRows: [],
             columns,
             transfers: [],
             pageSize: this.initialPageSize,
             total: null,
-            loading: false,
+            loading: true,
             expectedTopicLength: 0,
             pagination: {
                 sortBy: 'date',
@@ -87,7 +88,11 @@ export default {
             },
             showDateAge: true,
             tokenList: {},
+            highlightAddress: '',
         };
+    },
+    created(){
+        this.updateLoadingRows();
     },
     mounted() {
         switch (this.tokenType) {
@@ -109,6 +114,22 @@ export default {
         });
     },
     methods: {
+        truncatedId(id) {
+            if (id.length > 7) {
+                return `${id.substring(0, 4)}...${id.substring(id.length - 3)}`;
+            } else {
+                return id;
+            }
+        },
+        setHighlightAddress(address) {
+            this.highlightAddress = address;
+        },
+        async updateLoadingRows() {
+            this.loadingRows = [];
+            for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+                this.loadingRows.push(i);
+            }
+        },
         async onRequest(props) {
             this.loading = true;
 
@@ -119,49 +140,40 @@ export default {
                 this.pagination.rowsNumber = response.data.total_count;
             }
 
-            const tokenList = await this.$contractManager.getTokenList();
-
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
+            this.updateLoadingRows();
 
             let newTransfers = [];
             for (const transfer of response.data.results) {
-                let contract = await this.$contractManager.getContract(transfer.contract);
+                const contractData = response.data.contracts[transfer.contract];
                 let valueDisplay;
                 if(this.tokenType === 'erc20'){
-                    if (contract && contract.properties.decimals) {
-                        valueDisplay = formatWei(transfer.amount, contract.properties.decimals);
+                    if (contractData && contractData.decimals) {
+                        valueDisplay = formatWei(transfer.amount, contractData.decimals);
                     } else {
                         valueDisplay = this.$t('components.unknown_precision');
                     }
                 } else if (this.tokenType === 'erc721') {
                     valueDisplay = '#' + transfer.id.toString();
-                    if(contract){
-                        transfer.token = await this.$contractManager.loadNFT(contract, transfer.id);
-                    }
                 } else if (this.tokenType === 'erc1155') {
                     valueDisplay = transfer.amount.toString();
                 } else if(transfer.id) {
                     valueDisplay = '#' + transfer.id.toString();
                 }
-                tokenList.tokens.forEach((token) => {
-                    if(token.address.toLowerCase() === transfer.contract.toLowerCase()){
-                        contract.logoURI = token.logoURI;
-                    }
-                });
+
                 const nTransfer = {
                     hash: transfer.transaction,
-                    timestamp: transfer.timestamp / 1000,
-                    count: 1,
+                    timestamp: transfer.timestamp,
+                    count: transfer.amount,
                     id: transfer.id,
                     token: transfer.token,
                     value: valueDisplay,
-                    contract: contract,
+                    contract: contractData,
                     from: toChecksumAddress(transfer.from),
                     to: toChecksumAddress(transfer.to),
-                    ...contract,
                 };
 
                 newTransfers.push(nTransfer);
@@ -172,7 +184,6 @@ export default {
                 this.transfers.length,
                 ...newTransfers,
             );
-
             this.rows = this.transfers;
             this.loading = false;
         },
@@ -187,6 +198,16 @@ export default {
 
             return path;
         },
+        convertToEpoch(dateString){
+            // date may be returned as date string or epoch depending on api call
+            if (typeof dateString === 'number'){
+                return dateString / 1000;
+            }
+            // convert YYYY-MM-DD hh:mm:ss format returned from api to unix epoch
+            const d = dateString.split(/\D+/);
+            const epoch = new Date(d[0], --d[1], d[1], d[3], d[4], d[5]) / 1000;
+            return epoch;
+        },
         toggleDateFormat() {
             this.showDateAge = !this.showDateAge;
         },
@@ -198,19 +219,15 @@ export default {
 
 <template>
 <q-table
+    v-if="!loading"
     v-model:pagination="pagination"
     :rows="rows"
     :row-key="row => row.hash"
     :columns="columns"
-    :loading="loading"
     :rows-per-page-label="$t('global.records_per_page')"
     :rows-per-page-options="[10, 20, 50]"
-    flat
     @request="onRequest"
 >
-    <template v-slot:loading>
-        <q-inner-loading showing color="secondary" />
-    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th
@@ -218,19 +235,24 @@ export default {
                 :key="col.name"
                 :props="props"
             >
-                <div class="u-flex--center-y">
-                    {{ col.label }}
+                <div
+                    v-if="col.name==='date'"
+                    class="u-flex--center-y"
+                    @click="toggleDateFormat"
+                >
+                    <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
 
                     <q-icon
-                        v-if="col.name==='date'"
                         class="info-icon"
-                        name="fas fa-info-circle"
-                        @click="toggleDateFormat"
+                        name="far fa-question-circle"
                     >
                         <q-tooltip anchor="bottom middle" self="bottom middle">
                             {{ $t('components.click_to_change_format') }}
                         </q-tooltip>
                     </q-icon>
+                </div>
+                <div v-else class="u-flex--center-y">
+                    {{ col.label }}
                 </div>
 
             </q-th>
@@ -243,7 +265,7 @@ export default {
                 <TransactionField :transaction-hash="props.row.hash"/>
             </q-td>
             <q-td key="date" :props="props">
-                <DateField :epoch="props.row.timestamp" :force-show-age="showDateAge" />
+                <DateField :epoch="convertToEpoch(props.row.timestamp)" :force-show-age="showDateAge"/>
             </q-td>
             <q-td key="direction" :props="props">
                 <span v-if="toChecksumAddress(address) === toChecksumAddress(props.row.from)" class="direction out">
@@ -257,10 +279,24 @@ export default {
                 </span>
             </q-td>
             <q-td key="from" :props="props">
-                <AddressField :key="props.row.from" :address="props.row.from" :truncate="16"/>
+                <AddressField
+                    v-if="props.row.from"
+                    :key="props.row.from"
+                    :address="props.row.from"
+                    :truncate="16"
+                    :highlightAddress="highlightAddress"
+                    @highlight="setHighlightAddress"
+                />
             </q-td>
             <q-td key="to" :props="props">
-                <AddressField :key="props.row.to" :address="props.row.to" :truncate="16"/>
+                <AddressField
+                    v-if="props.row.to"
+                    :key="props.row.to"
+                    :address="props.row.to"
+                    :truncate="16"
+                    :highlightAddress="highlightAddress"
+                    @highlight="setHighlightAddress"
+                />
             </q-td>
             <q-td key="value" :props="props">
                 <span v-if="tokenType==='erc721' && props.row.token?.imageCache">
@@ -280,47 +316,130 @@ export default {
             </q-td>
             <q-td key="token" :props="props" class="flex items-center">
                 <AddressField
-                    :key="props.row.contract"
-                    class="token-name"
-                    :address="props.row.address"
-                    :contract="props.row.contract"
-                    :truncate="15"
+                    :key="props.row.contract.address"
+                    :address="props.row.contract.address"
+                    :truncate="16"
+                    :highlightAddress="highlightAddress"
+                    @highlight="setHighlightAddress"
                 />
-                <span v-if="tokenType === 'erc1155'" class="q-pl-xs" >#{{ props.row.id}}</span>
+                <span v-if="tokenType === 'erc1155'" class="q-pl-xs" >
+                    #{{ truncatedId(props.row.id) }}
+                    <q-tooltip>{{ props.row.id }}</q-tooltip>
+                </span>
+            </q-td>
+        </q-tr>
+    </template>
+</q-table>
+<q-table
+    v-else
+    v-model:pagination="pagination"
+    :rows="loadingRows"
+    :row-key="row => row.hash"
+    :columns="columns"
+    :rows-per-page-label="$t('global.records_per_page')"
+    :rows-per-page-options="[10, 20, 50]"
+>
+    <template v-slot:header="props">
+        <q-tr :props="props">
+            <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+            >
+                <div
+                    v-if="col.name==='date'"
+                    class="u-flex--center-y"
+                    @click="toggleDateFormat"
+                >
+                    <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
+
+                    <q-icon
+                        class="info-icon"
+                        name="far fa-question-circle"
+                    >
+                        <q-tooltip anchor="bottom middle" self="bottom middle">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
+                    </q-icon>
+                </div>
+                <div v-else class="u-flex--center-y">
+                    {{ col.label }}
+                </div>
+
+            </q-th>
+        </q-tr>
+    </template>
+
+    <template v-slot:body="">
+        <q-tr>
+            <q-td key="hash" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="date" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="direction" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="from" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="to" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="value" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="token" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
             </q-td>
         </q-tr>
     </template>
 </q-table>
 </template>
 
-<style lang='sass' scoped>
-.direction
-    user-select: none
-    padding: 3px 6px
-    border-radius: 5px
-    font-size: 0.9em
-.direction.in
-    color: rgb(0,161,134)
-    background: rgba(0,161,134,0.1)
-    border: 1px solid rgb(0,161,134)
-.direction.out
-    color: #cc9a06!important
-    background: rgba(255,193,7,0.1)
-    border: 1px solid #cc9a06!important
-.nft-icon
-    width: 32px
-    height: 32px
-    vertical-align: middle
-    border-radius: 100%
+<style lang='scss' scoped>
+.direction {
+  user-select: none;
+  padding: 3px 6px;
+  border-radius: 5px;
+  font-size: 0.9em;
 
-.coin-icon
-  width: 20px
-  height: 20px
-  margin-right: .25rem
-  vertical-align: middle
-  border-radius: 100%
+  &.in {
+    color: rgb(0, 161, 134);
+    background: rgba(0, 161, 134, 0.1);
+    border: 1px solid rgb(0, 161, 134);
+  }
 
-.token-name
-  vertical-align: middle
-  display: inline-block
+  &.out {
+    color: #cc9a06 !important;
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid #cc9a06 !important;
+  }
+}
+
+.nft-icon {
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+  border-radius: 100%;
+}
+
+.coin-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: .25rem;
+  vertical-align: middle;
+  border-radius: 100%;
+}
+
+.token-name {
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.info-icon{
+    margin-left: .25rem;
+}
+
 </style>

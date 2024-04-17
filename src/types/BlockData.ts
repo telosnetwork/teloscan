@@ -1,7 +1,7 @@
 export interface BlockData {
-    transactionsCount: number;
-    number: string;
-    blockHeight: string; // same as number
+    number: string;             // this is returning from indexer but it should be called blockNumber
+    blockNumber: number;        // replicates the number value in number format (not string)
+    transactionsCount: number;  // replicates the transactionsCount value in number format (not string) https://api.testnet.teloscan.io/v1/blocks?includeCount=true
     logsBloom: string;
     gasLimit: string;
     gasUsed: string;

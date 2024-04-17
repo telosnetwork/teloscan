@@ -36,7 +36,6 @@ export function formatWei(bn, tokenDecimals, displayDecimals) {
     const formatted = ethers.utils.formatUnits(amount.toString(), (tokenDecimals || WEI_PRECISION));
     let str = formatted.toString();
     str = str.padEnd(str.length + displayDecimals, '0');
-    console.log('str', str);
     if(displayDecimals > 0 && str.includes('.')) {
         const parts = str.split('.');
         return parts[0] + '.' + parts[1].slice(0, displayDecimals);
@@ -211,4 +210,49 @@ export function getFormattedUtcOffset(date) {
     const hours = pad(Math.floor(offset / 60));
     const minutes = pad(offset % 60);
     return sign + hours + ':' + minutes;
+}
+
+/**
+ * This functions returns the name of the browser
+ */
+export function getBrowserName() {
+    const userAgent = window.navigator.userAgent;
+    const browsers = {
+        chrome: /chrome/i,
+        safari: /safari/i,
+        firefox: /firefox/i,
+        ie: /internet explorer/i,
+        edge: /edge/i,
+        opera: /opera/i,
+        ios_saf: /version\/(\d).*safari/i,
+    };
+
+    for (const key in browsers) {
+        if (browsers[key].test(userAgent)) {
+            return key;
+        }
+    }
+
+    return 'unknown';
+}
+
+/**
+ * This functions returns true if we are using Firefox
+ */
+export function isFirefox() {
+    return getBrowserName() === 'firefox';
+}
+
+/**
+ * This functions returns true if we are using Safari
+ */
+export function isSafari() {
+    return getBrowserName() === 'safari';
+}
+
+/**
+ * This functions returns true if we are using Chrome
+ */
+export function isChrome() {
+    return getBrowserName() === 'chrome';
 }

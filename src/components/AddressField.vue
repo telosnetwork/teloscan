@@ -34,6 +34,10 @@ const props = defineProps({
         type: Number,
         default: 0,
     },
+    hideContractIcon: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(['highlight']);
@@ -41,17 +45,29 @@ const emit = defineEmits(['highlight']);
 const displayName = ref('');
 const fullName = ref(toChecksumAddress(props.address));
 const contract = ref<any>(null);
+const contractName = ref('');
 const logo = ref<any>(null);
 const tokenList = ref<any>(null);
+const checksum = ref('');
+
+const restart = async () => {
+    if (!props.address) {
+        return;
+    }
+    tokenList.value = await contractManager.getTokenList();
+    checksum.value = toChecksumAddress(props.address);
+    await loadContract();
+    await getDisplay();
+};
+
+
 
 watch(() => props.address, async () => {
-    await loadContract();
+    restart();
 });
 
 onMounted(async () => {
-    tokenList.value = await contractManager.getTokenList();
-    await loadContract();
-    await getDisplay();
+    restart();
 });
 
 const truncateText = (text: string, middle?: boolean) => {
@@ -59,8 +75,7 @@ const truncateText = (text: string, middle?: boolean) => {
         return text;
     }
     if (middle) {
-        // eslint-disable-next-line max-len
-        return `${text.slice(0, (props.truncate / 2))}...${text.slice(text.length - (props.truncate / 2), text.length)}`;
+        return `${text.slice(0, (props.truncate / 2 + 2))}...${text.slice(text.length - (props.truncate / 2), text.length)}`;
     }
     return `${text.slice(0, props.truncate)}...`;
 };
@@ -74,7 +89,7 @@ const getDisplay = async () => {
         return;
     }
     let address = toChecksumAddress(props.address);
-    if (contract.value && contract.value.getName() && contract.value.getName().length > 0) {
+    if (contractName.value) {
         if(tokenList.value?.tokens){
             tokenList.value.tokens.forEach((token: any) => {
                 if(token.address.toLowerCase() === contract.value.address.toLowerCase()){
@@ -88,7 +103,7 @@ const getDisplay = async () => {
         ;
         const name = (contract.value.isToken() && contract.value.getProperties()?.symbol)
             ? contract.value.getProperties().symbol
-            : contract.value.getName()
+            : contractName.value
                 ;
         if(!name.startsWith('0x')){
             displayName.value = truncateText(name);
@@ -100,11 +115,11 @@ const getDisplay = async () => {
 };
 
 const loadContract = async () => {
-    let contractObj = await contractManager.getContract(props.address, true);
-    if (contractObj) {
-        fullName.value = (contractObj.getName() && !contractObj.getName().startsWith('0x'))
-            ? contractObj.getName()
-            : fullName.value;
+    let contractObj = await contractManager.getContract(props.address) ?? { address: props.address };
+
+    if (contractObj && contractObj.abi?.length > 0) {
+        contractName.value = contractObj.getName() ?? contractObj.name ?? '';
+        fullName.value = contractName.value || fullName.value;
         contract.value = contractObj;
     }
 };
@@ -117,26 +132,26 @@ function emitHighlight(val: string) {
 
 <template>
 <div
-    :key="displayName + address"
-    class='c-address-field'
-    @mouseover="emitHighlight(address)"
+    :key="displayName + checksum"
+    :class="['c-address-field', props.class]"
+    @mouseover="emitHighlight(checksum)"
     @mouseleave="emitHighlight('')"
 >
     <router-link
-        :to="`/address/${address}`"
+        :to="`/address/${checksum}`"
         :class="{
             'c-address-field__link': true,
-            'c-address-field__link--highlight': highlightAddress === props.address && highlightAddress !== ''
+            'c-address-field__link--highlight': highlightAddress === checksum && highlightAddress !== ''
         }"
     >
         <q-img
-            v-if="logo !== null"
+            v-if="logo !== null && hideContractIcon === false"
             class="q-mr-xs"
             :src="getIcon(logo)"
             width="16px"
             height="auto"
         />
-        <q-icon v-else-if="contract && contract.getName()" name="far fa-file" />
+        <q-icon v-else-if="contract && hideContractIcon == false" name="far fa-file-code" />
         <span class="c-address-field__text">{{ displayName }}</span>
         <q-tooltip v-if="fullName !== displayName">{{ fullName }}</q-tooltip>
     </router-link>
@@ -146,7 +161,6 @@ function emitHighlight(val: string) {
 
 <style lang="scss">
 .c-address-field {
-    min-width: 140px;
     display: inline-flex;
     align-items: center;
     gap: 4px;

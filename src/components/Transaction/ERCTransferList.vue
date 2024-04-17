@@ -1,405 +1,264 @@
-<script>
-import AddressField from 'components/AddressField';
-import { formatWei } from 'src/lib/utils';
-import { BigNumber, ethers } from 'ethers';
-import { getIcon } from 'src/lib/token-utils';
-import CustomTooltip  from 'components/CustomTooltip';
-import TokenValueField from 'components/Token/TokenValueField';
-import { TRANSFER_SIGNATURES, ERC1155_BATCH_TRANSFER_SIGNATURE } from 'src/lib/abi/signature/transfer_signatures';
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+<script lang="ts" setup>
+import { PropType, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useQuasar } from 'quasar';
+import { BigNumber } from 'ethers';
 
-export default {
-    name: 'ERCTransfersList',
-    components: {
-        AddressField,
-        CustomTooltip,
-        TokenValueField,
+import { EvmTransactionLog  } from 'antelope/types/EvmTransaction';
+import AddressField from 'components/AddressField.vue';
+import { ERCTransfer, ERC721Transfer, ERC1155Transfer, ERC20Transfer, TokenBasicData } from 'src/types';
+import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
+
+import { contractManager } from 'src/boot/telosApi';
+import { TRANSFER_SIGNATURES } from 'src/antelope/types';
+
+const $q = useQuasar();
+const { t: $t } = useI18n();
+const locale = useI18n().locale.value;
+
+const props = defineProps({
+    logs: {
+        type: Array as PropType<ERCTransfer[]>,
+        required: false,
+        default: () => [],
     },
-    props: {
-        logs: {
-            type: Array,
-            required: true,
-        },
-        type: {
-            type: String,
-            required: false,
-            default: 'erc20',
-        },
-        trxFrom: {
-            type: String,
-            required: false,
-        },
-        expanded: {
-            type: Boolean,
-            required: false,
-            default: false,
-        },
+    type: {
+        type: String,
+        required: false,
+        default: 'erc20',
     },
-    methods: {
-        formatWei,
-        getIcon,
-        parseTransfer(transfer){
-            if(transfer.token?.metadata && transfer.token.metadata !== '"___INVALID_METADATA___"'){
-                transfer.metadata = JSON.parse(transfer.token.metadata);
-                Object.keys(transfer.metadata).forEach((key) => {
-                    if(['image', 'attributes', 'name', 'description'].includes(key) === false){
-                        delete transfer.metadata[key];
-                    }
-                });
-            }
-            return transfer;
-        },
-        async expand(){
-            this.isExpanded = true;
-            this.pTransfers = await this.loadTransfers();
-        },
-        async loadTransfers() {
-            let transfers = [];
-            for (const log of this.logs) {
-                let sig = log.topics[0].substr(0, 10);
-                if (TRANSFER_SIGNATURES.includes(sig)) {
-                    let contract = await this.$contractManager.getContract(log.address);
-                    if(!contract || contract.supportedInterfaces === null){
-                        continue;
-                    }
-                    if(transfers.length >= 10 && this.isExpanded === false){
-                        if (
-                            this.type === 'erc721' && contract.supportedInterfaces.includes('erc721') ||
-                            this.type === 'erc1155' && contract.supportedInterfaces.includes('erc1155') ||
-                            this.type === 'erc20' && contract.supportedInterfaces.includes('erc20')
-                        ) {
-                            this.more++;
-                            continue;
-                        }
-                        break;
-                    }
-                    if (this.type === 'erc721' && contract.supportedInterfaces.includes('erc721')) {
-                        let tokenId = BigNumber.from(log.topics[3]).toString();
-                        this.isLoading = true;
-                        let token = await this.$contractManager.loadNFT(contract, tokenId.toString());
-                        let tokenUri = null;
-                        if(token){
-                            tokenUri = token.tokenUri?.replace('ipfs://', 'https://ipfs.io/ipfs/');
-                        } else {
-                            token = contract;
-                        }
-                        transfers.push({
-                            'tokenId': tokenId,
-                            'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                            'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
-                            'token' : token,
-                            'contract' : contract,
-                            'tokenUri': tokenUri,
-                        });
-                    } else if (this.type === 'erc1155' && contract.supportedInterfaces.includes('erc1155')) {
-                        this.isLoading = true;
-                        if(sig === ERC1155_BATCH_TRANSFER_SIGNATURE){
-                            const decoded = ethers.utils.defaultAbiCoder.decode(
-                                ['uint256[]', 'uint256[]'],
-                                log.data,
+    highlightAddress: {
+        type: String,
+        required: false,
+        default: '',
+    },
+});
+
+const emit = defineEmits(['highlight']);
+
+const erc721_transfers  = ref<ERC721Transfer[]>([]);
+const erc1155_transfers = ref<ERC1155Transfer[]>([]);
+const erc20_transfers   = ref<ERC20Transfer[]>([]);
+
+const loadTransfers = async () => {
+    if (!props.logs || props.logs.length === 0) {
+        return;
+    }
+
+    const logs = props.logs as EvmTransactionLog[];
+
+    for (const log of logs) {
+        // ERC20, ERC721 & ERC1155 transfers (ERC721 & ERC20 have same first topic but ERC20 has 4 topics for
+        // transfers, ERC20 has 3 log topics, ERC1155 has a different first topic)
+        let sig = log.topics[0].substring(0, 10);
+        if (TRANSFER_SIGNATURES.includes(sig)) {
+            let type = contractManager.getTokenTypeFromLog(log);
+            let contract = await contractManager.getContract(log.address, type);
+            if (typeof contract.properties !== 'undefined' && contract.properties !== null) {
+                let token: TokenBasicData = {
+                    'symbol': contract.properties.symbol,
+                    'address': log.address,
+                    'name': contract.properties.name,
+                    'decimals': contract.properties.decimals,
+                };
+                if (type === 'erc721') {
+                    console.error('NOT IMPLEMENTED: ERC721 transfers');
+                    let tokenId = BigNumber.from(log.topics[3]).toString();
+                    if (contract.token.extensions?.metadata) {
+                        try {
+                            token = await contractManager.loadTokenMetadata(
+                                log.address,
+                                contract.token,
+                                tokenId,
                             );
-                            const tokenIds = decoded[0];
-                            const tokenAmounts = decoded[1];
-                            for(let i = 0; i < tokenIds.length; i++){
-                                if(transfers.length >= 10 && this.isExpanded === false){
-                                    this.more++;
-                                    continue;
-                                }
-                                let token = this.$contractManager.loadNFT(contract, tokenIds[i].toString());
-                                if(!token){
-                                    token = contract;
-                                }
-                                transfers.push({
-                                    'amount': tokenAmounts[i],
-                                    'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
-                                    'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                                    'tokenId': tokenIds[i],
-                                    'token' : token,
-                                    'contract' : contract,
-                                });
-                            }
-                        } else {
-                            const tokenId = BigNumber.from(log.data.substr(0, 66)).toString();
-                            let token = this.$contractManager.loadNFT(contract, tokenId.toString());
-                            if(!token){
-                                token = contract;
-                            }
-                            transfers.push({
-                                'amount': BigNumber.from('0x' + log.data.substr(66, log.data.length)).toString(),
-                                'to': '0x' + log.topics[3].substr(log.topics[3].length - 40, 40),
-                                'from': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                                'tokenId': tokenId,
-                                'token' : token,
-                                'contract' : contract,
+                        } catch (e: any) {
+                            console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
+                            // notify the user
+                            $q.notify({
+                                message: $t(
+                                    'pages.couldnt_retreive_metadata_for_address',
+                                    { address: contract.address, message: e.message },
+                                ),
+                                color: 'negative',
+                                position: 'top',
+                                timeout: 5000,
                             });
                         }
-                    } else if (this.type === 'erc20' && contract.supportedInterfaces.includes('erc20')) {
-                        transfers.push({
-                            'value': log.data,
-                            'wei': BigNumber.from(log.data).toString(),
-                            'to': '0x' + log.topics[2].substr(log.topics[2].length - 40, 40),
-                            'from': '0x' + log.topics[1].substr(log.topics[1].length - 40, 40),
-                            'contract' : contract,
-                        });
                     }
+                    erc721_transfers.value.push({
+                        'tokenId': tokenId,
+                        'to': '0x' + log.topics[2].substring(log.topics[2].length - 40, 40),
+                        'from': '0x' + log.topics[1].substring(log.topics[1].length - 40, 40),
+                        'token': token,
+                    });
+                } else if (type === 'erc1155') {
+                    console.error('NOT IMPLEMENTED: ERC1155 transfers');
+                    let tokenId = BigNumber.from(log.data.substring(0, 66)).toString();
+                    if (contract.token.extensions?.metadata) {
+                        try {
+                            token = await contractManager.loadTokenMetadata(
+                                log.address,
+                                contract.token,
+                                tokenId,
+                            );
+                        } catch (e: any) {
+                            console.error(`Could not retreive metadata for ${contract.address}: ${e.message}`);
+                            // notify the user
+                            $q.notify({
+                                message: $t(
+                                    'pages.couldnt_retreive_metadata_for_address',
+                                    { address: contract.address, message: e.message },
+                                ),
+                                color: 'negative',
+                                position: 'top',
+                                timeout: 5000,
+                            });
+                        }
+                    }
+                    erc1155_transfers.value.push({
+                        'tokenId': tokenId,
+                        'amount': BigNumber.from(log.data).toString(),
+                        'to': '0x' + log.topics[3].substring(log.topics[3].length - 40, 40),
+                        'from': '0x' + log.topics[2].substring(log.topics[2].length - 40, 40),
+                        'token': token,
+                    });
+                } else {
+
+                    erc20_transfers.value.push({
+                        'value': log.data,
+                        'wei': BigNumber.from(log.data).toString(),
+                        'from': '0x' + log.topics[1].substring(log.topics[1].length - 40),
+                        'to': '0x' + log.topics[2].substring(log.topics[2].length - 40),
+                        'token': token,
+                    });
                 }
             }
-            for(let i = 0; i < transfers.length;i++){
-                transfers[i] = this.parseTransfer(transfers[i]);
-            }
-            this.isLoading = false;
-            return  transfers;
-        },
-    },
-
-    async mounted() {
-        this.pTransfers = await this.loadTransfers();
-    },
-    data() {
-        return {
-            BigNumber: BigNumber,
-            pTransfers: [],
-            isExpanded: this.expanded,
-            more: false,
-            isLoading: false,
-        };
-    },
+        }
+    }
 };
+
+function setHighlightAddress(val: string) {
+    emit('highlight', val);
+}
+
+const getValueDisplay = (value: string, symbol: string, decimals: number) =>
+    prettyPrintCurrency(
+        BigNumber.from(value),
+        4,
+        locale,
+        false,
+        symbol,
+        false,
+        typeof decimals === 'string' ? parseInt(decimals) : decimals,
+        false,
+    );
+
+watch(() => props.logs, async (newTrx) => {
+    if (newTrx) {
+        await loadTransfers();
+    }
+}, { immediate: true });
+
+
 </script>
 
+
 <template>
-<div v-if="pTransfers.length > 0" class="fit row wrap justify-start items-start content-start q-pb-md q-mb-xs">
-    <div  class="col-3">
-        <strong>
-            <span>{{ $t('pages.transfers_title', {'type': type.toUpperCase() }) }}</span>
-        </strong>
-    </div>
-    <div class="col-9 erc-transfers">
-        <div
-            v-for="(transfer, index) in pTransfers"
-            :key="'erct' + index"
-            class="fit row wrap justify-start items-start content-start"
-        >
-            <div class="col-4 flex">
-                <q-icon class="list-arrow" name="arrow_right"/>
-                <strong class="q-pr-sm">
-                    {{ $t('components.transaction.from') }} :
-                </strong>
-                <AddressField
-                    :address="transfer.from"
-                    :truncate="12"
-                    copy
-                    :name="
-                        transfer.contract && transfer.from.toLowerCase() === transfer.contract.address.toLowerCase()
-                            && transfer.contract.name ?  transfer.contract.name : null
-                    "
-                />
-            </div>
-            <div class="col-3 flex">
-                <strong class="q-pr-sm">{{ $t('components.transaction.to') }} : </strong>
-                <AddressField
-                    :address="transfer.to"
-                    :truncate="12"
-                    copy
-                    :name="
-                        transfer.contract && transfer.to.toLowerCase() === transfer.contract.address.toLowerCase()
-                            && transfer.contract.name ?  transfer.contract.name : null
-                    "
-                />
-            </div>
-            <div
-                v-if="
-                    transfer.contract.supportedInterfaces.includes('erc721')
-                        || transfer.contract.supportedInterfaces.includes('erc1155')
-                "
-                class="flex col-4"
-            >
-                <span v-if="transfer.amount > 0">{{ transfer.amount }} x</span>
-                <router-link
-                    class="q-ml-xs q-mr-xs"
-                    :to="'/address/' + transfer.contract.address"
-                >
-                    <span v-if="transfer.contract?.properties?.symbol?.length > 0">
-                        <span>{{ transfer.contract?.properties?.symbol?.slice(0, 6) }}</span>
-                        <span v-if="transfer.contract?.properties?.symbol?.length > 6">...</span>
-                    </span>
-                    <span v-else-if="transfer.contract?.properties?.name">
-                        <span>{{ transfer.contract?.properties?.name?.slice(0, 12) }}</span>
-                        <span v-if="transfer.contract?.properties?.name?.length > 12">...</span>
-                    </span>
-                    <span v-else>
-                        <span>
-                            {{ transfer.contract.address.slice(0, 6) + '...' + transfer.contract.address.slice(36, 40)}}
-                        </span>
-                    </span>
-                </router-link>
-                <div class="col">
-                    <span v-if="transfer.tokenId.length > 15">
-                        <span class="word-break">
-                            {{ ' #' + transfer.tokenId.slice(0, 15) + '...' }}
-                            <CustomTooltip :content="'#' + transfer.tokenId" />
-                        </span>
-                    </span>
-                    <span v-else>
-                        <span class="word-break">
-                            {{ ' #' + transfer.tokenId }}
-                        </span>
-                    </span>
-                    <span
-                        v-if="transfer.metadata?.image && transfer.metadata.image.startsWith('data:image')"
-                        class="q-ml-xs"
-                    >
-                        <a
-                            clickable="clickable"
-                            :href="transfer.metadata.image"
-                            target="_blank"
-                            download
-                        >
-                            <q-img
-                                :src="transfer.metadata.image"
-                                class="nft-thumbnail"
-                            />
-                            <CustomTooltip :content="$t('components.nfts.consult_media')" />
-                        </a>
-                    </span>
-                    <span
-                        v-else-if="transfer.token?.imageCache"
-                        class="q-ml-xs"
-                    >
-                        <a
-                            clickable="clickable"
-                            :href="transfer.token.imageCache + '/1440.webp'"
-                            target="_blank"
-                        >
-                            <q-img
-                                :src="transfer.token.imageCache + '/280.webp'"
-                                class="nft-thumbnail"
-                            />
-                            <CustomTooltip :content="$t('components.nfts.consult_media')" />
-                        </a>
-                    </span>
-                    <span v-if="transfer.contract.supportedInterfaces.includes('erc1155')">
-                        <a clickable="clickable" :href="'/address/' + transfer.token.address" target="_blank">
-                            <CustomTooltip :content="$t('components.nfts.consult_collection')" />
-                        </a>
-                    </span>
-                    <span>
-                        <span v-if="transfer.metadata" class="word-break">
-                            <a clickable="clickable">
-                                <q-icon class="q-pb-sm q-ml-xs" name="info" size="18px"/>
-                            </a>
-                            <CustomTooltip :content="transfer.metadata" :long="true" />
-                        </span>
-                        <span v-if="transfer.tokenUri?.startsWith('http')" class="word-break">
-                            <a clickable="clickable" :href="transfer.tokenUri" target="_blank">
-                                <q-icon class="q-pb-sm q-ml-xs" name="description" size="18px"/>
-                            </a>
-                            <CustomTooltip :content="$t('components.nfts.consult_metadata')" />
-                        </span>
-                    </span>
-                </div>
-            </div>
-            <div v-else class="col-4 flex">
-                <strong class="q-pr-sm">
-                    {{ $t('pages.value') }} :
-                </strong>
-                <TokenValueField
-                    :value="transfer.value"
-                    :showWei="true"
-                    :address="transfer.contract.address"
-                    :truncate="6"
-                />
-            </div>
+<div class="c-erc-transfers">
+    <div
+        v-for="(transfer, index) in erc20_transfers"
+        :key="index"
+        class="c-erc-transfers__row"
+    >
+        <q-icon class="c-erc-transfers__icon list-arrow" name="arrow_right"/>
+        <div class="c-erc-transfers__cell c-erc-transfers__cell--a">
+            <strong> {{ $t('components.transaction.from') }} </strong>
+            <AddressField
+                copy
+                :address="transfer.from"
+                :truncate="15"
+                :highlightAddress="props.highlightAddress"
+                @highlight="setHighlightAddress"
+            />
         </div>
-        <div v-if="!isExpanded && more" class="expand-btn fit row items-center" @click="expand">
-            <div class="separator"></div>
-            <div class="flex items-center">
-                <q-icon name="add_circle_outline" class="q-mr-xs" />
-                <span>{{ $t('global.expand', {more: more}) }}</span>
-            </div>
+        <div class="c-erc-transfers__cell c-erc-transfers__cell--b">
+            <strong>{{ $t('components.transaction.to') }}</strong>
+            <AddressField
+                copy
+                :address="transfer.to"
+                :truncate="15"
+                :highlightAddress="props.highlightAddress"
+                @highlight="setHighlightAddress"
+            />
         </div>
-    </div>
-</div>
-<div v-else-if="isLoading" class="fit row wrap justify-center items-center q-mt-sm q-pb-md q-mb-xs">
-    <div class="col-3"></div>
-    <div class="col-9 justify-center flex">
-        <q-spinner size="1.5em" class="q-mr-xs"/>
-        <span>{{ $t('pages.loading_transfers') }}</span>
+        <div class="c-erc-transfers__cell c-erc-transfers__cell--c">
+            <strong>{{ $t('components.nfts.amount') }}</strong>
+            <span>{{ getValueDisplay(transfer.value, '', transfer.token.decimals ) }}</span>
+            <AddressField
+                :address="transfer.token.address"
+                :truncate="15"
+                :highlightAddress="props.highlightAddress"
+                @highlight="setHighlightAddress"
+            />
+        </div>
     </div>
 </div>
 </template>
 
-<!--eslint-enable-->
-<style scoped lang="sass">
-    .nft-thumbnail:hover
-        transform: scale(1.2)
-    .nft-thumbnail
-        transition: 500ms transform ease
-        vertical-align: middle
-        border-radius: 100%
-        width: 16px
-        height: 16px
-        margin-top: -7px
-    .body--dark .expand-btn
-        color: rgba(255, 255, 255, 0.6)
-    .expand-btn
-        position: relative
-        margin-top: 4px
-        cursor: pointer
-        color: rgba(0, 0, 0, 0.6)
-    .body--dark .expand-btn .flex
-        background: var(--q-dark)
-    .expand-btn .flex
-        background: white
-        padding-right: 5px
-        z-index: 2
-    .body--dark .separator
-        border-top: 1px dashed rgba(255, 255, 255, 0.3)
-    .separator
-        z-index: 1
-        background: transparent
-        position: absolute
-        width: 320px
-        border-top: 1px dashed rgba(0, 0, 0, 0.3)
-        top: 10px
-    .coin-icon
-        width: 16px
-        height: 16px
-        margin-top: -6px
-        margin-right: .15rem
-        vertical-align: middle
-        border-radius: 100%
-    .erc-transfers
-        .row
-            .col-5
-                strong
-                    margin-right: 3px
+<style lang="scss">
+.c-erc-transfers {
+    max-height: 200px;
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    @include scroll-bar;
 
-    @media (max-width: 1024px)
-        .row
-            .col-3
-                width: 100%
-        .erc-transfers
-            .row
-                .col-3, .col-9, .col-5
-                    width: 100%
-                    padding-left: 0px
-                .col-5
-                    padding-top: 2px
-                .col-3, .col-5
-                    padding-left: 15px
-                .col-4
-                    padding-top: 10px
-                    width: 100%
-                .col-9
-                    padding-left: 10px
+    &__row {
+        margin-bottom: 10px;
+        grid-template-rows: auto;
+        grid-auto-columns: 19px 1fr;
+        grid-template:
+            'icon a'
+            'icon b'
+            'icon c';
+        display: grid;
+    }
 
+    &__icon {
+        grid-area: icon;
+    }
+    &__cell {
+        display: flex;
+        gap: 5px;
+        &--a {
+            grid-area: a;
+        }
+        &--b {
+            grid-area: b;
+        }
+        &--c {
+            grid-area: c;
+        }
+    }
 
-    @media screen and (max-width: 420px)
-        .coin-icon
-            width: 12px
-            height: 12px
-            margin-right: 3px
-            margin-top: -3px
-    pre
-        font-size: 0.8em
+    @media screen and (min-width: $breakpoint-sm-min) {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        overflow-x: hidden;
+        &__row {
+            display: flex;
+            gap: 5px;
+            align-items: baseline;
+        }
+        &__cell {
+            display: flex;
+            gap: 5px;
+            align-items: flex-start;
+        }
+    }
+}
+
 </style>

@@ -11,6 +11,8 @@ import { useQuasar } from 'quasar';
 import AppHeader from 'components/header/AppHeader.vue';
 import FooterMain from 'components/FooterMain.vue';
 
+import { getBrowserName } from 'src/lib/utils';
+
 const $route = useRoute();
 const $q = useQuasar();
 
@@ -20,8 +22,19 @@ const margin = ref(50);
 
 const onHomePage = computed(() => $route.name === 'home');
 
+
 onBeforeMount(() => {
-    $q.dark.set(localStorage.getItem('darkModeEnabled') !== 'false');
+    const $q = useQuasar();
+    const storedDarkMode = localStorage.getItem('darkModeEnabled');
+
+    // Check if 'darkModeEnabled' is in localStorage
+    if (storedDarkMode !== null) {
+        $q.dark.set(storedDarkMode === 'true');
+    } else {
+        // Use system preferences if there is no preference saved
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        $q.dark.set(prefersDark);
+    }
 });
 
 onMounted(() => {
@@ -49,7 +62,7 @@ function showBackToTop() {
 </script>
 
 <template>
-<q-layout view="hhh lpr fff" class="c-main-layout">
+<q-layout view="hhh lpr fff" :class="`c-main-layout ${getBrowserName()}`">
     <div class="c-main-layout__background-container">
         <div class="c-main-layout__background-top">
             <div class="c-main-layout__background-circle c-main-layout__background-circle--1"></div>
@@ -113,8 +126,8 @@ function showBackToTop() {
         background-color: rgba(var(--q-primary), 0.04);
 
         body.body--dark & {
-            background-color: darken($dark, 5%);
-            opacity: 0.4;
+            background-color: rgb(28, 28, 28);
+            opacity: 1;
         }
     }
 
@@ -133,38 +146,38 @@ function showBackToTop() {
 
     &__background-top {
         top: 0;
-        height: 30vh;
+        height: 320px;
         overflow: hidden;
         background-image:
-            radial-gradient(circle at 0% 150%, var(--q-primary), transparent 40%),
-            radial-gradient(circle at 100% 100%, var(--q-primary), transparent 39%),
-            radial-gradient(circle at 100% 0%, $secondary, transparent 40%),
-            radial-gradient(circle at 65% 21%, $accent, transparent 40%);
+        radial-gradient(circle at 0% 170%, $secondary, transparent 45%),
+            radial-gradient(circle at 100% 130%, $secondary, transparent 30%),
+            radial-gradient(circle at 100% 0%, var(--q-primary), transparent 30%),
+            radial-gradient(circle at 50% 20%, $accent, transparent 70%);
 
         @media screen and (min-width: $breakpoint-sm-min) {
             background-image:
-                radial-gradient(circle at 0% 120%, var(--q-primary), transparent 25%),
-                radial-gradient(circle at 100% 100%, var(--q-primary), transparent 25%),
-                radial-gradient(circle at 100% 0%, $secondary, transparent 25%),
-                radial-gradient(circle at 75% 10%, $accent, transparent 25%);
+            radial-gradient(circle at 0% 170%, $secondary, transparent 45%),
+            radial-gradient(circle at 100% 130%, $secondary, transparent 30%),
+            radial-gradient(circle at 100% 0%, var(--q-primary), transparent 30%),
+            radial-gradient(circle at 50% 20%, $accent, transparent 70%)
         }
 
         @media screen and (min-width: $breakpoint-md-min) {
-            height: 40vh;
+            height: 400px;
 
             background-image:
-                radial-gradient(circle at 0% 150%, var(--q-primary), transparent 20%),
-                radial-gradient(circle at 100% 100%, var(--q-primary), transparent 20%),
-                radial-gradient(circle at 100% 0%, $secondary, transparent 25%),
-                radial-gradient(circle at 70% -10%, $accent, transparent 30%);
+            radial-gradient(circle at 0% 170%, $secondary, transparent 45%),
+            radial-gradient(circle at 100% 130%, $secondary, transparent 30%),
+            radial-gradient(circle at 100% 0%, var(--q-primary), transparent 30%),
+            radial-gradient(circle at 50% 20%, $accent, transparent 70%)
         }
 
         @media screen and (min-width: $breakpoint-lg-min) {
             background-image:
-                radial-gradient(circle at 0% 150%, var(--q-primary), transparent 20%),
-                radial-gradient(circle at 100% 100%, var(--q-primary), transparent 18%),
-                radial-gradient(circle at 100% 0%, $secondary, transparent 22%),
-                radial-gradient(circle at 75% -10%, $accent, transparent 20%)
+                radial-gradient(circle at 0% 170%, $secondary, transparent 40%),
+                radial-gradient(circle at 100% 140%, $secondary, transparent 20%),
+                radial-gradient(circle at 100% 0%, var(--q-primary), transparent 20%),
+                radial-gradient(circle at 50% 20%, $accent, transparent 90%)
         }
     }
 
@@ -173,13 +186,13 @@ function showBackToTop() {
         height: 70vh;
 
         background-image:
-            radial-gradient(circle at 100% 83%, $accent, transparent 30%),
-            radial-gradient(circle at 72% 90%, $secondary, transparent 36%);
+            radial-gradient(circle at 112% 75%, $accent, transparent 20%),
+                radial-gradient(circle at 98% 100%, var(--q-primary), transparent 20%);
 
-        @media screen and (min-width: $breakpoint-md-min) {
+        @media screen and (min-width: $breakpoint-lg-min) {
             background-image:
-                radial-gradient(circle at 100% 83%, $accent, transparent 20%),
-                radial-gradient(circle at 80% 90%, $secondary, transparent 25%);
+                radial-gradient(circle at 112% 75%, $accent, transparent 20%),
+                radial-gradient(circle at 98% 100%, var(--q-primary), transparent 20%);
         }
     }
 
@@ -187,13 +200,13 @@ function showBackToTop() {
         position: absolute;
         content: "";
         border-radius: 100%;
-        border: 24px solid var(--faint-circle-color);
+        border: 32px solid var(--faint-circle-color);
 
         &--1 {
-            top: -5vh;
-            right: -20vh;
-            width: 40vh;
-            height: 40vh;
+            top: -12vh;
+            right: -16vh;
+            width: 45vh;
+            height: 45vh;
         }
 
         &--2 {
@@ -204,8 +217,8 @@ function showBackToTop() {
                 top: -50%;
                 right: 0;
                 left: 0;
-                width: 40vh;
-                height: 40vh;
+                width: 45vh;
+                height: 45vh;
                 margin: 0 auto;
             }
         }

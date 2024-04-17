@@ -10,7 +10,7 @@ export default {
     data() {
         return {
             endpoints: [],
-            blockHeight: 0,
+            blockNumber: 0,
         };
     },
     mounted() {
@@ -70,8 +70,8 @@ export default {
                 });
 
                 const block = parseInt(result.data.result, 16);
-                if (this.blockHeight < block) {
-                    this.blockHeight = block;
+                if (this.blockNumber < block) {
+                    this.blockNumber = block;
                 }
 
                 this.endpoints[idx].latency = result.timings.elapsedTime;
@@ -108,7 +108,7 @@ export default {
                 </q-item-label>
                 <q-item-label v-if="endpoint.block" side top>
                     {{ $t('components.health.block_height') }}:&nbsp;
-                    <span :class="getBlockClass(blockHeight, endpoint.block)">
+                    <span :class="getBlockClass(blockNumber, endpoint.block)">
                         {{ endpoint.block }}
                     </span>
                 </q-item-label>
@@ -126,21 +126,30 @@ export default {
 </div>
 </template>
 
-<style scoped lang='sass'>
-.q-list
-  border-radius: 6px
-  box-shadow: 0 1px 5px rgb(0 0 0 / 20%), 0 2px 2px rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%)
-.tableWrapper
-  max-width: 100vw
-  min-width: 50vw
-  max-width: 100vw
-  border-radius: 6px
-.text-primary
-  margin-left: .25rem
-@media only screen and (max-width: 600px)
-  .full-width
-    min-width: 100%
-    margin-top: .25rem
-  .no-wrap
-    flex-wrap: wrap
+<style scoped lang='scss'>
+.q-list {
+    border-radius: 6px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.20), 0 2px 2px rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12);
+  }
+
+  .tableWrapper {
+    max-width: 100vw;
+    border-radius: 6px;
+  }
+
+  .text-primary {
+    margin-left: .25rem;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .full-width {
+      min-width: 100%;
+      margin-top: .25rem;
+    }
+
+    .no-wrap {
+      flex-wrap: wrap;
+    }
+  }
+
 </style>

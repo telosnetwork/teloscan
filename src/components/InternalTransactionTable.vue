@@ -67,6 +67,7 @@ export default {
 
         return {
             rows: [],
+            loadingRows: [],
             columns,
             transactions: [],
             pageSize: this.initialPageSize,
@@ -87,9 +88,10 @@ export default {
         // initialization of the translated texts
         this.columns[0].label = this.$t('components.tx_hash');
         this.columns[1].label = this.$t('components.block');
-        this.columns[2].label = this.$t('components.date');
+        this.columns[2].label = this.$t('components.age');
         this.columns[3].label = this.$t('components.method');
         this.columns[4].label = this.$t('components.internal_txns');
+        this.updateLoadingRows();
     },
     watch: {
         '$route.query.page': {
@@ -114,6 +116,12 @@ export default {
         },
     },
     methods: {
+        updateLoadingRows() {
+            this.loadingRows = [];
+            for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+                this.loadingRows.push(i);
+            }
+        },
         popstate(event) {
             const page = event.state.pagination.page;
             const size = event.state.pagination.size;
@@ -126,6 +134,7 @@ export default {
             if (size) {
                 this.pagination.rowsPerPage = Number(size);
             }
+            this.updateLoadingRows();
             this.onRequest({
                 pagination: this.pagination,
             });
@@ -258,40 +267,42 @@ export default {
 
 <template>
 <q-table
+    v-if="!loading"
     v-model:pagination="pagination"
     :rows="rows"
     :row-key="row => row.hash"
     :columns="columns"
-    :loading="loading"
     :rows-per-page-options="page_size_options"
-    flat
     @request="onPaginationChange"
 >
-    <template v-slot:loading>
-        <q-inner-loading showing color="secondary" />
-    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 <div :class="[ 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" >
-                    {{ col.label }}
-                    <template v-if="col.name === 'date'">
+                    <div
+                        v-if="col.name === 'date'"
+                        @click="toggleDateFormat"
+                    >
+                        <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
                         <q-icon
                             class="info-icon"
-                            name="fas fa-info-circle"
-                            @click="toggleDateFormat"
+                            name="far fa-question-circle"
                         >
                             <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
                                 {{ $t('components.click_to_change_format') }}
                             </q-tooltip>
                         </q-icon>
-                    </template>
-                    <template v-if="col.name === 'method'">
-                        <q-icon class="info-icon" name="fas fa-info-circle" />
+                    </div>
+                    <div v-else-if="col.name === 'method'">
+                        {{ col.label }}
+                        <q-icon class="info-icon" name="far fa-question-circle" />
                         <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
                             {{ $t('components.executed_based_on_decoded_data') }}
                         </q-tooltip>
-                    </template>
+                    </div>
+                    <div v-else>
+                        {{ col.label }}
+                    </div>
                 </div>
             </q-th>
             <q-td auto-width/>
@@ -340,4 +351,74 @@ export default {
         </q-tr>
     </template>
 </q-table>
+<q-table
+    v-else
+    v-model:pagination="pagination"
+    :rows="loadingRows"
+    :row-key="row => row.hash"
+    :columns="columns"
+    :rows-per-page-options="page_size_options"
+>
+    <template v-slot:header="props">
+        <q-tr :props="props">
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <div :class="[ 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" >
+                    <div
+                        v-if="col.name === 'date'"
+                        @click="toggleDateFormat"
+                    >
+                        <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
+                        <q-icon
+                            class="info-icon"
+                            name="far fa-question-circle"
+                        >
+                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                                {{ $t('components.click_to_change_format') }}
+                            </q-tooltip>
+                        </q-icon>
+                    </div>
+                    <div v-else-if="col.name === 'method'">
+                        {{ col.label }}
+                        <q-icon class="info-icon" name="far fa-question-circle" />
+                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                            {{ $t('components.executed_based_on_decoded_data') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-else>
+                        {{ col.label }}
+                    </div>
+                </div>
+            </q-th>
+            <q-td auto-width/>
+        </q-tr>
+    </template>
+    <template v-slot:body="">
+        <q-tr>
+            <q-td key="hash" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="block" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="date" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="method" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="int_txns" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td auto-width>
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+        </q-tr>
+    </template>
+</q-table>
 </template>
+<style lang="scss" scoped>
+.info-icon{
+    margin-left: .25rem;
+    padding-bottom: 0.2rem;
+}
+</style>

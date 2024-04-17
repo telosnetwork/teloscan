@@ -17,7 +17,7 @@ const tabs = ['overview', 'transactions'];
 
 const tab = ref(defaultTab);
 const block = ref(0);
-const blockHeight = computed(() => block.value ?? 0);
+const blockNumber = computed(() => block.value ?? 0);
 const blockData = ref<BlockData | null>(null);
 
 const transactionsCount = computed(() => blockData.value ? blockData.value.transactionsCount : 0);
@@ -40,13 +40,11 @@ function visitNativeBlockExplorer(extraData: any) {
 
 const loadBlockData = async () => {
     try {
-        if (blockHeight.value <= 0) {
+        if (blockNumber.value <= 0) {
             return;
         }
-        const response = await indexerApi.get(`/block/${blockHeight.value}`);
+        const response = await indexerApi.get(`/block/${blockNumber.value}`);
         blockData.value = toRaw(response.data?.results?.[0]) as BlockData;
-        // workaround to avoid using number as property name
-        blockData.value.blockHeight = blockData.value.number;
     } catch (error) {
         console.error('Failed to fetch block data:', error);
         blockData.value = null;
@@ -108,7 +106,13 @@ onMounted(() => {
 
     <div class="c-block__main-container">
         <div class="c-block__main-content">
-            <q-tab-panels v-model="tab" class="c-block__panels">
+            <q-tab-panels
+                v-model="tab"
+                class="c-block__panels"
+                animated
+                transition-next="fade"
+                transition-prev="fade"
+            >
                 <q-tab-panel class="c-block__panel" name="overview">
                     <BlockOverview
                         :data="blockData"
@@ -152,6 +156,8 @@ onMounted(() => {
     }
     &__panels {
         background: transparent;
+        --v-overflow: visible;
+        overflow: visible !important;
     }
     &__panel {
         padding: 0px;

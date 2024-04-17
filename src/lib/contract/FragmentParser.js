@@ -40,28 +40,14 @@ export default class FragmentParser {
         }
         this.processing.push(data);
 
-        try {
-            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`);
-            if (abiResponse) {
-                if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
-                    console.error(`Unable to find function signature for sig: ${prefix}`);
-                    this.functionInterfaces[prefix] = '';
-                    return false;
-                }
-                this.functionInterfaces[prefix] = `function ${abiResponse.data.text_signature}`;
-                return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
-            }
-        } catch (e) {
-            console.error(`Error trying to find event signature for function ${prefix}`);
-            this.functionInterfaces[prefix] = '';
-            return false;
-        }
+        this.functionInterfaces[prefix] = '';
+        return false;
     }
     async getEventInterface(data) {
         if(data === '0x'){
             return false;
         }
-        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, data)) {
+        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, data) && this.eventInterfaces[data]) {
             return new ethers.utils.Interface([this.eventInterfaces[data]]);
         }
         if(this.processing.includes(data)){
@@ -75,27 +61,15 @@ export default class FragmentParser {
             const response = await axios.get(url);
             if(response.data){
                 this.eventInterfaces[data] = `event ${response.data}`;
+                this.processing = this.processing.filter(item => item !== data);
                 return new ethers.utils.Interface([this.eventInterfaces[data]]);
             }
         } catch (e) {
             console.debug(e);
         }
 
-        try {
-            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`);
-            if (abiResponse) {
-                if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
-                    console.error(`Unable to find event signature for event: ${data}`);
-                    return false;
-                }
-                this.eventInterfaces[data] = `event ${abiResponse.data.text_signature}`;
-                return new ethers.utils.Interface([this.eventInterfaces[data]]);
-            }
-        } catch (e) {
-            console.error(`Error trying to find event signature for event ${data}: ${e.message}`);
-            return false;
-        }
         this.eventInterfaces[data] = '';
+        this.processing = this.processing.filter(item => item !== data);
         return false;
     }
 
@@ -129,7 +103,6 @@ export default class FragmentParser {
             }
             return parsedLog;
         }
-
         parsedLog = await this.parseEvent(contract, log);
         parsedLog = this.formatLog(contract, log, parsedLog);
         if(parsedLog.name && parsedLog.eventFragment?.inputs){

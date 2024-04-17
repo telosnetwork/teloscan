@@ -18,7 +18,7 @@ const props = defineProps({
 
 const emit = defineEmits(['prev-block', 'next-block', 'trx-table', 'extra-data']);
 
-const blockHeight = ref(0);
+const blockNumber = ref(0);
 const blockData = ref<BlockData | null>(null);
 
 // Computed properties
@@ -78,9 +78,9 @@ const nextBlock = () => {
 
 watch(() => props.data, (newData) => {
     blockData.value = newData ?? null;
-    const newNumber = Number(newData?.number);
+    const newNumber = Number(newData?.blockNumber);
     if (!isNaN(newNumber)) {
-        blockHeight.value = newNumber;
+        blockNumber.value = newNumber;
     }
 }, { immediate: true });
 
@@ -102,8 +102,8 @@ watch(() => props.data, (newData) => {
             </div>
             <div class="c-block-data__row-attribute">{{ $t('components.blocks.block_height') }}</div>
         </div>
-        <div class="c-block-data__col-val">
-            <div class="c-block-data__row-value">{{ blockHeight }}</div>
+        <div class="c-block-data__col-val c-block-data__col-val--block-number">
+            <div class="c-block-data__row-value">{{ blockNumber }}</div>
             <div class="c-block-data__row-icon-btn c-block-data__row-icon-btn--left" @click="prevBlock">
                 <i class="fa fa-chevron-left small"></i>
             </div>
@@ -156,13 +156,20 @@ watch(() => props.data, (newData) => {
         </div>
         <div class="c-block-data__col-val">
             <div class="c-block-data__row-value">
-                <span class="c-block-data__row-value-link" @click="trxTableClick">
-                    {{
-                        transactionsCount === 1
-                            ? $t('components.blocks.count_transaction')
-                            : $t('components.blocks.count_transactions', { count: transactionsCount })
-                    }}
-                </span>
+                <template
+                    v-if="transactionsCount > 0"
+                >
+                    <span class="c-block-data__row-value-link" @click="trxTableClick">
+                        {{
+                            transactionsCount === 1
+                                ? $t('components.blocks.count_transaction')
+                                : $t('components.blocks.count_transactions', { count: transactionsCount })
+                        }}
+                    </span>
+                </template>
+                <template v-else>
+                    {{ $t('components.blocks.count_transactions', { count: transactionsCount }) }}
+                </template>
                 {{ $t('components.blocks.in_this_block') }}
             </div>
         </div>
@@ -318,6 +325,7 @@ watch(() => props.data, (newData) => {
 
 
 <style lang="scss">
+
 .c-block-data {
     padding: 1.25rem!important;
     display: flex;
@@ -329,6 +337,12 @@ watch(() => props.data, (newData) => {
         justify-content: left;
         align-items: baseline;
         gap: 5px;
+    }
+    &__col-val {
+        &--block-number {
+            display: flex;
+            align-items: center;
+        }
     }
     &__row {
         padding: 0.5rem 0;

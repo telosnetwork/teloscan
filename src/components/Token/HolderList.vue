@@ -3,6 +3,7 @@ import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import { formatWei } from 'src/lib/utils';
 import BigDecimal from 'js-big-decimal';
+import { BigNumber, ethers } from 'ethers';
 export default {
     name: 'HolderList',
     components: {
@@ -14,6 +15,11 @@ export default {
             type: Object,
             required: true,
         },
+    },
+    created(){
+        for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+            this.loadingRows.push(i);
+        }
     },
     async mounted() {
         let list = await this.$contractManager.getSystemContractsList();
@@ -60,6 +66,7 @@ export default {
         return {
             columns: columns,
             holders: [],
+            loadingRows: [],
             loading: true,
             systemContractsList: '',
             showSystemContracts: false,
@@ -120,26 +127,28 @@ export default {
             }
             return share.getValue() + '%';
         },
+        displayBalance(balanceString, tokenDecimals){
+            const locale = this.$i18n.global.locale.value;
+            const bn = BigNumber.from(balanceString);
+            const formatted = ethers.utils.formatUnits(bn.toString(), (tokenDecimals));
+            return parseFloat(formatted).toLocaleString(locale);
+        },
     },
 };
 </script>
 
 <template>
 <q-table
+    v-if="!loading"
     v-model:pagination="pagination"
     :rows="holders"
-    :loading="loading"
     :rows-per-page-label="$t('global.records_per_page')"
     :binary-state-sort="true"
     :row-key="row => row.address"
     :columns="columns"
     :rows-per-page-options="[10, 20, 50]"
-    flat
     @request="onRequest"
 >
-    <template v-slot:loading>
-        <q-inner-loading showing color="primary" />
-    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th
@@ -160,7 +169,7 @@ export default {
             </q-td>
             <q-td key="balance" :props="props">
                 <span v-if="contract?.properties?.decimals">
-                    {{ formatWei(props.row.balance, contract.properties?.decimals) }}
+                    {{ displayBalance(props.row.balance, contract.properties?.decimals) }}
                 </span>
                 <span v-else>
                     {{ props.row.balance }}
@@ -239,11 +248,52 @@ export default {
         <q-toggle
             v-model="showSystemContracts"
             :label="$t('components.holders.show_system_contracts')"
-            color="secondary"
+            color="primary"
             checked-icon="visibility"
             unchecked-icon="visibility_off"
             @update:model-value="onRequest({pagination: pagination})"
         />
+    </template>
+</q-table>
+<q-table
+    v-else
+    v-model:pagination="pagination"
+    :rows="loadingRows"
+    :rows-per-page-label="$t('global.records_per_page')"
+    :columns="columns"
+    :rows-per-page-options="[10, 20, 50]"
+>
+    <template v-slot:header="props">
+        <q-tr :props="props">
+            <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+            >
+                <div class="u-flex--center-y">
+                    {{ col.label }}
+                </div>
+            </q-th>
+        </q-tr>
+    </template>
+    <template v-slot:body="">
+        <q-tr>
+            <q-td key="holder">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="balance">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="telos_supply_share">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="supply_share" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="updated">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+        </q-tr>
     </template>
 </q-table>
 </template>

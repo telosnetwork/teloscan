@@ -20,12 +20,14 @@ const routes = [
     {
         path: '/address/:address',
         component: () => import('layouts/MainLayout.vue'),
-        children: [{
-            path: '',
-            name: 'address',
-            props: route => ({ page: route.query.page, pagesize: route.query.pagesize }),
-            component: () => import('pages/AccountAddress.vue'),
-        }],
+        children: [
+            {
+                path: '',
+                name: 'address',
+                props: route => ({ page: route.query.page, pagesize: route.query.pagesize }),
+                component: () => import('pages/AccountPage.vue'),
+            },
+        ],
     },
     {
         path: '/tx/:hash',
@@ -86,16 +88,24 @@ const routes = [
     },
     {
         path: '/health',
-        name: 'health',
         component: () => import('layouts/MainLayout.vue'),
         children: [{
             path: '',
+            name: 'health',
             component: () => import('pages/HealthPage.vue'),
         }],
     },
     {
+        path: '/export',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            name: 'export',
+            component: () => import('pages/ErrorNotFoundPage.vue'),
+        }],
+    },
+    {
         path: '/endpoints',
-        // eslint-disable-next-line no-unused-vars
         redirect: () => ({ path: '/health' }),
     },
     {
@@ -109,7 +119,11 @@ const routes = [
     },
     {
         path: '/:catchAll(.*)*',
-        component: () => import('pages/Error404.vue'),
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            component: () => import('pages/ErrorNotFoundPage.vue'),
+        }],
     },
 ];
 

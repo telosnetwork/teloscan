@@ -96,7 +96,7 @@ export default {
 <div v-if="fragment" class="c-fragment-list-element" :style="depthStyle"  >
     <q-expansion-item
         :disable="!isExpandable"
-        class="shadow-2 q-mb-md"
+        class="shadow-1 q-mb-md"
     >
         <template v-slot:header>
             <div class="flex items-center justify-between">
