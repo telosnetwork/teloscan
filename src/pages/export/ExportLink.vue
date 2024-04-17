@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-<p class="text-right q-pa-sm q-mr-md">
+<div class="c-export-link text-right q-pa-md q-mr-sm">
     [
     <router-link
         :to="{
@@ -26,5 +26,11 @@ defineProps<{
         />
     </router-link>
     ]
-</p>
+</div>
 </template>
+
+<style lang="scss">
+.c-export-link {
+    display: inline-block;
+}
+</style>

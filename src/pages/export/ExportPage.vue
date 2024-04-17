@@ -213,117 +213,123 @@ onBeforeUnmount(() => {
     </div>
 
     <q-card class="c-export-page__content">
-        <div class="q-pa-lg">
-            <form>
-                <div class="row q-mb-md">
-                    <div class="col-12 col-md-6 col-lg-2">
-                        <q-select
-                            v-model="typeSelectModel"
-                            :options="exportTypes"
-                            color="secondary"
-                            :label="$t('components.export.export_type')"
-                        />
+        <form>
+            <div class="c-export-page__container">
+                <div class="c-export-page__row c-export-page__row--break">
+                    <div class="c-export-page__col">
+                        <div class="c-export-page__row c-export-page__value-container">
+                            <q-select
+                                v-model="typeSelectModel"
+                                :options="exportTypes"
+                                color="secondary"
+                                class="c-export-page__value"
+                                :label="$t('components.export.export_type')"
+                            />
+                        </div>
+                        <div class="c-export-page__row c-export-page__value-container">
+                            <AddressInput
+                                ref="accountInputRef"
+                                v-model="accountModel"
+                                :label="$t('pages.account')"
+                                class="c-export-page__value"
+                                required="required"
+                                name="export-account"
+                            />
+                        </div>
                     </div>
-                </div>
-
-                <div class="row q-mb-lg">
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <AddressInput
-                            ref="accountInputRef"
-                            v-model="accountModel"
-                            :label="$t('pages.account')"
-                            required="required"
-                            name="export-account"
-                        />
-                    </div>
-                </div>
-
-                <div class="row q-mb-md">
-                    <div class="col-12">
-                        {{ $t('components.export.choose_download_option') }}
-                        <br>
-                        <q-radio
-                            v-model="downloadRangeType"
-                            :val="downloadRangeTypes.date"
-                            :label="$t('components.export.date_range')"
-                            color="secondary"
-                        />
-                        <q-radio
-                            v-model="downloadRangeType"
-                            :val="downloadRangeTypes.block"
-                            :label="$t('components.export.block_range')"
-                            color="secondary"
-                        />
-                    </div>
-                </div>
-
-                <div class="row q-mb-md">
-                    <div v-if="downloadRangeType === downloadRangeTypes.date" class="col-12 col-md-6 col-lg-4">
-                        <q-input
-                            :model-value="dateTextInputModel"
-                            :readonly="true"
-                            flat
-                            :label="$t('components.export.date_range')"
-                            class="q-mr-md"
+                    <div class="c-export-page__col">
+                        <div class="c-export-page__row c-export-page__value-container">
+                            <div class="c-export-page__value">
+                                {{ $t('components.export.choose_download_option') }}
+                                <br>
+                                <q-radio
+                                    v-model="downloadRangeType"
+                                    :val="downloadRangeTypes.date"
+                                    :label="$t('components.export.date_range')"
+                                    color="secondary"
+                                />
+                                <q-radio
+                                    v-model="downloadRangeType"
+                                    :val="downloadRangeTypes.block"
+                                    :label="$t('components.export.block_range')"
+                                    color="secondary"
+                                />
+                            </div>
+                        </div>
+                        <div
+                            v-if="downloadRangeType === downloadRangeTypes.date"
+                            class="c-export-page__row c-export-page__value-container"
                         >
-                            <template v-slot:append>
-                                <q-icon name="event" class="cursor-pointer">
-                                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                                        <q-date
-                                            v-model="dateRange"
-                                            minimal
-                                            range
-                                            color="secondary"
-                                        >
-                                            <div class="row items-center justify-end">
-                                                <q-btn
-                                                    v-close-popup
-                                                    :label="$t('global.close')"
-                                                    color="primary"
-                                                    flat
-                                                />
-                                            </div>
-                                        </q-date>
-                                    </q-popup-proxy>
-                                </q-icon>
-                            </template>
-                        </q-input>
+                            <q-input
+                                :model-value="dateTextInputModel"
+                                :readonly="true"
+                                flat
+                                :label="$t('components.export.date_range')"
+                                class="c-export-page__value"
+                            >
+                                <template v-slot:append>
+                                    <q-icon name="event" class="cursor-pointer">
+                                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                            <q-date
+                                                v-model="dateRange"
+                                                minimal
+                                                range
+                                                color="secondary"
+                                            >
+                                                <div class="row items-center justify-end">
+                                                    <q-btn
+                                                        v-close-popup
+                                                        :label="$t('global.close')"
+                                                        color="primary"
+                                                        flat
+                                                    />
+                                                </div>
+                                            </q-date>
+                                        </q-popup-proxy>
+                                    </q-icon>
+                                </template>
+                            </q-input>
+                        </div>
+                        <div
+                            v-else
+                            class="c-export-page__row c-export-page__value-container"
+                        >
+                            <q-input
+                                v-model="startBlockModel"
+                                :label="`${$t('components.export.start_block')}*`"
+                                name="export-data-start-block"
+                                type="number"
+                                color="secondary"
+                                required="required"
+                                class="c-export-page__value"
+                            />
+                            <q-input
+                                v-model="endBlockModel"
+                                :label="`${$t('components.export.end_block')}*`"
+                                name="export-data-end-block"
+                                type="number"
+                                color="secondary"
+                                required="required"
+                                class="c-export-page__value"
+                            />
+                        </div>
                     </div>
-
-                    <template v-else>
-                        <q-input
-                            v-model="startBlockModel"
-                            :label="`${$t('components.export.start_block')}*`"
-                            name="export-data-start-block"
-                            type="number"
-                            color="secondary"
-                            required="required"
-                            class="col-12 col-sm-6 col-md-4 col-lg-3 q-mr-md"
-                        />
-                        <q-input
-                            v-model="endBlockModel"
-                            :label="`${$t('components.export.end_block')}*`"
-                            name="export-data-end-block"
-                            type="number"
-                            color="secondary"
-                            required="required"
-                            class="col-12 col-sm-6 col-md-4 col-lg-3"
-                        />
-                    </template>
                 </div>
 
-                <div class="row q-mb-lg">
-                    <div class="col-12">
-                        <div class="flex items-center c-export-page__limit-notice">
+                <div class="c-export-page__row c-export-page__row--separator"></div>
+
+                <div class="c-export-page__row">
+                    <div class="c-export-page__col c-export-page__value-container">
+                        <div class="c-export-page__value flex items-center c-export-page__limit-notice">
                             <q-icon name="info" class="q-mr-sm" />
                             {{ $t('components.export.limit_notice', { amount: RESULTS_LIMIT.toLocaleString() }) }}
                         </div>
                     </div>
                 </div>
 
-                <div class="row q-mb-md">
-                    <div class="col-12">
-                        <div class="c-export-page__captcha-container">
+                <div class="c-export-page__row">
+                    <div class="c-export-page__col c-export-page__value-container">
+                        <div class="c-export-page__value c-export-page__captcha-container">
                             <q-spinner class="c-export-page__captcha-spinner" size="md" aria-hidden="true" />
 
                             <div id="export-page-captcha" class="c-export-page__captcha"></div>
@@ -331,27 +337,28 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-12">
+                <div class="c-export-page__row">
+                    <div class="c-export-page__buttons c-export-page__value-container">
                         <q-btn
                             :disable="!enableDownloadButton"
                             :label="$t('components.export.download_csv')"
                             :loading="exportIsLoading"
                             icon="download"
                             color="secondary"
-                            class="q-mr-md"
+                            class="c-export-page__btn"
                             @click="download"
                         />
                         <q-btn
                             :label="$t('components.export.reset')"
                             flat
+                            class="c-export-page__btn"
                             color="secondary"
                             @click="resetOptions"
                         />
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </q-card>
 </div>
 </template>
@@ -371,6 +378,11 @@ onBeforeUnmount(() => {
 
     &__content {
         width: 100%;
+        // Option 1
+        // padding: 0px 250px;
+        // @media (max-width: 1024px) {
+        //     padding: 0px;
+        // }
     }
 
     &__captcha-container {
@@ -392,5 +404,51 @@ onBeforeUnmount(() => {
 
     &__limit-notice {
         color: var(--grey-text-color);
+    }
+
+    &__row {
+        display: flex;
+        flex-direction: row;
+        &--separator {
+            // Option 1
+            display: none;
+
+            // Option 2
+            background-color: var(--muted-text-color);
+            height: 1px;
+            margin: 16px 0;
+        }
+
+        &--break {
+            // Option 2
+            flex-direction: row;
+            @media (max-width: 1024px) {
+                flex-direction: column;
+            }
+
+            // Option 1 and 3
+            flex-direction: column;
+        }
+    }
+
+    &__col {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    &__value {
+        width: 100%;
+    }
+
+    &__buttons {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 16px;
+        gap: 16px;
+    }
+
+    &__value-container {
+        padding: 16px;
     }
 }</style>
