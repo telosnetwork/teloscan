@@ -79,6 +79,7 @@ export class AntelopeConfig {
             type EVMError = {code:string};
             const evmErr = error as EVMError;
 
+            // high priority generic errors
             switch (evmErr.code) {
             case 'CALL_EXCEPTION':          return 'antelope.evm.error_call_exception';
             case 'INSUFFICIENT_FUNDS':      return 'antelope.evm.error_insufficient_funds';
@@ -87,7 +88,6 @@ export class AntelopeConfig {
             case 'NUMERIC_FAULT':           return 'antelope.evm.error_numeric_fault';
             case 'REPLACEMENT_UNDERPRICED': return 'antelope.evm.error_replacement_underpriced';
             case 'TRANSACTION_REPLACED':    return 'antelope.evm.error_transaction_replaced';
-            case 'UNPREDICTABLE_GAS_LIMIT': return 'antelope.evm.error_unpredictable_gas_limit';
             case 'USER_REJECTED':           return 'antelope.evm.error_user_rejected';
             case 'ACTION_REJECTED':         return 'antelope.evm.error_transaction_canceled';
             }
@@ -128,6 +128,11 @@ export class AntelopeConfig {
                 if (messageFound !== 'unknown') {
                     return messageFound;
                 }
+            }
+
+            // low priority generic errors
+            switch (evmErr.code) {
+            case 'UNPREDICTABLE_GAS_LIMIT': return 'antelope.evm.error_unpredictable_gas_limit';
             }
 
             if (typeof error === 'string') {
