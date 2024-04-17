@@ -457,7 +457,7 @@ onMounted(() => {
                 </span>
             </q-td>
             <q-td key="value" :props="props">
-                <span>
+                <span class="value">
                     {{ getValueDisplay(props.row.value, props.row.contract.symbol, props.row.contract.decimals) }}
                     <q-tooltip>{{ props.row.value }}</q-tooltip>
                 </span>
@@ -572,6 +572,13 @@ onMounted(() => {
 
 .info-icon{
     margin-left: .25rem;
+}
+
+.value {
+    max-width: 175px;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 </style>
