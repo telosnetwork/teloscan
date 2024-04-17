@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // Mocking Antelope and Config -----------------------------------
@@ -32,12 +33,12 @@ export class AntelopeConfig {
         if (error instanceof AntelopeError) {
             return error as AntelopeError;
         }
-        const str = this.errorToStringHandler(error);
+        const msgOrObject = this.errorMessageExtractor(error);
         // if it matches antelope.*.error_*
-        if (typeof str === 'string') {
-            return new AntelopeError(str, { error });
+        if (typeof msgOrObject === 'string') {
+            return new AntelopeError(msgOrObject, { error });
         } else {
-            return new AntelopeError(description, { error: str });
+            return new AntelopeError(description, { error: msgOrObject });
         }
     }
 
@@ -73,29 +74,10 @@ export class AntelopeConfig {
     private __transaction_error_handler: (err: AntelopeError, trxFailed: string) => void = () => void 0;
 
     // error to string handler --
-    private __error_to_string_handler: (error: unknown) => object | string = (error: unknown) => {
+    private __error_message_extractor: (error: unknown) => object | string | null = (error: unknown) => {
         try {
             type EVMError = {code:string};
             const evmErr = error as EVMError;
-
-            if (typeof error === 'object') {
-                const candidates = ['message', 'reason'];
-                const deepSearch = (obj: Record<string, unknown>): string => {
-                    for (const key in obj) {
-                        if (candidates.includes(key) && typeof obj[key] === 'string') {
-                            return obj[key] as string;
-                        }
-                        if (typeof obj[key] === 'object') {
-                            return deepSearch(obj[key] as Record<string, unknown>);
-                        }
-                    }
-                    return 'unknown';
-                };
-                const messageFound = deepSearch(error as Record<string, unknown>);
-                if (messageFound !== 'unknown') {
-                    return messageFound;
-                }
-            }
 
             switch (evmErr.code) {
             case 'CALL_EXCEPTION':          return 'antelope.evm.error_call_exception';
@@ -110,27 +92,62 @@ export class AntelopeConfig {
             case 'ACTION_REJECTED':         return 'antelope.evm.error_transaction_canceled';
             }
 
+            if (typeof error === 'object') {
+                const candidates = ['message', 'reason'];
+
+                const extractDeepestErrorMessage = (error: unknown): string => {
+                    if (typeof error !== 'object' || error === null) {
+                        return 'unknown';  // We return 'unknown' if it is not an object or is null
+                    }
+                    const queue: {node: unknown, depth: number}[] = [{ node: error, depth: 0 }];
+                    let deepestMessage = 'unknown';
+                    let maxDepth = -1;
+
+                    while (queue.length > 0) {
+                        const { node, depth } = queue.shift()!;  // Sacamos el primer elemento de la cola
+
+                        const nodeKeys = Object.keys(node as Record<string, unknown>);
+                        for (const key of nodeKeys) {
+                            const value = (node as Record<string, unknown>)[key];
+                            if (candidates.includes(key) && typeof value === 'string') {
+                                // If we find a message in a deeper level, we update it
+                                if (depth > maxDepth) {
+                                    deepestMessage = value;
+                                    maxDepth = depth;
+                                }
+                            } else if (typeof value === 'object' && value !== null) {
+                                // If the value is an object, we add it to the queue to explore its children
+                                queue.push({ node: value, depth: depth + 1 });
+                            }
+                        }
+                    }
+
+                    return deepestMessage;
+                };
+                const messageFound = extractDeepestErrorMessage(error as Record<string, unknown>);
+                if (messageFound !== 'unknown') {
+                    return messageFound;
+                }
+            }
+
             if (typeof error === 'string') {
-                return { error };
+                return { text: error };
             }
             if (typeof error === 'number') {
-                return { error: error.toString() };
+                return { number: error.toString() };
             }
             if (typeof error === 'boolean') {
-                return { error: error.toString() };
+                return { boolean: error.toString() };
             }
             if (typeof error === 'undefined') {
-                return { error: 'undefined' };
+                return { value: 'undefined' };
             }
             if (typeof error === 'object') {
-                if (error === null) {
-                    return { error: 'null' };
-                }
-                return { error };
+                return error;
             }
-            return { error: 'unknown' };
+            return { };
         } catch (er) {
-            return { error: 'unknown' };
+            return { };
         }
     };
 
@@ -213,8 +230,8 @@ export class AntelopeConfig {
         return this.__transaction_error_handler;
     }
 
-    get errorToStringHandler() {
-        return this.__error_to_string_handler;
+    get errorMessageExtractor() {
+        return this.__error_message_extractor;
     }
 
     // setting indexer constants --
@@ -292,8 +309,8 @@ export class AntelopeConfig {
     }
 
     // setting error to string handler --
-    public setErrorToStringHandler(handler: (catched: unknown) => object) {
-        this.__error_to_string_handler = handler;
+    public setErrorMessageExtractor(handler: (catched: unknown) => object | string | null) {
+        this.__error_message_extractor = handler;
     }
 
 }

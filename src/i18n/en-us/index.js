@@ -544,7 +544,7 @@ export default {
         success_message_copied: 'Your account name has been copied to the clipboard.',
         success_see_trx_label: 'See Transaction',
         dismiss_label: 'Dismiss',
-        error_title: 'ooops',
+        error_title: 'Error',
         error_title_disconnect: 'No Internet connection',
         error_message_disconnect: 'We\'re sorry, it looks like you\'re not connected to the internet. Please check your network connection and try again.',
         error_see_details_label: 'See Details',
