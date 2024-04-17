@@ -150,7 +150,7 @@ const getValueDisplay = (value: string, symbol: string, decimals: number) =>
         false,
         symbol,
         false,
-        decimals,
+        typeof decimals === 'string' ? parseInt(decimals) : decimals,
         false,
     );
 
