@@ -3,6 +3,7 @@ import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
 import { formatWei } from 'src/lib/utils';
 import BigDecimal from 'js-big-decimal';
+import { BigNumber, ethers } from 'ethers';
 export default {
     name: 'HolderList',
     components: {
@@ -126,6 +127,12 @@ export default {
             }
             return share.getValue() + '%';
         },
+        displayBalance(balanceString, tokenDecimals){
+            const locale = this.$i18n.global.locale.value;
+            const bn = BigNumber.from(balanceString);
+            const formatted = ethers.utils.formatUnits(bn.toString(), (tokenDecimals));
+            return parseFloat(formatted).toLocaleString(locale);
+        },
     },
 };
 </script>
@@ -162,7 +169,7 @@ export default {
             </q-td>
             <q-td key="balance" :props="props">
                 <span v-if="contract?.properties?.decimals">
-                    {{ formatWei(props.row.balance, contract.properties?.decimals) }}
+                    {{ displayBalance(props.row.balance, contract.properties?.decimals) }}
                 </span>
                 <span v-else>
                     {{ props.row.balance }}
