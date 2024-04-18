@@ -44,6 +44,7 @@ export default {
                 dataset = this.traces;
             } else {
                 if(this.transaction === null || this.itxs.length > 0){
+                    this.loading = false;
                     return;
                 }
                 let query = `/transaction/${this.transaction.hash}/internal?limit=1000&sort=ASC&offset=0&includeAbi=1`;
@@ -55,6 +56,7 @@ export default {
                     console.error(`Could not retrieve internal transactions for transaction ${this.transaction.hash}`,
                         response,
                     );
+                    this.loading = false;
                     return;
                 }
             }
@@ -78,7 +80,7 @@ export default {
 
                 if (itx.type === 'create') {
                     name = this.$t('components.transaction.contract_deployment');
-                } else if (itx.action.value > 0) {
+                } else if (+itx.action.value > 0) {
                     name = this.$t('components.transaction.tlos_transfer');
                     isTransferETH = true;
                 }
