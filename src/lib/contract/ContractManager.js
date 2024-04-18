@@ -231,13 +231,13 @@ export default class ContractManager {
         }
         return null;
     }
-    async getContract(address, cacheEmpty) {
+    async getContract(address, force) {
         if (address === null || typeof address !== 'string') {
             return;
         }
         const addressLower = address.toLowerCase();
 
-        if (typeof this.contracts[addressLower] !== 'undefined') {
+        if (!force && typeof this.contracts[addressLower] !== 'undefined') {
             return this.contracts[addressLower];
         }
 
@@ -247,7 +247,7 @@ export default class ContractManager {
         }
 
         this.processing.push(addressLower);
-        let contract = (cacheEmpty) ? { address : address } : null;
+        let contract = null;
         try {
             let response = await this.indexerApi.get(`/contract/${address}?full=true&includeAbi=true`);
             if(response.data?.success && response.data.results.length > 0){

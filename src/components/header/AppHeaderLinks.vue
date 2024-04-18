@@ -42,6 +42,10 @@ const telosBridgeUrl = IS_MAINNET
     ? 'https://bridge.telos.net/bridge'
     : 'https://telos-bridge-testnet.netlify.app/bridge';
 
+const obeUrl = IS_MAINNET
+    ? 'https://explorer.telos.net/'
+    : 'https://explorer-test.telos.net';
+
 const developersSubmenuItems = [
     {
         url: teloscanSwaggerUrl,
@@ -73,6 +77,10 @@ const moreSubmenuItems = {
         {
             url: 'https://www.telos.net/ecosystem',
             label: $t('components.header.telos_ecosystem'),
+        },
+        {
+            url: obeUrl,
+            label: $t('components.header.telos_zero_explorer'),
         },
     ],
 };

@@ -3,16 +3,20 @@
 import { onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { contractManager, indexerApi } from 'src/boot/telosApi';
+import { indexerApi } from 'src/boot/telosApi';
 
-import TransactionField from 'components/TransactionField';
-import AddressField from 'components/AddressField';
-import MethodField from 'components/MethodField';
+import TransactionField from 'components/TransactionField.vue';
+import MethodField from 'components/MethodField.vue';
+import AddressField from 'components/AddressField.vue';
+import NftItemField from 'components/NftItemField.vue';
 import DateField from 'components/DateField.vue';
 import { formatWei, toChecksumAddress } from 'src/lib/utils';
 import { EvmTransactionExtended, Pagination } from 'src/types';
-import { EvmContractFunctionParameter, EvmTransaction, EvmTransactionLog } from 'src/antelope/types';
-import { ethers } from 'ethers';
+
+import { loadTransaction } from 'src/lib/transaction-utils';
+import { WEI_PRECISION } from 'src/antelope/wallets/utils';
+import { BigNumber } from 'ethers';
+import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 
 const { t: $t } = useI18n();
 
@@ -197,90 +201,11 @@ const getPath = (settings: { pagination: Pagination }) => {
     return path;
 };
 
-// Method name resolution ------------------
-// This must be refactored in the future. Follow issue #654
-// https://github.com/telosnetwork/teloscan/issues/654
-const resolveMethodName = async (hash: string) => {
-    try {
-        const trxResponse = await indexerApi.get(`/transaction/${hash}?full=true&includeAbi=true`);
-        if (trxResponse.data.results.length === 0) {
-            console.error(`Transaction ${hash} not found`);
-            return;
-        }
-        const aux = trxResponse.data.results[0] as EvmTransaction;
-        let logsArray: EvmTransactionLog[] = [];
-        if(aux.logs){
-            const fixedStr = aux.logs.replace('transaction_hash', 'transactionHash');
-            try {
-                logsArray = JSON.parse(fixedStr) as EvmTransactionLog[];
-            } catch (e) {
-                console.error('Error parsing logs', e);
-            }
-        }
-        const _trx:EvmTransactionExtended = {
-            ...aux,
-            gasUsedBn: ethers.BigNumber.from(aux.gasUsed),
-            gasLimitBn: ethers.BigNumber.from(aux.gasLimit),
-            valueBn: ethers.BigNumber.from(aux.value),
-            gasPriceBn: ethers.BigNumber.from(aux.gasPrice),
-            contract: undefined,
-            parsedTransaction: undefined,
-            functionParams: [],
-            logsArray,
-        };
-        await loadContract(_trx);
-    } catch (e) {
-        console.error('Error resolving method name', e);
-        return;
-    }
+const resolveMethodName = async (transfer: NftTransferData) => {
+    transfer.trx = await loadTransaction(transfer.hash);
+    // force the rows to update
+    rows.value = [...rows.value];
 };
-const loadContract = async (_trx: EvmTransactionExtended) => {
-    const transfer = rows.value.find(t => t.hash === _trx.hash && t.trx === null);
-    if (!_trx || _trx.input === '0x') {
-        if (transfer) {
-            transfer.trx = _trx;
-        }
-        return;
-    }
-    _trx.contract = await contractManager.getContract(_trx.to?.toLowerCase());
-    if (!_trx.contract) {
-        if (transfer) {
-            transfer.trx = _trx;
-        }
-        return;
-    }
-
-    _trx.parsedTransaction = await contractManager.parseContractTransaction(
-        _trx,
-        _trx.input,
-        _trx.contract,
-    );
-
-    _trx.functionParams = getFunctionParams(_trx);
-
-    if (transfer) {
-        transfer.trx = _trx;
-    }
-};
-const getFunctionParams = (trx: EvmTransactionExtended) => {
-    if (!trx.parsedTransaction) {
-        return [];
-    }
-    const args:EvmContractFunctionParameter[] = [];
-    trx.parsedTransaction.functionFragment.inputs.forEach((input, i) => {
-        args.push({
-            name: input.name,
-            type: input.type,
-            arrayChildren: (input.arrayChildren !== null) ? input.arrayChildren.type : false,
-            value:  trx.parsedTransaction?.args[i],
-        });
-    });
-    return args;
-};
-// ----------------------------------------------------
-
-
-
 
 const onRequest = async (settings: { pagination: Pagination}) => {
     loading.value = true;
@@ -300,7 +225,6 @@ const onRequest = async (settings: { pagination: Pagination}) => {
 
     let newTransfers = [] as NftTransferData[];
     for (const transfer of response.data.results) {
-        resolveMethodName(transfer.transaction);
         const contractData = response.data.contracts[transfer.contract];
         let valueDisplay;
         if(props.tokenType === 'erc20'){
@@ -324,6 +248,7 @@ const onRequest = async (settings: { pagination: Pagination}) => {
         } as NftTransferData;
 
         newTransfers.push(nTransfer);
+        resolveMethodName(nTransfer);
     }
 
     rows.value.splice(
@@ -333,6 +258,29 @@ const onRequest = async (settings: { pagination: Pagination}) => {
     );
     loading.value = false;
 };
+
+const locale = useI18n().locale.value;
+function getValueDisplay(value: string, symbol: string, decimals: number) {
+    const _decimals = typeof decimals === 'number' ? decimals : parseInt(decimals ?? WEI_PRECISION);
+    console.log('getValueDisplay', value, symbol, decimals, '[', _decimals, ']');
+    try {
+        return prettyPrintCurrency(
+            BigNumber.from(value.split('.').join('')),
+            4,
+            locale,
+            false,
+            symbol ?? 'UNKNOWN',
+            false,
+            _decimals,
+            false,
+        );
+    } catch (e) {
+        console.error('getValueDisplay', e);
+    }
+
+    return truncatedId(value);
+}
+
 
 const convertToEpoch = (dateString: string | number) => {
     if (typeof dateString === 'number'){
@@ -355,7 +303,6 @@ const updateLoadingRows = () => {
 };
 
 const updateCols = () => {
-    console.log('updateCols()', props.tokenType);
     let exclude = [] as string[];
 
     switch (props.tokenType) {
@@ -363,10 +310,10 @@ const updateCols = () => {
         exclude = ['id', 'amount', 'item'];
         break;
     case 'erc721':
-        exclude = ['value', 'amount', 'item'];
+        exclude = ['value', 'amount', 'token'];
         break;
     case 'erc1155':
-        exclude = ['value', 'item'];
+        exclude = ['value', 'token'];
         break;
     default:
         throw new Error($t('components.unsupported_token_type', { tokenType: props.tokenType }));
@@ -510,8 +457,8 @@ onMounted(() => {
                 </span>
             </q-td>
             <q-td key="value" :props="props">
-                <span>
-                    {{ truncatedId(props.row.value) }}
+                <span class="value">
+                    {{ getValueDisplay(props.row.value, props.row.contract.symbol, props.row.contract.decimals) }}
                     <q-tooltip>{{ props.row.value }}</q-tooltip>
                 </span>
             </q-td>
@@ -525,12 +472,9 @@ onMounted(() => {
                 />
             </q-td>
             <q-td key="item" :props="props" class="flex items-center">
-                <AddressField
-                    :key="props.row.contract.address"
-                    :address="props.row.contract.address"
-                    :truncate="16"
-                    :highlightAddress="highlightAddress"
-                    @highlight="setHighlightAddress"
+                <NftItemField
+                    :id="props.row.id"
+                    :contract="props.row.contract"
                 />
             </q-td>
         </q-tr>
@@ -628,6 +572,13 @@ onMounted(() => {
 
 .info-icon{
     margin-left: .25rem;
+}
+
+.value {
+    max-width: 175px;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 </style>

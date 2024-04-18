@@ -22,8 +22,19 @@ const margin = ref(50);
 
 const onHomePage = computed(() => $route.name === 'home');
 
+
 onBeforeMount(() => {
-    $q.dark.set(localStorage.getItem('darkModeEnabled') !== 'false');
+    const $q = useQuasar();
+    const storedDarkMode = localStorage.getItem('darkModeEnabled');
+
+    // Check if 'darkModeEnabled' is in localStorage
+    if (storedDarkMode !== null) {
+        $q.dark.set(storedDarkMode === 'true');
+    } else {
+        // Use system preferences if there is no preference saved
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        $q.dark.set(prefersDark);
+    }
 });
 
 onMounted(() => {

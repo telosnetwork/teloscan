@@ -124,6 +124,15 @@ const notifyMessage = function(type, icon, title, message, payload, remember = '
                 }
             }
 
+            // If the content is a valid JSON, it should be possible to parse it and re stringify it using a pretty format
+            try {
+                const parsed = JSON.parse(content);
+                content = JSON.stringify(parsed, null, 4);
+                content = `<pre>${content}</pre>`;
+            } catch (e) {
+                // If it fails, we discard the error and use the original content
+            }
+
             Dialog.create({
                 class: 'c-notify__dialog',
                 title: this.$t('notification.error_details_title'),

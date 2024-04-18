@@ -109,6 +109,18 @@ const routes = [
         redirect: () => ({ path: '/health' }),
     },
     {
+        // if the user falls on a /staking path, we need to redirect the user to https://wallet.telos.net/evm/staking?tab=stake
+        path: '/staking',
+        component: () => import('layouts/MainLayout.vue'),
+        hildren: [{
+            path: '',
+            component: () => import('pages/ErrorNotFoundPage.vue'),
+        }],
+        beforeEnter() {
+            window.location.href = 'https://wallet.telos.net/evm/staking?tab=stake';
+        },
+    },
+    {
         path: '/:catchAll(.*)*',
         component: () => import('layouts/MainLayout.vue'),
         children: [{

@@ -11,9 +11,6 @@ import { useFeedbackStore } from 'src/antelope/mocks';
 import { EvmABI, EvmFunctionParam, Label, TransactionResponse } from 'src/antelope/types';
 import { subscribeForTransactionReceipt } from 'src/antelope/wallets/utils/trx-utils';
 
-export const errorToString = (error: unknown) =>
-    getAntelope().config.errorToStringHandler(error);
-
 export interface AccountModel {
     label: typeof CURRENT_CONTEXT;
     isNative: boolean;
@@ -145,7 +142,7 @@ class AccountStore {
             const authenticator = useAccountStore().getAccount(label)?.authenticator as EVMAuthenticator;
             return authenticator.isConnectedToCorrectChain();
         } catch (error) {
-            console.error('Error: ', errorToString(error));
+            console.error('Error: ', error);
             return Promise.resolve(false);
         } finally {
             useFeedbackStore().unsetLoading('account.isConnectedToCorrectNetwork');
