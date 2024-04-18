@@ -433,6 +433,7 @@ async function loadAccount() {
     &__coin-icon {
         width: 24px;
         height: 24px;
+        border-radius: 100%;
     }
 
     &__panels {
