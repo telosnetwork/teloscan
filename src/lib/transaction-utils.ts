@@ -2,8 +2,9 @@ import { ethers } from 'ethers';
 import { indexerApi } from 'src/boot/telosApi';
 
 import { EvmTransaction, EvmTransactionLog } from 'src/antelope/types';
-import { EvmTransactionExtended } from 'src/types';
+import { EvmTransactionExtended, NftTransferData } from 'src/types';
 import { TransactionDescription } from 'ethers/lib/utils';
+import { toChecksumAddress } from 'src/lib/utils';
 
 export const tryToExtractMethod = (abi: {[hash: string]: string }, input: string) => {
     if (!abi || !input) {
@@ -57,3 +58,15 @@ export const loadTransaction = async (hash: string): Promise<EvmTransactionExten
         return null;
     }
 };
+export const getDirection = (address: string, row: NftTransferData) => {
+    if (toChecksumAddress(row.to) === toChecksumAddress(row.from)) {
+        return 'self';
+    } else if (toChecksumAddress(address) === toChecksumAddress(row.from)) {
+        return 'out';
+    } else if (toChecksumAddress(address) === toChecksumAddress(row.to)) {
+        return 'in';
+    } else {
+        return 'unknown';
+    }
+};
+

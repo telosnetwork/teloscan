@@ -271,6 +271,7 @@ export default {
         transaction: {
             in: 'in',
             out: 'out',
+            self: 'self',
             load_error: 'Could not load transactions',
             show_short: 'Show short',
             show_total: 'Mostrar total',
