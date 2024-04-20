@@ -96,6 +96,8 @@ export default {
         erc721_transfers_tooltip: 'Liste der ERC721 Token-Übertragungen in dieser Transaktion',
         erc1155_transfers: 'ERC1155 Transfers',
         erc1155_transfers_tooltip: 'Liste der ERC1155 Token-Übertragungen in dieser Transaktion',
+        tlos_transfers: 'TLOS Transfers',
+        tlos_transfers_tooltip: 'Liste der TLOS Token-Übertragungen in dieser Transaktion',
         tokens: 'Tokens',
         created_at_trx: 'Erstellt in Transaktion',
         by_address: 'Durch Konto/Adresse',
