@@ -375,7 +375,9 @@ onMounted(() => {
     <template v-slot:body="props">
         <q-tr :props="props">
             <q-td key="hash" :props="props">
-                <TransactionField :transaction-hash="props.row.hash"/>
+                <TransactionField
+                    :transaction-hash="props.row.hash"
+                />
             </q-td>
             <q-td key="method" :props="props">
                 <MethodField
