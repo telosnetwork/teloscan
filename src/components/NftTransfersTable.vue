@@ -11,12 +11,13 @@ import AddressField from 'components/AddressField.vue';
 import NftItemField from 'components/NftItemField.vue';
 import DateField from 'components/DateField.vue';
 import { formatWei, toChecksumAddress } from 'src/lib/utils';
-import { EvmTransactionExtended, Pagination } from 'src/types';
+import { NftTransferProps, NftTransferData } from 'src/types';
 
-import { loadTransaction } from 'src/lib/transaction-utils';
+import { loadTransaction, getDirection } from 'src/lib/transaction-utils';
 import { WEI_PRECISION } from 'src/antelope/wallets/utils';
 import { BigNumber } from 'ethers';
 import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
+import { Pagination } from 'src/types';
 
 const { t: $t } = useI18n();
 
@@ -61,30 +62,6 @@ interface TransferData {
 }
 
 // ---------------------
-
-export interface NftTransferData {
-    hash: string;
-    timestamp: number;
-    amount: string;
-    id: string;
-    value: string;
-    contract: {
-        address: string;
-        name: string;
-        symbol: string;
-        decimals: number;
-    };
-    from: string;
-    to: string;
-    trx: EvmTransactionExtended | null;
-}
-
-export interface NftTransferProps {
-    title: string;
-    tokenType: string;
-    address: string;
-    initialPageSize: number;
-}
 
 const props = withDefaults(defineProps<NftTransferProps>(), {
     title: '',
@@ -398,7 +375,9 @@ onMounted(() => {
     <template v-slot:body="props">
         <q-tr :props="props">
             <q-td key="hash" :props="props">
-                <TransactionField :transaction-hash="props.row.hash"/>
+                <TransactionField
+                    :transaction-hash="props.row.hash"
+                />
             </q-td>
             <q-td key="method" :props="props">
                 <MethodField
@@ -414,14 +393,10 @@ onMounted(() => {
                 <DateField :epoch="convertToEpoch(props.row.timestamp)" :force-show-age="showDateAge"/>
             </q-td>
             <q-td key="direction" :props="props">
-                <span v-if="toChecksumAddress(address) === toChecksumAddress(props.row.from)" class="direction out">
-                    {{ $t('components.transaction.out').toUpperCase() }}
-                </span>
                 <span
-                    v-else-if="toChecksumAddress(address) === toChecksumAddress(props.row.to)"
-                    class="direction in"
+                    :class="`direction ${getDirection(address, props.row)}`"
                 >
-                    {{ $t('components.transaction.in').toUpperCase() }}
+                    {{ $t(`components.transaction.${getDirection(address, props.row)}`).toUpperCase() }}
                 </span>
             </q-td>
             <q-td key="from" :props="props">
@@ -532,22 +507,7 @@ onMounted(() => {
 
 <style lang='scss' scoped>
 .direction {
-  user-select: none;
-  padding: 3px 6px;
-  border-radius: 5px;
-  font-size: 0.9em;
-
-  &.in {
-    color: rgb(0, 161, 134);
-    background: rgba(0, 161, 134, 0.1);
-    border: 1px solid rgb(0, 161, 134);
-  }
-
-  &.out {
-    color: #cc9a06 !important;
-    background: rgba(255, 193, 7, 0.1);
-    border: 1px solid #cc9a06 !important;
-  }
+  @include direction;
 }
 
 .nft-icon {
