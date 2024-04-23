@@ -115,3 +115,27 @@
     }
 }
 
+@mixin direction {
+    user-select: none;
+    padding: 3px 6px;
+    border-radius: 5px;
+    font-size: 0.9em;
+
+    &.in {
+        color: rgb(0, 161, 134);
+        background: rgba(0, 161, 134, 0.1);
+        border: 1px solid rgb(0, 161, 134);
+    }
+
+    &.out {
+        color: #cc9a06 !important;
+        background: rgba(255, 193, 7, 0.1);
+        border: 1px solid #cc9a06 !important;
+    }
+
+    &.self {
+        color: #949494 !important;
+        background: rgba(148, 148, 148, 0.1);
+        border: 1px solid #949494 !important;
+    }
+}
