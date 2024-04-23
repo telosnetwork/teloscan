@@ -38,6 +38,7 @@ const toAddress = ref('');
 const isAContractDeployment = ref(false);
 
 const showMoreDetails = ref(true);
+const showErc20Transfers = ref(true);
 const moreDetailsHeight = ref(0);
 
 const getValueDisplay = (value: string) =>
@@ -69,6 +70,9 @@ function setHighlightAddress(val: string) {
     highlightAddress.value = val;
 }
 
+function setERC20TransfersCount(count: number) {
+    showErc20Transfers.value = count > 0;
+}
 
 watch(() => props.trx, async (newTrx) => {
     if (newTrx) {
@@ -299,7 +303,12 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
     </div>
 
     <!-- ERC20 Token Tranfers -->
-    <div v-if="(trx?.logsArray.length ?? 0) > 0" class="c-trx-overview__row">
+    <div
+        :class="{
+            'c-trx-overview__row': true,
+            'c-trx-overview__row--hidden': !showErc20Transfers,
+        }"
+    >
         <div class="c-trx-overview__col-att">
             <div class="c-trx-overview__row-tooltip">
                 <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
@@ -316,6 +325,7 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
                 :type="'erc20'"
                 :highlightAddress="highlightAddress"
                 @highlight="setHighlightAddress"
+                @transfers-count="setERC20TransfersCount"
             />
         </div>
     </div>
@@ -512,6 +522,9 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
         padding: 0.5rem 0;
         &--toggle-details {
             cursor: pointer;
+        }
+        &--hidden {
+            display: none;
         }
     }
     &__row-tooltip {

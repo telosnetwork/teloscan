@@ -30,6 +30,7 @@ watch(() => route.params.hash, async (newValue) => {
     }
     hash.value = typeof newValue === 'string' ? newValue : newValue[0];
     trx.value = await loadTransaction(hash.value);
+    trxNotFound.value = !trx.value;
 }, { immediate: true });
 
 
