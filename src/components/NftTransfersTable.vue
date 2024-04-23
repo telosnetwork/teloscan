@@ -239,10 +239,21 @@ const onRequest = async (settings: { pagination: Pagination}) => {
 const locale = useI18n().locale.value;
 function getValueDisplay(value: string, symbol: string, decimals: number) {
     const _decimals = typeof decimals === 'number' ? decimals : parseInt(decimals ?? WEI_PRECISION);
-    console.log('getValueDisplay', value, symbol, decimals, '[', _decimals, ']');
+    // value is has this format: xxxxxxx.zzzzzzzzz
+    // we force it to have exactly _decimals decimals
+    const parts = value.split('.');
+    const decimalsDiff = _decimals - (parts[1]?.length ?? 0);
+    if (decimalsDiff > 0) {
+        parts[1] = parts[1] ?? '';
+        parts[1] += '0'.repeat(decimalsDiff);
+    } else if (decimalsDiff < 0) {
+        parts[1] = parts[1]?.slice(0, _decimals) ?? '';
+    }
+    const _value = parts.join('.');
+
     try {
-        return prettyPrintCurrency(
-            BigNumber.from(value.split('.').join('')),
+        const result = prettyPrintCurrency(
+            BigNumber.from(_value.split('.').join('')),
             4,
             locale,
             false,
@@ -251,6 +262,7 @@ function getValueDisplay(value: string, symbol: string, decimals: number) {
             _decimals,
             false,
         );
+        return result;
     } catch (e) {
         console.error('getValueDisplay', e);
     }
