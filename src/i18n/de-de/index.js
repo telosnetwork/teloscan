@@ -273,6 +273,7 @@ export default {
         transaction: {
             in: 'in',
             out: 'out',
+            self: 'self',
             load_error: 'Transaktionen konnten nicht geladen werden',
             show_short: 'Kurz anzeigen',
             show_total: 'Summe anzeigen',

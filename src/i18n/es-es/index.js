@@ -274,6 +274,7 @@ export default {
         transaction: {
             in: 'entra',
             out: 'sale',
+            self: 'neutral',
             load_error: 'No se pudieron cargar las transacciones',
             show_short: 'Mostrar corta',
             show_total: 'Mostrar total',

@@ -4,10 +4,14 @@ import { indexerApi } from 'src/boot/telosApi';
 import { contractManager } from 'src/boot/telosApi';
 
 import { EvmTransaction, EvmTransactionLog } from 'src/antelope/types';
-import { EvmTransactionExtended } from 'src/types';
+import { EvmTransactionExtended, NftTransferData } from 'src/types';
 import { TransactionDescription } from 'ethers/lib/utils';
+<<<<<<< HEAD
 import { WEI_PRECISION, formatWei, parseErrorMessage } from 'src/lib/utils';
 
+=======
+import { toChecksumAddress } from 'src/lib/utils';
+>>>>>>> 55b30f2d3e97410995609b35f5c8ffe504d1618b
 
 export const tryToExtractMethod = (abi: {[hash: string]: string }, input: string) => {
     if (!abi || !input) {
@@ -61,7 +65,6 @@ export const loadTransaction = async (hash: string): Promise<EvmTransactionExten
         return null;
     }
 };
-
 
 export const getParsedInternalTransactions = async (hash: string, $t: (k:string)=>string) => new Promise<{itxs:unknown[], parsedItxs:unknown[]}>((resolve, reject) => {
     const query = `/transaction/${hash}/internal?limit=1000&sort=ASC&offset=0&includeAbi=1`;
@@ -164,3 +167,15 @@ export const getParsedInternalTransactions = async (hash: string, $t: (k:string)
         reject();
     });
 });
+export const getDirection = (address: string, row: NftTransferData) => {
+    if (toChecksumAddress(row.to) === toChecksumAddress(row.from)) {
+        return 'self';
+    } else if (toChecksumAddress(address) === toChecksumAddress(row.from)) {
+        return 'out';
+    } else if (toChecksumAddress(address) === toChecksumAddress(row.to)) {
+        return 'in';
+    } else {
+        return 'unknown';
+    }
+};
+

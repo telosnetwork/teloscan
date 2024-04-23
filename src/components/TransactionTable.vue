@@ -6,6 +6,7 @@ import { onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { BigNumber } from 'ethers/lib/ethers';
 
+import { getDirection } from 'src/lib/transaction-utils';
 import { contractManager, indexerApi } from 'src/boot/telosApi';
 import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 import { WEI_PRECISION } from 'src/lib/utils';
@@ -92,6 +93,11 @@ const columns = [
         align: 'left',
     },
     {
+        name: 'direction',
+        label: '',
+        align: 'left',
+    },
+    {
         name: 'from',
         label: $t('components.from'),
         align: 'left',
@@ -112,6 +118,20 @@ const columns = [
         align: 'right',
     },
 ];
+
+function updateColumns() {
+    // we only need the direction column if we are looking at a specific account
+    const index = columns.findIndex(col => col.name === 'direction');
+    if (!props.accountAddress && index !== -1) {
+        columns.splice(index, 1);
+    } else if (props.accountAddress && index === -1) {
+        columns.splice(6, 0, {
+            name: 'direction',
+            label: '',
+            align: 'left',
+        });
+    }
+}
 
 watch(() => route.query,
     (query) => {
@@ -134,6 +154,7 @@ function setPagination(page: number, size: number, desc: boolean) {
         pagination.value.rowsPerPage = size;
     }
     pagination.value.descending = desc;
+    updateColumns();
     parseTransactions();
 }
 
@@ -389,7 +410,7 @@ onBeforeMount(() => {
                             color="primary"
                             :transaction-hash="props.row.hash"
                             :status="props.row.status === '0x1'"
-                            :truncate="18"
+                            :truncate="13"
                         />
                     </div>
                 </q-td>
@@ -406,6 +427,13 @@ onBeforeMount(() => {
                 </q-td>
                 <q-td key="date" :props="props" @click="toggleDateFormat">
                     <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
+                </q-td>
+                <q-td key="direction" :props="props">
+                    <span
+                        :class="`direction ${getDirection(accountAddress, props.row)}`"
+                    >
+                        {{ $t(`components.transaction.${getDirection(accountAddress, props.row)}`).toUpperCase() }}
+                    </span>
                 </q-td>
                 <q-td key="from" :props="props" class="c-transaction-table__cell">
                     <AddressField
@@ -508,6 +536,9 @@ onBeforeMount(() => {
                 <q-td key="date">
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
+                <q-td key="direction" >
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
                 <q-td key="from"  class="c-transaction-table__cell">
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
@@ -527,6 +558,10 @@ onBeforeMount(() => {
 
 </template>
 <style lang="scss">
+
+.direction {
+  @include direction;
+}
 // quasar override
 .sortable {
     height: 60px;
