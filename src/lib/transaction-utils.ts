@@ -6,12 +6,9 @@ import { contractManager } from 'src/boot/telosApi';
 import { EvmTransaction, EvmTransactionLog } from 'src/antelope/types';
 import { EvmTransactionExtended, NftTransferData } from 'src/types';
 import { TransactionDescription } from 'ethers/lib/utils';
-<<<<<<< HEAD
 import { WEI_PRECISION, formatWei, parseErrorMessage } from 'src/lib/utils';
 
-=======
 import { toChecksumAddress } from 'src/lib/utils';
->>>>>>> 55b30f2d3e97410995609b35f5c8ffe504d1618b
 
 export const tryToExtractMethod = (abi: {[hash: string]: string }, input: string) => {
     if (!abi || !input) {
