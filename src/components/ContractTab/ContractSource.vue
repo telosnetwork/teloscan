@@ -1,6 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
@@ -34,8 +34,31 @@ const metaData = ref<MetaData>({});
 
 const expanded = ref({} as {[key:string]: boolean});
 
+// this function saves expanded content to local storage
+const saveExpanded = () => {
+    localStorage.setItem(`expanded-${props.contract.address}`, JSON.stringify(expanded.value));
+};
+
+// this function loads expanded content from local storage
+const loadExpanded = () => {
+    const expandedData = localStorage.getItem(`expanded-${props.contract.address}`);
+    if (expandedData) {
+        const parsed = JSON.parse(expandedData);
+        for (const key in parsed) {
+            expanded.value[key] = parsed[key];
+        }
+        return true;
+    } else {
+        return false;
+    }
+};
+
 
 const getFileKey = (index: number) => `viewer-${index}`;
+
+watch(expanded.value, () => {
+    saveExpanded();
+});
 
 onMounted(async () => {
     let sourceData;
@@ -53,32 +76,6 @@ onMounted(async () => {
 
     if ((files.value as {bytecode: any}).bytecode) {
         loading.value = false;
-    }
-
-    try {
-        const bytecodeResponse = await axios.post('/evm', {
-            jsonrpc: '2.0',
-            id: 1,
-            method: 'eth_getCode',
-            params: [props.contract.address],
-        });
-
-        if (bytecodeResponse.data?.result) {
-            (files.value as any[]).unshift({
-                content: bytecodeResponse.data.result,
-                name: 'bytecode',
-                expanded: false,
-                fullscreen: false,
-                raw: bytecodeResponse.data.result,
-                contract: false,
-            });
-        }
-
-        (files.value as any[]).forEach((file, index) => {
-            expanded.value[getFileKey(index)] = true;
-        });
-    } catch (e) {
-        console.error(e);
     }
 
     loading.value = false;
@@ -111,9 +108,12 @@ const sortFiles = (filesToSort: any[]) => {
         }
     }
 
-    (files.value as any[]).forEach((file, index) => {
-        expanded.value[getFileKey(index)] = true;
-    });
+    const loaded = loadExpanded();
+    if (!loaded) {
+        (files.value as any[]).forEach((file, index) => {
+            expanded.value[getFileKey(index)] = true;
+        });
+    }
 };
 
 const isContract = (fileName: string) => {
