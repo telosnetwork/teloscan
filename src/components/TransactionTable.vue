@@ -4,16 +4,15 @@ import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import { onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { BigNumber } from 'ethers/lib/ethers';
 
 import { getDirection } from 'src/lib/transaction-utils';
 import { contractManager, indexerApi } from 'src/boot/telosApi';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 import { WEI_PRECISION } from 'src/lib/utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
+import ValueField from 'components/ValueField.vue';
 import MethodField from 'components/MethodField.vue';
 import TransactionDialog from 'components/TransactionDialog.vue';
 import TransactionField from 'components/TransactionField.vue';
@@ -304,19 +303,6 @@ function setHighlightAddress(val: string) {
     highlightAddress.value = val;
 }
 
-function getValueDisplay(value: string) {
-    return prettyPrintCurrency(
-        BigNumber.from(value),
-        4,
-        locale,
-        false,
-        'TLOS',
-        false,
-        WEI_PRECISION,
-        false,
-    );
-}
-
 const updateLoadingRows = () => {
     loadingRows.value = [];
     for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
@@ -458,7 +444,11 @@ onBeforeMount(() => {
                     />
                 </q-td>
                 <q-td key='value' :props="props" class="c-transaction-table__cell">
-                    {{ getValueDisplay(props.row.value) }}
+                    <ValueField
+                        :value="props.row.value"
+                        :symbol="'TLOS'"
+                        :decimals="WEI_PRECISION"
+                    />
                 </q-td>
                 <q-td key='fee' :props="props" class="c-transaction-table__cell">
                     <TransactionFeeField
