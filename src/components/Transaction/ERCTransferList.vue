@@ -43,6 +43,7 @@ const erc20_transfers   = ref<ERC20Transfer[]>([]);
 
 const loadTransfers = async () => {
     if (!props.logs || props.logs.length === 0) {
+        emit('transfers-count', 0);
         return;
     }
 
@@ -145,7 +146,7 @@ function setHighlightAddress(val: string) {
     emit('highlight', val);
 }
 
-const getValueDisplay = (value: string, symbol: string, decimals: number) =>
+const getValueDisplay = (value: string, symbol: string, decimals: number | string) =>
     prettyPrintCurrency(
         BigNumber.from(value),
         4,
@@ -219,7 +220,6 @@ watch(() => props.logs, async (newTrx) => {
     @include scroll-bar;
 
     &__row {
-        margin-bottom: 10px;
         grid-template-rows: auto;
         grid-auto-columns: 19px 1fr;
         grid-template:
@@ -227,6 +227,10 @@ watch(() => props.logs, async (newTrx) => {
             'icon b'
             'icon c';
         display: grid;
+
+        & + & {
+            margin-top: 10px;
+        }
     }
 
     &__icon {
