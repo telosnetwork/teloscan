@@ -61,7 +61,10 @@ const downloadRangeType = ref(downloadRangeTypes.date);
 const dateRange = ref({ to: '', from: '' });
 const startBlockModel = ref('');
 const endBlockModel = ref('');
-const captchaSucceeded = ref(false);
+// const captchaSucceeded = ref(false);
+// const captchaToken = ref('');
+const captchaSucceeded = ref(true); // FIXME: uncomment this line
+const captchaToken = ref('10000000-aaaa-bbbb-cccc-000000000001'); // FIXME: uncomment this line
 const exportIsLoading = ref(false);
 
 // computed
@@ -146,6 +149,7 @@ function download() {
         };
 
     downloadCsv(
+        captchaToken.value,
         $t,
         RESULTS_LIMIT,
         typeSelectModel.value.value,
@@ -169,7 +173,8 @@ function hCaptchaLoadHandler() {
     });
 }
 
-function hCaptchaSuccessHandler() {
+function hCaptchaSuccessHandler(token: string) {
+    captchaToken.value = token;
     captchaSucceeded.value = true;
 }
 

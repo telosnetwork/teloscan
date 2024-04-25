@@ -35,7 +35,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['highlight']);
+const emit = defineEmits(['highlight', 'transfers-count']);
 
 const erc721_transfers  = ref<ERC721Transfer[]>([]);
 const erc1155_transfers = ref<ERC1155Transfer[]>([]);
@@ -136,6 +136,9 @@ const loadTransfers = async () => {
             }
         }
     }
+
+    const count = erc20_transfers.value.length + erc721_transfers.value.length + erc1155_transfers.value.length;
+    emit('transfers-count', count);
 };
 
 function setHighlightAddress(val: string) {

@@ -272,6 +272,7 @@ export default {
         transaction: {
             in: 'dépot',
             out: 'envoi',
+            self: 'soi-même',
             form_from: 'De : ',
             form_to: 'À : ',
             load_error: 'Erreur de chargement des transactions',

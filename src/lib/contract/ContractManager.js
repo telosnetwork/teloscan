@@ -257,6 +257,10 @@ export default class ContractManager {
             console.error(`Could not retrieve contract ${address}: ${e.message}`);
         }
         if(contract === null){
+            let index = this.processing.indexOf(addressLower);
+            if(index > -1){
+                this.processing.splice(index, 1);
+            }
             return;
         }
         this.addContractToCache(address, contract);
