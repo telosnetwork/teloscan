@@ -40,8 +40,6 @@ function getValueDisplay(value: number | string, symbol: string, decimals: numbe
         }
         _final_value = BigNumber.from(parts.join(''));
     }
-    console.log('getValueDisplay() sale:', { _value, _final_value, _decimals }); // FIXME: remove this line
-
     try {
         const result = prettyPrintCurrency(
             _final_value,
@@ -53,6 +51,7 @@ function getValueDisplay(value: number | string, symbol: string, decimals: numbe
             _decimals,
             false,
         );
+        console.log('getValueDisplay() sale:', { _value, _final_value, symbol, _decimals, result }); // FIXME: remove this line
         return result;
     } catch (e) {
         console.error('getValueDisplay', e);
@@ -62,12 +61,13 @@ function getValueDisplay(value: number | string, symbol: string, decimals: numbe
 }
 
 
-const getTooltipValueDisplay = (value: string| number, symbol: string) => {
-    const num = getValueDisplay(value, 'TLOS', WEI_PRECISION, WEI_PRECISION);
-    // debemos retirar los ceros decimales no significativos luego de la coma
-    const v = num.replace(/\.(0+$)/, '')+ ' ' + symbol;
-    console.log(num, v);
-    return v;
+const getTooltipValueDisplay = (value: string| number, symbol: string, decimals: number | string, displayDecimals = 4) => {
+    const num = getValueDisplay(value, '', decimals, displayDecimals);
+    const withoutZeros = num.trim().replace(/(0+$)/, '')+ ' ' + symbol;
+    // modify the previous line to remove the trailing zeros after the first decimal digit
+    const withOneDigit = num.trim().replace(/(\.\d[1-9]*)(0+$)/, '$1')+ ' ' + symbol;
+    console.log({ num, withoutZeros, withOneDigit });
+    return withOneDigit;
 };
 
 </script>
@@ -75,7 +75,7 @@ const getTooltipValueDisplay = (value: string| number, symbol: string) => {
 <template>
 <span class="c-value-field">
     {{ getValueDisplay(props.value, props.symbol ?? '', props.decimals ?? WEI_PRECISION) }}
-    <q-tooltip>{{ getTooltipValueDisplay(props.value, props.symbol ?? '') }}</q-tooltip>
+    <q-tooltip>{{ getTooltipValueDisplay(props.value, props.symbol ?? '', props.decimals ?? WEI_PRECISION, WEI_PRECISION) }}</q-tooltip>
 </span>
 </template>
 <style scoped>

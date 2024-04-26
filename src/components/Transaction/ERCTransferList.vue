@@ -197,6 +197,7 @@ watch(() => props.logs, async (newTrx) => {
         </div>
         <div class="c-erc-transfers__cell c-erc-transfers__cell--c">
             <strong>{{ $t('components.nfts.amount') }}</strong>
+            <!-- ValueField -->
             <span>{{ getValueDisplay(transfer.value, '', transfer.token.decimals ) }}</span>
             <AddressField
                 :address="transfer.token.address"
