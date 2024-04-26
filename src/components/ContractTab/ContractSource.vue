@@ -1,6 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
@@ -32,10 +32,74 @@ const loading = ref(true);
 const sources = ref(false);
 const metaData = ref<MetaData>({});
 
-const expanded = ref({} as {[key:string]: boolean});
+// expand / collapse ------
+interface ExpandedCollapsed {
+    [key: string]: boolean;
+}
+const expanded = ref({} as ExpandedCollapsed);
+const enableSave = ref(false);
+const defaultState = ref<boolean | null>(null);
 
+const saveDefaultState = () => {
+    localStorage.setItem('expanded-default', JSON.stringify(defaultState.value));
+};
+
+const loadDefaultState = () => {
+    const defaultStateData = localStorage.getItem('expanded-default');
+    if (defaultStateData) {
+        const parsed = JSON.parse(defaultStateData);
+        defaultState.value = parsed;
+        return true;
+    } else {
+        return false;
+    }
+};
+loadDefaultState();
+
+const expandAll = () => {
+    for (const key in expanded.value) {
+        expanded.value[key] = true;
+    }
+    defaultState.value = true;
+    enableSave.value = true;
+    saveDefaultState();
+};
+
+const collapseAll = () => {
+    for (const key in expanded.value) {
+        expanded.value[key] = false;
+    }
+    defaultState.value = false;
+    enableSave.value = true;
+    saveDefaultState();
+};
+
+// this function saves expanded content to local storage
+const saveExpanded = () => {
+    if (enableSave.value) {
+        localStorage.setItem(`expanded-${props.contract.address}`, JSON.stringify(expanded.value));
+    }
+};
+
+// this function loads expanded content from local storage
+const loadExpanded = () => {
+    const expandedData = localStorage.getItem(`expanded-${props.contract.address}`);
+    if (expandedData) {
+        const parsed = JSON.parse(expandedData);
+        for (const key in parsed) {
+            expanded.value[key] = parsed[key];
+        }
+        return true;
+    } else {
+        return false;
+    }
+};
 
 const getFileKey = (index: number) => `viewer-${index}`;
+
+watch(expanded.value, () => {
+    saveExpanded();
+});
 
 onMounted(async () => {
     let sourceData;
@@ -53,32 +117,6 @@ onMounted(async () => {
 
     if ((files.value as {bytecode: any}).bytecode) {
         loading.value = false;
-    }
-
-    try {
-        const bytecodeResponse = await axios.post('/evm', {
-            jsonrpc: '2.0',
-            id: 1,
-            method: 'eth_getCode',
-            params: [props.contract.address],
-        });
-
-        if (bytecodeResponse.data?.result) {
-            (files.value as any[]).unshift({
-                content: bytecodeResponse.data.result,
-                name: 'bytecode',
-                expanded: false,
-                fullscreen: false,
-                raw: bytecodeResponse.data.result,
-                contract: false,
-            });
-        }
-
-        (files.value as any[]).forEach((file, index) => {
-            expanded.value[getFileKey(index)] = true;
-        });
-    } catch (e) {
-        console.error(e);
     }
 
     loading.value = false;
@@ -111,9 +149,12 @@ const sortFiles = (filesToSort: any[]) => {
         }
     }
 
-    (files.value as any[]).forEach((file, index) => {
-        expanded.value[getFileKey(index)] = true;
-    });
+    const loaded = loadExpanded();
+    if (!loaded) {
+        (files.value as any[]).forEach((file, index) => {
+            expanded.value[getFileKey(index)] = defaultState.value === null ? true : defaultState.value;
+        });
+    }
 };
 
 const isContract = (fileName: string) => {
@@ -132,18 +173,6 @@ const setMetaData = (data: any) => {
         enabled: data.settings.optimizer.enabled,
         runs: data.settings.optimizer.runs,
     };
-};
-
-const expandAll = () => {
-    for (const key in expanded.value) {
-        expanded.value[key] = true;
-    }
-};
-
-const collapseAll = () => {
-    for (const key in expanded.value) {
-        expanded.value[key] = false;
-    }
 };
 
 </script>
@@ -200,6 +229,7 @@ const collapseAll = () => {
             v-model="expanded[getFileKey(index)]"
             :default-opened="true"
             class="shadow-2 q-mb-md"
+            @update:model-value="enableSave = true; expanded[getFileKey(index)] = $event;"
         >
             <template v-slot:header>
                 <div class="flex items-center justify-between">

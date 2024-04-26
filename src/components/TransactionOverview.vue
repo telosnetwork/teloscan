@@ -11,11 +11,12 @@ import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
-import MethodField from 'components/MethodField.vue';
+import TransactionAction from 'components/TransactionAction.vue';
 import GasLimitAndUsage from 'components/GasLimitAndUsage.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 import ERCTransferList from 'components/Transaction/ERCTransferList.vue';
+import TLOSTransferList from 'components/Transaction/TLOSTransferList.vue';
 
 const { t: $t } = useI18n();
 
@@ -39,6 +40,7 @@ const isAContractDeployment = ref(false);
 
 const showMoreDetails = ref(true);
 const showErc20Transfers = ref(true);
+const showTLOSTransfers = ref(true);
 const moreDetailsHeight = ref(0);
 
 const getValueDisplay = (value: string) =>
@@ -74,6 +76,10 @@ function setERC20TransfersCount(count: number) {
     showErc20Transfers.value = count > 0;
 }
 
+function setTLOSTransfersCount(count: number) {
+    showTLOSTransfers.value = count > 0;
+}
+
 watch(() => props.trx, async (newTrx) => {
     if (newTrx) {
         if (newTrx.to) {
@@ -84,6 +90,7 @@ watch(() => props.trx, async (newTrx) => {
                 isAContractDeployment.value = true;
             }
         }
+
         await loadBlockData();
     }
 }, { immediate: true });
@@ -230,10 +237,11 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
             <q-skeleton v-if="!trx" type="text" class="c-trx-overview__skeleton" />
             <template v-else>
                 <span v-if="isAContractDeployment">{{ $t('components.transaction.contract_deployment') }}</span>
-                <MethodField
+                <TransactionAction
                     v-else
                     :trx="trx"
-                    :fullText="true"
+                    :highlightAddress="highlightAddress"
+                    @highlight="setHighlightAddress"
                 />
             </template>
         </div>
@@ -326,6 +334,34 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
                 :highlightAddress="highlightAddress"
                 @highlight="setHighlightAddress"
                 @transfers-count="setERC20TransfersCount"
+            />
+        </div>
+    </div>
+
+    <!-- TLOS Tranfers -->
+    <div
+        :class="{
+            'c-trx-overview__row': true,
+            'c-trx-overview__row--hidden': !showTLOSTransfers,
+        }"
+    >
+        <div class="c-trx-overview__col-att">
+            <div class="c-trx-overview__row-tooltip">
+                <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.transaction.tlos_transfers_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
+            </div>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.tlos_transfers') }}</div>
+        </div>
+        <div class="c-trx-overview__col-val c-trx-overview__col-val--erc-transfers">
+            <TLOSTransferList
+                v-if="trx"
+                :transaction="trx"
+                :highlightAddress="highlightAddress"
+                @highlight="setHighlightAddress"
+                @transfers-count="setTLOSTransfersCount"
             />
         </div>
     </div>

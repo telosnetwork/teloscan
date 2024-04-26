@@ -2,7 +2,8 @@
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 import FragmentList from 'components/Transaction/FragmentList.vue';
-import { WEI_PRECISION, formatWei, parseErrorMessage  } from 'src/lib/utils';
+import { getParsedInternalTransactions } from 'src/lib/transaction-utils';
+
 
 export default {
     name: 'InternalTxns',
@@ -38,109 +39,9 @@ export default {
     },
     async created() {
         this.loading = true;
-        try {
-            let dataset;
-            if(typeof this.traces !== 'undefined' && this.traces !== null) {
-                dataset = this.traces;
-            } else {
-                if(this.transaction === null || this.itxs.length > 0){
-                    this.loading = false;
-                    return;
-                }
-                let query = `/transaction/${this.transaction.hash}/internal?limit=1000&sort=ASC&offset=0&includeAbi=1`;
-                let response = await this.$indexerApi.get(query);
-                if(response && response.data?.results?.length > 0) {
-                    dataset = response.data?.results;
-                    this.$contractManager.addContractsToCache(response.data?.contracts);
-                } else {
-                    console.error(`Could not retrieve internal transactions for transaction ${this.transaction.hash}`,
-                        response,
-                    );
-                    this.loading = false;
-                    return;
-                }
-            }
-            for (let k = 0; k < dataset.length; k++) {
-                let itx = dataset[k];
-
-                // Get rid of duplicated calls
-                if(k === 1){
-                    if(itx.action.input === dataset[k - 1].action.input
-                        && itx.action.from === dataset[k - 1].action.from
-                        && itx.action.to === dataset[k - 1].action.to
-                        && itx.action.value === dataset[k - 1].action.value
-                    ){
-                        continue;
-                    }
-                }
-
-                itx.callType = itx.action.callType;
-                let contract = await this.getContract(itx.action.to);
-                let inputs, outputs, args, name, isTransferETH = false;
-
-                if (itx.type === 'create') {
-                    name = this.$t('components.transaction.contract_deployment');
-                } else if (+itx.action.value > 0) {
-                    name = this.$t('components.transaction.tlos_transfer');
-                    isTransferETH = true;
-                }
-
-                if (itx.action.input) {
-                    const parsedTransaction = await this.$contractManager.parseContractTransaction(
-                        itx,
-                        itx.action.input,
-                        contract,
-                    );
-                    if (parsedTransaction) {
-                        args = parsedTransaction.args;
-                        name = parsedTransaction.signature;
-                        isTransferETH = false;
-                        outputs = parsedTransaction.functionFragment ?
-                            parsedTransaction.functionFragment.outputs :
-                            parsedTransaction.outputs;
-
-                        inputs = parsedTransaction.functionFragment ?
-                            parsedTransaction.functionFragment.inputs :
-                            parsedTransaction.inputs;
-                    }
-                }
-                this.itxs.push(itx);
-                this.parsedItxs.push({
-                    index: itx.index,
-                    type: itx.type,
-                    args: args,
-                    error: (itx.error !== null && itx.result?.output?.slice(0, 10) === '0x08c379a0')
-                        ? itx.error + ': ' + parseErrorMessage(itx.result?.output)
-                        : itx.error,
-                    traceAddress: itx.traceAddress,
-                    parent: itx.traceAddress[0] || 0,
-                    name: name,
-                    from: itx.action?.from,
-                    isTransferETH: isTransferETH,
-                    sig: (itx.action.input) ? itx.action.input.slice(0, 10) : '',
-                    inputs: inputs,
-                    outputs: outputs,
-                    depth: itx.traceAddress.length,
-                    to: itx.action?.to,
-                    contract: contract,
-                    value: (itx.type !== 'create' && itx.action?.value !== '0')
-                        ? formatWei(itx.action.value, WEI_PRECISION)
-                        : 0,
-                });
-            }
-            this.parsedItxs.sort((a, b) => {
-                let deeper = (a.traceAddress.length > b.traceAddress.length) ? a : b;
-                let result = 0;
-                for(var i = 0; i < deeper.traceAddress.length;i++){
-                    let valueA = a.traceAddress[i] || -1;
-                    let valueB = b.traceAddress[i] || -1;
-                    result = result + (valueA - valueB);
-                }
-                return result;
-            });
-        } catch (e) {
-            console.error(`Could not retrieve internal transactions for transaction: ${e}`);
-        }
+        const { parsedItxs, itxs } = await getParsedInternalTransactions(this.transaction.hash, this.$t);
+        this.parsedItxs = parsedItxs;
+        this.itxs = itxs;
         this.loading = false;
     },
     data () {
@@ -153,6 +54,7 @@ export default {
         };
     },
 };
+
 </script>
 <template>
 <div>
