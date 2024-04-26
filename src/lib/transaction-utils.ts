@@ -21,9 +21,13 @@ export const tryToExtractMethod = (abi: {[hash: string]: string }, input: string
     if (!method) {
         return undefined;
     }
-    return {
-        name: method[1],
-    } as TransactionDescription;
+    if (method[1]) {
+        return {
+            name: method[1],
+        } as TransactionDescription;
+    } else {
+        return undefined;
+    }
 };
 export const loadTransaction = async (hash: string): Promise<EvmTransactionExtended | null>  => {
     try {

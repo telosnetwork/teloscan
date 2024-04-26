@@ -11,7 +11,7 @@ import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
-import MethodField from 'components/MethodField.vue';
+import TransactionAction from 'components/TransactionAction.vue';
 import GasLimitAndUsage from 'components/GasLimitAndUsage.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
@@ -237,10 +237,11 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
             <q-skeleton v-if="!trx" type="text" class="c-trx-overview__skeleton" />
             <template v-else>
                 <span v-if="isAContractDeployment">{{ $t('components.transaction.contract_deployment') }}</span>
-                <MethodField
+                <TransactionAction
                     v-else
                     :trx="trx"
-                    :fullText="true"
+                    :highlightAddress="highlightAddress"
+                    @highlight="setHighlightAddress"
                 />
             </template>
         </div>
