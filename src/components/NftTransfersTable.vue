@@ -16,8 +16,11 @@ import { NftTransferProps, NftTransferData } from 'src/types';
 
 import { loadTransaction, getDirection } from 'src/lib/transaction-utils';
 import { Pagination } from 'src/types';
+import { useStore } from 'vuex';
 
 const { t: $t } = useI18n();
+const $store = useStore();
+const toggleDisplayDecimals = () => $store.dispatch('general/toggleDisplayDecimals');
 
 // ---------------------
 interface TransfersResponse {
@@ -338,6 +341,17 @@ onMounted(() => {
                             {{ $t('components.click_to_change_format') }}
                         </q-tooltip>
                     </q-icon>
+                </div>
+                <div
+                    v-else-if="col.name==='value'"
+                    class="u-flex--center-y"
+                    @click="toggleDisplayDecimals"
+                >
+                    <a>{{ col.label }}</a>
+                    <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                    <q-tooltip anchor="bottom middle" self="bottom middle">
+                        {{ $t('components.click_to_change_format') }}
+                    </q-tooltip>
                 </div>
                 <div v-else class="u-flex--center-y">
                     {{ col.label }}

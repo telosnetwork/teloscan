@@ -2,6 +2,7 @@
 import AddressField from 'src/components/AddressField';
 import AddToWallet from 'src/components/AddToWallet';
 import ValueField from 'components/ValueField.vue';
+import { mapActions } from 'vuex';
 
 export default {
     name: 'TokenTable',
@@ -52,6 +53,7 @@ export default {
         };
     },
     methods: {
+        ...mapActions('general', ['toggleDisplayDecimals']),
         async showEntry(token) {
             console.log('showEntry', token);
         },
@@ -75,9 +77,18 @@ export default {
                 :key="col.name"
                 :props="props"
             >
-                <div class="u-flex--center-y">
-                    {{ col.label }}
+                <div v-if="col.name==='balance'" class="u-flex--center-y" @click="toggleDisplayDecimals">
+                    <a>{{ col.label }}</a>
+                    <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                    <q-tooltip anchor="bottom middle" self="bottom middle">
+                        {{ $t('components.click_to_change_format') }}
+                    </q-tooltip>
                 </div>
+                <template v-else>
+                    <div class="u-flex--center-y">
+                        {{ col.label }}
+                    </div>
+                </template>
             </q-th>
         </q-tr>
     </template>
@@ -94,14 +105,8 @@ export default {
                 {{ props.row.symbol }}
             </q-td>
             <q-td key="balance" :props="props">
-                <!-- ValueField -->
-                <span v-if="props.row.balance === '0.0000'">{{ '< 0.0001' }}</span>
-                <span v-else>{{ props.row.balance }}</span>
-                <q-tooltip>{{ props.row.fullBalance }}</q-tooltip>
                 <ValueField
-                    :value="props.row.value"
-                    :symbol="''"
-                    :decimals="props.row.decimals"
+                    :value="props.row.fullBalance"
                 />
             </q-td>
             <q-td key="usd" :props="props">

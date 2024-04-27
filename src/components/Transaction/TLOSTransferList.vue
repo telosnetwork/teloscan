@@ -2,17 +2,15 @@
 <script lang="ts" setup>
 import { PropType, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { BigNumber } from 'ethers';
 
 import AddressField from 'components/AddressField.vue';
+import ValueField from 'components/ValueField.vue';
+
 import { EvmTransactionExtended } from 'src/types';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 import { getParsedInternalTransactions } from 'src/lib/transaction-utils';
-import { WEI_PRECISION } from 'src/lib/utils';
 
 
 const { t: $t } = useI18n();
-const locale = useI18n().locale.value;
 const loading = ref(false);
 const parsedItxs = ref<unknown []>([]);
 const itxs = ref<unknown []>([]);
@@ -71,27 +69,6 @@ function setHighlightAddress(val: string) {
     emit('highlight', val);
 }
 
-function getValueDisplay(value: string, symbol: string, decimals: number | string) {
-    const _decimals = typeof decimals === 'number' ? decimals : parseInt(decimals ?? WEI_PRECISION);
-    console.log('getValueDisplay', value, symbol, decimals, '[', _decimals, ']');
-    try {
-        return prettyPrintCurrency(
-            BigNumber.from(value.split('.').join('')),
-            4,
-            locale,
-            false,
-            symbol ?? 'UNKNOWN',
-            false,
-            _decimals,
-            false,
-        );
-    } catch (e) {
-        console.error('getValueDisplay', e);
-    }
-
-    return value;
-}
-
 watch(() => props.transaction, async (newTrx) => {
     if (newTrx) {
         await loadTransfers();
@@ -132,7 +109,11 @@ watch(() => props.transaction, async (newTrx) => {
         </div>
         <div class="c-tlos-transfers__cell c-tlos-transfers__cell--c">
             <strong>{{ $t('components.nfts.amount') }}</strong>
-            <span>{{ getValueDisplay(transfer.value, transfer.token.symbol, transfer.token.decimals ) }}</span>
+            <ValueField
+                :value="transfer.value"
+                :symbol="transfer.token.symbol"
+                :decimals="transfer.token.decimals"
+            />
         </div>
     </div>
 </div>

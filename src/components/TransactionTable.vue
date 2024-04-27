@@ -19,6 +19,7 @@ import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 
 import { Pagination } from 'src/types';
+import { useStore } from 'vuex';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -26,6 +27,8 @@ const router = useRouter();
 const $i18n = useI18n();
 const { t: $t } = $i18n;
 const locale = $i18n.locale.value;
+const $store = useStore();
+const toggleDisplayDecimals = () => $store.dispatch('general/toggleDisplayDecimals');
 
 const FIVE_HUNDRED_K = 500000;
 
@@ -356,10 +359,17 @@ onBeforeMount(() => {
                             {{ $t('pages.transactions.see_tx_preview_tooltip') }}
                         </q-tooltip>
                     </div>
-                    <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
+                    <div v-else-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
                         <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
                         <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
                         <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-else-if="col.name==='value'" class="u-flex--center-y" @click="toggleDisplayDecimals">
+                        <a>{{ col.label }}</a>
+                        <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                        <q-tooltip anchor="bottom middle" self="bottom middle">
                             {{ $t('components.click_to_change_format') }}
                         </q-tooltip>
                     </div>
