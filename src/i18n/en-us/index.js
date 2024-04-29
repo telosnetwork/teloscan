@@ -312,6 +312,8 @@ export default {
             erc721_transfers_tooltip: 'List of ERC721 token transfers in this transaction',
             erc1155_transfers: 'ERC1155 transfers',
             erc1155_transfers_tooltip: 'List of ERC1155 token transfers in this transaction',
+            tlos_transfers: 'TLOS transfers',
+            tlos_transfers_tooltip: 'List of internal TLOS transfers in this transaction',
             value: 'Value',
             value_tooltip: 'The amount of cryptocurrency transferred in this transaction.',
             gas_fee: 'Transaction Fee',

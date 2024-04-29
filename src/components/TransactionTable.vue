@@ -4,21 +4,22 @@ import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import { onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { BigNumber } from 'ethers/lib/ethers';
 
+import { getDirection } from 'src/lib/transaction-utils';
 import { contractManager, indexerApi } from 'src/boot/telosApi';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 import { WEI_PRECISION } from 'src/lib/utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
+import ValueField from 'components/ValueField.vue';
 import MethodField from 'components/MethodField.vue';
 import TransactionDialog from 'components/TransactionDialog.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 
 import { Pagination } from 'src/types';
+import { useStore } from 'vuex';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -26,6 +27,8 @@ const router = useRouter();
 const $i18n = useI18n();
 const { t: $t } = $i18n;
 const locale = $i18n.locale.value;
+const $store = useStore();
+const toggleDisplayDecimals = () => $store.dispatch('general/toggleDisplayDecimals');
 
 const FIVE_HUNDRED_K = 500000;
 
@@ -92,6 +95,11 @@ const columns = [
         align: 'left',
     },
     {
+        name: 'direction',
+        label: '',
+        align: 'left',
+    },
+    {
         name: 'from',
         label: $t('components.from'),
         align: 'left',
@@ -112,6 +120,20 @@ const columns = [
         align: 'right',
     },
 ];
+
+function updateColumns() {
+    // we only need the direction column if we are looking at a specific account
+    const index = columns.findIndex(col => col.name === 'direction');
+    if (!props.accountAddress && index !== -1) {
+        columns.splice(index, 1);
+    } else if (props.accountAddress && index === -1) {
+        columns.splice(6, 0, {
+            name: 'direction',
+            label: '',
+            align: 'left',
+        });
+    }
+}
 
 watch(() => route.query,
     (query) => {
@@ -134,6 +156,7 @@ function setPagination(page: number, size: number, desc: boolean) {
         pagination.value.rowsPerPage = size;
     }
     pagination.value.descending = desc;
+    updateColumns();
     parseTransactions();
 }
 
@@ -283,19 +306,6 @@ function setHighlightAddress(val: string) {
     highlightAddress.value = val;
 }
 
-function getValueDisplay(value: string) {
-    return prettyPrintCurrency(
-        BigNumber.from(value),
-        4,
-        locale,
-        false,
-        'TLOS',
-        false,
-        WEI_PRECISION,
-        false,
-    );
-}
-
 const updateLoadingRows = () => {
     loadingRows.value = [];
     for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
@@ -349,10 +359,17 @@ onBeforeMount(() => {
                             {{ $t('pages.transactions.see_tx_preview_tooltip') }}
                         </q-tooltip>
                     </div>
-                    <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
+                    <div v-else-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
                         <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
                         <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
                         <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-else-if="col.name==='value'" class="u-flex--center-y" @click="toggleDisplayDecimals">
+                        <a>{{ col.label }}</a>
+                        <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                        <q-tooltip anchor="bottom middle" self="bottom middle">
                             {{ $t('components.click_to_change_format') }}
                         </q-tooltip>
                     </div>
@@ -389,7 +406,7 @@ onBeforeMount(() => {
                             color="primary"
                             :transaction-hash="props.row.hash"
                             :status="props.row.status === '0x1'"
-                            :truncate="18"
+                            :truncate="13"
                         />
                     </div>
                 </q-td>
@@ -406,6 +423,13 @@ onBeforeMount(() => {
                 </q-td>
                 <q-td key="date" :props="props" @click="toggleDateFormat">
                     <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
+                </q-td>
+                <q-td key="direction" :props="props">
+                    <span
+                        :class="`direction ${getDirection(accountAddress, props.row)}`"
+                    >
+                        {{ $t(`components.transaction.${getDirection(accountAddress, props.row)}`).toUpperCase() }}
+                    </span>
                 </q-td>
                 <q-td key="from" :props="props" class="c-transaction-table__cell">
                     <AddressField
@@ -430,7 +454,11 @@ onBeforeMount(() => {
                     />
                 </q-td>
                 <q-td key='value' :props="props" class="c-transaction-table__cell">
-                    {{ getValueDisplay(props.row.value) }}
+                    <ValueField
+                        :value="props.row.value"
+                        :symbol="'TLOS'"
+                        :decimals="WEI_PRECISION"
+                    />
                 </q-td>
                 <q-td key='fee' :props="props" class="c-transaction-table__cell">
                     <TransactionFeeField
@@ -508,6 +536,9 @@ onBeforeMount(() => {
                 <q-td key="date">
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
+                <q-td key="direction" >
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
                 <q-td key="from"  class="c-transaction-table__cell">
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
@@ -527,6 +558,10 @@ onBeforeMount(() => {
 
 </template>
 <style lang="scss">
+
+.direction {
+  @include direction;
+}
 // quasar override
 .sortable {
     height: 60px;

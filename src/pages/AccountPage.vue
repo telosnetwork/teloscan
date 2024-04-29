@@ -387,7 +387,6 @@ async function loadAccount() {
                 }
             }
 
-
             &-icon {
                 margin-left: 6px;
                 &--verified {

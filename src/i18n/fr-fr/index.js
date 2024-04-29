@@ -100,6 +100,8 @@ export default {
         erc721_transfers_tooltip: 'Liste des transferts de jetons ERC721 dans cette transaction',
         erc1155_transfers: 'Transferts ERC1155',
         erc1155_transfers_tooltip: 'Liste des transferts de jetons ERC1155 dans cette transaction',
+        tlos_transfers: 'TLOS transfers',
+        tlos_transfers_tooltip: 'Liste des transferts internes de TLOS dans cette transaction',
         tokens: 'Jetons',
         created_at_trx: 'Création',
         by_address: 'Par',

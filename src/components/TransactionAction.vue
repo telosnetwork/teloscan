@@ -3,11 +3,13 @@ import { computed, ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { ZERO_ADDRESSES } from 'src/lib/utils';
+import MethodField from 'components/MethodField.vue';
+import AddressField from 'components/AddressField.vue';
 
 const { t: $t } = useI18n();
 
 const props = defineProps({
-    highlightMethod: {
+    highlightAddress: {
         type: String,
         required: false,
         default: '',
@@ -26,18 +28,6 @@ const props = defineProps({
         },
         required: true,
     },
-    fullText: {
-        type: Boolean,
-        default: false,
-    },
-    separateWords: {
-        type: Boolean,
-        default: false,
-    },
-    contract: {
-        type: Object,
-        default: () => null,
-    },
 });
 
 const emit = defineEmits(['highlight']);
@@ -45,38 +35,6 @@ const emit = defineEmits(['highlight']);
 const methodName = ref('');
 const nativeTooltipText = ref('');
 
-const methodSignature = computed(() => {
-    if (props.trx.input && props.trx.input !== '0x') {
-        // the first 10 characters of the input data are the method signature, including leading '0x'
-        return props.trx.input.slice(0, 10);
-    }
-
-    return '';
-});
-const methodNameOrSignature = computed(() => {
-    if (methodName.value) {
-        return methodName.value;
-    }
-
-    if (props.trx.input && props.trx.input !== '0x') {
-        return methodSignature.value;
-    }
-
-    return '';
-});
-const displayText = computed(() => {
-    try {
-        let method = methodNameOrSignature.value;
-        if (method && props.separateWords) {
-            method = method.replace(/([A-Z])/g, ' $1').trim();
-            method = method[0].toUpperCase() + method.slice(1);
-        }
-        return method;
-    } catch (e) {
-        console.error(e);
-    }
-    return '';
-});
 const propValue = computed(() => +(props.trx.value || '0x0'));
 
 onMounted(async () => {
@@ -109,49 +67,54 @@ const setValues = async () => {
     }
 };
 
-function emitHighlight(val: string) {
+function setHighlightAddress(val: string) {
     emit('highlight', val);
 }
 </script>
 
 <template>
-<div
-    :class="{
-        'c-method': true,
-        'c-method--highlight': [methodName, methodSignature].includes(highlightMethod) && highlightMethod !== '',
-        'c-method--full-text': fullText,
-    }"
-    @mouseenter="emitHighlight(methodName || methodSignature)"
-    @mouseleave="emitHighlight('')"
->
-    {{ displayText }}
+<div class="c-trx-action">
 
-    <q-tooltip>
-        {{ nativeTooltipText || methodName || displayText }}
-    </q-tooltip>
+    <q-icon class="c-tlos-transfers__icon list-arrow" name="arrow_right"/>
+
+    <span class="c-trx-action__text">Call</span>
+
+    <MethodField
+        class="c-trx-action__method"
+        :separateWords="true"
+        :trx="props.trx"
+        :fullText="true"
+    />
+
+    <span class="c-trx-action__text">Function by</span>
+
+    <AddressField
+        :address="props.trx.from"
+        :truncate="12"
+        :highlightAddress="props.highlightAddress"
+        @highlight="setHighlightAddress"
+    />
+
+    <span class="c-trx-action__text">on</span>
+
+    <AddressField
+        :address="props.trx.to"
+        :truncate="12"
+        :highlightAddress="props.highlightAddress"
+        @highlight="setHighlightAddress"
+    />
 </div>
 </template>
 
 <style lang="scss">
-.c-method {
-    width: 80px;
-    height: 24px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    padding: 3px 4px 0;
-    text-align: center;
-    border-radius: 5px;
-    font-size: 0.9em;
-    border: 1px solid var(--border-color);
+.c-trx-action {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
 
-    &--highlight {
-        background: rgba($secondary, 0.2);
-        border: 1px dashed $secondary;
-    }
-
-    &--full-text {
-        width: auto;
+    &__method {
+        transform: translateY(-2px);
     }
 }
 </style>
