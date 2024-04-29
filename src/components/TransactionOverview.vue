@@ -2,14 +2,13 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { BigNumber } from 'ethers';
 import { BlockData, EvmTransactionExtended } from 'src/types';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { indexerApi } from 'src/boot/telosApi';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
+import ValueField from 'components/ValueField.vue';
 import DateField from 'components/DateField.vue';
 import TransactionAction from 'components/TransactionAction.vue';
 import GasLimitAndUsage from 'components/GasLimitAndUsage.vue';
@@ -19,8 +18,6 @@ import ERCTransferList from 'components/Transaction/ERCTransferList.vue';
 import TLOSTransferList from 'components/Transaction/TLOSTransferList.vue';
 
 const { t: $t } = useI18n();
-
-const locale = useI18n().locale.value;
 
 const props = defineProps<{
     trx: EvmTransactionExtended | null,
@@ -42,19 +39,6 @@ const showMoreDetails = ref(true);
 const showErc20Transfers = ref(true);
 const showTLOSTransfers = ref(true);
 const moreDetailsHeight = ref(0);
-
-const getValueDisplay = (value: string) =>
-    prettyPrintCurrency(
-        BigNumber.from(value),
-        4,
-        locale,
-        false,
-        'TLOS',
-        false,
-        WEI_PRECISION,
-        false,
-    );
-
 
 const loadBlockData = async () => {
     try {
@@ -381,7 +365,11 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
         <div class="c-trx-overview__col-val">
             <q-skeleton v-if="!trx" type="text" class="c-trx-overview__skeleton" />
             <template v-else>
-                {{ getValueDisplay(trx.value) }}
+                <ValueField
+                    :value="trx.value"
+                    :symbol="'TLOS'"
+                    :decimals="WEI_PRECISION"
+                />
             </template>
         </div>
     </div>

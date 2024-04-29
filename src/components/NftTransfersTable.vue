@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 import { indexerApi } from 'src/boot/telosApi';
 
 import TransactionField from 'components/TransactionField.vue';
+import ValueField from 'components/ValueField.vue';
 import MethodField from 'components/MethodField.vue';
 import AddressField from 'components/AddressField.vue';
 import NftItemField from 'components/NftItemField.vue';
@@ -14,12 +15,12 @@ import { formatWei, toChecksumAddress } from 'src/lib/utils';
 import { NftTransferProps, NftTransferData } from 'src/types';
 
 import { loadTransaction, getDirection } from 'src/lib/transaction-utils';
-import { WEI_PRECISION } from 'src/antelope/wallets/utils';
-import { BigNumber } from 'ethers';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 import { Pagination } from 'src/types';
+import { useStore } from 'vuex';
 
 const { t: $t } = useI18n();
+const $store = useStore();
+const toggleDisplayDecimals = () => $store.dispatch('general/toggleDisplayDecimals');
 
 // ---------------------
 interface TransfersResponse {
@@ -236,41 +237,6 @@ const onRequest = async (settings: { pagination: Pagination}) => {
     loading.value = false;
 };
 
-const locale = useI18n().locale.value;
-function getValueDisplay(value: string, symbol: string, decimals: number) {
-    const _decimals = typeof decimals === 'number' ? decimals : parseInt(decimals ?? WEI_PRECISION);
-    // value is has this format: xxxxxxx.zzzzzzzzz
-    // we force it to have exactly _decimals decimals
-    const parts = value.split('.');
-    const decimalsDiff = _decimals - (parts[1]?.length ?? 0);
-    if (decimalsDiff > 0) {
-        parts[1] = parts[1] ?? '';
-        parts[1] += '0'.repeat(decimalsDiff);
-    } else if (decimalsDiff < 0) {
-        parts[1] = parts[1]?.slice(0, _decimals) ?? '';
-    }
-    const _value = parts.join('.');
-
-    try {
-        const result = prettyPrintCurrency(
-            BigNumber.from(_value.split('.').join('')),
-            4,
-            locale,
-            false,
-            symbol ?? 'UNKNOWN',
-            false,
-            _decimals,
-            false,
-        );
-        return result;
-    } catch (e) {
-        console.error('getValueDisplay', e);
-    }
-
-    return truncatedId(value);
-}
-
-
 const convertToEpoch = (dateString: string | number) => {
     if (typeof dateString === 'number'){
         return dateString / 1000;
@@ -376,6 +342,17 @@ onMounted(() => {
                         </q-tooltip>
                     </q-icon>
                 </div>
+                <div
+                    v-else-if="col.name==='value'"
+                    class="u-flex--center-y"
+                    @click="toggleDisplayDecimals"
+                >
+                    <a>{{ col.label }}</a>
+                    <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                    <q-tooltip anchor="bottom middle" self="bottom middle">
+                        {{ $t('components.click_to_change_format') }}
+                    </q-tooltip>
+                </div>
                 <div v-else class="u-flex--center-y">
                     {{ col.label }}
                 </div>
@@ -444,10 +421,11 @@ onMounted(() => {
                 </span>
             </q-td>
             <q-td key="value" :props="props">
-                <span class="value">
-                    {{ getValueDisplay(props.row.value, props.row.contract.symbol, props.row.contract.decimals) }}
-                    <q-tooltip>{{ props.row.value }}</q-tooltip>
-                </span>
+                <ValueField
+                    :value="props.row.value"
+                    :symbol="props.row.contract.symbol"
+                    :decimals="props.row.contract.decimals"
+                />
             </q-td>
             <q-td key="token" :props="props" class="flex items-center">
                 <AddressField
