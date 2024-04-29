@@ -2,18 +2,18 @@
 import BlockField from 'components/BlockField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
-import MethodField from 'components/MethodField';
 import InternalTxns from 'components/Transaction/InternalTxns';
-import { formatWei } from 'src/lib/utils';
+import ValueField from 'components/ValueField.vue';
+import { WEI_PRECISION, formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
 export default {
-    name: 'InternalTransactionTable',
+    name: 'InternalTransactionFlatTable',
     components: {
         TransactionField,
         DateField,
         BlockField,
-        MethodField,
+        ValueField,
         InternalTxns,
     },
     props: {
@@ -54,12 +54,17 @@ export default {
                 align: 'left',
             },
             {
-                name: 'method',
+                name: 'from',
                 label: '',
                 align: 'left',
             },
             {
-                name: 'int_txns',
+                name: 'to',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'value',
                 label: '',
                 align: 'right',
             },
@@ -89,8 +94,9 @@ export default {
         this.columns[0].label = this.$t('components.tx_hash');
         this.columns[1].label = this.$t('components.block');
         this.columns[2].label = this.$t('components.age');
-        this.columns[3].label = this.$t('components.method');
-        this.columns[4].label = this.$t('components.internal_txns');
+        this.columns[3].label = this.$t('pages.from');
+        this.columns[4].label = this.$t('pages.to');
+        this.columns[5].label = this.$t('pages.value');
         this.updateLoadingRows();
     },
     watch: {
@@ -213,6 +219,24 @@ export default {
                             };
                         }
                     }
+
+
+                    transaction.traces.forEach((trace) => {
+                        const entry = {
+                            hash: transaction.hash,
+                            blockNumber: transaction.blockNumber,
+                            timestamp: transaction.timestamp,
+                            from: trace.action.from,
+                            to: trace.action.to,
+                            value: trace.action.value,
+                            symbol: 'TLOS',
+                            decimals: WEI_PRECISION,
+                        };
+                        this.rows.push(entry);
+                    });
+
+
+
                 } catch (e) {
                     console.error(
                         `Failed to parse data for transaction, error was: ${e.message}`,
@@ -226,7 +250,7 @@ export default {
                     });
                 }
             }
-            this.rows = this.transactions;
+            // this.rows = this.transactions; // FIXME:
             this.loading = false;
         },
         getPath(props) {
@@ -319,23 +343,17 @@ export default {
             <q-td key="date" :props="props">
                 <DateField :epoch="(props.row.timestamp / 1000)" :force-show-age="showDateAge"/>
             </q-td>
-            <q-td key="method" :props="props">
-                <MethodField v-if="props.row.parsedTransaction" :trx="props.row" :shortenName="true"/>
+            <q-td key="from" :props="props">
+                <TransactionField :transaction-hash="props.row.from"/>
             </q-td>
-            <q-td key="int_txns" :props="props">
-                <span v-if="props.row.traces?.length > 0">
-                    <b> {{ $t('components.n_internal_txns', {amount: props.row.traces.length} ) }} </b>
-                </span>
-                <span v-else>{{ $t('components.none') }}</span>
+            <q-td key="to" :props="props">
+                <TransactionField :transaction-hash="props.row.to"/>
             </q-td>
-            <q-td auto-width>
-                <q-icon
-                    v-if="props.row.traces?.length > 0"
-                    :name="props.expand ? 'expand_more' : 'expand_less'"
-                    size="sm"
-                    class="clickable"
-                    clickable
-                    @click="props.expand = !props.expand"
+            <q-td key="value" :props="props">
+                <ValueField
+                    :value="props.row.value"
+                    :symbol="props.row.symbol"
+                    :decimals="props.row.decimals"
                 />
             </q-td>
         </q-tr>

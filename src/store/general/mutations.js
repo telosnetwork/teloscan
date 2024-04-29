@@ -18,6 +18,10 @@ export const setHighlightMethod = (state, highlightMethod) => {
     state.highlightMethod = highlightMethod;
 };
 
+export const setHighlightTx = (state, highlightTx) => {
+    state.highlightTx = highlightTx;
+};
+
 export const setDisplayDecimals = (state, displayDecimals) => {
     state.displayDecimals = displayDecimals;
 };

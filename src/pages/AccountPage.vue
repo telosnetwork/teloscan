@@ -14,6 +14,7 @@ import { Token } from 'src/types/Token';
 
 import TransactionTable from 'components/TransactionTable.vue';
 import InternalTransactionTable from 'components/InternalTransactionTable.vue';
+import InternalTransactionFlatTable from 'components/InternalTransactionFlatTable.vue';
 import NftTransfersTable from 'components/NftTransfersTable.vue';
 import TokenList from 'components/Token/TokenList.vue';
 import ApprovalList from 'components/Token/ApprovalList.vue';
@@ -44,6 +45,7 @@ const nonce = ref<number | null>(null);
 const contract = ref<Contract | null>(null);
 const tab = ref(tabs[0]);
 const initialLoadComplete = ref(false);
+const useInternalTransactionsFlat = ref(true);
 
 const accountAddress = computed(() => route.params.address as string ?? '');
 const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
@@ -312,7 +314,19 @@ async function loadAccount() {
                 <HolderList :contract="contract" />
             </q-tab-panel>
             <q-tab-panel v-else name="internaltx">
-                <InternalTransactionTable :title="accountAddress" :filter="{address:accountAddress}"/>
+
+                <q-card class="c-address__internal-txns">
+                    <q-card-section>
+                        <q-toggle
+                            v-model="useInternalTransactionsFlat"
+                            label="Flat view"
+                            color="primary"
+                        />
+                    </q-card-section>
+
+                    <InternalTransactionFlatTable v-if="useInternalTransactionsFlat" :title="accountAddress" :filter="{address:accountAddress}"/>
+                    <InternalTransactionTable v-else :title="accountAddress" :filter="{address:accountAddress}"/>
+                </q-card>
             </q-tab-panel>
             <q-tab-panel
                 v-if="
