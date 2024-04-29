@@ -1,6 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 
 import { contractManager } from 'src/boot/telosApi';
 import { getIcon } from 'src/lib/token-utils';
@@ -49,6 +49,7 @@ const contractName = ref('');
 const logo = ref<any>(null);
 const tokenList = ref<any>(null);
 const checksum = ref('');
+const isToken = computed(() => contract.value?.isToken() ?? false);
 
 const restart = async () => {
     if (!props.address) {
@@ -101,7 +102,7 @@ const getDisplay = async () => {
             ? ''
             : logo.value
         ;
-        const name = (contract.value.isToken() && contract.value.getProperties()?.symbol)
+        const name = (isToken.value && contract.value.getProperties()?.symbol)
             ? contract.value.getProperties().symbol
             : contractName.value
                 ;
@@ -138,7 +139,7 @@ function emitHighlight(val: string) {
     @mouseleave="emitHighlight('')"
 >
     <router-link
-        :to="`/address/${checksum}`"
+        :to="`/${isToken?'token':'address'}/${checksum}`"
         :class="{
             'c-address-field__link': true,
             'c-address-field__link--highlight': highlightAddress === checksum && highlightAddress !== ''
