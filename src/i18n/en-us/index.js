@@ -42,6 +42,9 @@ export default {
             internal: 'Internal Transactions',
             not_found: 'Transaction not found',
         },
+        internaltrx: {
+            page_title: 'Contract Internal Transactions',
+        },
         home: {
             telos_evm_explorer: 'The Telos EVM Explorer',
             market_cap: 'Market Cap',
