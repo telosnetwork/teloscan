@@ -349,10 +349,9 @@ export default {
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div :class="[ 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" >
-                    <div
+                <div :class="[ 'c-inttrx-flat__header-age', 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" @click="toggleDateFormat">
+                    <template
                         v-if="col.name === 'date'"
-                        @click="toggleDateFormat"
                     >
                         <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
                         <q-icon
@@ -363,7 +362,7 @@ export default {
                                 {{ $t('components.click_to_change_format') }}
                             </q-tooltip>
                         </q-icon>
-                    </div>
+                    </template>
                     <div v-else-if="col.name === 'method'">
                         {{ col.label }}
                         <q-icon class="info-icon" name="far fa-question-circle" />
@@ -449,10 +448,9 @@ export default {
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div :class="[ 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" >
-                    <div
+                <div :class="[ 'c-inttrx-flat__header-age', 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" @click="toggleDateFormat">
+                    <template
                         v-if="col.name === 'date'"
-                        @click="toggleDateFormat"
                     >
                         <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
                         <q-icon
@@ -463,7 +461,7 @@ export default {
                                 {{ $t('components.click_to_change_format') }}
                             </q-tooltip>
                         </q-icon>
-                    </div>
+                    </template>
                     <div v-else-if="col.name === 'method'">
                         {{ col.label }}
                         <q-icon class="info-icon" name="far fa-question-circle" />
@@ -524,6 +522,9 @@ export default {
         .q-table__bottom {
             position: relative;
         }
+    }
+    &__header-age {
+        gap: 5px;
     }
     &__footer {
         position: absolute;
