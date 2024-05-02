@@ -65,10 +65,6 @@ const loadTransfers = async () => {
     emit('transfers-count', tlos_transfers.value.length);
 };
 
-function setHighlightAddress(val: string) {
-    emit('highlight', val);
-}
-
 watch(() => props.transaction, async (newTrx) => {
     if (newTrx) {
         await loadTransfers();
@@ -93,8 +89,6 @@ watch(() => props.transaction, async (newTrx) => {
                 copy
                 :address="transfer.from"
                 :truncate="15"
-                :highlightAddress="props.highlightAddress"
-                @highlight="setHighlightAddress"
             />
         </div>
         <div class="c-tlos-transfers__cell c-tlos-transfers__cell--b">
@@ -103,8 +97,6 @@ watch(() => props.transaction, async (newTrx) => {
                 copy
                 :address="transfer.to"
                 :truncate="15"
-                :highlightAddress="props.highlightAddress"
-                @highlight="setHighlightAddress"
             />
         </div>
         <div class="c-tlos-transfers__cell c-tlos-transfers__cell--c">

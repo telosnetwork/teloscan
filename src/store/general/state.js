@@ -5,5 +5,5 @@ export default () => ({
     highlightAddress: '',
     highlightMethod: '',
     highlightTx: '',
-    displayDecimals: 'fixed', // fixed, dynamic
+    displayDecimals: 'dynamic', // fixed, dynamic
 });

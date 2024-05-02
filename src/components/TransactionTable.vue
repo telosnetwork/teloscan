@@ -51,7 +51,6 @@ const loading =  ref(false);
 const showDateAge = ref(true);
 const showTotalGasFee = ref(true);
 const highlightMethod = ref('');
-const highlightAddress = ref('');
 const totalRows = ref(0);
 
 const transactions: any[] = [];
@@ -302,10 +301,6 @@ function setHighlightMethod(val: string) {
     highlightMethod.value = val;
 }
 
-function setHighlightAddress(val: string) {
-    highlightAddress.value = val;
-}
-
 const updateLoadingRows = () => {
     loadingRows.value = [];
     for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
@@ -438,8 +433,6 @@ onBeforeMount(() => {
                         :address="props.row.from"
                         :truncate="12"
                         :copy="true"
-                        :highlightAddress="highlightAddress"
-                        @highlight="setHighlightAddress"
                     />
                 </q-td>
                 <q-td key="to" :props="props" class="c-transaction-table__cell">
@@ -449,8 +442,6 @@ onBeforeMount(() => {
                         :address="props.row.to"
                         :truncate="12"
                         :copy="true"
-                        :highlightAddress="highlightAddress"
-                        @highlight="setHighlightAddress"
                     />
                 </q-td>
                 <q-td key='value' :props="props" class="c-transaction-table__cell">
