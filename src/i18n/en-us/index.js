@@ -44,6 +44,7 @@ export default {
         },
         internaltrx: {
             page_title: 'Contract Internal Transactions',
+            for_address: 'for address { address }',
         },
         home: {
             telos_evm_explorer: 'The Telos EVM Explorer',

@@ -28,6 +28,8 @@ body.body--light {
     --scrollbar-track-bg-color: #{$grey-5};
     --scrollbar-thumb-bg-color: #{$grey-7};
 
+    --odd-row-bg-color: #{$grey-3};
+
     a:hover {
         color: $a-hover-light;
     }
@@ -48,6 +50,8 @@ body.body--dark {
 
     --scrollbar-track-bg-color: #{$grey-10};
     --scrollbar-thumb-bg-color: #{$grey-7};
+
+    --odd-row-bg-color: #{$grey-10};
 
     --q-dark: #181818;
 

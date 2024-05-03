@@ -3,8 +3,8 @@ import BlockField from 'components/BlockField';
 import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import AddressField from 'components/AddressField';
-import InternalTxns from 'components/Transaction/InternalTxns';
 import ValueField from 'components/ValueField.vue';
+import { getDirection } from 'src/lib/transaction-utils';
 import { WEI_PRECISION, formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
@@ -16,18 +16,17 @@ export default {
         DateField,
         BlockField,
         ValueField,
-        InternalTxns,
     },
     props: {
+        address: {
+            type: String,
+            required: true,
+        },
         page: {
             type: Number,
         },
         pagesize: {
             type: Number,
-        },
-        title: {
-            type: String,
-            required: true,
         },
         filter: {
             type: Object,
@@ -40,11 +39,6 @@ export default {
         usePagination: {
             type: Boolean,
             default: true,
-        },
-    },
-    computed: {
-        address() {
-            return this.filter?.address ?? '';
         },
     },
     data() {
@@ -65,7 +59,17 @@ export default {
                 align: 'left',
             },
             {
+                name: 'type',
+                label: '',
+                align: 'left',
+            },
+            {
                 name: 'from',
+                label: '',
+                align: 'left',
+            },
+            {
+                name: 'direction',
                 label: '',
                 align: 'left',
             },
@@ -101,14 +105,17 @@ export default {
     },
     async created() {
         // initialization of the translated texts
-        this.columns[0].label = this.$t('components.tx_hash');
-        this.columns[1].label = this.$t('components.block');
-        this.columns[2].label = this.$t('components.age');
-        this.columns[3].label = this.$t('pages.from');
-        this.columns[4].label = this.$t('pages.to');
-        this.columns[5].label = this.$t('pages.value');
+        this.columns.filter(t => t.name === 'hash')[0].label = this.$t('components.tx_hash');
+        this.columns.filter(t => t.name === 'block')[0].label = this.$t('components.block');
+        this.columns.filter(t => t.name === 'date')[0].label = this.$t('components.age');
+        this.columns.filter(t => t.name === 'type')[0].label = this.$t('components.approvals.type');
+        this.columns.filter(t => t.name === 'from')[0].label = this.$t('pages.from');
+        this.columns.filter(t => t.name === 'to')[0].label = this.$t('pages.to');
+        this.columns.filter(t => t.name === 'value')[0].label = this.$t('pages.value');
         if (!this.usePagination) {
             this.pagination.rowsPerPage = 25;
+            // we need to remove type column
+            this.columns = this.columns.filter(col => col.name !== 'type');
         }
         this.updateLoadingRows();
     },
@@ -135,6 +142,7 @@ export default {
         },
     },
     methods: {
+        getDirection: getDirection,
         updateLoadingRows() {
             this.loadingRows = [];
             for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
@@ -211,7 +219,7 @@ export default {
                     if (!contract) {
                         continue;
                     }
-                    if (totalTraces >= 25 && !props.usePagination) {
+                    if (totalTraces >= 25 && !this.usePagination) {
                         // we already have enough data
                         break;
                     }
@@ -247,31 +255,43 @@ export default {
                         }
                     }
 
-
                     processedTransactions++;
+                    const entries = [];
                     transaction.traces.forEach((trace) => {
                         const entry = {
                             trx: processedTransactions % 2 === 0 ? 'even' : 'odd',
                             hash: transaction.hash,
                             blockNumber: transaction.blockNumber,
                             timestamp: transaction.timestamp,
+                            type: trace.action.callType,
                             from: trace.action.from,
                             to: trace.action.to,
                             value: trace.action.value,
                             symbol: 'TLOS',
                             decimals: WEI_PRECISION,
                         };
-                        this.rows.push(entry);
+                        entries.push(entry);
                     });
 
-                    // TODO: if we want to crop in exactly 25 rows, we need to uncomment this
-                    // if (!this.usePagination) {
-                    //     // we make sure there are no more than 25 rows.
-                    //     // If we have more than 25 rows, we discard the rest
-                    //     if (this.rows.length > 25) {
-                    //         this.rows = this.rows.slice(0, 25);
-                    //     }
-                    // }
+                    if (this.usePagination) {
+                        const entry = {
+                            trx: processedTransactions % 2 === 0 ? 'even' : 'odd',
+                            hash: transaction.hash,
+                            blockNumber: transaction.blockNumber,
+                            timestamp: transaction.timestamp,
+                            type: entries[0].type,
+                            from: transaction.from,
+                            to: transaction.to,
+                            value: transaction.value,
+                            symbol: 'TLOS',
+                            decimals: WEI_PRECISION,
+                            traces: entries,
+                            expand: true,
+                        };
+                        this.rows.push(entry);
+                    } else {
+                        this.rows = this.rows.concat(entries);
+                    }
 
                 } catch (e) {
                     console.error(
@@ -292,8 +312,8 @@ export default {
             const { page, rowsPerPage, descending } = props.pagination;
             let path;
             const filter = Object.assign({}, this.filter ? this.filter : {});
-            if (filter.address) {
-                path = `/address/${filter.address}/transactions`;
+            if (this.address) {
+                path = `/address/${this.address}/transactions`;
             } else {
                 path = '/transactions';
             }
@@ -340,7 +360,7 @@ export default {
             align="center"
             class="c-inttrx-flat__footer"
         >
-            <router-link class="c-inttrx-flat__footer-container" :to="{ name: 'txsInternal', query: { a: address } }">
+            <router-link class="c-inttrx-flat__footer-container" :to="{ name: 'txsinternal', query: { a: address } }">
                 <span class="c-inttrx-flat__footer-text"> See all transactions </span>
                 <q-icon name="arrow_forward" class="c-inttrx-flat__footer-icon" />
             </router-link>
@@ -375,7 +395,7 @@ export default {
                     </div>
                 </div>
             </q-th>
-            <q-td v-if="usePagination" auto-width/>
+            <q-th v-if="usePagination" auto-width/>
         </q-tr>
     </template>
     <template v-slot:body="props">
@@ -389,6 +409,9 @@ export default {
             <q-td key="date" :props="props">
                 <DateField :epoch="(props.row.timestamp / 1000)" :force-show-age="showDateAge"/>
             </q-td>
+            <q-td key="type" :props="props">
+                {{ props.row.type }}
+            </q-td>
             <q-td key="from" :props="props">
                 <AddressField
                     v-if="props.row.from"
@@ -396,6 +419,13 @@ export default {
                     :address="props.row.from"
                     :truncate="12"
                 />
+            </q-td>
+            <q-td key="direction" :props="props">
+                <span
+                    :class="`direction ${getDirection(address, props.row)}`"
+                >
+                    {{ $t(`components.transaction.${getDirection(address, props.row)}`).toUpperCase() }}
+                </span>
             </q-td>
             <q-td key="to" :props="props">
                 <AddressField
@@ -412,16 +442,67 @@ export default {
                     :decimals="props.row.decimals"
                 />
             </q-td>
+            <q-td v-if="usePagination" auto-width>
+                <!-- we need a switch to expand the rows below -->
+                <q-btn
+                    :icon="props.row.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                    flat
+                    round
+                    dense
+                    @click="props.row.expand = !props.row.expand"
+                />
+            </q-td>
         </q-tr>
         <q-tr
-            v-show="props.expand"
-            v-if="props.row.traces?.length > 0"
+            v-for="(trace, index) in props.row.traces"
+            v-show="props.row.expand"
+            :key="`${trace.hash}-${index}`"
             :props="props"
-            class="q-virtual-scroll--with-prev"
+            :class="props.row.trx"
         >
-            <q-td colspan="100%">
-                <InternalTxns :traces="props.row.traces" :transaction="props.row" />
+            <q-td key="hash" :props="props">
+                <TransactionField :transaction-hash="trace.hash" :useHighlight="true"/>
             </q-td>
+            <q-td key="block" :props="props">
+                <BlockField :block="trace.blockNumber"/>
+            </q-td>
+            <q-td key="date" :props="props">
+                <DateField :epoch="(trace.timestamp / 1000)" :force-show-age="showDateAge"/>
+            </q-td>
+            <q-td key="type" :props="props">
+                {{ trace.type }}
+            </q-td>
+            <q-td key="from" :props="props">
+                <AddressField
+                    v-if="trace.from"
+                    :key="trace.from"
+                    :address="trace.from"
+                    :truncate="12"
+                />
+            </q-td>
+            <q-td key="direction" :props="props">
+                <span
+                    :class="`direction ${getDirection(address, trace)}`"
+                >
+                    {{ $t(`components.transaction.${getDirection(address, trace)}`).toUpperCase() }}
+                </span>
+            </q-td>
+            <q-td key="to" :props="props">
+                <AddressField
+                    v-if="trace.to"
+                    :key="trace.to"
+                    :address="trace.to"
+                    :truncate="12"
+                />
+            </q-td>
+            <q-td key="value" :props="props">
+                <ValueField
+                    :value="trace.value"
+                    :symbol="trace.symbol"
+                    :decimals="trace.decimals"
+                />
+            </q-td>
+            <q-td v-if="usePagination" auto-width/>
         </q-tr>
     </template>
 </q-table>
@@ -439,7 +520,7 @@ export default {
             align="center"
             class="c-inttrx-flat__footer"
         >
-            <router-link class="c-inttrx-flat__footer-container" :to="{ name: 'txsInternal' }">
+            <router-link class="c-inttrx-flat__footer-container" :to="{ name: 'txsinternal', query: { a: address } }">
                 <span class="c-inttrx-flat__footer-text"> See all transactions </span>
                 <q-icon name="arrow_forward" class="c-inttrx-flat__footer-icon" />
             </router-link>
@@ -488,10 +569,13 @@ export default {
             <q-td key="date" >
                 <q-skeleton type="text" class="c-trx-overview__skeleton" />
             </q-td>
-            <q-td key="method" >
+            <q-td key="from" >
                 <q-skeleton type="text" class="c-trx-overview__skeleton" />
             </q-td>
-            <q-td key="int_txns" >
+            <q-td key="direction" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="to" >
                 <q-skeleton type="text" class="c-trx-overview__skeleton" />
             </q-td>
             <q-td key="value" >
@@ -507,7 +591,11 @@ export default {
 <style lang="scss">
 
 .odd {
-        background-color: var(--scrollbar-track-bg-color);
+    background-color: var(--odd-row-bg-color);
+}
+
+.direction {
+  @include direction;
 }
 
 .c-inttrx-flat {

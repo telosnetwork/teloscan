@@ -90,6 +90,7 @@ const getDisplay = async () => {
         return;
     }
     let address = toChecksumAddress(props.address);
+    fullName.value = address;
     if (contractName.value) {
         if(tokenList.value?.tokens){
             tokenList.value.tokens.forEach((token: any) => {
