@@ -83,6 +83,11 @@ export default {
                 label: '',
                 align: 'right',
             },
+            {
+                name: 'count',
+                label: '',
+                align: 'right',
+            },
         ];
 
         return {
@@ -101,6 +106,7 @@ export default {
             },
             page_size_options: [10, 20, 50],
             showDateAge: true,
+            allExpanded: true,
         };
     },
     async created() {
@@ -112,11 +118,14 @@ export default {
         this.columns.filter(t => t.name === 'from')[0].label = this.$t('pages.from');
         this.columns.filter(t => t.name === 'to')[0].label = this.$t('pages.to');
         this.columns.filter(t => t.name === 'value')[0].label = this.$t('pages.value');
+        this.columns.filter(t => t.name === 'count')[0].label = this.$t('pages.count');
         if (!this.usePagination) {
             this.pagination.rowsPerPage = 25;
-            // we need to remove type column
+            // we need to remove type and count columns
             this.columns = this.columns.filter(col => col.name !== 'type');
+            this.columns = this.columns.filter(col => col.name !== 'count');
         }
+        this.loadAllExpanded();
         this.updateLoadingRows();
     },
     watch: {
@@ -291,6 +300,11 @@ export default {
                         this.rows.push(entry);
                     } else {
                         this.rows = this.rows.concat(entries);
+                        // we make sure there are no more than 25 rows.
+                        // If we have more than 25 rows, we discard the rest
+                        if (this.rows.length > 25) {
+                            this.rows = this.rows.slice(0, 25);
+                        }
                     }
 
                 } catch (e) {
@@ -306,6 +320,9 @@ export default {
                     });
                 }
             }
+            this.rows.forEach((row) => {
+                row.expand = this.allExpanded;
+            });
             this.loading = false;
         },
         getPath(props) {
@@ -340,16 +357,33 @@ export default {
         toggleDateFormat() {
             this.showDateAge = !this.showDateAge;
         },
+        toggleAllExpanded() {
+            this.allExpanded = !this.allExpanded;
+            this.rows.forEach((row) => {
+                row.expand = this.allExpanded;
+            });
+            this.saveAllExpanded();
+        },
+        loadAllExpanded() {
+            // we look for the local Storage to see if the user has already expanded all the rows
+            const allExpanded = localStorage.getItem('allExpanded');
+            if (allExpanded) {
+                this.allExpanded = allExpanded === 'true';
+            }
+        },
+        saveAllExpanded() {
+            // we save the state of the allExpanded variable in the local storage
+            localStorage.setItem('allExpanded', this.allExpanded);
+        },
     },
 };
 </script>
 
 <template>
 <q-table
-    v-if="!loading"
     v-model:pagination="pagination"
     class="c-inttrx-flat__table"
-    :rows="rows"
+    :rows="loading? loadingRows : rows"
     :row-key="row => row.hash"
     :columns="columns"
     :rows-per-page-options="page_size_options"
@@ -369,10 +403,8 @@ export default {
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div :class="[ 'c-inttrx-flat__header-age', 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" @click="toggleDateFormat">
-                    <template
-                        v-if="col.name === 'date'"
-                    >
+                <template v-if="col.name === 'date'" >
+                    <div class="c-inttrx-flat__header-age u-flex--center-y" @click="toggleDateFormat">
                         <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
                         <q-icon
                             class="info-icon"
@@ -382,209 +414,155 @@ export default {
                                 {{ $t('components.click_to_change_format') }}
                             </q-tooltip>
                         </q-icon>
-                    </template>
-                    <div v-else-if="col.name === 'method'">
-                        {{ col.label }}
-                        <q-icon class="info-icon" name="far fa-question-circle" />
-                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
-                            {{ $t('components.executed_based_on_decoded_data') }}
-                        </q-tooltip>
                     </div>
-                    <div v-else>
-                        {{ col.label }}
-                    </div>
+                </template>
+
+                <div v-else-if="col.name === 'count'">
+                    {{ col.label }}
+                    <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                        {{ $t('pages.internal_txns') }}
+                    </q-tooltip>
+                </div>
+                <div v-else>
+                    {{ col.label }}
                 </div>
             </q-th>
-            <q-th v-if="usePagination" auto-width/>
-        </q-tr>
-    </template>
-    <template v-slot:body="props">
-        <q-tr :props="props" :class="props.row.trx">
-            <q-td key="hash" :props="props">
-                <TransactionField :transaction-hash="props.row.hash" :useHighlight="true"/>
-            </q-td>
-            <q-td key="block" :props="props">
-                <BlockField :block="props.row.blockNumber"/>
-            </q-td>
-            <q-td key="date" :props="props">
-                <DateField :epoch="(props.row.timestamp / 1000)" :force-show-age="showDateAge"/>
-            </q-td>
-            <q-td key="type" :props="props">
-                {{ props.row.type }}
-            </q-td>
-            <q-td key="from" :props="props">
-                <AddressField
-                    v-if="props.row.from"
-                    :key="props.row.from"
-                    :address="props.row.from"
-                    :truncate="12"
-                />
-            </q-td>
-            <q-td key="direction" :props="props">
-                <span
-                    :class="`direction ${getDirection(address, props.row)}`"
-                >
-                    {{ $t(`components.transaction.${getDirection(address, props.row)}`).toUpperCase() }}
-                </span>
-            </q-td>
-            <q-td key="to" :props="props">
-                <AddressField
-                    v-if="props.row.to"
-                    :key="props.row.to"
-                    :address="props.row.to"
-                    :truncate="12"
-                />
-            </q-td>
-            <q-td key="value" :props="props">
-                <ValueField
-                    :value="props.row.value"
-                    :symbol="props.row.symbol"
-                    :decimals="props.row.decimals"
-                />
-            </q-td>
-            <q-td v-if="usePagination" auto-width>
-                <!-- we need a switch to expand the rows below -->
+            <q-th v-if="usePagination" auto-width>
                 <q-btn
-                    :icon="props.row.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                    :icon="allExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
                     flat
                     round
                     dense
-                    @click="props.row.expand = !props.row.expand"
-                />
-            </q-td>
-        </q-tr>
-        <q-tr
-            v-for="(trace, index) in props.row.traces"
-            v-show="props.row.expand"
-            :key="`${trace.hash}-${index}`"
-            :props="props"
-            :class="props.row.trx"
-        >
-            <q-td key="hash" :props="props">
-                <TransactionField :transaction-hash="trace.hash" :useHighlight="true"/>
-            </q-td>
-            <q-td key="block" :props="props">
-                <BlockField :block="trace.blockNumber"/>
-            </q-td>
-            <q-td key="date" :props="props">
-                <DateField :epoch="(trace.timestamp / 1000)" :force-show-age="showDateAge"/>
-            </q-td>
-            <q-td key="type" :props="props">
-                {{ trace.type }}
-            </q-td>
-            <q-td key="from" :props="props">
-                <AddressField
-                    v-if="trace.from"
-                    :key="trace.from"
-                    :address="trace.from"
-                    :truncate="12"
-                />
-            </q-td>
-            <q-td key="direction" :props="props">
-                <span
-                    :class="`direction ${getDirection(address, trace)}`"
+                    @click="toggleAllExpanded()"
                 >
-                    {{ $t(`components.transaction.${getDirection(address, trace)}`).toUpperCase() }}
-                </span>
-            </q-td>
-            <q-td key="to" :props="props">
-                <AddressField
-                    v-if="trace.to"
-                    :key="trace.to"
-                    :address="trace.to"
-                    :truncate="12"
-                />
-            </q-td>
-            <q-td key="value" :props="props">
-                <ValueField
-                    :value="trace.value"
-                    :symbol="trace.symbol"
-                    :decimals="trace.decimals"
-                />
-            </q-td>
-            <q-td v-if="usePagination" auto-width/>
-        </q-tr>
-    </template>
-</q-table>
-<q-table
-    v-else
-    v-model:pagination="pagination"
-    class="c-inttrx-flat__table"
-    :rows="loadingRows"
-    :row-key="row => row.hash"
-    :columns="columns"
-    :rows-per-page-options="page_size_options"
->
-    <template v-if="!usePagination" v-slot:bottom>
-        <q-card-actions
-            align="center"
-            class="c-inttrx-flat__footer"
-        >
-            <router-link class="c-inttrx-flat__footer-container" :to="{ name: 'txsinternal', query: { a: address } }">
-                <span class="c-inttrx-flat__footer-text"> See all transactions </span>
-                <q-icon name="arrow_forward" class="c-inttrx-flat__footer-icon" />
-            </router-link>
-        </q-card-actions>
-    </template>
-    <template v-slot:header="props">
-        <q-tr :props="props">
-            <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div :class="[ 'c-inttrx-flat__header-age', 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" @click="toggleDateFormat">
-                    <template
-                        v-if="col.name === 'date'"
-                    >
-                        <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
-                        <q-icon
-                            class="info-icon"
-                            name="far fa-question-circle"
-                        >
-                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
-                                {{ $t('components.click_to_change_format') }}
-                            </q-tooltip>
-                        </q-icon>
-                    </template>
-                    <div v-else-if="col.name === 'method'">
-                        {{ col.label }}
-                        <q-icon class="info-icon" name="far fa-question-circle" />
-                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
-                            {{ $t('components.executed_based_on_decoded_data') }}
-                        </q-tooltip>
-                    </div>
-                    <div v-else>
-                        {{ col.label }}
-                    </div>
-                </div>
+                    <q-tooltip>{{ allExpanded ? $t('components.collapse_all') : $t('components.expand_all') }}</q-tooltip>
+                </q-btn>
             </q-th>
-            <q-td auto-width/>
         </q-tr>
     </template>
-    <template v-slot:body="">
-        <q-tr>
-            <q-td key="hash" >
-                <q-skeleton type="text" class="c-trx-overview__skeleton" />
-            </q-td>
-            <q-td key="block" >
-                <q-skeleton type="text" class="c-trx-overview__skeleton" />
-            </q-td>
-            <q-td key="date" >
-                <q-skeleton type="text" class="c-trx-overview__skeleton" />
-            </q-td>
-            <q-td key="from" >
-                <q-skeleton type="text" class="c-trx-overview__skeleton" />
-            </q-td>
-            <q-td key="direction" >
-                <q-skeleton type="text" class="c-trx-overview__skeleton" />
-            </q-td>
-            <q-td key="to" >
-                <q-skeleton type="text" class="c-trx-overview__skeleton" />
-            </q-td>
-            <q-td key="value" >
-                <q-skeleton type="text" class="c-trx-overview__skeleton" />
-            </q-td>
-            <q-td v-if="usePagination" auto-width>
-                <q-skeleton type="text" class="c-trx-overview__skeleton" />
-            </q-td>
-        </q-tr>
+    <template v-slot:body="props">
+        <template v-if="loading">
+            <q-tr>
+                <!-- we need to iterate 7 times if usePagination and 10 times if not -->
+                <q-td
+                    v-for="i in (usePagination ? 10 : 7)"
+                    :key="i"
+                >
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+            </q-tr>
+        </template>
+        <template v-else>
+            <q-tr :props="props" :class="props.row.trx">
+                <q-td key="hash" :props="props">
+                    <TransactionField :transaction-hash="props.row.hash" :useHighlight="true"/>
+                </q-td>
+                <q-td key="block" :props="props">
+                    <BlockField :block="props.row.blockNumber"/>
+                </q-td>
+                <q-td key="date" :props="props">
+                    <DateField :epoch="(props.row.timestamp / 1000)" :force-show-age="showDateAge"/>
+                </q-td>
+                <q-td key="type" :props="props">
+                    {{ props.row.type }}
+                </q-td>
+                <q-td key="from" :props="props">
+                    <AddressField
+                        v-if="props.row.from"
+                        :key="props.row.from"
+                        :address="props.row.from"
+                        :truncate="12"
+                    />
+                </q-td>
+                <q-td key="direction" :props="props">
+                    <span
+                        :class="`direction ${getDirection(address, props.row)}`"
+                    >
+                        {{ $t(`components.transaction.${getDirection(address, props.row)}`).toUpperCase() }}
+                    </span>
+                </q-td>
+                <q-td key="to" :props="props">
+                    <AddressField
+                        v-if="props.row.to"
+                        :key="props.row.to"
+                        :address="props.row.to"
+                        :truncate="12"
+                    />
+                </q-td>
+                <q-td key="value" :props="props">
+                    <ValueField
+                        :value="props.row.value"
+                        :symbol="props.row.symbol"
+                        :decimals="props.row.decimals"
+                    />
+                </q-td>
+                <q-td key="count" :props="props">
+                    {{ props.row.traces.length }}
+                </q-td>
+                <q-td v-if="usePagination" auto-width>
+                    <!-- we need a switch to expand the rows below -->
+                    <q-btn
+                        :icon="props.row.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
+                        flat
+                        round
+                        dense
+                        @click="props.row.expand = !props.row.expand"
+                    />
+                </q-td>
+            </q-tr>
+            <q-tr
+                v-for="(trace, index) in props.row.traces"
+                v-show="props.row.expand"
+                :key="`${trace.hash}-${index}`"
+                :props="props"
+                :class="props.row.trx"
+            >
+                <q-td key="hash" :props="props">
+                    <TransactionField :transaction-hash="trace.hash" :useHighlight="true"/>
+                </q-td>
+                <q-td key="block" :props="props">
+                    <BlockField :block="trace.blockNumber"/>
+                </q-td>
+                <q-td key="date" :props="props">
+                    <DateField :epoch="(trace.timestamp / 1000)" :force-show-age="showDateAge"/>
+                </q-td>
+                <q-td key="type" :props="props">
+                    {{ trace.type }}
+                </q-td>
+                <q-td key="from" :props="props">
+                    <AddressField
+                        v-if="trace.from"
+                        :key="trace.from"
+                        :address="trace.from"
+                        :truncate="12"
+                    />
+                </q-td>
+                <q-td key="direction" :props="props">
+                    <span
+                        :class="`direction ${getDirection(address, trace)}`"
+                    >
+                        {{ $t(`components.transaction.${getDirection(address, trace)}`).toUpperCase() }}
+                    </span>
+                </q-td>
+                <q-td key="to" :props="props">
+                    <AddressField
+                        v-if="trace.to"
+                        :key="trace.to"
+                        :address="trace.to"
+                        :truncate="12"
+                    />
+                </q-td>
+                <q-td key="value" :props="props">
+                    <ValueField
+                        :value="trace.value"
+                        :symbol="trace.symbol"
+                        :decimals="trace.decimals"
+                    />
+                </q-td>
+                <q-td key="count" :props="props" />
+                <q-td v-if="usePagination" auto-width/>
+            </q-tr>
+        </template>
     </template>
 </q-table>
 </template>

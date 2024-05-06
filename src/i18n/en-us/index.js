@@ -139,6 +139,7 @@ export default {
         input: 'Input',
         output: 'Output',
         value: 'Value',
+        count: 'Count',
         overview: 'overview',
         more_info: 'more info',
         transaction_sent: 'txn sent',

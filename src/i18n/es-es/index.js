@@ -137,6 +137,7 @@ export default {
         input: 'Entrada',
         output: 'Salida',
         value: 'Valor',
+        count: 'Cuenta',
         overview: 'visión general',
         more_info: 'más información',
         transaction_sent: 'txn enviado',
