@@ -45,47 +45,47 @@ export default {
         const columns = [
             {
                 name: 'hash',
-                label: '',
+                label: 'hash',
                 align: 'left',
             },
             {
                 name: 'block',
-                label: '',
+                label: 'block',
                 align: 'left',
             },
             {
                 name: 'date',
-                label: '',
+                label: 'date',
                 align: 'left',
             },
             {
                 name: 'type',
-                label: '',
+                label: 'type',
                 align: 'left',
             },
             {
                 name: 'from',
-                label: '',
+                label: 'from',
                 align: 'left',
             },
             {
                 name: 'direction',
-                label: '',
+                label: 'direction',
                 align: 'left',
             },
             {
                 name: 'to',
-                label: '',
+                label: 'to',
                 align: 'left',
             },
             {
                 name: 'value',
-                label: '',
+                label: 'value',
                 align: 'right',
             },
             {
                 name: 'count',
-                label: '',
+                label: 'count',
                 align: 'right',
             },
         ];
