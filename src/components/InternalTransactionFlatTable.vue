@@ -106,7 +106,7 @@ export default {
             },
             page_size_options: [10, 20, 50],
             showDateAge: true,
-            allExpanded: true,
+            allExpanded: false,
         };
     },
     async created() {
