@@ -1,10 +1,12 @@
 <script>
-import AddressField from 'src/components/AddressField.vue';
-import AddToWallet from 'src/components/AddToWallet.vue';
+import AddressField from 'src/components/AddressField';
+import AddToWallet from 'src/components/AddToWallet';
+import ValueField from 'components/ValueField.vue';
+import { mapActions } from 'vuex';
 
 export default {
     name: 'TokenTable',
-    components: { AddressField, AddToWallet },
+    components: { AddressField, AddToWallet, ValueField },
     props: {
         tokens: {
             type: Array,
@@ -46,9 +48,15 @@ export default {
         ];
 
         return {
-            rows: [...this.tokens],
+            rows: [... this.tokens],
             columns,
         };
+    },
+    methods: {
+        ...mapActions('general', ['toggleDisplayDecimals']),
+        async showEntry(token) {
+            console.log('showEntry', token);
+        },
     },
 };
 </script>
@@ -60,7 +68,6 @@ export default {
     :columns="columns"
     :loading="!(rows)"
     :rows-per-page-options="[0]"
-    flat
 >
 
     <template v-slot:header="props">
@@ -70,15 +77,24 @@ export default {
                 :key="col.name"
                 :props="props"
             >
-                <div class="u-flex--center-y">
-                    {{ col.label }}
+                <div v-if="col.name==='balance'" class="u-flex--center-y" @click="toggleDisplayDecimals">
+                    <a>{{ col.label }}</a>
+                    <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                    <q-tooltip anchor="bottom middle" self="bottom middle">
+                        {{ $t('components.click_to_change_format') }}
+                    </q-tooltip>
                 </div>
+                <template v-else>
+                    <div class="u-flex--center-y">
+                        {{ col.label }}
+                    </div>
+                </template>
             </q-th>
         </q-tr>
     </template>
 
     <template v-slot:body="props">
-        <q-tr :props="props">
+        <q-tr :props="props" @click="showEntry(props.row)">
             <q-td key="icon" :props="props">
                 <q-img :src="props.row.logoURI" class="c-token-icon" />
             </q-td>
@@ -89,9 +105,9 @@ export default {
                 {{ props.row.symbol }}
             </q-td>
             <q-td key="balance" :props="props">
-                <span v-if="props.row.balance === '0.0000'">{{ '< 0.0001' }}</span>
-                <span v-else>{{ props.row.balance }}</span>
-                <q-tooltip>{{ props.row.fullBalance }}</q-tooltip>
+                <ValueField
+                    :value="props.row.fullBalance"
+                />
             </q-td>
             <q-td key="usd" :props="props">
                 <span v-if="props.row.price > 0">
@@ -117,13 +133,22 @@ export default {
     </template>
 </q-table>
 </template>
-<style lang='sass' scoped>
-tbody  tr td:first-child
-    width: 50px
-tbody  tr td:last-child
-    width: 100px
-.c-token-icon
-    width: 32px
-    height: auto
-    border-radius: 100%
+<style lang='scss' scoped>
+tbody {
+    tr {
+      td:first-child {
+        width: 50px;
+      }
+      td:last-child {
+        width: 100px;
+      }
+    }
+  }
+
+  .c-token-icon {
+    width: 32px;
+    height: auto;
+    border-radius: 100%;
+  }
+
 </style>

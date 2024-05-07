@@ -33,14 +33,14 @@ export default {
             fileType: true,
             TIME_DELAY: 6000,
             sourcePathRules: [
-                val => ((val.length === 0)
-                || (val.length && val.charAt(val.length - 1) === '/'))
-                || this.$t('pages.invalid_path_format'),
+                val => ((val.length === 0) ||
+                (val.length && val.charAt(val.length - 1) === '/')) ||
+                this.$t('pages.invalid_path_format'),
             ],
             constructorArgsRules: [
-                val => ((val.length === 0)
-                || (val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ','))
-                || this.$t('pages.no_trailing_commas'),
+                val => ((val.length === 0) ||
+                (val.length && val.charAt(val.length - 1) !== ',' && val.charAt(0) !== ',')) ||
+                this.$t('pages.no_trailing_commas'),
             ],
         };
     },
@@ -51,7 +51,7 @@ export default {
         uploaderLabel() {
             const solFile = this.$t('pages.select_sol_file');
             const jsonFile = this.$t('pages.select_json_file');
-            return this.fileType ? solFile : jsonFile;
+            return  this.fileType ? solFile : jsonFile;
         },
     },
     async mounted() {
@@ -62,23 +62,23 @@ export default {
     },
     methods: {
         isValidAddressFormat,
-        setCompiler(option) {
+        setCompiler(option){
             this.compilerVersion = option;
         },
-        setEvm(option) {
+        setEvm(option){
             this.targetEvm = option;
         },
-        uploaded(uploadedObj) {
+        uploaded(uploadedObj){
             const verifyResponse = JSON.parse(uploadedObj.xhr.response);
             this.onNotify(verifyResponse);
-            if (verifyResponse.type === 'positive') {
+            if (verifyResponse.type === 'positive'){
                 this.navToAddress();
             }
         },
-        onNotify(notification) {
+        onNotify(notification){
             let noti = { ...notification };
 
-            if (typeof notification !== 'object' || !Object.prototype.hasOwnProperty.call(notification, 'message')) {
+            if (typeof notification !== 'object' || !Object.prototype.hasOwnProperty.call(notification, 'message')){
                 noti = { message: JSON.stringify(notification), type: 'negative' };
             }
             this.$q.notify({
@@ -88,7 +88,7 @@ export default {
                 timeout: this.TIME_DELAY,
             });
         },
-        navToAddress() {
+        navToAddress(){
             setTimeout(() => {
                 this.$router.push({ name: 'address', params: { address: this.contractAddress } });
             }, this.TIME_DELAY);
@@ -97,43 +97,41 @@ export default {
             return `${process.env.TELOS_API_ENDPOINT}/contracts/verify`;
         },
         async submitFormHandler() {
-            if (this.$refs.uploader) {
-                if (this.$refs.uploader.files.length === 0) {
+            if (this.$refs.uploader){
+                if (this.$refs.uploader.files.length === 0){
                     this.onNotify({ type: 'info', message: this.$t('pages.paste_contract_contents') });
                     return;
                 }
                 await this.$refs.uploader.upload();
-            } else {
+            }else{
                 await this.uploadForm();
             }
         },
 
-        async uploadForm() {
+        async uploadForm(){
             const formData = this.getFormData();
             formData.append('files', this.contractInput);
-            try {
+            try{
                 const result = await this.$telosApi.general.post('contracts/verify', formData);
                 this.onNotify(result.data);
-                if (result.data.type === 'positive') {
+                if (result.data.type === 'positive'){
                     this.navToAddress();
                 }
-            } catch (e) {
+            }catch(e){
                 this.onNotify({ message: e, type: 'negative' });
             }
         },
 
-        getFormData() {
-            const formFields = this.getFormFields();
+        getFormData(){
+            let formFields = this.getFormFields();
             const formData = new FormData();
-            Object.keys(formFields).forEach((i) => {
-                if (Object.prototype.hasOwnProperty.call(formFields, i)) {
-                    formData.append(formFields[i].name, formFields[i].value);
-                }
-            });
+            for (let i in formFields){
+                formData.append(formFields[i].name, formFields[i].value);
+            }
             return formData;
         },
 
-        getFormFields() {
+        getFormFields(){
             return [
                 { name: 'sourcePath', value: this.sourcePath },
                 { name: 'contractAddress', value: this.contractAddress },
@@ -146,7 +144,7 @@ export default {
             ];
         },
 
-        resetForm() {
+        resetForm(){
             this.contractAddress = '';
             this.compilerVersion = '';
             this.sourcePath = '';
@@ -155,7 +153,7 @@ export default {
             this.optimizer = false;
             this.runs = 200;
             this.fileType = true;
-            if (this.$refs.uploader) {
+            if (this.$refs.uploader){
                 this.$refs.uploader.files = [];
             }
         },
@@ -199,13 +197,13 @@ export default {
                                     v-model="inputMethod"
                                     :label="$t('pages.upload_file')"
                                     :val="true"
-                                    color="secondary"
+                                    color="primary"
                                 />
                                 <q-radio
                                     v-model="inputMethod"
                                     :label="$t('pages.text_input')"
                                     :val="false"
-                                    color="secondary"
+                                    color="primary"
                                 />
                             </div>
                         </div>
@@ -234,14 +232,14 @@ export default {
                                     v-model="fileType"
                                     label=".sol"
                                     :val="true"
-                                    color="secondary"
+                                    color="primary"
                                 />
                                 <q-radio
                                     v-if="inputMethod"
                                     v-model="fileType"
                                     label=".json"
                                     :val="false"
-                                    color="secondary"
+                                    color="primary"
                                 />
                             </div>
                         </div>
@@ -274,8 +272,8 @@ export default {
                             @rejected="onNotify"
                         />
                         <div class="button-container">
-                            <q-btn :label="$t('pages.verify_contract')" type="submit" color="secondary"/>
-                            <q-btn :label="$t('pages.reset')" type="reset" color="secondary"/>
+                            <q-btn :label="$t('pages.verify_contract')" type="submit" color="primary"/>
+                            <q-btn :label="$t('pages.reset')" type="reset" color="primary"/>
                         </div>
                     </div>
                 </q-form>
@@ -286,6 +284,11 @@ export default {
 </template>
 
 <style scoped lang="sass">
+.pageContainer
+    flex: 0 1 1200px
+    margin: auto
+    max-width: 1200px
+
 .uploader
   max-width: 300px
 

@@ -96,6 +96,7 @@ export class OreIdAuth extends EVMAuthenticator {
     }
 
     async login(network: string): Promise<addressString | null> {
+        this.trace('login', network);
         const chainSettings = this.getChainSettings();
         const trackSuccessfulLogin = () => {
             this.trace('login', 'trackAnalyticsEvent -> generic login succeeded', TELOS_ANALYTICS_EVENT_NAMES.loginSuccessful);

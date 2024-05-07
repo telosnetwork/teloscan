@@ -1,23 +1,8 @@
 import { boot } from 'quasar/wrappers';
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';
-// import fetch from 'node-fetch';
+import fetch from 'node-fetch';
 import axios from 'axios';
 import { ethers } from 'ethers';
-
-const axiosFetch = async (url, options = {}) => {
-    const response = await axios({
-        url,
-        method: options.method || 'get',
-        data: options.body,
-        headers: options.headers,
-    });
-    return {
-        async json() {
-            return response.data;
-        },
-        // Add other relevant methods and properties as needed
-    };
-};
 
 const evm = new TelosEvmApi({
     endpoint: process.env.NETWORK_EVM_ENDPOINT,
@@ -53,13 +38,12 @@ const hyperion = axios.create({
     baseURL: process.env.NETWORK_EVM_ENDPOINT,
 });
 
+const providerManager = new ProviderManager();
+
 export default boot(({ app, store }) => {
-    store.$providerManager = new ProviderManager();
-    app.config.globalProperties.$providerManager = store.$providerManager;
-    store.$evm = evm;
-    app.config.globalProperties.$evm = evm;
-    app.config.globalProperties.$evmEndpoint = hyperion;
-    store.$evmEndpoint = app.config.globalProperties.$evmEndpoint;
+    store.$providerManager = app.config.globalProperties.$providerManager = providerManager;
+    store.$evm = app.config.globalProperties.$evm = evm;
+    store.$evmEndpoint = app.config.globalProperties.$evmEndpoint = hyperion;
 });
 
-export { evm };
+export { evm, providerManager };

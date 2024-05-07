@@ -1,9 +1,9 @@
 <script>
-import AddressField from 'components/AddressField.vue';
-import DateField from 'components/DateField.vue';
+import AddressField from 'components/AddressField';
+import DateField from 'components/DateField';
 import { formatWei } from 'src/lib/utils';
 import BigDecimal from 'js-big-decimal';
-
+import { BigNumber, ethers } from 'ethers';
 export default {
     name: 'HolderList',
     components: {
@@ -16,16 +16,23 @@ export default {
             required: true,
         },
     },
+    created(){
+        for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+            this.loadingRows.push(i);
+        }
+    },
     async mounted() {
-        const list = await this.$contractManager.getSystemContractsList();
-        this.systemContractsList = Object.keys(list.contracts).map(contractKey => list.contracts[contractKey].address).join(',');
-        this.systemContractsList.substr(this.systemContractsList.length - 2, this.systemContractsList.length - 1);
+        let list = await this.$contractManager.getSystemContractsList();
+        for(const contract in list.contracts){
+            this.systemContractsList += list.contracts[contract].address + ',';
+        }
+        this.systemContractsList.substr(this.systemContractsList.length -2, this.systemContractsList.length - 1);
         await this.onRequest({
             pagination: this.pagination,
         });
     },
     data() {
-        const columns = [
+        let columns = [
             {
                 name: 'holder',
                 label: this.$t('components.holders.holder'),
@@ -39,12 +46,12 @@ export default {
             },
             {
                 name: 'telos_supply_share',
-                label: `% ${this.$t('components.holders.telos_supply')}`,
+                label: '% ' + this.$t('components.holders.telos_supply'),
                 align: 'left',
             },
             {
                 name: 'supply_share',
-                label: `% ${this.$t('components.holders.global_supply')}`,
+                label: '% ' + this.$t('components.holders.global_supply'),
                 align: 'left',
             },
             {
@@ -53,12 +60,13 @@ export default {
                 align: 'left',
             },
         ];
-        if (!this.contract.properties?.total_supply_ibc) {
+        if(!this.contract.properties?.total_supply_ibc){
             columns.splice(3, 1);
         }
         return {
-            columns,
+            columns: columns,
             holders: [],
+            loadingRows: [],
             loading: true,
             systemContractsList: '',
             showSystemContracts: false,
@@ -76,11 +84,9 @@ export default {
         async onRequest(props) {
             this.loading = true;
 
-            const {
-                page, rowsPerPage, sortBy, descending,
-            } = props.pagination;
+            const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
-            const response = await this.$indexerApi.get(this.getPath(props));
+            let response = await this.$indexerApi.get(this.getPath(props));
 
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
@@ -89,10 +95,10 @@ export default {
             if (response.data?.total_count && this.pagination.rowsNumber !== response.data?.total_count) {
                 this.pagination.rowsNumber = response.data.total_count;
             }
-            const holders = [];
-            response.data.results.forEach((holder) => {
+            let holders = [];
+            for (let holder of response.data.results) {
                 holders.push(holder);
-            });
+            }
             this.holders = holders;
             this.loading = false;
         },
@@ -103,23 +109,29 @@ export default {
             }`;
             path += `&includeAbi=true&offset=${(page - 1) * rowsPerPage}`;
             path += '&includePagination=true';
-            path = (!this.showSystemContracts) ? `${path}&not=${this.systemContractsList}` : path;
+            path = (!this.showSystemContracts) ? path + '&not=' + this.systemContractsList : path;
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             return path;
         },
         formatWei,
-        displaySupplyShare(balance, supplies, decimals, fixed) {
+        displaySupplyShare(balance, supplies, decimals, fixed){
             let share = new BigDecimal(balance).divide(new BigDecimal(supplies)).multiply(new BigDecimal('100'));
-            if (fixed) {
-                if (share.compareTo(new BigDecimal('0.01')) === -1) {
+            if(fixed){
+                if(share.compareTo(new BigDecimal('0.01')) ===  -1){
                     return '< 0.01%';
                 }
                 share = share.round(fixed);
             }
-            if (share.compareTo(new BigDecimal('0.000000000000000001')) === -1) {
+            if(share.compareTo(new BigDecimal('0.000000000000000001')) === -1){
                 return '< 0.000000000000000001%';
             }
-            return `${share.getValue()}%`;
+            return share.getValue() + '%';
+        },
+        displayBalance(balanceString, tokenDecimals){
+            const locale = this.$i18n.global.locale.value;
+            const bn = BigNumber.from(balanceString);
+            const formatted = ethers.utils.formatUnits(bn.toString(), (tokenDecimals));
+            return parseFloat(formatted).toLocaleString(locale);
         },
     },
 };
@@ -127,20 +139,16 @@ export default {
 
 <template>
 <q-table
+    v-if="!loading"
     v-model:pagination="pagination"
     :rows="holders"
-    :loading="loading"
     :rows-per-page-label="$t('global.records_per_page')"
     :binary-state-sort="true"
     :row-key="row => row.address"
     :columns="columns"
     :rows-per-page-options="[10, 20, 50]"
-    flat
     @request="onRequest"
 >
-    <template v-slot:loading>
-        <q-inner-loading showing color="primary" />
-    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th
@@ -161,7 +169,7 @@ export default {
             </q-td>
             <q-td key="balance" :props="props">
                 <span v-if="contract?.properties?.decimals">
-                    {{ formatWei(props.row.balance, contract.properties?.decimals) }}
+                    {{ displayBalance(props.row.balance, contract.properties?.decimals) }}
                 </span>
                 <span v-else>
                     {{ props.row.balance }}
@@ -240,11 +248,52 @@ export default {
         <q-toggle
             v-model="showSystemContracts"
             :label="$t('components.holders.show_system_contracts')"
-            color="secondary"
+            color="primary"
             checked-icon="visibility"
             unchecked-icon="visibility_off"
             @update:model-value="onRequest({pagination: pagination})"
         />
+    </template>
+</q-table>
+<q-table
+    v-else
+    v-model:pagination="pagination"
+    :rows="loadingRows"
+    :rows-per-page-label="$t('global.records_per_page')"
+    :columns="columns"
+    :rows-per-page-options="[10, 20, 50]"
+>
+    <template v-slot:header="props">
+        <q-tr :props="props">
+            <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+            >
+                <div class="u-flex--center-y">
+                    {{ col.label }}
+                </div>
+            </q-th>
+        </q-tr>
+    </template>
+    <template v-slot:body="">
+        <q-tr>
+            <q-td key="holder">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="balance">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="telos_supply_share">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="supply_share" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="updated">
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+        </q-tr>
     </template>
 </q-table>
 </template>

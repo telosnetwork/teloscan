@@ -2,17 +2,17 @@ import { BigNumber, ethers } from 'ethers';
 import { defineAsyncComponent } from 'vue';
 
 const asyncInputComponents = {
-    AddressInput: defineAsyncComponent(() => import('components/inputs/AddressInput.vue')),
-    AddressArrayInput: defineAsyncComponent(() => import('components/inputs/AddressArrayInput.vue')),
-    BooleanArrayInput: defineAsyncComponent(() => import('components/inputs/BooleanArrayInput.vue')),
-    BooleanInput: defineAsyncComponent(() => import('components/inputs/BooleanInput.vue')),
-    BytesArrayInput: defineAsyncComponent(() => import('components/inputs/BytesArrayInput.vue')),
-    SignedIntInput: defineAsyncComponent(() => import('components/inputs/SignedIntInput.vue')),
-    StringArrayInput: defineAsyncComponent(() => import('components/inputs/StringArrayInput.vue')),
-    StringInput: defineAsyncComponent(() => import('components/inputs/StringInput.vue')),
-    UnsignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntArrayInput.vue')),
-    UnsignedIntInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntInput.vue')),
-    SignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/SignedIntArrayInput.vue')),
+    AddressInput: defineAsyncComponent(() => import('components/inputs/AddressInput')),
+    AddressArrayInput: defineAsyncComponent(() => import('components/inputs/AddressArrayInput')),
+    BooleanArrayInput: defineAsyncComponent(() => import('components/inputs/BooleanArrayInput')),
+    BooleanInput: defineAsyncComponent(() => import('components/inputs/BooleanInput')),
+    BytesArrayInput: defineAsyncComponent(() => import('components/inputs/BytesArrayInput')),
+    SignedIntInput: defineAsyncComponent(() => import('components/inputs/SignedIntInput')),
+    StringArrayInput: defineAsyncComponent(() => import('components/inputs/StringArrayInput')),
+    StringInput: defineAsyncComponent(() => import('components/inputs/StringInput')),
+    UnsignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntArrayInput')),
+    UnsignedIntInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntInput')),
+    SignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/SignedIntArrayInput')),
 };
 
 /**
@@ -217,16 +217,16 @@ function getComponentForInputType(type) {
  */
 function getExpectedArrayLengthFromParameterType(type) {
     if (parameterTypeIsBytes(type)) {
-    // defines the length of a bytes array by the first number after "bytes", e.g. 32 in bytes32
-    // therefore a type with an array of byte arrays like bytes32[8] is not supported.
-    // Only fixed-size byte value types and unbounded bytes arrays are supported
-    // see https://docs.soliditylang.org/en/latest/types.html#bytes-and-string-as-arrays
+        // defines the length of a bytes array by the first number after "bytes", e.g. 32 in bytes32
+        // therefore a type with an array of byte arrays like bytes32[8] is not supported.
+        // Only fixed-size byte value types and unbounded bytes arrays are supported
+        // see https://docs.soliditylang.org/en/latest/types.html#bytes-and-string-as-arrays
         const match = type.match(/\d+/)?.[0];
         return match ? Number(match) : undefined;
     }
 
     const expectedArrayLengthRegex = /\d+(?=]$)/;
-    const match = type.match(expectedArrayLengthRegex);
+    const match = type.match(expectedArrayLengthRegex)?.[0];
     return match ? Number(match) : undefined;
 }
 

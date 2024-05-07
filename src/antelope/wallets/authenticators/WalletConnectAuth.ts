@@ -68,7 +68,6 @@ export class WalletConnectAuth extends EVMAuthenticator {
         this.options = options;
         this.wagmiClient = wagmiClient;
         this._debouncedPrepareTokenConfigResolver = null;
-
         this.web3Modal = new Web3Modal(this.options, this.wagmiClient);
     }
 

@@ -1,3 +1,7 @@
-export const errorMsg = state => state.errorMsg;
-export const successMsg = state => state.successMsg;
-export const isLoading = state => state.isLoading;
+export const errorMsg = ({ errorMsg }) => errorMsg;
+export const successMsg = ({ successMsg }) => successMsg;
+export const isLoading = ({ isLoading }) => isLoading;
+export const highlightAddress = ({ highlightAddress }) => highlightAddress;
+export const highlightMethod = ({ highlightMethod }) => highlightMethod;
+export const displayDecimals = ({ displayDecimals }) => displayDecimals;
+

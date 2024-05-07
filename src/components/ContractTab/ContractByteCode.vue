@@ -15,21 +15,21 @@ export default {
         };
     },
     async mounted() {
-        if (this.bytecode) {
+        if(this.bytecode){
             this.loading = false;
             return;
         }
-        try {
-            const bytecode = await this.$evmEndpoint.post('/evm', {
+        try{
+            let bytecode = await this.$evmEndpoint.post('/evm', {
                 jsonrpc: '2.0',
                 id: ++this.rpcId,
                 method: 'eth_getCode',
                 params: [this.contract.address],
             });
-            if (bytecode.data?.result) {
+            if(bytecode.data?.result){
                 this.bytecode = bytecode.data.result;
             }
-        } catch (e) {
+        } catch(e){
             console.error(e);
         }
         this.loading = false;

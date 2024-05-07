@@ -1,9 +1,9 @@
 <script>
-import BlockField from 'components/BlockField.vue';
-import DateField from 'components/DateField.vue';
-import TransactionField from 'components/TransactionField.vue';
-import MethodField from 'components/MethodField.vue';
-import InternalTxns from 'components/Transaction/InternalTxns.vue';
+import BlockField from 'components/BlockField';
+import DateField from 'components/DateField';
+import TransactionField from 'components/TransactionField';
+import MethodField from 'components/MethodField';
+import InternalTxns from 'components/Transaction/InternalTxns';
 import { formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
 
@@ -67,6 +67,7 @@ export default {
 
         return {
             rows: [],
+            loadingRows: [],
             columns,
             transactions: [],
             pageSize: this.initialPageSize,
@@ -87,9 +88,10 @@ export default {
     // initialization of the translated texts
         this.columns[0].label = this.$t('components.tx_hash');
         this.columns[1].label = this.$t('components.block');
-        this.columns[2].label = this.$t('components.date');
+        this.columns[2].label = this.$t('components.age');
         this.columns[3].label = this.$t('components.method');
         this.columns[4].label = this.$t('components.internal_txns');
+        this.updateLoadingRows();
     },
     watch: {
         '$route.query.page': {
@@ -114,6 +116,12 @@ export default {
         },
     },
     methods: {
+        updateLoadingRows() {
+            this.loadingRows = [];
+            for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+                this.loadingRows.push(i);
+            }
+        },
         popstate(event) {
             const { page } = event.state.pagination;
             const { size } = event.state.pagination;
@@ -126,6 +134,7 @@ export default {
             if (size) {
                 this.pagination.rowsPerPage = Number(size);
             }
+            this.updateLoadingRows();
             this.onRequest({
                 pagination: this.pagination,
             });
@@ -148,10 +157,8 @@ export default {
             this.loading = true;
             // this line cleans the table for a second and the components have to be created again (clean)
             this.rows = [];
-            const {
-                page, rowsPerPage, sortBy, descending,
-            } = props.pagination;
-            const result = await this.$indexerApi.get(this.getPath(props));
+            const { page, rowsPerPage, sortBy, descending } = props.pagination;
+            let result = await this.$indexerApi.get(this.getPath(props));
             if (this.total === null) {
                 this.pagination.rowsNumber = result.data.total_count;
             }
@@ -176,10 +183,10 @@ export default {
                     if (!contract) {
                         continue;
                     }
-                    const traces = await this.$indexerApi.get(
-                        `/transaction/${transaction.hash}/internal?limit=1000&sort=ASC&offset=0&includeAbi=1`,
+                    let traces = await this.$indexerApi.get(
+                        '/transaction/' + transaction.hash + '/internal?limit=1000&sort=ASC&offset=0&includeAbi=1',
                     );
-                    for (const trace of [...traces.data.results]) {
+                    for(const trace of [...traces.data.results]){
                         trace.hash = trace.transaction_hash;
                     }
                     transaction.traces = traces.data?.results;
@@ -192,17 +199,17 @@ export default {
                     );
                     transaction.parsedTransaction = parsedTransaction;
                     // Get ERC20 transfer from main function call
-                    const signature = transaction.input.substring(0, 10);
+                    let signature = transaction.input.substring(0, 10);
                     if (
                         signature
                         && TRANSFER_SIGNATURES.includes(signature)
                         && transaction.parsedTransaction.args.amount
                     ) {
-                        const decimals = transaction.contract.properties?.decimals;
-                        if (transaction.contract && decimals) {
+                        let decimals = transaction.contract.properties?.decimals;
+                        if(transaction.contract && decimals){
                             transaction.transfer = {
-                                value: `${formatWei(transaction.parsedTransaction.args.amount, decimals)}`,
-                                symbol: transaction.contract.properties.symbol,
+                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], decimals)}`,
+                                'symbol': transaction.contract.properties.symbol,
                             };
                         }
                     }
@@ -225,7 +232,7 @@ export default {
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
             let path;
-            const filter = { ...(this.filter ? this.filter : {}) };
+            const filter = Object.assign({}, this.filter ? this.filter : {});
             if (filter.address) {
                 path = `/address/${filter.address}/transactions`;
             } else {
@@ -247,7 +254,7 @@ export default {
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             path += '&includeAbi=1&full=1';
 
-            path += (this.total === null) ? '&includePagination=true' : ''; // We only need the count once
+            path += (this.total === null) ? '&includePagination=true' : '';  // We only need the count once
 
             return path;
         },
@@ -260,13 +267,12 @@ export default {
 
 <template>
 <q-table
+    v-if="!loading"
     v-model:pagination="pagination"
     :rows="rows"
     :row-key="row => row.hash"
     :columns="columns"
-    :loading="loading"
     :rows-per-page-options="page_size_options"
-    flat
     @request="onPaginationChange"
 >
     <template v-slot:loading>
@@ -276,24 +282,30 @@ export default {
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 <div :class="[ 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" >
-                    {{ col.label }}
-                    <template v-if="col.name === 'date'">
+                    <div
+                        v-if="col.name === 'date'"
+                        @click="toggleDateFormat"
+                    >
+                        <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
                         <q-icon
                             class="info-icon"
-                            name="fas fa-info-circle"
-                            @click="toggleDateFormat"
+                            name="far fa-question-circle"
                         >
                             <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
                                 {{ $t('components.click_to_change_format') }}
                             </q-tooltip>
                         </q-icon>
-                    </template>
-                    <template v-if="col.name === 'method'">
-                        <q-icon class="info-icon" name="fas fa-info-circle" />
+                    </div>
+                    <div v-else-if="col.name === 'method'">
+                        {{ col.label }}
+                        <q-icon class="info-icon" name="far fa-question-circle" />
                         <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
                             {{ $t('components.executed_based_on_decoded_data') }}
                         </q-tooltip>
-                    </template>
+                    </div>
+                    <div v-else>
+                        {{ col.label }}
+                    </div>
                 </div>
             </q-th>
             <q-td auto-width/>
@@ -342,4 +354,74 @@ export default {
         </q-tr>
     </template>
 </q-table>
+<q-table
+    v-else
+    v-model:pagination="pagination"
+    :rows="loadingRows"
+    :row-key="row => row.hash"
+    :columns="columns"
+    :rows-per-page-options="page_size_options"
+>
+    <template v-slot:header="props">
+        <q-tr :props="props">
+            <q-th v-for="col in props.cols" :key="col.name" :props="props">
+                <div :class="[ 'u-flex--center-y', { 'u-flex--right': col.align === 'right' } ]" >
+                    <div
+                        v-if="col.name === 'date'"
+                        @click="toggleDateFormat"
+                    >
+                        <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
+                        <q-icon
+                            class="info-icon"
+                            name="far fa-question-circle"
+                        >
+                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                                {{ $t('components.click_to_change_format') }}
+                            </q-tooltip>
+                        </q-icon>
+                    </div>
+                    <div v-else-if="col.name === 'method'">
+                        {{ col.label }}
+                        <q-icon class="info-icon" name="far fa-question-circle" />
+                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                            {{ $t('components.executed_based_on_decoded_data') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-else>
+                        {{ col.label }}
+                    </div>
+                </div>
+            </q-th>
+            <q-td auto-width/>
+        </q-tr>
+    </template>
+    <template v-slot:body="">
+        <q-tr>
+            <q-td key="hash" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="block" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="date" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="method" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td key="int_txns" >
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+            <q-td auto-width>
+                <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+        </q-tr>
+    </template>
+</q-table>
 </template>
+<style lang="scss" scoped>
+.info-icon{
+    margin-left: .25rem;
+    padding-bottom: 0.2rem;
+}
+</style>

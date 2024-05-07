@@ -14,7 +14,13 @@ export async function doRPC(_, { method, params }) {
     return result.data;
 }
 
-export const fetchTlosPrice = async function ({ commit }) {
+// TODO: make sure we're not using this and remove...
+//  should be using the $contractManager that's on prototype (this.$contractManager)
+export async function getContract(_, { address }) {
+    return this.$contractManager.getContract(address);
+}
+
+export const fetchTlosPrice = async function({ commit }) {
     try {
         const response = await this.$indexerApi.get('/tokens/marketdata?tokens=TLOS&vs=usd');
         const tlosPrice = parseFloat(response.data?.results[0].price).toFixed(4);

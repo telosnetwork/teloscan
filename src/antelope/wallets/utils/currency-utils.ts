@@ -127,7 +127,7 @@ export function prettyPrintCurrency(
     }
 
     const decimalSeparator = getDecimalSeparatorForLocale(locale);
-    const trailingZeroesRegex = new RegExp(`\\${decimalSeparator}?0+(\\D|$)`, 'g');
+    const trailingZeroesRegex = new RegExp(`(\\d)\\${decimalSeparator}0+(\\D|$)`, 'g');
 
     const decimalOptions : Record<string, number | undefined> = {
         maximumFractionDigits: precision,
@@ -164,62 +164,64 @@ export function prettyPrintCurrency(
         ).format(amount);
 
         if ((trimZeroes || precision === 0) && finalFormattedValue.indexOf(decimalSeparator) > -1) {
-            finalFormattedValue = finalFormattedValue.replace(trailingZeroesRegex, '');
+            finalFormattedValue = finalFormattedValue.replace(trailingZeroesRegex, '$1');
+        }
+
+        return finalFormattedValue;
+    } else {
+        if (amount.lt(1) && amount.gt(0)) {
+            decimalOptions.maximumIntegerDigits = 1;
+            decimalOptions.minimumIntegerDigits = 1;
+        } else if (abbreviate) {
+            const forceFractionDisplay = amount.lt(1000) && amount.gt(-1000);
+
+            decimalOptions.maximumFractionDigits = forceFractionDisplay ? precision : 2;
+            decimalOptions.minimumFractionDigits = forceFractionDisplay ? precision : 2;
+            decimalOptions.maximumIntegerDigits = 3;
+        }
+
+        // Intl format method only takes number / bigint, and a BigNumber value cannot have a fractional amount,
+        // and also decimals may be more places than maximum JS precision.
+        // As such, decimals must be handled specially for BigNumber amounts.
+
+        const amountAsString = formatUnits(amount, tokenDecimals); // amount string, like "1.0"
+
+        const [integerString, decimalString] = amountAsString.split('.');
+
+        const formattedInteger = Intl.NumberFormat(
+            locale,
+            { notation: abbreviate ? 'compact' : undefined },
+        ).format(BigInt(integerString));
+
+        const formattedDecimal = decimalString.slice(0, precision || 1).padEnd(precision, '0');
+
+        let finalFormattedValue;
+
+        if (abbreviate) {
+            finalFormattedValue = formattedInteger; // drop decimals for abbreviated amounts
+        } else {
+            finalFormattedValue = `${formattedInteger}${decimalSeparator}${formattedDecimal}`;
+        }
+
+        if ((trimZeroes || precision === 0) && finalFormattedValue.indexOf(decimalSeparator) > -1) {
+            finalFormattedValue = finalFormattedValue.replace(trailingZeroesRegex, '$1');
+        }
+
+        if (precision === 2 && tokenDecimals === 2 && currency) {
+            // value is a fiat currency with 2 decimals, so add the currency symbol
+            if (displayCurrencyAsCode) {
+                finalFormattedValue = `${finalFormattedValue}\u00A0${currency}`;
+            } else {
+                const symbol = getCurrencySymbol(locale, currency);
+                finalFormattedValue = `${symbol}${finalFormattedValue}`;
+            }
+
+        } else if (currency) {
+            finalFormattedValue += ` ${currency}`;
         }
 
         return finalFormattedValue;
     }
-    if (amount.lt(1) && amount.gt(0)) {
-        decimalOptions.maximumIntegerDigits = 1;
-        decimalOptions.minimumIntegerDigits = 1;
-    } else if (abbreviate) {
-        const forceFractionDisplay = amount.lt(1000) && amount.gt(-1000);
-
-        decimalOptions.maximumFractionDigits = forceFractionDisplay ? precision : 2;
-        decimalOptions.minimumFractionDigits = forceFractionDisplay ? precision : 2;
-        decimalOptions.maximumIntegerDigits = 3;
-    }
-
-    // Intl format method only takes number / bigint, and a BigNumber value cannot have a fractional amount,
-    // and also decimals may be more places than maximum JS precision.
-    // As such, decimals must be handled specially for BigNumber amounts.
-
-    const amountAsString = formatUnits(amount, tokenDecimals); // amount string, like "1.0"
-
-    const [integerString, decimalString] = amountAsString.split('.');
-
-    const formattedInteger = Intl.NumberFormat(
-        locale,
-        { notation: abbreviate ? 'compact' : undefined },
-    ).format(BigInt(integerString));
-
-    const formattedDecimal = decimalString.slice(0, precision || 1).padEnd(precision, '0');
-
-    let finalFormattedValue;
-
-    if (abbreviate) {
-        finalFormattedValue = formattedInteger; // drop decimals for abbreviated amounts
-    } else {
-        finalFormattedValue = `${formattedInteger}${decimalSeparator}${formattedDecimal}`;
-    }
-
-    if ((trimZeroes || precision === 0) && finalFormattedValue.indexOf(decimalSeparator) > -1) {
-        finalFormattedValue = finalFormattedValue.replace(trailingZeroesRegex, '');
-    }
-
-    if (precision === 2 && tokenDecimals === 2 && currency) {
-    // value is a fiat currency with 2 decimals, so add the currency symbol
-        if (displayCurrencyAsCode) {
-            finalFormattedValue = `${finalFormattedValue}\u00A0${currency}`;
-        } else {
-            const symbol = getCurrencySymbol(locale, currency);
-            finalFormattedValue = `${symbol}${finalFormattedValue}`;
-        }
-    } else if (currency) {
-        finalFormattedValue += ` ${currency}`;
-    }
-
-    return finalFormattedValue;
 }
 
 /**

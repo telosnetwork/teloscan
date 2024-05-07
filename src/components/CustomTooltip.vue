@@ -38,11 +38,11 @@ export default {
 </template>
 
 <style lang="sass">
-.tooltip-long
-    word-break: break-all
-    max-height: 100% !important
-    .tooltip-content
-        font-size: 0.7em
-        white-space: pre-wrap
+    .tooltip-long
         word-break: break-all
+        max-height: 100% !important
+        .tooltip-content
+            font-size: 0.7em
+            white-space: pre-wrap
+            word-break: break-all
 </style>

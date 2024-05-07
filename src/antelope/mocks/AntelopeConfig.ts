@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // Mocking Antelope and Config -----------------------------------
@@ -38,12 +39,13 @@ export class AntelopeConfig {
         if (error instanceof AntelopeError) {
             return error as AntelopeError;
         }
-        const str = this.errorToStringHandler(error);
+        const msgOrObject = this.errorMessageExtractor(error);
         // if it matches antelope.*.error_*
-        if (str.match(/^antelope\.[a-z0-9_]+\.error_/)) {
-            return new AntelopeError(str, { error });
+        if (typeof msgOrObject === 'string') {
+            return new AntelopeError(msgOrObject, { error });
+        } else {
+            return new AntelopeError(description, { error: msgOrObject });
         }
-        return new AntelopeError(description, { error: str });
     }
 
     // indexer health threshold --
@@ -87,11 +89,12 @@ export class AntelopeConfig {
     private __transaction_error_handler: (err: AntelopeError, trxFailed: string) => void = () => void 0;
 
     // error to string handler --
-    private __error_to_string_handler: (error: unknown) => string = (error: unknown) => {
+    private __error_message_extractor: (error: unknown) => object | string | null = (error: unknown) => {
         try {
             type EVMError = {code:string};
             const evmErr = error as EVMError;
 
+            // high priority generic errors
             switch (evmErr.code) {
             case 'CALL_EXCEPTION': return 'antelope.evm.error_call_exception';
             case 'INSUFFICIENT_FUNDS': return 'antelope.evm.error_insufficient_funds';
@@ -106,33 +109,67 @@ export class AntelopeConfig {
             default: break;
             }
 
+            if (typeof error === 'object') {
+                const candidates = ['message', 'reason'];
+
+                const extractDeepestErrorMessage = (error: unknown): string => {
+                    if (typeof error !== 'object' || error === null) {
+                        return 'unknown';  // We return 'unknown' if it is not an object or is null
+                    }
+                    const queue: {node: unknown, depth: number}[] = [{ node: error, depth: 0 }];
+                    let deepestMessage = 'unknown';
+                    let maxDepth = -1;
+
+                    while (queue.length > 0) {
+                        const { node, depth } = queue.shift()!;  // Sacamos el primer elemento de la cola
+
+                        const nodeKeys = Object.keys(node as Record<string, unknown>);
+                        for (const key of nodeKeys) {
+                            const value = (node as Record<string, unknown>)[key];
+                            if (candidates.includes(key) && typeof value === 'string') {
+                                // If we find a message in a deeper level, we update it
+                                if (depth > maxDepth) {
+                                    deepestMessage = value;
+                                    maxDepth = depth;
+                                }
+                            } else if (typeof value === 'object' && value !== null) {
+                                // If the value is an object, we add it to the queue to explore its children
+                                queue.push({ node: value, depth: depth + 1 });
+                            }
+                        }
+                    }
+
+                    return deepestMessage;
+                };
+                const messageFound = extractDeepestErrorMessage(error as Record<string, unknown>);
+                if (messageFound !== 'unknown') {
+                    return messageFound;
+                }
+            }
+
+            // low priority generic errors
+            switch (evmErr.code) {
+            case 'UNPREDICTABLE_GAS_LIMIT': return 'antelope.evm.error_unpredictable_gas_limit';
+            }
+
             if (typeof error === 'string') {
-                return error;
+                return { text: error };
             }
             if (typeof error === 'number') {
-                return error.toString();
+                return { number: error.toString() };
             }
             if (typeof error === 'boolean') {
-                return error.toString();
-            }
-            if (error instanceof Error) {
-                return error.message;
+                return { boolean: error.toString() };
             }
             if (typeof error === 'undefined') {
-                return 'undefined';
+                return { value: 'undefined' };
             }
             if (typeof error === 'object') {
-                if (error === null) {
-                    return 'null';
-                }
-                if (Array.isArray(error)) {
-                    return error.map(a => this.__error_to_string_handler(a)).join(', ');
-                }
-                return JSON.stringify(error);
+                return error;
             }
-            return 'unknown';
+            return { };
         } catch (er) {
-            return 'error';
+            return { };
         }
     };
 
@@ -211,8 +248,8 @@ export class AntelopeConfig {
         return this.__transaction_error_handler;
     }
 
-    get errorToStringHandler() {
-        return this.__error_to_string_handler;
+    get errorMessageExtractor() {
+        return this.__error_message_extractor;
     }
 
     // setting indexer constants --
@@ -290,8 +327,8 @@ export class AntelopeConfig {
     }
 
     // setting error to string handler --
-    public setErrorToStringHandler(handler: (catched: unknown) => string) {
-        this.__error_to_string_handler = handler;
+    public setErrorMessageExtractor(handler: (catched: unknown) => object | string | null) {
+        this.__error_message_extractor = handler;
     }
 }
 

@@ -1,8 +1,8 @@
 <script>
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
-import ParameterList from 'components/Transaction/ParameterList.vue';
-import AddressField from 'components/AddressField.vue';
+import ParameterList from 'components/Transaction/ParameterList';
+import AddressField from 'components/AddressField';
 import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
 
@@ -40,12 +40,12 @@ export default {
             return;
         }
         this.address = (this.fragment.contract) ? this.fragment.contract.address : this.fragment.address;
-        if (this.address) {
-            this.address = (this.address.startsWith('0x')) ? this.address : `0x${this.address}`;
+        if(this.address){
+            this.address = (this.address.startsWith('0x')) ? this.address : '0x' + this.address;
         }
-        const inputs = this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
-        if (inputs) {
-            for (let i = 0; i < inputs.length; i++) {
+        let inputs = this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
+        if(inputs){
+            for(let i=0; i < inputs.length;i++){
                 this.expanded_parameters.push({});
             }
         }
@@ -63,29 +63,29 @@ export default {
             if (typeof this.fragment.depth === 'undefined') {
                 return {};
             }
-            return { marginLeft: `${this.fragment.depth * 20}px` };
+            return { marginLeft: (this.fragment.depth * 20)  + 'px' };
         },
         inputs() {
             return this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
         },
-        params() {
-            const args = [];
+        params(){
+            let args = [];
             this.inputs?.forEach((input, i) => {
                 args.push({
                     name: input.name,
                     type: input.type,
                     arrayChildren: (input.arrayChildren !== null) ? input.arrayChildren.type : false,
-                    value: this.fragment.args[i],
+                    value:  this.fragment.args[i],
                 });
             });
             return args;
         },
         isExpandable() {
             return (
-                this.fragment.error
-                || (this.fragment.inputs && this.fragment.inputs.length > 0)
-                || (this.fragment.value && this.fragment.value !== '0.0')
-                || !this.fragment.name
+                this.fragment.error ||
+                this.fragment.inputs && this.fragment.inputs.length > 0 ||
+                this.fragment.value && this.fragment.value !== '0.0' ||
+                !this.fragment.name
             );
         },
     },
@@ -96,7 +96,7 @@ export default {
 <div v-if="fragment" class="c-fragment-list-element" :style="depthStyle"  >
     <q-expansion-item
         :disable="!isExpandable"
-        class="shadow-2 q-mb-md"
+        class="shadow-1 q-mb-md"
     >
         <template v-slot:header>
             <div class="flex items-center justify-between">
@@ -126,7 +126,6 @@ export default {
                             :truncate="15"
                             class="word-break"
                             :name="fragment.contract?.name"
-                            :highlight="transactionFrom && fragment.contract?.address === transactionFrom"
                             @click.stop=""
                         />
                     </small>
@@ -162,10 +161,6 @@ export default {
                                     :address="fragment.from"
                                     :truncate="0"
                                     :copy="true"
-                                    :highlight="
-                                        transactionFrom
-                                            && fragment.from.toLowerCase() === transactionFrom.toLowerCase()
-                                    "
                                     class="word-break"
                                 />
                             </div>
@@ -180,10 +175,6 @@ export default {
                                     :address="fragment.to"
                                     :truncate="0"
                                     :copy="true"
-                                    :highlight="
-                                        transactionFrom
-                                            && fragment.to.toLowerCase() === transactionFrom.toLowerCase()
-                                    "
                                     class="word-break"
                                 />
                             </div>

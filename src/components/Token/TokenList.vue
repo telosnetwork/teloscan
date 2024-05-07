@@ -1,9 +1,10 @@
 <script>
+import { markRaw } from 'vue';
 import { formatWei } from 'src/lib/utils';
 import erc20Abi from 'erc-20-abi';
-import DEFAULT_TOKEN_LOGO from 'src/assets/evm_logo.png';
-import TokenGridElement from 'src/components/Token/TokenGridElement.vue';
-import TokenTable from 'src/components/Token/TokenTable.vue';
+import DEFAULT_TOKEN_LOGO from 'assets/logo--teloscan.png';
+import TokenGridElement from 'src/components/Token/TokenGridElement';
+import TokenTable from 'src/components/Token/TokenTable';
 import BigDecimal from 'js-big-decimal';
 
 export default {
@@ -27,46 +28,51 @@ export default {
         await this.loadTokens();
     },
     methods: {
-        checkTokenList(address, tokenList) {
-            return tokenList.tokens.filter(token => address.toLowerCase() === token.address.toLowerCase())[0];
+        checkTokenList(address, tokenList){
+            return tokenList.tokens.filter((token) => {
+                if(address.toLowerCase() === token.address.toLowerCase()){
+                    return markRaw(token);
+                }
+            })[0];
         },
         async loadTokens() {
-            if (this.tokensOfficial !== false || this.tokens !== false || this.processing || this.address === null) {
+            if(this.tokensOfficial !== false || this.tokens !== false || this.processing || this.address === null){
                 return;
             }
             this.processing = true;
             const tokenList = await this.$contractManager.getTokenList();
             const response = await this.$indexerApi.get(`/account/${this.address}/balances?limit=1000`);
-            const tokens = [];
-            const tokensOfficial = [];
+            let tokens = [];
+            let tokensOfficial = [];
             await Promise.all(await response.data.results.map(async (result) => {
-                const token = this.checkTokenList(result.contract.toLowerCase(), tokenList);
-                if (token) {
-                    const contract = await this.$contractManager.getContract(token.address);
-                    if (!contract || !contract.supportedInterfaces.includes('erc20')) {
-                        return null;
+                let token = this.checkTokenList(result.contract.toLowerCase(), tokenList);
+                if(token){
+                    const contract = await this.$contractManager.getContract(token.address, true);
+                    if(!contract || !contract.supportedInterfaces.includes('erc20')){
+                        return;
                     }
                     token.price = contract.properties?.price || 0;
                     token.balance = `${formatWei(result.balance, token.decimals, 4)}`;
                     token.fullBalance = `${formatWei(result.balance, token.decimals)}`;
-                    if (token.price && parseFloat(token.price) > 0) {
+                    if(token.price && parseFloat(token.price) > 0){
                         token.valueUSD = `${Math.round((token.price * token.fullBalance) * 10000) / 10000}`;
                         token.fullValueUSD = (token.valueUSD !== '0.0')
                             ? new BigDecimal(token.price).multiply(new BigDecimal(token.fullBalance)).getValue()
-                            : '0';
+                            : '0'
+                        ;
                     }
                     if (token.logoURI && token.logoURI.startsWith('ipfs://')) {
                         token.logoURI = `https://ipfs.io/ipfs/${token.logoURI.replace(/ipfs:\/\//, '')}`;
                     } else if (!token.logoURI) {
                         token.logoURI = DEFAULT_TOKEN_LOGO;
                     }
-                    if (!contract.abi) {
+                    if(!contract.abi){
                         contract.abi = erc20Abi;
                     }
                     tokensOfficial.push(token);
                     return token;
-                } if (result.contract !== '___NATIVE_CURRENCY___') {
-                    const contract = await this.$contractManager.getContract(result.contract);
+                } else if(result.contract !== '___NATIVE_CURRENCY___'){
+                    let contract = await this.$contractManager.getContract(result.contract);
                     result.address = contract.address;
                     result.name = contract.name;
                     result.symbol = contract.properties?.symbol;
@@ -79,24 +85,24 @@ export default {
                     tokens.push(result);
                     return result;
                 }
-                return null;
             }));
             this.tokensOfficial = this.sortTokens(tokensOfficial, 'valueUSD');
             this.tokens = this.sortTokens(tokens, 'balance');
             this.processing = false;
         },
         sortTokens(tokens, key) {
-            if (key === 'balance') {
+            if(key === 'balance'){
                 return tokens.sort((a, b) => new BigDecimal(b.fullBalance)
                     .compareTo(new BigDecimal(a.fullBalance)));
+            } else {
+                return tokens.sort((a, b) => {
+                    if(!a.fullValueUSD && !b.fullValueUSD){
+                        return new BigDecimal(b.fullBalance).compareTo(new BigDecimal(a.fullBalance));
+                    }
+                    return new BigDecimal(b.fullValueUSD || '0')
+                        .compareTo(new BigDecimal(a.fullValueUSD || '0'));
+                });
             }
-            return tokens.sort((a, b) => {
-                if (!a.fullValueUSD && !b.fullValueUSD) {
-                    return new BigDecimal(b.fullBalance).compareTo(new BigDecimal(a.fullBalance));
-                }
-                return new BigDecimal(b.fullValueUSD || '0')
-                    .compareTo(new BigDecimal(a.fullValueUSD || '0'));
-            });
         },
     },
 };
@@ -121,7 +127,7 @@ export default {
             :label="(showGrid) ? $t('global.show_table') : $t('global.show_grid')"
             checked-icon="table_rows"
             unchecked-icon="apps"
-            color="secondary"
+            color="primary"
         />
     </div>
     <div v-if="showGrid">

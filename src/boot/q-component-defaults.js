@@ -42,7 +42,7 @@ function isTouchDevice() {
 // more info on params: https://v2.quasar.dev/quasar-cli/boot-files
 export default boot((/* { app, router, ... } */) => {
     // Metamask quick fix (redirects assets info to /token instead of /address), to replace with real 301 once SSR
-    if (typeof window !== 'undefined' && window.location.href.includes('/token/0x')) {
+    if(window.location.href.includes('/token/0x')){
         window.location.href = window.location.href.replace('/token/', '/address/');
     }
     // https://github.com/quasarframework/quasar/discussions/8761#discussioncomment-1042529

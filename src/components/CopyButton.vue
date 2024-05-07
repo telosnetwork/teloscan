@@ -1,64 +1,62 @@
-<script>
-import { copyToClipboard } from 'quasar';
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { copyToClipboard, useQuasar } from 'quasar';
+import { useI18n } from 'vue-i18n';
+
+const $q = useQuasar();
+const { t: $t } = useI18n();
+
+const props = defineProps({
+    text: {
+        type: String,
+        required: true,
+    },
+    description: {
+        type: String,
+        default: '',
+    },
+    accompanyingText: {
+        type: String,
+        default: '',
+    },
+});
 
 const icons = {
     copy: 'far fa-copy',
     success: 'fas fa-check',
 };
 
-export default {
-    name: 'CopyButton',
-    props: {
-        text: {
-            type: String,
-            required: true,
-        },
-        description: {
-            type: String,
-            default: '',
-        },
-        accompanyingText: {
-            type: String,
-            default: '',
-        },
-    },
-    data: () => ({
-        iconClass: icons.copy,
-        hint: '',
-    }),
-    computed: {
-        containerClasses() {
-            const extraClass = this.accompanyingText ? 'c-copy-button--block' : '';
-            return `c-copy-button ${extraClass}`;
-        },
-        iconClasses() {
-            return `${this.iconClass} q-pl-xs`;
-        },
-        defaultHint() {
-            return this.$t('components.copy_to_clipboard', { text: this.description });
-        },
-    },
-    created() {
-        this.hint = this.defaultHint;
-    },
-    methods: {
-        handleClick() {
-            copyToClipboard(this.text).then(() => {
-                this.iconClass = icons.success;
-                this.hint = this.$t('components.copied');
-                setTimeout(() => {
-                    this.iconClass = icons.copy;
-                    this.hint = this.defaultHint;
-                }, 1500);
-            }).catch((err) => {
-                console.error(`Failed to copy to clipboard: ${err}`);
-                this.$q.notify({
-                    type: 'negative',
-                    message: this.$t('components.copy_to_clipboard_failed'),
-                });
-            });
-        },
-    },
+const iconClass = ref(icons.copy);
+const hint = ref('');
+
+const defaultHint = computed(() => $t('components.copy_to_clipboard', { text: props.description }));
+
+const containerClasses = computed(() => {
+    const extraClass = props.accompanyingText ? 'c-copy-button--block' : '';
+    return `c-copy-button ${extraClass}`;
+});
+
+const iconClasses = computed(() => iconClass.value);
+
+onMounted(() => {
+    hint.value = defaultHint.value;
+});
+
+const handleClick = () => {
+    copyToClipboard(props.text).then(() => {
+        iconClass.value = icons.success;
+        hint.value = $t('components.copied');
+        setTimeout(() => {
+            iconClass.value = icons.copy;
+            hint.value = defaultHint.value;
+        }, 1500);
+    }).catch((err) => {
+        console.error(`Failed to copy to clipboard: ${err}`);
+        $q.notify({
+            type: 'negative',
+            message: $t('components.copy_to_clipboard_failed'),
+        });
+    });
 };
 </script>
 
@@ -66,16 +64,12 @@ export default {
 <div
     :class="containerClasses"
     :aria-label="hint"
-    aria-role="button"
+    role="button"
     tabindex="0"
     @click.stop="handleClick"
     @keydown.space.enter="handleClick"
 >
-    <q-tooltip
-        :offset="[0,0]"
-        anchor="center end"
-        self="center left"
-    >
+    <q-tooltip :offset="[0, 0]" anchor="center end" self="center left">
         {{ hint }}
     </q-tooltip>
 
@@ -87,6 +81,7 @@ export default {
 
 <style lang="scss">
 .c-copy-button {
+    gap: 5px;
     display: inline-flex;
     justify-content: center;
     margin-top: -2px;

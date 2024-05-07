@@ -33,6 +33,10 @@ export default boot(({ app }) => {
 
     // Listen for language-changed event
     const setLocale = (newLanguage) => {
+        if (!newLanguage){
+            return;
+        }
+
         const currentLanguage = localStorage.getItem('language');
 
         if (newLanguage !== currentLanguage) {

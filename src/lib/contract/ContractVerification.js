@@ -10,7 +10,6 @@ const getCompilerOptions = async () => {
 
 const parseCompilerList = (buildArray) => {
     const versionStringArr = [];
-    // eslint-disable-next-line no-restricted-syntax
     for (const build of buildArray) {
         versionStringArr.unshift(`v${build.longVersion}`);
     }

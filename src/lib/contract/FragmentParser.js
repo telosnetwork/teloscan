@@ -12,14 +12,13 @@ export default class FragmentParser {
         this.evmEndpoint = evmEndpoint;
     }
 
-    async addEventInterface(hex, signature) {
+    async addEventInterface(hex, signature){
         if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, hex)) {
             return;
         }
         this.eventInterfaces[hex] = signature;
     }
-
-    async addFunctionInterface(hex, signature) {
+    async addFunctionInterface(hex, signature){
         if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, hex)) {
             return;
         }
@@ -27,88 +26,55 @@ export default class FragmentParser {
     }
 
     async getFunctionInterface(data) {
-        const prefix = data.toLowerCase().slice(0, 10);
-        if (prefix === '0x') {
-            return false;
+        let prefix = data.toLowerCase().slice(0, 10);
+        if(prefix === '0x'){
+            return;
         }
         if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, prefix)) {
             return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
         }
-        if (this.processing.includes(data)) {
-            await new Promise((resolve) => {
-                setTimeout(resolve, 300);
-            });
-            const result = await this.getFunctionInterface(data);
+        if(this.processing.includes(data)){
+            await new Promise(resolve => setTimeout(resolve, 300));
+            let result = await this.getFunctionInterface(data);
             return result;
         }
         this.processing.push(data);
 
-        try {
-            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=function&hex=${prefix}`);
-            if (abiResponse) {
-                if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
-                    console.error(`Unable to find function signature for sig: ${prefix}`);
-                    this.functionInterfaces[prefix] = '';
-                    return false;
-                }
-                this.functionInterfaces[prefix] = `function ${abiResponse.data.text_signature}`;
-                return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
-            }
-        } catch (e) {
-            console.error(`Error trying to find event signature for function ${prefix}`);
-            this.functionInterfaces[prefix] = '';
-            return false;
-        }
-
+        this.functionInterfaces[prefix] = '';
         return false;
     }
-
     async getEventInterface(data) {
-        if (data === '0x') {
+        if(data === '0x'){
             return false;
         }
-        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, data)) {
+        if (Object.prototype.hasOwnProperty.call(this.eventInterfaces, data) && this.eventInterfaces[data]) {
             return new ethers.utils.Interface([this.eventInterfaces[data]]);
         }
-        if (this.processing.includes(data)) {
-            await new Promise((resolve) => {
-                setTimeout(resolve, 300);
-            });
-            return this.getEventInterface(data);
+        if(this.processing.includes(data)){
+            await new Promise(resolve => setTimeout(resolve, 300));
+            return await this.getEventInterface(data);
         }
         this.processing.push(data);
 
         try {
             const url = `https://cdn.statically.io/gh/telosnetwork/topic0/main/with_parameter_names/${data.substr(2)}`;
             const response = await axios.get(url);
-            if (response.data) {
+            if(response.data){
                 this.eventInterfaces[data] = `event ${response.data}`;
+                this.processing = this.processing.filter(item => item !== data);
                 return new ethers.utils.Interface([this.eventInterfaces[data]]);
             }
         } catch (e) {
             console.debug(e);
         }
 
-        try {
-            const abiResponse = await this.evmEndpoint.get(`/v2/evm/get_abi_signature?type=event&hex=${data}`);
-            if (abiResponse) {
-                if (!abiResponse.data || !abiResponse.data.text_signature || abiResponse.data.text_signature === '') {
-                    console.error(`Unable to find event signature for event: ${data}`);
-                    return false;
-                }
-                this.eventInterfaces[data] = `event ${abiResponse.data.text_signature}`;
-                return new ethers.utils.Interface([this.eventInterfaces[data]]);
-            }
-        } catch (e) {
-            console.error(`Error trying to find event signature for event ${data}: ${e.message}`);
-            return false;
-        }
         this.eventInterfaces[data] = '';
+        this.processing = this.processing.filter(item => item !== data);
         return false;
     }
 
-    formatLog(contract, log, parsedLog) {
-        if (!parsedLog.signature) {
+    formatLog(contract, log, parsedLog){
+        if(!parsedLog.signature){
             return log;
         }
         parsedLog.function_signature = log.topics[0].slice(0, 10);
@@ -132,28 +98,27 @@ export default class FragmentParser {
                 parsedLog = await this.parseEvent(contract, log);
             }
             parsedLog = this.formatLog(contract, log, parsedLog);
-            if (parsedLog.name && parsedLog.eventFragment?.inputs) {
+            if(parsedLog.name && parsedLog.eventFragment?.inputs){
                 parsedLog.inputs = parsedLog.eventFragment.inputs;
             }
             return parsedLog;
         }
-
         parsedLog = await this.parseEvent(contract, log);
         parsedLog = this.formatLog(contract, log, parsedLog);
-        if (parsedLog.name && parsedLog.eventFragment?.inputs) {
+        if(parsedLog.name && parsedLog.eventFragment?.inputs){
             parsedLog.inputs = parsedLog.eventFragment.inputs;
         }
         parsedLog = this.formatLog(contract, log, parsedLog);
         return parsedLog;
     }
 
-    async parseEvent(contract, log) {
+    async parseEvent(contract, log){
         const eventInterface = await this.getEventInterface(log.topics[0]);
         if (eventInterface) {
             try {
-                const parsedLog = eventInterface.parseLog(log);
+                let parsedLog = eventInterface.parseLog(log);
                 return parsedLog;
-            } catch (e) {
+            } catch(e) {
                 console.error(`Failed to parse log #${log.logIndex} from event interface. Please check the ABI.`);
             }
         }

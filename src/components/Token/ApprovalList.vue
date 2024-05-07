@@ -1,7 +1,7 @@
 <!-- eslint-disable @typescript-eslint/no-this-alias -->
 <script>
-import AddressField from 'components/AddressField.vue';
-import DateField from 'components/DateField.vue';
+import AddressField from 'components/AddressField';
+import DateField from 'components/DateField';
 import {
     formatWei,
     ZERO_ADDRESSES,
@@ -12,48 +12,48 @@ import { CURRENT_CONTEXT, useAccountStore } from 'src/antelope/mocks';
 
 const approveABI = [
     {
-        constant: false,
-        inputs: [
+        'constant': false,
+        'inputs': [
             {
-                name: '_spender',
-                type: 'address',
+                'name': '_spender',
+                'type': 'address',
             },
             {
-                name: '_value',
-                type: 'uint256',
-            },
-        ],
-        name: 'approve',
-        outputs: [
-            {
-                name: '',
-                type: 'bool',
+                'name': '_value',
+                'type': 'uint256',
             },
         ],
-        payable: false,
-        stateMutability: 'nonpayable',
-        type: 'function',
+        'name': 'approve',
+        'outputs': [
+            {
+                'name': '',
+                'type': 'bool',
+            },
+        ],
+        'payable': false,
+        'stateMutability': 'nonpayable',
+        'type': 'function',
     },
 ];
 
 const approvalForAllABI = [
     {
-        inputs: [
+        'inputs': [
             {
-                internalType: 'address',
-                name: 'operator',
-                type: 'address',
+                'internalType': 'address',
+                'name': 'operator',
+                'type': 'address',
             },
             {
-                internalType: 'bool',
-                name: '_approved',
-                type: 'bool',
+                'internalType': 'bool',
+                'name': '_approved',
+                'type': 'bool',
             },
         ],
-        name: 'setApprovalForAll',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
+        'name': 'setApprovalForAll',
+        'outputs': [],
+        'stateMutability': 'nonpayable',
+        'type': 'function',
     },
 ];
 export default {
@@ -71,7 +71,7 @@ export default {
         },
     },
     data() {
-        const columns = [
+        let columns = [
             {
                 name: 'spender',
                 label: this.$t('components.approvals.spender'),
@@ -79,9 +79,9 @@ export default {
             },
             {
                 name: 'amount',
-                label: (this.type === 'erc20')
-                    ? this.$t('components.approvals.amount')
-                    : this.$t('components.approvals.token_id'),
+                label: (this.type === 'erc20') ?
+                    this.$t('components.approvals.amount') :
+                    this.$t('components.approvals.token_id'),
                 align: 'left',
                 sortable: !this.isNFT(),
             },
@@ -103,11 +103,12 @@ export default {
             },
         ];
         return {
-            columns,
+            columns: columns,
             confirmModal: null,
             approved: false,
             approvals: [],
             selected: [],
+            loadingRows: [],
             displayConfirmModal: false,
             displayUpdateModal: false,
             modalUpdateValue: false,
@@ -123,6 +124,11 @@ export default {
             loading: true,
         };
     },
+    created(){
+        for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+            this.loadingRows.push(i);
+        }
+    },
     async mounted() {
         await this.onRequest({
             pagination: this.pagination,
@@ -136,35 +142,32 @@ export default {
         ...mapGetters('login', ['address', 'isLoggedIn', 'isNative']),
     },
     methods: {
-        async onRequest(props) {
+        async onRequest(props){
             this.loading = true;
 
-            const {
-                page, rowsPerPage, sortBy, descending,
-            } = props.pagination;
+            const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
-            const response = await this.$indexerApi.get(this.getPath(props));
+            let response = await this.$indexerApi.get(this.getPath(props));
 
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
             this.pagination.rowsNumber = response.data.total_count;
-            const approvals = [];
-
-            for (const approval of response.data.results) {
-                approval.selected = (this.selected.includes(`${approval.spender}:${approval.contract}`));
+            let approvals = [];
+            for (let approval of response.data.results) {
+                approval.selected = (this.selected.includes(approval.spender + ':' + approval.contract));
                 approval.contract = await this.$contractManager.getContract(approval.contract);
                 approval.single = 0;
-                if (this.isNFT() === false) {
+                if(this.isNFT() === false){
                     approval.usd = 0;
-                    if (approval.contract.properties?.price) {
+                    if(approval.contract.properties?.price){
                         approval.usd = (formatWei(
                             approval.amount,
                             approval.contract.properties.decimals,
-                        ) * (approval.contract.properties?.price ?? 0)).toFixed(2);
+                        ) * approval.contract.properties?.price).toFixed(2);
                     }
-                    if (approval.amount > 0) {
+                    if(approval.amount > 0){
                         approval.amountRaw = formatWei(
                             approval.amount,
                             approval.contract.properties?.decimals || 18,
@@ -177,7 +180,7 @@ export default {
                         ).toString();
                     }
                 } else {
-                    if (typeof approval.tokenId !== 'undefined') {
+                    if(typeof approval.tokenId !== 'undefined'){
                         approval.single = 1;
                     }
                     approval.amountRaw = approval.approved;
@@ -189,10 +192,10 @@ export default {
             this.approvals = approvals;
             this.loading = false;
         },
-        isNFT() {
+        isNFT(){
             return (this.type !== 'erc20');
         },
-        getPath(props) {
+        getPath(props){
             const { page, rowsPerPage, descending } = props.pagination;
             let path = `/account/${this.accountAddress}/approvals?type=${this.type}&limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
@@ -202,10 +205,10 @@ export default {
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             return path;
         },
-        async toggleApproval(contractAddress, single, spender, param2, message, error) {
-            if (this.isNFT()) {
-                if (this.type === 'erc1155') {
-                    return useAccountStore().signCustomTransaction(
+        async toggleApproval(contractAddress, single, spender, param2, message, error){
+            if(this.isNFT()){
+                if(this.type === 'erc1155'){
+                    return await useAccountStore().signCustomTransaction(
                         CURRENT_CONTEXT,
                         message,
                         error,
@@ -213,60 +216,63 @@ export default {
                         approveABI,
                         [spender, param2],
                     );
+                } else {
+                    // ERC721 has both approve & setApprovalForAll..
+                    if(single){
+                        return await useAccountStore().signCustomTransaction(
+                            CURRENT_CONTEXT,
+                            message,
+                            error,
+                            contractAddress,
+                            approveABI,
+                            [spender, param2],
+                        );
+                    } else {
+                        return await useAccountStore().signCustomTransaction(
+                            CURRENT_CONTEXT,
+                            message,
+                            error,
+                            contractAddress,
+                            approvalForAllABI,
+                            [spender, false],
+                        );
+                    }
                 }
-                // ERC721 has both approve & setApprovalForAll..
-                if (single) {
-                    return useAccountStore().signCustomTransaction(
-                        CURRENT_CONTEXT,
-                        message,
-                        error,
-                        contractAddress,
-                        approveABI,
-                        [spender, param2],
-                    );
-                }
-                return useAccountStore().signCustomTransaction(
+            } else {
+                return await useAccountStore().signCustomTransaction(
                     CURRENT_CONTEXT,
                     message,
                     error,
                     contractAddress,
-                    approvalForAllABI,
-                    [spender, false],
+                    approveABI,
+                    [spender, param2],
                 );
             }
-            return useAccountStore().signCustomTransaction(
-                CURRENT_CONTEXT,
-                message,
-                error,
-                contractAddress,
-                approveABI,
-                [spender, param2],
-            );
         },
         async updateApproval(spender, contractAddress, single, param2) {
-            if (!contractAddress || !spender) {
-                return null;
+            if(!contractAddress || !spender){
+                return;
             }
             this.signing = true;
-            const contract = await this.$contractManager.getContract(contractAddress);
-            if (!contract) {
-                return null;
+            const contract  = await this.$contractManager.getContract(contractAddress);
+            if(!contract){
+                return;
             }
 
             if (this.isLoggedIn && !this.isNative) {
                 let spenderAddress = spender; // Needed to avoid reassign error
-                if (single) {
+                if(single){
                     spenderAddress = ZERO_ADDRESSES;
                 }
-                const spenderContract = await this.$contractManager.getContract(spenderAddress);
+                const spenderContract  = await this.$contractManager.getContract(spenderAddress);
                 try {
                     await this.toggleApproval(contract.address, single, spenderAddress, param2, this.$t(
                         'components.approvals.update_success',
                         {
                             spender: spenderContract?.getName() || spenderAddress,
                             contract: contract.getName() || contract.address,
-                        },
-                    ), this.$t('components.approvals.update_failed'));
+                        }), this.$t('components.approvals.update_failed'),
+                    );
                     return true;
                 } catch (e) {
                     return false;
@@ -285,66 +291,62 @@ export default {
             const ctx = this;
             this.confirmModal = async function () {
                 const result = await ctx.updateApproval(spender, contract, single, tokenId || 0);
-                if (result) {
+                if(result){
                     await ctx.checkChanges();
                 }
                 this.signing = false;
                 this.displayConfirmModal = false;
             };
         },
-        async checkChanges() {
+        async checkChanges(){
             let approval = true;
             let i = 0;
-            const currentApprovals = this.approvals;
+            let currentApprovals = this.approvals;
             this.displayConfirmModal = false;
             this.displayUpdateModal = false;
             this.signing = false;
-            await new Promise((resolve) => {
-                setTimeout(resolve, 2000);
-            });
-            while (approval) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            while(approval) {
                 await this.onRequest({
                     pagination: this.pagination,
                 });
-                for (let k = 0; k < currentApprovals.length; k++) {
-                    if (
+                for(let k = 0; k < currentApprovals.length; k++){
+                    if(
                         !this.approvals[k]
                         || currentApprovals[k].amount !== this.approvals[k].amount
                         || currentApprovals[k].spender !== this.approvals[k].spender
                         || currentApprovals[k].contract !== this.approvals[k].contract
-                    ) {
+                    ){
                         approval = false;
                         this.selected = [];
                         break;
                     }
                 }
-                if (i === 10) {
-                    approval = false;
+                if(i === 10){
+                    approval  = false;
                     break;
                 }
-                await new Promise((resolve) => {
-                    setTimeout(resolve, 1000);
-                });
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 i++;
             }
         },
-        toggleAll(value) {
-            for (let i = 0; i < this.approvals.length; i++) {
+        toggleAll(value){
+            for(let i = 0; i < this.approvals.length; i++){
                 this.toggleSelected(
-                    `${this.approvals[i].spender}:${
-                        this.approvals[i].contract.address || this.approvals[i].contract}:${
-                        this.approvals[i].single}:${
-                        this.approvals[i].tokenId}`,
+                    this.approvals[i].spender + ':' +
+                    (this.approvals[i].contract.address || this.approvals[i].contract) + ':' +
+                    this.approvals[i].single + ':' +
+                    this.approvals[i].tokenId,
                     value,
                 );
             }
         },
-        toggleSelected(id, value) {
-            const parts = id.split(':');
-            for (let i = 0; i < this.approvals.length; i++) {
-                if (parts[0] === this.approvals[i].spender && parts[1] === this.approvals[i].contract.address) {
-                    if (this.approvals[i].tokenId) {
-                        if (parts[3] === this.approvals[i].tokenId) {
+        toggleSelected(id, value){
+            let parts = id.split(':');
+            for(let i = 0; i < this.approvals.length; i++){
+                if(parts[0] === this.approvals[i].spender && parts[1] === this.approvals[i].contract.address){
+                    if(this.approvals[i].tokenId){
+                        if(parts[3] === this.approvals[i].tokenId){
                             this.approvals[i].selected = value;
                         }
                     } else {
@@ -353,41 +355,41 @@ export default {
                 }
             }
 
-            const index = this.selected.indexOf(id);
-            if (value && index === -1) {
+            let index = this.selected.indexOf(id);
+            if(value && index === -1){
                 this.selected.push(id);
-            } else if (index > -1 && (this.selected.length === 1 || index === 0)) {
+            } else if (index > - 1 && (this.selected.length === 1 || index === 0)) {
                 this.selected = [];
             } else if (index > -1) {
                 this.selected = this.selected.slice(index, 1);
             }
         },
-        async isLoggedInAccount() {
-            if (!this.isLoggedIn) {
+        async isLoggedInAccount(){
+            if(!this.isLoggedIn){
                 return false;
             }
             return (this.accountAddress === this.address);
         },
-        async handleCtaRemoveAll() {
+        async handleCtaRemoveAll(){
+            this.toggleAll(true);
             if (!this.isLoggedInAccount()) {
                 this.displayLoginModal = true;
                 return;
             }
             let more = true;
-            const limit = 100;
+            let limit = 100;
             let offset = 0;
-            while (more) {
-                // eslint-disable-next-line no-await-in-loop
-                const response = await this.$indexerApi.get(
+            while(more){
+                let response = await this.$indexerApi.get(
                     `/account/${this.accountAddress}/approvals?limit=${limit}&offset=${offset}&includePagination=true
                     &type=${this.type}`,
                 );
                 more = response.data?.more || false;
-                offset += limit;
-                if (response.data) {
-                    for (const approval of response.data.results) {
+                offset = offset + limit;
+                if(response.data){
+                    for(let approval of response.data.results){
                         this.toggleSelected(
-                            `${approval.spender}:${approval.contract}:${approval.single}:${approval.tokenId}`,
+                            approval.spender + ':' + approval.contract + ':' + approval.single + ':' + approval.tokenId,
                             true,
                         );
                     }
@@ -395,7 +397,7 @@ export default {
             }
             this.handleCtaRemoveSelected();
         },
-        async handleCtaRemoveSelected() {
+        async handleCtaRemoveSelected(){
             if (!this.isLoggedIn) {
                 this.displayLoginModal = true;
                 return;
@@ -403,42 +405,42 @@ export default {
             this.displayConfirmModal = true;
             const ctx = this;
             this.confirmModal = async function () {
-                const results = [];
+                let results = [];
                 await Promise.all(
                     ctx.selected.map(async (id) => {
-                        const parts = id.split(':');
-                        const result = await ctx.updateApproval(
+                        let parts = id.split(':');
+                        let result = await ctx.updateApproval(
                             parts[0],
                             parts[1],
                             (parts[2] === '1' || parts[2] === 'true'),
-                            Number(parts[3]) || 0,
+                            parseInt(parts[3]) || 0,
                         );
-                        if (result) {
+                        if(result){
                             results.push(true);
                         }
                     }),
                 );
-                if (results.includes(true)) {
+                if(results.includes(true)){
                     await ctx.checkChanges();
                 }
                 this.signing = false;
                 this.displayConfirmModal = false;
             };
         },
-        async handleCtaUpdate(spender, contractAddress, single, tokenId, current) {
+        async handleCtaUpdate(spender, contractAddress, single, tokenId, current){
             this.displayUpdateModal = true;
             this.modalUpdateValue = current;
-            const contract = await this.$contractManager.getContract(contractAddress);
+            const contract  = await this.$contractManager.getContract(contractAddress);
             this.mask = '#'.repeat(contract.properties?.decimals || 18);
-            this.confirmModalUpdate = async function () {
-                const success = await this.updateApproval(
+            this.confirmModalUpdate = async function(){
+                let success = await this.updateApproval(
                     spender,
                     contractAddress,
                     single,
-                    tokenId
-                    || BigNumber.from(ethers.utils.parseUnits(this.modalUpdateValue, contract.properties.decimals)),
+                    tokenId ||
+                    BigNumber.from(ethers.utils.parseUnits(this.modalUpdateValue, contract.properties.decimals)),
                 );
-                if (success) {
+                if(success){
                     await this.checkChanges();
                 }
                 this.displayUpdateModal = false;
@@ -446,7 +448,7 @@ export default {
                 return success;
             };
         },
-        modalHide() {
+        modalHide(){
             this.signing = false;
             this.displayConfirmModal = false;
             this.displayUpdateModal = false;
@@ -462,20 +464,16 @@ export default {
 </div>
 <div>
     <q-table
+        v-if="!loading"
         v-model:pagination="pagination"
         :rows="approvals"
-        :loading="loading"
         :rows-per-page-label="$t('global.records_per_page')"
         :binary-state-sort="true"
         :row-key="row => row.address"
         :columns="columns"
         :rows-per-page-options="[10, 20, 50]"
-        flat
         @request="onRequest"
     >
-        <template v-slot:loading>
-            <q-inner-loading showing color="secondary" />
-        </template>
         <template v-slot:header="props">
             <q-tr :props="props">
                 <q-th
@@ -577,7 +575,7 @@ export default {
                                 + props.row.tokenId"
                             :true-val="props.row.spender + ':' + props.row.contract.address + ':' + props.row.single
                                 + ':' + props.row.tokenId"
-                            color="secondary"
+                            color="primary"
                             size="xs"
                         />
                         <q-tooltip v-if="selected.includes(props.row.spender + ':' + props.row.contract.address)">
@@ -598,7 +596,7 @@ export default {
                     <div class="flex justify-end">
                         <div v-if="selected.length > 0" class="flex justify-end">
                             <div>
-                                <q-btn class="items-center q-mr-sm" color="secondary" @click="toggleAll(false)">
+                                <q-btn class="items-center q-mr-sm" color="primary" @click="toggleAll(false)">
                                     <q-icon
                                         name="highlight_off"
                                         class="q-mr-xs"
@@ -652,6 +650,47 @@ export default {
             </q-tr>
         </template>
     </q-table>
+    <q-table
+        v-else
+        v-model:pagination="pagination"
+        :rows="loadingRows"
+        :rows-per-page-label="$t('global.records_per_page')"
+        :columns="columns"
+        :rows-per-page-options="[10, 20, 50]"
+    >
+        <template v-slot:header="props">
+            <q-tr :props="props">
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
+                    <div class="u-flex--center-y">
+                        {{ col.label }}
+                    </div>
+                </q-th>
+            </q-tr>
+        </template>
+        <template v-slot:body="">
+            <q-tr >
+                <q-td key="spender">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="amount">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="contract">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="updated">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="action">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+            </q-tr>
+        </template>
+    </q-table>
     <q-dialog v-model="displayUpdateModal" @hide="modalHide">
         <q-card v-if="!signing" class="q-pa-xl">
             <q-card-section>
@@ -688,7 +727,7 @@ export default {
                     id="updateBtn"
                     :disabled="!modalUpdateValue"
                     :label="$t('global.sign')"
-                    color="secondary"
+                    color="primary"
                     text-color="black"
                     @click="this.$refs.input.validate() && this.confirmModalUpdate()"
                 />
@@ -722,7 +761,7 @@ export default {
                 <q-btn
                     v-close-popup
                     :label="$t('global.sign')"
-                    color="secondary"
+                    color="primary"
                     text-color="black"
                     @click="confirmModal()"
                 />
@@ -739,13 +778,13 @@ export default {
 </template>
 
 <style scoped lang="sass">
-.body--dark .q-checkbox__bg
-    border-color: lightgray
-.q-card
-    min-width: 320px
-    flex-grow: 1
-.sortable
-    height: 60px
-    display: flex
-    align-items: center
+    .body--dark .q-checkbox__bg
+        border-color: lightgray
+    .q-card
+        min-width: 320px
+        flex-grow: 1
+    .sortable
+        height: 60px
+        display: flex
+        align-items: center
 </style>

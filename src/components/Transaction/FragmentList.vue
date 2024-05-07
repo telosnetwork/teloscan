@@ -1,6 +1,5 @@
 <script>
-import FragmentListElement from 'components/Transaction/FragmentListElement.vue';
-
+import FragmentListElement from 'components/Transaction/FragmentListElement';
 export default {
     name: 'FragmentList',
     components: {

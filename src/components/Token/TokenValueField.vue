@@ -2,7 +2,6 @@
 import { getIcon } from 'src/lib/token-utils';
 import { BigNumber } from 'ethers';
 import { formatWei } from 'src/lib/utils';
-
 export default {
     name: 'TokenValueField',
     props: {
@@ -27,24 +26,24 @@ export default {
     methods: {
         getIcon,
         BigNumber,
-        shorten(value, decimals) {
+        shorten(value, decimals){
             let valueShort = formatWei(value, decimals, this.truncate);
-            const valueRaw = formatWei(value, decimals);
-            const parts = valueRaw.split('.');
+            let valueRaw = formatWei(value, decimals);
+            let parts = valueRaw.split('.');
             let compare = '0.';
             for (let i = 0; i < this.truncate - 1; i++) {
                 compare += '0';
             }
-            if (valueShort === (`${compare}0`) && parts[1]?.length > this.truncate) {
-                valueShort = `< ${compare}1`;
+            if (valueShort === (compare + '0') && parts[1]?.length > this.truncate) {
+                valueShort = '< ' + compare + '1';
             }
             return valueShort;
         },
-        async getLogo(contract) {
+        async getLogo(contract){
             let logoURI = '';
             const tokenList = await this.$contractManager.getTokenList();
             tokenList.tokens.forEach((token) => {
-                if (token.address.toLowerCase() === contract.address.toLowerCase()) {
+                if(token.address.toLowerCase() ===  contract.address.toLowerCase()){
                     logoURI = token.logoURI;
                 }
             });
@@ -53,9 +52,9 @@ export default {
     },
     async mounted() {
         this.valueRaw = this.value.toLocaleString(0, { useGrouping: false }).replace('.', '');
-        if (this.address) {
+        if(this.address){
             const contract = await this.$contractManager.getContract(this.address);
-            if (contract) {
+            if(contract){
                 this.valueWei = BigNumber.from(this.value);
                 this.valueShort = this.shorten(this.valueRaw, contract.properties?.decimals);
                 this.valueRaw = formatWei(this.valueRaw, contract.properties?.decimals);
@@ -71,7 +70,7 @@ export default {
         this.symbol = 'TLOS';
         this.logo = false;
     },
-    data() {
+    data(){
         return {
             valueShort: this.valueShort,
             valueRaw: this.valueRaw,
@@ -99,7 +98,7 @@ export default {
             <q-tooltip v-if="!showWei">{{ $t('components.transaction.show_total') }}</q-tooltip>
             <q-tooltip v-else >{{ $t('components.transaction.show_wei') }}</q-tooltip>
         </span>
-        <router-link v-if="symbol != 'TLOS'" :to="`/address/${address}`">
+        <router-link v-if="symbol !== 'TLOS'" :to="`/address/${address}`">
             <span>{{ symbol.slice(0, 6) }}</span>
             <span v-if="symbol.length > 6">...</span>
             <q-tooltip>{{ name }}</q-tooltip>
@@ -121,11 +120,11 @@ export default {
 
 <!--eslint-enable-->
 <style scoped lang="sass">
-.coin-icon
-    width: 16px
-    height: 16px
-    margin-top: -6px
-    margin-right: 3px
-    vertical-align: middle
-    border-radius: 100%
+    .coin-icon
+        width: 16px
+        height: 16px
+        margin-top: -6px
+        margin-right: 3px
+        vertical-align: middle
+        border-radius: 100%
 </style>

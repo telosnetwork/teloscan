@@ -1,12 +1,11 @@
 <script>
 import axios from 'axios';
-
-const API_URL = (process.env.NETWORK_EVM_CHAIN_ID === 40)
-    ? 'https://api.monitor.telos.net'
-    : 'https://api.monitor-test.telos.net';
-const API_ENDPOINT_TASKS = `${API_URL}/tasks`;
-const API_ENDPOINT_STATUSES = `${API_URL}/task_status`;
-const API_ENDPOINT_CATEGORIES = `${API_URL}/task_categories`;
+const API_URL = (process.env.NETWORK_EVM_CHAIN_ID === 40) ?
+    'https://api.monitor.telos.net' :
+    'https://api.monitor-test.telos.net';
+const API_ENDPOINT_TASKS = API_URL + '/tasks';
+const API_ENDPOINT_STATUSES = API_URL + '/task_status';
+const API_ENDPOINT_CATEGORIES = API_URL + '/task_categories';
 
 export default {
     name: 'MonitorComponent',
@@ -48,6 +47,7 @@ export default {
 
         return {
             rows: [],
+            loadingRows: [],
             tasks: [],
             categories: [],
             columns,
@@ -68,9 +68,12 @@ export default {
         this.columns[2].label = this.$t('components.health.category');
         this.columns[3].label = this.$t('components.health.task');
         this.columns[4].label = this.$t('components.health.message');
+        for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
+            this.loadingRows.push(i);
+        }
     },
     methods: {
-        async getCategories() {
+        async getCategories(){
             try {
                 const results = await axios.get(API_ENDPOINT_CATEGORIES);
                 this.categories = results.data;
@@ -78,7 +81,7 @@ export default {
                 console.error(`Could not retrieve task categories: ${e}`);
             }
         },
-        async getTasks() {
+        async getTasks(){
             try {
                 const results = await axios.get(API_ENDPOINT_TASKS);
                 this.tasks = results.data;
@@ -94,7 +97,7 @@ export default {
             try {
                 let url = API_ENDPOINT_STATUSES;
                 url += '?order=id.desc&select=task(name,category),message,checked_at,type,id&limit=';
-                url += `${rowsPerPage}&offset=${rowsPerPage * (page - 1)}`;
+                url += rowsPerPage + '&offset=' + rowsPerPage * (page - 1);
                 const results = await axios.get(url);
 
                 this.rows = results.data;
@@ -114,33 +117,30 @@ export default {
                 console.error(e);
             }
         },
-        getType(id) {
+        getType(id){
             let type = '';
             switch (id) {
-            case (1):
+            case(1):
                 type = this.$t('components.health.success');
                 break;
-            case (2):
+            case(2):
                 type = this.$t('components.health.info');
                 break;
-            case (3):
+            case(3):
                 type = this.$t('components.health.alert');
                 break;
-            case (4):
+            case(4):
                 type = this.$t('components.health.error');
                 break;
-            default:
-                type = '';
             }
             return type;
         },
-        getCategory(id) {
-            for (const i in this.categories) {
-                if (this.categories[i].id === id) {
+        getCategory(id){
+            for(let i in this.categories){
+                if(this.categories[i].id === id){
                     return this.categories[i].name;
                 }
             }
-            return '';
         },
     },
 };
@@ -149,13 +149,12 @@ export default {
 <template>
 <div class="q-mb-md tableWrapper">
     <q-table
+        v-if="!loading"
         v-model:pagination="pagination"
         :rows="rows"
         :row-key="row => row.id"
         :columns="columns"
-        :loading="loading"
         :rows-per-page-options="[10, 20, 50]"
-        flat
         @request="onRequest"
     >
         <q-tr :props="props">
@@ -189,7 +188,7 @@ export default {
                     <q-icon
                         v-else-if="props.row.type === 2"
                         name="info"
-                        color="secondary"
+                        color="primary"
                         size="1.15em"
                     />
                     <q-icon
@@ -211,10 +210,52 @@ export default {
             </q-tr>
         </template>
     </q-table>
+    <q-table
+        v-else
+        v-model:pagination="pagination"
+        :rows="loadingRows"
+        :row-key="row => row.id"
+        :columns="columns"
+        :rows-per-page-options="[10, 20, 50]"
+    >
+        <q-tr :props="props">
+            <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+                @click="col.name==='checked_at' ? showAge =! showAge : null"
+            />
+            <q-tooltip v-if="col.name === 'checked_at'" anchor="bottom middle" self="bottom middle">
+                {{ $t('components.health.click_to_change_format') }}
+            </q-tooltip>
+            {{ col.label }}
+        </q-tr>
+        <template v-slot:body="">
+            <q-tr>
+                <q-td key="status">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="checked_at">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="category">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="task">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+                <q-td key="message">
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+            </q-tr>
+        </template>
+    </q-table>
 </div>
 </template>
 
-<style scoped lang='sass'>
-.tableWrapper
-    width: 50vw
+<style scoped lang='scss'>
+.tableWrapper{
+    width: 100%;
+    margin: auto;
+}
 </style>

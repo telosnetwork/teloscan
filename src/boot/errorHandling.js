@@ -62,13 +62,20 @@ const successNotification = function (message) {
 
 class NotificationAction {
     constructor(payload) {
-        this.label = payload.label;
-        this.class = payload.class;
-        this.handler = payload.handler;
+        this.label     = payload.label;
+        this.class     = payload.class;
+        this.handler   = payload.handler;
+        this.onDismiss = payload.onDismiss;
         this.iconRight = payload.iconRight;
         this.color = payload.color;
     }
 }
+
+const crossIcon = require('src/assets/icon--cross.svg');
+const infoIcon  = require('src/assets/icon--info.svg');
+const checkIcon = require('src/assets/icon--check.svg');
+const discoIcon = require('src/assets/icon--disconnected.svg');
+const warningIcon = require('src/assets/icon--warning.svg');
 
 const html = `
     <div class="c-notify__container c-notify__container--{type} c-notify__container--{random}">
@@ -123,6 +130,15 @@ const notifyMessage = function (type, icon, title, message, payload, remember = 
                 }
             }
 
+            // If the content is a valid JSON, it should be possible to parse it and re stringify it using a pretty format
+            try {
+                const parsed = JSON.parse(content);
+                content = JSON.stringify(parsed, null, 4);
+                content = `<pre>${content}</pre>`;
+            } catch (e) {
+                // If it fails, we discard the error and use the original content
+            }
+
             Dialog.create({
                 class: 'c-notify__dialog',
                 title: this.$t('notification.error_details_title'),
@@ -143,11 +159,14 @@ const notifyMessage = function (type, icon, title, message, payload, remember = 
         class: 'c-notify__action-btn c-notify__action-btn--hide',
     };
 
+    let onDismiss = null;
+
     // adding buttons
     if (typeof payload === 'string' && type === 'success') {
         actions.push(link_btn);
     } else if (typeof payload === 'object' && payload instanceof NotificationAction) {
         actions.push(action_btn);
+        onDismiss = payload.onDismiss;
     } else if (typeof payload === 'object' && type === 'error') {
         actions.push(details_btn);
     } else {
@@ -206,6 +225,7 @@ const notifyMessage = function (type, icon, title, message, payload, remember = 
         html: true,
         classes: 'c-notify',
         actions,
+        onDismiss,
     });
 };
 
@@ -258,7 +278,17 @@ const notifyFailureWithAction = function (message, payload) {
     );
 };
 
-const notifyDisconnected = function () {
+const notifyWarningWithAction = function(message, payload) {
+    return notifyMessage.bind(this)(
+        'error',
+        warningIcon,
+        this.$t('notification.warning_title').toUpperCase(),
+        message,
+        new NotificationAction(payload),
+    );
+};
+
+const notifyDisconnected = function() {
     return notifyMessage.bind(this)(
         'error',
         discoIcon,
@@ -323,51 +353,39 @@ export default boot(({ app, store }) => {
 
     // new Message notifications handlers
     app.config.globalProperties.$notifySuccessTransaction = notifySuccessTransaction.bind(store);
-    app.config.globalProperties.$notifySuccessMessage = notifySuccessMessage.bind(store);
-    app.config.globalProperties.$notifySuccessCopy = notifySuccessCopy.bind(store);
-    app.config.globalProperties.$notifyFailure = notifyFailure.bind(store);
-    app.config.globalProperties.$notifyFailureWithAction = notifyFailureWithAction.bind(store);
-    app.config.globalProperties.$notifyDisconnected = notifyDisconnected.bind(store);
-    app.config.globalProperties.$notifyNeutralMessage = notifyNeutralMessage.bind(store);
-    app.config.globalProperties.$notifyRememberInfo = notifyRememberInfo.bind(store);
-    store.$notifySuccessTransaction = app.config.globalProperties.$notifySuccessTransaction;
-    store.$notifySuccessMessage = app.config.globalProperties.$notifySuccessMessage;
-    store.$notifySuccessCopy = app.config.globalProperties.$notifySuccessCopy;
-    store.$notifyFailure = app.config.globalProperties.$notifyFailure;
-    store.$notifyFailureWithAction = app.config.globalProperties.$notifyFailureWithAction;
-    store.$notifyDisconnected = app.config.globalProperties.$notifyDisconnected;
-    store.$notifyNeutralMessage = app.config.globalProperties.$notifyNeutralMessage;
-    store.$notifyRememberInfo = app.config.globalProperties.$notifyRememberInfo;
+    app.config.globalProperties.$notifySuccessMessage     = notifySuccessMessage.bind(store);
+    app.config.globalProperties.$notifySuccessCopy        = notifySuccessCopy.bind(store);
+    app.config.globalProperties.$notifyFailure            = notifyFailure.bind(store);
+    app.config.globalProperties.$notifyFailureWithAction  = notifyFailureWithAction.bind(store);
+    app.config.globalProperties.$notifyWarningWithAction  = notifyWarningWithAction.bind(store);
+    app.config.globalProperties.$notifyDisconnected       = notifyDisconnected.bind(store);
+    app.config.globalProperties.$notifyNeutralMessage     = notifyNeutralMessage.bind(store);
+    app.config.globalProperties.$notifyRememberInfo       = notifyRememberInfo.bind(store);
+    store['$notifySuccessTransaction']                    = app.config.globalProperties.$notifySuccessTransaction;
+    store['$notifySuccessMessage']                        = app.config.globalProperties.$notifySuccessMessage;
+    store['$notifySuccessCopy']                           = app.config.globalProperties.$notifySuccessCopy;
+    store['$notifyFailure']                               = app.config.globalProperties.$notifyFailure;
+    store['$notifyFailureWithAction']                     = app.config.globalProperties.$notifyFailureWithAction;
+    store['$notifyWarningWithAction']                     = app.config.globalProperties.$notifyWarningWithAction;
+    store['$notifyDisconnected']                          = app.config.globalProperties.$notifyDisconnected;
+    store['$notifyNeutralMessage']                        = app.config.globalProperties.$notifyNeutralMessage;
+    store['$notifyRememberInfo']                          = app.config.globalProperties.$notifyRememberInfo;
 
     // transaction notifications handlers
     store.$t = app.config.globalProperties.$t;
 });
 
-export function useNotifications() {
-    const instance = getCurrentInstance();
-    if (!instance) {
-        throw new Error('useNotifications must be used within a setup function.');
-    }
-
-    const { proxy } = instance;
-
-    const qNotifySuccessTransaction = proxy.$notifySuccessTransaction;
-    const qNotifySuccessMessage = proxy.$notifySuccessMessage;
-    const qNotifySuccessCopy = proxy.$notifySuccessCopy;
-    const qNotifyFailure = proxy.$notifyFailure;
-    const qNotifyFailureWithAction = proxy.$notifyFailureWithAction;
-    const qNotifyDisconnected = proxy.$notifyDisconnected;
-    const qNotifyNeutralMessage = proxy.$notifyNeutralMessage;
-    const qNotifyRememberInfo = proxy.$notifyRememberInfo;
-
-    return {
-        notifySuccessTransaction: qNotifySuccessTransaction,
-        notifySuccessMessage: qNotifySuccessMessage,
-        notifySuccessCopy: qNotifySuccessCopy,
-        notifyFailure: qNotifyFailure,
-        notifyFailureWithAction: qNotifyFailureWithAction,
-        notifyDisconnected: qNotifyDisconnected,
-        notifyNeutralMessage: qNotifyNeutralMessage,
-        notifyRememberInfo: qNotifyRememberInfo,
-    };
-}
+export {
+    errorNotification,
+    unexpectedErrorNotification,
+    warningNotification,
+    successNotification,
+    notifySuccessTransaction,
+    notifySuccessMessage,
+    notifySuccessCopy,
+    notifyFailure,
+    notifyFailureWithAction,
+    notifyDisconnected,
+    notifyNeutralMessage,
+    notifyRememberInfo,
+};

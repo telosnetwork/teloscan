@@ -1,6 +1,6 @@
 <script>
-import AddressField from 'components/AddressField.vue';
-import TokenValueField from 'components/Token/TokenValueField.vue';
+import AddressField from 'components/AddressField';
+import TokenValueField from 'components/Token/TokenValueField';
 import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
 import BigDecimal from 'js-big-decimal';
@@ -29,60 +29,61 @@ export default {
     methods: {
         formatWei,
         getIcon,
-        async expand() {
+        async expand(){
             this.isExpanded = true;
             this.pApprovals = await this.loadApprovals();
         },
-        isInfiniteApproval(log, contract) {
-            const amount = BigNumber.from(log.data);
+        isInfiniteApproval(log, contract){
+            let amount = BigNumber.from(log.data);
             let infinite = (amount.gte(INFINITE));
-            if (!infinite && contract.properties?.supply) {
-                const fAmount = new BigDecimal(
+            if(!infinite && contract.properties?.supply){
+                let fAmount = new BigDecimal(
                     formatWei(amount, contract.properties.decimals, contract.properties.decimals),
                 );
-                const supply = new BigDecimal(contract.properties.supply);
+                let supply = new BigDecimal(contract.properties.supply);
                 infinite = (fAmount.compareTo(supply) > -1);
             }
             return infinite;
         },
         async loadApprovals() {
-            const approvals = [];
-            this.logs.forEach(async (log) => {
-                const sig = log.topics[0].substr(0, 10);
+            let approvals = [];
+            for (const log of this.logs) {
+                let sig = log.topics[0].substr(0, 10);
                 if (APPROVAL_SIGNATURES.includes(sig)) {
-                    const contract = await this.$contractManager.getContract(log.address);
+                    let contract = await this.$contractManager.getContract(log.address);
                     if (!contract || contract.supportedInterfaces === null) {
-                        return;
+                        continue;
                     }
-                    if (approvals.length >= 10 && this.isExpanded === false) {
+                    if(approvals.length >= 10 && this.isExpanded === false){
                         this.more = true;
-                        return;
+                        break;
                     }
-                    const spender = `0x${log.topics[2].substr(log.topics[2].length - 40, 40)}`;
+                    let spender = '0x' + log.topics[2].substr(log.topics[2].length - 40, 40);
                     if (sig === ERC_APPROVAL_SIGNATURE) {
-                        if (contract.supportedInterfaces.includes('erc20')) {
-                            const infinite = this.isInfiniteApproval(log, contract);
+                        if(contract.supportedInterfaces.includes('erc20')){
+                            let infinite = this.isInfiniteApproval(log, contract);
                             approvals.push({
                                 amount: BigNumber.from(log.data).toString(),
-                                infinite,
+                                infinite: infinite,
                                 token: contract,
-                                spender,
+                                spender: spender,
                             });
-                        } else if (contract.supportedInterfaces.includes('erc721')) {
+                        } else if(contract.supportedInterfaces.includes('erc721')){
                             approvals.push({
                                 tokenId: BigNumber.from(log.topics[3]).toString(),
                                 token: contract,
-                                spender,
+                                spender: spender,
                             });
                         }
                     } else {
                         approvals.push({
                             token: contract,
-                            spender,
+                            spender: spender,
                         });
                     }
                 }
-            });
+
+            }
 
             this.isLoading = false;
             return approvals;

@@ -1,7 +1,7 @@
 import { boot } from 'quasar/wrappers';
 import { Api, JsonRpc } from 'eosjs';
 
-const signTransaction = async function (actions) {
+const signTransaction = async function(actions) {
     actions.forEach((action) => {
         if (!action.authorization || !action.authorization.length) {
             action.authorization = [
@@ -36,9 +36,9 @@ const getRpc = function () {
     return this.$type === 'ual' ? this.$ualUser.rpc : this.$defaultApi.rpc;
 };
 
-const getTableRows = async function (options) {
+const getTableRows = async function(options) {
     const rpc = this.$antelopeApi.getRpc();
-    return rpc.get_table_rows({
+    return await rpc.get_table_rows({
         json: true,
         ...options,
     });
@@ -46,13 +46,12 @@ const getTableRows = async function (options) {
 
 const getAccount = async function (accountName) {
     const rpc = this.$antelopeApi.getRpc();
-    return rpc.get_account(accountName);
+    return await rpc.get_account(accountName);
 };
 
 export default boot(async ({ app, store }) => {
-    store.$isAntelopeCapable = false;
-    app.config.globalProperties.isAntelopeCapable = false;
-    if (process.env.NETWORK_PROTOCOL && process.env.NETWORK_HOST) {
+    store.$isAntelopeCapable = app.config.globalProperties.isAntelopeCapable = false;
+    if(process.env.NETWORK_PROTOCOL && process.env.NETWORK_HOST){
         const rpc = new JsonRpc(
             `${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}:${process.env.NETWORK_PORT}`,
         );
@@ -61,8 +60,7 @@ export default boot(async ({ app, store }) => {
             textDecoder: new TextDecoder(),
             textEncoder: new TextEncoder(),
         });
-        store.$isAntelopeCapable = true;
-        app.config.globalProperties.isAntelopeCapable = true;
+        store.$isAntelopeCapable = app.config.globalProperties.isAntelopeCapable = true;
     }
     store.$antelopeApi = {
         signTransaction: signTransaction.bind(store),

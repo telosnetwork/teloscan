@@ -1,6 +1,6 @@
 <script>
-import AddressField from 'src/components/AddressField.vue';
-import AddToWallet from 'src/components/AddToWallet.vue';
+import AddressField from 'src/components/AddressField';
+import AddToWallet from 'src/components/AddToWallet';
 
 export default {
     name: 'TokenGridElement',
@@ -14,7 +14,7 @@ export default {
     data() {
         return {
             element: { ...this.token },
-            symbol: (this.token.symbol.length > 12) ? `${this.token.symbol.slice(0, 12).trim()}...` : this.token.symbol,
+            symbol: (this.token?.symbol?.length > 12) ? this.token.symbol.slice(0, 12).trim() + '...' : this.token.symbol,
         };
     },
 };
@@ -36,7 +36,12 @@ export default {
                         <q-tooltip>{{ this.token.name }}</q-tooltip>
                     </span>
                 </div>
-                <AddressField :address="element.address" :name="symbol" class="q-mb-sm"/>
+                <AddressField
+                    :truncate="16"
+                    :address="element.address"
+                    :name="symbol"
+                    class="q-mb-sm"
+                />
                 <div>
                     <div class="flex">
                         <span v-if="element.balance === '0.0000' && element.fullBalance > 0">
