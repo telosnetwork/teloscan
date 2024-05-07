@@ -1,5 +1,7 @@
 <script>
-import JsonViewer from 'vue-json-viewer';
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
+import ParameterList from 'components/Transaction/ParameterList';
 import AddressField from 'components/AddressField';
 import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
@@ -8,7 +10,8 @@ export default {
     name: 'FragmentListElement',
     components: {
         AddressField,
-        JsonViewer,
+        VueJsonPretty,
+        ParameterList,
     },
     props: {
         fragment: {
@@ -19,17 +22,26 @@ export default {
             type: Object,
             required: true,
         },
+        transactionFrom: {
+            type: String,
+            required: false,
+        },
     },
     data(){
         return {
             showWei: false,
-            expanded: false,
+            address: null,
+            name: null,
             expanded_parameters: [],
         };
     },
     created(){
         if(!this.fragment) {
             return;
+        }
+        this.address = (this.fragment.contract) ? this.fragment.contract.address : this.fragment.address;
+        if(this.address){
+            this.address = (this.address.startsWith('0x')) ? this.address : '0x' + this.address;
         }
         let inputs = this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
         if(inputs){
@@ -51,27 +63,30 @@ export default {
             if(typeof this.fragment.depth === 'undefined') {
                 return;
             }
-            return { marginLeft: ((this.fragment.depth * 20)  + 20) + 'px' };
+            return { marginLeft: (this.fragment.depth * 20)  + 'px' };
         },
         inputs(){
             return this.fragment.eventFragment ? this.fragment.eventFragment.inputs : this.fragment.inputs;
         },
-        fragmentClass(){
-            let fragmentClass = 'c-fragment-list-element__head justify-between items-center';
-            return (this.isExpandable) ? fragmentClass + ' clickable' : fragmentClass;
+        params(){
+            let args = [];
+            this.inputs?.forEach((input, i) => {
+                args.push({
+                    name: input.name,
+                    type: input.type,
+                    arrayChildren: (input.arrayChildren !== null) ? input.arrayChildren.type : false,
+                    value:  this.fragment.args[i],
+                });
+            });
+            return args;
         },
         isExpandable(){
             return (
+                this.fragment.error ||
                 this.fragment.inputs && this.fragment.inputs.length > 0 ||
-                this.fragment.value ||
+                this.fragment.value && this.fragment.value !== '0.0' ||
                 !this.fragment.name
             );
-        },
-        arrowIcon() {
-            if(!this.isExpandable) {
-                return '';
-            }
-            return this.expanded ? 'arrow_drop_down' : 'arrow_right';
         },
     },
 };
@@ -79,171 +94,133 @@ export default {
 
 <template>
 <div v-if="fragment" class="c-fragment-list-element" :style="depthStyle"  >
-    <div :class="fragmentClass" @click="expanded = !expanded">
-        <span class="row items-center">
-            <q-icon :name="arrowIcon" size="sm" />
-            <strong v-if="fragment?.name">
-                {{ fragment.name }}
-            </strong>
-            <strong v-else>
-                {{ $t('components.transaction.unknown') }} ({{ fragment.sig }})
-            </strong>
-        </span>
-        <small v-if="fragment.contract">
-            <AddressField
-                :address="
-                    (fragment.contract.address[0] === '0' && fragment.contract.address[1] === 'x') ?
-                        fragment.contract.address :
-                        '0x' + fragment.contract.address
-                "
-                :truncate="15"
-                class="word-break"
-                :name="fragment.contract.name"
-                :copy="true"
-            />
-        </small>
-    </div>
-    <div v-if="expanded" class="q-pl-md">
-        <div v-if="fragment?.name" :key="fragment.name">
-            <div
-                v-for="(param, index) in inputs"
-                :key="`fragment-${index}`"
-                class="fit row justify-start items-start content-start"
-            >
-                <div class="col-4">
-                    <template v-if="param.name">
-                        {{ param.name }} ({{ param.type }}):
-                    </template>
-
-                    <template v-else>
-                        {{ param.type }}:
-                    </template>
-                </div>
-
-                <div class="col-8">
-                    <AddressField
-                        v-if="param.type === 'address'"
-                        :address="fragment.args[index]"
-                        :truncate="0"
-                        class="word-break"
-                        :copy="true"
+    <q-expansion-item
+        :disable="!isExpandable"
+        class="shadow-1 q-mb-md"
+    >
+        <template v-slot:header>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center col-shrink">
+                    <strong v-if="fragment.name">
+                        <span v-if="fragment.name.length > 190">{{ fragment.name.substring(0, 190) }}...</span>
+                        <span v-else>{{ fragment.name }}</span>
+                    </strong>
+                    <strong v-else>
+                        {{ $t('components.transaction.unknown') }} ({{ fragment?.sig }})
+                    </strong>
+                    <strong v-if="fragment.error" class="q-ml-xs">
+                        {{ ' - ' + $t('global.error') }}
+                    </strong>
+                    <q-icon
+                        v-if="fragment.error"
+                        name="warning"
+                        color="negative"
+                        class="q-ml-xs"
                     />
-                    <div v-else-if="param.type === 'uint256' || param.type === 'uint128'"  class="word-break">
-                        <div v-if="fragment.isTransfer && fragment.token">
-                            <div
-                                v-if="!fragment.token.type || fragment.token.type === 'erc20'"
-                                class="clickable"
-                                @click="showWei = !showWei"
-                            >
-                                <span v-if="!showWei">
-                                    <span> {{ formatWei(fragment.args[index], fragment.token.decimals) }}</span>
-                                    <q-tooltip>Show wei</q-tooltip>
-                                    <AddressField
-                                        :address="fragment.token.address"
-                                        :truncate="0"
-                                        :name="fragment.token.symbol"
-                                        class="word-break q-ml-xs"
-                                    />
-                                </span>
-                                <span v-else>
-                                    {{ fragment.args[index] }}
-                                </span>
+                </div>
+                <div>
+                    <small>
+                        <AddressField
+                            v-if="address"
+                            :address="address"
+                            :truncate="15"
+                            class="word-break"
+                            :name="fragment.contract?.name"
+                            @click.stop=""
+                        />
+                    </small>
+                </div>
+            </div>
+        </template>
+        <q-card class="q-pl-md q-pr-md">
+            <q-card-section
+                v-if="this.fragment?.error"
+                class="q-pa-sm"
+            >
+                <div class="negative q-pa-md flex align-center q-mb-sm rounded-borders q-mt-sm">
+                    <q-icon
+                        name="warning"
+                        color="negative"
+                        class="q-mr-xs"
+                        size="1.4em"
+                    />
+                    <span class="text-negative">{{ fragment?.error }}</span>
+                </div>
+            </q-card-section>
+            <q-card-section v-if="fragment.name" :key="this.fragment.name">
+                <ParameterList :params="params" :trxFrom="transactionFrom" :contract="fragment.contract" />
+                <div v-if="fragment.value && fragment.value !== 0">
+                    <div v-if="fragment.isTransferETH" >
+                        <div class="fit row justify-start items-start content-start">
+                            <div class="col-4">
+                                <q-icon class="list-arrow" name="arrow_right"/>
+                                <span>{{ $t('pages.from').toLowerCase() }}</span>
                             </div>
-                            <div v-else>
+                            <div class="col-8">
                                 <AddressField
-                                    v-if="fragment.token.symbol"
-                                    :address="fragment.token.address"
+                                    :address="fragment.from"
                                     :truncate="0"
-                                    :name="fragment.token.symbol"
-                                    class="word-break"
-                                />
-                                <span v-if="fragment.token.symbol"> #</span>
-                                <span> {{ fragment.args[index] }}</span>
-                            </div>
-                        </div>
-                        <div v-else class="word-break">
-                            {{ fragment.args[index] }}
-                        </div>
-                    </div>
-                    <div v-else-if="param.type === 'tuple'" v-on:click.stop="toggle(index, 'expanded')">
-                        <div>[ </div>
-                        <div
-                            v-for="(i) in fragment.args[index].length - 1"
-                            :key="param.type + i"
-                            :class="
-                                (expanded_parameters[index]['expanded']) ?
-                                    'q-pl-xl word-break' :
-                                    'q-pl-xl word-break hidden'
-                            "
-                        >
-                            {{ i }},
-                        </div>
-                        <div
-                            v-if="!expanded_parameters[index]['expanded']"
-                            class="q-px-sm ellipsis-label q-mb-xs"
-                        >...</div>
-                        <div>]</div>
-                    </div>
-                    <div
-                        v-else-if="param.arrayChildren && fragment.args[index]"
-                        v-on:click.stop="toggle(index, 'expanded')"
-                    >
-                        <div>[ </div>
-                        <div
-                            v-for="i in fragment.args[index].length - 1"
-                            :key="param.type + i"
-                            :class="
-                                (expanded_parameters[index]['expanded']) ?
-                                    'q-pl-xl word-break' :
-                                    'q-pl-xl word-break hidden'
-                            "
-                        >
-                            <div v-if="param.arrayChildren.type === 'address'">
-                                <AddressField
-                                    :address="fragment.args[index][i]"
-                                    :truncate="0"
-                                    class="word-break"
                                     :copy="true"
+                                    class="word-break"
                                 />
                             </div>
-                            <span v-else class="word-break">{{ fragment.args[index][i] }},</span>
                         </div>
-                        <div
-                            v-if="!expanded_parameters[index]['expanded']"
-                            class="q-px-sm ellipsis-label q-mb-xs"
-                        >...</div>
-                        <div>]</div>
+                        <div class="fit row justify-start items-start content-start">
+                            <div class="col-4">
+                                <q-icon class="list-arrow" name="arrow_right"/>
+                                <span>{{ $t('pages.to').toLowerCase() }}</span>
+                            </div>
+                            <div class="col-8">
+                                <AddressField
+                                    :address="fragment.to"
+                                    :truncate="0"
+                                    :copy="true"
+                                    class="word-break"
+                                />
+                            </div>
+                        </div>
                     </div>
-                    <div v-else class="word-break">
-                        {{ fragment.args[index] }}
+                    <div class="fit row justify-start items-start content-start">
+                        <div class="col-4">
+                            <q-icon class="list-arrow" name="arrow_right"/>
+                            <span>{{ $t('components.transaction.value_uint256').toLowerCase() }}</span>
+                        </div>
+                        <div class="col-8">
+                            {{ fragment.value }} TLOS
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div v-if="fragment.value">
-                <div class="fit row justify-start items-start content-start">
-                    <div class="col-4">
-                        {{ $t('components.transaction.value_uint256') }}
-                    </div>
-                    <div class="col-8">
-                        {{ fragment.value }} TLOS
-                    </div>
-                </div>
-            </div>
-        </div>
-        <JsonViewer
-            v-else
-            :value="rawFragment"
-            theme="custom-theme"
-            class="q-mb-md"
-        />
-    </div>
+            </q-card-section>
+            <q-card-section v-else>
+                <VueJsonPretty
+                    :data="rawFragment"
+                    :showLine="false"
+                    :deep="1"
+                    class="q-mb-md q-pl-md"
+                />
+            </q-card-section>
+        </q-card>
+    </q-expansion-item>
+
 </div>
 </template>
 
 <style lang="scss" scoped>
+body.body--dark .c-fragment-list-element  .negative {
+    background: $negative;
+    span, .q-icon {
+        color: white !important;
+    }
+}
+.q-expansion-item__container > .q-item > .flex {
+    width: 100%;
+}
 .c-fragment-list-element {
     margin-bottom: 24px;
-
+    .col-shrink {
+        max-width: 90%;
+        word-break: break-all;
+    }
     &__head {
         background: rgba(0, 0, 0, 0.1);
         padding: 10px 20px;
@@ -258,14 +235,53 @@ export default {
         @at-root .body--dark & {
             background: rgba(0, 0, 0, 0.25);
         }
+        .row {
+            flex-flow: nowrap;
+            max-width: 70%;
+        }
+        .q-icon {
+            margin-top: -3px;
+        }
+    }
+    pre {
+        font-family: inherit;
+        font-size: inherit;
+        margin: auto;
     }
 
     &__fragment {
         white-space: pre;
     }
+    .negative {
+        border: 1px solid;
+    }
 }
 .jv-container .jv-code {
     padding: 10px 10px 10px 10px;
+}
+@media only screen and (max-width: 480px){
+    .c-fragment-list-element {
+        &__head {
+            display: block;
+            text-align: center;
+            padding: 15px;
+            .c-address-field {
+                border-top: 1px solid rgba(255, 255, 255, 0.3);
+                padding-top: 10px;
+                width: 100%;
+                display: flex;
+                margin-top: 15px;
+            }
+            .q-icon {
+                margin-left: -7px;
+                font-size: 20px;
+            }
+            .row {
+                flex-flow: nowrap;
+                max-width: 100%;
+            }
+        }
+    }
 }
 @media only screen and (max-width: 400px){
     .c-fragment-list-element {

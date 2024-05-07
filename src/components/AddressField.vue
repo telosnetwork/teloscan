@@ -1,120 +1,198 @@
-<script>
-import { mapActions } from 'vuex';
-import { ethers } from 'ethers';
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
+<script setup lang="ts">
+import { ref, watch, onMounted, computed } from 'vue';
 
-import CopyButton from 'components/CopyButton';
+import { contractManager } from 'src/boot/telosApi';
+import { getIcon } from 'src/lib/token-utils';
+import { toChecksumAddress } from 'src/lib/utils';
 
-export default {
-    name: 'AddressField',
-    components: {
-        CopyButton,
-    },
-    props: {
-        address: {
-            type: String,
-            required: true,
-        },
-        name: {
-            type: String,
-            default: '',
-        },
-        copy: {
-            type: Boolean,
-            default: false,
-        },
-        highlight: {
-            type: Boolean,
-            default: false,
-        },
-        truncate: {
-            type: Number,
-            default: 18,
-        },
-        isContractTrx: {
-            type: Boolean,
-            default: false,
-        },
-    },
-    data: () => ({
-        contract: null,
-    }),
-    watch: {
-        address () {
-            this.loadContract();
-        },
-    },
-    async mounted() {
-        await this.loadContract();
-    },
-    methods: {
-        ...mapActions('evm', ['getContract']),
-        getDisplay() {
-            if(!this.address){
-                return;
-            }
-            if (this.name) {
-                return this.truncate > 0 && this.name.length > this.truncate ?
-                    `${this.name.slice(0, this.truncate)}...` :
-                    `${this.name}`;
-            }
+import CopyButton from 'components/CopyButton.vue';
 
-            if (this.contract && this.contract.getName()) {
-                const name = this.contract.getName();
-                if(name[0] === '0' && name[1] === 'x'){
-                    return this.truncate > 0 ? `${this.address.slice(0, this.truncate)}...` : this.address;
-                }
-                return this.truncate > 0 && name.length > this.truncate ?
-                    `${name.slice(0, this.truncate)}...` :
-                    `${name}`;
-            }
-            if (!this.address) {
-                return '';
-            }
-            // This formats the address for us and handles zero padding we get from log events
-            const address = ethers.utils.getAddress(this.address);
-            return this.truncate > 0 ? `${address.slice(0, this.truncate)}...` : address;
-        },
-        async loadContract() {
-            this.contract = null;
-            if (!this.isContractTrx) {
-                return;
-            }
-
-            // TODO: check if this is a contract, account lookup via telosevm-js?
-            // TODO: if this is linked to a Telos account, display the Telos account name and link it to bloks
-            //   for now if we ask for a contract, we'll get one back and it'll be labeled as undefined
-            let contract = await this.getContract({ address: this.address });
-            if (contract) {
-                this.contract = contract;
-            }
-        },
-
+const props = defineProps({
+    highlightAddress: {
+        type: String,
+        required: false,
+        default: '',
     },
+    address: {
+        type: String,
+        required: true,
+    },
+    class: {
+        type: String,
+        default: '',
+    },
+    name: {
+        type: String,
+        default: '',
+    },
+    copy: {
+        type: Boolean,
+        default: false,
+    },
+    truncate: {
+        type: Number,
+        default: 0,
+    },
+    hideContractIcon: {
+        type: Boolean,
+        default: false,
+    },
+});
+
+const emit = defineEmits(['highlight']);
+
+const displayName = ref('');
+const fullName = ref(toChecksumAddress(props.address));
+const contract = ref<any>(null);
+const contractName = ref('');
+const logo = ref<any>(null);
+const tokenList = ref<any>(null);
+const checksum = ref('');
+const isToken = computed(() => contract.value?.isToken() ?? false);
+
+const restart = async () => {
+    if (!props.address) {
+        return;
+    }
+    tokenList.value = await contractManager.getTokenList();
+    checksum.value = toChecksumAddress(props.address);
+    await loadContract();
+    await getDisplay();
 };
+
+
+
+watch(() => props.address, async () => {
+    restart();
+});
+
+onMounted(async () => {
+    restart();
+});
+
+const truncateText = (text: string, middle?: boolean) => {
+    if (props.truncate === 0 || text.length <= props.truncate) {
+        return text;
+    }
+    if (middle) {
+        return `${text.slice(0, (props.truncate / 2 + 2))}...${text.slice(text.length - (props.truncate / 2), text.length)}`;
+    }
+    return `${text.slice(0, props.truncate)}...`;
+};
+
+const getDisplay = async () => {
+    if (props.name) {
+        displayName.value = truncateText(props.name);
+        return;
+    }
+    if (!props.address) {
+        return;
+    }
+    let address = toChecksumAddress(props.address);
+    if (contractName.value) {
+        if(tokenList.value?.tokens){
+            tokenList.value.tokens.forEach((token: any) => {
+                if(token.address.toLowerCase() === contract.value.address.toLowerCase()){
+                    logo.value = (token.logoURI);
+                }
+            });
+        }
+        logo.value = (logo.value === null && contract.value.getSupportedInterfaces().includes('erc20'))
+            ? ''
+            : logo.value
+        ;
+        const name = (isToken.value && contract.value.getProperties()?.symbol)
+            ? contract.value.getProperties().symbol
+            : contractName.value
+                ;
+        if(!name.startsWith('0x')){
+            displayName.value = truncateText(name);
+            return;
+        }
+    }
+    // This formats the address for us and handles zero padding we get from log events
+    displayName.value = truncateText(address, true);
+};
+
+const loadContract = async () => {
+    let contractObj = await contractManager.getContract(props.address) ?? { address: props.address };
+
+    if (contractObj && contractObj.abi?.length > 0) {
+        contractName.value = contractObj.getName() ?? contractObj.name ?? '';
+        fullName.value = contractName.value || fullName.value;
+        contract.value = contractObj;
+    }
+};
+
+function emitHighlight(val: string) {
+    emit('highlight', val);
+}
+
 </script>
 
 <template>
-<div class="c-address-field">
-    <q-icon v-if="contract && !copy" class="far fa-file-alt">
-        <q-tooltip>Contract</q-tooltip>
-    </q-icon>
-    <router-link :to="`/address/${address}`" :class="highlight ? 'highlighted' : ''">
-        {{ getDisplay() }}
+<div
+    :key="displayName + checksum"
+    :class="['c-address-field', props.class]"
+    @mouseover="emitHighlight(checksum)"
+    @mouseleave="emitHighlight('')"
+>
+    <router-link
+        :to="`/${isToken?'token':'address'}/${checksum}`"
+        :class="{
+            'c-address-field__link': true,
+            'c-address-field__link--highlight': highlightAddress === checksum && highlightAddress !== ''
+        }"
+    >
+        <q-img
+            v-if="logo !== null && hideContractIcon === false"
+            class="q-mr-xs"
+            :src="getIcon(logo)"
+            width="16px"
+            height="auto"
+        />
+        <q-icon v-else-if="contract && hideContractIcon == false" name="far fa-file-code" />
+        <span class="c-address-field__text">{{ displayName }}</span>
+        <q-tooltip v-if="fullName !== displayName">{{ fullName }}</q-tooltip>
     </router-link>
     <CopyButton v-if="copy && address" :text="address" description="address"/>
 </div>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .c-address-field {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-}
-a.highlighted {
-    color: #bb9200;
-}
-body.body--dark a.highlighted {
-    color: $warning;
+
+    &__link {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        position: relative;
+
+        &--highlight {
+            background: rgba($secondary, 0.2);
+            outline: 1px dashed $secondary;
+            border-radius: 5px;
+        }
+    }
+
+    &__text {
+        word-break: break-word;
+    }
+
+    .q-icon {
+        margin-right: 3px;
+    }
+
+    .q-img {
+        border-radius: 100%;
+    }
+
+    a {
+        vertical-align: middle;
+    }
 }
 </style>

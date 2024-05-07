@@ -1,5 +1,5 @@
 <script>
-import { parseStringArrayString } from 'components/ContractTab/function-interface-utils';
+import { parseStringArrayString } from 'src/lib/function-interface-utils';
 
 import BaseTextInput from 'components/inputs/BaseTextInput';
 

@@ -1,9 +1,16 @@
-<script>
-import { toRaw } from 'vue';
+<!-- eslint-disable max-len -->
+<!-- eslint-disable no-unused-vars -->
+<!-- eslint-disable max-len -->
+<script lang="ts">
+import { defineComponent, toRaw } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
-
+import { LOGIN_DATA_KEY } from 'src/lib/utils';
+import { useAccountStore } from 'src/antelope';
+import { CURRENT_CONTEXT } from 'src/antelope/wallets';
+import { EvmABI, EvmFunctionParam } from 'src/antelope/types';
+import { WEI_PRECISION } from 'src/antelope/wallets/utils';
 import {
     asyncInputComponents,
     getComponentForInputType,
@@ -15,16 +22,25 @@ import {
     parameterTypeIsBoolean,
     parameterTypeIsSignedIntArray,
     parameterTypeIsUnsignedIntArray,
-} from 'components/ContractTab/function-interface-utils';
+} from 'src/lib/function-interface-utils';
 
-import TransactionField from 'components/TransactionField';
+import TransactionField from 'src/components/TransactionField.vue';
+import LoginModal from 'components/LoginModal.vue';
 
+interface Opts {
+    value?: string;
+}
 
-export default {
-    name: 'FunctionInterface',
+interface Error {
+    message: string;
+}
+
+export default defineComponent({
+    name: 'FunctionInterfaceNew',
     components: {
         ...asyncInputComponents,
         TransactionField,
+        LoginModal,
     },
     props: {
         contract: {
@@ -32,7 +48,7 @@ export default {
             default: null,
         },
         abi: {
-            type: Object,
+            type: Object, // EvmABIEntry
             default: null,
         },
         runLabel: {
@@ -60,24 +76,25 @@ export default {
 
         return {
             loading: false,
-            errorMessage: '',
+            errorMessage: null as string | null,
             decimalOptions,
-            result: null,
-            hash: null,
-            enterAmount: false,
-            amountInput: 0,
-            amountParam: null,
-            amountDecimals: 0,
+            result: null as string | null,                // string | null
+            hash: null as string | null,                  // string | null
+            enterAmount: false,                           // boolean
+            amountInput: 0,                               // number
+            amountParam: 0 as number | string,            // null ?
+            amountDecimals: 0,                            // number
             selectDecimals: decimalOptions[0],
-            customDecimals: 0,
-            value: '0',
-            inputModels: [],
-            params: [],
+            customDecimals: 0,                            // number
+            value: '0',                                   // string
+            inputModels: [] as string[],                  // raw input values
+            params: [] as EvmFunctionParam[],             // parsed input values
             valueParam: {
                 'name': 'value',
                 'type': 'amount',
                 'internalType': 'amount',
             },
+            showLoginModal: false,
         };
     },
     async created() {
@@ -87,21 +104,21 @@ export default {
     computed: {
         ...mapGetters('login', [
             'address',
-            'isLoggedIn',
             'isNative',
+            'isLoggedIn',
             'nativeAccount',
         ]),
         functionABI(){
-            return `${this.abi.name}(${this.abi.inputs.map(i => i.type).join(',')})`;
+            return `${this.abi.name}(${this.abi.inputs.map((i: { type: never; }) => i.type).join(',')})`;
         },
         inputComponents() {
             if (!Array.isArray(this.abi?.inputs)) {
                 return [];
             }
 
-            const getExtraBindingsForType = ({ type, name }, index) => {
+            const getExtraBindingsForType = ({ type, name }: {type: string, name: string}, index: number) => {
                 const label = `${name ? name : `Param ${index + 1}`}`;
-                const extras = {};
+                const extras = {} as {[key:string]: string};
 
                 // represents integer bits (e.g. uint256) for int types, or array length for array types
                 let size = undefined;
@@ -111,12 +128,13 @@ export default {
                     size = getIntegerBits(type);
                 }
 
-                const getIntSize = () => type.match(/\d+(?=\[)/)[0];
+                const result = type.match(/(\d+)(?=\[)/);
+                const intSize = result ? result[0] : undefined;
 
-                if (parameterTypeIsUnsignedIntArray(type)) {
-                    extras['uint-size'] = getIntSize();
-                } else if (parameterTypeIsSignedIntArray(type)) {
-                    extras['int-size'] = getIntSize();
+                if (intSize && parameterTypeIsUnsignedIntArray(type)) {
+                    extras['uint-size'] = intSize;
+                } else if (intSize && parameterTypeIsSignedIntArray(type)) {
+                    extras['int-size'] = intSize;
                 }
 
                 const defaultModelValue = parameterTypeIsBoolean(type) ? null : '';
@@ -130,14 +148,14 @@ export default {
                 };
             };
 
-            const handleModelValueChange = (type, index, value) => {
+            const handleModelValueChange = (type: string, index: number, value: string) => {
                 this.inputModels[index] = value;
 
                 if (!inputIsComplex(type)) {
                     this.params[index] = value;
                 }
             };
-            const handleValueParsed = (type, index, value) => {
+            const handleValueParsed = (type: string, index: number, value: EvmFunctionParam) => {
                 if (inputIsComplex(type)) {
                     this.params[index] = value;
                 }
@@ -147,12 +165,9 @@ export default {
                 bindings: getExtraBindingsForType(input, index),
                 is: getComponentForInputType(input.type),
                 inputType: input.type,
-                handleModelValueChange: (type, index, value) => handleModelValueChange(type, index, value),
-                handleValueParsed:      (type, index, value) => handleValueParsed(type, index, value),
+                handleModelValueChange: (type: string, index: number, value: string) => handleModelValueChange(type, index, value),
+                handleValueParsed:      (type: string, index: number, value: EvmFunctionParam) => handleValueParsed(type, index, value),
             }));
-        },
-        enableRun() {
-            return this.isLoggedIn || this.abi.stateMutability === 'view';
         },
         missingInputs() {
             if (this.abi.inputs.length !== this.params.length) {
@@ -160,7 +175,7 @@ export default {
             }
 
             for (let i = 0; i < this.abi.inputs.length; i++) {
-                if (['', null, undefined].includes(this.params[i])) {
+                if (['', null, undefined].includes(this.params[i] as never)) {
                     return true;
                 }
             }
@@ -169,22 +184,22 @@ export default {
         },
     },
     methods: {
-        showAmountDialog(param) {
+        showAmountDialog(param: string) {
             this.amountParam = param;
             this.amountDecimals = 18;
             this.enterAmount = true;
         },
         updateDecimals() {
             this.amountDecimals = this.selectDecimals.value === 'custom' ?
-                this.customDecimals :
-                this.selectDecimals.value;
+                +this.customDecimals :
+                +this.selectDecimals.value;
         },
         setAmount() {
-            const integerAmount = ethers.utils.parseUnits(this.amountInput + '', this.amountDecimals).toString();
-            if (this.amountParam === 'value') {
+            const integerAmount = ethers.utils.parseUnits(this.amountInput.toString(), this.amountDecimals).toString();
+            if (typeof this.amountParam === 'string') {
                 this.value = integerAmount;
             } else {
-                this.params[this.amountParam] = integerAmount;
+                this.params[this.amountParam] = integerAmount as never;
             }
 
             this.clearAmount();
@@ -192,17 +207,32 @@ export default {
         clearAmount() {
             this.amountInput = 0;
         },
+        login() {
+            this.showLoginModal = true;
+        },
         async run() {
+            if (!this.isLoggedIn){
+                this.login();
+                return;
+            }
             this.loading = true;
-
+            this.result = null;
             try {
-                const opts = {};
-                if (this.abi.stateMutability === 'payable') {
-                    opts.value = this.value;
-                }
 
                 if (this.abi.stateMutability === 'view') {
                     return await this.runRead();
+                }
+
+                const loginData = localStorage.getItem(LOGIN_DATA_KEY);
+                if (!loginData) {
+                    console.error('No login data found');
+                    this.errorMessage = this.$t('global.internal_error');
+                    return;
+                }
+
+                const opts: Opts = {};
+                if (this.abi.stateMutability === 'payable') {
+                    opts.value = this.value;
                 }
 
                 if (this.isNative) {
@@ -211,29 +241,29 @@ export default {
 
                 return await this.runEVM(opts);
             } catch (e) {
-                this.result = e.message;
+                this.result = (e as Error).message;
             }
 
             this.endLoading();
         },
-        async getEthersFunction(provider) {
-            const contractInstance = await this.contract.getContractInstance(provider);
+        async getEthersFunction(provider?: ethers.providers.JsonRpcSigner | ethers.providers.JsonRpcProvider) {
+            const contractInstance = await this.$contractManager.getContractInstance(this.contract, provider);
             return contractInstance[this.functionABI];
         },
         runRead() {
             return this.getEthersFunction()
                 .then(func => func(...this.params)
-                    .then((response) => {
+                    .then((response: string) => {
                         this.result = response;
                         this.errorMessage = null;
                     })
-                    .catch((msg) => {
+                    .catch((msg: string) => {
                         this.errorMessage = msg;
                     })
                     .finally(() => this.endLoading()),
                 );
         },
-        async runNative(opts) {
+        async runNative(opts: Opts) {
             const contractInstance = toRaw(await this.contract.getContractInstance());
             const func = contractInstance.populateTransaction[this.functionABI];
             const gasEstimater = contractInstance.estimateGas[this.functionABI];
@@ -245,18 +275,17 @@ export default {
             unsignedTrx.gasLimit = gasLimit;
             unsignedTrx.gasPrice = gasPrice;
 
-            // DO NOT INCLUDE CHAINID, EIP155 is only for replay attacks and you cannot replay a Telos native signed trx
-            // this can however break stuff that tries to decode this trx
-            //unsignedTrx.chainId = this.$evm.chainId;
-
             if (opts.value) {
                 unsignedTrx.value = opts.value;
             }
 
             const raw = ethers.utils.serializeTransaction(unsignedTrx);
 
-            let user = this.$providerManager.getProvider();
-            await user.signTransaction(
+            let user = this.$providerManager.getProvider() as {
+                signTransaction: (tx: never, opts: never) => Promise<void>;
+            } | undefined;
+
+            await user?.signTransaction(
                 {
                     actions: [{
                         account: 'eosio.evm',
@@ -274,17 +303,12 @@ export default {
                             sender: this.address.replace(/^0x/, '').toLowerCase(),
                         },
                     }],
-                },
+                } as never,
                 {
                     blocksBehind: 3,
                     expireSeconds: 30,
-                },
+                } as never,
             );
-
-            // This doesn't produce the right hash... but would be nice to use ethers here instead of ethereumjs/tx
-            //  maybe just need to have signed transaction with an empty signature?
-            //  What is etherumjs/tx doing differently?
-            //this.hash = ethers.utils.keccak256(raw);
 
             const trxBuffer = Buffer.from(raw.replace(/^0x/, ''), 'hex');
 
@@ -292,25 +316,54 @@ export default {
                 common: this.$evm.chainConfig,
             });
 
-            this.hash = `0x${tx.hash().toString('hex')}`;
+            this.hash = `0x${tx?.hash().toString('hex')}`;
             this.endLoading();
         },
-        async runEVM(opts) {
-            const func = await this.getEthersFunction(this.$providerManager.getEthersProvider().getSigner());
+        async runEVM(opts: Opts) {
+            const value = opts.value ? BigNumber.from(opts.value) : undefined;
 
-            const result = await func(...this.params, opts);
-            this.hash = result.hash;
-            this.endLoading();
+            // Preparing the mesage to show while waiting for confirmation.
+            const name = this.abi.name;
+            const params = this.abi.inputs.length;
+            let keyMsg = 'notification.neutral_message_custom_call';
+            let keyErr = 'notification.error_message_custom_call';
+            let message = this.$t(keyMsg, { name, params });
+            let error = this.$t(keyErr, { name, params });
+            if (value) {
+                keyMsg = 'notification.neutral_message_custom_call_send';
+                keyErr = 'notification.error_message_custom_call_send';
+                const quantity = ethers.utils.formatUnits(value, WEI_PRECISION);
+                const symbol = 'TLOS';
+                message = this.$t(keyMsg, { name, params, quantity, symbol });
+                error = this.$t(keyErr, { name, params, quantity, symbol });
+            }
+
+            useAccountStore().signCustomTransaction(
+                CURRENT_CONTEXT,
+                message,
+                error,
+                this.contract.address,
+                [this.abi] as EvmABI,
+                this.params,
+                value,
+            ).then((result) => {
+                this.hash = result.hash;
+                this.endLoading();
+            }).catch((error) => {
+                this.result = this.$t(error.message);
+                this.endLoading();
+            });
         },
         endLoading() {
             this.loading = false;
         },
     },
-};
+});
 </script>
 
 <template>
 <div>
+    <LoginModal :show="showLoginModal" @hide="showLoginModal = false" />
     <q-dialog v-model="enterAmount">
         <q-card class="amount-dialog">
             <div class="q-pa-md">
@@ -335,16 +388,14 @@ export default {
                 <q-card-actions align="right">
                     <q-btn
                         v-close-popup
-                        flat="flat"
+                        flat
                         :label="$t('global.ok')"
-                        color="primary"
                         @click="setAmount"
                     />
                     <q-btn
                         v-close-popup
-                        flat="flat"
+                        flat
                         :label="$t('global.cancel')"
-                        color="primary"
                         @click="clearAmount"
                     />
                 </q-card-actions>
@@ -383,12 +434,11 @@ export default {
     </template>
 
     <q-btn
-        v-if="enableRun"
         :loading="loading"
         :label="runLabel"
         :disabled="missingInputs"
         class="run-button q-mb-md"
-        color="secondary"
+        color="primary"
         icon="send"
         @click="run"
     />
@@ -406,7 +456,3 @@ export default {
     </div>
 </div>
 </template>
-
-<style lang="scss">
-
-</style>

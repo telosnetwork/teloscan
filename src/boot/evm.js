@@ -1,10 +1,8 @@
 import { boot } from 'quasar/wrappers';
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';
-import ContractManager from 'src/lib/ContractManager';
 import fetch from 'node-fetch';
 import axios from 'axios';
 import { ethers } from 'ethers';
-import { markRaw } from 'vue';
 
 const evm = new TelosEvmApi({
     endpoint: process.env.NETWORK_EVM_ENDPOINT,
@@ -21,7 +19,7 @@ const evm = new TelosEvmApi({
 const providerContainer = {
     provider: null,
 };
-
+// providerContainer.provider type is: ethers.providers.ExternalProvider | ethers.providers.JsonRpcFetchFunc | null
 class ProviderManager {
     setProvider(provider) {
         providerContainer.provider = provider;
@@ -37,18 +35,17 @@ class ProviderManager {
         return providerContainer.provider;
     }
 }
+
+
 export default boot(({ app, store }) => {
     const hyperion = axios.create({
         baseURL: process.env.NETWORK_EVM_ENDPOINT,
     });
-
-    const contractManager = new ContractManager(hyperion);
-    contractManager.init();
-
-    store.$providerManager = app.config.globalProperties.$providerManager = new ProviderManager();
+    
+    const providerManager = new ProviderManager();
+    store.$providerManager = app.config.globalProperties.$providerManager = providerManager;
     store.$evm = app.config.globalProperties.$evm = evm;
     store.$evmEndpoint = app.config.globalProperties.$evmEndpoint = hyperion;
-    store.$contractManager = app.config.globalProperties.$contractManager = markRaw(contractManager);
 });
 
-export { evm };
+export { evm, providerManager };

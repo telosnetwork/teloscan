@@ -32,7 +32,7 @@ export default boot(({ app, ssrContext }) => {
 
     // Listen for language-changed event
     const setLocale = (newLanguage) => {
-        if (ssrContext) {
+        if (ssrContext || !newLanguage){
             return;
         }
 
@@ -51,4 +51,5 @@ export default boot(({ app, ssrContext }) => {
     // Set setLocale and i18n reference available for global access
     app.config.globalProperties.$setLocale = setLocale;
     app.config.globalProperties.$i18n = i18n;
+    app.config.globalProperties.$t = i18n.global.t;
 });

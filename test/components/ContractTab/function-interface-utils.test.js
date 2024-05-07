@@ -20,13 +20,12 @@ import {
     parseAddressString,
     parseBooleanArrayString,
     parseBooleanString,
-    parseBytesArrayString,
     parseSignedIntArrayString,
     parseSignedIntString,
     parseStringArrayString,
     parseUintArrayString,
     parseUintString,
-} from 'components/ContractTab/function-interface-utils';
+} from 'src/lib/function-interface-utils';
 import { BigNumber } from 'ethers';
 
 describe('function-interface-utils', () => {
@@ -500,30 +499,6 @@ describe('function-interface-utils', () => {
 
             expect(parseBooleanString('fals')).toBe(undefined);
             expect(parseBooleanString(3)).toBe(undefined);
-        });
-    });
-
-    describe('parseBytesArrayString', () => {
-        it('should correctly parse a string representation of bytes', () => {
-            const bytesOne = 'fa';
-            const bytesTwo = 'B4';
-
-            // any length - valid
-            expect(parseBytesArrayString('[]')).toEqual([]);
-            expect(parseBytesArrayString(`[${bytesOne}]`)).toEqual([bytesOne]);
-            expect(parseBytesArrayString(`[${bytesOne}, ${bytesTwo}]`)).toEqual([bytesOne, bytesTwo]);
-
-            // any length - invalid
-            expect(parseBytesArrayString('[1]')).toEqual(undefined);
-
-
-            // fixed length - valid
-            expect(parseBytesArrayString(`[${bytesOne}]`, 1)).toEqual([bytesOne]);
-            expect(parseBytesArrayString(`[${bytesOne}, ${bytesTwo}]`, 2)).toEqual([bytesOne, bytesTwo]);
-
-            // fixed length - invalid
-            expect(parseBytesArrayString('[]', 2)).toEqual(undefined);
-            expect(parseBytesArrayString(`[${bytesOne}]`, 2)).toEqual(undefined);
         });
     });
 

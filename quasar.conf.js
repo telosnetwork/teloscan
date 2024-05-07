@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /*
  * This file runs in a Node context (it's NOT transpiled by Babel), so use only
  * the ES6 features that are supported by your Node version. https://node.green/
@@ -36,13 +37,15 @@ module.exports = function(/* ctx */) {
             'hyperion',
             'i18n',
             'api',
+            'errorHandling',
             'telosApi',
             'evm',
             'hyperion',
             'q-component-defaults',
+            'antelope',
         ],
         // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
-        css: ['fonts/silka/silka.css', 'app.sass'],
+        css: ['fonts/silka/silka.css', 'app.scss'],
 
         // https://github.com/quasarframework/quasar/tree/dev/extras
         extras: [
@@ -66,6 +69,11 @@ module.exports = function(/* ctx */) {
                 chain.plugin('eslint-webpack-plugin')
                     .use(ESLintPlugin, [{ extensions: ['js', 'vue'] }]);
                 chain.plugin('node-polyfill').use(nodePolyfillWebpackPlugin);
+            },
+
+            scssLoaderOptions: {
+                additionalData: '@import "~src/css/global/global-index.scss";',
+                sourceMap: false, // prevent issue where changing style in devtools breaks page styles
             },
 
             // transpile: false,
@@ -96,7 +104,14 @@ module.exports = function(/* ctx */) {
         framework: {
             iconSet: 'material-icons', // Quasar icon set
             lang: 'en-US', // Quasar language pack
-            config: {},
+            config: {
+                brand: {
+                    // brand colors
+                    primary: '#8B3F98',
+                    secondary: '#348DCC',
+                    accent: '#73C58F',
+                },
+            },
 
             // Possible values for "importStrategy":
             // * 'auto' - (DEFAULT) Auto-import needed Quasar components & directives
@@ -111,15 +126,12 @@ module.exports = function(/* ctx */) {
             // directives: [],
 
             // Quasar plugins
-            plugins: [
-                'Notify',
-                'Meta',
-            ],
+            plugins: ['Notify', 'Meta', 'Dialog'],
         },
 
         // animations: 'all', // --- includes all animations
         // https://quasar.dev/options/animations
-        animations: [],
+        animations: ['fadeIn', 'fadeOut'],
 
         // https://quasar.dev/quasar-cli/developing-ssr/configuring-ssr
         ssr: {
@@ -144,27 +156,27 @@ module.exports = function(/* ctx */) {
                 theme_color: '#027be3',
                 icons: [
                     {
-                        src: 'icons/icon-128x128.png',
+                        src: 'branding/telos-scan.png',
                         sizes: '128x128',
                         type: 'image/png',
                     },
                     {
-                        src: 'icons/icon-192x192.png',
+                        src: 'branding/telos-scan.png',
                         sizes: '192x192',
                         type: 'image/png',
                     },
                     {
-                        src: 'icons/icon-256x256.png',
+                        src: 'branding/telos-scan.png',
                         sizes: '256x256',
                         type: 'image/png',
                     },
                     {
-                        src: 'icons/icon-384x384.png',
+                        src: 'branding/telos-scan.png',
                         sizes: '384x384',
                         type: 'image/png',
                     },
                     {
-                        src: 'icons/icon-512x512.png',
+                        src: 'branding/telos-scan.png',
                         sizes: '512x512',
                         type: 'image/png',
                     },

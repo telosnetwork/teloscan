@@ -1,22 +1,27 @@
 module.exports = {
     root: true,
+    parser: 'vue-eslint-parser',
     parserOptions: {
-        parser: '@babel/eslint-parser',
-        ecmaVersion: 2018,
+        extraFileExtensions: ['.vue'],
+        parser: '@typescript-eslint/parser',
         sourceType: 'module',
     },
     env: {
+        'es2020': true,
         'browser': true,
+        'es2021': true,
         'amd': true,
         'node': true,
         'vue/setup-compiler-macros': true,
         'jest/globals': true,
     },
     extends: [
-        'eslint:recommended',
+        'plugin:@typescript-eslint/recommended',
         'plugin:vue/vue3-essential',
+        'eslint:recommended',
     ],
     plugins: [
+        '@typescript-eslint',
         'vue',
         'jest',
     ],
@@ -31,7 +36,6 @@ module.exports = {
         'comma-dangle': ['error', 'always-multiline'],
         'indent': ['error', 4],
         'quotes': ['error', 'single'],
-        'max-len': ['error', { 'code': 120 }],
         'eol-last': ['error', 'always'],
         'object-curly-spacing': ['error', 'always'],
         'array-bracket-spacing': ['error', 'never'],
@@ -51,7 +55,8 @@ module.exports = {
         }],
         'no-return-assign': ['error', 'always'],
         'no-param-reassign': 'error',
-
+        'no-unused-vars': 'off',
+        '@typescript-eslint/no-unused-vars': ['error'],
 
         'vue/html-indent': ['warn', 4, { 'baseIndent': 0 }],
         'vue/max-attributes-per-line': ['warn', {
@@ -105,27 +110,4 @@ module.exports = {
         'vue/component-definition-name-casing': ['error', 'PascalCase'],
         'vue/component-name-in-template-casing': ['error', 'PascalCase'],
     },
-    overrides:[
-        {
-            'files': ['**/*.ts', '**/*.tsx', '**/*/.vue'],
-            'env': { 'browser': true, 'es6': true, 'node': true },
-            'extends': [
-                'eslint:recommended',
-                'plugin:@typescript-eslint/eslint-recommended',
-                'plugin:@typescript-eslint/recommended',
-                'plugin:vue/vue3-essential',
-            ],
-            'parser': '@typescript-eslint/parser',
-            'parserOptions': {
-                'ecmaFeatures': { 'jsx': true },
-                'ecmaVersion': 2018,
-                'sourceType': 'module',
-                'project': './tsconfig.json',
-            },
-            'plugins': ['vue', '@typescript-eslint'],
-            'rules': {
-                '@typescript-eslint/no-explicit-any': 1,
-            },
-        },
-    ],
 };

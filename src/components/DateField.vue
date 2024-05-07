@@ -1,53 +1,59 @@
-<script>
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import moment from 'moment';
+
 import { getFormattedUtcOffset } from 'src/lib/utils';
+import { formatTimePeriod } from 'src/lib/date-utils';
 
-const moment = require('moment');
+const { t: $t } = useI18n();
 
-export default {
-    name: 'DateField',
-    props: {
-        epoch: {
-            type: Number,
-            required: true,
-        },
-        // if true, the component will display plain-english e.g. "3 minutes ago" on initial load; if false, it will
-        // display long format e.g. "Jan 6, 2023 11:41:40 (UTC -05:00)"
-        defaultToAge: {
-            type: Boolean,
-            default: true,
-        },
-        // a value of true or false will force the component to display plain-english age or date stamp respectively;
-        // the default value of null will allow the component to toggle itself via user clicks.
-        // having a value defined for this prop will disable user click interaction
-        forceShowAge: {
-            type: Boolean,
-            default: null,
-        },
+const props = defineProps({
+    epoch: {
+        type: Number,
+        required: true,
     },
-    data: () => ({
-        showAge: false,
-    }),
-    computed: {
-        friendlyDate ()  {
-            const showAge = this.forceShowAge === true || (this.forceShowAge === null && this.showAge);
+    defaultToAge: {
+        type: Boolean,
+        default: true,
+    },
+    forceShowAge: {
+        type: Boolean,
+        default: null,
+    },
+    utc: {
+        type: Boolean,
+        default: true,
+    },
+    mutedText: {
+        type: Boolean,
+        default: false,
+    },
+});
 
-            if (showAge) {
-                return moment.unix(this.epoch).fromNow();
-            }
+const showAge = ref(props.defaultToAge);
 
-            const offset = getFormattedUtcOffset(new Date(this.epoch));
-            return `${moment.unix(this.epoch).format('MMM D, YYYY HH:mm:ss')} (UTC ${offset})`;
-        },
-    },
-    created() {
-        this.showAge = this.defaultToAge;
-    },
-    methods: {
-        toggleDisplay() {
-            this.showAge = !this.showAge;
-        },
-    },
-};
+const friendlyDate = computed(() => {
+    const showAgeValue = props.forceShowAge === true || (props.forceShowAge === null && showAge.value);
+    if (showAgeValue) {
+        const difference = Date.now() - props.epoch * 1000;
+        return $t('antelope.words.time_ago', { time: formatTimePeriod(difference / 1000, $t) });
+    }
+    const timestamp = moment.unix(props.epoch);
+    if (props.utc) {
+        return moment.utc(timestamp).format('YYYY-MM-DD HH:mm:ss');
+    } else {
+        const offset = getFormattedUtcOffset(new Date(props.epoch * 1000));
+        const offsetString = ` (UTC ${offset})`;
+        return `${timestamp.format('YYYY-MM-DD HH:mm:ss')} ${offsetString}`;
+    }
+});
+
+function toggleDisplay() {
+    if (props.forceShowAge === null) {
+        showAge.value = !showAge.value;
+    }
+}
 </script>
 
 <template>
@@ -55,6 +61,7 @@ export default {
     :class="{
         'c-date-field': true,
         'c-date-field--clickable': forceShowAge === null,
+        'c-date-field--muted': mutedText,
     }"
     @click="toggleDisplay"
 >
@@ -76,6 +83,11 @@ export default {
 
     &--clickable {
         cursor: pointer;
+    }
+
+    &--muted {
+        color: var(--grey-text-color);
+        font-size: 0.8rem;
     }
 }
 </style>

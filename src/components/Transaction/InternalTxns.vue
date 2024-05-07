@@ -1,23 +1,25 @@
 <script>
-import JsonViewer from 'vue-json-viewer';
+import VueJsonPretty from 'vue-json-pretty';
+import 'vue-json-pretty/lib/styles.css';
 import FragmentList from 'components/Transaction/FragmentList.vue';
-import { WEI_PRECISION, formatWei } from 'src/lib/utils';
-import { BigNumber } from 'ethers';
+import { getParsedInternalTransactions } from 'src/lib/transaction-utils';
+
 
 export default {
     name: 'InternalTxns',
     components: {
-        JsonViewer,
+        VueJsonPretty,
         FragmentList,
     },
     props: {
-        itxs: {
-            type: Array,
-            required: true,
-        },
-        contract: {
+        traces : {
             type: Object,
             required: false,
+        },
+        transaction : {
+            type: Object,
+            required: false,
+            default: null,
         },
     },
     methods: {
@@ -36,97 +38,79 @@ export default {
         },
     },
     async created() {
-        let i = 0;
-        for(let k = 0; k < this.itxs.length;k++){
-            let itx = this.itxs[k];
-            let contract = await this.getContract(itx.to);
-            let fnsig =  itx.input.slice(0, 8);
-            let name = this.$t('components.transaction.unknown');
-            let inputs, outputs, args  = false;
-            if(itx.type === 'create'){
-                name = this.$t('components.transaction.contract_deployment');
-            } else if (fnsig){
-                name = this.$t('components.transaction.unknown') + ' (' + '0x' + fnsig + ')';
-            } else if (itx.value){
-                name = this.$t('components.transaction.tlos_transfer');
-            }
-            if(itx.traceAddress.length < 2){
-                itx.index = i;
-                i++;
-            }
-
-            if(itx.input_trimmed){
-                const parsedTransaction = await contract.parseTransaction(
-                    '0x' + itx.input_trimmed,
-                );
-
-                if(parsedTransaction){
-                    args = parsedTransaction.args;
-                    name = parsedTransaction.signature;
-                    outputs = parsedTransaction.functionFragment ?
-                        parsedTransaction.functionFragment.outputs :
-                        parsedTransaction.outputs;
-
-                    inputs = parsedTransaction.functionFragment ?
-                        parsedTransaction.functionFragment.inputs :
-                        parsedTransaction.inputs;
-                }
-            }
-            this.parsedItxs.push({
-                index: itx.index,
-                args: args,
-                parent: itx.traceAddress[0] || itx.index,
-                name: name,
-                from: itx.from,
-                sig: '0x' + itx.input.slice(0, 8),
-                inputs: inputs,
-                outputs: outputs,
-                depth: itx.depth,
-                to: itx.to,
-                contract: contract,
-                value: (itx.type !== 'create' && itx.value) ? formatWei('0x' + itx.value, WEI_PRECISION): 0,
-            });
-        }
-        this.parsedItxs.sort((a, b) => BigNumber.from(a.parent).sub(BigNumber.from(b.parent)).toNumber());
-
+        this.loading = true;
+        const { parsedItxs, itxs } = await getParsedInternalTransactions(this.transaction.hash, this.$t);
+        this.parsedItxs = parsedItxs;
+        this.itxs = itxs;
+        this.loading = false;
     },
     data () {
         return {
             human_readable: true,
+            depth: 2,
             parsedItxs: [],
+            loading:  true,
+            itxs: [],
         };
     },
 };
+
 </script>
 <template>
 <div>
-    <div v-if="itxs.length === 0" class="row">
+    <div v-if="loading" class="row center justify-center items-center">
+        <q-spinner size="md" />
+    </div>
+    <div v-else-if="itxs.length === 0" class="row">
         <div class="col-12 flex items-center justify-center">
             <q-icon class="fa fa-info-circle" size="md" />
             <h5 class="text-center  q-ma-md"> {{ $t('components.transaction.no_internal_trxs_found') }}</h5>
         </div>
     </div>
     <div v-else class="row">
-        <div class="col-12 u-flex--center-y">
-            <q-toggle
-                v-model="human_readable"
-                icon="visibility"
-                color="secondary"
-                size="lg"
-            />
-            {{ $t('components.transaction.human_readable') }}
+        <div class="col-12 u-flex--center-y justify-between">
+            <div>
+                <q-toggle
+                    v-model="human_readable"
+                    icon="visibility"
+                    color="primary"
+                    size="lg"
+                />
+                {{ $t('components.transaction.human_readable') }}
+                <small>
+                    <q-icon name="info" class="q-mb-xs q-ml-xs" size="14px"/>
+                    <q-tooltip>
+                        {{ $t('components.transaction.verify_related_contract') }}
+                    </q-tooltip>
+                </small>
+            </div>
+            <div v-if="!human_readable">
+                <q-toggle
+                    v-model="depth"
+                    :true-value="2"
+                    :false-value="1"
+                    checked-icon="unfold_more"
+                    unchecked-icon="unfold_less"
+                    color="primary"
+                    size="lg"
+                />
+                <span v-if="depth === 2">{{ $t('components.click_to_fold') }}</span>
+                <span v-else>{{ $t('components.click_to_expand') }}</span>
+            </div>
         </div>
         <div class="col-12">
             <FragmentList
                 v-if="human_readable"
                 :fragments="itxs"
                 :parsedFragments="parsedItxs"
+                :transactionFrom="transaction.from"
             />
-            <JsonViewer
+            <VueJsonPretty
                 v-else
-                :value="itxs"
-                theme="custom-theme"
-                class="q-mb-md"
+                :data="itxs"
+                :deep="depth"
+                :showLine="false"
+                class="q-mb-md q-pl-md"
             />
         </div>
     </div>
