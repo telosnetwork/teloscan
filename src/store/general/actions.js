@@ -4,3 +4,14 @@ export const toggleDisplayDecimals = async function({ commit }) {
     commit('setDisplayDecimals', displayDecimals);
 };
 
+export const setHighlightAddress = async function({ commit }, address) {
+    commit('setHighlightAddress', address);
+};
+
+export const setHighlightMethod = async function({ commit }, method) {
+    commit('setHighlightMethod', method);
+};
+
+export const setHighlightTx = async function({ commit }, tx) {
+    commit('setHighlightTx', tx);
+};

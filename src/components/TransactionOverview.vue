@@ -31,7 +31,6 @@ const blockNumber = computed(() => props.trx?.blockNumber);
 const timestamp = computed(() => props.trx?.timestamp || 0);
 const blockData = ref<BlockData | null>(null);
 const transactionIndex = ref<number>(-1);
-const highlightAddress = ref('');
 const toAddress = ref('');
 const isAContractDeployment = ref(false);
 
@@ -51,10 +50,6 @@ const loadBlockData = async () => {
         blockData.value = null;
     }
 };
-
-function setHighlightAddress(val: string) {
-    highlightAddress.value = val;
-}
 
 function setERC20TransfersCount(count: number) {
     showErc20Transfers.value = count > 0;
@@ -170,7 +165,7 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
         <div class="c-trx-overview__col-val">
             <div class="c-trx-overview__row-value">
                 <q-skeleton v-if="loading" type="text" class="c-trx-overview__skeleton" />
-                <BlockField v-else :block="blockNumber" />
+                <BlockField v-else :block="blockNumber ?? 0" />
             </div>
         </div>
     </div>
@@ -224,8 +219,6 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
                 <TransactionAction
                     v-else
                     :trx="trx"
-                    :highlightAddress="highlightAddress"
-                    @highlight="setHighlightAddress"
                 />
             </template>
         </div>
@@ -250,8 +243,6 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
                 :key="'trx-from-'+ trx.from"
                 copy
                 :address="trx.from"
-                :highlightAddress="highlightAddress"
-                @highlight="setHighlightAddress"
             />
         </div>
     </div>
@@ -276,8 +267,6 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
                     copy
                     :address="toAddress"
                     :is-contract-trx="true"
-                    :highlightAddress="highlightAddress"
-                    @highlight="setHighlightAddress"
                 />
                 Created ]
             </template>
@@ -287,8 +276,6 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
                     copy
                     :address="toAddress"
                     :is-contract-trx="!!trx?.contract"
-                    :highlightAddress="highlightAddress"
-                    @highlight="setHighlightAddress"
                 />
             </template>
         </div>
@@ -315,8 +302,6 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
             <ERCTransferList
                 :logs="trx?.logsArray ?? []"
                 :type="'erc20'"
-                :highlightAddress="highlightAddress"
-                @highlight="setHighlightAddress"
                 @transfers-count="setERC20TransfersCount"
             />
         </div>
@@ -343,8 +328,6 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
             <TLOSTransferList
                 v-if="trx"
                 :transaction="trx"
-                :highlightAddress="highlightAddress"
-                @highlight="setHighlightAddress"
                 @transfers-count="setTLOSTransfersCount"
             />
         </div>

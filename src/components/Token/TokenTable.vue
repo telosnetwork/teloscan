@@ -99,7 +99,12 @@ export default {
                 <q-img :src="props.row.logoURI" class="c-token-icon" />
             </q-td>
             <q-td key="name" :props="props">
-                <AddressField :address="props.row.address" :name="props.row.name" :truncate="32"/>
+                <AddressField
+                    :address="props.row.address"
+                    :name="props.row.name"
+                    :truncate="32"
+                    :useHighlight="false"
+                />
             </q-td>
             <q-td key="symbol" :props="props">
                 {{ props.row.symbol }}
