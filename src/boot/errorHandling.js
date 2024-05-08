@@ -319,18 +319,20 @@ const notifyRememberInfo = function(title, message, payload, key) {
 
     const handler = (event) => {
         // If the user click the checkbox, we set the flag in the local storage
-        if (event.target.id === id) {
-            const checkbox = document.getElementById(id);
-            if (checkbox.checked) {
-                dismissed[id] = true;
+        if(!process.env.SERVER){
+            if (event.target.id === id) {
+                const checkbox = document.getElementById(id);
+                if (checkbox.checked) {
+                    dismissed[id] = true;
+                } else {
+                    delete dismissed[id];
+                }
+                localStorage.setItem(storageKey, JSON.stringify(dismissed));
             } else {
-                delete dismissed[id];
-            }
-            localStorage.setItem(storageKey, JSON.stringify(dismissed));
-        } else {
-            // catching Dismiss button click
-            if (event.target.parentNode.classList.contains('q-btn__content')) {
-                window.removeEventListener('click', handler);
+                // catching Dismiss button click
+                if (event.target.parentNode.classList.contains('q-btn__content')) {
+                    window.removeEventListener('click', handler);
+                }
             }
         }
     };

@@ -42,7 +42,7 @@ module.exports = function(/* ctx */) {
             'evm',
             'hyperion',
             'q-component-defaults',
-            'antelope',
+            { path: 'antelope', server: false },
         ],
         // https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-css
         css: ['fonts/silka/silka.css', 'app.scss'],

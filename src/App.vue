@@ -20,7 +20,7 @@ const isNative = computed(() => $store.getters['login/isNative']);
 
 onMounted(async () => {
     const network = useChainStore().currentChain.settings.getNetwork();
-    if (TELOS_NETWORK_NAMES.includes(network)) {
+    if (!process.env.SERVER && TELOS_NETWORK_NAMES.includes(network)) {
         const script = document.createElement('script');
         script.src = 'https://cdn.usefathom.com/script.js';
         script.dataset.site = 'PDKJSBKL';

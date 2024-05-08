@@ -6,28 +6,31 @@ import { NFTSourceTypes, NftSourceType } from 'src/antelope/types';
  * @returns NFTSourceTypes.AUDIO or NFTSourceTypes.VIDEO
  */
 export async function determineWebmType(source: string): Promise<NftSourceType> {
-    return new Promise((resolve, reject) => {
-        // Create a video element
-        const video = document.createElement('video');
-
-        // Listen for the 'loadedmetadata' event
-        video.addEventListener('loadedmetadata', () => {
-            // If videoHeight or videoWidth is 0, then it's audio-only.
-            if (video.videoHeight === 0 || video.videoWidth === 0) {
-                resolve(NFTSourceTypes.AUDIO);
-            } else {
-                resolve(NFTSourceTypes.VIDEO);
-            }
+    if(process.env.SERVER){
+        return new Promise<NftSourceType>(() => {
+            console.debug(''); // Here because dumb lint options
         });
-
-        // Handle error
-        video.addEventListener('error', () => {
-            reject(new Error('Failed to load video metadata.'));
+    } else {
+        return new Promise((resolve, reject) => {
+            // Create a video element
+            const video = document.createElement('video');
+            // Listen for the 'loadedmetadata' event
+            video.addEventListener('loadedmetadata', () => {
+                // If videoHeight or videoWidth is 0, then it's audio-only.
+                if (video.videoHeight === 0 || video.videoWidth === 0) {
+                    resolve(NFTSourceTypes.AUDIO);
+                } else {
+                    resolve(NFTSourceTypes.VIDEO);
+                }
+            });
+            // Handle error
+            video.addEventListener('error', () => {
+                reject(new Error('Failed to load video metadata.'));
+            });
+            // Set the URL as the video source
+            video.src = source;
         });
-
-        // Set the URL as the video source
-        video.src = source;
-    });
+    }
 }
 
 /**

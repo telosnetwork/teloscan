@@ -18,6 +18,9 @@ const qrInstance = ref<QRious>();
 const showCode = ref(false);
 
 function showQrCode(){
+    if(process.env.SERVER){
+        return;
+    }
     showCode.value = true;
     nextTick().then(() => {
         document.getElementById('qr-code')?.appendChild(qrInstance.value?.image as HTMLImageElement);

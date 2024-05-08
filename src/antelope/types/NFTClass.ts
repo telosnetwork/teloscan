@@ -195,6 +195,11 @@ export class NFTItemClass {
     }
 
     async determineWebmType(source: string): Promise<string> {
+        if(process.env.SERVER){
+            return new Promise<string>(() => {
+                console.debug(''); // Here because lint options
+            });
+        }
         return new Promise<string>((resolve, reject) => {
             const video = document.createElement('video');
 
@@ -219,6 +224,11 @@ export class NFTItemClass {
     }
 
     async extractFrameFromVideo(source: string, time: number): Promise<string> {
+        if(process.env.SERVER){
+            return new Promise<string>(() => {
+                console.debug(''); // Here because dumb lint options
+            });
+        }
         // this function seams not to wer in most of the cases. It returns a transparent image
         return new Promise<string>((resolve, reject) => {
             const video = document.createElement('video');

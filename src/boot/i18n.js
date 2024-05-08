@@ -24,6 +24,7 @@ export default boot(({ app, ssrContext }) => {
         locale: lastChosenLanguage,
         globalInjection: true,
         messages,
+        legacy: false,
     });
 
     // Set i18n instance on app

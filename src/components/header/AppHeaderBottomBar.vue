@@ -20,7 +20,7 @@ const menuBottomBarHidden = ref(false);
 const menuVisibleMobile = ref(false);
 
 watchEffect(() => {
-    if (!menuVisibleMobile.value) {
+    if (!process.env.SERVER && !menuVisibleMobile.value) {
         (document.activeElement as HTMLElement | null)?.blur();
     }
 });

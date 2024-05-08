@@ -14,6 +14,9 @@ import { AntelopeError } from 'src/antelope/types';
  * This function is used to register the EVMAuthenticators that will be used by the app.
  */
 export function initAntelope(app: App) {
+    if(process.env.SERVER){
+        return;
+    }
     const oreIdOptions: OreIdOptions = {
         appName: process.env.APP_NAME,
         appId: process.env.OREID_APP_ID as string,

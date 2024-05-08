@@ -6,11 +6,11 @@
   "author": "Jesse Schulman <jesse@caleos.io>",
   "private": true,
   "scripts": {
-    "dev": "quasar dev",
+    "dev": "quasar dev -m ssr",
     "build": "quasar build",
     "lint": "eslint --ext .js,.vue ./",
     "test": "jest",
-    "nuke": "rm -rf node_modules && yarn cache clean && yarn install"
+    "nuke": "quasar ext remove @quasar/qmediaplayer"
   },
   "dependencies": {
     "@eosrio/hyperion-stream-client": "^0.4.0-beta.5",
@@ -38,8 +38,8 @@
     "highlight.js": "10",
     "highlightjs-solidity": "^2.0.3",
     "isomorphic-fetch": "^3.0.0",
-    "localstorage-polyfill": "^1.0.1",
     "js-big-decimal": "^1.4.1",
+    "localstorage-polyfill": "^1.0.1",
     "moment": "^2.29.4",
     "oreid-js": "^4.7.1",
     "oreid-webpopup": "^2.4.0",
@@ -63,10 +63,9 @@
     "@babel/eslint-parser": "^7.13.14",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "7.19.3",
-    "@babel/regjsgen": "^0.8.0",
     "@babel/preset-typescript": "^7.23.0",
+    "@babel/regjsgen": "^0.8.0",
     "@quasar/app-webpack": "3.6.2",
-    "@quasar/quasar-app-extension-qmediaplayer": "^2.0.0-beta.6",
     "@types/jest": "29.1.1",
     "@types/lodash": "^4.14.182",
     "@typescript-eslint/eslint-plugin": "^5.48.2",

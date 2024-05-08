@@ -3,7 +3,9 @@ import { initAntelope } from 'src/antelope/wallets/init';
 
 
 export default boot(({ app }) => {
-    initAntelope(app);
+    if(!process.env.SERVER){
+        initAntelope(app);
+    }
 });
 
 

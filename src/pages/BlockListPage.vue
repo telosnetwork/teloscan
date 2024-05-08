@@ -1,12 +1,33 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useMeta } from 'quasar';
 
 import BlockTable from 'components/BlockTable.vue';
 
 const { t: $t } = useI18n();
 
 const showEmptyBlocks = ref(false);
+useMeta({
+    // sets document title
+    title: 'Latest blocks',
+    // optional; sets final title as "Index Page - My Website", useful for multiple level meta
+    titleTemplate: title => `${title} - Teloscan`,
+
+    // meta tags
+    meta: {
+        description: { name: 'description', content: 'Teloscan is a balzing fast block explorer for Telos EVM based on Etherscan' },
+        keywords: { name: 'keywords', content: 'Telos, block, block explorer, transactions, evm, blockchain, Telos EVM' },
+        equiv: { 'http-equiv': 'Content-Type', content: 'text/html; charset=UTF-8' },
+        // note: for Open Graph type metadata you will need to use SSR, to ensure page is rendered by the server
+        ogTitle:  {
+            property: 'og:title',
+            content: 'Home Page', // optional; similar to title, but allows templating with other meta properties
+            // optional; similar to titleTemplate, but allows templating with other meta properties
+            template: content => `${content} - Teloscan`,
+        },
+    },
+});
 
 </script>
 

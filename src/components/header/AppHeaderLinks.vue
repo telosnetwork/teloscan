@@ -110,6 +110,9 @@ watch(() => $q.screen, () => {
 }, { deep: true });
 
 function blurActiveElement() {
+    if(process.env.SERVER) {
+        return;
+    }
     (document.activeElement as HTMLElement | null)?.blur();
 }
 

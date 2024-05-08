@@ -185,6 +185,9 @@ export function getRouteWatcherForTabs(routeName, tabs, defaultTab) {
  * @return {boolean}
  */
 export function getClientIsApple() {
+    if(process.env.SERVER){
+        return false;
+    }
     return [
         'iPad Simulator',
         'iPhone Simulator',
@@ -216,6 +219,9 @@ export function getFormattedUtcOffset(date) {
  * This functions returns the name of the browser
  */
 export function getBrowserName() {
+    if(process.env.SERVER){
+        return 'unknown';
+    }
     const userAgent = window.navigator.userAgent;
     const browsers = {
         chrome: /chrome/i,

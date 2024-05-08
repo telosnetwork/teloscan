@@ -7,6 +7,7 @@ import { indexerApi } from 'src/boot/telosApi';
 import TransactionTable from 'components/TransactionTable.vue';
 import BlockOverview from 'components/BlockOverview.vue';
 import { BlockData } from 'src/types';
+import { useMeta } from 'quasar';
 
 const router = useRouter();
 const route = useRoute();
@@ -21,6 +22,26 @@ const blockNumber = computed(() => block.value ?? 0);
 const blockData = ref<BlockData | null>(null);
 
 const transactionsCount = computed(() => blockData.value ? blockData.value.transactionsCount : 0);
+useMeta({
+    // sets document title
+    title: 'Block ' + route.params.block,
+    // optional; sets final title as "Index Page - My Website", useful for multiple level meta
+    titleTemplate: title => `${title} - Teloscan`,
+
+    // meta tags
+    meta: {
+        description: { name: 'description', content: 'Teloscan is a balzing fast block explorer for Telos EVM based on Etherscan' },
+        keywords: { name: 'keywords', content: 'Telos, block, block explorer, transactions, evm, blockchain, Telos EVM' },
+        equiv: { 'http-equiv': 'Content-Type', content: 'text/html; charset=UTF-8' },
+        // note: for Open Graph type metadata you will need to use SSR, to ensure page is rendered by the server
+        ogTitle:  {
+            property: 'og:title',
+            content: 'Home Page', // optional; similar to title, but allows templating with other meta properties
+            // optional; similar to titleTemplate, but allows templating with other meta properties
+            template: content => `${content} - Teloscan`,
+        },
+    },
+});
 
 // Methods
 

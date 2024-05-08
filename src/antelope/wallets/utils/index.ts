@@ -176,6 +176,9 @@ export function sortAbiFunctionsByName(fns: EvmABIEntry[]): EvmABIEntry[] {
  * @return {boolean}
  */
 export function getClientIsApple() {
+    if(process.env.SERVER){
+        return false;
+    }
     return [
         'iPad Simulator',
         'iPhone Simulator',

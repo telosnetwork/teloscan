@@ -292,29 +292,31 @@ function getPath(type: string) {
                 </q-td>
                 <q-td key="media" :props="props">
                     <a
-                        v-if="props.row.metadata?.animation"
+                        v-if="!process.env.SERVER && props.row.metadata?.animation"
                         :href="props.row.metadata.animation"
                         target="_blank"
                     >
                         <div class="overlay"></div>
-                        <q-media-player
-                            type="video"
-                            loop="loop"
-                            :autoplay="true"
-                            :show-big-play-button="false"
-                            muted="muted"
-                            big-play-button-color="purpleBright"
-                            :hideVolumeSlider="true"
-                            :noControls="true"
-                            :hideVolumeBtn="true"
-                            :hidePlayBtn="true"
-                            :hideSettingsBtn="true"
-                            :hideFullscreenBtn="true"
-                            :sources="[{
-                                type: 'video/' + props.row.metadata.animationExtension,
-                                src: props.row.metadata.animation,
-                            }]"
-                        />
+                        <client-only>
+                            <q-media-player
+                                type="video"
+                                loop="loop"
+                                :autoplay="true"
+                                :show-big-play-button="false"
+                                muted="muted"
+                                big-play-button-color="purpleBright"
+                                :hideVolumeSlider="true"
+                                :noControls="true"
+                                :hideVolumeBtn="true"
+                                :hidePlayBtn="true"
+                                :hideSettingsBtn="true"
+                                :hideFullscreenBtn="true"
+                                :sources="[{
+                                    type: 'video/' + props.row.metadata.animationExtension,
+                                    src: props.row.metadata.animation,
+                                }]"
+                            />
+                        </client-only>
                     </a>
                     <span
                         v-else-if="props.row.imageCache || props.row.metadata?.image"

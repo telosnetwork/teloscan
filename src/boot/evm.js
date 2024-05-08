@@ -36,13 +36,12 @@ class ProviderManager {
     }
 }
 
+const providerManager = new ProviderManager();
 
 export default boot(({ app, store }) => {
     const hyperion = axios.create({
         baseURL: process.env.NETWORK_EVM_ENDPOINT,
     });
-    
-    const providerManager = new ProviderManager();
     store.$providerManager = app.config.globalProperties.$providerManager = providerManager;
     store.$evm = app.config.globalProperties.$evm = evm;
     store.$evmEndpoint = app.config.globalProperties.$evmEndpoint = hyperion;

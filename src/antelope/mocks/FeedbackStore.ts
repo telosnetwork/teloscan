@@ -15,7 +15,7 @@ export const createTraceFunction = (store_name: string) => function(action: stri
 // only if we are NOT in production mode search in the url for the trace flag
 // to turn on the Antelope trace mode
 let trace = false;
-if (process.env.NODE_ENV !== 'production') {
+if (!process.env.SERVER && process.env.NODE_ENV !== 'production') {
     const urlParams = new URLSearchParams(window.location.search);
     trace = urlParams.get('trace') === 'true';
 }
