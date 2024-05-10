@@ -165,7 +165,12 @@ export default {
     <template v-slot:body="props">
         <q-tr :props="props">
             <q-td key="holder" :props="props">
-                <AddressField :key="props.row.address + 'c'" :address="props.row.address" :truncate="18" />
+                <AddressField
+                    :key="props.row.address + 'c'"
+                    :address="props.row.address"
+                    :truncate="18"
+                    :useHighlight="false"
+                />
             </q-td>
             <q-td key="balance" :props="props">
                 <span v-if="contract?.properties?.decimals">

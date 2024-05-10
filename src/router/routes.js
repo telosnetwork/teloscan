@@ -109,6 +109,15 @@ const routes = [
         }],
     },
     {
+        path: '/txsInternal',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            name: 'txsInternal',
+            component: () => import('pages/ErrorNotFoundPage.vue'),
+        }],
+    },
+    {
         path: '/endpoints',
         redirect: () => ({ path: '/health' }),
     },

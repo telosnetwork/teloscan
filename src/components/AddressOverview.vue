@@ -51,6 +51,11 @@ onBeforeMount(() => {
                     width="18"
                 >
                 {{ getBalanceDisplay(tokenQty) }}
+                <ValueField
+                    :value="tokenQty"
+                    :symbol="'TLOS'"
+                    :decimals="WEI_PRECISION"
+                />
             </div>
         </q-card-section>
         <q-card-section v-if="!loadingComplete" >

@@ -3,15 +3,11 @@ import { computed, ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { ZERO_ADDRESSES } from 'src/lib/utils';
+import { useStore } from 'vuex';
 
 const { t: $t } = useI18n();
 
 const props = defineProps({
-    highlightMethod: {
-        type: String,
-        required: false,
-        default: '',
-    },
     trx: {
         type: Object as () => {
             parsedTransaction?: {
@@ -30,16 +26,26 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    separateWords: {
+        type: Boolean,
+        default: false,
+    },
     contract: {
         type: Object,
         default: () => null,
     },
+    useHighlight: {
+        type: Boolean,
+        default: true,
+    },
 });
-
-const emit = defineEmits(['highlight']);
 
 const methodName = ref('');
 const nativeTooltipText = ref('');
+
+const $store = useStore();
+const setHighlightMethod = (method: string) => props.useHighlight ? $store.dispatch('general/setHighlightMethod', method) : null;
+const highlightMethod = computed(() => props.useHighlight ? $store.state.general.highlightMethod : '');
 
 const methodSignature = computed(() => {
     if (props.trx.input && props.trx.input !== '0x') {
@@ -49,7 +55,7 @@ const methodSignature = computed(() => {
 
     return '';
 });
-const displayText = computed(() => {
+const methodNameOrSignature = computed(() => {
     if (methodName.value) {
         return methodName.value;
     }
@@ -58,6 +64,19 @@ const displayText = computed(() => {
         return methodSignature.value;
     }
 
+    return '';
+});
+const displayText = computed(() => {
+    try {
+        let method = methodNameOrSignature.value;
+        if (method && props.separateWords) {
+            method = method.replace(/([A-Z])/g, ' $1').trim();
+            method = method[0].toUpperCase() + method.slice(1);
+        }
+        return method;
+    } catch (e) {
+        console.error(e);
+    }
     return '';
 });
 const propValue = computed(() => +(props.trx.value || '0x0'));
@@ -91,10 +110,6 @@ const setValues = async () => {
         methodName.value = props.trx.parsedTransaction.name;
     }
 };
-
-function emitHighlight(val: string) {
-    emit('highlight', val);
-}
 </script>
 
 <template>
@@ -104,8 +119,8 @@ function emitHighlight(val: string) {
         'c-method--highlight': [methodName, methodSignature].includes(highlightMethod) && highlightMethod !== '',
         'c-method--full-text': fullText,
     }"
-    @mouseenter="emitHighlight(methodName || methodSignature)"
-    @mouseleave="emitHighlight('')"
+    @mouseenter="setHighlightMethod(methodName || methodSignature)"
+    @mouseleave="setHighlightMethod('')"
 >
     {{ displayText }}
 

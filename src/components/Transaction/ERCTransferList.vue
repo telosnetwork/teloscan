@@ -5,21 +5,20 @@ import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { BigNumber } from 'ethers';
 
-import { EvmTransactionLog  } from 'antelope/types/EvmTransaction';
+import { EvmLogs  } from 'src/antelope/types/EvmLog';
 import AddressField from 'components/AddressField.vue';
-import { ERCTransfer, ERC721Transfer, ERC1155Transfer, ERC20Transfer, TokenBasicData } from 'src/types';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
+import ValueField from 'components/ValueField.vue';
+import { ERC721Transfer, ERC1155Transfer, ERC20Transfer, TokenBasicData } from 'src/types';
 
 import { contractManager } from 'src/boot/telosApi';
 import { TRANSFER_SIGNATURES } from 'src/antelope/types';
 
 const $q = useQuasar();
 const { t: $t } = useI18n();
-const locale = useI18n().locale.value;
 
 const props = defineProps({
     logs: {
-        type: Array as PropType<ERCTransfer[]>,
+        type: Array as PropType<EvmLogs>,
         required: false,
         default: () => [],
     },
@@ -43,10 +42,11 @@ const erc20_transfers   = ref<ERC20Transfer[]>([]);
 
 const loadTransfers = async () => {
     if (!props.logs || props.logs.length === 0) {
+        emit('transfers-count', 0);
         return;
     }
 
-    const logs = props.logs as EvmTransactionLog[];
+    const logs = props.logs as EvmLogs;
 
     for (const log of logs) {
         // ERC20, ERC721 & ERC1155 transfers (ERC721 & ERC20 have same first topic but ERC20 has 4 topics for
@@ -141,22 +141,6 @@ const loadTransfers = async () => {
     emit('transfers-count', count);
 };
 
-function setHighlightAddress(val: string) {
-    emit('highlight', val);
-}
-
-const getValueDisplay = (value: string, symbol: string, decimals: number) =>
-    prettyPrintCurrency(
-        BigNumber.from(value),
-        4,
-        locale,
-        false,
-        symbol,
-        false,
-        typeof decimals === 'string' ? parseInt(decimals) : decimals,
-        false,
-    );
-
 watch(() => props.logs, async (newTrx) => {
     if (newTrx) {
         await loadTransfers();
@@ -181,8 +165,6 @@ watch(() => props.logs, async (newTrx) => {
                 copy
                 :address="transfer.from"
                 :truncate="15"
-                :highlightAddress="props.highlightAddress"
-                @highlight="setHighlightAddress"
             />
         </div>
         <div class="c-erc-transfers__cell c-erc-transfers__cell--b">
@@ -191,18 +173,17 @@ watch(() => props.logs, async (newTrx) => {
                 copy
                 :address="transfer.to"
                 :truncate="15"
-                :highlightAddress="props.highlightAddress"
-                @highlight="setHighlightAddress"
             />
         </div>
         <div class="c-erc-transfers__cell c-erc-transfers__cell--c">
             <strong>{{ $t('components.nfts.amount') }}</strong>
-            <span>{{ getValueDisplay(transfer.value, '', transfer.token.decimals ) }}</span>
+            <ValueField
+                :value="transfer.value"
+                :decimals="transfer.token.decimals"
+            />
             <AddressField
                 :address="transfer.token.address"
                 :truncate="15"
-                :highlightAddress="props.highlightAddress"
-                @highlight="setHighlightAddress"
             />
         </div>
     </div>
@@ -219,7 +200,6 @@ watch(() => props.logs, async (newTrx) => {
     @include scroll-bar;
 
     &__row {
-        margin-bottom: 10px;
         grid-template-rows: auto;
         grid-auto-columns: 19px 1fr;
         grid-template:
@@ -227,6 +207,10 @@ watch(() => props.logs, async (newTrx) => {
             'icon b'
             'icon c';
         display: grid;
+
+        & + & {
+            margin-top: 10px;
+        }
     }
 
     &__icon {

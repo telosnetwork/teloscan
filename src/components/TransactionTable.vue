@@ -4,22 +4,22 @@ import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import { onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { BigNumber } from 'ethers/lib/ethers';
 
 import { getDirection } from 'src/lib/transaction-utils';
 import { contractManager, indexerApi } from 'src/boot/telosApi';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 import { WEI_PRECISION } from 'src/lib/utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
+import ValueField from 'components/ValueField.vue';
 import MethodField from 'components/MethodField.vue';
 import TransactionDialog from 'components/TransactionDialog.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 
 import { Pagination } from 'src/types';
+import { useStore } from 'vuex';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -27,6 +27,8 @@ const router = useRouter();
 const $i18n = useI18n();
 const { t: $t } = $i18n;
 const locale = $i18n.locale.value;
+const $store = useStore();
+const toggleDisplayDecimals = () => $store.dispatch('general/toggleDisplayDecimals');
 
 const FIVE_HUNDRED_K = 500000;
 
@@ -49,7 +51,6 @@ const loading =  ref(false);
 const showDateAge = ref(true);
 const showTotalGasFee = ref(true);
 const highlightMethod = ref('');
-const highlightAddress = ref('');
 const totalRows = ref(0);
 
 const transactions: any[] = [];
@@ -114,7 +115,7 @@ const columns = [
     },
     {
         name: 'fee',
-        label: `${$t('components.txn_fee')} (TLOS)`,
+        label: `${$t('components.txn_fee')}`,
         align: 'right',
     },
 ];
@@ -300,23 +301,6 @@ function setHighlightMethod(val: string) {
     highlightMethod.value = val;
 }
 
-function setHighlightAddress(val: string) {
-    highlightAddress.value = val;
-}
-
-function getValueDisplay(value: string) {
-    return prettyPrintCurrency(
-        BigNumber.from(value),
-        4,
-        locale,
-        false,
-        'TLOS',
-        false,
-        WEI_PRECISION,
-        false,
-    );
-}
-
 const updateLoadingRows = () => {
     loadingRows.value = [];
     for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
@@ -370,10 +354,17 @@ onBeforeMount(() => {
                             {{ $t('pages.transactions.see_tx_preview_tooltip') }}
                         </q-tooltip>
                     </div>
-                    <div v-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
+                    <div v-else-if="col.name === 'date'" class="u-flex--center-y" @click="toggleDateFormat">
                         <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
                         <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
                         <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-else-if="col.name==='value'" class="u-flex--center-y" @click="toggleDisplayDecimals">
+                        <a>{{ col.label }}</a>
+                        <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                        <q-tooltip anchor="bottom middle" self="bottom middle">
                             {{ $t('components.click_to_change_format') }}
                         </q-tooltip>
                     </div>
@@ -442,8 +433,6 @@ onBeforeMount(() => {
                         :address="props.row.from"
                         :truncate="12"
                         :copy="true"
-                        :highlightAddress="highlightAddress"
-                        @highlight="setHighlightAddress"
                     />
                 </q-td>
                 <q-td key="to" :props="props" class="c-transaction-table__cell">
@@ -453,12 +442,14 @@ onBeforeMount(() => {
                         :address="props.row.to"
                         :truncate="12"
                         :copy="true"
-                        :highlightAddress="highlightAddress"
-                        @highlight="setHighlightAddress"
                     />
                 </q-td>
                 <q-td key='value' :props="props" class="c-transaction-table__cell">
-                    {{ getValueDisplay(props.row.value) }}
+                    <ValueField
+                        :value="props.row.value"
+                        :symbol="'TLOS'"
+                        :decimals="WEI_PRECISION"
+                    />
                 </q-td>
                 <q-td key='fee' :props="props" class="c-transaction-table__cell">
                     <TransactionFeeField

@@ -2,24 +2,22 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { BigNumber } from 'ethers';
 import { BlockData, EvmTransactionExtended } from 'src/types';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { indexerApi } from 'src/boot/telosApi';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
+import ValueField from 'components/ValueField.vue';
 import DateField from 'components/DateField.vue';
-import MethodField from 'components/MethodField.vue';
+import TransactionAction from 'components/TransactionAction.vue';
 import GasLimitAndUsage from 'components/GasLimitAndUsage.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 import ERCTransferList from 'components/Transaction/ERCTransferList.vue';
+import TLOSTransferList from 'components/Transaction/TLOSTransferList.vue';
 
 const { t: $t } = useI18n();
-
-const locale = useI18n().locale.value;
 
 const props = defineProps<{
     trx: EvmTransactionExtended | null,
@@ -33,26 +31,13 @@ const blockNumber = computed(() => props.trx?.blockNumber);
 const timestamp = computed(() => props.trx?.timestamp || 0);
 const blockData = ref<BlockData | null>(null);
 const transactionIndex = ref<number>(-1);
-const highlightAddress = ref('');
 const toAddress = ref('');
 const isAContractDeployment = ref(false);
 
 const showMoreDetails = ref(true);
 const showErc20Transfers = ref(true);
+const showTLOSTransfers = ref(true);
 const moreDetailsHeight = ref(0);
-
-const getValueDisplay = (value: string) =>
-    prettyPrintCurrency(
-        BigNumber.from(value),
-        4,
-        locale,
-        false,
-        'TLOS',
-        false,
-        WEI_PRECISION,
-        false,
-    );
-
 
 const loadBlockData = async () => {
     try {
@@ -66,12 +51,12 @@ const loadBlockData = async () => {
     }
 };
 
-function setHighlightAddress(val: string) {
-    highlightAddress.value = val;
-}
-
 function setERC20TransfersCount(count: number) {
     showErc20Transfers.value = count > 0;
+}
+
+function setTLOSTransfersCount(count: number) {
+    showTLOSTransfers.value = count > 0;
 }
 
 watch(() => props.trx, async (newTrx) => {
@@ -84,6 +69,7 @@ watch(() => props.trx, async (newTrx) => {
                 isAContractDeployment.value = true;
             }
         }
+
         await loadBlockData();
     }
 }, { immediate: true });
@@ -179,7 +165,7 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
         <div class="c-trx-overview__col-val">
             <div class="c-trx-overview__row-value">
                 <q-skeleton v-if="loading" type="text" class="c-trx-overview__skeleton" />
-                <BlockField v-else :block="blockNumber" />
+                <BlockField v-else :block="blockNumber ?? 0" />
             </div>
         </div>
     </div>
@@ -230,10 +216,9 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
             <q-skeleton v-if="!trx" type="text" class="c-trx-overview__skeleton" />
             <template v-else>
                 <span v-if="isAContractDeployment">{{ $t('components.transaction.contract_deployment') }}</span>
-                <MethodField
+                <TransactionAction
                     v-else
                     :trx="trx"
-                    :fullText="true"
                 />
             </template>
         </div>
@@ -258,8 +243,6 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
                 :key="'trx-from-'+ trx.from"
                 copy
                 :address="trx.from"
-                :highlightAddress="highlightAddress"
-                @highlight="setHighlightAddress"
             />
         </div>
     </div>
@@ -284,8 +267,6 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
                     copy
                     :address="toAddress"
                     :is-contract-trx="true"
-                    :highlightAddress="highlightAddress"
-                    @highlight="setHighlightAddress"
                 />
                 Created ]
             </template>
@@ -295,8 +276,6 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
                     copy
                     :address="toAddress"
                     :is-contract-trx="!!trx?.contract"
-                    :highlightAddress="highlightAddress"
-                    @highlight="setHighlightAddress"
                 />
             </template>
         </div>
@@ -323,9 +302,33 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
             <ERCTransferList
                 :logs="trx?.logsArray ?? []"
                 :type="'erc20'"
-                :highlightAddress="highlightAddress"
-                @highlight="setHighlightAddress"
                 @transfers-count="setERC20TransfersCount"
+            />
+        </div>
+    </div>
+
+    <!-- TLOS Tranfers -->
+    <div
+        :class="{
+            'c-trx-overview__row': true,
+            'c-trx-overview__row--hidden': !showTLOSTransfers,
+        }"
+    >
+        <div class="c-trx-overview__col-att">
+            <div class="c-trx-overview__row-tooltip">
+                <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
+                    <q-tooltip anchor="bottom right" self="top start">
+                        {{ $t('components.transaction.tlos_transfers_tooltip') }}
+                    </q-tooltip>
+                </q-icon>
+            </div>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.tlos_transfers') }}</div>
+        </div>
+        <div class="c-trx-overview__col-val c-trx-overview__col-val--erc-transfers">
+            <TLOSTransferList
+                v-if="trx"
+                :transaction="trx"
+                @transfers-count="setTLOSTransfersCount"
             />
         </div>
     </div>
@@ -345,7 +348,11 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
         <div class="c-trx-overview__col-val">
             <q-skeleton v-if="!trx" type="text" class="c-trx-overview__skeleton" />
             <template v-else>
-                {{ getValueDisplay(trx.value) }}
+                <ValueField
+                    :value="trx.value"
+                    :symbol="'TLOS'"
+                    :decimals="WEI_PRECISION"
+                />
             </template>
         </div>
     </div>

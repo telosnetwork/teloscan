@@ -36,6 +36,7 @@ const props = defineProps({
         <AddressField
             :address="props.address"
             :truncate="18"
+            :useHighlight="false"
         />
         <CopyButton
             :text="props.address"
