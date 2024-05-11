@@ -58,16 +58,21 @@ const accountModel = ref('');
 const accountInputRef = ref<null | typeof AddressInput>(null);
 const typeSelectModel = ref(exportTypes[0]);
 const downloadRangeType = ref(downloadRangeTypes.date);
-const dateRange = ref({ to: '', from: '' });
+// const dateRange = ref({ to: '', from: '' });
+const startDateModel = ref('');
+const endDateModel = ref('');
 const startBlockModel = ref('');
 const endBlockModel = ref('');
-// const captchaSucceeded = ref(false);
-// const captchaToken = ref('');
-const captchaSucceeded = ref(true); // FIXME: uncomment this line
-const captchaToken = ref('10000000-aaaa-bbbb-cccc-000000000001'); // FIXME: uncomment this line
+const captchaSucceeded = ref(false);
+const captchaToken = ref('');
 const exportIsLoading = ref(false);
 
 // computed
+const dateRange = computed(() => ({
+    from: startDateModel.value,
+    to: endDateModel.value,
+}));
+
 const enableDownloadButton = computed(() => {
     const isNumber = (val: string) => /^\d+$/.test(val);
 
@@ -82,9 +87,9 @@ const enableDownloadButton = computed(() => {
             (downloadRangeType.value === downloadRangeTypes.block && blockRangeIsValid)
         );
 });
-const dateTextInputModel = computed(() =>
-    (dateRange.value.from && dateRange.value.to) ? `${dateRange.value.from} - ${dateRange.value.to}` : '',
-);
+
+const startDateTextInputModel = computed(() => startDateModel.value);
+const endDateTextInputModel = computed(() => endDateModel.value);
 
 // watchers
 watch(accountModel, () => {
@@ -107,11 +112,6 @@ watch(typeSelectModel, () => {
     }
 }, { immediate: true });
 
-watch(downloadRangeType, () => {
-    startBlockModel.value = '';
-    endBlockModel.value = '';
-    dateRange.value = { to: '', from: '' };
-});
 
 // methods
 function resetOptions() {
@@ -119,7 +119,7 @@ function resetOptions() {
     typeSelectModel.value = exportTypes[0];
     startBlockModel.value = '';
     endBlockModel.value = '';
-    dateRange.value = { to: '', from: '' };
+
 
     nextTick(() => {
         accountInputRef.value?.resetValidation();
@@ -266,19 +266,50 @@ onBeforeUnmount(() => {
                             class="c-export-page__row c-export-page__value-container"
                         >
                             <q-input
-                                :model-value="dateTextInputModel"
-                                :readonly="true"
-                                flat
-                                :label="$t('components.export.date_range')"
+                                v-model="startDateTextInputModel"
+                                :label="`${$t('components.export.start_date')}*`"
+                                name="export-data-start-date"
+                                type="text"
+                                color="secondary"
+                                required="required"
                                 class="c-export-page__value"
                             >
                                 <template v-slot:append>
                                     <q-icon name="event" class="cursor-pointer">
                                         <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                                             <q-date
-                                                v-model="dateRange"
+                                                v-model="startDateModel"
                                                 minimal
-                                                range
+                                                color="secondary"
+                                            >
+                                                <div class="row items-center justify-end">
+                                                    <q-btn
+                                                        v-close-popup
+                                                        :label="$t('global.close')"
+                                                        color="primary"
+                                                        flat
+                                                    />
+                                                </div>
+                                            </q-date>
+                                        </q-popup-proxy>
+                                    </q-icon>
+                                </template>
+                            </q-input>
+                            <q-input
+                                v-model="endDateTextInputModel"
+                                :label="`${$t('components.export.end_date')}*`"
+                                name="export-data-end-date"
+                                type="text"
+                                color="secondary"
+                                required="required"
+                                class="c-export-page__value"
+                            >
+                                <template v-slot:append>
+                                    <q-icon name="event" class="cursor-pointer">
+                                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                            <q-date
+                                                v-model="endDateModel"
+                                                minimal
                                                 color="secondary"
                                             >
                                                 <div class="row items-center justify-end">
@@ -295,6 +326,7 @@ onBeforeUnmount(() => {
                                 </template>
                             </q-input>
                         </div>
+
                         <div
                             v-else
                             class="c-export-page__row c-export-page__value-container"
@@ -383,11 +415,13 @@ onBeforeUnmount(() => {
 
     &__content {
         width: 100%;
-        // Option 1
-        // padding: 0px 250px;
-        // @media (max-width: 1024px) {
-        //     padding: 0px;
-        // }
+        padding: 0px 250px;
+        @media (max-width: 1245px) {
+            padding: 0px calc(36vw - 200px);
+        }
+        @media (max-width: 768px) {
+            padding: 0px;
+        }
     }
 
     &__captcha-container {
@@ -414,24 +448,12 @@ onBeforeUnmount(() => {
     &__row {
         display: flex;
         flex-direction: row;
+        gap: 16px;
         &--separator {
-            // Option 1
             display: none;
-
-            // Option 2
-            background-color: var(--muted-text-color);
-            height: 1px;
-            margin: 16px 0;
         }
 
         &--break {
-            // Option 2
-            flex-direction: row;
-            @media (max-width: 1024px) {
-                flex-direction: column;
-            }
-
-            // Option 1 and 3
             flex-direction: column;
         }
     }

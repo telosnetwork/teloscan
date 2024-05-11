@@ -502,6 +502,8 @@ export default {
             column_header_token_symbol: 'Símbolo do Token',
             column_header_tx_hash: 'Transaction Hash',
             date_range: 'Intervalo de datas',
+            start_date: 'Data de início',
+            end_date: 'Data final',
             download_csv: 'Baixar CSV',
             download_transactions_csv: 'Baixar CSV de transações',
             download_erc_20_transfers_csv: 'Baixar CSV de transferências ERC-20',
