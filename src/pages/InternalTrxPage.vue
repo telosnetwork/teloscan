@@ -18,7 +18,7 @@ const address = computed(() => route.query.a as string);
 
     <div class="c-internal-trx__header">
         <div class="c-internal-trx__header-title">{{ $t('pages.internaltrx.page_title') }}</div>
-        <div class="c-internal-trx__header-sub-title">{{ $t('pages.internaltrx.for_address') }}
+        <div v-if="address" class="c-internal-trx__header-sub-title">{{ $t('pages.internaltrx.for_address') }}
             <AddressField
                 :address="address"
             />

@@ -434,6 +434,7 @@ export default {
             telos_wallet: 'Wallet',
             telos_bridge: 'Bridge',
             transactions: 'Transaktionen',
+            internal_transactions: 'Internal Transactions',
             verify_contract_sourcify: 'Vertrag überprüfen (Sourcify)',
             view_other_networks: 'Andere Netzwerke anzeigen',
         },
