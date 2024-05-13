@@ -241,7 +241,17 @@ async function parseTransactions() {
             }
         }
         loading.value = false;
-        rows.value = transactions;
+        // This converts the timestamp to a number regardless of the format it is in
+        rows.value = transactions.map((t) => {
+            if (typeof t.timestamp === 'number') {
+                return t;
+            } else {
+                const timestamp = new Date(t.timestamp).getTime();
+                const localZone = new Date().getTimezoneOffset() * 60000;
+                t.timestamp = timestamp - localZone;
+                return t;
+            }
+        });
     } catch (e: any) {
         $q.notify({
             type: 'negative',
