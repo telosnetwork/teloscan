@@ -241,7 +241,8 @@ async function parseTransactions() {
             }
         }
         loading.value = false;
-        rows.value = transactions;
+        // This converts the timestamp to a number regardless of the format it is in
+        rows.value = transactions.map(t => ({ ...t, timestamp: new Date(t.timestamp).getTime() }));
     } catch (e: any) {
         $q.notify({
             type: 'negative',
