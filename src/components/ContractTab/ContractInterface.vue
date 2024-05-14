@@ -43,7 +43,7 @@ onMounted(async () => {
 </script>
 
 <template>
-<div class="q-pt-md">
+<div class="c-contract-interface q-pt-md">
     <AppHeaderWallet v-if="props.write" class="c-login-button c-contract-interface__login"/>
     <q-list class="c-contract-interface__container">
         <q-expansion-item
@@ -81,6 +81,13 @@ onMounted(async () => {
         margin-bottom: 0.75rem !important;
         margin-left: 1rem;
     }
+
+    .q-item__label {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
+
 
 </style>
