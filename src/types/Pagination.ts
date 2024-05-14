@@ -5,3 +5,13 @@ export type Pagination = {
     rowsPerPage: number;
     rowsNumber: number;
 }
+
+
+export type PaginationByKey = {
+    page: number;
+    key: number;
+    initialKey: number;
+    descending: boolean;
+    rowsPerPage: number;
+    rowsNumber: number;
+}
