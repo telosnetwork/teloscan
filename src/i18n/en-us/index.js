@@ -217,6 +217,9 @@ export default {
         to: 'To',
         item: 'Item',
         amount: 'Amount',
+        download_image: 'Download Image',
+        confirm_download_image: 'Confirm you want to download this image',
+        confirm: 'Confirm',
         approvals: {
             token_id: 'Token ID',
             approved: 'Approved',

@@ -270,6 +270,9 @@ export default {
         nonce: 'Nonce',
         from: 'De',
         to: 'Para',
+        download_image: 'Baixar imagem',
+        confirm_download_image: 'Confirme que deseja baixar esta imagem',
+        confirm: 'Confirmar',
         transaction: {
             in: 'in',
             out: 'out',

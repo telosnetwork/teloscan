@@ -216,6 +216,9 @@ export default {
         nonce: 'Nonce',
         from: 'De',
         to: 'À',
+        download_image: 'Télécharger l’image',
+        confirm_download_image: 'Confirmez que vous voulez télécharger cette image',
+        confirm: 'Confirmer',
         approvals: {
             token_id: 'ID Jeton',
             approved: 'Approuvé',
