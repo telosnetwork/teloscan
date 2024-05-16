@@ -3,12 +3,15 @@
 import { ref, watch, onMounted, onBeforeMount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { indexerApi } from 'src/boot/telosApi';
+import { notifyMessage, icons, NotificationAction } from 'src/boot/errorHandling';
 import { ALLOWED_VIDEO_EXTENSIONS } from 'src/lib/utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import { NFT, NFT_TYPE } from 'src/types/NFT';
 import { QTableProps } from 'quasar';
+
+
 
 const allowedFilters = ['contract', 'account'];
 
@@ -213,6 +216,25 @@ function getPath(type: string) {
     }
     return `/${queryFilter}/${props.address}/nfts?type=${type}&includeAbi=true&limit=10000&forceMetadata=1&includePagination=true`;
 }
+
+function confirmDownloadImage(imageData: string, name: string) {
+    notifyMessage (
+        'success',
+        icons.info,
+        $t('components.download_image'),
+        $t('components.confirm_download_image'),
+        new NotificationAction({
+            label: $t('components.confirm'),
+            handler: () => {
+                // download image
+                const link = document.createElement('a');
+                link.href = imageData;
+                link.download = name;
+                link.click();
+            },
+        }),
+    );
+}
 </script>
 
 <template>
@@ -333,14 +355,13 @@ function getPath(type: string) {
                                 :alt="props.row.metadata?.name"
                             />
                         </a>
-                        <a
+                        <q-img
                             v-else-if="isDataImage(props.row)"
-                            :href="props.row.metadata?.image"
-                            target="_blank"
-                            download
-                        >
-                            <q-img :src="props.row.metadata?.image" :alt="props.row.metadata?.name" />
-                        </a>
+                            class="cursor-pointer"
+                            :src="props.row.metadata?.image"
+                            :alt="props.row.metadata?.name"
+                            @click="confirmDownloadImage(props.row.metadata?.image, props.row.metadata?.name)"
+                        />
                         <a
                             v-else
                             :href="props.row.metadata?.image"
@@ -358,7 +379,7 @@ function getPath(type: string) {
                         :href="props.row.tokenUri"
                         target="_blank"
                     >
-                        <q-icon name="download" size="sm" />
+                        <q-icon size="sm" name="launch"/>
                         <q-tooltip v-if="props.row.tokenUri">{{ $t('components.nfts.ipfs') }}</q-tooltip>
                     </a>
                 </q-td>
@@ -465,5 +486,8 @@ function getPath(type: string) {
     height: 60px;
     display: flex;
     align-items: center;
+}
+.cursor-pointer {
+    cursor: pointer;
 }
 </style>

@@ -41,6 +41,7 @@ export default {
                     :address="element.address"
                     :name="symbol"
                     class="q-mb-sm"
+                    :useHighlight="false"
                 />
                 <div>
                     <div class="flex">

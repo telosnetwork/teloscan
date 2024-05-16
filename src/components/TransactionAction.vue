@@ -30,8 +30,6 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['highlight']);
-
 const methodName = ref('');
 const nativeTooltipText = ref('');
 
@@ -67,9 +65,6 @@ const setValues = async () => {
     }
 };
 
-function setHighlightAddress(val: string) {
-    emit('highlight', val);
-}
 </script>
 
 <template>
@@ -89,19 +84,15 @@ function setHighlightAddress(val: string) {
     <span class="c-trx-action__text">Function by</span>
 
     <AddressField
-        :address="props.trx.from"
+        :address="props.trx.from ?? ''"
         :truncate="12"
-        :highlightAddress="props.highlightAddress"
-        @highlight="setHighlightAddress"
     />
 
     <span class="c-trx-action__text">on</span>
 
     <AddressField
-        :address="props.trx.to"
+        :address="props.trx.to ?? ''"
         :truncate="12"
-        :highlightAddress="props.highlightAddress"
-        @highlight="setHighlightAddress"
     />
 </div>
 </template>

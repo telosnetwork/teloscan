@@ -117,6 +117,15 @@ const routes = [
         }],
     },
     {
+        path: '/txsinternal',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [{
+            path: '',
+            name: 'txsinternal',
+            component: () => import('pages/InternalTrxPage.vue'),
+        }],
+    },
+    {
         path: '/endpoints',
         redirect: () => ({ path: '/health' }),
     },

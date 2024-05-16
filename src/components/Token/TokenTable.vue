@@ -54,9 +54,6 @@ export default {
     },
     methods: {
         ...mapActions('general', ['toggleDisplayDecimals']),
-        async showEntry(token) {
-            console.log('showEntry', token);
-        },
     },
 };
 </script>
@@ -94,12 +91,17 @@ export default {
     </template>
 
     <template v-slot:body="props">
-        <q-tr :props="props" @click="showEntry(props.row)">
+        <q-tr :props="props">
             <q-td key="icon" :props="props">
                 <q-img :src="props.row.logoURI" class="c-token-icon" />
             </q-td>
             <q-td key="name" :props="props">
-                <AddressField :address="props.row.address" :name="props.row.name" :truncate="32"/>
+                <AddressField
+                    :address="props.row.address"
+                    :name="props.row.name"
+                    :truncate="32"
+                    :useHighlight="false"
+                />
             </q-td>
             <q-td key="symbol" :props="props">
                 {{ props.row.symbol }}

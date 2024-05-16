@@ -490,7 +490,12 @@ export default {
         <template v-slot:body="props">
             <q-tr :props="props">
                 <q-td key="spender" :props="props">
-                    <AddressField :key="props.row.spender + 'c'" :address="props.row.spender" :truncate="18" />
+                    <AddressField
+                        :key="props.row.spender + 'c'"
+                        :address="props.row.spender"
+                        :truncate="18"
+                        :useHighlight="false"
+                    />
                 </q-td>
                 <q-td key="amount" :props="props" >
                     <div v-if="!this.isNFT()">
@@ -553,6 +558,7 @@ export default {
                         :key="props.row.contract.address + 'contract'"
                         :address="props.row.contract.address"
                         :truncate="18"
+                        :useHighlight="false"
                     />
                 </q-td>
                 <q-td key="updated" :props="props">

@@ -44,6 +44,8 @@ function updateLocalVariables() {
 
         if (local_value.indexOf('.') === -1) {
             // if local_value has the format xxxxxxxxxxxyyyyyyyyyyyyyy
+
+            local_value = '0'.repeat(WEI_PRECISION) + local_value; // -> 0000000000xxxxxxxx.yyyyyyyyyyyyyy
             local_value = [
                 local_value.slice(0, local_value.length - local_decimals), // xxxxxxxxxxx
                 local_value.slice(local_value.length - local_decimals),    // yyyyyyyyyyyyyy
@@ -103,7 +105,7 @@ function updateLocalVariables() {
             false,
             local_decimals,
             false,
-        ).trim().replace(/(\.\d[1-9]*)(0+$)/, '$1')+ ' ' + (props.symbol ?? '');
+        ).trim().replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
     } catch (e) {
         console.error('getValueDisplay', e);
     }

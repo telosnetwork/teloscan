@@ -141,10 +141,6 @@ const loadTransfers = async () => {
     emit('transfers-count', count);
 };
 
-function setHighlightAddress(val: string) {
-    emit('highlight', val);
-}
-
 watch(() => props.logs, async (newTrx) => {
     if (newTrx) {
         await loadTransfers();
@@ -169,8 +165,6 @@ watch(() => props.logs, async (newTrx) => {
                 copy
                 :address="transfer.from"
                 :truncate="15"
-                :highlightAddress="props.highlightAddress"
-                @highlight="setHighlightAddress"
             />
         </div>
         <div class="c-erc-transfers__cell c-erc-transfers__cell--b">
@@ -179,8 +173,6 @@ watch(() => props.logs, async (newTrx) => {
                 copy
                 :address="transfer.to"
                 :truncate="15"
-                :highlightAddress="props.highlightAddress"
-                @highlight="setHighlightAddress"
             />
         </div>
         <div class="c-erc-transfers__cell c-erc-transfers__cell--c">
@@ -192,8 +184,6 @@ watch(() => props.logs, async (newTrx) => {
             <AddressField
                 :address="transfer.token.address"
                 :truncate="15"
-                :highlightAddress="props.highlightAddress"
-                @highlight="setHighlightAddress"
             />
         </div>
     </div>

@@ -162,11 +162,6 @@ const truncatedId = (id: string) => {
     }
 };
 
-const highlightAddress = ref('');
-function setHighlightAddress(val: string) {
-    highlightAddress.value = val;
-}
-
 const getPath = (settings: { pagination: Pagination }) => {
     const { page, rowsPerPage, descending } = settings.pagination;
     let path = `/account/${props.address}/transfers?limit=${
@@ -394,8 +389,6 @@ onMounted(() => {
                     :key="props.row.from"
                     :address="props.row.from"
                     :truncate="12"
-                    :highlightAddress="highlightAddress"
-                    @highlight="setHighlightAddress"
                 />
             </q-td>
             <q-td key="to" :props="props">
@@ -404,8 +397,6 @@ onMounted(() => {
                     :key="props.row.to"
                     :address="props.row.to"
                     :truncate="12"
-                    :highlightAddress="highlightAddress"
-                    @highlight="setHighlightAddress"
                 />
             </q-td>
             <q-td key="id" :props="props">
@@ -432,8 +423,6 @@ onMounted(() => {
                     :key="props.row.contract.address"
                     :address="props.row.contract.address"
                     :truncate="16"
-                    :highlightAddress="highlightAddress"
-                    @highlight="setHighlightAddress"
                 />
             </q-td>
             <q-td key="item" :props="props" class="flex items-center">

@@ -18,7 +18,7 @@ import TransactionDialog from 'components/TransactionDialog.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 
-import { Pagination } from 'src/types';
+import { Pagination, PaginationByKey } from 'src/types';
 import { useStore } from 'vuex';
 
 const $q = useQuasar();
@@ -41,7 +41,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
     title: '',
-    initialPageSize: 1,
+    initialPageSize: 50,
     accountAddress: '',
 });
 
@@ -51,19 +51,19 @@ const loading =  ref(false);
 const showDateAge = ref(true);
 const showTotalGasFee = ref(true);
 const highlightMethod = ref('');
-const highlightAddress = ref('');
 const totalRows = ref(0);
 
 const transactions: any[] = [];
 const page_size_options = [10, 25, 50, 100];
 
-const pagination = ref<Pagination>(
+const pagination = ref<PaginationByKey>(
     {
-        sortBy: 'block',
+        key: 0,
+        page: 0,
         descending: true,
-        page: 1,
-        rowsPerPage: 50,
+        rowsPerPage: props.initialPageSize,
         rowsNumber: 0,
+        initialKey: 0,
     },
 );
 
@@ -137,9 +137,10 @@ function updateColumns() {
 
 watch(() => route.query,
     (query) => {
+        // key=1232322&rowsPerPage=50&sort=DESC
         const { p, rowsPerPage, sort } = query;
 
-        let page = p ? Number(p) : 1;
+        let page = p ? Number(p) : 0;
         let size = rowsPerPage ? Number(rowsPerPage) : pagination.value.rowsPerPage;
         let desc = sort ? sort === 'DESC' : true;
 
@@ -149,13 +150,17 @@ watch(() => route.query,
 );
 
 function setPagination(page: number, size: number, desc: boolean) {
-    if (page) {
-        pagination.value.page = page;
-    }
-    if (size) {
-        pagination.value.rowsPerPage = size;
-    }
+    console.log('setPagination()', { page, size, desc, initialKey: pagination.value.initialKey });
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = size;
     pagination.value.descending = desc;
+
+    if (pagination.value.initialKey > 0) {
+        // key is page pages away from the initial key
+        const zero_base_page = page - 1;
+        pagination.value.key = pagination.value.initialKey - (zero_base_page * pagination.value.rowsPerPage);
+        console.log('setPagination() key ->', pagination.value.key);
+    }
     updateColumns();
     parseTransactions();
 }
@@ -181,22 +186,26 @@ async function parseTransactions() {
         return;
     }
     loading.value = true;
-    const { page, rowsPerPage, sortBy, descending } = pagination.value;
+    const { key, rowsPerPage, descending } = pagination.value;
 
 
     try {
-        let response = await indexerApi.get(getPath());
+        const path = await getPath();
+        let response = await indexerApi.get(path);
         totalRows.value = response.data?.total_count;
-        const results = response.data.results.slice(0, FIVE_HUNDRED_K);
+        const results = response.data.results;
+        const next = response.data.next;
 
-        if (pagination.value.rowsNumber === 0) {
-            pagination.value.rowsNumber = response.data?.total_count > FIVE_HUNDRED_K ? FIVE_HUNDRED_K : response.data?.total_count;
+        if (pagination.value.initialKey === 0) {
+            pagination.value.initialKey = next + rowsPerPage;
         }
 
-        pagination.value.page = page;
+        pagination.value.key = key === 0 ? next : key;
         pagination.value.rowsPerPage = rowsPerPage;
-        pagination.value.sortBy = sortBy;
         pagination.value.descending = descending;
+        if (pagination.value.rowsNumber === 0) {
+            pagination.value.rowsNumber = totalRows.value;
+        }
 
         transactions.splice(
             0,
@@ -281,21 +290,39 @@ function addEmptyToCache(contracts: any, transaction: any){
     }
 }
 
-function getPath() {
-    const { page, rowsPerPage, descending } = pagination.value;
+async function getPath() {
+    const { page, key, rowsPerPage, descending } = pagination.value;
     const prepend = props.accountAddress ? `address/${props.accountAddress}` : '';
     let path = `${prepend}/transactions?limit=${
-        rowsPerPage === 0 ? 500 : rowsPerPage
+        rowsPerPage === 0 ? 100 : Math.min(rowsPerPage, props.initialPageSize)
     }`;
-    path += `&offset=${(page - 1) * rowsPerPage}`;
-    path += `&sort=${descending ? 'desc' : 'asc'}`;
-    path += (pagination.value.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
-    if (props.block) {
-        if (props.accountAddress) {
-            path += `&startBlock=${props.block}&endBlock=${props.block}`;
-        } else {
-            path += `&block=${props.block}`;
+    if (props.accountAddress) {
+        path += `&offset=${(page - 1) * rowsPerPage}`;
+        path += `&sort=${descending ? 'desc' : 'asc'}`;
+        path += (pagination.value.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
+        if (props.block) {
+            if (props.accountAddress) {
+                path += `&startBlock=${props.block}&endBlock=${props.block}`;
+            } else {
+                path += `&block=${props.block}`;
+            }
         }
+    } else {
+        if (pagination.value.initialKey === 0) {
+            // in the case of the first query, we need to get the initial key
+            let _aux_path = path.replace(/limit=\d+/, 'limit=1');
+            _aux_path += `&sort=${descending ? 'desc' : 'asc'}`;
+            _aux_path += '&includePagination=true';
+            _aux_path += '&key=0';
+            let response = await indexerApi.get(_aux_path);
+            const next = response.data.next;
+            pagination.value.initialKey = next + 1;
+            console.log('--->', { next, initialKey: pagination.value.initialKey });
+        }
+        path += `&sort=${descending ? 'desc' : 'asc'}`;
+        path += '&includePagination=true';
+        path += '&includeAbi=true';
+        path += `&key=${key}`;
     }
     return path;
 }
@@ -310,10 +337,6 @@ function toggleGasValue() {
 
 function setHighlightMethod(val: string) {
     highlightMethod.value = val;
-}
-
-function setHighlightAddress(val: string) {
-    highlightAddress.value = val;
 }
 
 const updateLoadingRows = () => {
@@ -448,8 +471,6 @@ onBeforeMount(() => {
                         :address="props.row.from"
                         :truncate="12"
                         :copy="true"
-                        :highlightAddress="highlightAddress"
-                        @highlight="setHighlightAddress"
                     />
                 </q-td>
                 <q-td key="to" :props="props" class="c-transaction-table__cell">
@@ -459,8 +480,6 @@ onBeforeMount(() => {
                         :address="props.row.to"
                         :truncate="12"
                         :copy="true"
-                        :highlightAddress="highlightAddress"
-                        @highlight="setHighlightAddress"
                     />
                 </q-td>
                 <q-td key='value' :props="props" class="c-transaction-table__cell">

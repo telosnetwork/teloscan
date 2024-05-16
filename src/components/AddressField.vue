@@ -7,13 +7,9 @@ import { getIcon } from 'src/lib/token-utils';
 import { toChecksumAddress } from 'src/lib/utils';
 
 import CopyButton from 'components/CopyButton.vue';
+import { useStore } from 'vuex';
 
 const props = defineProps({
-    highlightAddress: {
-        type: String,
-        required: false,
-        default: '',
-    },
     address: {
         type: String,
         required: true,
@@ -38,9 +34,12 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    useHighlight: {
+        type: Boolean,
+        default: true,
+    },
 });
 
-const emit = defineEmits(['highlight']);
 
 const displayName = ref('');
 const fullName = ref(toChecksumAddress(props.address));
@@ -61,7 +60,9 @@ const restart = async () => {
     await getDisplay();
 };
 
-
+const $store = useStore();
+const setHighlightAddress = (method: string) => props.useHighlight ? $store.dispatch('general/setHighlightAddress', method) : null;
+const highlightAddress = computed(() => props.useHighlight ? $store.state.general.highlightAddress : '');
 
 watch(() => props.address, async () => {
     restart();
@@ -90,6 +91,7 @@ const getDisplay = async () => {
         return;
     }
     let address = toChecksumAddress(props.address);
+    fullName.value = address;
     if (contractName.value) {
         if(tokenList.value?.tokens){
             tokenList.value.tokens.forEach((token: any) => {
@@ -125,18 +127,14 @@ const loadContract = async () => {
     }
 };
 
-function emitHighlight(val: string) {
-    emit('highlight', val);
-}
-
 </script>
 
 <template>
 <div
     :key="displayName + checksum"
     :class="['c-address-field', props.class]"
-    @mouseover="emitHighlight(checksum)"
-    @mouseleave="emitHighlight('')"
+    @mouseover="setHighlightAddress(checksum)"
+    @mouseleave="setHighlightAddress('')"
 >
     <router-link
         :to="`/${isToken?'token':'address'}/${checksum}`"

@@ -4,5 +4,6 @@ export default () => ({
     isLoading: null,
     highlightAddress: '',
     highlightMethod: '',
-    displayDecimals: 'fixed', // fixed, dynamic
+    highlightTx: '',
+    displayDecimals: 'dynamic', // fixed, dynamic
 });

@@ -13,7 +13,7 @@ import { BalanceQueryResponse, BalanceResult } from 'src/types/BalanceResult';
 import { Token } from 'src/types/Token';
 
 import TransactionTable from 'components/TransactionTable.vue';
-import InternalTransactionTable from 'components/InternalTransactionTable.vue';
+import InternalTransactionFlatTable from 'components/InternalTransactionFlatTable.vue';
 import NftTransfersTable from 'components/NftTransfersTable.vue';
 import TokenList from 'components/Token/TokenList.vue';
 import ApprovalList from 'components/Token/ApprovalList.vue';
@@ -63,8 +63,10 @@ watch(accountAddress, (newVal, oldVal) => {
 }, { deep: true, immediate: true });
 
 watch(() => route.query.tab, (newTab) => {
-    const str = newTab as string;
-    tab.value = tabs.includes(str) ? str : tabs[0];
+    if (route.name === 'address') {
+        const str = newTab as string;
+        tab.value = tabs.includes(str) ? str : tabs[0];
+    }
 });
 
 watch(tab, (newTab) => {
@@ -316,7 +318,10 @@ async function loadAccount() {
                 <HolderList v-if="contract" :contract="contract" />
             </q-tab-panel>
             <q-tab-panel v-else name="internaltx">
-                <InternalTransactionTable :title="accountAddress" :filter="{address:accountAddress}"/>
+                <InternalTransactionFlatTable
+                    :address="accountAddress"
+                    :usePagination="false"
+                />
             </q-tab-panel>
             <q-tab-panel
                 v-if="
