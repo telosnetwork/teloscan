@@ -156,6 +156,10 @@ export default class ContractManager {
             return;
         }
         let index = address.toString().toLowerCase();
+        if (contractData === null) {
+            this.contracts[index] = null;
+            return;
+        }
         let contract = this.factory.buildContract(contractData);
         if(
             typeof this.contracts[index] === 'undefined'
@@ -261,6 +265,7 @@ export default class ContractManager {
             if(index > -1){
                 this.processing.splice(index, 1);
             }
+            this.addContractToCache(address, null);
             return;
         }
         this.addContractToCache(address, contract);

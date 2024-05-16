@@ -62,8 +62,10 @@ watch(accountAddress, (newVal, oldVal) => {
 }, { deep: true, immediate: true });
 
 watch(() => route.query.tab, (newTab) => {
-    const str = newTab as string;
-    tab.value = tabs.includes(str) ? str : tabs[0];
+    if (route.name === 'address') {
+        const str = newTab as string;
+        tab.value = tabs.includes(str) ? str : tabs[0];
+    }
 });
 
 watch(tab, (newTab) => {
@@ -313,8 +315,7 @@ async function loadAccount() {
             </q-tab-panel>
             <q-tab-panel v-else name="internaltx">
                 <InternalTransactionFlatTable
-                    :title="accountAddress"
-                    :filter="{address:accountAddress}"
+                    :address="accountAddress"
                     :usePagination="false"
                 />
             </q-tab-panel>

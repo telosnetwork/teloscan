@@ -42,6 +42,10 @@ export default {
             internal: 'Internal Transactions',
             not_found: 'Transaction not found',
         },
+        internaltrx: {
+            page_title: 'Contract Internal Transactions',
+            for_address: 'for address { address }',
+        },
         home: {
             telos_evm_explorer: 'The Telos EVM Explorer',
             market_cap: 'Market Cap',
@@ -135,6 +139,7 @@ export default {
         input: 'Input',
         output: 'Output',
         value: 'Value',
+        count: 'Count',
         overview: 'overview',
         more_info: 'more info',
         transaction_sent: 'txn sent',
@@ -447,6 +452,7 @@ export default {
             telos_wallet: 'Wallet',
             telos_bridge: 'Bridge',
             transactions: 'Transactions',
+            internal_transactions: 'Internal Transactions',
             verify_contract_sourcify: 'Verify Contract (Sourcify)',
             view_other_networks: 'View other networks',
         },
