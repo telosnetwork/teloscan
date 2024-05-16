@@ -109,12 +109,12 @@ const routes = [
         }],
     },
     {
-        path: '/txsInternal',
+        path: '/txsinternal',
         component: () => import('layouts/MainLayout.vue'),
         children: [{
             path: '',
-            name: 'txsInternal',
-            component: () => import('pages/ErrorNotFoundPage.vue'),
+            name: 'txsinternal',
+            component: () => import('pages/InternalTrxPage.vue'),
         }],
     },
     {

@@ -26,6 +26,7 @@ const emit = defineEmits(['close-menu']);
 
 
 const blockchainSubmenuItems = [
+    { name: 'txsinternal', label: $t('components.header.internal_transactions') },
     { name: 'transactions', label: $t('components.header.transactions') },
     { name: 'blocks', label: $t('components.header.blocks') },
 ];

@@ -176,7 +176,7 @@ export const getDirection = (address: string, row: NftTransferData) => {
     } else if (toChecksumAddress(address) === toChecksumAddress(row.to)) {
         return 'in';
     } else {
-        return 'unknown';
+        return 'to';
     }
 };
 
