@@ -292,37 +292,32 @@ function addEmptyToCache(contracts: any, transaction: any){
 
 async function getPath() {
     const { page, key, rowsPerPage, descending } = pagination.value;
-    const prepend = props.accountAddress ? `address/${props.accountAddress}` : '';
-    let path = `${prepend}/transactions?limit=${
-        rowsPerPage === 0 ? 100 : Math.min(rowsPerPage, props.initialPageSize)
-    }`;
+    const limit = rowsPerPage === 0 ? 50 : Math.max(Math.min(rowsPerPage, props.initialPageSize), 10);
+    let path = '';
     if (props.accountAddress) {
+        path = `address/${props.accountAddress}/transactions?limit=${limit}`;
         path += `&offset=${(page - 1) * rowsPerPage}`;
         path += `&sort=${descending ? 'desc' : 'asc'}`;
         path += (pagination.value.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
         if (props.block) {
-            if (props.accountAddress) {
-                path += `&startBlock=${props.block}&endBlock=${props.block}`;
-            } else {
-                path += `&block=${props.block}`;
-            }
+            path += `&startBlock=${props.block}&endBlock=${props.block}`;
         }
     } else {
+        path = `transactions?limit=${limit}`;
         if (pagination.value.initialKey === 0) {
             // in the case of the first query, we need to get the initial key
-            let _aux_path = path.replace(/limit=\d+/, 'limit=1');
-            _aux_path += `&sort=${descending ? 'desc' : 'asc'}`;
-            _aux_path += '&includePagination=true';
-            _aux_path += '&key=0';
-            let response = await indexerApi.get(_aux_path);
+            let response = await indexerApi.get('transactions?includePagination=true&key=0');
             const next = response.data.next;
             pagination.value.initialKey = next + 1;
-            console.log('--->', { next, initialKey: pagination.value.initialKey });
         }
         path += `&sort=${descending ? 'desc' : 'asc'}`;
         path += '&includePagination=true';
         path += '&includeAbi=true';
-        path += `&key=${key}`;
+        if (props.block) {
+            path += `&block=${props.block}`;
+        } else {
+            path += `&key=${key}`;
+        }
     }
     return path;
 }
