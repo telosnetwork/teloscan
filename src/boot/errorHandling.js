@@ -386,6 +386,7 @@ export default boot(({ app, store }) => {
     // transaction notifications handlers
     store['$t'] = app.config.globalProperties.$t;
     $t          = app.config.globalProperties.$t;
+});
 
 export {
     errorNotification,
