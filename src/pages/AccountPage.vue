@@ -50,6 +50,7 @@ const initialLoadComplete = ref(false);
 const accountAddress = computed(() => route.params.address as string ?? '');
 const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
 const address = computed(() => store.getters['login/address']);
+const isToken = computed(() => contract.value?.isToken() ?? false);
 
 
 watch(accountAddress, (newVal, oldVal) => {
@@ -125,6 +126,9 @@ async function loadAccount() {
             });
         }
         title.value = $t('pages.contract');
+        if (isToken.value){
+            title.value = $t('components.token');
+        }
     } else {
         contractManager.addContractToCache(accountAddress.value, { address: accountAddress.value });
         try {
@@ -225,7 +229,7 @@ async function loadAccount() {
             :label="$t('components.nfts.collection')"
         />
         <q-tab
-            v-if="contract && contract.isToken()"
+            v-if="isToken"
             name="holders"
             class="c-address__tabs-tab"
             :to="{ query: {tab: 'holders' }}"
@@ -323,12 +327,8 @@ async function loadAccount() {
             >
                 <NFTList :address="contract.address" filter="contract" />
             </q-tab-panel>
-            <q-tab-panel
-                v-if="contract && contract.isToken()"
-                name="holders"
-                class="c-address__panel c-address__panel-holders"
-            >
-                <HolderList :contract="contract" />
+            <q-tab-panel v-if="isToken" name="holders">
+                <HolderList v-if="contract" :contract="contract" />
             </q-tab-panel>
             <q-tab-panel v-else name="internaltx">
                 <InternalTransactionFlatTable

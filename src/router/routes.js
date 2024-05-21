@@ -9,6 +9,18 @@ const routes = [
         }],
     },
     {
+        path: '/token/:address',
+        component: () => import('layouts/MainLayout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'token',
+                props: route => ({ page: route.query.page, pagesize: route.query.pagesize }),
+                component: () => import('pages/AccountPage.vue'),
+            },
+        ],
+    },
+    {
         path: '/address/:address/sourcify',
         component: () => import('layouts/MainLayout.vue'),
         children: [{
