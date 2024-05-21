@@ -48,6 +48,7 @@ const contractName = ref('');
 const logo = ref<any>(null);
 const tokenList = ref<any>(null);
 const checksum = ref('');
+const isToken = computed(() => contract.value?.isToken() ?? false);
 
 const restart = async () => {
     if (!props.address) {
@@ -103,7 +104,7 @@ const getDisplay = async () => {
             ? ''
             : logo.value
         ;
-        const name = (contract.value.isToken() && contract.value.getProperties()?.symbol)
+        const name = (isToken.value && contract.value.getProperties()?.symbol)
             ? contract.value.getProperties().symbol
             : contractName.value
                 ;
@@ -136,7 +137,7 @@ const loadContract = async () => {
     @mouseleave="setHighlightAddress('')"
 >
     <router-link
-        :to="`/address/${checksum}`"
+        :to="`/${isToken?'token':'address'}/${checksum}`"
         :class="{
             'c-address-field__link': true,
             'c-address-field__link--highlight': highlightAddress === checksum && highlightAddress !== ''
