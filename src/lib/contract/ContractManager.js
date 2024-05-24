@@ -51,7 +51,7 @@ export default class ContractManager {
         return transfers;
     }
     async parseContractTransaction(raw, data, contract, transfers) {
-        if (data === '0x' || data === null || typeof contract === 'undefined') {
+        if (data === '0x' || data === null || !contract) {
             return false;
         }
         if (contract.getInterface()) {
