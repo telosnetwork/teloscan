@@ -275,6 +275,9 @@ export default {
         download_image: 'Descargar imagen',
         confirm_download_image: 'Confirma que quieres descargar esta imagen',
         confirm: 'Confirmar',
+        click_to_toggle_media_size: 'Haga clic para cambiar el tamaño del medio',
+        toggle_expand: 'Alternar ajuste a pantalla o tamaño original',
+        close: 'Cerrar',
         transaction: {
             in: 'entra',
             out: 'sale',

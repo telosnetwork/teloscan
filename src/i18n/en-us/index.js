@@ -225,6 +225,9 @@ export default {
         download_image: 'Download Image',
         confirm_download_image: 'Confirm you want to download this image',
         confirm: 'Confirm',
+        click_to_toggle_media_size: 'Click to toggle media size',
+        toggle_expand: 'Toggle fit to screen of original size',
+        close: 'Close',
         approvals: {
             token_id: 'Token ID',
             approved: 'Approved',
