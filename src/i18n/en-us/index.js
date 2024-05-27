@@ -225,6 +225,14 @@ export default {
         download_image: 'Download Image',
         confirm_download_image: 'Confirm you want to download this image',
         confirm: 'Confirm',
+        input_viewer: {
+            name: 'Name',
+            type: 'Type',
+            data: 'Data',
+            default_view: 'Default View',
+            original_view: 'Original View',
+            decoded_view: 'Decoded View',
+        },
         approvals: {
             token_id: 'Token ID',
             approved: 'Approved',
