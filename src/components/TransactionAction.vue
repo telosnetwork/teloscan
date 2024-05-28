@@ -114,6 +114,7 @@ const setValues = async () => {
 <style lang="scss">
 .c-trx-action {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     gap: 5px;
     align-items: center;
