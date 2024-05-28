@@ -20,7 +20,7 @@ const props = defineProps<{
 const emit = defineEmits(['change']);
 
 const { t: $t } = useI18n();
-const currentView = ref<string>('default');
+const currentView = ref<string>('original');
 
 const showView = (view: string) => {
     currentView.value = view;
@@ -35,6 +35,13 @@ const defaultViewString = computed(() => {
     str += `\nMethodID: ${props.data.input.substring(0, 10)}\n`;
     str += props.data.args.map((arg, index) => `[${index}]:  ${arg.input}`).join('\n');
     return str;
+});
+
+const signatureString = computed(() => {
+    if (!props.data) {
+        return '';
+    }
+    return `Function: ${props.data.name}`;
 });
 
 const decodedData = computed(() => {
@@ -95,7 +102,7 @@ const initView = () => {
     if (props.data === null) {
         currentView.value = 'original';
     } else {
-        currentView.value = 'default';
+        currentView.value = 'original';
     }
 };
 watch([() => props.data, () => props.input], () => {
@@ -126,6 +133,13 @@ onMounted(() => {
             />
         </div>
         <div v-else-if="currentView === 'decoded'" class="c-transaction-input-viewer__table">
+            <q-input
+                v-model="signatureString"
+                borderless
+                autogrow
+                readonly
+                type="textarea"
+            />
             <q-table
                 v-model:pagination.sync="pagination"
                 :rows="rows"
@@ -133,23 +147,46 @@ onMounted(() => {
                 row-key="index"
             >
                 <template v-slot:bottom></template>
+                <template v-slot:body="props">
+                    <q-tr :key="props.row.hash + props.row.parsedTransaction?.transfers?.length" :props="props">
+                        <q-td key="index" :props="props" class="c-transaction-input-viewer__table_cell">
+                            {{  props.row ? props.row.index : '' }}
+                        </q-td>
+                        <q-td key="name" :props="props" class="c-transaction-input-viewer__table_cell">
+                            {{  props.row ? props.row.name : '' }}
+                        </q-td>
+                        <q-td key="type" :props="props" class="c-transaction-input-viewer__table_cell">
+                            {{  props.row ? props.row.type : '' }}
+                        </q-td>
+                        <q-td key="value" :props="props" class="c-transaction-input-viewer__table_cell c-transaction-input-viewer__table_cell--value">
+                            <span>
+                                {{  props.row ? props.row.value : '' }}
+                                <q-tooltip>{{  props.row ? props.row.value : '' }}</q-tooltip>
+                            </span>
+                        </q-td>
+                    </q-tr>
+                </template>
             </q-table>
         </div>
     </div>
     <div v-if="props.data !== null" class="c-transaction-input-viewer__controls">
+        <!-- TODO: https://github.com/telosnetwork/teloscan/issues/762
         <q-btn
+            class="c-transaction-input-viewer__controls-btn"
             :color="currentView === 'default' ? 'primary' : 'default'"
             @click="showView('default')"
         >
             {{ $t('components.input_viewer.default_view') }}
-        </q-btn>
+        </q-btn-->
         <q-btn
+            class="c-transaction-input-viewer__controls-btn"
             :color="currentView === 'original' ? 'primary' : 'default'"
             @click="showView('original')"
         >
             {{ $t('components.input_viewer.original_view') }}
         </q-btn>
         <q-btn
+            class="c-transaction-input-viewer__controls-btn"
             :color="currentView === 'decoded' ? 'primary' : 'default'"
             @click="showView('decoded')"
         >
@@ -168,6 +205,14 @@ onMounted(() => {
         .q-table__bottom {
             display: none;
         }
+
+        &_cell {
+            &--value {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 700px;
+            }
+        }
     }
 
     &__controls {
@@ -175,12 +220,8 @@ onMounted(() => {
         display: flex;
         gap: 8px;
 
-        &__select {
-            flex: 1;
-        }
-
-        &__decode-btn {
-            flex-shrink: 0;
+        &-btn.bg-default {
+            color: var(--text-color) !important;
         }
     }
 
