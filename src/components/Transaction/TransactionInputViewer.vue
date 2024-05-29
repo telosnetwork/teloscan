@@ -128,6 +128,14 @@ onMounted(() => {
     initView();
 });
 
+const copied = ref(false);
+const copyToClipboard = (row_value: string) => {
+    navigator.clipboard.writeText(row_value);
+    copied.value = true;
+    setTimeout(() => {
+        copied.value = false;
+    }, 2000);
+};
 
 </script>
 
@@ -192,11 +200,19 @@ onMounted(() => {
                         <q-td key="type" :props="props" class="c-transaction-input-viewer__table-cell">
                             {{  props.row ? props.row.type : '' }}
                         </q-td>
-                        <q-td key="value" :props="props" class="c-transaction-input-viewer__table-cell c-transaction-input-viewer__table-cell--value">
+                        <q-td
+                            key="value"
+                            :props="props"
+                            class="c-transaction-input-viewer__table-cell c-transaction-input-viewer__table-cell--value"
+                            @click="copyToClipboard(props.row.value)"
+                        >
                             <div class="c-transaction-input-viewer__table-cell-value">
                                 {{  props.row ? props.row.value : '' }}
-                                <q-tooltip>{{  props.row ? props.row.value : '' }}</q-tooltip>
                             </div>
+                            <q-tooltip>
+                                <q-icon v-if="copied" class="fas fa-check" />
+                                {{ copied ? $t('components.copied') : $t('components.copy_to_clipboard') }}
+                            </q-tooltip>
                         </q-td>
                     </q-tr>
                 </template>
@@ -242,8 +258,14 @@ onMounted(() => {
         }
 
         &-cell {
+            &--value {
+                cursor: pointer;
+            }
             &-value {
-                white-space: normal;
+                // solamente para resoluciones desktop
+                @media (min-width: 1024px) {
+                    white-space: normal;
+                }
             }
         }
         &-header-cell {
