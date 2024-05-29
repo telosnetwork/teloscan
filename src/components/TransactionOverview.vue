@@ -566,6 +566,7 @@ onMounted(() => {
     }
     &__col-val {
         flex-grow: 1;
+        overflow: hidden;
     }
     &__row {
         padding: 0.5rem 0;

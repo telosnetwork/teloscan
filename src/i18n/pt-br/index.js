@@ -274,6 +274,15 @@ export default {
         download_image: 'Baixar imagem',
         confirm_download_image: 'Confirme que deseja baixar esta imagem',
         confirm: 'Confirmar',
+        input_viewer: {
+            name: 'Nome',
+            type: 'Tipo',
+            data: 'Dados',
+            default_view: 'Vista padrão',
+            original_view: 'Vista original',
+            decoded_view: 'Vista decodificada',
+            copy_button_desc: 'tabela de parâmetros',
+        },
         transaction: {
             in: 'in',
             out: 'out',

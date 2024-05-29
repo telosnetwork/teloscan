@@ -232,6 +232,7 @@ export default {
             default_view: 'Default View',
             original_view: 'Original View',
             decoded_view: 'Decoded View',
+            copy_button_desc: 'parameters table',
         },
         approvals: {
             token_id: 'Token ID',

@@ -220,6 +220,15 @@ export default {
         download_image: 'Télécharger l’image',
         confirm_download_image: 'Confirmez que vous voulez télécharger cette image',
         confirm: 'Confirmer',
+        input_viewer: {
+            name: 'Nom',
+            type: 'Type',
+            data: 'Données',
+            default_view: 'Vue par défaut',
+            original_view: 'Vue originale',
+            decoded_view: 'Vue décodée',
+            copy_button_desc: 'tableau des paramètres',
+        },
         approvals: {
             token_id: 'ID Jeton',
             approved: 'Approuvé',

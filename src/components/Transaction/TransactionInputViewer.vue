@@ -3,6 +3,7 @@ import { ethers } from 'ethers';
 import { ref, computed, watch, onMounted } from 'vue';
 import { defineProps, defineEmits } from 'vue';
 import { useI18n } from 'vue-i18n';
+import CopyButton from 'components/CopyButton.vue';
 
 // Interfaces
 export interface DecodedTransactionInput {
@@ -36,6 +37,21 @@ const defaultViewString = computed(() => {
     str += props.data.args.map((arg, index) => `[${index}]:  ${arg.input}`).join('\n');
     return str;
 });
+
+const copyButtonText = computed(() => {
+    if (!props.data) {
+        return '';
+    }
+    let str = '';
+    str += columns.value.map(col => col.label).join(',') + '\n';
+    rows.value.forEach((row, index) => {
+        str += `${index}, ${row.name}, ${row.type}, ${row.value}\n`;
+    });
+
+    return str;
+});
+
+const copyButtonDesc = computed(() => $t('components.input_viewer.copy_button_desc'));
 
 const signatureString = computed(() => {
     if (!props.data) {
@@ -113,7 +129,6 @@ onMounted(() => {
 });
 
 
-
 </script>
 
 
@@ -146,26 +161,46 @@ onMounted(() => {
                 :columns="columns"
                 row-key="index"
             >
-                <template v-slot:bottom></template>
+                <template v-slot:header="props">
+                    <q-tr :props="props">
+                        <q-th
+                            v-for="col in props.cols"
+                            :key="col.name"
+                            :props="props"
+                        >
+                            <div class="c-transaction-input-viewer__table-header-cell">
+                                <span>{{ col.label }}</span>
+                                <CopyButton
+                                    v-if="col.name === 'value'"
+                                    :text="copyButtonText"
+                                    :description="copyButtonDesc"
+                                    accompanyingText=""
+                                    class="q-mr-sm"
+                                />
+                            </div>
+                        </q-th>
+                    </q-tr>
+                </template>
                 <template v-slot:body="props">
                     <q-tr :key="props.row.hash + props.row.parsedTransaction?.transfers?.length" :props="props">
-                        <q-td key="index" :props="props" class="c-transaction-input-viewer__table_cell">
+                        <q-td key="index" :props="props" class="c-transaction-input-viewer__table-cell">
                             {{  props.row ? props.row.index : '' }}
                         </q-td>
-                        <q-td key="name" :props="props" class="c-transaction-input-viewer__table_cell">
+                        <q-td key="name" :props="props" class="c-transaction-input-viewer__table-cell">
                             {{  props.row ? props.row.name : '' }}
                         </q-td>
-                        <q-td key="type" :props="props" class="c-transaction-input-viewer__table_cell">
+                        <q-td key="type" :props="props" class="c-transaction-input-viewer__table-cell">
                             {{  props.row ? props.row.type : '' }}
                         </q-td>
-                        <q-td key="value" :props="props" class="c-transaction-input-viewer__table_cell c-transaction-input-viewer__table_cell--value">
-                            <span>
+                        <q-td key="value" :props="props" class="c-transaction-input-viewer__table-cell c-transaction-input-viewer__table-cell--value">
+                            <div class="c-transaction-input-viewer__table-cell-value">
                                 {{  props.row ? props.row.value : '' }}
                                 <q-tooltip>{{  props.row ? props.row.value : '' }}</q-tooltip>
-                            </span>
+                            </div>
                         </q-td>
                     </q-tr>
                 </template>
+                <template v-slot:bottom></template>
             </q-table>
         </div>
     </div>
@@ -206,12 +241,15 @@ onMounted(() => {
             display: none;
         }
 
-        &_cell {
-            &--value {
-                overflow: hidden;
-                text-overflow: ellipsis;
-                max-width: 700px;
+        &-cell {
+            &-value {
+                white-space: normal;
             }
+        }
+        &-header-cell {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
     }
 
