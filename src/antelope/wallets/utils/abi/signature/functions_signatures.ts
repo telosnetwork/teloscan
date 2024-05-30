@@ -1,0 +1,28 @@
+/* eslint-disable max-len */
+export const functions_overrides = {
+    '0xa9059cbb': 'function transfer(address to, uint amount)',
+    '0xaac48653': 'function mint(address account, uint256 id, uint256 amount, uint256 maximum, string tokenUri, bytes data)',
+    '0xf5298aca': 'function burn(address account,uint256 id,uint256 value)',
+    '0x18cbafe5': 'function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline)',
+    '0x095ea7b3': 'function approve(address spender, uint256 amount)',
+    '0x7ff36ab5': 'function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)',
+    '0xfb3bdb41': 'function swapETHForExactTokens(uint256 amountOut, address[] path, address to, uint256 deadline)',
+    '0x38ed1739': 'function swapExactTokensForTokens(uint256 amountIn, uint256 amountOutMin, address[] path, address to, uint256 deadline)',
+    '0xded9382a': 'function removeLiquidityETHWithPermit(address token, uint256 liquidity, uint256 amountTokenMin, uint256 amountETHMin, address to, uint256 deadline, bool approveMax, uint8 v, bytes32 r, bytes32 s)',
+    '0xf305d719': 'function addLiquidityETH(address token, uint256 amountTokenDesired, uint256 amountTokenMin, uint256 amountETHMin, address to, uint256 deadline)',
+    '0xa22cb465': 'function setApprovalForAll(address to, bool approved)',
+    '0x23b872dd': 'function transferFrom(address sender, address recipient, uint256 amount)',
+    '0xf242432a': 'function safeTransferFrom(address from, address to, uint256 id, uint256 amount, bytes data)',
+    '0xe8e33700': 'function addLiquidity(address tokenA, address tokenB, uint256 amountADesired, uint256 amountBDesired, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline)',
+    '0x4a25d94a': 'function swapTokensForExactETH(uint256 amountOut, uint256 amountInMax, address[] calldata path, address to, uint256 deadline)',
+    '0x5c11d795': 'function swapExactTokensForTokensSupportingFeeOnTransferTokens(uint256 amountIn, uint256 amountOutMin, address[] path, address to, uint256 deadline)',
+    '0x0cd5840b': 'function create(address[] offerProperties_, uint256[] offerIds_, uint256[] offerValues_, address[] demandProperties_, uint256[] demandIds_, uint256[] demandValues_)',
+    '0xb583cc2c': 'function setSaleStartEnd(string eventCode, uint256 start, uint256 end)',
+    '0xbea9849e': 'function setUniswapRouter(address _new)',
+    '0x860665b3': 'function openTrove(uint256 _maxFeePercentage, uint256 _LUSDAmount, address _upperHint, address _lowerHint)',
+    '0x2195995c': 'function removeLiquidityWithPermit(address tokenA, address tokenB, uint256 liquidity, uint256 amountAMin, uint256 amountBMin, address to, uint256 deadline, bool approveMax, uint8 v, bytes32 r, bytes32 s)',
+    '0x70a08231': 'function balanceOf(address)',
+    '0xf23a6e61': 'function onERC1155Received(address operator, address from, uint256 id, uint256 value, bytes data)',
+    '0x3542aee2': 'function mintByOwner(address to, uint256 tokenType)',
+} as { [prefix: string]: string };
+
