@@ -9,13 +9,14 @@ import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import ImagePopup from 'src/components/ImagePopup.vue';
 import { NFT, NFT_TYPE } from 'src/types/NFT';
-import { QTableProps } from 'quasar';
+import { QTableProps, useQuasar } from 'quasar';
 
 
 
 const allowedFilters = ['contract', 'account'];
 
 const { t : $t } = useI18n();
+const $q = useQuasar();
 
 const props = defineProps({
     address: {
@@ -348,7 +349,7 @@ onMounted(() => {
                             :previewSize="previewSize"
                         />
                     </span>
-                    <q-tooltip v-if="props.row?.metadata?.description">{{ props.row.metadata.description }}</q-tooltip>
+                    <q-tooltip v-if="props.row?.metadata?.description && $q.screen.gt.md">{{ props.row.metadata.description }}</q-tooltip>
                 </q-td>
                 <q-td key="metadata" :props="props">
                     <a
