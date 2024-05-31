@@ -1,6 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, toRaw, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { BlockData, EvmTransactionExtended } from 'src/types';
 import { WEI_PRECISION } from 'src/lib/utils';
@@ -16,6 +16,8 @@ import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 import ERCTransferList from 'components/Transaction/ERCTransferList.vue';
 import TLOSTransferList from 'components/Transaction/TLOSTransferList.vue';
+import TransactionInputViewer from 'components/Transaction/TransactionInputViewer.vue';
+import { DecodedTransactionInput, getParsedInternalTransactions } from 'src/lib/transaction-utils';
 
 const { t: $t } = useI18n();
 
@@ -32,12 +34,13 @@ const timestamp = computed(() => props.trx?.timestamp || 0);
 const blockData = ref<BlockData | null>(null);
 const transactionIndex = ref<number>(-1);
 const toAddress = ref('');
+const decodedData = ref<DecodedTransactionInput | null>(null);
 const isAContractDeployment = ref(false);
 
 const showMoreDetails = ref(true);
 const showErc20Transfers = ref(true);
 const showTLOSTransfers = ref(true);
-const moreDetailsHeight = ref(0);
+const moreDetailsHeight = ref<string | number>(0);
 
 const loadBlockData = async () => {
     try {
@@ -59,6 +62,14 @@ function setTLOSTransfersCount(count: number) {
     showTLOSTransfers.value = count > 0;
 }
 
+async function loadParsedInternalTransactions() {
+    if (hash.value) {
+        const { parsedItxs } = await getParsedInternalTransactions(hash.value, $t);
+        const decoded = (toRaw(parsedItxs)[0] as {decoded:unknown})?.decoded;
+        decodedData.value = decoded as DecodedTransactionInput;
+    }
+}
+
 watch(() => props.trx, async (newTrx) => {
     if (newTrx) {
         if (newTrx.to) {
@@ -71,26 +82,51 @@ watch(() => props.trx, async (newTrx) => {
         }
 
         await loadBlockData();
+        await loadParsedInternalTransactions();
     }
 }, { immediate: true });
 
-watch(() => blockData.value, (newBlockData) => {
-    if (newBlockData) {
-        const moreDetailsContainer = document.querySelector('.c-trx-overview__more-details-container');
+const updateMoreDetailsHeight = () => {
+    setTimeout(() => {
+        const moreDetailsContainer = document.querySelector('.c-trx-overview__more-details-container') as HTMLDivElement;
         if (moreDetailsContainer) {
-            moreDetailsHeight.value = moreDetailsContainer.clientHeight;
-            showMoreDetails.value = false;
+            const clone = completeClonehtmlElement(moreDetailsContainer);
+            document.body.appendChild(clone);
+            moreDetailsHeight.value = clone.scrollHeight;
+            document.body.removeChild(clone);
+            if (showMoreDetails.value) {
+                moreDetailsContainer.style.setProperty('height', `${moreDetailsHeight.value}px`);
+            } else {
+                moreDetailsContainer.style.setProperty('height', '0px');
+            }
+        } else {
+            setTimeout(updateMoreDetailsHeight, 100);
         }
-    }
+    }, 20);
+};
+
+const completeClonehtmlElement = (element: HTMLElement) => {
+    const clone = element.cloneNode(true) as HTMLElement;
+    clone.style.setProperty('position', 'absolute');
+    clone.style.setProperty('visibility', 'hidden');
+    clone.style.setProperty('height', 'auto');
+    clone.style.setProperty('width', `${element.offsetWidth}px`);
+    return clone;
+};
+
+watch(() => showMoreDetails.value, () => {
+    updateMoreDetailsHeight();
 });
 
-watch(() => showMoreDetails.value, (newShowMoreDetails) => {
-    const moreDetailsContainer = document.querySelector('.c-trx-overview__more-details-container') as HTMLDivElement;
-    if (moreDetailsContainer) {
-        moreDetailsContainer.style.setProperty('height', newShowMoreDetails ? `${moreDetailsHeight.value}px` : '0px');
-    }
+watch(() => decodedData.value, () => {
+    showMoreDetails.value = false;
+    updateMoreDetailsHeight();
 });
 
+onMounted(() => {
+    showMoreDetails.value = false;
+    updateMoreDetailsHeight();
+});
 
 </script>
 
@@ -483,7 +519,13 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
             </div>
             <div class="c-trx-overview__col-val">
                 <q-skeleton v-if="loading" type="text" class="c-trx-overview__skeleton" />
-                <div v-else class="c-trx-overview__row-value c-trx-overview__row-value--input">{{ trx.input }}</div>
+                <div v-else class="c-trx-overview__row-value c-trx-overview__row-value--input">
+                    <TransactionInputViewer
+                        :data="decodedData"
+                        :input="props.trx?.input || '0x'"
+                        @change="updateMoreDetailsHeight"
+                    />
+                </div>
             </div>
         </div>
 
@@ -524,6 +566,7 @@ watch(() => showMoreDetails.value, (newShowMoreDetails) => {
     }
     &__col-val {
         flex-grow: 1;
+        overflow: hidden;
     }
     &__row {
         padding: 0.5rem 0;
