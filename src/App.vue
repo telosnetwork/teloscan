@@ -18,6 +18,9 @@ const $q = useQuasar();
 // computed
 const isNative = computed(() => $store.getters['login/isNative']);
 
+
+
+
 onMounted(async () => {
     const network = useChainStore().currentChain.settings.getNetwork();
     if (TELOS_NETWORK_NAMES.includes(network)) {

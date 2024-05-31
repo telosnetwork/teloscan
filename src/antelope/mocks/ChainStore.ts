@@ -141,15 +141,5 @@ const ChainStore = {
 
 export const useChainStore = () => ChainStore;
 
-/*
-
-// TODO: put this code somewhere else
-setTimeout(() => {
-    if (process.env.NETWORK === 'mainnet') {
-        ChainStore.setChain('mainnet', 'telos-evm');
-    } else {
-        ChainStore.setChain('testnet', 'telos-evm-testnet');
-    }
-}, 1000);
-
-*/
+// TODO: remove this
+ChainStore.setChain('mainnet', process.env.NETWORK_EVM_NAME as string);
