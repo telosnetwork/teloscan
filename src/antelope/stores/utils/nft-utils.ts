@@ -21,16 +21,6 @@ export async function extractNftMetadata(
     let image = '';
     let mediaSource: string | undefined = undefined;
 
-    let _metadata = metadata;
-
-    if (typeof _metadata === 'string') {
-        try {
-            _metadata = JSON.parse(_metadata);
-        } catch (error) {
-            _metadata = { tokenUri };
-        }
-    }
-
     // We are going to test the imageCache URL to see if it is a valid URL
     if (imageCache) {
         // first we create a regExp for the valid URL. e.g: "https://nfts.telos.net/40/0x552fd5743432eC2dAe222531e8b88bf7d2410FBc/344"
@@ -48,16 +38,16 @@ export async function extractNftMetadata(
         }
     }
     // if there's an image in the metadata, we return that
-    if (!image && _metadata?.image && urlIsPicture(_metadata.image)) {
-        image = _metadata.image as string;
+    if (!image && metadata?.image && urlIsPicture(metadata.image)) {
+        image = metadata.image as string;
     }
 
-    if (!image && _metadata) {
+    if (!image && metadata) {
         // this NFT is not a simple image and could be anything (including an image).
         // We need to look at the metadata
         // we iterate over the metadata properties
-        for (const property in _metadata) {
-            const _value = _metadata[property];
+        for (const property in metadata) {
+            const _value = metadata[property];
 
             if (typeof _value !== 'string') {
                 continue;
@@ -111,7 +101,7 @@ export async function extractNftMetadata(
         }
     }
 
-    if (!image && tokenUri && (!_metadata || Object.keys(_metadata).length === 0)) {
+    if (!image && tokenUri && (!metadata || Object.keys(metadata).length === 0)) {
         // if there is no metadata, attempt to use the tokenUri
         if (await urlIsVideo(tokenUri)) {
             mediaType = NFTSourceTypes.VIDEO;
@@ -120,15 +110,15 @@ export async function extractNftMetadata(
         }
     }
 
-    const metadataImageIsMediaUrl = await urlIsVideo(_metadata?.image ?? '') || await urlIsAudio(_metadata?.image ?? '') || urlIsPicture(_metadata?.image ?? '');
+    const metadataImageIsMediaUrl = await urlIsVideo(metadata?.image ?? '') || await urlIsAudio(metadata?.image ?? '') || urlIsPicture(metadata?.image ?? '');
 
-    if (_metadata?.image?.includes(IPFS_GATEWAY) && !metadataImageIsMediaUrl) {
-        mediaType = await determineIpfsMediaType(_metadata?.image);
+    if (metadata?.image?.includes(IPFS_GATEWAY) && !metadataImageIsMediaUrl) {
+        mediaType = await determineIpfsMediaType(metadata?.image);
 
         if (mediaType === NFTSourceTypes.IMAGE) {
-            image = _metadata?.image;
+            image = metadata?.image;
         }
-        mediaSource = _metadata?.image;
+        mediaSource = metadata?.image;
     }
 
     return { image, mediaType, mediaSource };

@@ -4,7 +4,7 @@
 // useAccountStore().getAccount(this.label).account as addressString;
 import { EVMAuthenticator } from 'src/antelope/wallets';
 import { AntelopeError, addressString } from 'src/antelope/types';
-import { CURRENT_CONTEXT, EVMChainSettings, createTraceFunction, useChainStore } from 'src/antelope/mocks';
+import { CURRENT_CONTEXT, TeloscanEVMChainSettings, createTraceFunction, useChainStore } from 'src/antelope/mocks';
 import { BigNumber } from 'ethers'; 'src/antelope/mocks/FeedbackStore';
 import { getAntelope } from 'src/antelope/mocks/AntelopeConfig';
 import { useFeedbackStore } from 'src/antelope/mocks';
@@ -111,7 +111,7 @@ class AccountStore {
             useFeedbackStore().setLoading(funcname);
             const account = this.loggedAccount as EvmAccountModel;
             const authenticator = this.loggedAccount.authenticator as EVMAuthenticator;
-            const chainSettings = useChainStore().loggedChain.settings as unknown as EVMChainSettings;
+            const chainSettings = useChainStore().loggedChain.settings as unknown as TeloscanEVMChainSettings;
 
             const tx = await authenticator.signCustomTransaction(contract, abi, parameters, value)
                 .then(r => this.subscribeForTransactionReceipt(account, r as TransactionResponse));
