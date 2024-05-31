@@ -445,7 +445,7 @@ export default defineComponent({
     <p class="text-negative output-container">
         {{ errorMessage }}
     </p>
-    <div v-if="result" class="output-container">
+    <div v-if="result !== null" class="output-container">
         {{ $t('components.contract_tab.result') }} ({{ abi?.outputs.length > 0 ? abi.outputs[0].type : '' }}):
         <router-link v-if="abi?.outputs?.[0]?.type === 'address'" :to="`/address/${result}`" >{{ result }}</router-link>
         <template v-else>{{ result }}</template>

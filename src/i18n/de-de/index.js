@@ -277,6 +277,15 @@ export default {
         click_to_toggle_media_size: 'Klicken, um die Mediengröße umzuschalten',
         toggle_expand: 'Passform auf Bildschirm oder Originalgröße umschalten',
         close: 'Schließen',
+        input_viewer: {
+            name: 'Name',
+            type: 'Typ',
+            data: 'Daten',
+            default_view: 'Standardansicht',
+            original_view: 'Originalansicht',
+            decoded_view: 'Dekodierte Ansicht',
+            copy_button_desc: 'Parametertabelle',
+        },
         transaction: {
             in: 'in',
             out: 'out',

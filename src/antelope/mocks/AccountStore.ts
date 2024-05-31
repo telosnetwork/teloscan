@@ -54,11 +54,15 @@ class AccountStore {
 
     async loginEVM({ authenticator, network, autoLogAccount }: LoginEVMActionData, trackAnalyticsEvents: boolean): Promise<boolean> {
         currentAuthenticator = authenticator;
-        currentAccount = autoLogAccount ? await authenticator.autoLogin(network, autoLogAccount, trackAnalyticsEvents) : await authenticator.login(network, trackAnalyticsEvents);
+        currentAccount = autoLogAccount
+            ? await authenticator.autoLogin(network, autoLogAccount, trackAnalyticsEvents)
+            : await authenticator.login(network, trackAnalyticsEvents);
 
-        const account = useAccountStore().getAccount(authenticator.label);
-        getAntelope().events.onLoggedIn.next(account);
-        return true;
+        if (currentAccount) {
+            const account = useAccountStore().getAccount(authenticator.label);
+            getAntelope().events.onLoggedIn.next(account);
+        }
+        return !!currentAccount;
     }
 
     logout() {

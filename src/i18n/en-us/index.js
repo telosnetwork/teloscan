@@ -228,6 +228,15 @@ export default {
         click_to_toggle_media_size: 'Click to toggle media size',
         toggle_expand: 'Toggle fit to screen of original size',
         close: 'Close',
+        input_viewer: {
+            name: 'Name',
+            type: 'Type',
+            data: 'Data',
+            default_view: 'Default View',
+            original_view: 'Original View',
+            decoded_view: 'Decoded View',
+            copy_button_desc: 'parameters table',
+        },
         approvals: {
             token_id: 'Token ID',
             approved: 'Approved',

@@ -277,6 +277,15 @@ export default {
         click_to_toggle_media_size: 'Clique para alternar o tamanho da mídia',
         toggle_expand: 'Alternar ajuste à tela ou tamanho original',
         close: 'Fechar',
+        input_viewer: {
+            name: 'Nome',
+            type: 'Tipo',
+            data: 'Dados',
+            default_view: 'Vista padrão',
+            original_view: 'Vista original',
+            decoded_view: 'Vista decodificada',
+            copy_button_desc: 'tabela de parâmetros',
+        },
         transaction: {
             in: 'in',
             out: 'out',
