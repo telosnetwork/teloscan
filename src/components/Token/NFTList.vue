@@ -250,7 +250,7 @@ onMounted(() => {
                     <div v-if="col.name==='media'" class="u-flex--center-y" @click="toggleMediaSize">
                         <a>{{ col.label }}</a>
                         <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
-                        <q-tooltip anchor="bottom middle" self="top middle">
+                        <q-tooltip v-it="$q.screen.gt.md" anchor="bottom middle" self="top middle">
                             {{ $t('components.click_to_toggle_media_size') }}
                         </q-tooltip>
                     </div>
