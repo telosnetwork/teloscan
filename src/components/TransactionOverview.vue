@@ -72,6 +72,7 @@ async function loadParsedInternalTransactions() {
 
 watch(() => props.trx, async (newTrx) => {
     if (newTrx) {
+        console.log('newTrx', newTrx);
         if (newTrx.to) {
             toAddress.value = newTrx.to;
         } else {
@@ -80,7 +81,6 @@ watch(() => props.trx, async (newTrx) => {
                 isAContractDeployment.value = true;
             }
         }
-
         await loadBlockData();
         await loadParsedInternalTransactions();
     }
@@ -251,9 +251,7 @@ onMounted(() => {
         <div class="c-trx-overview__col-val">
             <q-skeleton v-if="!trx" type="text" class="c-trx-overview__skeleton" />
             <template v-else>
-                <span v-if="isAContractDeployment">{{ $t('components.transaction.contract_deployment') }}</span>
                 <TransactionAction
-                    v-else
                     :trx="trx"
                 />
             </template>
