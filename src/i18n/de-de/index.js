@@ -274,6 +274,9 @@ export default {
         download_image: 'Bild herunterladen',
         confirm_download_image: 'Bestätigen Sie, dass Sie dieses Bild herunterladen möchten',
         confirm: 'Bestätigen',
+        click_to_toggle_media_size: 'Klicken, um die Mediengröße umzuschalten',
+        toggle_expand: 'Passform auf Bildschirm oder Originalgröße umschalten',
+        close: 'Schließen',
         input_viewer: {
             name: 'Name',
             type: 'Typ',

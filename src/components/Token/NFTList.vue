@@ -3,19 +3,20 @@
 import { ref, watch, onMounted, onBeforeMount } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { indexerApi } from 'src/boot/telosApi';
-import { notifyMessage, icons, NotificationAction } from 'src/boot/errorHandling';
 import { ALLOWED_VIDEO_EXTENSIONS } from 'src/lib/utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
+import ImagePopup from 'src/components/ImagePopup.vue';
 import { NFT, NFT_TYPE } from 'src/types/NFT';
-import { QTableProps } from 'quasar';
+import { QTableProps, useQuasar } from 'quasar';
 
 
 
 const allowedFilters = ['contract', 'account'];
 
 const { t : $t } = useI18n();
+const $q = useQuasar();
 
 const props = defineProps({
     address: {
@@ -158,12 +159,6 @@ function hasVideo(nft: NFT) {
     return nft;
 }
 
-function isDataImage(nft: NFT) {
-    let image = getMedia(nft);
-    const regex = new RegExp(/(data:image\/[^;]+;base64[^"]+)/);
-    return regex.test(image);
-}
-
 async function onRequest() {
     loading.value = true;
 
@@ -217,24 +212,20 @@ function getPath(type: string) {
     return `/${queryFilter}/${props.address}/nfts?type=${type}&includeAbi=true&limit=10000&forceMetadata=1&includePagination=true`;
 }
 
-function confirmDownloadImage(imageData: string, name: string) {
-    notifyMessage (
-        'success',
-        icons.info,
-        $t('components.download_image'),
-        $t('components.confirm_download_image'),
-        new NotificationAction({
-            label: $t('components.confirm'),
-            handler: () => {
-                // download image
-                const link = document.createElement('a');
-                link.href = imageData;
-                link.download = name;
-                link.click();
-            },
-        }),
-    );
-}
+// Media display
+const previewSize = ref(36);
+const toggleMediaSize = () => {
+    previewSize.value = (previewSize.value === 36) ? 72 : 36;
+    // save in storage
+    localStorage.setItem('mediaSize', previewSize.value.toString());
+};
+onMounted(() => {
+    const size = localStorage.getItem('mediaSize');
+    if(size){
+        previewSize.value = parseInt(size);
+    }
+});
+
 </script>
 
 <template>
@@ -256,7 +247,14 @@ function confirmDownloadImage(imageData: string, name: string) {
                     :key="col.name"
                     :props="props"
                 >
-                    <div class="u-flex--center-y">
+                    <div v-if="col.name==='media'" class="u-flex--center-y" @click="toggleMediaSize">
+                        <a>{{ col.label }}</a>
+                        <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
+                        <q-tooltip v-it="$q.screen.gt.md" anchor="bottom middle" self="top middle">
+                            {{ $t('components.click_to_toggle_media_size') }}
+                        </q-tooltip>
+                    </div>
+                    <div v-else class="u-flex--center-y">
                         {{ col.label }}
                     </div>
                 </q-th>
@@ -342,35 +340,16 @@ function confirmDownloadImage(imageData: string, name: string) {
                         v-else-if="props.row.imageCache || props.row.metadata?.image"
                         clickable="clickable"
                     >
-                        <a
-                            v-if="props.row.imageCache && !isDataImage(props.row)"
-                            :href="
+                        <ImagePopup
+                            :image="
                                 (props.row.imageCache) ? props.row.imageCache + '/1440.webp' :
                                 props.row.metadata?.image
                             "
-                            target="_blank"
-                        >
-                            <q-img
-                                :src="props.row.imageCache + '/280.webp'"
-                                :alt="props.row.metadata?.name"
-                            />
-                        </a>
-                        <q-img
-                            v-else-if="isDataImage(props.row)"
-                            class="cursor-pointer"
-                            :src="props.row.metadata?.image"
-                            :alt="props.row.metadata?.name"
-                            @click="confirmDownloadImage(props.row.metadata?.image, props.row.metadata?.name)"
+                            :title="props.row.metadata?.name"
+                            :previewSize="previewSize"
                         />
-                        <a
-                            v-else
-                            :href="props.row.metadata?.image"
-                            target="_blank"
-                        >
-                            <q-img :src="props.row.metadata?.image" :alt="props.row.metadata?.name" />
-                        </a>
                     </span>
-                    <q-tooltip v-if="props.row?.metadata?.description">{{ props.row.metadata.description }}</q-tooltip>
+                    <q-tooltip v-if="props.row?.metadata?.description && $q.screen.gt.md">{{ props.row.metadata.description }}</q-tooltip>
                 </q-td>
                 <q-td key="metadata" :props="props">
                     <a
