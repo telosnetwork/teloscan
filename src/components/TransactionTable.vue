@@ -150,7 +150,6 @@ watch(() => route.query,
 );
 
 function setPagination(page: number, size: number, desc: boolean) {
-    console.log('setPagination()', { page, size, desc, initialKey: pagination.value.initialKey });
     pagination.value.page = page;
     pagination.value.rowsPerPage = size;
     pagination.value.descending = desc;
@@ -159,7 +158,6 @@ function setPagination(page: number, size: number, desc: boolean) {
         // key is page pages away from the initial key
         const zero_base_page = page - 1;
         pagination.value.key = pagination.value.initialKey - (zero_base_page * pagination.value.rowsPerPage);
-        console.log('setPagination() key ->', pagination.value.key);
     }
     updateColumns();
     parseTransactions();
