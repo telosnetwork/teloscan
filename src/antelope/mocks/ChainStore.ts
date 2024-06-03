@@ -8,6 +8,7 @@ import { ChainSettings, NativeCurrencyAddress, TokenClass } from 'src/antelope/t
 import TelosEVM from 'src/antelope/chains/evm/telos-evm';
 import TelosEVMTestnet from 'src/antelope/chains/evm/telos-evm-testnet';
 import { ethers } from 'ethers';
+import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 
 export interface TeloscanEVMChainSettings {
     getStakedSystemToken(): TokenClass;
@@ -22,6 +23,9 @@ export interface TeloscanEVMChainSettings {
     getExplorerUrl: () => string;
     getSmallLogoPath: () => string;
     getLargeLogoPath: () => string;
+    // Telos Specific
+    getEthAccountByNativeAccount: (account: string) => Promise<string>;
+    getNativeSupport(): TelosEvmApi | null;
 }
 
 export const evmSettings: { [network: string]: TeloscanEVMChainSettings } = {
@@ -118,7 +122,6 @@ const ChainStore = {
     getNetworkSettings: (network: string) => current.settings,
     getChain: (label: string) => ChainStore.currentChain,
     setChain: (label: string, network: string) => {
-        console.error('ChainStore.setChain', label, network);
         if (network in evmSettings) {
 
             // create the chain model if it doesn't exist

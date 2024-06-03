@@ -225,6 +225,7 @@ export default {
         download_image: 'Download Image',
         confirm_download_image: 'Confirm you want to download this image',
         confirm: 'Confirm',
+        native_not_supported: 'This chain does not support Antelope basechain',
         approvals: {
             token_id: 'Token ID',
             approved: 'Approved',

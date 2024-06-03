@@ -35,7 +35,6 @@ module.exports = function(/* ctx */) {
             'ual',
             'hyperion',
             'i18n',
-            'api',
             'errorHandling',
             'telosApi',
             'evm',

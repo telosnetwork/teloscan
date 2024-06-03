@@ -5,7 +5,6 @@ import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { Authenticator } from 'universal-authenticator-library';
-import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 
 import {
     LOGIN_EVM,
@@ -24,7 +23,7 @@ import {
     useChainStore,
 } from 'src/antelope/mocks';
 import { ual } from 'src/boot/ual';
-import { evm, providerManager } from 'src/boot/evm';
+import { providerManager } from 'src/boot/evm';
 
 const $q = useQuasar();
 const store = useStore();
@@ -111,9 +110,10 @@ async function ualLogin(wallet: Authenticator, account?: string) {
     if (users.length) {
         const account = users[0];
         const accountName = await account.getAccountName();
-        let evmAccount;
+        let evmAccount = '';
         try {
-            evmAccount = await (evm as unknown as TelosEvmApi).telos.getEthAccountByTelosAccount(accountName);
+            const chain = useChainStore().currentChain;
+            evmAccount = await chain.settings.getEthAccountByNativeAccount(accountName);
         } catch (e) {
             $q.notify({
                 position: 'top',
@@ -124,14 +124,14 @@ async function ualLogin(wallet: Authenticator, account?: string) {
             return;
         }
         setLogin({
-            address: evmAccount.address,
+            address: evmAccount,
             nativeAccount: accountName,
         });
         providerManager.setProvider(account);
         localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
             type: LOGIN_NATIVE,
             provider: wallet.getName(),
-            account: evmAccount.address,
+            account: evmAccount,
         }));
     }
     emit('hide');

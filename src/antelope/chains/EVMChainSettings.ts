@@ -29,6 +29,7 @@ import { createTraceFunction } from 'src/antelope/mocks/FeedbackStore';
 import { getAntelope } from 'src/antelope';
 import { WEI_PRECISION, PRICE_UPDATE_INTERVAL_IN_MIN } from 'src/antelope/stores/utils';
 import { BehaviorSubject, filter } from 'rxjs';
+import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 
 
 export default abstract class EVMChainSettings implements ChainSettings {
@@ -541,5 +542,14 @@ export default abstract class EVMChainSettings implements ChainSettings {
             console.error('type of response.result', typeof response.result, [response.result]);
             return response.result as EvmBlockData;
         });
+    }
+
+    // teloscan specific. MUST be overridden by the chain
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async getEthAccountByNativeAccount(_: string): Promise<string> {
+        throw new Error('Feature not supported for this network');
+    }
+    getNativeSupport(): TelosEvmApi | null {
+        return null;
     }
 }

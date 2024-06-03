@@ -48,4 +48,4 @@ export default boot(({ app, store }) => {
     store.$evmEndpoint = app.config.globalProperties.$evmEndpoint = hyperion;
 });
 
-export { evm, providerManager };
+export { providerManager };

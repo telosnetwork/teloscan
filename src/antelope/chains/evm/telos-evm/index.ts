@@ -5,6 +5,9 @@ import { TokenClass, TokenSourceInfo } from 'src/antelope/types';
 import { useUserStore } from 'src/antelope';
 import { getFiatPriceFromIndexer, getCoingeckoPriceChartData, getCoingeckoUsdPrice } from 'src/lib/price';
 
+// specific for Telos
+import { TelosEvmApi } from '@telosnetwork/telosevm-js';
+
 const LOGO = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/telos.png';
 const CHAIN_ID = '40';
 export const NETWORK = 'telos-evm';
@@ -62,6 +65,20 @@ const CONTRACTS_BUCKET = 'https://verified-evm-contracts.s3.amazonaws.com';
 declare const fathom: { trackEvent: (eventName: string) => void };
 
 export default class TelosEVM extends EVMChainSettings {
+    nativeSupport: TelosEvmApi;
+    constructor(network: string) {
+        super(network);
+        this.nativeSupport = new TelosEvmApi({
+            endpoint: this.getHyperionEndpoint(),
+            chainId: parseInt(this.getChainId()),
+            ethPrivateKeys: [],
+            telosContract: this.getEscrowContractAddress(),
+            telosPrivateKeys: [],
+            fetch,
+        });
+        console.assert(network === NETWORK, `Network name mismatch: '${network}' !== '${NETWORK}'`);
+    }
+
     getNetwork(): string {
         return NETWORK;
     }
@@ -172,4 +189,19 @@ export default class TelosEVM extends EVMChainSettings {
 
         fathom.trackEvent(eventName);
     }
+
+    // teloscan specific
+    getNativeSupport(): TelosEvmApi | null {
+        return this.nativeSupport;
+    }
+
+    async getEthAccountByNativeAccount(native: string): Promise<string> {
+        const account = await this.nativeSupport.telos.getEthAccountByTelosAccount(native);
+        if (account) {
+            return account.address;
+        } else {
+            return '';
+        }
+    }
+
 }
