@@ -65,6 +65,48 @@ export const loadTransaction = async (hash: string): Promise<EvmTransactionExten
         return null;
     }
 };
+function parseInput(inputString: string, inputs: {name: string, type: string}[], values: {[key: string]: unknown}) {
+    let offset = 10; // El prefijo de la función ocupa 10 caracteres.
+
+    const list = inputs.map((input, index) => {
+        const value = values[index];
+        let length = 64; // Longitud predeterminada para uint256, bool, etc.
+        let inputPortion = '';
+
+        if (input.type === 'address') {
+            length = 64;
+            inputPortion = inputString.slice(offset, offset + length);
+        } else if (input.type === 'uint128' || input.type.startsWith('uint')) {
+            inputPortion = inputString.slice(offset, offset + length);
+        } else if (input.type === 'bool') {
+            inputPortion = inputString.slice(offset, offset + length);
+        } else if (input.type === 'string' || input.type.startsWith('bytes')) {
+            const dataOffset = parseInt(inputString.slice(offset, offset + 64), 16) * 2;
+            const dataLength = parseInt(inputString.slice(dataOffset, dataOffset + 64), 16) * 2;
+            inputPortion = inputString.slice(dataOffset + 64, dataOffset + 64 + dataLength);
+            length = 64; // Reinicia la longitud a 64 para los punteros
+        }
+
+        const result = {
+            name: input.name,
+            type: input.type,
+            value: value,
+            input: inputPortion,
+        };
+
+        offset += length;
+        return result;
+    });
+
+    return list;
+}
+
+export interface DecodedTransactionInput {
+    method: string;
+    name: string;
+    args: {name: string, type: string, input: string, value: unknown}[];
+    input: string;
+}
 
 export const getParsedInternalTransactions = async (hash: string, $t: (k:string)=>string) => new Promise<{itxs:unknown[], parsedItxs:unknown[]}>((resolve, reject) => {
     const query = `/v1/transaction/${hash}/internal?limit=1000&sort=ASC&offset=0&includeAbi=1`;
@@ -93,6 +135,7 @@ export const getParsedInternalTransactions = async (hash: string, $t: (k:string)
                 itx.callType = itx.action.callType;
                 const contract = await contractManager.getContract(itx.action.to);
                 let inputs, outputs, args, name, isTransferETH = false;
+                let decoded: DecodedTransactionInput|null = null;
 
                 if (itx.type === 'create') {
                     name = $t('components.transaction.contract_deployment');
@@ -118,10 +161,26 @@ export const getParsedInternalTransactions = async (hash: string, $t: (k:string)
                         inputs = parsedTransaction.functionFragment ?
                             parsedTransaction.functionFragment.inputs :
                             parsedTransaction.inputs;
+
+                        // Extraemos "setValue" de la string "setValue(string,uint128,uint128)"
+                        const mothod = name ? name.split('(')[0] : '';
+
+                        const values = args;
+                        const decodedArgs = parseInput(itx.action.input, inputs, values);
+
+                        decoded = {
+                            mothod,
+                            name: name,
+                            args: decodedArgs,
+                            input: itx.action.input,
+                        } as unknown as DecodedTransactionInput;
                     }
                 }
                 itxs.push(itx);
+
+
                 parsedItxs.push({
+                    decoded,
                     index: itx.index,
                     type: itx.type,
                     args: args,
