@@ -4,7 +4,6 @@ import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { BlockData, EvmTransactionExtended } from 'src/types';
 import { WEI_PRECISION } from 'src/lib/utils';
-import { indexerApi } from 'src/boot/telosApi';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
@@ -16,6 +15,7 @@ import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 import ERCTransferList from 'components/Transaction/ERCTransferList.vue';
 import TLOSTransferList from 'components/Transaction/TLOSTransferList.vue';
+import { useChainStore } from 'src/antelope';
 
 const { t: $t } = useI18n();
 
@@ -40,9 +40,10 @@ const showTLOSTransfers = ref(true);
 const moreDetailsHeight = ref(0);
 
 const loadBlockData = async () => {
+    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
     try {
         if (blockNumber.value) {
-            const response = await indexerApi.get(`/block/${blockNumber.value}`);
+            const response = await indexerApi.get(`/v1/block/${blockNumber.value}`);
             blockData.value = response.data?.results?.[0] as BlockData;
         }
     } catch (error) {

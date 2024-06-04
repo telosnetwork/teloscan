@@ -1,14 +1,12 @@
 import { ethers } from 'ethers';
 
-import { indexerApi } from 'src/boot/telosApi';
-import { contractManager } from 'src/boot/telosApi';
-
 import { EvmTransaction, EvmTransactionLog } from 'src/antelope/types';
 import { EvmTransactionExtended, NftTransferData } from 'src/types';
 import { TransactionDescription } from 'ethers/lib/utils';
 import { WEI_PRECISION, formatWei, parseErrorMessage } from 'src/lib/utils';
 
 import { toChecksumAddress } from 'src/lib/utils';
+import { useChainStore } from 'src/antelope';
 
 export const tryToExtractMethod = (abi: {[hash: string]: string }, input: string) => {
     if (!abi || !input) {
@@ -31,7 +29,8 @@ export const tryToExtractMethod = (abi: {[hash: string]: string }, input: string
 };
 export const loadTransaction = async (hash: string): Promise<EvmTransactionExtended | null>  => {
     try {
-        const trxResponse = await indexerApi.get(`/transaction/${hash}?full=true&includeAbi=true`);
+        const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+        const trxResponse = await indexerApi.get(`/v1/transaction/${hash}?full=true&includeAbi=true`);
         const abi = trxResponse.data.abi;
         if (trxResponse.data.results.length === 0) {
             console.error(`Transaction ${hash} not found`);
@@ -68,7 +67,9 @@ export const loadTransaction = async (hash: string): Promise<EvmTransactionExten
 };
 
 export const getParsedInternalTransactions = async (hash: string, $t: (k:string)=>string) => new Promise<{itxs:unknown[], parsedItxs:unknown[]}>((resolve, reject) => {
-    const query = `/transaction/${hash}/internal?limit=1000&sort=ASC&offset=0&includeAbi=1`;
+    const query = `/v1/transaction/${hash}/internal?limit=1000&sort=ASC&offset=0&includeAbi=1`;
+    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+    const contractManager = useChainStore().currentChain.settings.getContractManager();
     indexerApi.get(query).then(async (response) => {
         if(response && response.data?.results?.length > 0) {
             const dataset = response.data?.results;

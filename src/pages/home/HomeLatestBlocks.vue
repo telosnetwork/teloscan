@@ -3,13 +3,13 @@ import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
-import { indexerApi } from 'src/boot/telosApi';
 import { onMounted, ref, toRaw } from 'vue';
 import { BlockData } from 'src/types';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
+import { useChainStore } from 'src/antelope';
 
 type BlockDataOrLoading = BlockData | null;
 
@@ -107,6 +107,7 @@ async function fetchBlocksWithTransactions(firstPage: BlockData[]) {
 }
 
 async function fetchBlocksPage(page: number) {
+    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
     const path = getPath(page);
     const result = await indexerApi.get(path);
 
@@ -133,7 +134,7 @@ async function fetchBlocks() {
 
 function getPath(page = 0) {
     const offset = page * 100;
-    let path = `blocks?limit=6&includePagination&noEmpty=true&offset=${offset}`;
+    let path = `v1/blocks?limit=6&includePagination&noEmpty=true&offset=${offset}`;
     return path;
 }
 

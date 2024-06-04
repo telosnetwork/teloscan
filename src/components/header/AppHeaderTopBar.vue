@@ -10,16 +10,9 @@ import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { formatUnits } from 'ethers/lib/utils';
 import { useRoute } from 'vue-router';
-
 import { useChainStore } from 'src/antelope';
-import {
-    IS_MAINNET,
-    IS_TESTNET,
-    TELOSCAN_MAINNET_URL,
-    TELOSCAN_TESTNET_URL,
-    // BETA_TELOSCAN_MAINNET_URL,
-    // BETA_TELOSCAN_TESTNET_URL,
-} from 'src/lib/chain-utils';
+import { TELOSCAN_MAINNET_URL, TELOSCAN_TESTNET_URL } from 'src/lib/chain-utils';
+
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import OutlineButton from 'components/OutlineButton.vue';
@@ -39,7 +32,7 @@ const locale = computed(() => $i18n.locale.value);
 const hideSearchBar = computed(() => $route.name ==='home');
 const systemTokenSymbol = computed(() => chainStore.currentChain.settings.getSystemToken().symbol);
 const gasPriceInGwei = computed(() => {
-    if (IS_TESTNET) {
+    if (chainStore.currentChain.settings.isTestnet()) {
         return '';
     }
 
@@ -54,7 +47,7 @@ const gasPriceInGwei = computed(() => {
     return gasGweiNoDecimals.toLocaleString(locale.value);
 });
 const tlosPrice = computed(() => {
-    if (IS_TESTNET) {
+    if (chainStore.currentChain.settings.isTestnet()) {
         return '';
     }
 
@@ -67,7 +60,7 @@ const tlosPrice = computed(() => {
 });
 
 onBeforeMount(() => {
-    if (IS_MAINNET) {
+    if (!chainStore.currentChain.settings.isTestnet()) {
         fetchTlosPrice();
         fetchGasPrice();
     }
@@ -95,14 +88,14 @@ function toggleDarkMode() {
 }
 
 function goToTeloscanMainnet() {
-    if (IS_MAINNET) {
+    if (!chainStore.currentChain.settings.isTestnet()) {
         return;
     }
     window.open(TELOSCAN_MAINNET_URL, '_blank');
 }
 
 function goToTeloscanTestnet() {
-    if (IS_TESTNET) {
+    if (chainStore.currentChain.settings.isTestnet()) {
         return;
     }
     window.open(TELOSCAN_TESTNET_URL, '_blank');
@@ -113,13 +106,13 @@ function goToTeloscanTestnet() {
 <div class="c-header-top-bar">
     <div class="c-header-top-bar__inner-container">
         <div class="c-header-top-bar__left-container">
-            <div v-if="IS_MAINNET" class="text-caption q-mr-md">
+            <div v-if="!chainStore.currentChain.settings.isTestnet()" class="text-caption q-mr-md">
                 <span class="c-header-top-bar__grey-text">
                     {{ $t('components.header.system_token_price', { token: systemTokenSymbol }) }}
                 </span> ${{ tlosPrice }}
             </div>
 
-            <div v-if="IS_MAINNET" class="text-caption u-flex--center-y">
+            <div v-if="!chainStore.currentChain.settings.isTestnet()" class="text-caption u-flex--center-y">
                 <q-icon name="fas fa-gas-pump" class="c-header-top-bar__grey-text q-mr-xs" />
                 <span class="c-header-top-bar__grey-text">
                     {{ $t('components.header.gas') }}:
@@ -161,7 +154,7 @@ function goToTeloscanTestnet() {
                             @click="goToTeloscanMainnet"
                             @keydown.enter="goToTeloscanMainnet"
                         >
-                            <q-item-section :class="IS_MAINNET ? 'text-primary' : ''">
+                            <q-item-section :class="chainStore.currentChain.settings.isTestnet() ? '' : 'text-primary'">
                                 Telos Mainnet
                             </q-item-section>
                         </q-item>
@@ -172,7 +165,7 @@ function goToTeloscanTestnet() {
                             @click="goToTeloscanTestnet"
                             @keydown.enter="goToTeloscanTestnet"
                         >
-                            <q-item-section :class="IS_TESTNET ? 'text-primary' : ''">
+                            <q-item-section :class="chainStore.currentChain.settings.isTestnet() ? 'text-primary' : ''">
                                 Telos Testnet
                             </q-item-section>
                         </q-item>

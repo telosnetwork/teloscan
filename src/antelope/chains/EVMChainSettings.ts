@@ -31,6 +31,14 @@ import { WEI_PRECISION, PRICE_UPDATE_INTERVAL_IN_MIN } from 'src/antelope/stores
 import { BehaviorSubject, filter } from 'rxjs';
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 
+import ContractManager from 'src/lib/contract/ContractManager';
+import FragmentParser from 'src/lib/contract/FragmentParser';
+
+// UAL
+import { UAL } from 'universal-authenticator-library';
+import { Wombat } from 'ual-wombat';
+import { Anchor } from 'ual-anchor';
+
 
 export default abstract class EVMChainSettings implements ChainSettings {
     // to avoid init() being called twice
@@ -123,6 +131,23 @@ export default abstract class EVMChainSettings implements ChainSettings {
         // Axios Response Interceptor
         this.hyperion.interceptors.response.use(responseHandler, erorrHandler);
         this.indexer.interceptors.response.use(responseHandler, erorrHandler);
+
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const self = this;
+        this.indexer.interceptors.response.use(function (response) {
+            if(response.data?.abi?.length > 0){
+                for (const [key, value] of Object.entries(response.data.abi)) {
+                    self.getContractManager().parser.addFunctionInterface(key, value);
+                    self.getFragmentParser().addFunctionInterface(key, value);
+                }
+            }
+            if(response.data?.contracts){
+                self.getContractManager().addContractsToCache(response.data.contracts);
+            }
+            return response;
+        }, function (error) {
+            return Promise.reject(error);
+        });
 
         // Check indexer health state periodically
         this.initPromise = new Promise((resolve) => {
@@ -544,12 +569,63 @@ export default abstract class EVMChainSettings implements ChainSettings {
         });
     }
 
-    // teloscan specific. MUST be overridden by the chain
+    // --------- Teloscan specific ---------
+    getIndexerApi(): AxiosInstance {
+        return this.indexer;
+    }
+    getTelosApi(): AxiosInstance {
+        return this.api;
+    }
+    getHyperionApi(): AxiosInstance {
+        return this.hyperion;
+    }
+    // MUST be overridden by the chain
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async getEthAccountByNativeAccount(_: string): Promise<string> {
-        throw new Error('Feature not supported for this network');
+    async getEthAccountByNativeAccount(native: string): Promise<string> {
+        throw new Error('Feature not supported for this network (' + native + ')');
     }
     getNativeSupport(): TelosEvmApi | null {
         return null;
+    }
+
+    // -- contract manager --
+    contractManager: ContractManager | null = null;
+    fragmentParser: FragmentParser | null = null;
+    private createContractManager(): ContractManager {
+        this.contractManager = new ContractManager(this.indexer, this.getFragmentParser());
+        return this.contractManager;
+    }
+    getContractManager(): ContractManager {
+        if (!this.contractManager) {
+            return this.createContractManager();
+        } else {
+            return this.contractManager;
+        }
+    }
+    getFragmentParser(): FragmentParser {
+        if (!this.fragmentParser) {
+            this.fragmentParser = new FragmentParser(this.hyperion);
+        }
+        return this.fragmentParser;
+    }
+
+    ual: UAL | null = null;
+    getNativeUALChain(): { chainId: string, rpcEndpoints: RpcEndpoint[] } | null {
+        return null;
+    }
+    getUAL(): UAL | null {
+        if (!this.ual) {
+            const chain = this.getNativeUALChain();
+            if (!chain) {
+                return null;
+            } else {
+                const authenticators = [
+                    new Anchor([chain], { appName: process.env.APP_NAME as string }),
+                    new Wombat([chain], { appName: process.env.APP_NAME as string }),
+                ];
+                this.ual = new UAL([chain], 'ual', authenticators);
+            }
+        }
+        return this.ual;
     }
 }

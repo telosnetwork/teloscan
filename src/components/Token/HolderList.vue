@@ -4,6 +4,7 @@ import DateField from 'components/DateField';
 import { formatWei } from 'src/lib/utils';
 import BigDecimal from 'js-big-decimal';
 import { BigNumber, ethers } from 'ethers';
+import { useChainStore } from 'src/antelope';
 export default {
     name: 'HolderList',
     components: {
@@ -22,7 +23,7 @@ export default {
         }
     },
     async mounted() {
-        let list = await this.$contractManager.getSystemContractsList();
+        let list = await useChainStore().currentChain.settings.getContractManager().getSystemContractsList();
         for(const contract in list.contracts){
             this.systemContractsList += list.contracts[contract].address + ',';
         }
@@ -86,7 +87,8 @@ export default {
 
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
-            let response = await this.$indexerApi.get(this.getPath(props));
+            const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+            let response = await indexerApi.get(this.getPath(props));
 
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
@@ -104,7 +106,7 @@ export default {
         },
         getPath(props) {
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/token/${this.contract.address}/holders?limit=${
+            let path = `/v1/token/${this.contract.address}/holders?limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
             path += `&includeAbi=true&offset=${(page - 1) * rowsPerPage}`;

@@ -2,6 +2,7 @@
 import { getIcon } from 'src/lib/token-utils';
 import { BigNumber } from 'ethers';
 import { formatWei } from 'src/lib/utils';
+import { useChainStore } from 'src/antelope';
 export default {
     name: 'TokenValueField',
     props: {
@@ -41,7 +42,7 @@ export default {
         },
         async getLogo(contract){
             let logoURI = '';
-            const tokenList = await this.$contractManager.getTokenList();
+            const tokenList = await useChainStore().currentChain.settings.getContractManager().getTokenList();
             tokenList.tokens.forEach((token) => {
                 if(token.address.toLowerCase() ===  contract.address.toLowerCase()){
                     logoURI = token.logoURI;
@@ -53,7 +54,7 @@ export default {
     async mounted() {
         this.valueRaw = this.value.toLocaleString(0, { useGrouping: false }).replace('.', '');
         if(this.address){
-            const contract = await this.$contractManager.getContract(this.address);
+            const contract = await useChainStore().currentChain.settings.getContractManager().getContract(this.address);
             if(contract){
                 this.valueWei = BigNumber.from(this.value);
                 this.valueShort = this.shorten(this.valueRaw, contract.properties?.decimals);

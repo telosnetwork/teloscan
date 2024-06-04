@@ -32,11 +32,8 @@ module.exports = function(/* ctx */) {
         // --> boot files are part of "main.js"
         // https://quasar.dev/quasar-cli/boot-files
         boot: [
-            'ual',
-            'hyperion',
             'i18n',
             'errorHandling',
-            'telosApi',
             'evm',
             'q-component-defaults',
             'antelope',

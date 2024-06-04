@@ -2,7 +2,7 @@
 
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
 import { Web3ModalConfig } from '@web3modal/html';
-import { MetamaskAuth, SafePalAuth, WalletConnectAuth, BraveAuth } from 'src/antelope/wallets';
+import { MetamaskAuth, SafePalAuth, WalletConnectAuth, BraveAuth, useChainStore } from 'src/antelope/wallets';
 import { configureChains, createConfig } from '@wagmi/core';
 import { telos, telosTestnet } from '@wagmi/core/chains';
 import { getAntelope } from 'src/antelope/mocks/AntelopeConfig';
@@ -54,7 +54,7 @@ export function initAntelope(app: App) {
 
     // setting authenticators getter --
     ant.config.setAuthenticatorsGetter(
-        () => app.config.globalProperties.$ual.getAuthenticators().availableAuthenticators);
+        () => useChainStore().currentChain.settings.getUAL()?.getAuthenticators().availableAuthenticators || []);
 
     // setting translation handler --
     ant.config.setLocalizationHandler(

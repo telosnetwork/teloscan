@@ -64,6 +64,12 @@ const CONTRACTS_BUCKET = 'https://verified-evm-contracts.s3.amazonaws.com';
 
 declare const fathom: { trackEvent: (eventName: string) => void };
 
+// UAL chain
+const NETWORK_CHAIN_ID = '4667b205c6838ef70ff7988f6e8257e8be0e1284a2f59699054a018f743b1d11';
+const NETWORK_PROTOCOL = 'https';
+const NETWORK_PORT = 443;
+const NETWORK_HOST = 'mainnet.telos.net';
+
 export default class TelosEVM extends EVMChainSettings {
     nativeSupport: TelosEvmApi;
     constructor(network: string) {
@@ -195,6 +201,19 @@ export default class TelosEVM extends EVMChainSettings {
         return this.nativeSupport;
     }
 
+    getNativeUALChain() {
+        return {
+            chainId: NETWORK_CHAIN_ID,
+            rpcEndpoints: [
+                {
+                    protocol: NETWORK_PROTOCOL,
+                    host: NETWORK_HOST,
+                    port: NETWORK_PORT,
+                },
+            ],
+        };
+    }
+
     async getEthAccountByNativeAccount(native: string): Promise<string> {
         const account = await this.nativeSupport.telos.getEthAccountByTelosAccount(native);
         if (account) {
@@ -202,6 +221,10 @@ export default class TelosEVM extends EVMChainSettings {
         } else {
             return '';
         }
+    }
+
+    getMonitorUrl(): string {
+        return 'https://api.monitor-test.telos.net';
     }
 
 }

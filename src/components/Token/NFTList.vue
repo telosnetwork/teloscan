@@ -2,7 +2,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeMount } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { indexerApi } from 'src/boot/telosApi';
 import { notifyMessage, icons, NotificationAction } from 'src/boot/errorHandling';
 import { ALLOWED_VIDEO_EXTENSIONS } from 'src/lib/utils';
 
@@ -10,6 +9,7 @@ import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import { NFT, NFT_TYPE } from 'src/types/NFT';
 import { QTableProps } from 'quasar';
+import { useChainStore } from 'src/antelope';
 
 
 
@@ -166,6 +166,7 @@ function isDataImage(nft: NFT) {
 
 async function onRequest() {
     loading.value = true;
+    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
 
     const { page, rowsPerPage, sortBy, descending } = pagination.value;
 
@@ -214,7 +215,7 @@ function getPath(type: string) {
     if(!allowedFilters.includes(queryFilter)){
         queryFilter = 'contract';
     }
-    return `/${queryFilter}/${props.address}/nfts?type=${type}&includeAbi=true&limit=10000&forceMetadata=1&includePagination=true`;
+    return `/v1/${queryFilter}/${props.address}/nfts?type=${type}&includeAbi=true&limit=10000&forceMetadata=1&includePagination=true`;
 }
 
 function confirmDownloadImage(imageData: string, name: string) {

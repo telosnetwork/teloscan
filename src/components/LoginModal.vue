@@ -22,7 +22,6 @@ import {
     useAccountStore,
     useChainStore,
 } from 'src/antelope/mocks';
-import { ual } from 'src/boot/ual';
 import { providerManager } from 'src/boot/evm';
 
 const $q = useQuasar();
@@ -41,7 +40,7 @@ const browserSupportsMetaMask = ref(true);
 const isBraveBrowser = ref(false);
 const isIOSMobile = ref(false);
 
-const authenticators = computed(() => ual.getAuthenticators().availableAuthenticators);
+const authenticators = computed(() => getAntelope().config.authenticatorsGetter());
 
 onMounted(async () => {
     await detectProvider();

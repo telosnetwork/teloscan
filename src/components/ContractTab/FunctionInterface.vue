@@ -247,8 +247,12 @@ export default defineComponent({
             this.endLoading();
         },
         async getEthersFunction(provider?: ethers.providers.JsonRpcSigner | ethers.providers.JsonRpcProvider) {
-            const contractInstance = await this.$contractManager.getContractInstance(this.contract, provider);
-            return contractInstance[this.functionABI];
+            const contractInstance = await useChainStore().currentChain.settings.getContractManager().getContractInstance(this.contract, provider);
+            if (!contractInstance) {
+                throw new Error('Contract not found');
+            } else {
+                return contractInstance[this.functionABI];
+            }
         },
         runRead() {
             return this.getEthersFunction()
