@@ -5,14 +5,13 @@ import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
 import {
-    IS_MAINNET,
-    IS_TESTNET,
     TELOSCAN_MAINNET_URL,
     TELOSCAN_TESTNET_URL,
 } from 'src/lib/chain-utils';
 
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import OutlineButton from 'components/OutlineButton.vue';
+import { useChainStore } from 'src/antelope';
 
 const $route = useRoute();
 const $router = useRouter();
@@ -31,41 +30,40 @@ const blockchainSubmenuItems = [
     { name: 'blocks', label: $t('components.header.blocks') },
 ];
 
-const teloscanSwaggerUrl = IS_MAINNET
+const teloscanSwaggerUrl = computed(() => !useChainStore().currentChain.settings.isTestnet()
     ? 'https://api.teloscan.io/v1/docs'
-    : 'https://api.testnet.teloscan.io/v1/docs';
+    : 'https://api.testnet.teloscan.io/v1/docs');
 
-const telosWalletUrl = IS_MAINNET
+const telosWalletUrl = computed(() => !useChainStore().currentChain.settings.isTestnet()
     ? 'https://wallet.telos.net/'
-    : 'https://wallet-dev.telos.net/';
+    : 'https://wallet-dev.telos.net/');
 
-const telosBridgeUrl = IS_MAINNET
+const telosBridgeUrl = computed(() => !useChainStore().currentChain.settings.isTestnet()
     ? 'https://bridge.telos.net/bridge'
-    : 'https://telos-bridge-testnet.netlify.app/bridge';
+    : 'https://telos-bridge-testnet.netlify.app/bridge');
 
-const obeUrl = IS_MAINNET
+const obeUrl = computed(() => !useChainStore().currentChain.settings.isTestnet()
     ? 'https://explorer.telos.net/'
-    : 'https://explorer-test.telos.net';
+    : 'https://explorer-test.telos.net');
 
-const developersSubmenuItems = [
+const developersSubmenuItems = computed(() => [
     {
-        url: teloscanSwaggerUrl,
+        url: teloscanSwaggerUrl.value,
         label: $t('components.header.api_documentation'),
     },
     {
         url: 'https://sourcify.dev/',
         label: $t('components.header.verify_contract_sourcify'),
     },
-];
+]);
 
 const telos_walletMenuItem = {
-    url: telosWalletUrl,
+    url: telosWalletUrl.value,
     label: `${$t('components.header.telos_wallet')}/Staking`,
 };
 
-
 const telos_bridgeMenuItem = {
-    url: telosBridgeUrl,
+    url: telosBridgeUrl.value,
     label: $t('components.header.telos_bridge'),
 };
 
@@ -80,7 +78,7 @@ const moreSubmenuItems = {
             label: $t('components.header.telos_ecosystem'),
         },
         {
-            url: obeUrl,
+            url: obeUrl.value,
             label: $t('components.header.telos_zero_explorer'),
         },
     ],
@@ -129,11 +127,11 @@ function toggleDarkMode() {
 
 function getIsCurrentNetworkMenuItem(url: string) {
     if (url === TELOSCAN_MAINNET_URL) {
-        return IS_MAINNET;
+        return !useChainStore().currentChain.settings.isTestnet();
     }
 
     if (url === TELOSCAN_TESTNET_URL) {
-        return IS_TESTNET;
+        return useChainStore().currentChain.settings.isTestnet();
     }
 
     return false;

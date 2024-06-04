@@ -10,7 +10,7 @@ import { useStore } from 'vuex';
 import { useQuasar } from 'quasar';
 
 import BlockField from 'components/BlockField.vue';
-import { indexerApi, telosApi } from 'src/boot/telosApi';
+import { useChainStore } from 'src/antelope';
 
 const $store = useStore();
 const $q = useQuasar();
@@ -60,12 +60,14 @@ function fetchLatestBlock() {
 }
 
 async function fetchTotalTransactions() {
-    const response = await indexerApi.get('/transactions?limit=0&next=-1&offset=0&includeAbi=false&includePagination=true&includeTransfers=false&full=false');
+    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+    const response = await indexerApi.get('/v1/transactions?limit=0&next=-1&offset=0&includeAbi=false&includePagination=true&includeTransfers=false&full=false');
     transactionsCount.value = response.data.total_count;
 }
 
 async function fetchMarketCap() {
     try {
+        const telosApi = useChainStore().currentChain.settings.getTelosApi();
         const response = await telosApi.get('/supply/total');
         const totalSupply = response.data;
         const usdMarketCap = totalSupply * tlosPrice.value;

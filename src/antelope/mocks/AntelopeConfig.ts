@@ -5,9 +5,12 @@
 import { EVMAuthenticator } from 'src/antelope/wallets/authenticators/EVMAuthenticator';
 import { AntelopeError, AntelopeErrorPayload } from 'src/antelope/types';
 import { App } from 'vue';
-import { Authenticator } from 'universal-authenticator-library';
+import { Authenticator, RpcEndpoint } from 'universal-authenticator-library';
 import { Subject } from 'rxjs';
 import { AccountModel } from 'src/antelope/mocks/AccountStore';
+import { ChainModel, TeloscanEVMChainSettings, useChainStore } from './ChainStore';
+import { CURRENT_CONTEXT } from '.';
+import { ethers } from 'ethers';
 
 export interface ComplexMessage {
     tag: string,
@@ -17,6 +20,9 @@ export interface ComplexMessage {
 
 export class AntelopeWallets {
     private authenticators: Map<string, EVMAuthenticator> = new Map();
+    private web3Provider: ethers.providers.Web3Provider | null = null;
+    private web3ProviderInitializationPromise: Promise<ethers.providers.Web3Provider> | null = null;
+
     init() {
         // dummie function
     }
@@ -26,6 +32,46 @@ export class AntelopeWallets {
     getAuthenticator(name: string) {
         return this.authenticators.get(name);
     }
+
+    getChainSettings(label: string) {
+        return (useChainStore().getChain(label).settings as TeloscanEVMChainSettings);
+    }
+
+    async getWeb3Provider(label = CURRENT_CONTEXT): Promise<ethers.providers.Web3Provider> {
+
+        // If a provider instance already exists, return it immediately.
+        if (this.web3Provider) {
+            return this.web3Provider;
+        }
+
+        // If an initialization is already underway, wait for it to complete.
+        if (this.web3ProviderInitializationPromise) {
+            return this.web3ProviderInitializationPromise;
+        }
+
+        // Start the initialization.
+        this.web3ProviderInitializationPromise = (async () => {
+            try {
+                const p: RpcEndpoint = this.getChainSettings(label).getRPCEndpoint();
+                const url = `${p.protocol}://${p.host}:${p.port}${p.path ?? ''}`;
+                const jsonRpcProvider = new ethers.providers.JsonRpcProvider(url);
+                await jsonRpcProvider.ready;
+                this.web3Provider = jsonRpcProvider as ethers.providers.Web3Provider;
+                return this.web3Provider;
+            } catch (e) {
+                this.web3ProviderInitializationPromise = null; // Reset to allow retries.
+                throw new AntelopeError('antelope.evn.error_no_provider');
+            }
+        })();
+
+        return this.web3ProviderInitializationPromise;
+    }
+
+    resetWeb3Provider() {
+        this.web3Provider = null;
+        this.web3ProviderInitializationPromise = null;
+    }
+
 }
 
 export class AntelopeConfig {
@@ -325,12 +371,19 @@ const wallets = new AntelopeWallets();
 const events = {
     onLoggedIn: new Subject<AccountModel>(),
     onLoggedOut: new Subject<void>(),
+    onNetworkChanged: new Subject<{label:string, chain:ChainModel}>(),
 };
 const Antelope = {
     config,
     wallets,
     events,
 };
+
+// each time the user changes the network,
+// we need to reset the current web3 provider instance
+events.onNetworkChanged.subscribe(() => {
+    Antelope.wallets.resetWeb3Provider();
+});
 
 export const getAntelope = () => Antelope;
 // ----------------------------------------------------------------

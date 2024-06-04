@@ -8,7 +8,7 @@ import {
 } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
-import { CURRENT_CONTEXT, useAccountStore } from 'src/antelope/mocks';
+import { CURRENT_CONTEXT, useAccountStore, useChainStore } from 'src/antelope/mocks';
 
 const approveABI = [
     {
@@ -147,7 +147,8 @@ export default {
 
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
 
-            let response = await this.$indexerApi.get(this.getPath(props));
+            const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+            let response = await indexerApi.get(this.getPath(props));
 
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
@@ -157,7 +158,7 @@ export default {
             let approvals = [];
             for (let approval of response.data.results) {
                 approval.selected = (this.selected.includes(approval.spender + ':' + approval.contract));
-                approval.contract = await this.$contractManager.getContract(approval.contract);
+                approval.contract = await useChainStore().currentChain.settings.getContractManager().getContract(approval.contract);
                 approval.single = 0;
                 if(this.isNFT() === false){
                     approval.usd = 0;
@@ -197,7 +198,7 @@ export default {
         },
         getPath(props){
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/account/${this.accountAddress}/approvals?type=${this.type}&limit=${
+            let path = `/v1/account/${this.accountAddress}/approvals?type=${this.type}&limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
             path += `&includeAbi=true&offset=${(page - 1) * rowsPerPage}`;
@@ -254,7 +255,7 @@ export default {
                 return;
             }
             this.signing = true;
-            const contract  = await this.$contractManager.getContract(contractAddress);
+            const contract  = await useChainStore().currentChain.settings.getContractManager().getContract(contractAddress);
             if(!contract){
                 return;
             }
@@ -264,7 +265,7 @@ export default {
                 if(single){
                     spenderAddress = ZERO_ADDRESSES;
                 }
-                const spenderContract  = await this.$contractManager.getContract(spenderAddress);
+                const spenderContract  = await useChainStore().currentChain.settings.getContractManager().getContract(spenderAddress);
                 try {
                     await this.toggleApproval(contract.address, single, spenderAddress, param2, this.$t(
                         'components.approvals.update_success',
@@ -380,8 +381,9 @@ export default {
             let limit = 100;
             let offset = 0;
             while(more){
-                let response = await this.$indexerApi.get(
-                    `/account/${this.accountAddress}/approvals?limit=${limit}&offset=${offset}&includePagination=true
+                const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+                let response = await indexerApi.get(
+                    `/v1/account/${this.accountAddress}/approvals?limit=${limit}&offset=${offset}&includePagination=true
                     &type=${this.type}`,
                 );
                 more = response.data?.more || false;
@@ -430,7 +432,7 @@ export default {
         async handleCtaUpdate(spender, contractAddress, single, tokenId, current){
             this.displayUpdateModal = true;
             this.modalUpdateValue = current;
-            const contract  = await this.$contractManager.getContract(contractAddress);
+            const contract  = await useChainStore().currentChain.settings.getContractManager().getContract(contractAddress);
             this.mask = '#'.repeat(contract.properties?.decimals || 18);
             this.confirmModalUpdate = async function(){
                 let success = await this.updateApproval(

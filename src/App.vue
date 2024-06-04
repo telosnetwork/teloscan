@@ -7,8 +7,6 @@ import moment from 'moment';
 
 import { getAntelope, useChainStore } from 'src/antelope';
 import { TELOS_NETWORK_NAMES } from 'src/antelope/mocks/chain-constants';
-import { indexerApi } from 'src/boot/telosApi';
-import { ual } from 'src/boot/ual';
 import { providerManager } from 'src/boot/evm';
 
 const $store = useStore();
@@ -28,8 +26,8 @@ onMounted(async () => {
         script.defer = true;
         document.body.appendChild(script);
     }
-
-    const health = await indexerApi.get('/health');
+    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+    const health = await indexerApi.get('/v1/health');
 
     if (health.data?.secondsBehind > 3) {
         let behindBy = moment(health.data.secondsBehind * 1000).utc().format('HH:mm:ss');
@@ -63,7 +61,7 @@ onMounted(async () => {
                 return;
             }
             const loginObj = JSON.parse(loginData);
-            const wallet = ual.getAuthenticators().availableAuthenticators.find(a => a.getName() === loginObj.provider);
+            const wallet = getAntelope().config.authenticatorsGetter().find(a => a.getName() === loginObj.provider);
             wallet?.logout();
         }
         $store.commit('login/setLogin', {});

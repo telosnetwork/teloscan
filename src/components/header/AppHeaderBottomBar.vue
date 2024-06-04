@@ -3,11 +3,10 @@ import { ref, watchEffect } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
-import { IS_TESTNET } from 'src/lib/chain-utils';
-
 import OutlineButton from 'components/OutlineButton.vue';
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import AppHeaderLinks from 'components/header/AppHeaderLinks.vue';
+import { useChainStore } from 'src/antelope';
 
 const $q = useQuasar();
 const { t: $t } = useI18n();
@@ -52,7 +51,7 @@ function scrollHandler(info: { direction: string; }) {
                 <span class="c-header-bottom-bar__logo-text">
                     Teloscan
                 </span>
-                <span v-if="IS_TESTNET" class="c-header-bottom-bar__testnet-indicator">
+                <span v-if="useChainStore().currentChain.settings.isTestnet()" class="c-header-bottom-bar__testnet-indicator">
                     Testnet
                 </span>
             </div>

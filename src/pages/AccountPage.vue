@@ -3,9 +3,6 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
-import { contractManager } from 'src/boot/telosApi';
-import { indexerApi } from 'src/boot/telosApi';
-import { evm } from 'src/boot/evm';
 import { toChecksumAddress } from 'src/lib/utils';
 import { getIcon } from 'src/lib/token-utils';
 import Contract from 'src/lib/contract/Contract';
@@ -26,6 +23,7 @@ import AddressQR from 'src/components/AddressQR.vue';
 import AddressOverview from 'src/components/AddressOverview.vue';
 import AddressMoreInfo from 'src/components/AddressMoreInfo.vue';
 import ContractMoreInfo from 'src/components/ContractMoreInfo.vue';
+import { useChainStore } from 'src/antelope';
 
 
 const { t: $t } = useI18n();
@@ -38,9 +36,7 @@ const tabs = ['transactions', 'collection', 'holders', 'internaltx', 'tokens', '
 const accountLoading = ref(false);
 const title = ref('');
 const fullTitle = ref('');
-const telosAccount = ref('');
 const balance = ref('0');
-const nonce = ref<number | null>(null);
 const contract = ref<Contract | null>(null);
 const tab = ref(tabs[0]);
 const initialLoadComplete = ref(false);
@@ -89,11 +85,13 @@ async function loadAccount() {
     if(!accountAddress.value || accountLoading.value){
         return;
     }
+    const contractManager = useChainStore().currentChain.settings.getContractManager();
     accountLoading.value = true;
     const tokenList = await contractManager.getTokenList();
     try {
+        const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
         const response: BalanceQueryResponse = await indexerApi.get(
-            `/account/${accountAddress.value}/balances?includeAbi=true`,
+            `/v1/account/${accountAddress.value}/balances?includeAbi=true`,
             // `/account/${accountAddress.value}/balances?contract=___NATIVE_CURRENCY___&includeAbi=true`,
         );
         //TODO restore original api query when contract param query is fixed
@@ -106,7 +104,6 @@ async function loadAccount() {
     }
     contract.value = null;
     fullTitle.value = '';
-    nonce.value = 0;
     title.value = $t('pages.account');
     const force = true;
     const cachedContract = await contractManager.getContract(accountAddress.value, force);
@@ -128,13 +125,6 @@ async function loadAccount() {
         }
     } else {
         contractManager.addContractToCache(accountAddress.value, { address: accountAddress.value });
-        try {
-            const account = await evm.telos.getEthAccount(accountAddress.value);
-            telosAccount.value = account?.account;
-            nonce.value = account?.nonce;
-        } catch (e) {
-            console.info(e);
-        }
     }
 
     accountLoading.value = false;
