@@ -70,17 +70,16 @@ const newChainModel = (network: string, isNative: boolean): ChainModel => {
     return model;
 };
 
-let current = {
-    settings: evmSettings['telos-evm'],
-} as unknown as ChainModel;
+const current = {};
 
 const ChainStore = {
     currentChain: current as unknown as ChainModel,
     loggedChain: current as unknown as ChainModel,
     loggedEvmChain: current as unknown as ChainModel,
-    getNetworkSettings: (network: string) => current.settings,
+    getNetworkSettings: (network: string) => ChainStore.currentChain.settings,
     getChain: (label: string) => ChainStore.currentChain,
     setChain: (label: string, network: string) => {
+        console.log('ChainStore.setChain()', ChainStore?.currentChain?.settings?.getNetwork() || null, '-->', network);
         if (network in evmSettings) {
 
             // create the chain model if it doesn't exist
@@ -89,11 +88,12 @@ const ChainStore = {
             }
 
             // make the change only if they are different
-            if (network !== current.settings.getNetwork()) {
-                current = chains[network];
+            if (network !== ChainStore?.currentChain?.settings?.getNetwork()) {
+                const current = chains[network];
                 ChainStore.currentChain = current;
                 ChainStore.loggedChain = current;
                 ChainStore.loggedEvmChain = current;
+                console.log('ChainStore.setChain()', ChainStore.currentChain.settings.getNetwork());
             }
         } else {
             throw new Error(`Network '${network}' not supported`);
@@ -102,6 +102,3 @@ const ChainStore = {
 };
 
 export const useChainStore = () => ChainStore;
-
-// Set
-ChainStore.setChain('current', process.env.NETWORK_EVM_NAME as string);

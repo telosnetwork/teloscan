@@ -69,11 +69,12 @@ const columns = [
     },
 ];
 
-watch(() => route.query.page,
-    (pageParam) => {
+watch(() => route.query,
+    () => {
         let page = 1;
         let desc = true;
         let size = page_size_options[0];
+        const pageParam = route.query.page;
 
         // we also allow to pass a single number as the page number
         if (typeof pageParam === 'number') {

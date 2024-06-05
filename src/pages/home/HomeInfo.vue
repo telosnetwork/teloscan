@@ -4,6 +4,7 @@ import {
     onBeforeMount,
     onBeforeUnmount,
     ref,
+    watch,
 } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useStore } from 'vuex';
@@ -11,6 +12,7 @@ import { useQuasar } from 'quasar';
 
 import BlockField from 'components/BlockField.vue';
 import { useChainStore } from 'src/antelope';
+import { useRoute } from 'vue-router';
 
 const $store = useStore();
 const $q = useQuasar();
@@ -102,6 +104,17 @@ function updateFigures() {
         }
     });
 }
+
+const $route = useRoute();
+const lastBlockKnown = ref<number>(0);
+watch(() => $route.query, () => {
+    marketCap.value = 0;
+    transactionsCount.value = 0;
+    initialLoadComplete.value = false;
+    lastBlockKnown.value = latestBlock.value;
+    updateFigures();
+});
+
 </script>
 
 <template>
@@ -143,7 +156,7 @@ function updateFigures() {
                 {{ $t('pages.home.last_finalized_block') }}
             </span>
             <br>
-            <q-skeleton v-if="latestBlock === 0" type="text" class="c-home-info__skeleton" />
+            <q-skeleton v-if="latestBlock === lastBlockKnown" type="text" class="c-home-info__skeleton" />
             <BlockField
                 v-else
                 class="c-home-info__number"

@@ -32,6 +32,10 @@ export const loadTransaction = async (hash: string): Promise<EvmTransactionExten
         const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
         const trxResponse = await indexerApi.get(`/v1/transaction/${hash}?full=true&includeAbi=true`);
         const abi = trxResponse.data.abi;
+        if (trxResponse.data.code === 404) {
+            console.error(`Transaction ${hash} not found`);
+            return null;
+        }
         if (trxResponse.data.results.length === 0) {
             console.error(`Transaction ${hash} not found`);
             return null;

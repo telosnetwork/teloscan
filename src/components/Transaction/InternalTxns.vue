@@ -40,6 +40,10 @@ export default {
     },
     async created() {
         this.loading = true;
+        if (!this.transaction) {
+            this.loading = false;
+            return;
+        }
         const { parsedItxs, itxs } = await getParsedInternalTransactions(this.transaction.hash, this.$t);
         this.parsedItxs = parsedItxs;
         this.itxs = itxs;

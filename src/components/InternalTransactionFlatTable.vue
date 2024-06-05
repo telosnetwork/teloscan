@@ -42,6 +42,11 @@ export default {
             default: true,
         },
     },
+    computed: {
+        rowsToShow() {
+            return this.loading? this.loadingRows : this.rows;
+        },
+    },
     data() {
         const columns = [
             {
@@ -131,27 +136,38 @@ export default {
     },
     watch: {
         '$route.query.page': {
-            handler(_pag) {
-                let pag = _pag;
-                let page = 1;
-                let size = this.page_size_options[0];
-
-                // we also allow to pass a single number as the page number
-                if (typeof pag === 'number') {
-                    page = pag;
-                } else if (typeof pag === 'string') {
-                    // we also allow to pass a string of two numbers: 'page,rowsPerPage'
-                    const [p, s] = pag.split(',');
-                    page = p;
-                    size = s;
-                }
-
-                this.setPagination(page, size);
+            handler() {
+                this.updateData();
             },
             immediate: true,
         },
+        '$route.query.network': {
+            handler() {
+                this.loading = true;
+                this.rows = [];
+                this.updateData();
+            },
+        },
     },
     methods: {
+        updateData() {
+            console.log('InternalTransactionFlatTable.updateData()');
+            const _pag = this.$route.query.page;
+            let pag = _pag;
+            let page = 1;
+            let size = this.page_size_options[0];
+
+            // we also allow to pass a single number as the page number
+            if (typeof pag === 'number') {
+                page = pag;
+            } else if (typeof pag === 'string') {
+                // we also allow to pass a string of two numbers: 'page,rowsPerPage'
+                const [p, s] = pag.split(',');
+                page = p;
+                size = s;
+            }
+            this.setPagination(page, size);
+        },
         getDirection: getDirection,
         updateLoadingRows() {
             this.loadingRows = [];
@@ -397,7 +413,7 @@ export default {
 <q-table
     v-model:pagination="pagination"
     class="c-inttrx-flat__table"
-    :rows="loading? loadingRows : rows"
+    :rows="rowsToShow"
     :row-key="row => row.hash"
     :columns="columns"
     :rows-per-page-options="page_size_options"

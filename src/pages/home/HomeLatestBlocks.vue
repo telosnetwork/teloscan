@@ -3,23 +3,24 @@ import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
-import { onMounted, ref, toRaw } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { BlockData } from 'src/types';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { ethers } from 'ethers';
 import { WEI_PRECISION } from 'src/lib/utils';
 import { useChainStore } from 'src/antelope';
+import { useRoute } from 'vue-router';
 
 type BlockDataOrLoading = BlockData | null;
 
 const $q = useQuasar();
 const $i18n = useI18n();
+const $route = useRoute();
 const { t: $t } = $i18n;
 const locale = $i18n.locale.value;
 const blocks = ref<BlockDataOrLoading[]>([null, null, null, null, null, null]);
 const gasPrice = '0x754d490126';
-const CACHE_KEY = 'latest-blocks';
 const blocksCache = ref<{
     range: { start: number },
     relevantBlocks: BlockData[],
@@ -27,31 +28,6 @@ const blocksCache = ref<{
     range: { start: 0 },
     relevantBlocks: [],
 });
-
-function saveCache() {
-    try {
-        const relevantBlocks = toRaw(blocks.value);
-        // if the first block has no transactions, we need to remove it
-        if (relevantBlocks[0]?.transactionsCount === 0) {
-            relevantBlocks.shift();
-        }
-        blocksCache.value.relevantBlocks = relevantBlocks as BlockData[];
-        localStorage.setItem(CACHE_KEY, JSON.stringify(blocksCache.value));
-    } catch (e) {
-        console.error(e);
-    }
-}
-
-function loadCache() {
-    const cache = localStorage.getItem(CACHE_KEY);
-    if (cache) {
-        try {
-            blocksCache.value = JSON.parse(cache);
-        } catch (e) {
-            console.error(e);
-        }
-    }
-}
 
 
 async function fetchBlocksWithTransactions(firstPage: BlockData[]) {
@@ -120,9 +96,7 @@ async function fetchBlocks() {
         blocks.value[0] = response.data.results[0];
         // remove the first block to avoid repeating it
         response.data.results.shift();
-        await fetchBlocksWithTransactions(response.data.results).then(() => {
-            saveCache();
-        });
+        await fetchBlocksWithTransactions(response.data.results);
     } catch (e: unknown) {
         $q.notify({
             type: 'negative',
@@ -162,7 +136,11 @@ const gasUsedFor = (block: BlockData) => {
 
 // lifecycle
 onMounted(() => {
-    loadCache();
+    fetchBlocks();
+});
+
+watch(() => $route.query, () => {
+    blocks.value = [null, null, null, null, null, null];
     fetchBlocks();
 });
 
