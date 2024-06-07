@@ -1,38 +1,48 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 import LogsViewer from 'components/Transaction/LogsViewer.vue';
 import InternalTxns from 'components/Transaction/InternalTxns.vue';
 import TransactionOverview from 'src/components/TransactionOverview.vue';
 
-const route = useRoute();
-
 import { EvmTransactionExtended } from 'src/types';
 import { loadTransaction } from 'src/lib/transaction-utils';
 
 const { t: $t } = useI18n();
-
+const route = useRoute();
+const router = useRouter();
 
 const defaultTab = 'overview';
-const tab = ref(defaultTab);
+const tab = ref<string>(route.query.tab as string || defaultTab);
 const trxNotFound = ref(false);
 const hash = ref('');
 const trx = ref<EvmTransactionExtended | null>(null);
 
-
+const updateData = async () => {
+    trx.value = await loadTransaction(hash.value);
+    trxNotFound.value = !trx.value;
+    if (!trx.value) {
+        tab.value = defaultTab;
+    }
+};
 
 watch(() => route.params.hash, async (newValue) => {
     if (!newValue || hash.value === newValue) {
         return;
     }
     hash.value = typeof newValue === 'string' ? newValue : newValue[0];
-    trx.value = await loadTransaction(hash.value);
-    trxNotFound.value = !trx.value;
+    updateData();
 }, { immediate: true });
 
+watch(() => route.query, () => {
+    updateData();
+});
+
+watch(tab, (newTab) => {
+    router.replace({ query: { ...route.query, tab: newTab } });
+});
 
 const prevTransaction = () => {
     console.error('prevTransaction() NOT IMPLEMENTED');
@@ -43,6 +53,7 @@ const nextTransaction = () => {
 };
 
 </script>
+
 
 <template>
 
@@ -121,6 +132,7 @@ const nextTransaction = () => {
                 <q-tab-panel class="c-transactions__panel c-transactions__panel--logs" name="logs">
                     <q-card class="c-transactions__panel-content--logs c-transactions__panel-content">
                         <LogsViewer
+                            v-if="trx"
                             :trx="trx"
                             :contract="trx?.contract"
                             :logs="trx?.logsArray"
@@ -130,6 +142,7 @@ const nextTransaction = () => {
                 <q-tab-panel class="c-transactions__panel c-transactions__panel" name="internal">
                     <q-card class="c-transactions__panel-content--internal c-transactions__panel-content">
                         <InternalTxns
+                            v-if="trx"
                             :transaction="trx"
                         />
                     </q-card>

@@ -41,9 +41,9 @@ onBeforeMount(() => {
         <q-card-section v-if="!loadingComplete" >
             <q-skeleton type="text" class="c-overview__skeleton" />
         </q-card-section>
-        <q-card-section v-else>
+        <q-card-section v-else class="c-overview__balance-container">
             <div class="c-overview__label"> TLOS {{ $t('pages.balance') }} </div>
-            <div class="c-overview__balance">
+            <div class="c-overview__balance-value">
                 <img
                     src="branding/telos.png"
                     alt="TLOS"
@@ -65,7 +65,7 @@ onBeforeMount(() => {
             <div class="c-overview__label">
                 TLOS {{ $t('pages.value') }}
             </div>
-            <div class="c-overview__balance"> {{ prettyPrintFiatBalance(fiatValue, 'us', false) }} (@ ${{ fiatPrice }}/TLOS)</div>
+            <div class="c-overview__balance-value"> {{ prettyPrintFiatBalance(fiatValue, 'us', false) }} (@ ${{ fiatPrice }}/TLOS)</div>
         </q-card-section>
     </q-card>
 </div>
@@ -73,8 +73,14 @@ onBeforeMount(() => {
 
 <style lang="scss">
 .c-overview{
-    &__balance{
+    &__balance-container{
         display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    &__balance-value {
+        display: flex;
+        gap: 5px;
     }
     &__label{
         font-weight: 600;
