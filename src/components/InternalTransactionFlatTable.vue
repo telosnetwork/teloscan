@@ -151,7 +151,6 @@ export default {
     },
     methods: {
         updateData() {
-            console.log('InternalTransactionFlatTable.updateData()');
             const _pag = this.$route.query.page;
             let pag = _pag;
             let page = 1;

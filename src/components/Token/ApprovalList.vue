@@ -124,11 +124,6 @@ export default {
             loading: true,
         };
     },
-    created(){
-        for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
-            this.loadingRows.push(i);
-        }
-    },
     async mounted() {
         await this.onRequest({
             pagination: this.pagination,
@@ -137,7 +132,16 @@ export default {
             this.displayLoginModal = true;
         }
     },
-
+    watch: {
+        '$route.query.network': {
+            handler() {
+                this.approvals = [];
+                this.onRequest({
+                    pagination: this.pagination,
+                });
+            },
+        },
+    },
     computed: {
         ...mapGetters('login', ['address', 'isLoggedIn', 'isNative']),
     },
@@ -146,6 +150,11 @@ export default {
             this.loading = true;
 
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
+
+            this.loadingRows = [];
+            for (var i = 1; i <= rowsPerPage; i++) {
+                this.loadingRows.push(i);
+            }
 
             const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
             let response = await indexerApi.get(this.getPath(props));

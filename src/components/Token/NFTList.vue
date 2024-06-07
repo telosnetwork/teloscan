@@ -10,6 +10,7 @@ import ImagePopup from 'src/components/ImagePopup.vue';
 import { NFT, NFT_TYPE } from 'src/types/NFT';
 import { useChainStore } from 'src/antelope';
 import { QTableProps, useQuasar } from 'quasar';
+import { useRoute } from 'vue-router';
 
 
 
@@ -17,6 +18,7 @@ const allowedFilters = ['contract', 'account'];
 
 const { t : $t } = useI18n();
 const $q = useQuasar();
+const $route = useRoute();
 
 const props = defineProps({
     address: {
@@ -225,6 +227,10 @@ onMounted(() => {
     if(size){
         previewSize.value = parseInt(size);
     }
+});
+
+watch(() => $route.query.network, () => {
+    onRequest();
 });
 
 </script>

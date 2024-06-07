@@ -4,7 +4,6 @@ import { evmSettings, useChainStore } from 'src/antelope';
 
 export default boot(({ app }) => {
     initAntelope(app);
-    console.log('boot:antelope');
 
     const defaultNetwork = Object.keys(evmSettings)[0];
     let network = new URLSearchParams(window.location.search).get('network');

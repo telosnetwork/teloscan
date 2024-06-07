@@ -16,7 +16,9 @@ import { loadTransaction, getDirection } from 'src/lib/transaction-utils';
 import { Pagination } from 'src/types';
 import { useStore } from 'vuex';
 import { useChainStore } from 'src/antelope';
+import { useRoute } from 'vue-router';
 
+const $route = useRoute();
 const { t: $t } = useI18n();
 const $store = useStore();
 const toggleDisplayDecimals = () => $store.dispatch('general/toggleDisplayDecimals');
@@ -294,6 +296,10 @@ watch(() => props.tokenType, () => {
     updateLoadingRows();
 },
 { immediate: true });
+
+watch(() => $route.query.network, () => {
+    onRequest({ pagination: pagination.value });
+});
 
 onMounted(() => {
     updateCols();

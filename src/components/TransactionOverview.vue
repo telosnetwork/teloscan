@@ -73,7 +73,6 @@ async function loadParsedInternalTransactions() {
 
 watch(() => props.trx, async (newTrx) => {
     if (newTrx) {
-        console.log('newTrx', newTrx);
         if (newTrx.to) {
             toAddress.value = newTrx.to;
         } else {

@@ -28,6 +28,17 @@ export default {
     async mounted() {
         await this.loadTokens();
     },
+
+    // if the url network parameter changes, we need to reload the tokens
+    watch: {
+        '$route.query.network': {
+            handler() {
+                this.tokens = false;
+                this.tokensOfficial = false;
+                this.loadTokens();
+            },
+        },
+    },
     methods: {
         checkTokenList(address, tokenList){
             return tokenList.tokens.filter((token) => {
@@ -37,7 +48,6 @@ export default {
             })[0];
         },
         async loadTokens() {
-            console.log('loadTokens Checkpoint 1'); // TODO: remove this line
             if(this.tokensOfficial !== false || this.tokens !== false || this.processing || this.address === null){
                 return;
             }

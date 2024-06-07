@@ -79,7 +79,6 @@ const ChainStore = {
     getNetworkSettings: (network: string) => ChainStore.currentChain.settings,
     getChain: (label: string) => ChainStore.currentChain,
     setChain: (label: string, network: string) => {
-        console.log('ChainStore.setChain()', ChainStore?.currentChain?.settings?.getNetwork() || null, '-->', network);
         if (network in evmSettings) {
 
             // create the chain model if it doesn't exist
@@ -93,7 +92,6 @@ const ChainStore = {
                 ChainStore.currentChain = current;
                 ChainStore.loggedChain = current;
                 ChainStore.loggedEvmChain = current;
-                console.log('ChainStore.setChain()', ChainStore.currentChain.settings.getNetwork());
             }
         } else {
             throw new Error(`Network '${network}' not supported`);

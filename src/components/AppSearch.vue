@@ -22,7 +22,6 @@ async function search() {
     if (!searchTerm.value) {
         return;
     }
-    console.log('searchTerm.value', searchTerm.value); // FIXME: remove this line
 
     searchTerm.value = searchTerm.value.trim().replace(/\s/, '');
     if (searchTerm.value.startsWith('0x')) {
