@@ -6,7 +6,6 @@ import { onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getDirection } from 'src/lib/transaction-utils';
-import { WEI_PRECISION } from 'src/lib/utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
@@ -358,7 +357,6 @@ onBeforeMount(() => {
     </div>
 </div>
 
-
 <q-card>
     <q-table
         v-if="!loading"
@@ -478,8 +476,8 @@ onBeforeMount(() => {
                 <q-td key='value' :props="props" class="c-transaction-table__cell">
                     <ValueField
                         :value="props.row.value"
-                        :symbol="'TLOS'"
-                        :decimals="WEI_PRECISION"
+                        :symbol="useChainStore().currentChain.settings.getSystemToken().symbol"
+                        :decimals="useChainStore().currentChain.settings.getSystemToken().decimals"
                     />
                 </q-td>
                 <q-td key='fee' :props="props" class="c-transaction-table__cell">
@@ -543,34 +541,11 @@ onBeforeMount(() => {
         </template>
         <template v-slot:body="">
             <q-tr>
-                <q-td key="preview" class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key="hash" class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key="method" class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key="block"  class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key="date">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key="direction" >
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key="from"  class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key="to"  class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key='value' class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key='fee' class="c-transaction-table__cell">
+                <q-td
+                    v-for="col in columns"
+                    :key="col.name"
+                    class="c-transaction-table__cell"
+                >
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
             </q-tr>

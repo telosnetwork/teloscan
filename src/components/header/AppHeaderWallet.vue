@@ -34,9 +34,9 @@ const prettySystemTokenBalance = computed(() =>
         4,
         $i18n.locale.value,
         false,
-        'TLOS',
+        useChainStore().currentChain.settings.getSystemToken().symbol,
         false,
-        WEI_PRECISION,
+        useChainStore().currentChain.settings.getSystemToken().decimals,
         false,
     ),
 );

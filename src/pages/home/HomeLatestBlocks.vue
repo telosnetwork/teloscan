@@ -8,7 +8,6 @@ import { BlockData } from 'src/types';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { ethers } from 'ethers';
-import { WEI_PRECISION } from 'src/lib/utils';
 import { useChainStore } from 'src/antelope';
 import { useRoute } from 'vue-router';
 
@@ -121,16 +120,16 @@ const gasUsedFor = (block: BlockData) => {
                 wei.isZero() ? 0 : 2, // If it is Zero, then do not show decimals
                 locale,
                 false,
-                'TLOS',
+                useChainStore().currentChain.settings.getSystemToken().symbol,
                 false,
-                WEI_PRECISION,
+                useChainStore().currentChain.settings.getSystemToken().decimals,
                 false,
             );
         } catch (e) {
             console.error(e);
         }
     }
-    return '0.00 TLOS';
+    return '0.00 ' + useChainStore().currentChain.settings.getSystemToken().symbol;
 };
 
 

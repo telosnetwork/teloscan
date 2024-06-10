@@ -124,7 +124,7 @@ watch(() => $route.query, () => {
             <div class="c-home-info__label-container">
                 <img
                     class="c-home-info__icon"
-                    src="branding/telos.png"
+                    :src="useChainStore().currentChain.settings.getSystemToken().logo"
                     height="14"
                     width="14"
                 >

@@ -112,7 +112,8 @@ export interface DecodedTransactionInput {
     input: string;
 }
 
-export const getParsedInternalTransactions = async (hash: string, $t: (k:string)=>string) => new Promise<{itxs:unknown[], parsedItxs:unknown[]}>((resolve, reject) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getParsedInternalTransactions = async (hash: string, $t: (k:string, v?: any)=>string) => new Promise<{itxs:unknown[], parsedItxs:unknown[]}>((resolve, reject) => {
     const query = `/v1/transaction/${hash}/internal?limit=1000&sort=ASC&offset=0&includeAbi=1`;
     const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
     const contractManager = useChainStore().currentChain.settings.getContractManager();
@@ -144,7 +145,9 @@ export const getParsedInternalTransactions = async (hash: string, $t: (k:string)
                 if (itx.type === 'create') {
                     name = $t('components.transaction.contract_deployment');
                 } else if (+itx.action.value > 0) {
-                    name = $t('components.transaction.tlos_transfer');
+                    name = $t('components.transaction.tlos_transfer', {
+                        symbol: useChainStore().currentChain.settings.getSystemToken().symbol,
+                    });
                     isTransferETH = true;
                 }
 

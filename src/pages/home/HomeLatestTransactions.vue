@@ -4,7 +4,6 @@ import { useI18n } from 'vue-i18n';
 import { BigNumber } from 'ethers/lib/ethers';
 
 import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
-import { WEI_PRECISION } from 'src/lib/utils';
 
 import DateField from 'components/DateField.vue';
 import TransactionField from 'components/TransactionField.vue';
@@ -51,9 +50,9 @@ function getTlosValue(value: string) {
         0,
         locale,
         false,
-        'TLOS',
+        useChainStore().currentChain.settings.getSystemToken().symbol,
         false,
-        WEI_PRECISION,
+        useChainStore().currentChain.settings.getSystemToken().decimals,
         true,
     );
 }

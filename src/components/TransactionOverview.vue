@@ -3,7 +3,6 @@
 import { computed, onMounted, ref, toRaw, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { BlockData, EvmTransactionExtended } from 'src/types';
-import { WEI_PRECISION } from 'src/lib/utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
@@ -352,11 +351,15 @@ onMounted(() => {
             <div class="c-trx-overview__row-tooltip">
                 <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.transaction.tlos_transfers_tooltip') }}
+                        {{ $t('components.transaction.tlos_transfers_tooltip', {
+                            symbol: useChainStore().currentChain.settings.getSystemToken().symbol,
+                        }) }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.tlos_transfers') }}</div>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.tlos_transfers', {
+                symbol: useChainStore().currentChain.settings.getSystemToken().symbol,
+            }) }}</div>
         </div>
         <div class="c-trx-overview__col-val c-trx-overview__col-val--erc-transfers">
             <TLOSTransferList
@@ -384,8 +387,8 @@ onMounted(() => {
             <template v-else>
                 <ValueField
                     :value="trx.value"
-                    :symbol="'TLOS'"
-                    :decimals="WEI_PRECISION"
+                    :symbol="useChainStore().currentChain.settings.getSystemToken().symbol"
+                    :decimals="useChainStore().currentChain.settings.getSystemToken().decimals"
                 />
             </template>
         </div>

@@ -345,7 +345,7 @@ export default defineComponent({
                 keyMsg = 'notification.neutral_message_custom_call_send';
                 keyErr = 'notification.error_message_custom_call_send';
                 const quantity = ethers.utils.formatUnits(value, WEI_PRECISION);
-                const symbol = 'TLOS';
+                const symbol = useChainStore().currentChain.settings.getSystemToken().symbol;
                 message = this.$t(keyMsg, { name, params, quantity, symbol });
                 error = this.$t(keyErr, { name, params, quantity, symbol });
             }

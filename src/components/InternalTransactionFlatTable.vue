@@ -305,7 +305,7 @@ export default {
                             from: trace.action.from,
                             to: trace.action.to,
                             value: trace.action.value,
-                            symbol: 'TLOS',
+                            symbol: useChainStore().currentChain.settings.getSystemToken().symbol,
                             decimals: WEI_PRECISION,
                         };
                         entries.push(entry);
@@ -321,7 +321,7 @@ export default {
                             from: transaction.from,
                             to: transaction.to,
                             value: transaction.value,
-                            symbol: 'TLOS',
+                            symbol: useChainStore().currentChain.settings.getSystemToken().symbol,
                             decimals: WEI_PRECISION,
                             traces: entries,
                             expand: true,
