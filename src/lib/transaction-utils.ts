@@ -1,14 +1,12 @@
 import { ethers } from 'ethers';
 
-import { indexerApi } from 'src/boot/telosApi';
-import { contractManager } from 'src/boot/telosApi';
-
 import { EvmTransaction, EvmTransactionLog } from 'src/antelope/types';
 import { EvmTransactionExtended, NftTransferData } from 'src/types';
 import { TransactionDescription } from 'ethers/lib/utils';
 import { WEI_PRECISION, formatWei, parseErrorMessage } from 'src/lib/utils';
 
 import { toChecksumAddress } from 'src/lib/utils';
+import { useChainStore } from 'src/antelope';
 
 export const tryToExtractMethod = (abi: {[hash: string]: string }, input: string) => {
     if (!abi || !input) {
@@ -31,8 +29,13 @@ export const tryToExtractMethod = (abi: {[hash: string]: string }, input: string
 };
 export const loadTransaction = async (hash: string): Promise<EvmTransactionExtended | null>  => {
     try {
-        const trxResponse = await indexerApi.get(`/transaction/${hash}?full=true&includeAbi=true`);
+        const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+        const trxResponse = await indexerApi.get(`/v1/transaction/${hash}?full=true&includeAbi=true`);
         const abi = trxResponse.data.abi;
+        if (trxResponse.data.code === 404) {
+            console.error(`Transaction ${hash} not found`);
+            return null;
+        }
         if (trxResponse.data.results.length === 0) {
             console.error(`Transaction ${hash} not found`);
             return null;
@@ -66,9 +69,54 @@ export const loadTransaction = async (hash: string): Promise<EvmTransactionExten
         return null;
     }
 };
+function parseInput(inputString: string, inputs: {name: string, type: string}[], values: {[key: string]: unknown}) {
+    let offset = 10; // El prefijo de la función ocupa 10 caracteres.
 
-export const getParsedInternalTransactions = async (hash: string, $t: (k:string)=>string) => new Promise<{itxs:unknown[], parsedItxs:unknown[]}>((resolve, reject) => {
-    const query = `/transaction/${hash}/internal?limit=1000&sort=ASC&offset=0&includeAbi=1`;
+    const list = inputs.map((input, index) => {
+        const value = values[index];
+        let length = 64; // Longitud predeterminada para uint256, bool, etc.
+        let inputPortion = '';
+
+        if (input.type === 'address') {
+            length = 64;
+            inputPortion = inputString.slice(offset, offset + length);
+        } else if (input.type === 'uint128' || input.type.startsWith('uint')) {
+            inputPortion = inputString.slice(offset, offset + length);
+        } else if (input.type === 'bool') {
+            inputPortion = inputString.slice(offset, offset + length);
+        } else if (input.type === 'string' || input.type.startsWith('bytes')) {
+            const dataOffset = parseInt(inputString.slice(offset, offset + 64), 16) * 2;
+            const dataLength = parseInt(inputString.slice(dataOffset, dataOffset + 64), 16) * 2;
+            inputPortion = inputString.slice(dataOffset + 64, dataOffset + 64 + dataLength);
+            length = 64; // Reinicia la longitud a 64 para los punteros
+        }
+
+        const result = {
+            name: input.name,
+            type: input.type,
+            value: value,
+            input: inputPortion,
+        };
+
+        offset += length;
+        return result;
+    });
+
+    return list;
+}
+
+export interface DecodedTransactionInput {
+    method: string;
+    name: string;
+    args: {name: string, type: string, input: string, value: unknown}[];
+    input: string;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getParsedInternalTransactions = async (hash: string, $t: (k:string, v?: any)=>string) => new Promise<{itxs:unknown[], parsedItxs:unknown[]}>((resolve, reject) => {
+    const query = `/v1/transaction/${hash}/internal?limit=1000&sort=ASC&offset=0&includeAbi=1`;
+    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+    const contractManager = useChainStore().currentChain.settings.getContractManager();
     indexerApi.get(query).then(async (response) => {
         if(response && response.data?.results?.length > 0) {
             const dataset = response.data?.results;
@@ -92,11 +140,14 @@ export const getParsedInternalTransactions = async (hash: string, $t: (k:string)
                 itx.callType = itx.action.callType;
                 const contract = await contractManager.getContract(itx.action.to);
                 let inputs, outputs, args, name, isTransferETH = false;
+                let decoded: DecodedTransactionInput|null = null;
 
                 if (itx.type === 'create') {
                     name = $t('components.transaction.contract_deployment');
                 } else if (+itx.action.value > 0) {
-                    name = $t('components.transaction.tlos_transfer');
+                    name = $t('components.transaction.tlos_transfer', {
+                        symbol: useChainStore().currentChain.settings.getSystemToken().symbol,
+                    });
                     isTransferETH = true;
                 }
 
@@ -117,10 +168,26 @@ export const getParsedInternalTransactions = async (hash: string, $t: (k:string)
                         inputs = parsedTransaction.functionFragment ?
                             parsedTransaction.functionFragment.inputs :
                             parsedTransaction.inputs;
+
+                        // Extraemos "setValue" de la string "setValue(string,uint128,uint128)"
+                        const mothod = name ? name.split('(')[0] : '';
+
+                        const values = args;
+                        const decodedArgs = parseInput(itx.action.input, inputs, values);
+
+                        decoded = {
+                            mothod,
+                            name: name,
+                            args: decodedArgs,
+                            input: itx.action.input,
+                        } as unknown as DecodedTransactionInput;
                     }
                 }
                 itxs.push(itx);
+
+
                 parsedItxs.push({
+                    decoded,
                     index: itx.index,
                     type: itx.type,
                     args: args,

@@ -1,4 +1,5 @@
 import { BigNumber } from 'ethers';
+import { useChainStore } from 'src/antelope';
 
 let rpcId = 0;
 
@@ -9,14 +10,16 @@ export async function doRPC(_, { method, params }) {
         method,
         params,
     };
-    const result = await this.$evmEndpoint.post('/evm', rpcPayload);
+    const result = await useChainStore().currentChain.settings.getHyperionApi().post('/evm', rpcPayload);
 
     return result.data;
 }
 
 export const fetchTlosPrice = async function({ commit }) {
     try {
-        const response = await this.$indexerApi.get('/tokens/marketdata?tokens=TLOS&vs=usd');
+        const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+        const symbol = useChainStore().currentChain.settings.getSystemToken().symbol;
+        const response = await indexerApi.get(`/v1/tokens/marketdata?tokens=${symbol}&vs=usd`);
         const tlosPrice = parseFloat(response.data?.results[0].price).toFixed(4);
         commit('setTlosPrice', tlosPrice);
     } catch (error) {

@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import { ZERO_ADDRESSES } from 'src/lib/utils';
 import { useStore } from 'vuex';
+import { useChainStore } from 'src/antelope';
 
 const { t: $t } = useI18n();
 
@@ -103,7 +104,9 @@ const setValues = async () => {
         nativeTooltipText.value = $t('pages.transactions.native_withdraw_tooltip');
         methodName.value = $t('pages.transactions.withdraw_action_name');
     } else if (!props.trx.parsedTransaction && props.trx.input === '0x' && propValue.value) {
-        methodName.value = $t('pages.transactions.transfer_tlos_action_name');
+        methodName.value = $t('pages.transactions.transfer_tlos_action_name', {
+            symbol: useChainStore().currentChain.settings.getSystemToken().symbol,
+        });
     } else if (!props.trx.parsedTransaction && props.trx.to === null) {
         methodName.value = $t('pages.transactions.contract_deployment');
     } else if (props.trx.parsedTransaction) {
