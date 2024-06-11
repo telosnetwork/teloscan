@@ -220,6 +220,18 @@ export default {
         download_image: 'Télécharger l’image',
         confirm_download_image: 'Confirmez que vous voulez télécharger cette image',
         confirm: 'Confirmer',
+        click_to_toggle_media_size: 'Cliquez pour changer la taille du média',
+        toggle_expand: 'Basculer pour s\'adapter à l\'écran ou taille originale',
+        close: 'Fermer',
+        input_viewer: {
+            name: 'Nom',
+            type: 'Type',
+            data: 'Données',
+            default_view: 'Vue par défaut',
+            original_view: 'Vue originale',
+            decoded_view: 'Vue décodée',
+            copy_button_desc: 'tableau des paramètres',
+        },
         approvals: {
             token_id: 'ID Jeton',
             approved: 'Approuvé',

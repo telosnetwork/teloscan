@@ -154,15 +154,7 @@ async function loginWithAntelope(name:string, autoLogAccount?: string) {
     }
     const authenticator = auth.newInstance(label);
     const network = useChainStore().currentChain.settings.getNetwork();
-    useAccountStore().loginEVM({ authenticator, network, autoLogAccount }, true).then(() => {
-        const address = useAccountStore().getAccount(label).account;
-        setLogin({ address });
-        localStorage.setItem(LOGIN_DATA_KEY, JSON.stringify({
-            type: LOGIN_EVM,
-            provider: name,
-            account: address,
-        }));
-    });
+    useAccountStore().loginEVM({ authenticator, network, autoLogAccount }, true);
     emit('hide');
 }
 

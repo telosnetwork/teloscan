@@ -210,6 +210,16 @@ export default {
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
             this.transactions = [...result.data.results];
+            this.transactions.forEach((transaction) => {
+                let timestamp = transaction.timestamp;
+                // This is a workaround to fix the timestamp issue (it should be fixed in the API)
+                // https://github.com/telosnetwork/teloscan-indexer/issues/234
+                if (typeof timestamp === 'string') {
+                    timestamp = new Date(timestamp).getTime() - new Date().getTimezoneOffset() * 60 * 1000;
+                    transaction.timestamp = timestamp;
+                }
+            });
+
             let totalTraces = 0;
             let processedTransactions = 0;
             for (const transaction of this.transactions) {
