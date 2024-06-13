@@ -55,6 +55,10 @@ export default defineComponent({
             type: String,
             default: null,
         },
+        write: {
+            type: Boolean,
+            required: true,
+        },
     },
     data : () => {
         const decimalOptions = [{
@@ -211,7 +215,7 @@ export default defineComponent({
             this.showLoginModal = true;
         },
         async run() {
-            if (!this.isLoggedIn){
+            if (!this.isLoggedIn && this.write){
                 this.login();
                 return;
             }
