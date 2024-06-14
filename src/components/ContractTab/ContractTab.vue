@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 import ContractSource from 'components/ContractTab/ContractSource.vue';
 import ContractInterface from 'components/ContractTab/ContractInterface.vue';
@@ -12,8 +13,32 @@ const props = defineProps({
     },
 });
 
-const source = ref(props.contract.abi?.length > 0);
+const route = useRoute();
+const router = useRouter();
+
+const source = ref(true);
 const write = ref(false);
+
+type TabValue = 'source' | 'read' | 'write';
+
+// Set initial values based on URL query
+onMounted(() => {
+    const subtab = route.query.subtab as string || 'source';
+    switch (subtab) {
+    case 'read':
+        source.value = false;
+        write.value = false;
+        break;
+    case 'write':
+        source.value = false;
+        write.value = true;
+        break;
+    default:
+        source.value = true;
+        write.value = false;
+        break;
+    }
+});
 
 const verified = computed(() => props.contract.verified);
 const abi = computed(() => {
@@ -27,11 +52,29 @@ const codeSelected = computed(() => source.value === true);
 const readSelected = computed(() => source.value === false && write.value === false);
 const writeSelected = computed(() => source.value === false && write.value === true);
 
+const selectTab = (tab: TabValue) => {
+    switch (tab) {
+    case 'read':
+        source.value = false;
+        write.value = false;
+        break;
+    case 'write':
+        source.value = false;
+        write.value = true;
+        break;
+    default:
+        source.value = true;
+        write.value = false;
+        break;
+    }
+    router.push({ query: { ...route.query, subtab: tab } });
+};
+
 </script>
 
 <template>
-<q-card>
-    <div v-if="abi" :key="contract.address + abi.length" class="c-contract">
+<div class="c-contract">
+    <div v-if="abi" :key="contract.address + abi.length">
         <div class="flex justify-between items-center">
             <div class="c-contract__tab-container">
                 <q-btn
@@ -40,7 +83,7 @@ const writeSelected = computed(() => source.value === false && write.value === t
                         'c-contract__tab': true,
                         'c-contract__tab--active': codeSelected,
                     }"
-                    @click="source = true; write = false"
+                    @click="selectTab('source')"
                 />
                 <q-btn
                     :label="$t('components.contract_tab.read')"
@@ -48,7 +91,7 @@ const writeSelected = computed(() => source.value === false && write.value === t
                         'c-contract__tab': true,
                         'c-contract__tab--active': readSelected,
                     }"
-                    @click="source = false; write = false"
+                    @click="selectTab('read')"
                 />
                 <q-btn
                     :label="$t('components.contract_tab.write')"
@@ -56,7 +99,7 @@ const writeSelected = computed(() => source.value === false && write.value === t
                         'c-contract__tab': true,
                         'c-contract__tab--active': writeSelected,
                     }"
-                    @click="source = false; write = true"
+                    @click="selectTab('write')"
                 />
             </div>
             <CopyButton
@@ -72,29 +115,28 @@ const writeSelected = computed(() => source.value === false && write.value === t
             :contract="contract"
         />
     </div>
-</q-card>
-
+</div>
 </template>
 
 <style lang='scss' scoped>
-.c-contract{
+.c-contract {
     padding-top: 1rem;
     padding-left: 1rem;
     padding-right: 1rem;
 
-    &__tab-container{
+    &__tab-container {
         display: inline-flex;
         gap: .5rem;
     }
 
-    &__tab{
+    &__tab {
         cursor: pointer;
         border-radius: 5px;
         color: var(--text-color);
         text-transform: capitalize !important;
         background-color: var(--tab-bg-color);
 
-        &:hover{
+        &:hover {
             color: var(--text-color);
         }
 
