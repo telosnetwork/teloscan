@@ -59,6 +59,7 @@ onMounted(async () => {
                         :contract="props.contract"
                         :group="props.write ? 'write' : 'read'"
                         :run-label="props.write ? 'Write' : 'Query'"
+                        :write="props.write"
                     />
                 </div>
             </q-card>
