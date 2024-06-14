@@ -6,11 +6,11 @@ import messages from 'src/i18n';
 let lastChosenLanguage = localStorage.getItem('language');
 
 //if not present in local storage then check user browser language
-if(!lastChosenLanguage) {
+if (!lastChosenLanguage) {
     lastChosenLanguage = navigator.language.toLowerCase().split(/[_-]+/)[0];
 }
 // Check if the browser language is supported, if not, fall back to 'en-us'
-if(!Object.keys(messages).includes(lastChosenLanguage)) {
+if (!Object.keys(messages).includes(lastChosenLanguage)) {
     lastChosenLanguage = 'en-us';
 }
 
@@ -38,7 +38,10 @@ export default boot(({ app }) => {
 
         if (newLanguage !== currentLanguage) {
             localStorage.setItem('language', newLanguage);
-            window.location.reload();
+
+            if (currentLanguage) {
+                window.location.reload();
+            }
         }
         // TODO: investigate if there is a better way to change the language not reloading the page
         // i18n.locale = newLanguage;

@@ -10,6 +10,9 @@ const telosApi = axios.create({
 const indexerApi = axios.create({
     baseURL: process.env.INDEXER_API_ENDPOINT,
 });
+const exportApi = axios.create({
+    baseURL: process.env.EXPORT_API_ENDPOINT,
+});
 const hyperion = axios.create({
     baseURL: process.env.NETWORK_EVM_ENDPOINT,
 });
@@ -21,9 +24,11 @@ let contractManager = new ContractManager(indexerApi, fragmentParser);
 export default boot(({ app, store }) => {
     app.config.globalProperties.$telosApi =  telosApi;
     app.config.globalProperties.$indexerApi = indexerApi;
+    app.config.globalProperties.$exportApi = exportApi;
     app.config.globalProperties.$fragmentParser = fragmentParser;
     store.$contractManager = app.config.globalProperties.$contractManager = markRaw(contractManager);
     store.$indexerApi = indexerApi;
+    store.$exportApi = exportApi;
     // Intercept API answer to set contracts & abi in cache directly
     indexerApi.interceptors.response.use(function (response) {
         if(response.data?.abi?.length > 0){
@@ -42,4 +47,4 @@ export default boot(({ app, store }) => {
 
 });
 
-export { telosApi, indexerApi, contractManager, fragmentParser };
+export { telosApi, indexerApi, exportApi, contractManager, fragmentParser };
