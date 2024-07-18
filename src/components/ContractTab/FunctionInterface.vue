@@ -460,3 +460,13 @@ export default defineComponent({
     </div>
 </div>
 </template>
+
+<style>
+.text-negative.output-container {
+    overflow-wrap: break-word;
+    word-break: break-all;
+    overflow: hidden;
+    white-space: pre-wrap;
+}
+</style>
+
