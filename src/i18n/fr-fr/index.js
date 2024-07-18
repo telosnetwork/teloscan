@@ -190,6 +190,7 @@ export default {
         search_failed: 'La recherche à échouée, veuillez saisir des mots clés de recherche correctes.',
         add_to_metamask: 'Ajoutez { symbol } à MetaMask',
         tx_hash: 'Transaction',
+        direction: 'Direction',
         block: 'Bloc',
         date: 'Date',
         method: 'Méthode',

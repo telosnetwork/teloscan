@@ -243,6 +243,7 @@ export default {
         search_failed: 'A busca falhou, digite um termo de pesquisa válido.',
         add_to_metamask: 'Adicionar { symbol } ao MetaMask',
         tx_hash: 'Txn Hash',
+        direction: 'Direção',
         block: 'Bloco',
         date: 'Date Time (UTC)',
         age: 'Age',
