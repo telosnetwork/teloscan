@@ -108,12 +108,16 @@ const routes = [
         }],
     },
     {
+        path: '/endpoints',
+        redirect: () => ({ path: '/health' }),
+    },
+    {
         path: '/export',
         component: () => import('layouts/MainLayout.vue'),
         children: [{
             path: '',
             name: 'export',
-            component: () => import('pages/ErrorNotFoundPage.vue'),
+            component: () => import('pages/export/ExportPage.vue'),
         }],
     },
     {
