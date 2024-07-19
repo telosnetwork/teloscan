@@ -6,6 +6,19 @@ import { useRouter } from 'vue-router';
 import axios from 'axios';
 
 import { evm } from 'src/boot/evm';
+import {
+    SearchResult,
+    SearchResultRaw,
+    SearchResultCategory,
+    SearchResultInterfaces,
+    SearchResultContract,
+    SearchResultToken,
+    SearchResultNFT,
+    SearchResultAddress,
+    SearchResultTrx,
+    SearchResultBlock,
+    SearchResultUnknown,
+} from 'src/types';
 
 const props = defineProps<{
     homepageMode?: boolean; // if true, the search bar will be styled for placement on the homepage
@@ -16,104 +29,46 @@ const $q = useQuasar();
 const { t: $t } = useI18n();
 
 const TIME_DELAY = 6000;
+const NULL_ADDRESS = '0x' + '0'.repeat(40);
+const NULL_HASH = '0x' + '0'.repeat(64);
 
 const searchTerm = ref<string>('');
 const inputRef = ref<{$el:HTMLInputElement}|null>(null);
 const showAutocomplete = ref<boolean>(false);
-const searchResults = ref<Array<SearchResultFixed>>([]);
+const searchResults = ref<Array<SearchResult>>([]);
 const selectedTab = ref<string>('tokens');
-
-export interface SearchResultEntry {
-    symbol: string;
-    address: string;
-    price: number;
-    decimals: number;
-    name: string;
-    verified: boolean;
-    supportedInterfaces: string;
-    type: string;
-    issuer: string | null;
-}
-
-export interface SearchResultFixed {
-    symbol: string;
-    address: string;
-    price: number;
-    decimals: number;
-    name: string;
-    verified: boolean;
-    type: string;
-    issuer: string | null;
-    // fixed properties
-    supportedInterfaces: string[];
-    priceUSD: string;
-    category: string;
-    icon: string;
-}
 
 console.log($router, $q, TIME_DELAY, evm, axios); // FIXME: remove this line
 
-async function search() {
-    /*
-    if (!searchTerm.value) {
-        return;
-    }
+// Logic to resolve and depurate search results ----
 
-    searchTerm.value = searchTerm.value.trim().replace(/\s/, '');
-    if (searchTerm.value.startsWith('0x')) {
-        if (searchTerm.value.length === 42) {
-            $router.push(`/address/${searchTerm.value}`);
-            return;
+const resolveCategory = (entry: SearchResultRaw): SearchResultCategory => {
+    switch (entry.type) {
+    case 'contract':
+        if (entry.supportedInterfaces?.includes('erc20')) {
+            return 'tokens';
+        } else if (
+            entry.supportedInterfaces?.includes('erc721') ||
+            entry.supportedInterfaces?.includes('erc721_metadata') ||
+            entry.supportedInterfaces?.includes('erc1155') ||
+            entry.supportedInterfaces?.includes('erc1155_metadata')
+        ) {
+            return 'nft';
         } else {
-            $router.push(`/tx/${searchTerm.value}`);
-            return;
+            return 'contract';
         }
-    } else if (searchTerm.value.match(/(^[a-z1-5.]{1,11}[a-z1-5]$)|(^[a-z1-5.]{12}[a-j1-5]$)/)) {
-        try {
-            const account = await evm.telos.getEthAccountByTelosAccount(searchTerm.value);
-            $router.push(`/address/${account.address}`);
-            return;
-        } catch (e) {
-            // in case this was a block that looked like an account name let's try it as a block
-            if (searchTerm.value && /\d+/g.test(searchTerm.value)) {
-                $router.push(`/block/${searchTerm.value}`);
-                return;
-            }
-
-            $q.notify({
-                position: 'top',
-                message: $t('components.header.address_not_found', { account: searchTerm.value }),
-                timeout: TIME_DELAY,
-            });
-            return;
-        }
-    } else if (/\d+/g.test(searchTerm.value)) {
-        $router.push(`/block/${searchTerm.value}`);
-        return;
-    }
-
-    $q.notify({
-        position: 'top',
-        message: $t('components.header.search_failed'),
-        timeout: TIME_DELAY,
-    });
-    */
-}
-
-
-const resolveCategory = (entry: SearchResultEntry): string => {
-    if (entry.supportedInterfaces.includes('erc20')) {
-        return 'tokens';
-    } else if (entry.supportedInterfaces.includes('erc721') || entry.supportedInterfaces.includes('erc721_metadata')) {
-        return 'nfts';
-    } else if (entry.supportedInterfaces.includes('erc1155')) {
-        return 'nfts';
-    } else {
-        return 'addresses';
+    case 'address':
+        return 'address';
+    case 'transaction':
+        return 'transaction';
+    case 'block':
+        return 'block';
+    default:
+        return 'unknown';
     }
 };
 
-const resolvePriceUSD = (entry: SearchResultEntry): string => {
+const resolvePriceUSD = (entry: SearchResultToken | SearchResultNFT): string => {
     if(+entry.price > 0) {
         if (entry.price > 0.0001) {
             return `$${Math.round((entry.price) * 10000) / 10000}`;
@@ -125,31 +80,98 @@ const resolvePriceUSD = (entry: SearchResultEntry): string => {
     }
 };
 
-const resolveIcon = (entry: SearchResultEntry): string => {
-    if (entry.type === '') {
-        // TODO resolve icon for addresses
-        return '';
+const resolveIcon = (entry: SearchResultToken): string => {
+    // TODO: implement this function
+    if (entry.category === 'token') {
+        return 'assets/logo--teloscan.png';
     } else {
         return 'assets/logo--teloscan.png';
     }
 };
 
-const resolveTabLabel = (category: string): string => {
-    let label = '';
-    switch (category) {
+const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
+    switch (resolveCategory(entry)) {
+    case 'contract':
+        return {
+            category: 'contract',
+            type: 'contract',
+            address: entry.address ?? NULL_ADDRESS,
+            name: entry.name ?? '',
+            verified: entry.verified ?? false,
+            supportedInterfaces: entry.supportedInterfaces?.split(' ') as SearchResultInterfaces[] ?? [],
+        } as SearchResultContract;
     case 'tokens':
-        label = $t('components.header.tokens');
-        break;
-    case 'nfts':
-        label = $t('components.header.nfts');
-        break;
-    case 'addresses':
-        label = $t('components.header.addresses');
-        break;
+        return {
+            category: 'token',
+            type: 'contract',
+            address: entry.address ?? NULL_ADDRESS,
+            name: entry.name ?? '',
+            symbol: entry.symbol ?? '',
+            price: entry.price ?? 0,
+            decimals: entry.decimals ?? 0,
+            verified: entry.verified ?? false,
+            issuer: entry.issuer ?? null,
+            supportedInterfaces: entry.supportedInterfaces?.split(' ') as SearchResultInterfaces[] ?? [],
+            priceUSD: resolvePriceUSD(entry as unknown as SearchResultToken),
+            icon: resolveIcon(entry as unknown as SearchResultToken),
+        } as SearchResultToken;
+    case 'nft':
+        return {
+            category: 'nft',
+            type: 'contract',
+            address: entry.address ?? NULL_ADDRESS,
+            name: entry.name ?? '',
+            symbol: entry.symbol ?? '',
+            price: entry.price ?? 0,
+            verified: entry.verified ?? false,
+            supportedInterfaces: entry.supportedInterfaces?.split(' ') as SearchResultInterfaces[] ?? [],
+            priceUSD: resolvePriceUSD(entry as unknown as SearchResultNFT),
+            img: resolveIcon(entry as unknown as SearchResultToken),
+        } as SearchResultNFT;
+    case 'address':
+        return {
+            category: 'address',
+            type: 'address',
+            address: entry.address ?? NULL_ADDRESS,
+        } as SearchResultAddress;
+    case 'transaction':
+        return {
+            category: 'transaction',
+            type: 'transaction',
+            hash: entry.hash ?? NULL_HASH,
+        } as SearchResultTrx;
+    case 'block':
+        return {
+            category: 'block',
+            type: 'block',
+            number: entry.number ?? 0,
+        } as SearchResultBlock;
     default:
-        return '..';
+        return {
+            category: 'unknown',
+            type: 'unknown',
+        } as SearchResultUnknown;
     }
-    // if we are not in homepage split the laben in spaces and return just the first word
+};
+
+const fetchResults = (query: string): SearchResult[] => {
+    if (query.length < 3) {
+        return [];
+    }
+    console.log('Fetching results for:', query);
+    const url = `https://api.teloscan.io/api?module=search&action=search&query=${query}`;
+    axios.get(url).then((response) => {
+        console.log('Response:', response);
+        return response.data.result.map((entry: SearchResultRaw) => convertRawToProcessedResult(entry));
+    }).catch((error) => {
+        console.error('Error fetching results:', error);
+    });
+    return [] as SearchResult[];
+};
+
+// Logic to handle autocomplete structure ----
+const resolveTabLabel = (category: string): string => {
+    let label = $t(`components.header.${category}`);
     return props.homepageMode ? label : label.split(' ')[0];
 };
 
@@ -160,175 +182,11 @@ const shouldShowDivider = (index: number): boolean => {
     return searchResults.value[index].category !== searchResults.value[index - 1].category;
 };
 
-// Simulated API call
-const fetchResults = (query: string): SearchResultFixed[] => {
-    console.log('Fetching results for:', query);
-    const hardcodedResults = {
-        'status': '200',
-        'message': 'OK',
-        'result': [
-            {
-                'symbol': 'BANANA',
-                'address': '0x7097Ee02465FB494841740B1a2b63c21Eed655E7',
-                'price': 0,
-                'decimals': 4,
-                'name': 'Banana',
-                'verified': true,
-                'supportedInterfaces': 'erc20',
-                'type': 'contract',
-                'issuer': null,
-            },
-            {
-                'symbol': 'DECO',
-                'address': '0x7e1cfe10949A6086A28C38aA4A43fDeAB34f198A',
-                'price': 0,
-                'decimals': 4,
-                'name': 'DestinyCoin',
-                'verified': true,
-                'supportedInterfaces': 'erc20',
-                'type': 'contract',
-                'issuer': null,
-            },
-            {
-                'symbol': 'KARMA',
-                'address': '0x730d2Fa7dC7642E041bcE231E85b39e9bF4a6a64',
-                'price': 0,
-                'decimals': 18,
-                'name': 'CharmDojo',
-                'verified': true,
-                'supportedInterfaces': 'erc1155',
-                'type': 'contract',
-                'issuer': null,
-            },
-            {
-                'symbol': 'BTC.b',
-                'address': '0x7627b27594bc71e6Ab0fCE755aE8931EB1E12DAC',
-                'price': 0,
-                'decimals': 8,
-                'name': 'Bitcoin',
-                'verified': true,
-                'supportedInterfaces': 'erc1155',
-                'type': 'contract',
-                'issuer': 'LayerZero',
-            },
-            {
-                'symbol': 'APPLE',
-                'address': '0x1234567890ABCDEF1234567890ABCDEF12345678',
-                'price': 100,
-                'decimals': 2,
-                'name': 'AppleCoin',
-                'verified': true,
-                'supportedInterfaces': 'erc721,erc721_metadata',
-                'type': 'contract',
-                'issuer': 'FruitIssuer',
-            },
-            {
-                'symbol': 'ORANGE',
-                'address': '0x234567890ABCDEF1234567890ABCDEF123456789',
-                'price': 50,
-                'decimals': 2,
-                'name': 'OrangeToken',
-                'verified': false,
-                'supportedInterfaces': 'erc721,erc721_metadata',
-                'type': 'contract',
-                'issuer': 'CitrusIssuer',
-            },
-            {
-                'symbol': 'GRAPE',
-                'address': '0x34567890ABCDEF1234567890ABCDEF1234567890',
-                'price': 25,
-                'decimals': 3,
-                'name': 'GrapeCoin',
-                'verified': true,
-                'supportedInterfaces': '',
-                'type': 'contract',
-                'issuer': 'VineyardIssuer',
-            },
-            {
-                'symbol': 'PEAR',
-                'address': '0x4567890ABCDEF1234567890ABCDEF12345678901',
-                'price': 75,
-                'decimals': 2,
-                'name': 'PearToken',
-                'verified': false,
-                'supportedInterfaces': '',
-                'type': 'contract',
-                'issuer': 'OrchardIssuer',
-            },
-            {
-                'symbol': 'PEACH',
-                'address': '0x567890ABCDEF1234567890ABCDEF123456789012',
-                'price': 30,
-                'decimals': 4,
-                'name': 'PeachCoin',
-                'verified': true,
-                'supportedInterfaces': 'erc20',
-                'type': 'contract',
-                'issuer': null,
-            },
-            {
-                'symbol': 'CHERRY',
-                'address': '0x67890ABCDEF1234567890ABCDEF1234567890123',
-                'price': 20,
-                'decimals': 4,
-                'name': 'CherryToken',
-                'verified': true,
-                'supportedInterfaces': 'erc20',
-                'type': 'contract',
-                'issuer': 'BerryIssuer',
-            },
-            {
-                'symbol': 'MANGO',
-                'address': '0x7890ABCDEF1234567890ABCDEF12345678901234',
-                'price': 60,
-                'decimals': 2,
-                'name': 'MangoCoin',
-                'verified': false,
-                'supportedInterfaces': 'erc20',
-                'type': 'contract',
-                'issuer': 'TropicalIssuer',
-            },
-            {
-                'symbol': 'PLUM',
-                'address': '0x890ABCDEF1234567890ABCDEF123456789012345',
-                'price': 40,
-                'decimals': 3,
-                'name': 'PlumToken',
-                'verified': true,
-                'supportedInterfaces': 'erc20',
-                'type': 'contract',
-                'issuer': 'StoneFruitIssuer',
-            },
-        ],
-    };
+const extractCategoryList = (): SearchResultCategory[] =>
+    searchResults.value.map(entry => entry.category).filter((value, index, self) => self.indexOf(value) === index) as SearchResultCategory[];
 
-    // we need to fix all raw properties before returning
-    const fixed = (hardcodedResults.result as SearchResultEntry[]).map((entry: SearchResultEntry) => ({
-        ...entry,
-        supportedInterfaces: entry.supportedInterfaces.split(','),
-        category: resolveCategory(entry),
-        priceUSD: resolvePriceUSD(entry),
-        icon: resolveIcon(entry),
-    }) as SearchResultFixed);
 
-    // we sort the results by category: tokens, nfts, addresses
-    return fixed.sort((a, b) => {
-        if (a.category === b.category) {
-            return a.name.localeCompare(b.name);
-        } else {
-            switch (a.category) {
-            case 'tokens':
-                return -1;
-            case 'nfts':
-                return b.category === 'tokens' ? 1 : -1;
-            case 'addresses':
-                return 1;
-            default:
-                return 0;
-            }
-        }
-    });
-};
+// Logic to open / close autocomplete ----
 
 const handleClick = (event: Event): void => {
     console.log('document.addEventListener(click)');
@@ -351,33 +209,12 @@ const handleClick = (event: Event): void => {
 
 onMounted(() => {
     document.addEventListener('click', handleClick);
-    // if (inputRef.value) {
-    //     console.log('inputRef.value.$el.addEventListener(focus)');
-    //     inputRef.value.$el.addEventListener('focus', handleClick);
-    // } else {
-    //     console.log('inputRef.value is null');
-    // }
-    // document.querySelectorAll('.c-search__input').forEach((element) => {
-    //     console.log('(.c-search__input).addEventListener(focus)');
-    //     element.addEventListener('focus', function() {
-    //         console.log('element.addEventListener(focus)');
-    //         showAutocomplete.value = true;
-    //         document.addEventListener('click', handleClick);
-    //     });
-    // });
 });
 
 onBeforeUnmount(() => {
     document.removeEventListener('click', handleClick);
-    // // if (inputRef.value) {
-    // //     inputRef.value.$el.removeEventListener('focus', handleClick);
-    // // }
-    // document.querySelectorAll('.c-search__input').forEach((element) => {
-    //     element.removeEventListener('focus', handleClick);
-    // });
 });
 
-// Watch searchTerm and fetch results
 watch(searchTerm, (newValue) => {
     searchResults.value = fetchResults(newValue);
     if (searchTerm.value !== '') {
@@ -407,7 +244,6 @@ watch(searchTerm, (newValue) => {
         :placeholder="$t('components.header.search_placeholder')"
         type="search"
         inputmode="search"
-        @keydown.enter="search"
     >
         <template v-slot:append>
             <q-icon
@@ -415,7 +251,6 @@ watch(searchTerm, (newValue) => {
                 size="24px"
                 class="c-search__icon"
                 aria-hidden="true"
-                @click="search"
             />
         </template>
     </q-input>
@@ -429,19 +264,11 @@ watch(searchTerm, (newValue) => {
             indicator-color="transparent"
         >
             <q-tab
-                name="tokens"
+                v-for="cat in extractCategoryList()"
+                :key="cat"
+                :name="cat"
+                :label="resolveTabLabel(cat)"
                 class="c-search__tabs-tab"
-                :label="resolveTabLabel('tokens')"
-            />
-            <q-tab
-                name="nfts"
-                class="c-search__tabs-tab"
-                :label="resolveTabLabel('nfts')"
-            />
-            <q-tab
-                name="addresses"
-                class="c-search__tabs-tab"
-                :label="resolveTabLabel('addresses')"
             />
         </q-tabs>
         <div class="c-search__results">
@@ -450,17 +277,10 @@ watch(searchTerm, (newValue) => {
                 :key="entry.address"
             >
                 <div v-if="shouldShowDivider(index)" class="c-search__result-category-divider"> {{ entry.category }}</div>
-                <div :class="['c-search__result', 'c-search__result--' + entry.category]">
-                    <img :src="entry.icon" alt="" class="c-search__result-icon">
-                    <div class="c-search__result-details">
-                        <div class="c-search__result-title">
-                            {{ entry.name }}
-                            <span v-if="entry.price > 0" class="c-search__result-title-price">{{ entry.priceUSD }}</span>
-                        </div>
-                        <div class="c-search__result-subtitle">{{ entry.address }}</div>
-                    </div>
-                    <q-icon name="check" class="c-search__result-check" aria-hidden="true"/>
-                </div>
+
+
+
+
             </template>
         </div>
     </div>
@@ -592,23 +412,6 @@ watch(searchTerm, (newValue) => {
         padding: 10px 10px 0px 10px;
         @include tabs-container;
     }
-    // FIXME: remove this comment
-    //     display: flex;
-    //     background:  var(--background-color);
-    //     border-bottom: 1px solid var(--border-color);
-    // }
-    // &__tab {
-    //     flex: 1;
-    //     padding: 8px;
-    //     text-align: center;
-    //     cursor: pointer;
-    //     border: none;
-    //     background: none;
-    //     outline: none;
-    //     &--selected {
-    //         background: #ddd;
-    //     }
-    // }
 
     &__results {
         @include scroll-bar;
