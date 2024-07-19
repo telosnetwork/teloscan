@@ -512,6 +512,7 @@ export default {
             date_range: 'Datumsbereich',
             start_date: 'Startdatum',
             end_date: 'Enddatum',
+            invalid_range: 'Ungültiger Bereich',
             download_csv: 'CSV-Datei herunterladen',
             download_transactions_csv: 'Transaktionen CSV-Datei herunterladen',
             download_erc_20_transfers_csv: 'ERC-20-Übertragungen CSV-Datei herunterladen',

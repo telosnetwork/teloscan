@@ -527,6 +527,7 @@ export default {
             date_range: 'Date Range',
             start_date: 'Start Date',
             end_date: 'End Date',
+            invalid_range: 'Invalid range',
             download_csv: 'Download CSV',
             download_transactions_csv: 'Download Transactions CSV',
             download_erc_20_transfers_csv: 'Download ERC-20 Transfers CSV',

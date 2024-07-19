@@ -73,24 +73,27 @@ const dateRange = computed(() => ({
     to: endDateModel.value,
 }));
 
-const enableDownloadButton = computed(() => {
-    const isNumber = (val: string) => /^\d+$/.test(val);
+const isNumber = (val: string) => /^\d+$/.test(val);
+const addressIsValid = !!parseAddressString(accountModel.value);
+const dateRangeIsValid = computed(() => dateRange.value.from && dateRange.value.to && dateRange.value.from <= dateRange.value.to);
+const blockRangeIsValid = computed(() =>
+    isNumber(startBlockModel.value) &&
+    isNumber(endBlockModel.value) &&
+    parseInt(startBlockModel.value) <= parseInt(endBlockModel.value) &&
+    parseInt(startBlockModel.value) >= 0);
 
-    const addressIsValid = !!parseAddressString(accountModel.value);
-    const dateRangeIsValid = dateRange.value.from && dateRange.value.to && dateRange.value.from <= dateRange.value.to;
-    const blockRangeIsValid =
-        isNumber(startBlockModel.value) &&
-        isNumber(endBlockModel.value) &&
-        parseInt(startBlockModel.value) <= parseInt(endBlockModel.value) &&
-        parseInt(startBlockModel.value) >= 0;
+// We must show an error only if both fields of the selected range type are not empty and are also invalid
+const showErrorMessages = computed(() =>
+    (downloadRangeType.value === downloadRangeTypes.date && !dateRangeIsValid.value && dateRange.value.from && dateRange.value.to) ||
+    (downloadRangeType.value === downloadRangeTypes.block && !blockRangeIsValid.value && startBlockModel.value && endBlockModel.value));
 
-    return addressIsValid &&
-        captchaSucceeded.value &&
-        (
-            (downloadRangeType.value === downloadRangeTypes.date && dateRangeIsValid) ||
-            (downloadRangeType.value === downloadRangeTypes.block && blockRangeIsValid)
-        );
-});
+const enableDownloadButton = computed(() =>
+    addressIsValid &&
+    captchaSucceeded.value &&
+    (
+        (downloadRangeType.value === downloadRangeTypes.date && dateRangeIsValid.value) ||
+        (downloadRangeType.value === downloadRangeTypes.block && blockRangeIsValid.value)
+    ));
 
 const startDateTextInputModel = computed(() => startDateModel.value);
 const endDateTextInputModel = computed(() => endDateModel.value);
@@ -266,17 +269,28 @@ onBeforeUnmount(() => {
                             </div>
                         </div>
                         <div
+                            v-if="showErrorMessages"
+                            class="c-export-page__row c-export-page__invalid-range"
+                        >
+                            {{ $t('components.export.invalid_range') }}
+                        </div>
+                        <div
                             v-if="downloadRangeType === downloadRangeTypes.date"
-                            class="c-export-page__row c-export-page__value-container"
+                            :class="{
+                                'c-export-page__row': true,
+                                'c-export-page__value-container': true,
+                                'c-export-page__value-container--error': showErrorMessages,
+                            }"
                         >
                             <q-input
                                 v-model="startDateTextInputModel"
                                 :label="`${$t('components.export.start_date')}*`"
                                 name="export-data-start-date"
                                 type="text"
-                                color="secondary"
+                                :color="showErrorMessages ? 'negative' : 'secondary'"
                                 required="required"
                                 class="c-export-page__value"
+                                error-message="Invalid date range"
                             >
                                 <template v-slot:append>
                                     <q-icon name="event" class="cursor-pointer">
@@ -304,7 +318,7 @@ onBeforeUnmount(() => {
                                 :label="`${$t('components.export.end_date')}*`"
                                 name="export-data-end-date"
                                 type="text"
-                                color="secondary"
+                                :color="showErrorMessages ? 'negative' : 'secondary'"
                                 required="required"
                                 class="c-export-page__value"
                             >
@@ -333,14 +347,18 @@ onBeforeUnmount(() => {
 
                         <div
                             v-else
-                            class="c-export-page__row c-export-page__value-container"
+                            :class="{
+                                'c-export-page__row': true,
+                                'c-export-page__value-container': true,
+                                'c-export-page__value-container--error': showErrorMessages
+                            }"
                         >
                             <q-input
                                 v-model="startBlockModel"
                                 :label="`${$t('components.export.start_block')}*`"
                                 name="export-data-start-block"
                                 type="number"
-                                color="secondary"
+                                :color="showErrorMessages ? 'negative' : 'secondary'"
                                 required="required"
                                 class="c-export-page__value"
                             />
@@ -349,7 +367,7 @@ onBeforeUnmount(() => {
                                 :label="`${$t('components.export.end_block')}*`"
                                 name="export-data-end-block"
                                 type="number"
-                                color="secondary"
+                                :color="showErrorMessages ? 'negative' : 'secondary'"
                                 required="required"
                                 class="c-export-page__value"
                             />
@@ -462,6 +480,12 @@ onBeforeUnmount(() => {
         }
     }
 
+    &__invalid-range {
+        justify-content: center;
+        color: var(--q-negative);
+        margin-top: 16px;
+    }
+
     &__col {
         display: flex;
         flex-direction: column;
@@ -481,5 +505,9 @@ onBeforeUnmount(() => {
 
     &__value-container {
         padding: 16px;
+        &--error {
+            border: 1px solid var(--q-negative);
+            border-radius: 4px;
+        }
     }
 }</style>

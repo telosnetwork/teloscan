@@ -509,6 +509,7 @@ export default {
             date_range: 'Intervalo de datas',
             start_date: 'Data de início',
             end_date: 'Data final',
+            invalid_range: 'Intervalo inválido',
             download_csv: 'Baixar CSV',
             download_transactions_csv: 'Baixar CSV de transações',
             download_erc_20_transfers_csv: 'Baixar CSV de transferências ERC-20',

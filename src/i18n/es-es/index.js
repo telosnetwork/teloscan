@@ -513,6 +513,7 @@ export default {
             date_range: 'Rango de fechas',
             start_date: 'Fecha de inicio',
             end_date: 'Fecha de finalización',
+            invalid_range: 'Rango de fechas no válido',
             download_csv: 'Descargar CSV',
             download_transactions_csv: 'Descargar transacciones CSV',
             download_erc_20_transfers_csv: 'Descargar transferencias ERC-20 CSV',
