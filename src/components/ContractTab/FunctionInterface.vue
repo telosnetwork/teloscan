@@ -23,9 +23,10 @@ import {
     parameterTypeIsSignedIntArray,
     parameterTypeIsUnsignedIntArray,
 } from 'src/lib/function-interface-utils';
-
 import TransactionField from 'src/components/TransactionField.vue';
 import LoginModal from 'components/LoginModal.vue';
+import FunctionOutputViewer from 'components/ContractTab/FunctionOutputViewer.vue';
+import { OutputType, OutputValue } from 'src/types';
 
 interface Opts {
     value?: string;
@@ -41,6 +42,7 @@ export default defineComponent({
         ...asyncInputComponents,
         TransactionField,
         LoginModal,
+        FunctionOutputViewer,
     },
     props: {
         contract: {
@@ -83,6 +85,8 @@ export default defineComponent({
             errorMessage: null as string | null,
             decimalOptions,
             result: null as string | null,                // string | null
+            response: [] as OutputValue[],                // OutputData[]
+            abiOutputs: [] as OutputType[],               // OutputType[]
             hash: null as string | null,                  // string | null
             enterAmount: false,                           // boolean
             amountInput: 0,                               // number
@@ -257,8 +261,10 @@ export default defineComponent({
         runRead() {
             return this.getEthersFunction()
                 .then(func => func(...this.params)
-                    .then((response: string) => {
-                        this.result = response;
+                    .then((response: OutputValue | OutputValue[]) => {
+                        this.result = response as unknown as string;
+                        this.response = Array.isArray(response) ? response : [response];
+                        this.abiOutputs = this.abi.outputs as OutputType[];
                         this.errorMessage = null;
                     })
                     .catch((msg: string) => {
@@ -449,10 +455,13 @@ export default defineComponent({
     <p class="text-negative output-container">
         {{ errorMessage }}
     </p>
-    <div v-if="result !== null" class="output-container">
-        {{ $t('components.contract_tab.result') }} ({{ abi?.outputs.length > 0 ? abi.outputs[0].type : '' }}):
-        <router-link v-if="abi?.outputs?.[0]?.type === 'address'" :to="`/address/${result}`" >{{ result }}</router-link>
-        <template v-else>{{ result }}</template>
+    <div v-if="response.length > 0" class="output-container">
+
+        <FunctionOutputViewer
+            :response="response"
+            :outputs="abiOutputs"
+        />
+
     </div>
     <div v-if="hash" class="output-container">
         {{ $t('components.contract_tab.view_transaction') }}
@@ -460,3 +469,13 @@ export default defineComponent({
     </div>
 </div>
 </template>
+
+<style>
+.text-negative.output-container {
+    overflow-wrap: break-word;
+    word-break: break-all;
+    overflow: hidden;
+    white-space: pre-wrap;
+}
+</style>
+
