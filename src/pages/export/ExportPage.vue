@@ -77,8 +77,12 @@ const enableDownloadButton = computed(() => {
     const isNumber = (val: string) => /^\d+$/.test(val);
 
     const addressIsValid = !!parseAddressString(accountModel.value);
-    const dateRangeIsValid = dateRange.value.from && dateRange.value.to;
-    const blockRangeIsValid = isNumber(startBlockModel.value) && isNumber(endBlockModel.value);
+    const dateRangeIsValid = dateRange.value.from && dateRange.value.to && dateRange.value.from <= dateRange.value.to;
+    const blockRangeIsValid =
+        isNumber(startBlockModel.value) &&
+        isNumber(endBlockModel.value) &&
+        parseInt(startBlockModel.value) <= parseInt(endBlockModel.value) &&
+        parseInt(startBlockModel.value) >= 0;
 
     return addressIsValid &&
         captchaSucceeded.value &&
