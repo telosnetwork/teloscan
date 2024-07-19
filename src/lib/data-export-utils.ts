@@ -59,8 +59,6 @@ export async function downloadCsv(
             const startTimestamp = (new Date(dateRange.from)).getTime();
             const endTimestamp = (new Date(dateRange.to)).getTime();
             returnUrl += `&startTimestamp=${startTimestamp}&endTimestamp=${endTimestamp}`;
-            returnUrl += `&startDate=${startTimestamp}&endDate=${endTimestamp}`;
-            returnUrl += `&startTime=${startTimestamp}&endTime=${endTimestamp}`;
         } else {
             returnUrl += `&startBlock=${blockRange.startBlock}&endBlock=${blockRange.endBlock}`;
         }
