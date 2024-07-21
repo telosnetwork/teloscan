@@ -74,7 +74,7 @@ const dateRange = computed(() => ({
 }));
 
 const isNumber = (val: string) => /^\d+$/.test(val);
-const addressIsValid = !!parseAddressString(accountModel.value);
+const addressIsValid = computed(() => !!parseAddressString(accountModel.value));
 const dateRangeIsValid = computed(() => dateRange.value.from && dateRange.value.to && dateRange.value.from <= dateRange.value.to);
 const blockRangeIsValid = computed(() =>
     isNumber(startBlockModel.value) &&
@@ -88,7 +88,7 @@ const showErrorMessages = computed(() =>
     (downloadRangeType.value === downloadRangeTypes.block && !blockRangeIsValid.value && startBlockModel.value && endBlockModel.value));
 
 const enableDownloadButton = computed(() =>
-    addressIsValid &&
+    addressIsValid.value &&
     captchaSucceeded.value &&
     (
         (downloadRangeType.value === downloadRangeTypes.date && dateRangeIsValid.value) ||
