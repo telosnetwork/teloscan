@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { useQuasar } from 'quasar';
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useRouter } from 'vue-router';
+import { toChecksumAddress } from 'src/lib/utils';
+import { getSystemBalance } from 'src/lib/balance-utils';
+
 import axios from 'axios';
 
-import { evm } from 'src/boot/evm';
+import AppSearchResultEntry from 'src/components/AppSearchResultEntry.vue';
+
 import {
     SearchResult,
     SearchResultRaw,
@@ -19,26 +21,29 @@ import {
     SearchResultBlock,
     SearchResultUnknown,
 } from 'src/types';
+import { Observable, debounceTime, fromEvent, map, of, switchMap, tap } from 'rxjs';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
     homepageMode?: boolean; // if true, the search bar will be styled for placement on the homepage
 }>();
 
-const $router = useRouter();
-const $q = useQuasar();
 const { t: $t } = useI18n();
+const router = useRouter();
 
-const TIME_DELAY = 6000;
 const NULL_ADDRESS = '0x' + '0'.repeat(40);
 const NULL_HASH = '0x' + '0'.repeat(64);
+const SearchResultCategories = ['tokens', 'nft', 'contract', 'address', 'transaction', 'block', 'unknown'];
 
 const searchTerm = ref<string>('');
 const inputRef = ref<{$el:HTMLInputElement}|null>(null);
 const showAutocomplete = ref<boolean>(false);
 const searchResults = ref<Array<SearchResult>>([]);
 const selectedTab = ref<string>('tokens');
+const fiatValue = useStore().getters['chain/tlosPrice'];
+const loading = ref<boolean>(false);
 
-console.log($router, $q, TIME_DELAY, evm, axios); // FIXME: remove this line
 
 // Logic to resolve and depurate search results ----
 
@@ -89,13 +94,24 @@ const resolveIcon = (entry: SearchResultToken): string => {
     }
 };
 
+const fetchBalance = (address: string): void => {
+    // This function fetches the balance of the given address in background and updates the search result when the balance is available
+    getSystemBalance(address, fiatValue).then((result) => {
+        const addressEntry = searchResults.value.find(entry => entry.category === 'address' && entry.address === address) as SearchResultAddress;
+        if (addressEntry) {
+            addressEntry.balance = $t('pages.tlos_balance', { balance: result?.tokenQty ?? '0' });
+        }
+    });
+};
+
 const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
+    const address = entry.address ?? NULL_ADDRESS;
     switch (resolveCategory(entry)) {
     case 'contract':
         return {
             category: 'contract',
             type: 'contract',
-            address: entry.address ?? NULL_ADDRESS,
+            address,
             name: entry.name ?? '',
             verified: entry.verified ?? false,
             supportedInterfaces: entry.supportedInterfaces?.split(' ') as SearchResultInterfaces[] ?? [],
@@ -104,7 +120,7 @@ const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
         return {
             category: 'token',
             type: 'contract',
-            address: entry.address ?? NULL_ADDRESS,
+            address,
             name: entry.name ?? '',
             symbol: entry.symbol ?? '',
             price: entry.price ?? 0,
@@ -119,7 +135,7 @@ const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
         return {
             category: 'nft',
             type: 'contract',
-            address: entry.address ?? NULL_ADDRESS,
+            address,
             name: entry.name ?? '',
             symbol: entry.symbol ?? '',
             price: entry.price ?? 0,
@@ -129,10 +145,12 @@ const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
             img: resolveIcon(entry as unknown as SearchResultToken),
         } as SearchResultNFT;
     case 'address':
+        fetchBalance(address); // this line fetches the balance in background
         return {
             category: 'address',
             type: 'address',
-            address: entry.address ?? NULL_ADDRESS,
+            address,
+            balance: 'loading',
         } as SearchResultAddress;
     case 'transaction':
         return {
@@ -154,24 +172,37 @@ const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
     }
 };
 
-const fetchResults = (query: string): SearchResult[] => {
+const byCategory = (a: SearchResult, b: SearchResult): number => {
+    const aIndex = SearchResultCategories.indexOf(a.category);
+    const bIndex = SearchResultCategories.indexOf(b.category);
+    return aIndex - bIndex;
+};
+
+const fetchResults = (query: string): Observable<SearchResult[]> => {
     if (query.length < 3) {
-        return [];
+        return of([] as SearchResult[]);
     }
-    console.log('Fetching results for:', query);
     const url = `https://api.teloscan.io/api?module=search&action=search&query=${query}`;
-    axios.get(url).then((response) => {
-        console.log('Response:', response);
-        return response.data.result.map((entry: SearchResultRaw) => convertRawToProcessedResult(entry));
-    }).catch((error) => {
-        console.error('Error fetching results:', error);
+    return new Observable<SearchResult[]>((observer) => {
+        loading.value = true;
+        axios.get(url).then((response) => {
+            const result = response.data.result.map((entry: SearchResultRaw) => convertRawToProcessedResult(entry));
+            result.sort(byCategory);
+            loading.value = false;
+            observer.next(result);
+            observer.complete();
+        }).catch((error) => {
+            console.error('Error fetching results:', error);
+            loading.value = false;
+            observer.next([] as SearchResult[]);
+            observer.complete();
+        });
     });
-    return [] as SearchResult[];
 };
 
 // Logic to handle autocomplete structure ----
 const resolveTabLabel = (category: string): string => {
-    let label = $t(`components.header.${category}`);
+    let label = $t(`components.header.category_${category}`);
     return props.homepageMode ? label : label.split(' ')[0];
 };
 
@@ -185,22 +216,37 @@ const shouldShowDivider = (index: number): boolean => {
 const extractCategoryList = (): SearchResultCategory[] =>
     searchResults.value.map(entry => entry.category).filter((value, index, self) => self.indexOf(value) === index) as SearchResultCategory[];
 
+const filterResults = (results: SearchResult[]): SearchResult[] => results.filter((result) => {
+    if (result.category === 'address') {
+        return result.address === toChecksumAddress(result.address);
+    }
+    return true;
+});
 
-// Logic to open / close autocomplete ----
+
+
+// Logic to open / close / scroll autocomplete ----
+
+watch(selectedTab, (newValue) => {
+    const resultsContainer = document.querySelector('.c-search__results');
+    const divider = document.querySelector(`.c-search__result-category-divider--${newValue}`);
+    if (divider && resultsContainer) {
+        const dividerOffset = divider.getBoundingClientRect().top - resultsContainer.getBoundingClientRect().top;
+        resultsContainer.scrollTo({
+            top: dividerOffset,
+            behavior: 'smooth',
+        });
+    }
+});
 
 const handleClick = (event: Event): void => {
-    console.log('document.addEventListener(click)');
     document.querySelectorAll('.c-search').forEach((element) => {
         if (!element.contains(event.target as Node)) {
-            console.log('document.addEventListener(click) CASO 1');
             showAutocomplete.value = false;
-            // document.removeEventListener('click', handleClick);
         } else {
             document.querySelectorAll('.c-search__input').forEach((inputEl) => {
                 if (inputEl.contains(event.target as Node) && searchTerm.value !== '') {
-                    console.log('document.addEventListener(click) CASO 2');
                     showAutocomplete.value = true;
-                    // document.addEventListener('click', handleClick);
                 }
             });
         }
@@ -208,6 +254,26 @@ const handleClick = (event: Event): void => {
 };
 
 onMounted(() => {
+    const input = inputRef.value?.$el;
+
+    if (input) {
+        fromEvent(input, 'input').pipe(
+            debounceTime(500), // Wait for 0.5 second of inactivity before sending the query
+            tap(() => {
+                showAutocomplete.value = searchTerm.value.length >= 3;
+            }),
+            map((event: Event) => (event.target as HTMLInputElement).value),
+            switchMap((query: string) =>
+                fetchResults(query).pipe(
+                    map(results => filterResults(results)),
+                ),
+            ),
+        ).subscribe((results: SearchResult[]) => {
+            selectedTab.value = results.length > 0 ? results[0].category : 'tokens';
+            searchResults.value = results;
+        });
+    }
+
     document.addEventListener('click', handleClick);
 });
 
@@ -215,15 +281,29 @@ onBeforeUnmount(() => {
     document.removeEventListener('click', handleClick);
 });
 
-watch(searchTerm, (newValue) => {
-    searchResults.value = fetchResults(newValue);
-    if (searchTerm.value !== '') {
-        showAutocomplete.value = true;
-        document.addEventListener('click', handleClick);
-    } else {
-        showAutocomplete.value = false;
+// Logic to handle search result click ----
+const handleResultClick = (item: SearchResult): void => {
+    showAutocomplete.value = false;
+    searchTerm.value = '';
+    switch (item.category) {
+    case 'block':
+        router.push({ name: 'block', params: { block: item.number.toString() } });
+        break;
+    case 'transaction':
+        router.push({ name: 'transaction', params: { hash: item.hash } });
+        break;
+    case 'address':
+    case 'contract':
+    case 'token':
+    case 'nft':
+        router.push({ name: 'address', params: { address: item.address } });
+        break;
+    default:
+        console.error('handleResultClick() unknown category:', item.category);
+        break;
     }
-});
+};
+
 </script>
 
 <template>
@@ -256,7 +336,22 @@ watch(searchTerm, (newValue) => {
     </q-input>
 
     <div v-if="showAutocomplete" class="c-search__autocomplete">
+        <div
+            v-if="loading"
+            class="c-search__loading"
+        >
+            <q-spinner-dots
+                color="primary"
+                size="24px"
+            />
+        </div>
+        <div
+            v-else
+            v-show="searchResults.length === 0"
+            class="c-search__no-results"
+        >{{ $t('components.header.no_results') }}</div>
         <q-tabs
+            v-show="searchResults.length > 0"
             v-model="selectedTab"
             class="c-search__tabs"
             active-class="c-search__tabs-tab--active"
@@ -274,13 +369,16 @@ watch(searchTerm, (newValue) => {
         <div class="c-search__results">
             <template
                 v-for="(entry, index) in searchResults"
-                :key="entry.address"
+                :key="entry.address ?? entry.hash"
             >
-                <div v-if="shouldShowDivider(index)" class="c-search__result-category-divider"> {{ entry.category }}</div>
-
-
-
-
+                <div
+                    v-if="shouldShowDivider(index)"
+                    :class="['c-search__result-category-divider', `c-search__result-category-divider--${entry.category}`]"
+                > {{ entry.category }}</div>
+                <AppSearchResultEntry
+                    :entry="entry"
+                    @click="handleResultClick(entry)"
+                />
             </template>
         </div>
     </div>
@@ -299,7 +397,7 @@ watch(searchTerm, (newValue) => {
     max-width: 500px;
 
     @media screen and (min-width: $breakpoint-md-min) {
-        width: 400px;
+        width: 450px;
     }
 
     @media screen and (min-width: $breakpoint-lg-min) {
@@ -394,9 +492,32 @@ watch(searchTerm, (newValue) => {
 
     // autocomplete styles
 
+    &__loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+    }
+
+    &__no-results {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+        color: var(--text-color);
+    }
+
+    &__result-category-divider {
+        padding: 12px 8px 4px 18px;
+        text-transform: uppercase;
+        font-size: 0.65rem;
+        letter-spacing: .5px;
+        color: var(--text-color);
+    }
+
     &__autocomplete {
         position: absolute;
-        width: 400px;
+        width: 680px;
         #{$this}--homepage & {
             max-width: 800px;
             width: 100vw;
@@ -415,45 +536,11 @@ watch(searchTerm, (newValue) => {
 
     &__results {
         @include scroll-bar;
-        max-height: 50vh;
+        max-height: 30vh;
         overflow-y: auto;
-    }
-
-    &__result {
         display: flex;
-        align-items: center;
-        padding: 8px;
-        border-bottom: 1px solid var(--border-color);
-
-        &--tokens {
-            // specific styles for tokens category
-        }
-
-        // other categories
-
-        &-icon {
-            width: 40px;
-            height: 40px;
-            margin-right: 8px;
-        }
-
-        &-details {
-            flex: 1;
-
-            &-title {
-                font-weight: bold;
-                font-size: 1.1em;
-            }
-
-            &-subtitle {
-                font-size: 0.9em;
-                color: #666;
-            }
-        }
-
-        &-check {
-            color: #4caf50;
-        }
+        flex-direction: column;
+        gap: 10px;
     }
 }
 </style>

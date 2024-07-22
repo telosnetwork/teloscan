@@ -2,7 +2,6 @@
 export type SearchResultCategory = 'contract' | 'tokens' | 'nft' | 'address' | 'transaction' | 'block' | 'unknown';
 export type SearchResultType = 'contract' | 'address' | 'transaction' | 'block';
 export type SearchResultInterfaces = 'none' | 'erc20' | 'erc721' | 'erc721_metadata' | 'erc1155' | 'erc1155_metadata';
-
 export interface SearchResultRaw {
     type: SearchResultType,         // all
     hash?: string;                  // transactions, blocks
@@ -16,7 +15,6 @@ export interface SearchResultRaw {
     supportedInterfaces?: string;   // contracts, tokens, nfts
     issuer?: string | null;         // tokens
 }
-
 export interface SearchResultContract {
     category: 'contract';
     type: 'contract';
@@ -60,6 +58,7 @@ export interface SearchResultAddress {
     category: 'address';
     type: 'address';
     address: string;
+    balance: string;
 }
 export interface SearchResultBlock {
     category: 'block';

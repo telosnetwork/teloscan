@@ -2,7 +2,6 @@
 import { defineProps } from 'vue';
 import {
     SearchResult,
-    SearchResultCategory,
     SearchResultContract,
     SearchResultToken,
     SearchResultNFT,
@@ -11,6 +10,8 @@ import {
     SearchResultBlock,
     SearchResultUnknown,
 } from 'src/types';
+
+import { createIcon } from '@download/blockies';
 
 const props = defineProps<{ entry: SearchResult }>();
 const category = props.entry.category;
@@ -33,22 +34,113 @@ const item = {
     unknown: asUnknown(props.entry),
 };
 
+const createIconFromData = (data: string) => {
+    // https://github.com/download13/blockies
+    var imgData = createIcon({
+        seed: data,
+        size: 8,
+        scale: 3,
+    }).toDataURL();
+    return imgData;
+};
+
+const emit = defineEmits(['click']);
+
+const habdleClick = () => {
+    emit('click', item);
+};
+
 </script>
 
 <template>
-<div class="c-search-result">
+<div class="c-search-result" @click="habdleClick">
 
     <template v-if="category === 'token'">
-        <div :class="['c-search-result__entry-' + entry.category]">
-            <img :src="item.token.icon" alt="" class="c-search-result__icon">
-            <div class="c-search-result__details">
-                <div class="c-search-result__title">
+        <div class='c-search-result-entry c-search-result-entry--token'>
+            <img :src="item.token.icon" alt="" class="c-search-result-entry__icon">
+            <div class="c-search-result-entry__details">
+                <div class="c-search-result-entry__title">
                     {{ item.token.name }}
-                    <span v-if="item.token.price > 0" class="c-search-result__title-price">{{ item.token.priceUSD }}</span>
+                    <span v-if="item.token.price > 0" class="c-search-result-entry__title-price">{{ item.token.priceUSD }}</span>
                 </div>
-                <div class="c-search-result__subtitle">{{ item.token.address }}</div>
+                <div class="c-search-result-entry__subtitle">{{ item.token.address }}</div>
             </div>
-            <q-icon name="check" class="c-search-result__check" aria-hidden="true"/>
+            <q-icon
+                v-if="item.token.verified"
+                name="check"
+                class="c-search-result-entry__check"
+                aria-hidden="true"
+            />
+        </div>
+    </template>
+
+    <template v-if="category === 'contract'">
+        <div class='c-search-result-entry c-search-result-entry--contract'>
+            <div class="c-search-result-entry__details">
+                <div class="c-search-result-entry__title">{{ item.contract.name }}</div>
+                <div class="c-search-result-entry__subtitle">{{ item.contract.address }}</div>
+            </div>
+            <q-icon
+                v-if="item.contract.verified"
+                name="check"
+                class="c-search-result-entry__check"
+                aria-hidden="true"
+            />
+        </div>
+    </template>
+
+    <template v-if="category === 'nft'">
+        <div class='c-search-result-entry c-search-result-entry--nft'>
+            <img :src="item.nft.img" alt="" class="c-search-result-entry__icon">
+            <div class="c-search-result-entry__details">
+                <div class="c-search-result-entry__title">{{ item.nft.name }}</div>
+                <div class="c-search-result-entry__subtitle">{{ item.nft.address }}</div>
+            </div>
+            <q-icon
+                v-if="item.nft.verified"
+                name="check"
+                class="c-search-result-entry__check"
+                aria-hidden="true"
+            />
+        </div>
+    </template>
+
+    <template v-if="category === 'address'">
+        <div class='c-search-result-entry c-search-result-entry--address'>
+            <img :src="createIconFromData(item.address.address)" alt="" class="c-search-result-entry__icon">
+            <div class="c-search-result-entry__details">
+                <div class="c-search-result-entry__title">{{ item.address.address }}</div>
+                <div v-if="item.address.balance === 'loading'" class="c-search-result-entry__subtitle">
+                    <q-skeleton type="text" width="100px" />
+                </div>
+                <div v-else class="c-search-result-entry__subtitle">{{ item.address.balance }}</div>
+            </div>
+        </div>
+    </template>
+
+    <template v-if="category === 'transaction'">
+        <div class='c-search-result-entry c-search-result-entry--transaction'>
+            <img :src="createIconFromData(item.transaction.hash)" alt="" class="c-search-result-entry__icon">
+            <div class="c-search-result-entry__details">
+                <div class="c-search-result-entry__title">{{ item.transaction.hash }}</div>
+            </div>
+        </div>
+    </template>
+
+    <template v-if="category === 'block'">
+        <div class='c-search-result-entry c-search-result-entry--block'>
+            <img :src="createIconFromData(item.block.number.toString())" alt="" class="c-search-result-entry__icon">
+            <div class="c-search-result-entry__details">
+                <div class="c-search-result-entry__title">{{ item.block.number }}</div>
+            </div>
+        </div>
+    </template>
+
+    <template v-if="category === 'unknown'">
+        <div class='c-search-result-entry c-search-result-entry--unknown'>
+            <div class="c-search-result-entry__details">
+                <div class="c-search-result-entry__title">Unknown</div>
+            </div>
         </div>
     </template>
 
@@ -56,6 +148,43 @@ const item = {
 </template>
 
 <style lang="scss">
-.c-search-result-entry {
+.c-search-result {
+    padding: 0px 10px;
+    &-entry {
+        padding: 8px;
+        cursor: pointer;
+        display: flex;
+        border-radius: 8px;
+        &:hover {
+            background-color: var(--bg-hover-color);
+        }
+        &__details {
+            display: flex;
+            flex: 1 1 auto;
+            flex-direction: column;
+        }
+        &__title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: .9062rem;
+            font-weight: 400;
+        }
+        &__subtitle {
+            font-size: 16px;
+            font-size: .875em;
+            color: var(--subtitle-color);
+        }
+        &__icon {
+            width: 22px;
+            height: 22px;
+            margin-right: 10px;
+            border-radius: 50%;
+        }
+        &__check {
+            font-size: 24px;
+            color: green;
+        }
+    }
 }
 </style>
