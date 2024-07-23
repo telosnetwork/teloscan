@@ -137,7 +137,7 @@ const loadContract = async () => {
     @mouseleave="setHighlightAddress('')"
 >
     <router-link
-        :to="`/${isToken?'token':'address'}/${checksum}`"
+        :to="`/address/${checksum}`"
         :class="{
             'c-address-field__link': true,
             'c-address-field__link--highlight': highlightAddress === checksum && highlightAddress !== ''

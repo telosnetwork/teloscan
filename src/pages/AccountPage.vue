@@ -25,7 +25,9 @@ import AddressQR from 'src/components/AddressQR.vue';
 import AddressOverview from 'src/components/AddressOverview.vue';
 import AddressMoreInfo from 'src/components/AddressMoreInfo.vue';
 import ContractMoreInfo from 'src/components/ContractMoreInfo.vue';
+import ExportLink from 'pages/export/ExportLink.vue';
 
+import { EXPORT_DOWNLOAD_TYPES } from 'src/lib/constants';
 
 const { t: $t } = useI18n();
 const route = useRoute();
@@ -48,6 +50,7 @@ const accountAddress = computed(() => route.params.address as string ?? '');
 const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
 const address = computed(() => store.getters['login/address']);
 const isToken = computed(() => contract.value?.isToken() ?? false);
+
 
 watch(accountAddress, (newVal, oldVal) => {
     if (newVal !== oldVal) {
@@ -292,16 +295,26 @@ async function loadAccount() {
             transition-prev="fade"
             keep-alive
         >
-            <q-tab-panel name="transactions">
+            <q-tab-panel
+                name="transactions"
+                class="c-address__panel c-address__panel-transactions"
+            >
                 <TransactionTable
                     v-if="accountAddress"
                     :title="accountAddress"
                     :account-address="accountAddress"
                 />
+                <ExportLink
+                    class="c-address__panel-export-link"
+                    :account="accountAddress"
+                    :type="EXPORT_DOWNLOAD_TYPES.transactions"
+                    :ariaLabel="$t('components.export.download_transactions_csv')"
+                />
             </q-tab-panel>
             <q-tab-panel
                 v-if="contract && contract.supportedInterfaces?.includes('erc721')"
                 name="collection"
+                class="c-address__panel c-address__panel-collection"
             >
                 <NFTList :address="contract.address" filter="contract" />
             </q-tab-panel>
@@ -321,37 +334,71 @@ async function loadAccount() {
                         && toChecksumAddress(accountAddress) === toChecksumAddress(address)
                 "
                 name="approvals"
+                class="c-address__panel c-address__panel-approvals"
             >
                 <ApprovalList type="erc20" :accountAddress="accountAddress" />
             </q-tab-panel>
-            <q-tab-panel name="nfts">
+            <q-tab-panel
+                name="nfts"
+                class="c-address__panel c-address__panel-nfts"
+            >
                 <NFTList :address="accountAddress" filter="account" />
             </q-tab-panel>
-            <q-tab-panel name="tokens">
+            <q-tab-panel
+                name="tokens"
+                class="c-address__panel c-address__panel-tokens"
+            >
                 <TokenList :address="accountAddress"/>
             </q-tab-panel>
-            <q-tab-panel name="tokentxns">
+            <q-tab-panel
+                name="tokentxns"
+                class="c-address__panel c-address__panel-tokentxns"
+            >
                 <NftTransfersTable
                     title="ERC-20 Transfers"
                     token-type="erc20"
                     :initialPageSize="10"
                     :address="accountAddress"
                 />
+                <ExportLink
+                    class="c-address__panel-export-link"
+                    :account="accountAddress"
+                    :type="EXPORT_DOWNLOAD_TYPES.erc20Transfers"
+                    :ariaLabel="$t('components.export.download_erc_20_transfers_csv')"
+                />
             </q-tab-panel>
-            <q-tab-panel name="erc721txns">
+            <q-tab-panel
+                name="erc721txns"
+                class="c-address__panel c-address__panel-erc721txns"
+            >
                 <NftTransfersTable
                     title="ERC-721 Transfers"
                     token-type="erc721"
                     :initialPageSize="10"
                     :address="accountAddress"
                 />
+                <ExportLink
+                    class="c-address__panel-export-link"
+                    :account="accountAddress"
+                    :type="EXPORT_DOWNLOAD_TYPES.erc721Transfers"
+                    :ariaLabel="$t('components.export.download_erc_721_transfers_csv')"
+                />
             </q-tab-panel>
-            <q-tab-panel name="erc1155txns">
+            <q-tab-panel
+                name="erc1155txns"
+                class="c-address__panel c-address__panel-erc1155txns"
+            >
                 <NftTransfersTable
                     title="ERC-1155 Transfers"
                     token-type="erc1155"
                     :initialPageSize="10"
                     :address="accountAddress"
+                />
+                <ExportLink
+                    class="c-address__panel-export-link"
+                    :account="accountAddress"
+                    :type="EXPORT_DOWNLOAD_TYPES.erc1155Transfers"
+                    :ariaLabel="$t('components.export.download_erc_1155_transfers_csv')"
                 />
             </q-tab-panel>
             <q-tab-panel v-if="contract" name="contract">
@@ -441,9 +488,16 @@ async function loadAccount() {
         overflow: visible !important;
     }
 
-    // quasar overrides
-    .q-tab-panel {
+    &__panel {
         padding: 0;
+        text-align: end;
+        &-export-link {
+            background-color: var(--invert-text-color);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+            margin-right: 0px;
+        }
     }
 }
 </style>

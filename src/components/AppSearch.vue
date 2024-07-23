@@ -182,7 +182,11 @@ const fetchResults = (query: string): Observable<SearchResult[]> => {
     if (query.length < 3) {
         return of([] as SearchResult[]);
     }
-    const url = `https://api.teloscan.io/api?module=search&action=search&query=${query}`;
+    const endpoint = process.env.EXPORT_API_ENDPOINT as string;
+    // When merging with Crosschain support (https://github.com/telosnetwork/teloscan/pull/769)
+    // use the following line instead:
+    // const endpoint = useChainStore().currentChain.settings.getIndexerApiEndpoint();
+    const url = `${endpoint}/api?module=search&action=search&query=${query}`;
     return new Observable<SearchResult[]>((observer) => {
         loading.value = true;
         axios.get(url).then((response) => {
@@ -517,10 +521,17 @@ const handleResultClick = (item: SearchResult): void => {
 
     &__autocomplete {
         position: absolute;
-        width: 680px;
+        width: calc(100% - 24px);
+        @media screen and (min-width: $breakpoint-md-min) {
+            width: 680px;
+        }
+
+        @media screen and (min-width: $breakpoint-lg-min) {
+            width: 730px;
+        }
         #{$this}--homepage & {
             max-width: 800px;
-            width: 100vw;
+            width: 100%;
         }
         background: var(--background-color);
         border: 1px solid var(--border-color);
@@ -541,6 +552,7 @@ const handleResultClick = (item: SearchResult): void => {
         display: flex;
         flex-direction: column;
         gap: 10px;
+        padding-bottom: 10px;
     }
 }
 </style>
