@@ -165,10 +165,11 @@ function setPagination(page: number, size: number, desc: boolean) {
 
 async function onPaginationChange(settings: { pagination: Pagination}) {
     const { page, rowsPerPage, descending } = settings.pagination;
-    // we need to change the URL to keep the pagination state by changing the route.query.page
-    // with a string like 'page,rowsPerPage'
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = rowsPerPage;
+    pagination.value.descending = descending;
+
     router.push({
-        // taking care to preserve the current #hash anchor and the current query parameters
         hash: window.location.hash,
         query: {
             ...route.query,
@@ -177,6 +178,8 @@ async function onPaginationChange(settings: { pagination: Pagination}) {
             sort: descending ? 'DESC' : 'ASC',
         },
     });
+
+    await parseTransactions();
 }
 
 async function parseTransactions() {
@@ -184,33 +187,26 @@ async function parseTransactions() {
         return;
     }
     loading.value = true;
-    const { key, rowsPerPage, descending } = pagination.value;
-
+    const { rowsPerPage, descending } = pagination.value;
 
     try {
         const path = await getPath();
         let response = await indexerApi.get(path);
-        totalRows.value = response.data?.total_count;
+        totalRows.value = response.data.total_count;
         const results = response.data.results;
-        const next = response.data.next;
 
-        if (pagination.value.initialKey === 0) {
-            pagination.value.initialKey = next + rowsPerPage;
-        }
-
-        pagination.value.key = key === 0 ? next : key;
         pagination.value.rowsPerPage = rowsPerPage;
         pagination.value.descending = descending;
-        if (pagination.value.rowsNumber === 0) {
-            pagination.value.rowsNumber = totalRows.value;
+        pagination.value.rowsNumber = totalRows.value;
+
+        if (results.length > 0) {
+            const lastItemKey = results[results.length - 1].id;
+            pagination.value.key = lastItemKey;
         }
 
-        transactions.splice(
-            0,
-            transactions.length,
-            ...results,
-        );
+        transactions.splice(0, transactions.length, ...results);
         rows.value = transactions;
+
         for (const transaction of transactions) {
             try {
                 if (transaction.input === '0x') {
@@ -289,34 +285,32 @@ function addEmptyToCache(contracts: any, transaction: any){
 }
 
 async function getPath() {
-    const { page, key, rowsPerPage, descending } = pagination.value;
+    const { page, rowsPerPage, descending } = pagination.value;
     const limit = rowsPerPage === 0 ? 50 : Math.max(Math.min(rowsPerPage, props.initialPageSize), 10);
     let path = '';
+
     if (props.accountAddress) {
         path = `address/${props.accountAddress}/transactions?limit=${limit}`;
         path += `&offset=${(page - 1) * rowsPerPage}`;
-        path += `&sort=${descending ? 'desc' : 'asc'}`;
-        path += (pagination.value.rowsNumber === 0) ? '&includePagination=true' : '';  // We only need the count once
-        if (props.block) {
-            path += `&startBlock=${props.block}&endBlock=${props.block}`;
-        }
     } else {
         path = `transactions?limit=${limit}`;
-        if (pagination.value.initialKey === 0) {
-            // in the case of the first query, we need to get the initial key
-            let response = await indexerApi.get('transactions?includePagination=true&key=0');
-            const next = response.data.next;
-            pagination.value.initialKey = next + 1;
+        if (page === 1 || pagination.value.key === 0) {
+            let response = await indexerApi.get('transactions?includePagination=true&limit=1');
+            const firstKey = response.data.results[0]?.id || 0;
+            pagination.value.initialKey = firstKey;
         }
-        path += `&sort=${descending ? 'desc' : 'asc'}`;
-        path += '&includePagination=true';
-        path += '&includeAbi=true';
-        if (props.block) {
-            path += `&block=${props.block}`;
-        } else {
-            path += `&key=${key}`;
-        }
+        const currentKey = pagination.value.initialKey - ((page - 1) * rowsPerPage);
+        path += `&key=${currentKey}`;
     }
+
+    path += `&sort=${descending ? 'desc' : 'asc'}`;
+    path += '&includePagination=true';
+    path += '&includeAbi=true';
+
+    if (props.block) {
+        path += `&startBlock=${props.block}&endBlock=${props.block}`;
+    }
+
     return path;
 }
 
