@@ -15,7 +15,9 @@ body {
 body.body--light {
     --border-color: #{$grey-3};
     --text-color: #{$dark};
+    --subtitle-color: #{$grey-7};
     --bg-color: white;
+    --bg-hover-color: rgb(233, 236, 239);
     --header-bg-color: {$grey-3};
     --muted-text-color: #{$grey-3};
     --invert-text-color: white;
@@ -40,7 +42,9 @@ body.body--light {
 body.body--dark {
     --border-color: #{$grey-9};
     --text-color: white;
+    --subtitle-color: #{$grey-5};
     --bg-color: #181818;
+    --bg-hover-color: #282828;
     --header-bg-color: #{$grey-10};
     --muted-text-color: #{$grey-8};
     --invert-text-color: #{$dark};
