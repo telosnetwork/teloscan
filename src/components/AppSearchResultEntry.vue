@@ -95,7 +95,10 @@ const habdleClick = () => {
         <div class='c-search-result-entry c-search-result-entry--nft'>
             <img :src="createIconFromData(item.nft.address)" alt="" class="c-search-result-entry__icon">
             <div class="c-search-result-entry__details">
-                <div class="c-search-result-entry__title">{{ item.nft.name }}</div>
+                <div class="c-search-result-entry__title">
+                    {{ item.nft.name }}
+                    <span class="c-search-result-entry__title-symbol">({{ item.nft.symbol }})</span>
+                </div>
                 <div class="c-search-result-entry__subtitle">{{ item.nft.address }}</div>
             </div>
             <q-icon
