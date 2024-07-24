@@ -200,8 +200,8 @@ async function parseTransactions() {
         pagination.value.rowsNumber = totalRows.value;
 
         if (results.length > 0) {
-            const lastItemKey = results[results.length - 1].id;
-            pagination.value.key = lastItemKey;
+            const firstItemKey = results[0].id;
+            pagination.value.initialKey = firstItemKey + 1;
         }
 
         transactions.splice(0, transactions.length, ...results);
@@ -209,10 +209,7 @@ async function parseTransactions() {
 
         for (const transaction of transactions) {
             try {
-                if (transaction.input === '0x') {
-                    continue;
-                }
-                if(!transaction.to) {
+                if (transaction.input === '0x' || !transaction.to) {
                     continue;
                 }
 
@@ -244,7 +241,6 @@ async function parseTransactions() {
             }
         }
         loading.value = false;
-        // This converts the timestamp to a number regardless of the format it is in
         rows.value = transactions.map((t) => {
             if (typeof t.timestamp === 'number') {
                 return t;
@@ -294,10 +290,10 @@ async function getPath() {
         path += `&offset=${(page - 1) * rowsPerPage}`;
     } else {
         path = `transactions?limit=${limit}`;
-        if (page === 1 || pagination.value.key === 0) {
+        if (page === 1 || pagination.value.initialKey === 0) {
             let response = await indexerApi.get('transactions?includePagination=true&limit=1');
             const firstKey = response.data.results[0]?.id || 0;
-            pagination.value.initialKey = firstKey;
+            pagination.value.initialKey = firstKey + 1;
         }
         const currentKey = pagination.value.initialKey - ((page - 1) * rowsPerPage);
         path += `&key=${currentKey}`;
