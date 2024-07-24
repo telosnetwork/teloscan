@@ -3,7 +3,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toChecksumAddress } from 'src/lib/utils';
 import { getSystemBalance } from 'src/lib/balance-utils';
-
+import { TokenList } from 'src/types';
 import axios from 'axios';
 
 import AppSearchResultEntry from 'src/components/AppSearchResultEntry.vue';
@@ -24,6 +24,7 @@ import {
 import { Observable, debounceTime, fromEvent, map, of, switchMap, tap } from 'rxjs';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { contractManager } from 'src/boot/telosApi';
 
 const props = defineProps<{
     homepageMode?: boolean; // if true, the search bar will be styled for placement on the homepage
@@ -43,7 +44,7 @@ const searchResults = ref<Array<SearchResult>>([]);
 const selectedTab = ref<string>('tokens');
 const fiatValue = useStore().getters['chain/tlosPrice'];
 const loading = ref<boolean>(false);
-
+const tokenList = ref<TokenList | null>(null);
 
 // Logic to resolve and depurate search results ----
 
@@ -87,8 +88,9 @@ const resolvePriceUSD = (entry: SearchResultToken | SearchResultNFT): string => 
 
 const resolveIcon = (entry: SearchResultToken): string => {
     // TODO: implement this function
-    if (entry.category === 'token') {
-        return 'assets/logo--teloscan.png';
+    const knownToken = tokenList.value?.tokens.find(token => token.address === entry.address);
+    if (knownToken) {
+        return knownToken.logoURI;
     } else {
         return 'assets/logo--teloscan.png';
     }
@@ -172,10 +174,28 @@ const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
     }
 };
 
-const byCategory = (a: SearchResult, b: SearchResult): number => {
+const sortCriteria = (a: SearchResult, b: SearchResult): number => {
     const aIndex = SearchResultCategories.indexOf(a.category);
     const bIndex = SearchResultCategories.indexOf(b.category);
-    return aIndex - bIndex;
+    const categorySort = aIndex - bIndex;
+    if (categorySort === 0) {
+        // same category
+        if (a.category === 'token' && b.category === 'token') {
+            const aKnown = tokenList.value?.tokens.find(token => token.address === a.address) ? 1 : 0;
+            const bKnown = tokenList.value?.tokens.find(token => token.address === b.address) ? 1 : 0;
+            if (aKnown && bKnown) {
+                // if both are known tokens, sort by price
+                return (b as SearchResultToken).price - (a as SearchResultToken).price;
+            } else {
+                // if one is known and the other is unknown, sort by known first
+                return bKnown - aKnown;
+            }
+        } else {
+            return 0;
+        }
+    } else {
+        return categorySort;
+    }
 };
 
 const fetchResults = (query: string): Observable<SearchResult[]> => {
@@ -186,12 +206,12 @@ const fetchResults = (query: string): Observable<SearchResult[]> => {
     // When merging with Crosschain support (https://github.com/telosnetwork/teloscan/pull/769)
     // use the following line instead:
     // const endpoint = useChainStore().currentChain.settings.getIndexerApiEndpoint();
-    const url = `${endpoint}/api?module=search&action=search&query=${query}&offset=1000`;
+    const url = `${endpoint}/api?module=search&action=search&query=${query}&offset=50`;
     return new Observable<SearchResult[]>((observer) => {
         loading.value = true;
         axios.get(url).then((response) => {
             const result = response.data.result.map((entry: SearchResultRaw) => convertRawToProcessedResult(entry));
-            result.sort(byCategory);
+            result.sort(sortCriteria);
             loading.value = false;
             observer.next(result);
             observer.complete();
@@ -257,7 +277,7 @@ const handleClick = (event: Event): void => {
     });
 };
 
-onMounted(() => {
+onMounted(async () => {
     const input = inputRef.value?.$el;
 
     if (input) {
@@ -279,6 +299,9 @@ onMounted(() => {
     }
 
     document.addEventListener('click', handleClick);
+
+    tokenList.value = await contractManager.getTokenList();
+    console.log('tokenList', tokenList.value);
 });
 
 onBeforeUnmount(() => {
@@ -554,6 +577,7 @@ const handleResultClick = (item: SearchResult): void => {
         flex-direction: column;
         gap: 10px;
         padding-bottom: 10px;
+        width: 100%;
     }
 }
 </style>

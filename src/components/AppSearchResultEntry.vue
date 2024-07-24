@@ -61,6 +61,7 @@ const habdleClick = () => {
             <div class="c-search-result-entry__details">
                 <div class="c-search-result-entry__title">
                     {{ item.token.name }}
+                    <span class="c-search-result-entry__title-symbol">({{ item.token.symbol }})</span>
                     <span v-if="item.token.price > 0" class="c-search-result-entry__title-price">{{ item.token.priceUSD }}</span>
                 </div>
                 <div class="c-search-result-entry__subtitle">{{ item.token.address }}</div>
@@ -76,6 +77,7 @@ const habdleClick = () => {
 
     <template v-if="category === 'contract'">
         <div class='c-search-result-entry c-search-result-entry--contract'>
+            <img :src="createIconFromData(item.contract.address)" alt="" class="c-search-result-entry__icon">
             <div class="c-search-result-entry__details">
                 <div class="c-search-result-entry__title">{{ item.contract.name }}</div>
                 <div class="c-search-result-entry__subtitle">{{ item.contract.address }}</div>
@@ -91,7 +93,7 @@ const habdleClick = () => {
 
     <template v-if="category === 'nft'">
         <div class='c-search-result-entry c-search-result-entry--nft'>
-            <img :src="item.nft.img" alt="" class="c-search-result-entry__icon">
+            <img :src="createIconFromData(item.nft.address)" alt="" class="c-search-result-entry__icon">
             <div class="c-search-result-entry__details">
                 <div class="c-search-result-entry__title">{{ item.nft.name }}</div>
                 <div class="c-search-result-entry__subtitle">{{ item.nft.address }}</div>
@@ -150,7 +152,9 @@ const habdleClick = () => {
 <style lang="scss">
 .c-search-result {
     padding: 0px 10px;
+    width: 100%;
     &-entry {
+        width: 100%;
         padding: 8px;
         cursor: pointer;
         display: flex;
@@ -159,6 +163,7 @@ const habdleClick = () => {
             background-color: var(--bg-hover-color);
         }
         &__details {
+            width: calc(100% - 50px);
             display: flex;
             flex: 1 1 auto;
             flex-direction: column;
@@ -169,11 +174,24 @@ const habdleClick = () => {
             white-space: nowrap;
             font-size: .9062rem;
             font-weight: 400;
+            &-symbol {
+                color: var(--subtitle-color);
+                margin-left: 5px;
+            }
+            &-price {
+                font-weight: 600;
+                color: var(--subtitle-color);
+                margin-left: 10px;
+            }
         }
         &__subtitle {
             font-size: 16px;
             font-size: .875em;
             color: var(--subtitle-color);
+            // elipsis
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         &__icon {
             width: 22px;
