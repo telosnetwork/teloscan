@@ -186,7 +186,7 @@ const fetchResults = (query: string): Observable<SearchResult[]> => {
     // When merging with Crosschain support (https://github.com/telosnetwork/teloscan/pull/769)
     // use the following line instead:
     // const endpoint = useChainStore().currentChain.settings.getIndexerApiEndpoint();
-    const url = `${endpoint}/api?module=search&action=search&query=${query}`;
+    const url = `${endpoint}/api?module=search&action=search&query=${query}&offset=1000`;
     return new Observable<SearchResult[]>((observer) => {
         loading.value = true;
         axios.get(url).then((response) => {
@@ -378,7 +378,7 @@ const handleResultClick = (item: SearchResult): void => {
                 <div
                     v-if="shouldShowDivider(index)"
                     :class="['c-search__result-category-divider', `c-search__result-category-divider--${entry.category}`]"
-                > {{ entry.category }}</div>
+                > {{ resolveTabLabel(entry.category) }}</div>
                 <AppSearchResultEntry
                     :entry="entry"
                     @click="handleResultClick(entry)"
@@ -512,11 +512,12 @@ const handleResultClick = (item: SearchResult): void => {
     }
 
     &__result-category-divider {
-        padding: 12px 8px 4px 18px;
+        padding: 16px 8px 4px 18px;
         text-transform: uppercase;
         font-size: 0.65rem;
         letter-spacing: .5px;
         color: var(--text-color);
+        border-top: 1px solid var(--border-color);
     }
 
     &__autocomplete {
