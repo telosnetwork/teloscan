@@ -186,7 +186,7 @@ const fetchResults = (query: string): Observable<SearchResult[]> => {
     // When merging with Crosschain support (https://github.com/telosnetwork/teloscan/pull/769)
     // use the following line instead:
     // const endpoint = useChainStore().currentChain.settings.getIndexerApiEndpoint();
-    const url = `${endpoint}/api?module=search&action=search&query=${query}&offset=1000`;
+    const url = `${endpoint}/api?module=search&action=search&query=${query}&offset=50`;
     return new Observable<SearchResult[]>((observer) => {
         loading.value = true;
         axios.get(url).then((response) => {
