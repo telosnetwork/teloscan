@@ -115,10 +115,6 @@ const habdleClick = () => {
             <img :src="createIconFromData(item.address.address)" alt="" class="c-search-result-entry__icon">
             <div class="c-search-result-entry__details">
                 <div class="c-search-result-entry__title">{{ item.address.address }}</div>
-                <div v-if="item.address.balance === 'loading'" class="c-search-result-entry__subtitle">
-                    <q-skeleton type="text" width="100px" />
-                </div>
-                <div v-else class="c-search-result-entry__subtitle">{{ item.address.balance }}</div>
             </div>
         </div>
     </template>

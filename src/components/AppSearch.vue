@@ -2,7 +2,6 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toChecksumAddress } from 'src/lib/utils';
-import { getSystemBalance } from 'src/lib/balance-utils';
 import { TokenList } from 'src/types';
 import axios from 'axios';
 
@@ -22,7 +21,6 @@ import {
     SearchResultUnknown,
 } from 'src/types';
 import { Observable, debounceTime, fromEvent, map, of, switchMap, tap } from 'rxjs';
-import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { contractManager } from 'src/boot/telosApi';
 
@@ -42,7 +40,6 @@ const inputRef = ref<{$el:HTMLInputElement}|null>(null);
 const showAutocomplete = ref<boolean>(false);
 const searchResults = ref<Array<SearchResult>>([]);
 const selectedTab = ref<string>('tokens');
-const fiatValue = useStore().getters['chain/tlosPrice'];
 const loading = ref<boolean>(false);
 const tokenList = ref<TokenList | null>(null);
 
@@ -96,16 +93,6 @@ const resolveIcon = (entry: SearchResultToken): string => {
     }
 };
 
-const fetchBalance = (address: string): void => {
-    // This function fetches the balance of the given address in background and updates the search result when the balance is available
-    getSystemBalance(address, fiatValue).then((result) => {
-        const addressEntry = searchResults.value.find(entry => entry.category === 'address' && entry.address === address) as SearchResultAddress;
-        if (addressEntry) {
-            addressEntry.balance = $t('pages.tlos_balance', { balance: result?.tokenQty ?? '0' });
-        }
-    });
-};
-
 const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
     const address = entry.address ?? NULL_ADDRESS;
     switch (resolveCategory(entry)) {
@@ -147,7 +134,6 @@ const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
             img: resolveIcon(entry as unknown as SearchResultToken),
         } as SearchResultNFT;
     case 'address':
-        fetchBalance(address); // this line fetches the balance in background
         return {
             category: 'address',
             type: 'address',
