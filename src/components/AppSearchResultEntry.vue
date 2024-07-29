@@ -59,9 +59,9 @@ const habdleClick = () => {
         <div class='c-search-result-entry c-search-result-entry--token'>
             <img :src="item.token.icon" alt="" class="c-search-result-entry__icon">
             <div class="c-search-result-entry__details">
-                <div class="c-search-result-entry__title">
+                <div v-if="item.token.name && item.token.name !== 'null'" class="c-search-result-entry__title">
                     {{ item.token.name }}
-                    <span class="c-search-result-entry__title-symbol">({{ item.token.symbol }})</span>
+                    <span v-if="item.token.symbol && item.token.symbol != 'null'" class="c-search-result-entry__title-symbol">({{ item.token.symbol }})</span>
                     <span v-if="item.token.price > 0" class="c-search-result-entry__title-price">{{ item.token.priceUSD }}</span>
                 </div>
                 <div class="c-search-result-entry__subtitle">{{ item.token.address }}</div>
@@ -71,7 +71,9 @@ const habdleClick = () => {
                 name="check"
                 class="c-search-result-entry__check"
                 aria-hidden="true"
-            />
+            >
+                <q-tooltip>{{ $t('components.contract_tab.verified_contract')}}</q-tooltip>
+            </q-icon>
         </div>
     </template>
 
@@ -79,7 +81,9 @@ const habdleClick = () => {
         <div class='c-search-result-entry c-search-result-entry--contract'>
             <img :src="createIconFromData(item.contract.address)" alt="" class="c-search-result-entry__icon">
             <div class="c-search-result-entry__details">
-                <div class="c-search-result-entry__title">{{ item.contract.name }}</div>
+                <div v-if="item.contract.name && item.contract.name !== 'null'" class="c-search-result-entry__title">
+                    {{ item.contract.name }}
+                </div>
                 <div class="c-search-result-entry__subtitle">{{ item.contract.address }}</div>
             </div>
             <q-icon
@@ -87,7 +91,9 @@ const habdleClick = () => {
                 name="check"
                 class="c-search-result-entry__check"
                 aria-hidden="true"
-            />
+            >
+                <q-tooltip>{{ $t('components.contract_tab.verified_contract')}}</q-tooltip>
+            </q-icon>
         </div>
     </template>
 
@@ -95,9 +101,10 @@ const habdleClick = () => {
         <div class='c-search-result-entry c-search-result-entry--nft'>
             <img :src="createIconFromData(item.nft.address)" alt="" class="c-search-result-entry__icon">
             <div class="c-search-result-entry__details">
-                <div class="c-search-result-entry__title">
+                <div v-if="item.nft.name && item.nft.name !== 'null'" class="c-search-result-entry__title">
                     {{ item.nft.name }}
-                    <span class="c-search-result-entry__title-symbol">({{ item.nft.symbol }})</span>
+                    <span v-if="item.nft.nftType" class="c-search-result-entry__title-nftType"> - {{ item.nft.nftType }}</span>
+                    <span v-if="item.nft.symbol && item.nft.symbol !== 'null'" class="c-search-result-entry__title-symbol">({{ item.nft.symbol }})</span>
                 </div>
                 <div class="c-search-result-entry__subtitle">{{ item.nft.address }}</div>
             </div>
@@ -106,7 +113,9 @@ const habdleClick = () => {
                 name="check"
                 class="c-search-result-entry__check"
                 aria-hidden="true"
-            />
+            >
+                <q-tooltip>{{ $t('components.contract_tab.verified_contract')}}</q-tooltip>
+            </q-icon>
         </div>
     </template>
 
@@ -181,6 +190,17 @@ const habdleClick = () => {
                 font-weight: 600;
                 color: var(--subtitle-color);
                 margin-left: 10px;
+            }
+            &-nftType {
+                font-weight: 400;
+                color: var(--subtitle-color);
+                margin-right: 5px;
+            }
+            &-muted {
+                font-weight: 400;
+                font-size: .875em;
+                color: var(--muted-text-color);
+                margin-left: 5px;
             }
         }
         &__subtitle {

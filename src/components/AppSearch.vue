@@ -120,7 +120,14 @@ const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
             priceUSD: resolvePriceUSD(entry as unknown as SearchResultToken),
             icon: resolveIcon(entry as unknown as SearchResultToken),
         } as SearchResultToken;
-    case 'nft':
+    case 'nft': {
+        const interfaces = entry.supportedInterfaces ?? '';
+        let nftType = '';
+        if (interfaces.includes('erc721')) {
+            nftType = 'ERC-721';
+        } else if (interfaces.includes('erc1155')) {
+            nftType = 'ERC-1155';
+        }
         return {
             category: 'nft',
             type: 'contract',
@@ -132,7 +139,9 @@ const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
             supportedInterfaces: entry.supportedInterfaces?.split(' ') as SearchResultInterfaces[] ?? [],
             priceUSD: resolvePriceUSD(entry as unknown as SearchResultNFT),
             img: resolveIcon(entry as unknown as SearchResultToken),
+            nftType,
         } as SearchResultNFT;
+    }
     case 'address':
         return {
             category: 'address',
@@ -167,6 +176,7 @@ const sortCriteria = (a: SearchResult, b: SearchResult): number => {
     if (categorySort === 0) {
         // same category
         if (a.category === 'token' && b.category === 'token') {
+            // If they are tokens, sort by known tokens first
             const aKnown = tokenList.value?.tokens.find(token => token.address === a.address) ? 1 : 0;
             const bKnown = tokenList.value?.tokens.find(token => token.address === b.address) ? 1 : 0;
             if (aKnown && bKnown) {
@@ -177,7 +187,22 @@ const sortCriteria = (a: SearchResult, b: SearchResult): number => {
                 return bKnown - aKnown;
             }
         } else {
-            return 0;
+            // if any of the two has a 'null' or empty '' name, put it at the end
+            const aRaw = a as SearchResultRaw;
+            const bRaw = b as SearchResultRaw;
+            if (aRaw.name === '' || aRaw.name === null) {
+                return 1;
+            } else if (bRaw.name === '' || bRaw.name === null) {
+                return -1;
+            } else {
+                // if any of the two has a 'null' or empty '' symbol, put it at the end
+                if (aRaw.symbol === '' || aRaw.symbol === null) {
+                    return 1;
+                } else if (bRaw.symbol === '' || bRaw.symbol === null) {
+                    return -1;
+                }
+                return 0;
+            }
         }
     } else {
         return categorySort;
@@ -227,27 +252,45 @@ const extractCategoryList = (): SearchResultCategory[] =>
     searchResults.value.map(entry => entry.category).filter((value, index, self) => self.indexOf(value) === index) as SearchResultCategory[];
 
 const filterResults = (results: SearchResult[]): SearchResult[] => results.filter((result) => {
+    let accepted = true;
     if (result.category === 'address') {
-        return result.address === toChecksumAddress(result.address);
+        accepted = result.address === toChecksumAddress(result.address);
     }
-    return true;
+    if (accepted) {
+        return accepted;
+    } else {
+        console.warn('Filtering out:', result);
+    }
 });
 
 
 
 // Logic to open / close / scroll autocomplete ----
 
-watch(selectedTab, (newValue) => {
+const selectCategory = (category: string) => {
     const resultsContainer = document.querySelector('.c-search__results');
-    const divider = document.querySelector(`.c-search__result-category-divider--${newValue}`);
+    const divider = document.querySelector(`.c-search__result-category-divider--${category}`);
     if (divider && resultsContainer) {
         const dividerOffset = divider.getBoundingClientRect().top - resultsContainer.getBoundingClientRect().top;
+        const currentScroll = resultsContainer.scrollTop;
+        const scrollTo = currentScroll + dividerOffset;
+
+        // remove scroll listener to avoid infinite loop
+        resultsContainer.removeEventListener('scroll', updateVisibleTab);
+        // scroll to the selected category
         resultsContainer.scrollTo({
-            top: dividerOffset,
+            top: scrollTo,
             behavior: 'smooth',
         });
+
+        // wait for the scroll to finish to re-enable the scroll listener
+        setTimeout(() => {
+            resultsContainer.addEventListener('scroll', updateVisibleTab);
+        }, 1500);
     }
-});
+};
+
+
 
 const handleClick = (event: Event): void => {
     document.querySelectorAll('.c-search').forEach((element) => {
@@ -261,6 +304,35 @@ const handleClick = (event: Event): void => {
             });
         }
     });
+};
+
+const updateVisibleTab = () => {
+    const resultsContainer = document.querySelector('.c-search__results');
+    if (!resultsContainer) {
+        return;
+    }
+
+    const dividers = document.querySelectorAll('.c-search__result-category-divider');
+
+    const containerTop = resultsContainer.getBoundingClientRect().top;
+    const candidate = {
+        top: -Infinity,
+        divider: null as Element | null,
+    };
+    for (const divider of dividers) {
+        const dividerTop = divider.getBoundingClientRect().top;
+        if (dividerTop < containerTop && dividerTop > candidate.top) {
+            candidate.top = dividerTop;
+            candidate.divider = divider;
+        }
+    }
+
+    if (candidate.divider) {
+        const category = candidate.divider.classList[1].split('--')[1]; // Extract category from class
+        if (category !== selectedTab.value) {
+            selectedTab.value = category;
+        }
+    }
 };
 
 onMounted(async () => {
@@ -287,11 +359,37 @@ onMounted(async () => {
     document.addEventListener('click', handleClick);
 
     tokenList.value = await contractManager.getTokenList();
-    console.log('tokenList', tokenList.value);
 });
 
 onBeforeUnmount(() => {
+    // Remove click listener
     document.removeEventListener('click', handleClick);
+
+    // Remove scroll listener
+    const resultsContainer = document.querySelector('.c-search__results');
+    if (resultsContainer) {
+        resultsContainer.removeEventListener('scroll', updateVisibleTab);
+    }
+});
+
+watch(showAutocomplete, (newValue) => {
+    if (!newValue) {
+        // if the autocomplete is hidden, remove the scroll listener
+        const resultsContainer = document.querySelector('.c-search__results');
+        if (resultsContainer) {
+            resultsContainer.removeEventListener('scroll', updateVisibleTab);
+        }
+    }
+});
+
+watch(searchResults, () => {
+    if (showAutocomplete.value && searchResults.value.length > 0) {
+        // if the autocomplete is visible, add the scroll listener
+        const resultsContainer = document.querySelector('.c-search__results');
+        if (resultsContainer) {
+            resultsContainer.addEventListener('scroll', updateVisibleTab);
+        }
+    }
 });
 
 // Logic to handle search result click ----
@@ -377,6 +475,7 @@ const handleResultClick = (item: SearchResult): void => {
                 :name="cat"
                 :label="resolveTabLabel(cat)"
                 class="c-search__tabs-tab"
+                @click="selectCategory(cat)"
             />
         </q-tabs>
         <div class="c-search__results">
