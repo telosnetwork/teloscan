@@ -84,7 +84,7 @@ export default class ContractManager {
     async loadNFTs(contract){
         let address = contract.address.toLowerCase();
         try {
-            let response = await this.indexerApi.get(`/v1/contract/${address}/nfts`);
+            let response = await this.indexerApi.get(`/contract/${address}/nfts`);
             if(response.data.results?.length > 0){
                 for(var i = 0; i < response.data.results.length; i++){
                     let nft = response.data.results[i];
@@ -105,7 +105,7 @@ export default class ContractManager {
         }
         try {
             // TODO: change endpoint based on contract interfaces
-            let response = await this.indexerApi.get(`/v1/contract/${address}/nfts?tokenId=${tokenId}`);
+            let response = await this.indexerApi.get(`/contract/${address}/nfts?tokenId=${tokenId}`);
             if(response.data.results?.length > 0){
                 this.contracts[address].nfts[tokenId] = response.data.results[0];
                 return response.data.results[0];
@@ -253,7 +253,7 @@ export default class ContractManager {
         this.processing.push(addressLower);
         let contract = null;
         try {
-            let response = await this.indexerApi.get(`/v1/contract/${address}?full=true&includeAbi=true`);
+            let response = await this.indexerApi.get(`/contract/${address}?full=true&includeAbi=true`);
             if(response.data?.success && response.data.results.length > 0){
                 contract = response.data.results[0];
             }
