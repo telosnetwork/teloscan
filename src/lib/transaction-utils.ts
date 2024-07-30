@@ -11,6 +11,7 @@ import { WEI_PRECISION, formatWei, parseErrorMessage } from 'src/lib/utils';
 import { toChecksumAddress } from 'src/lib/utils';
 
 export const tryToExtractMethod = (abi: {[hash: string]: string }, input: string) => {
+    console.log('tryToExtractMethod() -------->', abi, input);
     if (!abi || !input) {
         return undefined;
     }
