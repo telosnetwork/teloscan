@@ -12,8 +12,14 @@ import {
 } from 'src/types';
 
 import { createIcon } from '@download/blockies';
+import { computed } from 'vue';
 
-const props = defineProps<{ entry: SearchResult }>();
+const props = defineProps<{
+    entry: SearchResult,
+    selected: boolean,
+}>();
+
+const selected_class = computed(() => props.selected ? 'c-search-result-entry--selected' : '');
 const category = props.entry.category;
 
 const asToken = (entry: SearchResult): SearchResultToken => entry as SearchResultToken;
@@ -53,10 +59,10 @@ const habdleClick = () => {
 </script>
 
 <template>
-<div class="c-search-result" @click="habdleClick">
+<div @click="habdleClick">
 
     <template v-if="category === 'token'">
-        <div class='c-search-result-entry c-search-result-entry--token'>
+        <div :class="['c-search-result-entry', 'c-search-result-entry--token', selected_class]">
             <img :src="item.token.icon" alt="" class="c-search-result-entry__icon">
             <div class="c-search-result-entry__details">
                 <div v-if="item.token.name && item.token.name !== 'null'" class="c-search-result-entry__title">
@@ -78,7 +84,7 @@ const habdleClick = () => {
     </template>
 
     <template v-if="category === 'contract'">
-        <div class='c-search-result-entry c-search-result-entry--contract'>
+        <div :class="['c-search-result-entry', 'c-search-result-entry--contract', selected_class]">
             <img :src="createIconFromData(item.contract.address)" alt="" class="c-search-result-entry__icon">
             <div class="c-search-result-entry__details">
                 <div v-if="item.contract.name && item.contract.name !== 'null'" class="c-search-result-entry__title">
@@ -98,7 +104,7 @@ const habdleClick = () => {
     </template>
 
     <template v-if="category === 'nft'">
-        <div class='c-search-result-entry c-search-result-entry--nft'>
+        <div :class="['c-search-result-entry', 'c-search-result-entry--nft', selected_class]">
             <img :src="createIconFromData(item.nft.address)" alt="" class="c-search-result-entry__icon">
             <div class="c-search-result-entry__details">
                 <div v-if="item.nft.name && item.nft.name !== 'null'" class="c-search-result-entry__title">
@@ -120,7 +126,7 @@ const habdleClick = () => {
     </template>
 
     <template v-if="category === 'address'">
-        <div class='c-search-result-entry c-search-result-entry--address'>
+        <div :class="['c-search-result-entry', 'c-search-result-entry--address', selected_class]">
             <img :src="createIconFromData(item.address.address)" alt="" class="c-search-result-entry__icon">
             <div class="c-search-result-entry__details">
                 <div class="c-search-result-entry__title">{{ item.address.address }}</div>
@@ -129,7 +135,7 @@ const habdleClick = () => {
     </template>
 
     <template v-if="category === 'transaction'">
-        <div class='c-search-result-entry c-search-result-entry--transaction'>
+        <div :class="['c-search-result-entry', 'c-search-result-entry--transaction', selected_class]">
             <img :src="createIconFromData(item.transaction.hash)" alt="" class="c-search-result-entry__icon">
             <div class="c-search-result-entry__details">
                 <div class="c-search-result-entry__title">{{ item.transaction.hash }}</div>
@@ -138,7 +144,7 @@ const habdleClick = () => {
     </template>
 
     <template v-if="category === 'block'">
-        <div class='c-search-result-entry c-search-result-entry--block'>
+        <div :class="['c-search-result-entry', 'c-search-result-entry--block', selected_class]">
             <img :src="createIconFromData(item.block.number.toString())" alt="" class="c-search-result-entry__icon">
             <div class="c-search-result-entry__details">
                 <div class="c-search-result-entry__title">{{ item.block.number }}</div>
@@ -147,7 +153,7 @@ const habdleClick = () => {
     </template>
 
     <template v-if="category === 'unknown'">
-        <div class='c-search-result-entry c-search-result-entry--unknown'>
+        <div :class="['c-search-result-entry', 'c-search-result-entry--unknown', selected_class]">
             <div class="c-search-result-entry__details">
                 <div class="c-search-result-entry__title">Unknown</div>
             </div>
@@ -158,6 +164,8 @@ const habdleClick = () => {
 </template>
 
 <style lang="scss">
+
+
 .c-search-result {
     padding: 0px 10px;
     width: 100%;
@@ -167,7 +175,7 @@ const habdleClick = () => {
         cursor: pointer;
         display: flex;
         border-radius: 8px;
-        &:hover {
+        &--selected, &:hover {
             background-color: var(--bg-hover-color);
         }
         &__details {

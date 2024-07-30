@@ -1,3 +1,4 @@
+<!-- eslint-disable no-constant-condition -->
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -42,6 +43,9 @@ const searchResults = ref<Array<SearchResult>>([]);
 const selectedTab = ref<string>('tokens');
 const loading = ref<boolean>(false);
 const tokenList = ref<TokenList | null>(null);
+const selectedIndex = ref(-1);
+const scrolling = ref(false);
+const handlingKeyDown = ref(false);
 
 // Logic to resolve and depurate search results ----
 
@@ -266,6 +270,67 @@ const filterResults = (results: SearchResult[]): SearchResult[] => results.filte
 
 
 // Logic to open / close / scroll autocomplete ----
+const ensureSelectedIsVisible = () => {
+    setTimeout(() => {
+        const resultsContainer = document.querySelector('.c-search__results');
+        if (!resultsContainer) {
+            return;
+        }
+
+        const selectedElement = resultsContainer.querySelector('.c-search-result-entry--selected');
+        if (selectedElement) {
+            selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+
+        updateSelectedTab();
+    }, 0);
+};
+
+let keyDownTimeOut = setTimeout(() => {/**/}, 0);
+const handlingKeyDownTimeOut = () => {
+    clearTimeout(keyDownTimeOut);
+    keyDownTimeOut = setTimeout(() => {
+        handlingKeyDown.value = false;
+    }, 1000);
+};
+
+const handleKeydown = (event: KeyboardEvent) => {
+    if (!showAutocomplete.value) {
+        return;
+    }
+
+    switch (event.key) {
+    case 'ArrowDown':
+        if (selectedIndex.value < searchResults.value.length - 1) {
+            selectedIndex.value++;
+            handlingKeyDown.value = true;
+            handlingKeyDownTimeOut();
+            ensureSelectedIsVisible();
+        }
+        break;
+    case 'ArrowUp':
+        if (selectedIndex.value > 0) {
+            selectedIndex.value--;
+            handlingKeyDown.value = true;
+            handlingKeyDownTimeOut();
+            ensureSelectedIsVisible();
+        }
+        break;
+    case 'Enter':
+        if (selectedIndex.value === -1 && searchResults.value.length > 0) {
+            selectedIndex.value = 0;
+        }
+        if (selectedIndex.value !== -1) {
+            handleResultClick(searchResults.value[selectedIndex.value]);
+        }
+        break;
+    case 'Escape':
+        showAutocomplete.value = false;
+        break;
+    default:
+        break;
+    }
+};
 
 const selectCategory = (category: string) => {
     const resultsContainer = document.querySelector('.c-search__results');
@@ -275,22 +340,32 @@ const selectCategory = (category: string) => {
         const currentScroll = resultsContainer.scrollTop;
         const scrollTo = currentScroll + dividerOffset;
 
-        // remove scroll listener to avoid infinite loop
-        resultsContainer.removeEventListener('scroll', updateVisibleTab);
+        // set scrolling flag to avoid conflicting with mouse scroll
+        scrolling.value = true;
         // scroll to the selected category
         resultsContainer.scrollTo({
             top: scrollTo,
             behavior: 'smooth',
         });
 
-        // wait for the scroll to finish to re-enable the scroll listener
+        // wait for the scroll to finish to restore the scrolling flag
         setTimeout(() => {
-            resultsContainer.addEventListener('scroll', updateVisibleTab);
+            scrolling.value = false;
         }, 1500);
+
+
+        // we should select the first element of the category which is the next sibling of the divider and extract the index from the class
+        const nextSibling = divider.nextElementSibling;
+        if (nextSibling) {
+            const correctClass = [...nextSibling.classList].find((className: string) => className.startsWith('c-search__result-entry--index-')) ?? '';
+            const index = correctClass.split('index-')[1];
+            selectedIndex.value = parseInt(index);
+
+            // finally we force the input to focus to avoid the next keydown event to scroll the page
+            inputRef.value?.$el.focus();
+        }
     }
 };
-
-
 
 const handleClick = (event: Event): void => {
     document.querySelectorAll('.c-search').forEach((element) => {
@@ -306,31 +381,44 @@ const handleClick = (event: Event): void => {
     });
 };
 
-const updateVisibleTab = () => {
+const updateSelectedTab = () => {
     const resultsContainer = document.querySelector('.c-search__results');
-    if (!resultsContainer) {
+    if (!resultsContainer || scrolling.value) {
         return;
     }
 
-    const dividers = document.querySelectorAll('.c-search__result-category-divider');
-
-    const containerTop = resultsContainer.getBoundingClientRect().top;
-    const candidate = {
-        top: -Infinity,
-        divider: null as Element | null,
-    };
-    for (const divider of dividers) {
-        const dividerTop = divider.getBoundingClientRect().top;
-        if (dividerTop < containerTop && dividerTop > candidate.top) {
-            candidate.top = dividerTop;
-            candidate.divider = divider;
+    if (!handlingKeyDown.value) {
+        // The user is scrolling with the mouse, so we need to update the selected tab based on the visible category divider
+        const dividers = document.querySelectorAll('.c-search__result-category-divider');
+        const containerTop = resultsContainer.getBoundingClientRect().top;
+        const candidate = {
+            top: -Infinity,
+            divider: null as Element | null,
+        };
+        for (const divider of dividers) {
+            const dividerTop = divider.getBoundingClientRect().top;
+            if (dividerTop < containerTop && dividerTop > candidate.top) {
+                candidate.top = dividerTop;
+                candidate.divider = divider;
+            }
         }
-    }
+        if (candidate.divider) {
+            const category = candidate.divider.classList[1].split('--')[1]; // Extract category from class
+            if (category !== selectedTab.value) {
+                selectedTab.value = category;
+            }
+        }
+        // we should unselect whatever is selected avoid conflicting with mouse rollover effect
+        selectedIndex.value = -1;
 
-    if (candidate.divider) {
-        const category = candidate.divider.classList[1].split('--')[1]; // Extract category from class
-        if (category !== selectedTab.value) {
-            selectedTab.value = category;
+    } else {
+        // The user is using the keyboard, so we need to update the selected tab based on the selected result
+        const selectedElement = resultsContainer.querySelector('.c-search-result-entry--selected');
+        if (selectedElement) {
+            const category = selectedElement.classList[1].split('--')[1]; // Extract category from class
+            if (category !== selectedTab.value) {
+                selectedTab.value = category;
+            }
         }
     }
 };
@@ -364,30 +452,27 @@ onMounted(async () => {
 onBeforeUnmount(() => {
     // Remove click listener
     document.removeEventListener('click', handleClick);
-
-    // Remove scroll listener
-    const resultsContainer = document.querySelector('.c-search__results');
-    if (resultsContainer) {
-        resultsContainer.removeEventListener('scroll', updateVisibleTab);
-    }
 });
 
 watch(showAutocomplete, (newValue) => {
     if (!newValue) {
-        // if the autocomplete is hidden, remove the scroll listener
-        const resultsContainer = document.querySelector('.c-search__results');
-        if (resultsContainer) {
-            resultsContainer.removeEventListener('scroll', updateVisibleTab);
-        }
+        // reset selected index
+        selectedIndex.value = -1;
+    } else {
+        // The autocomplete is shown, so we select the first tab
+        selectedTab.value = searchResults.value.length > 0 ? searchResults.value[0].category : 'tokens';
     }
 });
 
 watch(searchResults, () => {
     if (showAutocomplete.value && searchResults.value.length > 0) {
-        // if the autocomplete is visible, add the scroll listener
         const resultsContainer = document.querySelector('.c-search__results');
         if (resultsContainer) {
-            resultsContainer.addEventListener('scroll', updateVisibleTab);
+            fromEvent(resultsContainer, 'scroll').pipe(
+                debounceTime(100),
+            ).subscribe(updateSelectedTab);
+        } else {
+            console.error('resultsContainer not found');
         }
     }
 });
@@ -435,6 +520,7 @@ const handleResultClick = (item: SearchResult): void => {
         :placeholder="$t('components.header.search_placeholder')"
         type="search"
         inputmode="search"
+        @keydown="handleKeydown"
     >
         <template v-slot:append>
             <q-icon
@@ -446,7 +532,12 @@ const handleResultClick = (item: SearchResult): void => {
         </template>
     </q-input>
 
-    <div v-if="showAutocomplete" class="c-search__autocomplete">
+    <div
+        v-if="showAutocomplete"
+        class="c-search__autocomplete"
+        tabindex="0"
+        @keydown="handleKeydown"
+    >
         <div
             v-if="loading"
             class="c-search__loading"
@@ -488,7 +579,9 @@ const handleResultClick = (item: SearchResult): void => {
                     :class="['c-search__result-category-divider', `c-search__result-category-divider--${entry.category}`]"
                 > {{ resolveTabLabel(entry.category) }}</div>
                 <AppSearchResultEntry
+                    :class="['c-search__result-entry', `c-search__result-entry--index-${index}`]"
                     :entry="entry"
+                    :selected="selectedIndex === index"
                     @click="handleResultClick(entry)"
                 />
             </template>
