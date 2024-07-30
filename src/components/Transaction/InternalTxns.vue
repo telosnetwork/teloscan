@@ -110,7 +110,7 @@ export default {
                 :data="itxs"
                 :deep="depth"
                 :showLine="false"
-                class="q-mb-md q-pl-md"
+                class="q-mb-md q-pa-md"
             />
         </div>
     </div>

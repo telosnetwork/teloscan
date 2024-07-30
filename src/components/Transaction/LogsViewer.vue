@@ -135,7 +135,7 @@ export default {
                 :data="rawLogs"
                 :showLine="false"
                 :deep="depth"
-                class="q-pl-md"
+                class="q-pa-md"
             />
         </div>
     </div>
