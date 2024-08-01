@@ -65,7 +65,65 @@ export default {
             },
         ];
 
+        const sampleData = {
+            'code': 200,
+            'success': true,
+            'message': 'OK',
+            'contracts': {},
+            'results': [
+                {
+                    'blockHash': '0x195f9b576f76f70d270c31daf253fc6abadd27f85295b399951791a93de8d930',
+                    'address': null,
+                    'traceAddress': [
+                        6,
+                    ],
+                    'type': 'call',
+                    'error': null,
+                    'transactionHash': '0xd1267832099c93a38473a2d7c069ba1fb63ff4310cde8bfe033d0816efe237d2',
+                    'result': {
+                        'gasUsed': '0x02b85f',
+                    },
+                    'transactionPosition': 0,
+                    'blockNumber': 196929646,
+                    'action': {
+                        'input': '0x',
+                        'gas': '0x0122e1',
+                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
+                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'value': '111',
+                        'callType': 'call',
+                    },
+                    'subtraces': 0,
+                },
+                {
+                    'blockHash': '0xde07825a46d9f9f59f8d339d7328723cdd1252a5958da925d929955fab1968a6',
+                    'address': null,
+                    'traceAddress': [
+                        5,
+                    ],
+                    'type': 'call',
+                    'error': null,
+                    'transactionHash': '0xef8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a2579',
+                    'result': {
+                        'gasUsed': '0x03c8e8',
+                    },
+                    'transactionPosition': 0,
+                    'blockNumber': 197640129,
+                    'action': {
+                        'input': '0x',
+                        'gas': '0x0189a6',
+                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
+                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'value': '1478185785293501154624',
+                        'callType': 'call',
+                    },
+                    'subtraces': 0,
+                },
+            ],
+        };
+
         return {
+            sampleData,
             rows: [],
             loadingRows: [],
             columns,
@@ -153,7 +211,30 @@ export default {
                 },
             });
         },
+        async fetchInternalTransactions() {
+            // simulamos esperar 1 segundo y retornamos los datos de ejemplo de la variable sampleData
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(this.sampleData);
+                }, 1000);
+            });
+        },
+        async onRequest_new(props) {
+            this.loading = true;
+            this.rows = [];
+            const { page, rowsPerPage, sortBy, descending } = props.pagination;
+            let result = await this.fetchInternalTransactions();
+            if (this.total === null) {
+                this.pagination.rowsNumber = result.results.length;
+            }
+            this.pagination.page = page;
+            this.pagination.rowsPerPage = rowsPerPage;
+            this.pagination.sortBy = sortBy;
+            this.pagination.descending = descending;
+        },
+
         async onRequest(props) {
+            console.log('---------- onRequest ----------------', props); // FIXME: remove this line
             this.loading = true;
             // this line cleans the table for a second and the components have to be created again (clean)
             this.rows = [];

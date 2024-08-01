@@ -197,6 +197,7 @@ export default {
             });
         },
         async onRequest(props) {
+            console.log('----------------------------', props);
             this.loading = true;
             // this line cleans the table for a second and the components have to be created again (clean)
             this.rows = [];
