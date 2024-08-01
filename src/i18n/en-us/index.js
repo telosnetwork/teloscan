@@ -34,6 +34,7 @@ export default {
             withdraw_action_name: 'withdraw',
             withdraw_native: 'withdraw (native)',
             x_gas_used_of_y_limit: '{ amount } gas used of { limit } limit',
+            see_all_transactions: 'See all transactions',
         },
         transaction: {
             page_title: 'Transaction Details',
