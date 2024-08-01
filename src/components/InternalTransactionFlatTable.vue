@@ -5,8 +5,7 @@ import TransactionField from 'components/TransactionField';
 import AddressField from 'components/AddressField';
 import ValueField from 'components/ValueField.vue';
 import { getDirection } from 'src/lib/transaction-utils';
-import { WEI_PRECISION, formatWei } from 'src/lib/utils';
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+import { useChainStore } from 'src/antelope';
 
 export default {
     name: 'InternalTransactionFlatTable',
@@ -83,20 +82,258 @@ export default {
                 label: 'value',
                 align: 'right',
             },
-            {
-                name: 'count',
-                label: 'count',
-                align: 'right',
-            },
         ];
 
+        // this is a sample of the data that will be obtained from the new API
+        const sampleData = {
+            'code': 200,
+            'success': true,
+            'message': 'OK',
+            'contracts': {},
+            'results': [
+                {
+                    'blockHash': '0x195f9b576f76f70d270c31daf253fc6abadd27f85295b399951791a93de8d930',
+                    'address': null,
+                    'traceAddress': [6],
+                    'type': 'call',
+                    'error': null,
+                    'transactionHash': '0xd1267832099c93a38473a2d7c069ba1fb63ff4310cde8bfe033d0816efe237d2',
+                    'result': { 'gasUsed': '0x02b85f' },
+                    'transactionPosition': 0,
+                    'blockNumber': 196929646,
+                    'action': {
+                        'input': '0x',
+                        'gas': '0x0122e1',
+                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
+                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'value': '111',
+                        'callType': 'call',
+                    },
+                    'subtraces': 0,
+                    'timestamp': 1722496536000,
+                },
+                {
+                    'blockHash': '0xde07825a46d9f9f59f8d339d7328723cdd1252a5958da925d929955fab1968a6',
+                    'address': null,
+                    'traceAddress': [5],
+                    'type': 'call',
+                    'error': null,
+                    'transactionHash': '0xef8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a2579',
+                    'result': { 'gasUsed': '0x03c8e8' },
+                    'transactionPosition': 0,
+                    'blockNumber': 197640129,
+                    'action': {
+                        'input': '0x',
+                        'gas': '0x0189a6',
+                        'from': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'to': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
+                        'value': '1478185785293501154624',
+                        'callType': 'call',
+                    },
+                    'subtraces': 0,
+                    'timestamp': 1722496536000,
+                },
+                {
+                    'blockHash': '0x298f9b676f76f70d270c31daf253fc6abadd27f85295b399951791a93de8d123',
+                    'address': null,
+                    'traceAddress': [7],
+                    'type': 'call',
+                    'error': null,
+                    'transactionHash': '0xef8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a2579',
+                    'result': { 'gasUsed': '0x02b85f' },
+                    'transactionPosition': 0,
+                    'blockNumber': 198929646,
+                    'action': {
+                        'input': '0x',
+                        'gas': '0x0222e1',
+                        'from': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'value': '250',
+                        'callType': 'call',
+                    },
+                    'subtraces': 0,
+                    'timestamp': 1722496536000,
+                },
+                {
+                    'blockHash': '0xde07825a46d9f9f59f8d339d7328723cdd1252a5958da925d929955fab1111a7',
+                    'address': null,
+                    'traceAddress': [8],
+                    'type': 'call',
+                    'error': null,
+                    'transactionHash': '0xcf8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a6789',
+                    'result': { 'gasUsed': '0x03c8e8' },
+                    'transactionPosition': 0,
+                    'blockNumber': 199640129,
+                    'action': {
+                        'input': '0x',
+                        'gas': '0x0389a6',
+                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
+                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'value': '1478185785293501154000',
+                        'callType': 'call',
+                    },
+                    'subtraces': 0,
+                    'timestamp': 1722496536000,
+                },
+                {
+                    'blockHash': '0x59f9b676f76f70d270c31daf253fc6abadd27f85295b399951791a93de8d1234',
+                    'address': null,
+                    'traceAddress': [9],
+                    'type': 'call',
+                    'error': null,
+                    'transactionHash': '0xcf8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a6789',
+                    'result': { 'gasUsed': '0x02b85f' },
+                    'transactionPosition': 0,
+                    'blockNumber': 200929646,
+                    'action': {
+                        'input': '0x',
+                        'gas': '0x0322e1',
+                        'from': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'to': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
+                        'value': '300',
+                        'callType': 'call',
+                    },
+                    'subtraces': 0,
+                    'timestamp': 1722496536000,
+                },
+                {
+                    'blockHash': '0xde07825a46d9f9f59f8d339d7328723cdd1252a5958da925d929955fab1968a6',
+                    'address': null,
+                    'traceAddress': [10],
+                    'type': 'call',
+                    'error': null,
+                    'transactionHash': '0xcf8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a6789',
+                    'result': { 'gasUsed': '0x03c8e8' },
+                    'transactionPosition': 0,
+                    'blockNumber': 201640129,
+                    'action': {
+                        'input': '0x',
+                        'gas': '0x0189a6',
+                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
+                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'value': '1478185785293501154200',
+                        'callType': 'call',
+                    },
+                    'subtraces': 0,
+                    'timestamp': 1722496536000,
+                },
+                {
+                    'blockHash': '0x29f9b576f76f70d270c31daf253fc6abadd27f85295b399951791a93de8d9301',
+                    'address': null,
+                    'traceAddress': [11],
+                    'type': 'call',
+                    'error': null,
+                    'transactionHash': '0xd1267832099c93a38473a2d7c069ba1fb63ff4310cde8bfe033d0816efe237d5',
+                    'result': { 'gasUsed': '0x02b85f' },
+                    'transactionPosition': 0,
+                    'blockNumber': 202929646,
+                    'action': {
+                        'input': '0x',
+                        'gas': '0x0122e1',
+                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
+                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'value': '200',
+                        'callType': 'call',
+                    },
+                    'subtraces': 0,
+                    'timestamp': 1722496536000,
+                },
+                {
+                    'blockHash': '0xde07825a46d9f9f59f8d339d7328723cdd1252a5958da925d929955fab1968a7',
+                    'address': null,
+                    'traceAddress': [12],
+                    'type': 'call',
+                    'error': null,
+                    'transactionHash': '0xef8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a2572',
+                    'result': { 'gasUsed': '0x03c8e8' },
+                    'transactionPosition': 0,
+                    'blockNumber': 203640129,
+                    'action': {
+                        'input': '0x',
+                        'gas': '0x0189a6',
+                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
+                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'value': '1478185785293501154300',
+                        'callType': 'call',
+                    },
+                    'subtraces': 0,
+                    'timestamp': 1722496536000,
+                },
+                {
+                    'blockHash': '0x49f9b576f76f70d270c31daf253fc6abadd27f85295b399951791a93de8d9310',
+                    'address': null,
+                    'traceAddress': [13],
+                    'type': 'call',
+                    'error': null,
+                    'transactionHash': '0xef8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a2572',
+                    'result': { 'gasUsed': '0x02b85f' },
+                    'transactionPosition': 0,
+                    'blockNumber': 204929646,
+                    'action': {
+                        'input': '0x',
+                        'gas': '0x0322e1',
+                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
+                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'value': '400',
+                        'callType': 'call',
+                    },
+                    'subtraces': 0,
+                    'timestamp': 1722496536000,
+                },
+                {
+                    'blockHash': '0xde07825a46d9f9f59f8d339d7328723cdd1252a5958da925d929955fab1968a8',
+                    'address': null,
+                    'traceAddress': [14],
+                    'type': 'call',
+                    'error': null,
+                    'transactionHash': '0xef8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a2572',
+                    'result': { 'gasUsed': '0x03c8e8' },
+                    'transactionPosition': 0,
+                    'blockNumber': 205640129,
+                    'action': {
+                        'input': '0x',
+                        'gas': '0x0189a6',
+                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
+                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'value': '1478185785293501154400',
+                        'callType': 'call',
+                    },
+                    'subtraces': 0,
+                    'timestamp': 1722496536000,
+                },
+                {
+                    'blockHash': '0x99f9b576f76f70d270c31daf253fc6abadd27f85295b399951791a93de8d9320',
+                    'address': null,
+                    'traceAddress': [15],
+                    'type': 'call',
+                    'error': null,
+                    'transactionHash': '0x91267832099c93a38473a2d7c069ba1fb63ff4310cde8bfe033d0816efe237d7',
+                    'result': { 'gasUsed': '0x02b85f' },
+                    'transactionPosition': 0,
+                    'blockNumber': 206929646,
+                    'action': {
+                        'input': '0x',
+                        'gas': '0x0322e1',
+                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
+                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
+                        'value': '500',
+                        'callType': 'call',
+                    },
+                    'subtraces': 0,
+                    'timestamp': 1722496536000,
+                },
+            ],
+        };
+
+
         return {
+            sampleData,
             rows: [],
             loadingRows: [],
             columns,
             transactions: [],
             pageSize: this.initialPageSize,
-            loading: false,
+            loading: true,
             pagination: {
                 sortBy: 'date',
                 descending: true,
@@ -118,15 +355,10 @@ export default {
         this.columns.filter(t => t.name === 'from')[0].label = this.$t('pages.from');
         this.columns.filter(t => t.name === 'to')[0].label = this.$t('pages.to');
         this.columns.filter(t => t.name === 'value')[0].label = this.$t('pages.value');
-        this.columns.filter(t => t.name === 'count')[0].label = this.$t('pages.count');
         this.columns.filter(t => t.name === 'direction')[0].label = this.$t('components.direction');
         if (!this.usePagination) {
             this.pagination.rowsPerPage = 25;
-            // we need to remove type and count columns
-            this.columns = this.columns.filter(col => col.name !== 'type');
-            this.columns = this.columns.filter(col => col.name !== 'count');
         }
-        this.loadAllExpanded();
         this.updateLoadingRows();
     },
     watch: {
@@ -196,145 +428,61 @@ export default {
                 },
             });
         },
+        async fetchInternalTransactions() {
+            // we simulate waiting 2 seconds and return the example data from the sampleData variable
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve(this.sampleData);
+                }, 2000);
+            });
+        },
         async onRequest(props) {
-            console.log('----------------------------', props);
+            const chainSettings = useChainStore().currentChain.settings;
             this.loading = true;
-            // this line cleans the table for a second and the components have to be created again (clean)
             this.rows = [];
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
-            const path = this.getPath(props);
-            let result = await this.$indexerApi.get(path);
-            if (!this.pagination.rowsNumber) {
-                this.pagination.rowsNumber = result.data.total_count;
+            let result = await this.fetchInternalTransactions();
+            if (this.total === null) {
+                this.pagination.rowsNumber = result.results.length;
             }
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
-            this.transactions = [...result.data.results];
-            this.transactions.forEach((transaction) => {
-                let timestamp = transaction.timestamp;
-                // This is a workaround to fix the timestamp issue (it should be fixed in the API)
-                // https://github.com/telosnetwork/teloscan-indexer/issues/234
-                if (typeof timestamp === 'string') {
-                    timestamp = new Date(timestamp).getTime() - new Date().getTimezoneOffset() * 60 * 1000;
-                    transaction.timestamp = timestamp;
-                }
-            });
 
-            let totalTraces = 0;
+            // Process the result data
             let processedTransactions = 0;
-            for (const transaction of this.transactions) {
-                try {
-                    transaction.transfer = false;
-                    transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
-                    if (transaction.input === '0x') {
-                        continue;
-                    }
-                    if(!transaction.to) {
-                        continue;
-                    }
-                    const contract = await this.$contractManager.getContract(
-                        transaction.to,
-                    );
-                    if (!contract) {
-                        continue;
-                    }
-                    if (totalTraces >= 25 && !this.usePagination) {
-                        // we already have enough data
-                        break;
-                    }
-                    let traces = await this.$indexerApi.get(
-                        '/transaction/' + transaction.hash + '/internal?limit=1000&sort=ASC&offset=0&includeAbi=1',
-                    );
-                    for(const trace of [...traces.data.results]){
-                        trace.hash = trace.transactionHash;
-                    }
-                    transaction.traces = traces.data?.results;
-                    totalTraces += +transaction.traces?.length;
-                    transaction.contract = contract;
-                    transaction.contractAddress = contract.address;
-                    const parsedTransaction = await this.$contractManager.parseContractTransaction(
-                        transaction,
-                        transaction.input,
-                        contract,
-                    );
-                    transaction.parsedTransaction = parsedTransaction;
-                    // Get ERC20 transfer from main function call
-                    let signature = transaction.input.substring(0, 10);
-                    if (
-                        signature &&
-                        TRANSFER_SIGNATURES.includes(signature) &&
-                        transaction.parsedTransaction.args['amount']
-                    ) {
-                        let decimals = transaction.contract.properties?.decimals;
-                        if(transaction.contract && decimals){
-                            transaction.transfer = {
-                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], decimals)}`,
-                                'symbol': transaction.contract.properties.symbol,
-                            };
-                        }
-                    }
-
+            let lastTransactionHash = '';
+            const totalEntries = [];
+            result.results.forEach((internalTrx) => {
+                if (internalTrx.transactionHash !== lastTransactionHash) {
                     processedTransactions++;
-                    const entries = [];
-                    transaction.traces.forEach((trace) => {
-                        const entry = {
-                            trx: processedTransactions % 2 === 0 ? 'even' : 'odd',
-                            hash: transaction.hash,
-                            blockNumber: transaction.blockNumber,
-                            timestamp: transaction.timestamp,
-                            type: trace.action.callType,
-                            from: trace.action.from,
-                            to: trace.action.to,
-                            value: trace.action.value,
-                            symbol: 'TLOS',
-                            decimals: WEI_PRECISION,
-                        };
-                        entries.push(entry);
-                    });
-
-                    if (this.usePagination) {
-                        const entry = {
-                            trx: processedTransactions % 2 === 0 ? 'even' : 'odd',
-                            hash: transaction.hash,
-                            blockNumber: transaction.blockNumber,
-                            timestamp: transaction.timestamp,
-                            type: entries[0].type,
-                            from: transaction.from,
-                            to: transaction.to,
-                            value: transaction.value,
-                            symbol: 'TLOS',
-                            decimals: WEI_PRECISION,
-                            traces: entries,
-                            expand: true,
-                        };
-                        this.rows.push(entry);
-                    } else {
-                        this.rows = this.rows.concat(entries);
-                        // we make sure there are no more than 25 rows.
-                        // If we have more than 25 rows, we discard the rest
-                        if (this.rows.length > 25) {
-                            this.rows = this.rows.slice(0, 25);
-                        }
-                    }
-
-                } catch (e) {
-                    console.error(
-                        `Failed to parse data for transaction, error was: ${e.message}`,
-                    );
-                    // notifiy user
-                    this.$q.notify({
-                        message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
-                        color: 'negative',
-                        position: 'top',
-                        timeout: 5000,
-                    });
+                    lastTransactionHash = internalTrx.transactionHash;
                 }
-            }
-            this.rows.forEach((row) => {
-                row.expand = this.allExpanded;
+                const entry = {
+                    trx: processedTransactions % 2 === 0 ? 'even' : 'odd',
+                    hash: internalTrx.transactionHash,
+                    blockNumber: internalTrx.blockNumber,
+                    timestamp: internalTrx.timestamp,
+                    type: internalTrx.action.callType,
+                    from: internalTrx.action.from,
+                    to: internalTrx.action.to,
+                    value: internalTrx.action.value,
+                    symbol: chainSettings.getSystemToken().symbol,
+                    decimals: chainSettings.getSystemToken().decimals,
+                };
+                totalEntries.push(entry);
+
             });
+
+            this.rows = totalEntries;
+
+            if (this.usePagination) {
+                this.pagination.rowsNumber = result.results.length;
+            } else {
+                this.rows = this.rows.slice(0, 25);
+            }
+
             this.loading = false;
         },
         getPath(props) {
@@ -342,9 +490,9 @@ export default {
             let path;
             const filter = Object.assign({}, this.filter ? this.filter : {});
             if (this.address) {
-                path = `/address/${this.address}/transactions`;
+                path = `/address/${this.address}/internal`;
             } else {
-                path = '/transactions';
+                path = '/internal';
             }
             path += `?limit=${
                 rowsPerPage === 0 ? 25 : rowsPerPage
@@ -369,24 +517,6 @@ export default {
         toggleDateFormat() {
             this.showDateAge = !this.showDateAge;
         },
-        toggleAllExpanded() {
-            this.allExpanded = !this.allExpanded;
-            this.rows.forEach((row) => {
-                row.expand = this.allExpanded;
-            });
-            this.saveAllExpanded();
-        },
-        loadAllExpanded() {
-            // we look for the local Storage to see if the user has already expanded all the rows
-            const allExpanded = localStorage.getItem('allExpanded');
-            if (allExpanded) {
-                this.allExpanded = allExpanded === 'true';
-            }
-        },
-        saveAllExpanded() {
-            // we save the state of the allExpanded variable in the local storage
-            localStorage.setItem('allExpanded', this.allExpanded);
-        },
     },
 };
 </script>
@@ -407,7 +537,7 @@ export default {
             class="c-inttrx-flat__footer"
         >
             <router-link class="c-inttrx-flat__footer-container" :to="{ name: 'txsinternal', query: { a: address } }">
-                <span class="c-inttrx-flat__footer-text"> See all transactions </span>
+                <span class="c-inttrx-flat__footer-text"> {{ $t('pages.transactions.see_all_transactions') }} </span>
                 <q-icon name="arrow_forward" class="c-inttrx-flat__footer-icon" />
             </router-link>
         </q-card-actions>
@@ -428,36 +558,17 @@ export default {
                         </q-icon>
                     </div>
                 </template>
-
-                <div v-else-if="col.name === 'count'">
-                    {{ col.label }}
-                    <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
-                        {{ $t('pages.internal_txns') }}
-                    </q-tooltip>
-                </div>
                 <div v-else>
                     {{ col.label }}
                 </div>
-            </q-th>
-            <q-th v-if="usePagination" auto-width>
-                <q-btn
-                    :icon="allExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-                    flat
-                    round
-                    dense
-                    @click="toggleAllExpanded()"
-                >
-                    <q-tooltip>{{ allExpanded ? $t('components.collapse_all') : $t('components.expand_all') }}</q-tooltip>
-                </q-btn>
             </q-th>
         </q-tr>
     </template>
     <template v-slot:body="props">
         <template v-if="loading">
             <q-tr>
-                <!-- we need to iterate 7 times if usePagination and 10 times if not -->
                 <q-td
-                    v-for="i in (usePagination ? 10 : 7)"
+                    v-for="i in (8)"
                     :key="i"
                 >
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
@@ -508,71 +619,6 @@ export default {
                         :decimals="props.row.decimals"
                     />
                 </q-td>
-                <q-td key="count" :props="props">
-                    {{ props.row.traces.length }}
-                </q-td>
-                <q-td v-if="usePagination" auto-width>
-                    <!-- we need a switch to expand the rows below -->
-                    <q-btn
-                        :icon="props.row.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-                        flat
-                        round
-                        dense
-                        @click="props.row.expand = !props.row.expand"
-                    />
-                </q-td>
-            </q-tr>
-            <q-tr
-                v-for="(trace, index) in props.row.traces"
-                v-show="props.row.expand"
-                :key="`${trace.hash}-${index}`"
-                :props="props"
-                :class="props.row.trx"
-            >
-                <q-td key="hash" :props="props">
-                    <TransactionField :transaction-hash="trace.hash" :useHighlight="true"/>
-                </q-td>
-                <q-td key="block" :props="props">
-                    <BlockField :block="trace.blockNumber"/>
-                </q-td>
-                <q-td key="date" :props="props">
-                    <DateField :epoch="(trace.timestamp / 1000)" :force-show-age="showDateAge"/>
-                </q-td>
-                <q-td key="type" :props="props">
-                    {{ trace.type }}
-                </q-td>
-                <q-td key="from" :props="props">
-                    <AddressField
-                        v-if="trace.from"
-                        :key="trace.from"
-                        :address="trace.from"
-                        :truncate="12"
-                    />
-                </q-td>
-                <q-td key="direction" :props="props">
-                    <span
-                        :class="`direction ${getDirection(address, trace)}`"
-                    >
-                        {{ $t(`components.transaction.${getDirection(address, trace)}`).toUpperCase() }}
-                    </span>
-                </q-td>
-                <q-td key="to" :props="props">
-                    <AddressField
-                        v-if="trace.to"
-                        :key="trace.to"
-                        :address="trace.to"
-                        :truncate="12"
-                    />
-                </q-td>
-                <q-td key="value" :props="props">
-                    <ValueField
-                        :value="trace.value"
-                        :symbol="trace.symbol"
-                        :decimals="trace.decimals"
-                    />
-                </q-td>
-                <q-td key="count" :props="props" />
-                <q-td v-if="usePagination" auto-width/>
             </q-tr>
         </template>
     </template>
