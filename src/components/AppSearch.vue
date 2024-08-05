@@ -1,9 +1,9 @@
+<!-- eslint-disable no-constant-condition -->
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { toChecksumAddress } from 'src/lib/utils';
-import { getSystemBalance } from 'src/lib/balance-utils';
-
+import { TokenList } from 'src/types';
 import axios from 'axios';
 
 import AppSearchResultEntry from 'src/components/AppSearchResultEntry.vue';
@@ -22,8 +22,8 @@ import {
     SearchResultUnknown,
 } from 'src/types';
 import { Observable, debounceTime, fromEvent, map, of, switchMap, tap } from 'rxjs';
-import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { contractManager } from 'src/boot/telosApi';
 
 const props = defineProps<{
     homepageMode?: boolean; // if true, the search bar will be styled for placement on the homepage
@@ -41,9 +41,11 @@ const inputRef = ref<{$el:HTMLInputElement}|null>(null);
 const showAutocomplete = ref<boolean>(false);
 const searchResults = ref<Array<SearchResult>>([]);
 const selectedTab = ref<string>('tokens');
-const fiatValue = useStore().getters['chain/tlosPrice'];
 const loading = ref<boolean>(false);
-
+const tokenList = ref<TokenList | null>(null);
+const selectedIndex = ref(-1);
+const scrolling = ref(false);
+const handlingKeyDown = ref(false);
 
 // Logic to resolve and depurate search results ----
 
@@ -87,21 +89,12 @@ const resolvePriceUSD = (entry: SearchResultToken | SearchResultNFT): string => 
 
 const resolveIcon = (entry: SearchResultToken): string => {
     // TODO: implement this function
-    if (entry.category === 'token') {
-        return 'assets/logo--teloscan.png';
+    const knownToken = tokenList.value?.tokens.find(token => token.address === entry.address);
+    if (knownToken) {
+        return knownToken.logoURI;
     } else {
         return 'assets/logo--teloscan.png';
     }
-};
-
-const fetchBalance = (address: string): void => {
-    // This function fetches the balance of the given address in background and updates the search result when the balance is available
-    getSystemBalance(address, fiatValue).then((result) => {
-        const addressEntry = searchResults.value.find(entry => entry.category === 'address' && entry.address === address) as SearchResultAddress;
-        if (addressEntry) {
-            addressEntry.balance = $t('pages.tlos_balance', { balance: result?.tokenQty ?? '0' });
-        }
-    });
 };
 
 const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
@@ -131,7 +124,14 @@ const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
             priceUSD: resolvePriceUSD(entry as unknown as SearchResultToken),
             icon: resolveIcon(entry as unknown as SearchResultToken),
         } as SearchResultToken;
-    case 'nft':
+    case 'nft': {
+        const interfaces = entry.supportedInterfaces ?? '';
+        let nftType = '';
+        if (interfaces.includes('erc721')) {
+            nftType = 'ERC-721';
+        } else if (interfaces.includes('erc1155')) {
+            nftType = 'ERC-1155';
+        }
         return {
             category: 'nft',
             type: 'contract',
@@ -143,9 +143,10 @@ const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
             supportedInterfaces: entry.supportedInterfaces?.split(' ') as SearchResultInterfaces[] ?? [],
             priceUSD: resolvePriceUSD(entry as unknown as SearchResultNFT),
             img: resolveIcon(entry as unknown as SearchResultToken),
+            nftType,
         } as SearchResultNFT;
+    }
     case 'address':
-        fetchBalance(address); // this line fetches the balance in background
         return {
             category: 'address',
             type: 'address',
@@ -172,10 +173,44 @@ const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
     }
 };
 
-const byCategory = (a: SearchResult, b: SearchResult): number => {
+const sortCriteria = (a: SearchResult, b: SearchResult): number => {
     const aIndex = SearchResultCategories.indexOf(a.category);
     const bIndex = SearchResultCategories.indexOf(b.category);
-    return aIndex - bIndex;
+    const categorySort = aIndex - bIndex;
+    if (categorySort === 0) {
+        // same category
+        if (a.category === 'token' && b.category === 'token') {
+            // If they are tokens, sort by known tokens first
+            const aKnown = tokenList.value?.tokens.find(token => token.address === a.address) ? 1 : 0;
+            const bKnown = tokenList.value?.tokens.find(token => token.address === b.address) ? 1 : 0;
+            if (aKnown && bKnown) {
+                // if both are known tokens, sort by price
+                return (b as SearchResultToken).price - (a as SearchResultToken).price;
+            } else {
+                // if one is known and the other is unknown, sort by known first
+                return bKnown - aKnown;
+            }
+        } else {
+            // if any of the two has a 'null' or empty '' name, put it at the end
+            const aRaw = a as SearchResultRaw;
+            const bRaw = b as SearchResultRaw;
+            if (aRaw.name === '' || aRaw.name === null) {
+                return 1;
+            } else if (bRaw.name === '' || bRaw.name === null) {
+                return -1;
+            } else {
+                // if any of the two has a 'null' or empty '' symbol, put it at the end
+                if (aRaw.symbol === '' || aRaw.symbol === null) {
+                    return 1;
+                } else if (bRaw.symbol === '' || bRaw.symbol === null) {
+                    return -1;
+                }
+                return 0;
+            }
+        }
+    } else {
+        return categorySort;
+    }
 };
 
 const fetchResults = (query: string): Observable<SearchResult[]> => {
@@ -191,7 +226,7 @@ const fetchResults = (query: string): Observable<SearchResult[]> => {
         loading.value = true;
         axios.get(url).then((response) => {
             const result = response.data.result.map((entry: SearchResultRaw) => convertRawToProcessedResult(entry));
-            result.sort(byCategory);
+            result.sort(sortCriteria);
             loading.value = false;
             observer.next(result);
             observer.complete();
@@ -221,27 +256,116 @@ const extractCategoryList = (): SearchResultCategory[] =>
     searchResults.value.map(entry => entry.category).filter((value, index, self) => self.indexOf(value) === index) as SearchResultCategory[];
 
 const filterResults = (results: SearchResult[]): SearchResult[] => results.filter((result) => {
+    let accepted = true;
     if (result.category === 'address') {
-        return result.address === toChecksumAddress(result.address);
+        accepted = result.address === toChecksumAddress(result.address);
     }
-    return true;
+    if (accepted) {
+        return accepted;
+    } else {
+        console.warn('Filtering out:', result);
+    }
 });
 
 
 
 // Logic to open / close / scroll autocomplete ----
+const ensureSelectedIsVisible = () => {
+    setTimeout(() => {
+        const resultsContainer = document.querySelector('.c-search__results');
+        if (!resultsContainer) {
+            return;
+        }
 
-watch(selectedTab, (newValue) => {
+        const selectedElement = resultsContainer.querySelector('.c-search-result-entry--selected');
+        if (selectedElement) {
+            selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+
+        updateSelectedTab();
+    }, 0);
+};
+
+let keyDownTimeOut = setTimeout(() => {/**/}, 0);
+const handlingKeyDownTimeOut = () => {
+    clearTimeout(keyDownTimeOut);
+    keyDownTimeOut = setTimeout(() => {
+        handlingKeyDown.value = false;
+    }, 1000);
+};
+
+const handleKeydown = (event: KeyboardEvent) => {
+    if (!showAutocomplete.value) {
+        return;
+    }
+
+    switch (event.key) {
+    case 'ArrowDown':
+        if (selectedIndex.value < searchResults.value.length - 1) {
+            selectedIndex.value++;
+            handlingKeyDown.value = true;
+            handlingKeyDownTimeOut();
+            ensureSelectedIsVisible();
+        }
+        break;
+    case 'ArrowUp':
+        if (selectedIndex.value > 0) {
+            selectedIndex.value--;
+            handlingKeyDown.value = true;
+            handlingKeyDownTimeOut();
+            ensureSelectedIsVisible();
+        }
+        break;
+    case 'Enter':
+        if (selectedIndex.value === -1 && searchResults.value.length > 0) {
+            selectedIndex.value = 0;
+        }
+        if (selectedIndex.value !== -1) {
+            handleResultClick(searchResults.value[selectedIndex.value]);
+        }
+        break;
+    case 'Escape':
+        showAutocomplete.value = false;
+        break;
+    default:
+        break;
+    }
+};
+
+const selectCategory = (category: string) => {
     const resultsContainer = document.querySelector('.c-search__results');
-    const divider = document.querySelector(`.c-search__result-category-divider--${newValue}`);
+    const divider = document.querySelector(`.c-search__result-category-divider--${category}`);
     if (divider && resultsContainer) {
         const dividerOffset = divider.getBoundingClientRect().top - resultsContainer.getBoundingClientRect().top;
+        const currentScroll = resultsContainer.scrollTop;
+        const scrollTo = currentScroll + dividerOffset;
+
+        // set scrolling flag to avoid conflicting with mouse scroll
+        scrolling.value = true;
+        // scroll to the selected category
         resultsContainer.scrollTo({
-            top: dividerOffset,
+            top: scrollTo,
             behavior: 'smooth',
         });
+
+        // wait for the scroll to finish to restore the scrolling flag
+        setTimeout(() => {
+            scrolling.value = false;
+        }, 1500);
+
+
+        // we should select the first element of the category which is the next sibling of the divider and extract the index from the class
+        const nextSibling = divider.nextElementSibling;
+        if (nextSibling) {
+            const correctClass = [...nextSibling.classList].find((className: string) => className.startsWith('c-search__result-entry--index-')) ?? '';
+            const index = correctClass.split('index-')[1];
+            selectedIndex.value = parseInt(index);
+
+            // finally we force the input to focus to avoid the next keydown event to scroll the page
+            inputRef.value?.$el.focus();
+        }
     }
-});
+};
 
 const handleClick = (event: Event): void => {
     document.querySelectorAll('.c-search').forEach((element) => {
@@ -257,7 +381,49 @@ const handleClick = (event: Event): void => {
     });
 };
 
-onMounted(() => {
+const updateSelectedTab = () => {
+    const resultsContainer = document.querySelector('.c-search__results');
+    if (!resultsContainer || scrolling.value) {
+        return;
+    }
+
+    if (!handlingKeyDown.value) {
+        // The user is scrolling with the mouse, so we need to update the selected tab based on the visible category divider
+        const dividers = document.querySelectorAll('.c-search__result-category-divider');
+        const containerTop = resultsContainer.getBoundingClientRect().top;
+        const candidate = {
+            top: -Infinity,
+            divider: null as Element | null,
+        };
+        for (const divider of dividers) {
+            const dividerTop = divider.getBoundingClientRect().top;
+            if (dividerTop < containerTop && dividerTop > candidate.top) {
+                candidate.top = dividerTop;
+                candidate.divider = divider;
+            }
+        }
+        if (candidate.divider) {
+            const category = candidate.divider.classList[1].split('--')[1]; // Extract category from class
+            if (category !== selectedTab.value) {
+                selectedTab.value = category;
+            }
+        }
+        // we should unselect whatever is selected avoid conflicting with mouse rollover effect
+        selectedIndex.value = -1;
+
+    } else {
+        // The user is using the keyboard, so we need to update the selected tab based on the selected result
+        const selectedElement = resultsContainer.querySelector('.c-search-result-entry--selected');
+        if (selectedElement) {
+            const category = selectedElement.classList[1].split('--')[1]; // Extract category from class
+            if (category !== selectedTab.value) {
+                selectedTab.value = category;
+            }
+        }
+    }
+};
+
+onMounted(async () => {
     const input = inputRef.value?.$el;
 
     if (input) {
@@ -279,10 +445,36 @@ onMounted(() => {
     }
 
     document.addEventListener('click', handleClick);
+
+    tokenList.value = await contractManager.getTokenList();
 });
 
 onBeforeUnmount(() => {
+    // Remove click listener
     document.removeEventListener('click', handleClick);
+});
+
+watch(showAutocomplete, (newValue) => {
+    if (!newValue) {
+        // reset selected index
+        selectedIndex.value = -1;
+    } else {
+        // The autocomplete is shown, so we select the first tab
+        selectedTab.value = searchResults.value.length > 0 ? searchResults.value[0].category : 'tokens';
+    }
+});
+
+watch(searchResults, () => {
+    if (showAutocomplete.value && searchResults.value.length > 0) {
+        const resultsContainer = document.querySelector('.c-search__results');
+        if (resultsContainer) {
+            fromEvent(resultsContainer, 'scroll').pipe(
+                debounceTime(100),
+            ).subscribe(updateSelectedTab);
+        } else {
+            console.error('resultsContainer not found');
+        }
+    }
 });
 
 // Logic to handle search result click ----
@@ -328,6 +520,7 @@ const handleResultClick = (item: SearchResult): void => {
         :placeholder="$t('components.header.search_placeholder')"
         type="search"
         inputmode="search"
+        @keydown="handleKeydown"
     >
         <template v-slot:append>
             <q-icon
@@ -339,7 +532,12 @@ const handleResultClick = (item: SearchResult): void => {
         </template>
     </q-input>
 
-    <div v-if="showAutocomplete" class="c-search__autocomplete">
+    <div
+        v-if="showAutocomplete"
+        class="c-search__autocomplete"
+        tabindex="0"
+        @keydown="handleKeydown"
+    >
         <div
             v-if="loading"
             class="c-search__loading"
@@ -368,6 +566,7 @@ const handleResultClick = (item: SearchResult): void => {
                 :name="cat"
                 :label="resolveTabLabel(cat)"
                 class="c-search__tabs-tab"
+                @click="selectCategory(cat)"
             />
         </q-tabs>
         <div class="c-search__results">
@@ -380,7 +579,9 @@ const handleResultClick = (item: SearchResult): void => {
                     :class="['c-search__result-category-divider', `c-search__result-category-divider--${entry.category}`]"
                 > {{ resolveTabLabel(entry.category) }}</div>
                 <AppSearchResultEntry
+                    :class="['c-search__result-entry', `c-search__result-entry--index-${index}`]"
                     :entry="entry"
+                    :selected="selectedIndex === index"
                     @click="handleResultClick(entry)"
                 />
             </template>
@@ -554,6 +755,7 @@ const handleResultClick = (item: SearchResult): void => {
         flex-direction: column;
         gap: 10px;
         padding-bottom: 10px;
+        width: 100%;
     }
 }
 </style>

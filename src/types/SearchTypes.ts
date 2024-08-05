@@ -46,6 +46,7 @@ export interface SearchResultNFT {
     price: number;
     verified: boolean;
     supportedInterfaces: SearchResultInterfaces[];
+    nftType: string;
     priceUSD: string;
     img: string;
 }
