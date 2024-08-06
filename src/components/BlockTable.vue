@@ -228,26 +228,24 @@ onBeforeMount(() => {
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div class="u-flex--center-y">
-                    {{ col.label }}
-                    <template v-if="col.name === 'date'">
-                        <q-icon
-                            class="info-icon q-ml-xs"
-                            name="fas fa-info-circle"
-                            @click="toggleDateFormat"
-                        >
-                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
-                                {{ $t('components.blocks.click_to_change_format') }}
-                            </q-tooltip>
-                        </q-icon>
-                    </template>
-                    <template v-if="col.name === 'method'">
-                        <q-icon class="info-icon" name="fas fa-info-circle q-ml-xs" />
-                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
-                            {{ $t('components.blocks.executed_based_on_decoded_data') }}
+                <template v-if="col.name === 'date'">
+                    <div class="u-flex--center-y" @click="toggleDateFormat">
+                        {{ col.label }}
+                        <q-icon class="info-icon" name="far fa-question-circle" />
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('components.blocks.click_to_change_format') }}
                         </q-tooltip>
-                    </template>
-                </div>
+                    </div>
+                </template>
+                <template v-if="col.name === 'method'">
+                    <div class="u-flex--center-y">
+                        {{ col.label }}
+                    </div>
+                    <q-icon class="info-icon" name="fas fa-info-circle q-ml-xs" />
+                    <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                        {{ $t('components.blocks.executed_based_on_decoded_data') }}
+                    </q-tooltip>
+                </template>
             </q-th>
         </q-tr>
     </template>
@@ -292,26 +290,24 @@ onBeforeMount(() => {
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
-                <div class="u-flex--center-y">
-                    {{ col.label }}
-                    <template v-if="col.name === 'date'">
-                        <q-icon
-                            class="info-icon q-ml-xs"
-                            name="fas fa-info-circle"
-                            @click="toggleDateFormat"
-                        >
-                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
-                                {{ $t('components.blocks.click_to_change_format') }}
-                            </q-tooltip>
-                        </q-icon>
-                    </template>
-                    <template v-if="col.name === 'method'">
-                        <q-icon class="info-icon" name="fas fa-info-circle q-ml-xs" />
-                        <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
-                            {{ $t('components.blocks.executed_based_on_decoded_data') }}
+                <template v-if="col.name === 'date'">
+                    <div class="u-flex--center-y" @click="toggleDateFormat">
+                        {{ col.label }}
+                        <q-icon class="info-icon" name="far fa-question-circle" />
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('components.blocks.click_to_change_format') }}
                         </q-tooltip>
-                    </template>
-                </div>
+                    </div>
+                </template>
+                <template v-if="col.name === 'method'">
+                    <div class="u-flex--center-y">
+                        {{ col.label }}
+                    </div>
+                    <q-icon class="info-icon" name="fas fa-info-circle q-ml-xs" />
+                    <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
+                        {{ $t('components.blocks.executed_based_on_decoded_data') }}
+                    </q-tooltip>
+                </template>
             </q-th>
         </q-tr>
     </template>

@@ -5,6 +5,7 @@ export default {
     pages: {
         blocklist: {
             title: 'Blocks',
+            display_empty_blocks: 'Display empty blocks',
         },
         blockpage: {
             block: 'Block',
@@ -51,6 +52,10 @@ export default {
             market_cap: 'Market Cap',
             last_finalized_block: 'Last Finalized Block',
             total_transactions: 'Total Transactions',
+            latest_blocks: 'Latest Blocks',
+            view_all_blocks: 'View all blocks',
+            latest_transactions: 'Latest Transactions',
+            view_all_transactions: 'View all transactions',
         },
         error: {
             title: 'Page not found.',
@@ -98,8 +103,11 @@ export default {
         loading_transfers: 'Loading transfers',
         loading_approvals: 'Loading approvals',
         erc20_transfers: 'ERC20 Transfers',
+        erc20_transfers_tooltip: 'List of ERC20 token transfers in this transaction',
         erc721_transfers: 'ERC721 Transfers',
+        erc721_transfers_tooltip: 'List of ERC721 token transfers in this transaction',
         erc1155_transfers: 'ERC1155 Transfers',
+        erc1155_transfers_tooltip: 'List of ERC1155 token transfers in this transaction',
         tokens: 'Tokens',
         created_at_trx: 'Created at Trx',
         by_address: 'By Address',
@@ -303,10 +311,10 @@ export default {
             show_wei: 'Show wei',
             value_uint256: 'Value (uint256) : ',
             tlos_transfer: 'TLOS Transfer',
-            contract_deployed: 'Contract Deployed',
             native_deposit: 'Deposit from Native Telos',
             native_withdraw: 'Withdraw to Native Telos',
             unknown: 'Unknown',
+            contract_deployed: 'Contract Deployed',
             contract_deployment: 'Contract Deployment',
             contract_interaction: 'Contract Interaction',
             deposit: 'deposit',
@@ -364,14 +372,12 @@ export default {
             incorrect_sigint_array_length: 'There should be { size } signed integers in the array',
             incorrect_strings_array_length: 'There should be { size } strings in the array',
             incorrect_unsigint_array_length: 'There should be { size } unsigned integers in the array',
-
             invalid_address_array_string: 'Entered value does not represent an array of addresses',
             invalid_booleans_array_string: 'Entered value does not represent an array of bool',
             invalid_bytes_array_string: 'Entered value does not represent an array of bytes',
             invalid_sigint_array_string: 'Entered value does not represent an array of signed integers',
             invalid_strings_array_string: 'Entered value does not represent an array of strings',
             invalid_unsigint_array_string: 'Entered value does not represent an array of unsigned integers',
-
             invalid_address_length: 'An address must be exactly 40 characters, not including "0x"',
             invalid_address_start: 'An address must begin with 0x',
             invalid_address_characters: 'Entry contains invalid characters',
@@ -637,7 +643,6 @@ export default {
         not_synced: 'Indexer is not synced to latest block',
         try_reloading: 'You can try reloading the page to fix it, if the problem persist please contact a Telos team member.',
         error: 'Error',
-        expand: 'See more ({more})',
         async_error_description: 'Sorry ! An error occurred trying to request resources. Please make sure your internet connection is working and try again. If the error persists, contact us directly on our Telegram channel.',
         language: 'Language',
         cancel: 'Cancel',
@@ -770,4 +775,3 @@ export default {
         },
     },
 };
-

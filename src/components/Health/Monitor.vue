@@ -162,7 +162,12 @@ export default {
                 :props="props"
                 @click="col.name==='checked_at' ? showAge =! showAge : null"
             />
-            <q-tooltip v-if="col.name === 'checked_at'" anchor="bottom middle" self="bottom middle">
+            <q-tooltip
+                v-if="col.name === 'checked_at'"
+                anchor="bottom middle"
+                self="bottom middle"
+                :offset="[0, 36]"
+            >
                 {{ $t('components.health.click_to_change_format') }}
             </q-tooltip>
             {{ col.label }}
@@ -223,7 +228,12 @@ export default {
                 :props="props"
                 @click="col.name==='checked_at' ? showAge =! showAge : null"
             />
-            <q-tooltip v-if="col.name === 'checked_at'" anchor="bottom middle" self="bottom middle">
+            <q-tooltip
+                v-if="col.name === 'checked_at'"
+                anchor="bottom middle"
+                self="bottom middle"
+                :offset="[0, 36]"
+            >
                 {{ $t('components.health.click_to_change_format') }}
             </q-tooltip>
             {{ col.label }}
