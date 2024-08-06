@@ -1,32 +1,6 @@
-// import { contractManager, indexerApi, exportApi } from 'src/boot/telosApi'; // FIXME: uncomment this line
-// import { formatTimestamp } from 'src/lib/date-utils'; // FIXME: uncomment this line
-// import { formatWei } from 'src/lib/utils'; // FIXME: uncomment this line
 import { AxiosError } from 'axios';
 import { exportApi } from 'src/boot/telosApi';
 import { EXPORT_DOWNLOAD_TYPES } from 'src/lib/constants';
-
-// import { EvmTransfer } from 'src/antelope/types/EvmTransaction'; // FIXME: uncomment this line
-
-/**
- * Escape a string value which is meant to be entered into a CSV
- *
- * @param value The value to escape
- * @returns The escaped value
- */
-/* // FIXME: uncomment this line
-function escapeCSVValue(value: string) {
-    let escapedVal = value;
-
-    if (
-        escapedVal.includes(',') ||
-        escapedVal.includes('\n') ||
-        escapedVal.includes('"')
-    ) {
-        escapedVal = `"${escapedVal.replace(/"/g, '""')}"`; // Escape quotes
-    }
-
-    return value;
-}*/
 
 /**
  * Download a CSV file of transactions
@@ -101,7 +75,6 @@ export async function downloadCsv(
     }
 
     try {
-        console.log('url: ', url); // FIXME: remove this line
         const { data } = await exportApi.get(url);
         csvContent = data;
     } catch (e) {
