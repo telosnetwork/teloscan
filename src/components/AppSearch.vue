@@ -284,8 +284,6 @@ const filterResults = (results: SearchResult[]): SearchResult[] => results.filte
     }
 });
 
-
-
 // Logic to open / close / scroll autocomplete ----
 const ensureSelectedIsVisible = () => {
     setTimeout(() => {
