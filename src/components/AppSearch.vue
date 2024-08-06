@@ -213,6 +213,23 @@ const sortCriteria = (a: SearchResult, b: SearchResult): number => {
     }
 };
 
+const goToFirstResultNow = (query: string) => {
+    const endpoint = process.env.EXPORT_API_ENDPOINT as string;
+    // When merging with Crosschain support (https://github.com/telosnetwork/teloscan/pull/769)
+    // use the following line instead:
+    // const endpoint = useChainStore().currentChain.settings.getIndexerApiEndpoint();
+    const url = `${endpoint}/api?module=search&action=search&query=${query}&offset=1`;
+    loading.value = true;
+    axios.get(url).then((response) => {
+        const result = response.data.result.map((entry: SearchResultRaw) => convertRawToProcessedResult(entry));
+        loading.value = false;
+        handleResultClick(result[0]);
+    }).catch((error) => {
+        console.error('Error fetching results:', error);
+        loading.value = false;
+    });
+};
+
 const fetchResults = (query: string): Observable<SearchResult[]> => {
     if (query.length < 3) {
         return of([] as SearchResult[]);
@@ -296,6 +313,10 @@ const handlingKeyDownTimeOut = () => {
 
 const handleKeydown = (event: KeyboardEvent) => {
     if (!showAutocomplete.value) {
+        // If the autocomplete is not shown yet and the user presses Enter, we should query instantly the first result and navigate to it
+        if (event.key === 'Enter') {
+            goToFirstResultNow(searchTerm.value);
+        }
         return;
     }
 
