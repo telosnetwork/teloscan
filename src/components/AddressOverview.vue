@@ -1,16 +1,17 @@
 <script lang="ts" setup>
-import { onBeforeMount, ref } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
-import { WEI_PRECISION, formatWei } from 'src/lib/utils';
+import { WEI_PRECISION } from 'src/lib/utils';
 import { prettyPrintFiatBalance } from 'src/antelope/wallets/utils';
+import { useChainStore } from 'src/antelope';
+import { SystemBalance } from 'src/lib/balance-utils';
 
 const $store = useStore();
 const { t: $t } = useI18n();
 
 const props = defineProps({
     balance: {
-        type: String,
+        type: Object as () => SystemBalance,
         required: true,
     },
     loadingComplete: {
@@ -21,17 +22,11 @@ const props = defineProps({
 
 const fiatPrice = $store.getters['chain/tlosPrice'];
 
-const tokenQty = ref('0');
-const fiatValue = ref(0);
-
-function getBalanceDisplay(quantity: string) {
-    return $t('pages.tlos_balance', { balance: quantity });
+function getBalanceDisplay(balance: string, symbol: string) {
+    return $t('pages.tlos_balance', { balance, symbol });
 }
 
-onBeforeMount(() => {
-    tokenQty.value = formatWei(props.balance, WEI_PRECISION, 4);
-    fiatValue.value = parseFloat(tokenQty.value) * parseFloat(fiatPrice);
-});
+const systemToken = useChainStore().currentChain.settings.getSystemToken();
 
 </script>
 
@@ -50,10 +45,10 @@ onBeforeMount(() => {
                     height="18"
                     width="18"
                 >
-                {{ getBalanceDisplay(tokenQty) }}
+                {{ getBalanceDisplay(props.balance.tokenQty, systemToken.symbol) }}
                 <ValueField
-                    :value="tokenQty"
-                    :symbol="'TLOS'"
+                    :value="props.balance.tokenQty"
+                    :symbol="systemToken.symbol"
                     :decimals="WEI_PRECISION"
                 />
             </div>
@@ -63,9 +58,9 @@ onBeforeMount(() => {
         </q-card-section>
         <q-card-section v-else>
             <div class="c-overview__label">
-                TLOS {{ $t('pages.value') }}
+                {{ systemToken.symbol }} {{ $t('pages.value') }}
             </div>
-            <div class="c-overview__balance"> {{ prettyPrintFiatBalance(fiatValue, 'us', false) }} (@ ${{ fiatPrice }}/TLOS)</div>
+            <div class="c-overview__balance"> {{ prettyPrintFiatBalance(props.balance.fiatValue, 'us', false) }} (@ ${{ fiatPrice }}/{{ systemToken.symbol }})</div>
         </q-card-section>
     </q-card>
 </div>
