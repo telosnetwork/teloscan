@@ -417,14 +417,10 @@ export default {
                 <template v-if="col.name === 'date'" >
                     <div class="c-inttrx-flat__header-age u-flex--center-y" @click="toggleDateFormat">
                         <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
-                        <q-icon
-                            class="info-icon"
-                            name="far fa-question-circle"
-                        >
-                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
-                                {{ $t('components.click_to_change_format') }}
-                            </q-tooltip>
-                        </q-icon>
+                        <q-icon class="info-icon" name="far fa-question-circle" />
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
                     </div>
                 </template>
 
