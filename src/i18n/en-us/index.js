@@ -443,6 +443,8 @@ export default {
             write_functions: 'Write functions',
             unverified_contract: 'Unverified contract',
             verified_contract: 'Verified contract',
+            upload_abi_json: 'upload ABI JSON file',
+            discard_abi_json: 'discard current ABI JSON',
         },
         header: {
             address_copied: 'Address copied to clipboard',

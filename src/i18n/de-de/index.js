@@ -443,6 +443,8 @@ export default {
             write_functions: 'Schreib-Funktionen',
             unverified_contract: 'Ungeprüfter Smart Contract',
             verified_contract: 'Verified contract',
+            upload_abi_json: 'ABI-JSON-Datei hochladen',
+            discard_abi_json: 'aktuellen ABI-JSON verwerfen',
         },
         header: {
             address_copied: 'Adresse/Konto in Zwischenablage kopiert',
