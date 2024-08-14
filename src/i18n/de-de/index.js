@@ -350,6 +350,9 @@ export default {
             incorrect_sigint_array_length: 'Das Array muss { size } signed Integers enthalten',
             incorrect_strings_array_length: 'Das Array sollte nur { size } Zeichenfolgen enthalten',
             incorrect_unsigint_array_length: 'Das Array muss { size } unsigned Integers enthalten',
+            incorrect_values_array_length: 'Es müssen { size } Werte im Array vorhanden sein',
+            tuple_struct_input_hint: 'Geben Sie die Tupelwerte in eckigen Klammern in der im Vertrag definierten Reihenfolge ein',
+            invalid_boolean_value: 'Der eingegebene Wert ist kein boolescher Wert',
 
             invalid_address_array_string: 'Eingegebener Wert repräsentiert kein Array von Adressen',
             invalid_booleans_array_string: 'Der eingegebene Wert entspricht keinem Array von bool(s)',

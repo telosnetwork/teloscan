@@ -13,6 +13,7 @@ const asyncInputComponents = {
     UnsignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntArrayInput')),
     UnsignedIntInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntInput')),
     SignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/SignedIntArrayInput')),
+    TupleStructInput: defineAsyncComponent(() => import('components/inputs/TupleStructInput')),
 };
 
 /**
@@ -114,6 +115,15 @@ function parameterTypeIsUnsignedIntArray(type) {
     return /^uint\d+\[\d*]$/.test(type);
 }
 
+/**
+ * Given a function interface type, returns true iff that type represents a tuple struct
+ * @param {string} type
+ * @returns {boolean}
+ */
+
+function parameterTypeIsTupleStruct(type) {
+    return type === 'tuple';
+}
 
 
 /**
@@ -208,6 +218,8 @@ function getComponentForInputType(type) {
         return asyncInputComponents.UnsignedIntInput;
     } else if (parameterTypeIsUnsignedIntArray(type)) {
         return asyncInputComponents.UnsignedIntArrayInput;
+    } else if (parameterTypeIsTupleStruct(type)) {
+        return asyncInputComponents.TupleStructInput;
     }
 
     return undefined;
@@ -570,6 +582,63 @@ function parseStringArrayString(str, expectedLength) {
     return parsedArrayOfStrings;
 }
 
+/**
+ * Given a string, returns a string iff it is a valid JSON representation of a tuple struct (without checking the types)
+ *
+ * @param str - JSON string representation of a tuple struct, e.g. '["abc", 23, 0x1234..12342]'
+ * @returns {string|undefined}
+ */
+function parseTupleString(str, expectedLength) {
+    let parsedTuple;
+
+    try {
+        parsedTuple = JSON.parse(str);
+        console.log('parseTupleString()', { parsedTuple }); // FIXME: remove
+    } catch {
+        // may be addresses in the tuple that are not quoted, therefore not valid JSON
+        // e.g. ["0x1234", 0x1234]
+        // we will try to identify the those cases, replace them with quoted addresses and try again
+        console.log('parseTupleString() failed first try'); // FIXME: remove
+        const notQuotedAddressRegex = /(?<!['"])\b0x[a-fA-F0-9]{40}\b(?!['"])/g;
+        const notQuotedAddresses = str.match(notQuotedAddressRegex);
+
+        let _str = str;
+        if (notQuotedAddresses) {
+            notQuotedAddresses.forEach((_address) => {
+                const quotedAddress = `"${_address}"`;
+                _str = str.replaceAll(_address, quotedAddress);
+            });
+
+            try {
+                parsedTuple = JSON.parse(_str);
+                return parsedTuple;
+            } catch {
+                return undefined;
+            }
+        }
+
+        return undefined;
+    }
+
+    const valueIsTuple = Array.isArray(parsedTuple);
+    // TODO: validate tuple structure
+    console.log('parseTupleString()', { valueIsTuple }); // FIXME: remove
+
+    if (!valueIsTuple) {
+        return undefined;
+    }
+
+    if (Number.isInteger(expectedLength)) {
+        const actualLength = parsedTuple.length;
+        console.log('parseTupleString()', { actualLength, expectedLength }); // FIXME: remove
+        if (actualLength !== expectedLength) {
+            return undefined;
+        }
+    }
+
+    return parsedTuple;
+}
+
 
 export {
     parameterIsArrayType,
@@ -592,6 +661,7 @@ export {
     parameterTypeIsStringArray,
     parameterTypeIsUnsignedInt,
     parameterTypeIsUnsignedIntArray,
+    parameterTypeIsTupleStruct,
 
     parseAddressArrayString,
     parseAddressString,
@@ -602,4 +672,5 @@ export {
     parseStringArrayString,
     parseUintArrayString,
     parseUintString,
+    parseTupleString,
 };

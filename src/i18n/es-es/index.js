@@ -351,6 +351,9 @@ export default {
             incorrect_sigint_array_length: 'Debe haber { size } enteros firmados en la matriz',
             incorrect_strings_array_length: 'Debe haber { size } cadenas en la matriz',
             incorrect_unsigint_array_length: 'Debe haber { size } enteros sin firmar en la matriz',
+            incorrect_values_array_length: 'Debe haber { size } valores en la matriz',
+            tuple_struct_input_hint: 'Ingrese los valores de la tupla entre paréntesis rectos en el orden en que se definen en el contrato',
+            invalid_boolean_value: 'El valor ingresado no es un booleano',
 
             invalid_address_array_string: 'El valor ingresado no representa una matriz de direcciones',
             invalid_booleans_array_string: 'El valor ingresado no representa una matriz de bool',

@@ -385,5 +385,6 @@ const formatAbiFunctionLists = async () => {
 }
 .c-login-button {
     margin-bottom: 0.5rem;
+    margin-left: 0.5rem;
 }
 </style>

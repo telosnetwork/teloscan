@@ -323,6 +323,9 @@ export default {
             incorrect_sigint_array_length: 'Le tableau doit contenir { size } entiers signés',
             incorrect_strings_array_length: 'Le tableau doit contenir { size } chaînes de caractères',
             incorrect_unsigint_array_length: 'Le tableau doit contenir { size } entiers non signés',
+            incorrect_values_array_length: 'Il doit y avoir { size } valeurs dans le tableau',
+            tuple_struct_input_hint: 'Entrez les valeurs de la structure de tuple entre crochets dans l\'ordre défini dans le contrat',
+            invalid_boolean_value: 'La valeur saisie n\'est pas un booléen',
 
             invalid_address_array_string: 'La valeur saisie ne represente pas un tableau d\'adresses',
             invalid_booleans_array_string: 'La valeur saisie ne represente pas un tableau de booléens',

@@ -364,6 +364,9 @@ export default {
             incorrect_sigint_array_length: 'There should be { size } signed integers in the array',
             incorrect_strings_array_length: 'There should be { size } strings in the array',
             incorrect_unsigint_array_length: 'There should be { size } unsigned integers in the array',
+            incorrect_values_array_length: 'There must be { size } values in the array',
+            tuple_struct_input_hint: 'Enter the tuple values in square brackets in the order defined in the contract',
+            invalid_boolean_value: 'The entered value is not a boolean',
 
             invalid_address_array_string: 'Entered value does not represent an array of addresses',
             invalid_booleans_array_string: 'Entered value does not represent an array of bool',

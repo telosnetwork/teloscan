@@ -3,3 +3,10 @@ export interface AbiFunction {
     stateMutability: string;
     name: string;
 }
+
+export interface InputDescription {
+    type: string;
+    name: string;
+    internalType: string;
+    components?: InputDescription[];
+}

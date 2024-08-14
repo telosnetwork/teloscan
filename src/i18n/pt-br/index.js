@@ -350,6 +350,9 @@ export default {
             incorrect_sigint_array_length: 'Deve haver { size } inteiros com sinal na matriz',
             incorrect_strings_array_length: 'Deve haver { size } strings (sequência de caracteres) na matriz',
             incorrect_unsigint_array_length: 'Deve haver { size } inteiros sem sinal na matriz',
+            incorrect_values_array_length: 'Devem haver { size } valores na matriz',
+            tuple_struct_input_hint: 'Insira os valores da tupla entre colchetes na ordem definida no contrato',
+            invalid_boolean_value: 'O valor inserido não é um booleano',
 
             invalid_address_array_string: 'O valor inserido não representa uma matriz de endereços',
             invalid_booleans_array_string: 'O valor inserido não representa uma matriz de booleanos',
