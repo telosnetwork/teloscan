@@ -443,8 +443,8 @@ export default {
             write_functions: 'Funciones de escritura',
             unverified_contract: 'Contrato no verificado',
             verified_contract: 'Contrato verificado',
-            upload_abi_json: 'subir archivo JSON de ABI',
-            discard_abi_json: 'descartar JSON de ABI actual',
+            upload_abi_json: 'Subir archivo JSON de ABI',
+            discard_abi_json: 'Descartar JSON de ABI actual',
         },
         header: {
             address_copied: 'Dirección copiada al portapapeles',
