@@ -62,6 +62,12 @@ body.body--dark {
     a:hover {
         color: $a-hover-dark;
     }
+
+    .vjs-tree-node.is-highlight,.vjs-tree-node:hover{
+        background-color:#313436
+    }
+
+    
 }
 
 a {

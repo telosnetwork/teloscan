@@ -435,7 +435,7 @@ export default {
             use_erc721_abi: 'Use ERC721 ABI',
             use_erc1155_abi: 'Use ERC1155 ABI',
             abi_from_json: 'ABI from JSON',
-            paste_abi_json_here: 'Paste ABI JSON here',
+            paste_abi_json_here: 'Paste ABI JSON Here',
             abi_json_preview: 'ABI JSON Preview',
             provided_abi_invalid: 'Provided ABI is invalid',
             provided_json_invalid: 'Provided JSON is invalid',
