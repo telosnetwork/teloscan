@@ -1366,6 +1366,11 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
+"@download/blockies@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@download/blockies/-/blockies-1.0.3.tgz#9aea770f9de72f3f947f1b3a53ee1e92f8dc4a68"
+  integrity sha512-iGDh2M6pFuXg9kyW+U//963LKylSLFpLG5hZvUppCjhkiDwsYquQPyamxCQlLASYySS3gGKAki2eWG9qIHKCew==
+
 "@eosrio/hyperion-stream-client@^0.4.0-beta.5":
   version "0.4.0-beta.5"
   resolved "https://registry.yarnpkg.com/@eosrio/hyperion-stream-client/-/hyperion-stream-client-0.4.0-beta.5.tgz#5662775e1c0e097968ac9c1c3b0398925d2145fd"
