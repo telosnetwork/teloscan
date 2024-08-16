@@ -213,8 +213,6 @@ async function parseTransactions() {
                     continue;
                 }
 
-                addEmptyToCache(response.data.contracts, transaction);
-
                 const contract = await contractManager.getContract(transaction.to);
 
                 if (!contract) {
@@ -258,25 +256,6 @@ async function parseTransactions() {
             caption: e.message,
         });
         loading.value = false;
-    }
-}
-
-function addEmptyToCache(contracts: any, transaction: any){
-    let found_to = 0;
-    let found_from = 0;
-    for(const contract in contracts){
-        if(contract.toLowerCase() === transaction.to.toLowerCase()) {
-            found_to++;
-        }
-        if(contract.toLowerCase() === transaction.from.toLowerCase()) {
-            found_from++;
-        }
-    }
-    if(found_from === 0){
-        contractManager.addContractToCache(transaction.from, { 'address': transaction.from });
-    }
-    if(found_to === 0){
-        contractManager.addContractToCache(transaction.to, { 'address': transaction.to });
     }
 }
 
