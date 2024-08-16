@@ -29,9 +29,7 @@ export default {
             </q-avatar>
             <div class="c-token__info">
                 <div class="c-token__name-container" :title="element.name">
-                    <span>
-                        <div class="c-token__name">{{ this.token.name }}</div>
-                    </span>
+                    <div class="c-token__name">{{ this.token.name }}</div>
                     <AddressField
                         :truncate="16"
                         :address="element.address"
@@ -39,7 +37,6 @@ export default {
                         :useHighlight="false"
                         class="c-token__address"
                     />
-
                 </div>
                 <div class="c-token__numbers">
                     <div class="c-token__numbers-balance">
@@ -72,6 +69,7 @@ export default {
 
 <style lang="scss">
 .c-token {
+    overflow: auto;
     &__token-card {
         display: block;
     }
@@ -81,6 +79,7 @@ export default {
     &__token-card-avatar {
         margin: 0px 10px;
         height: auto;
+        flex-shrink: 0;
     }
     &__token-card-icon {
         width: 100% !important;
@@ -88,11 +87,14 @@ export default {
     }
     &__info {
         flex-grow: 1;
+        min-width: 0;
     }
     &__name-container {
         display: flex;
         flex-direction: column;
         align-items: baseline;
+        max-width: 100%;
+        overflow: hidden;
     }
     &__name {
         font-size: 1.25rem;
@@ -102,6 +104,7 @@ export default {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        max-width: 100%;
     }
     &__address {
         display: block;
