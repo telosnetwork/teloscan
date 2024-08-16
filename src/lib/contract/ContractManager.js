@@ -4,10 +4,10 @@ import axios from 'axios';
 import { getTopicHash } from 'src/lib/utils';
 import { ERC1155_TRANSFER_SIGNATURE, TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures.js';
 import { erc1155Abi, erc721MetadataAbi } from 'src/lib/abi';
+import { useChainStore } from 'src/antelope/mocks/ChainStore';
 const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 const systemContractList =
     'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json';
-import { useChainStore } from 'src/antelope';
 
 class AddressCacheManager {
     constructor() {
