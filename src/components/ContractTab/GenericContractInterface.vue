@@ -340,7 +340,7 @@ const formatAbiFunctionLists = async () => {
                                 <FunctionInterface
                                     :abi="func"
                                     :contract="selectedContract"
-                                    :write="true"
+                                    :write="displayWriteFunctions"
                                     :group="displayWriteFunctions ? 'write' : 'read'"
                                     :run-label="displayWriteFunctions ? 'Write' : 'Query'"
                                 />
