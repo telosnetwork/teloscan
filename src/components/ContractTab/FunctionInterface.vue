@@ -37,7 +37,7 @@ interface Error {
 }
 
 export default defineComponent({
-    name: 'FunctionInterfaceNew',
+    name: 'FunctionInterface',
     components: {
         ...asyncInputComponents,
         TransactionField,
@@ -219,6 +219,7 @@ export default defineComponent({
             this.showLoginModal = true;
         },
         async run() {
+            console.log('run');
             if (!this.isLoggedIn && this.write){
                 this.login();
                 return;
@@ -249,6 +250,7 @@ export default defineComponent({
 
                 return await this.runEVM(opts);
             } catch (e) {
+                console.error(e);
                 this.result = (e as Error).message;
             }
 

@@ -2,7 +2,6 @@
 import { watch, defineProps, ref, toRaw } from 'vue';
 import { OutputValue, OutputType, OutputResult, OutputData } from 'src/types';
 
-
 const props = defineProps<{
     response: OutputValue[];
     outputs: OutputType[];
@@ -24,21 +23,45 @@ function processSimpleOutputs(values: OutputValue[], outputs: OutputType[]): Out
 
 function processNotExpectedOutputs(response: OutputValue[], outputs: OutputType[]): OutputResult {
     const name: string = outputs[0].name || 'response';
-    return { [name]: response } as unknown as OutputResult;
+    return {
+        [name]: {
+            value: response,
+            type: outputs[0].type,
+        },
+    } as unknown as OutputResult;
+}
+
+function processOutputResponsesArray(responses: OutputResult[], output: OutputType): OutputResult {
+    const list = [] as OutputResult[];
+    const tupleOutput = { ...output, type: 'tuple' } as OutputType;
+    responses.forEach((response) => {
+        const processed:OutputResult = processOutputResponse(response as unknown as OutputValue[], [tupleOutput]);
+        list.push(processed);
+    });
+
+    return {
+        [output.name || 'response']: list,
+    } as unknown as OutputResult;
 }
 
 function processOutputResponse(response: OutputValue[], outputs: OutputType[]): OutputResult {
-    if (outputs.length === 1 && response.length !== 1) {
-        if (outputs[0].type.includes('tuple')) {
+    if (response.length !== 1 && outputs.length === 1) {
+        if (outputs[0].type === 'tuple') {
             if (outputs[0].components) {
                 return processOutputResponse(response, outputs[0].components);
+            } else {
+                return processNotExpectedOutputs(response, outputs);
+            }
+        } else if (outputs[0].type === 'tuple[]') {
+            if (outputs[0].components) {
+                return processOutputResponsesArray(response as unknown as OutputResult[], outputs[0]);
             } else {
                 return processNotExpectedOutputs(response, outputs);
             }
         } else {
             return processNotExpectedOutputs(response, outputs);
         }
-    } else if (outputs.length === response.length) {
+    } else if (response.length === outputs.length) {
         return processSimpleOutputs(response, outputs);
     } else {
         return processNotExpectedOutputs(response, outputs);
@@ -65,10 +88,14 @@ function formatOutput(output: OutputResult, indentLevel = 1): string {
         } else if (data.type === 'address') {
             json += `${indent}${key}: <a href="/address/${data.value}">${data.value}</a>`;
         } else if (data.type === 'address[]') {
-            const addresses = data.value as string[];
+            const addresses = (typeof data.value === 'string' ? [data.value] : data.value) as string[];
             json += `${indent}${key}: [${addresses.map(address => `<a href="/address/${address}">${address}</a>`).join(', ')}]`;
         } else {
-            json += `${indent}${key}: ${data.value}`;
+            if (Array.isArray(data.value)) {
+                json += `${indent}${key}: [${data.value.join(', ')}]`;
+            } else {
+                json += `${indent}${key}: ${data.value}`;
+            }
         }
     }
 
@@ -89,9 +116,7 @@ watch(props, () => {
 
 <style lang="scss">
 .c-function-output-viewer {
-    &__json {
-        white-space: pre-wrap;
-        word-wrap: break-word;
-    }
+    overflow: auto;
+    @include scroll-bar;
 }
 </style>
