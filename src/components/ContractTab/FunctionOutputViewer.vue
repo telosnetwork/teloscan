@@ -116,9 +116,7 @@ watch(props, () => {
 
 <style lang="scss">
 .c-function-output-viewer {
-    &__json {
-        white-space: pre-wrap;
-        word-wrap: break-word;
-    }
+    overflow: auto;
+    @include scroll-bar;
 }
 </style>
