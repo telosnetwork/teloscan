@@ -240,14 +240,14 @@ const formatAbiFunctionLists = async () => {
         </div>
 
         <div v-if="selectedAbi === abiOptions.custom" class="row q-mb-lg">
-            <div class="col-12">
+            <div v-if="!customAbiIsValidJSON" class="col-12">
                 <div class="row">
                     <div class="col-12 col-sm-8 col-lg-9">
                         <q-input
                             v-model="customAbiDefinition"
                             clearable
                             name="custom-abi"
-                            label="Paste ABI JSON here"
+                            :label="$t('components.contract_tab.paste_abi_json_here')"
                             class="q-pb-lg"
                             autocomplete="off"
                             type="text"
@@ -258,7 +258,7 @@ const formatAbiFunctionLists = async () => {
                             v-model="fileModel"
                             outlined
                             name="custom-abi-file"
-                            label="upload ABI JSON file"
+                            :label="$t('components.contract_tab.upload_abi_json')"
                             class="abi-json-uploader q-ml-md text-center"
                             accept=".json"
                             @input="uploadFile"
@@ -266,26 +266,39 @@ const formatAbiFunctionLists = async () => {
                     </div>
                 </div>
             </div>
+            <div v-if="customAbiIsValidJSON" class="col-12">
+                <q-expansion-item
+                    class="shadow-2 q-mb-md"
+                >
+                    <template v-slot:header>
+                        <div class="c-gcontract-interface__abi_expansion_head">
+                            <span>{{ $t('components.contract_tab.abi_json_preview') }}</span>
+                            <q-icon
+                                name="close"
+                                size="sm"
+                                class="clickable"
+                                @click.stop="reset"
+                            >
+                                <q-tooltip>{{ $t('components.contract_tab.discard_abi_json') }}</q-tooltip>
+                            </q-icon>
+                        </div>
+                    </template>
+
+                    <q-card>
+                        <div class="q-pa-md">
+                            <VueJsonPretty
+                                :data="JSON.parse(customAbiDefinition)"
+                                :depth="1"
+                                expanded
+                            />
+                        </div>
+                    </q-card>
+                </q-expansion-item>
+            </div>
             <div class="col-sm-12">
                 <template v-if="!!customAbiDefinition">
-                    <template v-if="customAbiIsValidJSON">
-                        <p class="q-mb-sm">
-                            {{ $t('components.contract_tab.abi_json_preview') }}
-                        </p>
-                        <VueJsonPretty
-                            :data="JSON.parse(customAbiDefinition)"
-                            :depth="1"
-                            expanded
-                        />
-                        <p
-                            v-if="!showAbiFunctions"
-                            class="text-negative"
-                        >
-                            {{ $t('components.contract_tab.provided_abi_invalid') }}
-                        </p>
-                    </template>
                     <p
-                        v-else
+                        v-if="!customAbiIsValidJSON"
                         class="text-negative"
                     >
                         {{ $t('components.contract_tab.provided_json_invalid') }}
@@ -327,7 +340,7 @@ const formatAbiFunctionLists = async () => {
                                 <FunctionInterface
                                     :abi="func"
                                     :contract="selectedContract"
-                                    :write="true"
+                                    :write="displayWriteFunctions"
                                     :group="displayWriteFunctions ? 'write' : 'read'"
                                     :run-label="displayWriteFunctions ? 'Write' : 'Query'"
                                 />
@@ -378,6 +391,16 @@ const formatAbiFunctionLists = async () => {
             background-color: var(--active-tab-bg-color);
         }
     }
+
+    &__abi_expansion_head {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
 }
 .abi-json-uploader .q-field__label {
     text-align: center;
@@ -385,5 +408,6 @@ const formatAbiFunctionLists = async () => {
 }
 .c-login-button {
     margin-bottom: 0.5rem;
+    margin-left: 0.5rem;
 }
 </style>
