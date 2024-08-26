@@ -2,7 +2,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { toChecksumAddress } from 'src/lib/utils';
 import { TokenList } from 'src/types';
 import axios from 'axios';
 
@@ -98,6 +97,7 @@ const resolveIcon = (entry: SearchResultToken): string => {
 };
 
 const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
+    console.log('convertRawToProcessedResult()', entry);
     const address = entry.address ?? NULL_ADDRESS;
     switch (resolveCategory(entry)) {
     case 'contract':
@@ -274,9 +274,6 @@ const extractCategoryList = (): SearchResultCategory[] =>
 
 const filterResults = (results: SearchResult[]): SearchResult[] => results.filter((result) => {
     let accepted = true;
-    if (result.category === 'address') {
-        accepted = result.address === toChecksumAddress(result.address);
-    }
     if (accepted) {
         return accepted;
     } else {
