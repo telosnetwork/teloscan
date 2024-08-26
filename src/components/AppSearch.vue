@@ -97,7 +97,6 @@ const resolveIcon = (entry: SearchResultToken): string => {
 };
 
 const convertRawToProcessedResult = (entry: SearchResultRaw): SearchResult => {
-    console.log('convertRawToProcessedResult()', entry);
     const address = entry.address ?? NULL_ADDRESS;
     switch (resolveCategory(entry)) {
     case 'contract':
