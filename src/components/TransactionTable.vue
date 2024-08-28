@@ -283,7 +283,7 @@ async function getPath() {
     path += '&includeAbi=true';
 
     if (props.block) {
-        path += `&startBlock=${props.block}&endBlock=${props.block}`;
+        path += `&block=${props.block}`;
     }
 
     return path;
