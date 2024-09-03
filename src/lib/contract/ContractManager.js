@@ -66,6 +66,8 @@ class AddressCacheManager {
             this.contractInfoByNetwork[network][addressLower] = info;
             this.saveToLocalStorage();
         }
+
+        this.removeNullAddress(address);
     }
 
     exists(address) {
@@ -80,7 +82,7 @@ class AddressCacheManager {
         return this.contractInfoByNetwork[network] && this.contractInfoByNetwork[network][addressLower];
     }
 
-    removeAddress(address) {
+    removeNullAddress(address) {
         const addressLower = typeof address === 'string' ? address.toLowerCase() : '';
         const network = this.getCurrentNetwork();
         if (this.addressesByNetwork[network]) {
@@ -299,10 +301,11 @@ export default class ContractManager {
             return;
         }
         let contract = this.factory.buildContract(contractData);
+
         if(
-            typeof this.getNetworkContract(index) === 'undefined'
-            || contract.abi?.length > 0 && !this.getNetworkContract(index).abi
-            || contract.abi?.length > 0 && contract.abi.length > this.getNetworkContract(index).abi?.length
+            !this.getNetworkContract(index) && contract?.name
+            || contract.abi?.length > 0 && !this.getNetworkContract(index)?.abi
+            || contract.abi?.length > 0 && contract.abi.length > (this.getNetworkContract(index)?.abi?.length || 0)
         ){
             this.setNetworkContract(index, contract);
         }
