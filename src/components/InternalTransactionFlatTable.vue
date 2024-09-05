@@ -441,7 +441,8 @@ export default {
             this.loading = true;
             this.rows = [];
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
-            let result = await this.fetchInternalTransactions();
+            const path = this.getPath(props);
+            let result = await this.$indexerApi.get(path);
             if (this.total === null) {
                 this.pagination.rowsNumber = result.results.length;
             }
