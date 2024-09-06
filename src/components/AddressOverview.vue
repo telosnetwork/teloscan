@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
-import { WEI_PRECISION } from 'src/lib/utils';
 import { prettyPrintFiatBalance } from 'src/antelope/wallets/utils';
 import { useChainStore } from 'src/antelope';
 import { SystemBalance } from 'src/lib/balance-utils';
@@ -27,7 +26,6 @@ function getBalanceDisplay(balance: string, symbol: string) {
 }
 
 const systemToken = useChainStore().currentChain.settings.getSystemToken();
-
 </script>
 
 <template>
@@ -46,11 +44,6 @@ const systemToken = useChainStore().currentChain.settings.getSystemToken();
                     width="18"
                 >
                 {{ getBalanceDisplay(props.balance.tokenQty, systemToken.symbol) }}
-                <ValueField
-                    :value="props.balance.tokenQty"
-                    :symbol="systemToken.symbol"
-                    :decimals="WEI_PRECISION"
-                />
             </div>
         </q-card-section>
         <q-card-section v-if="!loadingComplete" >
