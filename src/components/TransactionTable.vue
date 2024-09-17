@@ -527,7 +527,7 @@ onBeforeMount(() => {
                 <q-td key="date">
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
-                <q-td key="direction" >
+                <q-td v-if="accountAddress" key="direction">
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
                 <q-td key="from"  class="c-transaction-table__cell">
