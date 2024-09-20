@@ -60,7 +60,7 @@ function fetchLatestBlock() {
 }
 
 async function fetchTotalTransactions() {
-    const response = await indexerApi.get('/transactions?limit=0&next=-1&offset=0&includeAbi=false&includePagination=true&includeTransfers=false&full=false');
+    const response = await indexerApi.get('/transactions?limit=1&next=-1&offset=0&includeAbi=false&includePagination=true&includeTransfers=false&full=false');
     transactionsCount.value = response.data.total_count;
 }
 
