@@ -213,8 +213,6 @@ async function parseTransactions() {
                     continue;
                 }
 
-                addEmptyToCache(response.data.contracts, transaction);
-
                 const contract = await contractManager.getContract(transaction.to);
 
                 if (!contract) {
@@ -261,25 +259,6 @@ async function parseTransactions() {
     }
 }
 
-function addEmptyToCache(contracts: any, transaction: any){
-    let found_to = 0;
-    let found_from = 0;
-    for(const contract in contracts){
-        if(contract.toLowerCase() === transaction.to.toLowerCase()) {
-            found_to++;
-        }
-        if(contract.toLowerCase() === transaction.from.toLowerCase()) {
-            found_from++;
-        }
-    }
-    if(found_from === 0){
-        contractManager.addContractToCache(transaction.from, { 'address': transaction.from });
-    }
-    if(found_to === 0){
-        contractManager.addContractToCache(transaction.to, { 'address': transaction.to });
-    }
-}
-
 async function getPath() {
     const { page, rowsPerPage, descending } = pagination.value;
     const limit = rowsPerPage === 0 ? 50 : Math.max(Math.min(rowsPerPage, props.initialPageSize), 10);
@@ -304,7 +283,7 @@ async function getPath() {
     path += '&includeAbi=true';
 
     if (props.block) {
-        path += `&startBlock=${props.block}&endBlock=${props.block}`;
+        path += `&block=${props.block}`;
     }
 
     return path;
@@ -385,7 +364,7 @@ onBeforeMount(() => {
                     <div v-else-if="col.name==='value'" class="u-flex--center-y" @click="toggleDisplayDecimals">
                         <a>{{ col.label }}</a>
                         <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
-                        <q-tooltip anchor="bottom middle" self="bottom middle">
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
                             {{ $t('components.click_to_change_format') }}
                         </q-tooltip>
                     </div>
@@ -548,7 +527,7 @@ onBeforeMount(() => {
                 <q-td key="date">
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
-                <q-td key="direction" >
+                <q-td v-if="accountAddress" key="direction">
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
                 <q-td key="from"  class="c-transaction-table__cell">

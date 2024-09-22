@@ -7,7 +7,7 @@ export interface TransactionQueryData {
     }
 }
 
-export type OutputValue = string | string[] | BigNumber | number | boolean | null;
+export type OutputValue = string | string[] | BigNumber | BigNumber[] | number | number[] | boolean | boolean[] | null;
 
 export interface OutputType {
     name: string,
@@ -22,5 +22,5 @@ export interface OutputData {
 }
 
 export type OutputResult = {
-    [name: string]: OutputData | OutputResult
+    [name: string]: OutputData | OutputResult | OutputResult[];
 };

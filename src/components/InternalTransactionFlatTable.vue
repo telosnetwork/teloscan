@@ -84,250 +84,8 @@ export default {
             },
         ];
 
-        // this is a sample of the data that will be obtained from the new API
-        const sampleData = {
-            'code': 200,
-            'success': true,
-            'message': 'OK',
-            'contracts': {},
-            'results': [
-                {
-                    'blockHash': '0x195f9b576f76f70d270c31daf253fc6abadd27f85295b399951791a93de8d930',
-                    'address': null,
-                    'traceAddress': [6],
-                    'type': 'call',
-                    'error': null,
-                    'transactionHash': '0xd1267832099c93a38473a2d7c069ba1fb63ff4310cde8bfe033d0816efe237d2',
-                    'result': { 'gasUsed': '0x02b85f' },
-                    'transactionPosition': 0,
-                    'blockNumber': 196929646,
-                    'action': {
-                        'input': '0x',
-                        'gas': '0x0122e1',
-                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
-                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
-                        'value': '111',
-                        'callType': 'call',
-                    },
-                    'subtraces': 0,
-                    'timestamp': 1722496536000,
-                },
-                {
-                    'blockHash': '0xde07825a46d9f9f59f8d339d7328723cdd1252a5958da925d929955fab1968a6',
-                    'address': null,
-                    'traceAddress': [5],
-                    'type': 'call',
-                    'error': null,
-                    'transactionHash': '0xef8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a2579',
-                    'result': { 'gasUsed': '0x03c8e8' },
-                    'transactionPosition': 0,
-                    'blockNumber': 197640129,
-                    'action': {
-                        'input': '0x',
-                        'gas': '0x0189a6',
-                        'from': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
-                        'to': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
-                        'value': '1478185785293501154624',
-                        'callType': 'call',
-                    },
-                    'subtraces': 0,
-                    'timestamp': 1722496536000,
-                },
-                {
-                    'blockHash': '0x298f9b676f76f70d270c31daf253fc6abadd27f85295b399951791a93de8d123',
-                    'address': null,
-                    'traceAddress': [7],
-                    'type': 'call',
-                    'error': null,
-                    'transactionHash': '0xef8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a2579',
-                    'result': { 'gasUsed': '0x02b85f' },
-                    'transactionPosition': 0,
-                    'blockNumber': 198929646,
-                    'action': {
-                        'input': '0x',
-                        'gas': '0x0222e1',
-                        'from': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
-                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
-                        'value': '250',
-                        'callType': 'call',
-                    },
-                    'subtraces': 0,
-                    'timestamp': 1722496536000,
-                },
-                {
-                    'blockHash': '0xde07825a46d9f9f59f8d339d7328723cdd1252a5958da925d929955fab1111a7',
-                    'address': null,
-                    'traceAddress': [8],
-                    'type': 'call',
-                    'error': null,
-                    'transactionHash': '0xcf8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a6789',
-                    'result': { 'gasUsed': '0x03c8e8' },
-                    'transactionPosition': 0,
-                    'blockNumber': 199640129,
-                    'action': {
-                        'input': '0x',
-                        'gas': '0x0389a6',
-                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
-                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
-                        'value': '1478185785293501154000',
-                        'callType': 'call',
-                    },
-                    'subtraces': 0,
-                    'timestamp': 1722496536000,
-                },
-                {
-                    'blockHash': '0x59f9b676f76f70d270c31daf253fc6abadd27f85295b399951791a93de8d1234',
-                    'address': null,
-                    'traceAddress': [9],
-                    'type': 'call',
-                    'error': null,
-                    'transactionHash': '0xcf8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a6789',
-                    'result': { 'gasUsed': '0x02b85f' },
-                    'transactionPosition': 0,
-                    'blockNumber': 200929646,
-                    'action': {
-                        'input': '0x',
-                        'gas': '0x0322e1',
-                        'from': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
-                        'to': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
-                        'value': '300',
-                        'callType': 'call',
-                    },
-                    'subtraces': 0,
-                    'timestamp': 1722496536000,
-                },
-                {
-                    'blockHash': '0xde07825a46d9f9f59f8d339d7328723cdd1252a5958da925d929955fab1968a6',
-                    'address': null,
-                    'traceAddress': [10],
-                    'type': 'call',
-                    'error': null,
-                    'transactionHash': '0xcf8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a6789',
-                    'result': { 'gasUsed': '0x03c8e8' },
-                    'transactionPosition': 0,
-                    'blockNumber': 201640129,
-                    'action': {
-                        'input': '0x',
-                        'gas': '0x0189a6',
-                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
-                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
-                        'value': '1478185785293501154200',
-                        'callType': 'call',
-                    },
-                    'subtraces': 0,
-                    'timestamp': 1722496536000,
-                },
-                {
-                    'blockHash': '0x29f9b576f76f70d270c31daf253fc6abadd27f85295b399951791a93de8d9301',
-                    'address': null,
-                    'traceAddress': [11],
-                    'type': 'call',
-                    'error': null,
-                    'transactionHash': '0xd1267832099c93a38473a2d7c069ba1fb63ff4310cde8bfe033d0816efe237d5',
-                    'result': { 'gasUsed': '0x02b85f' },
-                    'transactionPosition': 0,
-                    'blockNumber': 202929646,
-                    'action': {
-                        'input': '0x',
-                        'gas': '0x0122e1',
-                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
-                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
-                        'value': '200',
-                        'callType': 'call',
-                    },
-                    'subtraces': 0,
-                    'timestamp': 1722496536000,
-                },
-                {
-                    'blockHash': '0xde07825a46d9f9f59f8d339d7328723cdd1252a5958da925d929955fab1968a7',
-                    'address': null,
-                    'traceAddress': [12],
-                    'type': 'call',
-                    'error': null,
-                    'transactionHash': '0xef8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a2572',
-                    'result': { 'gasUsed': '0x03c8e8' },
-                    'transactionPosition': 0,
-                    'blockNumber': 203640129,
-                    'action': {
-                        'input': '0x',
-                        'gas': '0x0189a6',
-                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
-                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
-                        'value': '1478185785293501154300',
-                        'callType': 'call',
-                    },
-                    'subtraces': 0,
-                    'timestamp': 1722496536000,
-                },
-                {
-                    'blockHash': '0x49f9b576f76f70d270c31daf253fc6abadd27f85295b399951791a93de8d9310',
-                    'address': null,
-                    'traceAddress': [13],
-                    'type': 'call',
-                    'error': null,
-                    'transactionHash': '0xef8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a2572',
-                    'result': { 'gasUsed': '0x02b85f' },
-                    'transactionPosition': 0,
-                    'blockNumber': 204929646,
-                    'action': {
-                        'input': '0x',
-                        'gas': '0x0322e1',
-                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
-                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
-                        'value': '400',
-                        'callType': 'call',
-                    },
-                    'subtraces': 0,
-                    'timestamp': 1722496536000,
-                },
-                {
-                    'blockHash': '0xde07825a46d9f9f59f8d339d7328723cdd1252a5958da925d929955fab1968a8',
-                    'address': null,
-                    'traceAddress': [14],
-                    'type': 'call',
-                    'error': null,
-                    'transactionHash': '0xef8777abf72d0e9d376d564bc1fa3a2155cac93cc52fef7e863cfc522b5a2572',
-                    'result': { 'gasUsed': '0x03c8e8' },
-                    'transactionPosition': 0,
-                    'blockNumber': 205640129,
-                    'action': {
-                        'input': '0x',
-                        'gas': '0x0189a6',
-                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
-                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
-                        'value': '1478185785293501154400',
-                        'callType': 'call',
-                    },
-                    'subtraces': 0,
-                    'timestamp': 1722496536000,
-                },
-                {
-                    'blockHash': '0x99f9b576f76f70d270c31daf253fc6abadd27f85295b399951791a93de8d9320',
-                    'address': null,
-                    'traceAddress': [15],
-                    'type': 'call',
-                    'error': null,
-                    'transactionHash': '0x91267832099c93a38473a2d7c069ba1fb63ff4310cde8bfe033d0816efe237d7',
-                    'result': { 'gasUsed': '0x02b85f' },
-                    'transactionPosition': 0,
-                    'blockNumber': 206929646,
-                    'action': {
-                        'input': '0x',
-                        'gas': '0x0322e1',
-                        'from': '0xf9678db1ce83f6f51e5df348e2cc842ca51efec1',
-                        'to': '0xa30b5e3c8fee56c135aecb733cd708cc31a5657a',
-                        'value': '500',
-                        'callType': 'call',
-                    },
-                    'subtraces': 0,
-                    'timestamp': 1722496536000,
-                },
-            ],
-        };
-
 
         return {
-            sampleData,
             rows: [],
             loadingRows: [],
             columns,
@@ -428,14 +186,6 @@ export default {
                 },
             });
         },
-        async fetchInternalTransactions() {
-            // we simulate waiting 2 seconds and return the example data from the sampleData variable
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve(this.sampleData);
-                }, 2000);
-            });
-        },
         async onRequest(props) {
             const chainSettings = useChainStore().currentChain.settings;
             this.loading = true;
@@ -443,8 +193,11 @@ export default {
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             const path = this.getPath(props);
             let result = await this.$indexerApi.get(path);
-            if (this.total === null) {
-                this.pagination.rowsNumber = result.results.length;
+            if (!result.results && result.data?.results) {
+                result = result.data;
+            }
+            if (this.pagination.rowsNumber === 0 && result.total_count) {
+                this.pagination.rowsNumber = result.total_count;
             }
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
@@ -477,12 +230,6 @@ export default {
             });
 
             this.rows = totalEntries;
-
-            if (this.usePagination) {
-                this.pagination.rowsNumber = result.results.length;
-            } else {
-                this.rows = this.rows.slice(0, 25);
-            }
 
             this.loading = false;
         },
@@ -523,6 +270,7 @@ export default {
 </script>
 
 <template>
+<div><pre>loading: {{ loading }}</pre></div>
 <q-table
     v-model:pagination="pagination"
     class="c-inttrx-flat__table"
@@ -549,14 +297,10 @@ export default {
                 <template v-if="col.name === 'date'" >
                     <div class="c-inttrx-flat__header-age u-flex--center-y" @click="toggleDateFormat">
                         <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
-                        <q-icon
-                            class="info-icon"
-                            name="far fa-question-circle"
-                        >
-                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
-                                {{ $t('components.click_to_change_format') }}
-                            </q-tooltip>
-                        </q-icon>
+                        <q-icon class="info-icon" name="far fa-question-circle" />
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
                     </div>
                 </template>
                 <div v-else>

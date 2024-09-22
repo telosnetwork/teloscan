@@ -73,7 +73,7 @@ const selectTab = (tab: TabValue) => {
 </script>
 
 <template>
-<div class="c-contract">
+<q-card class="c-contract">
     <div v-if="abi" :key="contract.address + abi.length">
         <div class="flex justify-between items-center">
             <div class="c-contract__tab-container">
@@ -115,7 +115,7 @@ const selectTab = (tab: TabValue) => {
             :contract="contract"
         />
     </div>
-</div>
+</q-card>
 </template>
 
 <style lang='scss' scoped>

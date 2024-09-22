@@ -77,7 +77,7 @@ export default {
                 <div v-if="col.name==='balance'" class="u-flex--center-y" @click="toggleDisplayDecimals">
                     <a>{{ col.label }}</a>
                     <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
-                    <q-tooltip anchor="bottom middle" self="bottom middle">
+                    <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
                         {{ $t('components.click_to_change_format') }}
                     </q-tooltip>
                 </div>

@@ -14,16 +14,16 @@ const { t: $t } = useI18n();
 
 const left_options = ref<LatestContainerOptions>({
     blocks: {
-        title: 'Latest Blocks',
-        footer: 'View all Blocks',
+        title: $t('pages.home.latest_blocks'),
+        footer: $t('pages.home.view_all_blocks'),
         link: 'blocks',
     },
 });
 
 const right_options = ref<LatestContainerOptions>({
     transactions: {
-        title: 'Latest Transactions',
-        footer: 'View all Transactions',
+        title: $t('pages.home.latest_transactions'),
+        footer: $t('pages.home.view_all_transactions'),
         link: 'transactions',
     },
 });
