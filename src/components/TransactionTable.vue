@@ -274,7 +274,10 @@ async function getPath() {
             const firstKey = response.data.results[0]?.id || 0;
             pagination.value.initialKey = firstKey + 1;
         }
-        const currentKey = pagination.value.initialKey - ((page - 1) * rowsPerPage);
+        let currentKey = pagination.value.initialKey - ((page - 1) * rowsPerPage);
+        if (currentKey < 0) {
+            currentKey = rowsPerPage + 1;
+        }
         path += `&key=${currentKey}`;
     }
 
