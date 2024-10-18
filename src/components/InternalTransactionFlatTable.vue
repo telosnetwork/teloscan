@@ -5,8 +5,7 @@ import TransactionField from 'components/TransactionField';
 import AddressField from 'components/AddressField';
 import ValueField from 'components/ValueField.vue';
 import { getDirection } from 'src/lib/transaction-utils';
-import { WEI_PRECISION, formatWei } from 'src/lib/utils';
-import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+import { useChainStore } from 'src/antelope';
 
 export default {
     name: 'InternalTransactionFlatTable',
@@ -83,12 +82,8 @@ export default {
                 label: 'value',
                 align: 'right',
             },
-            {
-                name: 'count',
-                label: 'count',
-                align: 'right',
-            },
         ];
+
 
         return {
             rows: [],
@@ -96,7 +91,7 @@ export default {
             columns,
             transactions: [],
             pageSize: this.initialPageSize,
-            loading: false,
+            loading: true,
             pagination: {
                 sortBy: 'date',
                 descending: true,
@@ -118,15 +113,10 @@ export default {
         this.columns.filter(t => t.name === 'from')[0].label = this.$t('pages.from');
         this.columns.filter(t => t.name === 'to')[0].label = this.$t('pages.to');
         this.columns.filter(t => t.name === 'value')[0].label = this.$t('pages.value');
-        this.columns.filter(t => t.name === 'count')[0].label = this.$t('pages.count');
         this.columns.filter(t => t.name === 'direction')[0].label = this.$t('components.direction');
         if (!this.usePagination) {
             this.pagination.rowsPerPage = 25;
-            // we need to remove type and count columns
-            this.columns = this.columns.filter(col => col.name !== 'type');
-            this.columns = this.columns.filter(col => col.name !== 'count');
         }
-        this.loadAllExpanded();
         this.updateLoadingRows();
     },
     watch: {
@@ -197,143 +187,50 @@ export default {
             });
         },
         async onRequest(props) {
+            const chainSettings = useChainStore().currentChain.settings;
             this.loading = true;
-            // this line cleans the table for a second and the components have to be created again (clean)
             this.rows = [];
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             const path = this.getPath(props);
             let result = await this.$indexerApi.get(path);
-            if (!this.pagination.rowsNumber) {
-                this.pagination.rowsNumber = result.data.total_count;
+            if (!result.results && result.data?.results) {
+                result = result.data;
+            }
+            if (this.pagination.rowsNumber === 0 && result.total_count) {
+                this.pagination.rowsNumber = result.total_count;
             }
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
-            this.transactions = [...result.data.results];
-            this.transactions.forEach((transaction) => {
-                let timestamp = transaction.timestamp;
-                // This is a workaround to fix the timestamp issue (it should be fixed in the API)
-                // https://github.com/telosnetwork/teloscan-indexer/issues/234
-                if (typeof timestamp === 'string') {
-                    timestamp = new Date(timestamp).getTime() - new Date().getTimezoneOffset() * 60 * 1000;
-                    transaction.timestamp = timestamp;
-                }
-            });
 
-            let totalTraces = 0;
+            // Process the result data
             let processedTransactions = 0;
-            for (const transaction of this.transactions) {
-                try {
-                    transaction.transfer = false;
-                    transaction.value = formatWei(transaction.value.toLocaleString(0, { useGrouping: false }), 18);
-                    if (transaction.input === '0x') {
-                        continue;
-                    }
-                    if(!transaction.to) {
-                        continue;
-                    }
-                    const contract = await this.$contractManager.getContract(
-                        transaction.to,
-                    );
-                    if (!contract) {
-                        continue;
-                    }
-                    if (totalTraces >= 25 && !this.usePagination) {
-                        // we already have enough data
-                        break;
-                    }
-                    let traces = await this.$indexerApi.get(
-                        '/transaction/' + transaction.hash + '/internal?limit=1000&sort=ASC&offset=0&includeAbi=1',
-                    );
-                    for(const trace of [...traces.data.results]){
-                        trace.hash = trace.transactionHash;
-                    }
-                    transaction.traces = traces.data?.results;
-                    totalTraces += +transaction.traces?.length;
-                    transaction.contract = contract;
-                    transaction.contractAddress = contract.address;
-                    const parsedTransaction = await this.$contractManager.parseContractTransaction(
-                        transaction,
-                        transaction.input,
-                        contract,
-                    );
-                    transaction.parsedTransaction = parsedTransaction;
-                    // Get ERC20 transfer from main function call
-                    let signature = transaction.input.substring(0, 10);
-                    if (
-                        signature &&
-                        TRANSFER_SIGNATURES.includes(signature) &&
-                        transaction.parsedTransaction.args['amount']
-                    ) {
-                        let decimals = transaction.contract.properties?.decimals;
-                        if(transaction.contract && decimals){
-                            transaction.transfer = {
-                                'value': `${formatWei(transaction.parsedTransaction.args['amount'], decimals)}`,
-                                'symbol': transaction.contract.properties.symbol,
-                            };
-                        }
-                    }
-
+            let lastTransactionHash = '';
+            const totalEntries = [];
+            result.results.forEach((internalTrx) => {
+                if (internalTrx.transactionHash !== lastTransactionHash) {
                     processedTransactions++;
-                    const entries = [];
-                    transaction.traces.forEach((trace) => {
-                        const entry = {
-                            trx: processedTransactions % 2 === 0 ? 'even' : 'odd',
-                            hash: transaction.hash,
-                            blockNumber: transaction.blockNumber,
-                            timestamp: transaction.timestamp,
-                            type: trace.action.callType,
-                            from: trace.action.from,
-                            to: trace.action.to,
-                            value: trace.action.value,
-                            symbol: 'TLOS',
-                            decimals: WEI_PRECISION,
-                        };
-                        entries.push(entry);
-                    });
-
-                    if (this.usePagination) {
-                        const entry = {
-                            trx: processedTransactions % 2 === 0 ? 'even' : 'odd',
-                            hash: transaction.hash,
-                            blockNumber: transaction.blockNumber,
-                            timestamp: transaction.timestamp,
-                            type: entries[0].type,
-                            from: transaction.from,
-                            to: transaction.to,
-                            value: transaction.value,
-                            symbol: 'TLOS',
-                            decimals: WEI_PRECISION,
-                            traces: entries,
-                            expand: true,
-                        };
-                        this.rows.push(entry);
-                    } else {
-                        this.rows = this.rows.concat(entries);
-                        // we make sure there are no more than 25 rows.
-                        // If we have more than 25 rows, we discard the rest
-                        if (this.rows.length > 25) {
-                            this.rows = this.rows.slice(0, 25);
-                        }
-                    }
-
-                } catch (e) {
-                    console.error(
-                        `Failed to parse data for transaction, error was: ${e.message}`,
-                    );
-                    // notifiy user
-                    this.$q.notify({
-                        message: this.$t('components.failed_to_parse_transaction', { message: e.message }),
-                        color: 'negative',
-                        position: 'top',
-                        timeout: 5000,
-                    });
+                    lastTransactionHash = internalTrx.transactionHash;
                 }
-            }
-            this.rows.forEach((row) => {
-                row.expand = this.allExpanded;
+                const entry = {
+                    trx: processedTransactions % 2 === 0 ? 'even' : 'odd',
+                    hash: internalTrx.transactionHash,
+                    blockNumber: internalTrx.blockNumber,
+                    timestamp: internalTrx.timestamp,
+                    type: internalTrx.action.callType,
+                    from: internalTrx.action.from,
+                    to: internalTrx.action.to,
+                    value: internalTrx.action.value,
+                    symbol: chainSettings.getSystemToken().symbol,
+                    decimals: chainSettings.getSystemToken().decimals,
+                };
+                totalEntries.push(entry);
+
             });
+
+            this.rows = totalEntries;
+
             this.loading = false;
         },
         getPath(props) {
@@ -341,9 +238,9 @@ export default {
             let path;
             const filter = Object.assign({}, this.filter ? this.filter : {});
             if (this.address) {
-                path = `/address/${this.address}/transactions`;
+                path = `/address/${this.address}/internal`;
             } else {
-                path = '/transactions';
+                path = '/internal';
             }
             path += `?limit=${
                 rowsPerPage === 0 ? 25 : rowsPerPage
@@ -368,29 +265,12 @@ export default {
         toggleDateFormat() {
             this.showDateAge = !this.showDateAge;
         },
-        toggleAllExpanded() {
-            this.allExpanded = !this.allExpanded;
-            this.rows.forEach((row) => {
-                row.expand = this.allExpanded;
-            });
-            this.saveAllExpanded();
-        },
-        loadAllExpanded() {
-            // we look for the local Storage to see if the user has already expanded all the rows
-            const allExpanded = localStorage.getItem('allExpanded');
-            if (allExpanded) {
-                this.allExpanded = allExpanded === 'true';
-            }
-        },
-        saveAllExpanded() {
-            // we save the state of the allExpanded variable in the local storage
-            localStorage.setItem('allExpanded', this.allExpanded);
-        },
     },
 };
 </script>
 
 <template>
+<div><pre>loading: {{ loading }}</pre></div>
 <q-table
     v-model:pagination="pagination"
     class="c-inttrx-flat__table"
@@ -406,7 +286,7 @@ export default {
             class="c-inttrx-flat__footer"
         >
             <router-link class="c-inttrx-flat__footer-container" :to="{ name: 'txsinternal', query: { a: address } }">
-                <span class="c-inttrx-flat__footer-text"> See all transactions </span>
+                <span class="c-inttrx-flat__footer-text"> {{ $t('pages.transactions.see_all_transactions') }} </span>
                 <q-icon name="arrow_forward" class="c-inttrx-flat__footer-icon" />
             </router-link>
         </q-card-actions>
@@ -423,36 +303,17 @@ export default {
                         </q-tooltip>
                     </div>
                 </template>
-
-                <div v-else-if="col.name === 'count'">
-                    {{ col.label }}
-                    <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
-                        {{ $t('pages.internal_txns') }}
-                    </q-tooltip>
-                </div>
                 <div v-else>
                     {{ col.label }}
                 </div>
-            </q-th>
-            <q-th v-if="usePagination" auto-width>
-                <q-btn
-                    :icon="allExpanded ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-                    flat
-                    round
-                    dense
-                    @click="toggleAllExpanded()"
-                >
-                    <q-tooltip>{{ allExpanded ? $t('components.collapse_all') : $t('components.expand_all') }}</q-tooltip>
-                </q-btn>
             </q-th>
         </q-tr>
     </template>
     <template v-slot:body="props">
         <template v-if="loading">
             <q-tr>
-                <!-- we need to iterate 7 times if usePagination and 10 times if not -->
                 <q-td
-                    v-for="i in (usePagination ? 10 : 7)"
+                    v-for="i in (8)"
                     :key="i"
                 >
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
@@ -503,71 +364,6 @@ export default {
                         :decimals="props.row.decimals"
                     />
                 </q-td>
-                <q-td key="count" :props="props">
-                    {{ props.row.traces.length }}
-                </q-td>
-                <q-td v-if="usePagination" auto-width>
-                    <!-- we need a switch to expand the rows below -->
-                    <q-btn
-                        :icon="props.row.expand ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-                        flat
-                        round
-                        dense
-                        @click="props.row.expand = !props.row.expand"
-                    />
-                </q-td>
-            </q-tr>
-            <q-tr
-                v-for="(trace, index) in props.row.traces"
-                v-show="props.row.expand"
-                :key="`${trace.hash}-${index}`"
-                :props="props"
-                :class="props.row.trx"
-            >
-                <q-td key="hash" :props="props">
-                    <TransactionField :transaction-hash="trace.hash" :useHighlight="true"/>
-                </q-td>
-                <q-td key="block" :props="props">
-                    <BlockField :block="trace.blockNumber"/>
-                </q-td>
-                <q-td key="date" :props="props">
-                    <DateField :epoch="(trace.timestamp / 1000)" :force-show-age="showDateAge"/>
-                </q-td>
-                <q-td key="type" :props="props">
-                    {{ trace.type }}
-                </q-td>
-                <q-td key="from" :props="props">
-                    <AddressField
-                        v-if="trace.from"
-                        :key="trace.from"
-                        :address="trace.from"
-                        :truncate="12"
-                    />
-                </q-td>
-                <q-td key="direction" :props="props">
-                    <span
-                        :class="`direction ${getDirection(address, trace)}`"
-                    >
-                        {{ $t(`components.transaction.${getDirection(address, trace)}`).toUpperCase() }}
-                    </span>
-                </q-td>
-                <q-td key="to" :props="props">
-                    <AddressField
-                        v-if="trace.to"
-                        :key="trace.to"
-                        :address="trace.to"
-                        :truncate="12"
-                    />
-                </q-td>
-                <q-td key="value" :props="props">
-                    <ValueField
-                        :value="trace.value"
-                        :symbol="trace.symbol"
-                        :decimals="trace.decimals"
-                    />
-                </q-td>
-                <q-td key="count" :props="props" />
-                <q-td v-if="usePagination" auto-width/>
             </q-tr>
         </template>
     </template>
