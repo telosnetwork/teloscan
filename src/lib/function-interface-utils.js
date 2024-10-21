@@ -117,6 +117,15 @@ function parameterTypeIsUnsignedIntArray(type) {
 }
 
 /**
+ * Given a function interface type, returns true iff that type represents an signed integer, e.g. int32
+ * @param {string} type
+ * @returns {boolean}
+ */
+function parameterTypeSignedInt(type) {
+    return /^int\d+$/.test(type);
+}
+
+/**
  * Given a function interface type, returns true iff that type represents a tuple struct
  * @param {string} type
  * @returns {boolean}
@@ -150,7 +159,7 @@ function parameterIsArrayType(type) {
  * @returns {boolean}
  */
 function parameterIsIntegerType(type) {
-    return /^int\d+$/.test(type);
+    return /int\d+$/.test(type);
 }
 
 /**
@@ -187,13 +196,14 @@ function integerSizeValidator(prop, signed) {
  * @returns {boolean}
  */
 function inputIsComplex(type) {
-    return parameterIsIntegerType(type)         ||
+    return parameterTypeIsSignedInt(type)       ||
         parameterTypeIsAddress(type)            ||
         parameterTypeIsAddressArray(type)       ||
         parameterTypeIsBooleanArray(type)       ||
         parameterTypeIsBytes(type)              ||
         parameterTypeIsSignedIntArray(type)     ||
         parameterTypeIsStringArray(type)        ||
+        parameterTypeIsUnsignedInt(type)        ||
         parameterTypeIsUnsignedIntArray(type)   ||
         parameterTypeIsTupleStruct(type)        ||
         parameterTypeIsTupleStructArray(type);
@@ -723,7 +733,7 @@ function parseTupleArrayString(str, abi) {
 function createPlaceholderForTupleInput(componentDescription) {
     let placeholder = '[';
     for (let i = 0; i < +componentDescription.length; i++) {
-        if (parameterIsIntegerType(componentDescription[i].type)) {
+        if (parameterTypeIsInteger(componentDescription[i].type)) {
             placeholder += '-12';
         } else if (parameterTypeIsUnsignedInt(componentDescription[i].type)) {
             placeholder += '123';
@@ -802,6 +812,7 @@ export {
     parameterTypeIsSignedIntArray,
     parameterTypeIsString,
     parameterTypeIsStringArray,
+    parameterTypeSignedInt,
     parameterTypeIsUnsignedInt,
     parameterTypeIsUnsignedIntArray,
     parameterTypeIsTupleStruct,
