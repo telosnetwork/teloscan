@@ -1,0 +1,1 @@
+Verification successful! perfectly verified at Telos EVM Mainnet:0xc5F13247b1a2547Fd0f6C7696695cDFeB003027c
