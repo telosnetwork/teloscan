@@ -33,7 +33,7 @@ const loading = ref(true);
 const truncateHash = computed(() => $q.screen.width > 1024 && $q.screen.width <= 1240 ? 8 : 20);
 
 onBeforeMount(async () => {
-    const response = await indexerApi.get('transactions?limit=6');
+    const response = await indexerApi.get('transactions?limit=6&includeAbi=true');
     transactions.value = response.data.results;
     loading.value = false;
 });

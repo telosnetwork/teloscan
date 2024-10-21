@@ -14,6 +14,7 @@ const asyncInputComponents = {
     UnsignedIntInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntInput')),
     SignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/SignedIntArrayInput')),
     TupleStructInput: defineAsyncComponent(() => import('components/inputs/TupleStructInput')),
+    TupleStructArrayInput: defineAsyncComponent(() => import('components/inputs/TupleStructArrayInput')),
 };
 
 /**
@@ -125,6 +126,14 @@ function parameterTypeIsTupleStruct(type) {
     return type === 'tuple';
 }
 
+/**
+ * Given a function interface type, returns true iff that type represents an array of tuple structs
+ * @param {string} type
+ * @returns {boolean}
+ */
+function parameterTypeIsTupleStructArray(type) {
+    return /^tuple\[\d*]$/.test(type);
+}
 
 /**
  * Given a function interface type, returns true iff that type represents an array of any kind, e.g. string[] or uint8[]
@@ -141,7 +150,7 @@ function parameterIsArrayType(type) {
  * @returns {boolean}
  */
 function parameterIsIntegerType(type) {
-    return /int\d+$/.test(type);
+    return /^int\d+$/.test(type);
 }
 
 /**
@@ -178,14 +187,16 @@ function integerSizeValidator(prop, signed) {
  * @returns {boolean}
  */
 function inputIsComplex(type) {
-    return parameterIsIntegerType(type)     ||
-        parameterTypeIsAddress(type)        ||
-        parameterTypeIsAddressArray(type)   ||
-        parameterTypeIsBooleanArray(type)   ||
-        parameterTypeIsBytes(type)          ||
-        parameterTypeIsSignedIntArray(type) ||
-        parameterTypeIsStringArray(type)    ||
-        parameterTypeIsUnsignedIntArray(type);
+    return parameterIsIntegerType(type)         ||
+        parameterTypeIsAddress(type)            ||
+        parameterTypeIsAddressArray(type)       ||
+        parameterTypeIsBooleanArray(type)       ||
+        parameterTypeIsBytes(type)              ||
+        parameterTypeIsSignedIntArray(type)     ||
+        parameterTypeIsStringArray(type)        ||
+        parameterTypeIsUnsignedIntArray(type)   ||
+        parameterTypeIsTupleStruct(type)        ||
+        parameterTypeIsTupleStructArray(type);
 }
 
 /**
@@ -220,6 +231,8 @@ function getComponentForInputType(type) {
         return asyncInputComponents.UnsignedIntArrayInput;
     } else if (parameterTypeIsTupleStruct(type)) {
         return asyncInputComponents.TupleStructInput;
+    } else if (parameterTypeIsTupleStructArray(type)) {
+        return asyncInputComponents.TupleStructArrayInput;
     }
 
     return undefined;
@@ -350,7 +363,7 @@ function parseUintArrayString (str, expectedLength, expectedIntSize) {
  * Given a string, returns a BigNumber representation of that string iff it represents a solidity signed integer
  * and an expected size in bits is supplied
  *
- * @param {string} str - e.g. "12"
+ * @param {string} str - e.g. "-12"
  * @param {number} expectedSizeInBits - integer from 8 to 256, must be multiple of 8, e.g. 64 for int64
  * @returns {BigNumber|undefined}
  */
@@ -583,22 +596,33 @@ function parseStringArrayString(str, expectedLength) {
 }
 
 /**
- * Given a string, returns a string iff it is a valid JSON representation of a tuple struct (without checking the types)
+ * Given a string and a description (abi), returns a tuple struct iff the string is a valid JSON representation of a tuple
  *
  * @param str - JSON string representation of a tuple struct, e.g. '["abc", 23, 0x1234..12342]'
+ * @param abi - description of the tuple struct
  * @returns {string|undefined}
  */
-function parseTupleString(str, expectedLength) {
+function parseTupleString(str, abi) {
+    const parsedTuple = parseTupleStringWithUnquotedAddresses(str);
+    try {
+        return processTupleJson(parsedTuple, abi);
+    } catch {
+        return undefined;
+    }
+}
+
+/**
+ * Given a string, returns an JSON object representation of a tuple struct iff the string is a valid JSON representation
+ * It takes into account the possible unquoted addresses in the tuple struct
+ * @param {string} str - JSON string representation of a tuple struct, e.g. '["abc", 23, 0x1234..12342]'
+ */
+function parseTupleStringWithUnquotedAddresses(str) {
     let parsedTuple;
 
     try {
         parsedTuple = JSON.parse(str);
-        console.log('parseTupleString()', { parsedTuple }); // FIXME: remove
+        return parsedTuple;
     } catch {
-        // may be addresses in the tuple that are not quoted, therefore not valid JSON
-        // e.g. ["0x1234", 0x1234]
-        // we will try to identify the those cases, replace them with quoted addresses and try again
-        console.log('parseTupleString() failed first try'); // FIXME: remove
         const notQuotedAddressRegex = /(?<!['"])\b0x[a-fA-F0-9]{40}\b(?!['"])/g;
         const notQuotedAddresses = str.match(notQuotedAddressRegex);
 
@@ -619,25 +643,144 @@ function parseTupleString(str, expectedLength) {
 
         return undefined;
     }
+}
 
-    const valueIsTuple = Array.isArray(parsedTuple);
-    // TODO: validate tuple structure
-    console.log('parseTupleString()', { valueIsTuple }); // FIXME: remove
+/**
+ * Given an object and a description (abi), returns a tuple struct iff the object is a valid JSON representation of a tuple
+ * @param {object} json - JSON object representation of a tuple struct, e.g. { "0": "abc", "1": 23, "2": "0x1234..12342" }
+ * @param {object[]} abi - description of the tuple struct
+ * @returns {string|undefined}
+ */
+function processTupleJson(json, abi) {
+    if (Array.isArray(json) && json.length === abi.length) {
+        const parsed = [];
+        for (let i = 0; i < json.length; i++) {
+            const field = json[i];
+            const fieldAbi = abi[i];
+            const value = processTupleField(field, fieldAbi);
+            parsed.push(value);
+        }
+        return parsed;
+    } else {
+        throw new Error('Invalid tuple structure:\n' + JSON.stringify({ json, abi }, null, 4));
+    }
+}
 
-    if (!valueIsTuple) {
+/**
+ * Given a field and its abi, returns the processed field
+ * @param {string} field
+ * @param {object} fieldAbi
+ * @returns {string}
+ */
+function processTupleField(field, fieldAbi) {
+    const uintMatch = /^uint(\d+)$/.exec(fieldAbi.type);
+    const intMatch = /^int(\d+)$/.exec(fieldAbi.type);
+
+    if (uintMatch) {
+        const bits = parseInt(uintMatch[1], 10);
+        return parseUintString(field, bits);
+    } else if (intMatch) {
+        const bits = parseInt(intMatch[1], 10);
+        return parseSignedIntString(field, bits);
+    } else if (fieldAbi.type === 'address') {
+        return parseAddressString(field);
+    } else if (fieldAbi.type === 'bool') {
+        return parseBooleanString(field);
+    } else if (fieldAbi.type === 'string') {
+        return field;
+    } else if (fieldAbi.type === 'tuple') {
+        return parseTupleString(JSON.stringify(field), fieldAbi.components);
+    } else {
+        console.error('processTupleField() Unsupported tuple field type:', fieldAbi.type);
+        return field;
+    }
+}
+
+/**
+ * Given a string and a description (abi), returns an array of tuple structs iff the string is a valid JSON representation of a tuple array
+ * @param {string} str - JSON string representation of a tuple array, e.g. '[["abc", 23, 0x1234..12342], ["def", 45, 0x5678..56789]]'
+ * @param {object[]} abi - description of the tuple struct
+ */
+function parseTupleArrayString(str, abi) {
+    const parsedTupleArray = parseTupleStringWithUnquotedAddresses(str);
+    try {
+        const parsed = [];
+        for (let i = 0; i < parsedTupleArray.length; i++) {
+            const tupleStr = JSON.stringify(parsedTupleArray[i]);
+            parsed.push(parseTupleString(tupleStr, abi));
+        }
+        return parsed;
+    } catch {
         return undefined;
     }
+}
 
-    if (Number.isInteger(expectedLength)) {
-        const actualLength = parsedTuple.length;
-        console.log('parseTupleString()', { actualLength, expectedLength }); // FIXME: remove
-        if (actualLength !== expectedLength) {
-            return undefined;
+
+
+/**
+ * Given a function interface tuple input description, returns a placeholder string for that tuple input
+ */
+function createPlaceholderForTupleInput(componentDescription) {
+    let placeholder = '[';
+    for (let i = 0; i < +componentDescription.length; i++) {
+        if (parameterIsIntegerType(componentDescription[i].type)) {
+            placeholder += '-12';
+        } else if (parameterTypeIsUnsignedInt(componentDescription[i].type)) {
+            placeholder += '123';
+        } else if (parameterTypeIsSignedInt(componentDescription[i].type)) {
+            placeholder += '-123';
+        } else if (parameterTypeIsBoolean(componentDescription[i].type)) {
+            placeholder += 'true';
+        } else if (parameterTypeIsString(componentDescription[i].type)) {
+            placeholder += '"abc"';
+        } else if (parameterTypeIsAddress(componentDescription[i].type)) {
+            placeholder += '0x123...7890';
+        } else if (parameterTypeIsBytes(componentDescription[i].type)) {
+            placeholder += '0x123...234';
+        } else if (parameterTypeIsBooleanArray(componentDescription[i].type)) {
+            placeholder += '[true, false]';
+        } else if (parameterTypeIsStringArray(componentDescription[i].type)) {
+            placeholder += '["abc", "def"]';
+        } else if (parameterTypeIsAddressArray(componentDescription[i].type)) {
+            placeholder += '[0x123...7890, 0x123...7890]';
+        } else if (parameterTypeIsUnsignedIntArray(componentDescription[i].type)) {
+            placeholder += '[123, 456]';
+        } else if (parameterTypeIsSignedIntArray(componentDescription[i].type)) {
+            placeholder += '[-123, -456]';
+        } else if (parameterTypeIsTupleStruct(componentDescription[i].type)) {
+            placeholder += createPlaceholderForTupleInput(componentDescription[i].components);
+        } else if (parameterTypeIsTupleStructArray(componentDescription[i].type)) {
+            const expectedSize = getExpectedArrayLengthFromParameterType(componentDescription[i].type);
+            placeholder += createPlaceholderForTupleArrayInput(componentDescription[i].components, expectedSize);
+        }
+
+        if (i < +componentDescription.length - 1) {
+            placeholder += ', ';
         }
     }
-
-    return parsedTuple;
+    placeholder += ']';
+    return placeholder;
 }
+
+/**
+ * Given a function interface tuple array input description, returns a placeholder string for that tuple array input
+ */
+function createPlaceholderForTupleArrayInput(componentDescription, expectedSize) {
+    let placeholder = '[';
+    const size = +expectedSize > 0 ? expectedSize : 1;
+    for (let i = 0; i < size; i++) {
+        placeholder += createPlaceholderForTupleInput(componentDescription);
+        if (i < size - 1) {
+            placeholder += ', ';
+        }
+    }
+    if (expectedSize === -1) {
+        placeholder += ', ...';
+    }
+    placeholder += ']';
+    return placeholder;
+}
+
 
 
 export {
@@ -662,6 +805,7 @@ export {
     parameterTypeIsUnsignedInt,
     parameterTypeIsUnsignedIntArray,
     parameterTypeIsTupleStruct,
+    parameterTypeIsTupleStructArray,
 
     parseAddressArrayString,
     parseAddressString,
@@ -673,4 +817,10 @@ export {
     parseUintArrayString,
     parseUintString,
     parseTupleString,
+    parseTupleArrayString,
+
+    parseTupleStringWithUnquotedAddresses,
+
+    createPlaceholderForTupleInput,
+    createPlaceholderForTupleArrayInput,
 };

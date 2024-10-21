@@ -43,12 +43,11 @@ const props = defineProps({
 
 const displayName = ref('');
 const fullName = ref(toChecksumAddress(props.address));
-const contract = ref<any>(null);
+const displayInfo = ref<{ name:string, interfaces:string[], symbol?:string } | null>(null);
 const contractName = ref('');
 const logo = ref<any>(null);
 const tokenList = ref<any>(null);
 const checksum = ref('');
-const isToken = computed(() => contract.value?.isToken() ?? false);
 
 const restart = async () => {
     if (!props.address) {
@@ -56,7 +55,7 @@ const restart = async () => {
     }
     tokenList.value = await contractManager.getTokenList();
     checksum.value = toChecksumAddress(props.address);
-    await loadContract();
+    await loadDisplayInfo();
     await getDisplay();
 };
 
@@ -95,19 +94,17 @@ const getDisplay = async () => {
     if (contractName.value) {
         if(tokenList.value?.tokens){
             tokenList.value.tokens.forEach((token: any) => {
-                if(token.address.toLowerCase() === contract.value.address.toLowerCase()){
+                if(token.address.toLowerCase() === props.address.toLowerCase()){
                     logo.value = (token.logoURI);
                 }
             });
         }
-        logo.value = (logo.value === null && contract.value.getSupportedInterfaces().includes('erc20'))
+        logo.value = (logo.value === null && displayInfo.value?.symbol)
             ? ''
             : logo.value
         ;
-        const name = (isToken.value && contract.value.getProperties()?.symbol)
-            ? contract.value.getProperties().symbol
-            : contractName.value
-                ;
+        const name = (displayInfo.value?.symbol) ?? contractName.value;
+
         if(!name.startsWith('0x')){
             displayName.value = truncateText(name);
             return;
@@ -117,13 +114,13 @@ const getDisplay = async () => {
     displayName.value = truncateText(address, true);
 };
 
-const loadContract = async () => {
-    let contractObj = await contractManager.getContract(props.address) ?? { address: props.address };
+const loadDisplayInfo = async () => {
+    let info = await contractManager.getContractDisplayInfo(props.address);
 
-    if (contractObj && contractObj.abi?.length > 0) {
-        contractName.value = contractObj.getName() ?? contractObj.name ?? '';
+    if (info) {
+        contractName.value = info.name ?? '';
         fullName.value = contractName.value || fullName.value;
-        contract.value = contractObj;
+        displayInfo.value = info;
     }
 };
 
@@ -150,7 +147,7 @@ const loadContract = async () => {
             width="16px"
             height="auto"
         />
-        <q-icon v-else-if="contract && hideContractIcon == false" name="far fa-file-code" />
+        <q-icon v-else-if="displayInfo && hideContractIcon === false" name="far fa-file-code" />
         <span class="c-address-field__text">{{ displayName }}</span>
         <q-tooltip v-if="fullName !== displayName">{{ fullName }}</q-tooltip>
     </router-link>

@@ -4,14 +4,13 @@ import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { contractManager } from 'src/boot/telosApi';
-import { indexerApi } from 'src/boot/telosApi';
 import { evm } from 'src/boot/evm';
 import { toChecksumAddress } from 'src/lib/utils';
+import { SystemBalance, getSystemBalance } from 'src/lib/balance-utils';
 import { getIcon } from 'src/lib/token-utils';
-import Contract from 'src/lib/contract/Contract';
-import { BalanceQueryResponse, BalanceResult } from 'src/types/BalanceResult';
 import { Token } from 'src/types/Token';
 
+import Contract from 'src/lib/contract/Contract';
 import TransactionTable from 'components/TransactionTable.vue';
 import InternalTransactionFlatTable from 'components/InternalTransactionFlatTable.vue';
 import NftTransfersTable from 'components/NftTransfersTable.vue';
@@ -41,7 +40,7 @@ const accountLoading = ref(false);
 const title = ref('');
 const fullTitle = ref('');
 const telosAccount = ref('');
-const balance = ref('0');
+const balance = ref<SystemBalance>({ balance: '0', tokenQty: '0', fiatValue: 0 });
 const nonce = ref<number | null>(null);
 const contract = ref<Contract | null>(null);
 const tab = ref(tabs[0]);
@@ -94,18 +93,10 @@ async function loadAccount() {
     }
     accountLoading.value = true;
     const tokenList = await contractManager.getTokenList();
-    try {
-        const response: BalanceQueryResponse = await indexerApi.get(
-            `/account/${accountAddress.value}/balances?includeAbi=true`,
-            // `/account/${accountAddress.value}/balances?contract=___NATIVE_CURRENCY___&includeAbi=true`,
-        );
-        //TODO restore original api query when contract param query is fixed
-        const systemTokenResult = response.data.results.find((r : BalanceResult) => r.contract === '___NATIVE_CURRENCY___') as BalanceResult;
-
-        // balance.value = (response.data?.results?.length > 0) ? response.data.results[0].balance : '0';
-        balance.value = systemTokenResult ? systemTokenResult.balance : '0';
-    } catch (e) {
-        console.error('Could not get balance: ', e);
+    const fiatPrice = store.getters['chain/tlosPrice'];
+    const result = await getSystemBalance(accountAddress.value, fiatPrice);
+    if (result) {
+        balance.value = result;
     }
     contract.value = null;
     fullTitle.value = '';

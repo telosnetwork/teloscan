@@ -22,7 +22,7 @@ const showEmptyBlocks = ref(false);
             <q-toggle
                 v-model="showEmptyBlocks"
                 class="c-blocks__toggle"
-                label="display empty blocks"
+                :label="$t('pages.blocklist.display_empty_blocks')"
                 color="primary"
                 checked-icon="visibility"
                 unchecked-icon="visibility_off"

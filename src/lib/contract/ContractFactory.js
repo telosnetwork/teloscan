@@ -41,6 +41,11 @@ export default class ContractFactory {
                 }
             }
         }
+        // There are two possible metadata.json files. One has the abi in the root and the other has it in the output.abi
+        if (!Array.isArray(data.abi) && Array.isArray(data.abi?.output?.abi)) {
+            data.abi = data.abi.output.abi;
+        }
+
         return  new Contract({
             address: data.address,
             name: data.name,

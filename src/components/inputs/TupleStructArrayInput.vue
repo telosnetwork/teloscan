@@ -1,12 +1,17 @@
 <script>
 import {
+    createPlaceholderForTupleArrayInput,
+    parseTupleArrayString,
     parseTupleString,
-    createPlaceholderForTupleInput,
+    parseTupleStringWithUnquotedAddresses,
 } from 'src/lib/function-interface-utils';
+
 import BaseTextInput from 'components/inputs/BaseTextInput';
 
+// TODO: this is a copy of AddressArrayInput.vue, it needs to be implemented as tuple array input but for now it is a string array input to avoid errors
+
 export default {
-    name: 'TupleStructInput',
+    name: 'TupleStructArrayInput',
     components: {
         BaseTextInput,
     },
@@ -45,51 +50,52 @@ export default {
     }),
     async created() {
         // initialization of the translated texts
-        this.placeholder = this.createPlaceholder(this.componentDescription);
-        this.hint = this.$t('components.inputs.tuple_struct_input_hint');
+        this.placeholder = this.createPlaceholder(this.componentDescription, this.size);
+        this.hint = this.$t('components.inputs.str_input_hint');
     },
     computed: {
         rules() {
             const validateArrayLength = (value) => {
                 const sizeIsUnconstrained = [undefined, null, -1, '-1'].includes(this.size);
 
-                if ((sizeIsUnconstrained) || value === '') {
+                if ((sizeIsUnconstrained) || value === '[]') {
                     return true;
                 }
-
-                const abi = this.componentDescription;
-                const parsedValue = parseTupleString(value, abi);
-                return Array.isArray(parsedValue) && parsedValue.length === abi.length;
+                try {
+                    const json = parseTupleStringWithUnquotedAddresses(value);
+                    return Array.isArray(json) && json.length === +this.size;
+                } catch (e) {
+                    return true; // is not a problem of length
+                }
             };
 
             const incorrectArrayLengthMessage =
                 this.$t('components.inputs.incorrect_values_array_length', { size: +this.size });
 
-            const validateNoneEntryIsUndefined = (value, innerAbi) => {
-                const abi = innerAbi ? innerAbi : this.componentDescription;
-                if (value === '') {
-                    return true;
-                }
-                const parsedValue = typeof value === 'string' ? parseTupleString(value, abi) : value;
-
-                for (let i = 0; i < abi.length; i++) {
-                    if (parsedValue[i] === undefined) {
+            const validateFormat = (value) => {
+                const innerAbi = this.componentDescription;
+                try {
+                    const json = parseTupleStringWithUnquotedAddresses(value);
+                    if (!Array.isArray(json)) {
                         return false;
                     }
-                    if (abi[i].type === 'tuple') {
-                        if (!validateNoneEntryIsUndefined(parsedValue[i], abi[i].components)) {
+                    for (let i = 0; i < json.length; i++) {
+                        const parsedValue = parseTupleString(JSON.stringify(json[i]), innerAbi);
+                        if (!Array.isArray(parsedValue) || parsedValue.length !== innerAbi.length) {
                             return false;
                         }
                     }
+                } catch (e) {
+                    return false;
                 }
                 return true;
             };
 
-            const incorrectUndefinedEntryMessage = this.$t('components.inputs.incorrect_undefined_entry');
+            const incorrectFormattedEntryMessage = this.$t('components.inputs.incorrect_values_format');
 
             return [
                 val => validateArrayLength(val) || incorrectArrayLengthMessage,
-                val => validateNoneEntryIsUndefined(val) || incorrectUndefinedEntryMessage,
+                val => validateFormat(val) || incorrectFormattedEntryMessage,
             ];
         },
         shapedLabel() {
@@ -107,11 +113,11 @@ export default {
         },
     },
     methods: {
-        createPlaceholder(componentDescription) {
-            return createPlaceholderForTupleInput(componentDescription);
+        createPlaceholder(componentDescription, size) {
+            return createPlaceholderForTupleArrayInput(componentDescription, size);
         },
         shapedLabelType(componentDescription) {
-            let result = '(';
+            let result = '((';
             for (let i = 0; i < +componentDescription.length; i++) {
                 if (componentDescription[i].type === 'tuple') {
                     result += `${this.shapedLabelType(componentDescription[i].components)}`;
@@ -122,16 +128,13 @@ export default {
                     result += ', ';
                 }
             }
-            result += ')';
+            result += ')' + (this.size === -1 ? '[]' : `[${this.size}]`) + ')';
             return result;
         },
         handleChange(newValue) {
             if (newValue !== this.modelValue) {
                 this.$emit('update:modelValue', newValue);
-
-                const expectedSize = +this.size === -1 ? undefined : +this.size;
-                console.assert(expectedSize === this.componentDescription.length, { expectedSize, componentDescription: this.componentDescription });
-                const newParsed = parseTupleString(newValue, this.componentDescription);
+                const newParsed = parseTupleArrayString(newValue, this.componentDescription);
 
                 if (this.previousParsedValue !== newParsed) {
                     this.$emit('valueParsed', newParsed);

@@ -328,14 +328,10 @@ onMounted(() => {
                 >
                     <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
 
-                    <q-icon
-                        class="info-icon"
-                        name="far fa-question-circle"
-                    >
-                        <q-tooltip anchor="bottom middle" self="bottom middle">
-                            {{ $t('components.click_to_change_format') }}
-                        </q-tooltip>
-                    </q-icon>
+                    <q-icon class="info-icon" name="far fa-question-circle" />
+                    <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                        {{ $t('components.click_to_change_format') }}
+                    </q-tooltip>
                 </div>
                 <div
                     v-else-if="col.name==='value'"
@@ -344,7 +340,7 @@ onMounted(() => {
                 >
                     <a>{{ col.label }}</a>
                     <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
-                    <q-tooltip anchor="bottom middle" self="bottom middle">
+                    <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
                         {{ $t('components.click_to_change_format') }}
                     </q-tooltip>
                 </div>
@@ -457,14 +453,10 @@ onMounted(() => {
                 >
                     <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
 
-                    <q-icon
-                        class="info-icon"
-                        name="far fa-question-circle"
-                    >
-                        <q-tooltip anchor="bottom middle" self="bottom middle">
-                            {{ $t('components.click_to_change_format') }}
-                        </q-tooltip>
-                    </q-icon>
+                    <q-icon class="info-icon" name="far fa-question-circle" />
+                    <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                        {{ $t('components.click_to_change_format') }}
+                    </q-tooltip>
                 </div>
                 <div v-else class="u-flex--center-y">
                     {{ col.label }}
