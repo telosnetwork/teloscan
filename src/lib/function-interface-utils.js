@@ -733,12 +733,10 @@ function parseTupleArrayString(str, abi) {
 function createPlaceholderForTupleInput(componentDescription) {
     let placeholder = '[';
     for (let i = 0; i < +componentDescription.length; i++) {
-        if (parameterTypeIsInteger(componentDescription[i].type)) {
-            placeholder += '-12';
+        if (parameterTypeIsSignedInt(componentDescription[i].type)) {
+            placeholder += '-123';
         } else if (parameterTypeIsUnsignedInt(componentDescription[i].type)) {
             placeholder += '123';
-        } else if (parameterTypeIsSignedInt(componentDescription[i].type)) {
-            placeholder += '-123';
         } else if (parameterTypeIsBoolean(componentDescription[i].type)) {
             placeholder += 'true';
         } else if (parameterTypeIsString(componentDescription[i].type)) {
