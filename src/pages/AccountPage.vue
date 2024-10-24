@@ -138,13 +138,19 @@ async function loadAccount() {
 </script>
 
 <template>
-<div v-if="accountAddress && !accountLoading" :key="accountAddress" class="c-address q-pt-xl">
+<div v-if="accountAddress" :key="accountAddress" class="c-address q-pt-xl">
     <div class="row justify-between q-mb-lg">
         <div class="col-12">
             <div class="c-address__header">
                 <div class="c-address__header-text-container">
+                    <q-spinner
+                        v-if="accountLoading"
+                        class="c-address__header-spinner"
+                        color="primary"
+                        size="sm"
+                    />
                     <q-img
-                        v-if="contract && contract.supportedInterfaces?.includes('erc20')"
+                        v-else-if="contract && contract.supportedInterfaces?.includes('erc20')"
                         class="c-address__coin-icon"
                         :alt="contract.getName() + ' ERC20 token'"
                         :src="getIcon(contract.logoURI)"
@@ -452,6 +458,10 @@ async function loadAccount() {
         align-items: center;
         gap: 12px;
         flex-wrap: wrap;
+        &-spinner {
+            margin-bottom: 3px;
+        }
+
     }
 
     &__header-text-container {
