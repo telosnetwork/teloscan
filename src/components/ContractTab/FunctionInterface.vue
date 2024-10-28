@@ -202,93 +202,6 @@ export default defineComponent({
         },
     },
     methods: {
-        debug() { // FIXME: remove this method
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const getExampleValueForType = (input: { type: string; components?: { type: string; components?: any }[] }): string => {
-                const type = input.type;
-
-                // Verificar si es un array (tamaño fijo o variable)
-                const arrayMatch = type.match(/^(.+)\[(\d*)\]$/);
-                if (arrayMatch) {
-                    const baseType = arrayMatch[1];
-                    const sizeStr = arrayMatch[2]; // Puede ser una cadena vacía para arrays de tamaño variable
-                    const size = sizeStr ? parseInt(sizeStr, 10) : 1; // Por defecto, 1 para arrays de tamaño variable
-
-                    // Preparar el input base
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const baseInput = { type: baseType } as { type: string; components?: any };
-                    if (input.components) {
-                        baseInput.components = input.components;
-                    }
-
-                    // Generar el valor de ejemplo para el tipo base
-                    const baseValue = getExampleValueForType(baseInput);
-
-                    // Repetir el valor base según el tamaño del array
-                    const arrayValues = [];
-                    for (let i = 0; i < size; i++) {
-                        arrayValues.push(baseValue);
-                    }
-                    return `[${arrayValues.join(', ')}]`;
-                }
-
-                // Manejar los tipos básicos y otros casos
-                if (type === 'bool') {
-                    return 'false';
-                } else if (type === 'address') {
-                    return '0xA1F2aDC12cdB069406BFe51f31980324d757317C';
-                } else if (type === 'string') {
-                    return '"Hello"';
-                } else if (type.startsWith('bytes')) {
-                    // Manejar tipos bytesN
-                    if (type === 'bytes') {
-                        return '0x1234567890abcdef';
-                    } else if (type === 'bytes32') {
-                        return '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
-                    } else if (type === 'bytes16') {
-                        return '0x1234567890abcdef1234567890abcdef';
-                    } else if (type === 'bytes8') {
-                        return '0x1234567890abcdef';
-                    } else if (type === 'bytes4') {
-                        return '0x12345678';
-                    } else if (type === 'bytes2') {
-                        return '0x12';
-                    } else if (type === 'bytes1') {
-                        return '0x01';
-                    }
-                } else if (type.startsWith('uint') || type.startsWith('int')) {
-                    // Manejar tipos uintN e intN
-                    const numMatch = type.match(/^(u?)int(\d*)$/);
-                    if (numMatch) {
-                        const isUnsigned = numMatch[1] === 'u';
-                        if (isUnsigned) {
-                            return '123';
-                        } else {
-                            return '-123';
-                        }
-                    }
-                } else if (type === 'tuple') {
-                    const array: string[] = [];
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const abi = input.components as { type: string; components?: any }[];
-                    abi.forEach((component) => {
-                        array.push(getExampleValueForType(component));
-                    });
-                    return `[${array.join(', ')}]`;
-                }
-
-                console.error('Unknown type', type);
-                return '...';
-            };
-
-
-            // por daca input en abi, tomamos el type y creamos un valor de ejemplo para ese tipo y lo colocamos en this.params
-            this.inputModels = [];
-            this.abi.inputs.forEach((input: { type: string, components: {type:string}[] }) => {
-                this.inputModels.push(getExampleValueForType(input));
-            });
-
-        },
         showAmountDialog(param: string) {
             this.amountParam = param;
             this.amountDecimals = 18;
@@ -550,13 +463,6 @@ export default defineComponent({
         color="primary"
         icon="send"
         @click="run"
-    />
-    <!-- FIXME: remove the debug button -->
-    <q-btn
-        label="DEBUG"
-        class="run-button q-mb-md q-ml-md"
-        color="primary"
-        @click="debug"
     />
     <p class="text-negative output-container">
         {{ errorMessage }}
