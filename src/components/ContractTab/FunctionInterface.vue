@@ -21,12 +21,14 @@ import {
     parameterIsIntegerType,
     parameterTypeIsBoolean,
     parameterTypeIsSignedIntArray,
+    parameterTypeIsTupleStruct,
+    parameterTypeIsTupleStructArray,
     parameterTypeIsUnsignedIntArray,
 } from 'src/lib/function-interface-utils';
 import TransactionField from 'src/components/TransactionField.vue';
 import LoginModal from 'components/LoginModal.vue';
 import FunctionOutputViewer from 'components/ContractTab/FunctionOutputViewer.vue';
-import { OutputType, OutputValue } from 'src/types';
+import { OutputType, OutputValue, InputDescription } from 'src/types';
 
 interface Opts {
     value?: string;
@@ -124,9 +126,10 @@ export default defineComponent({
                 return [];
             }
 
-            const getExtraBindingsForType = ({ type, name }: {type: string, name: string}, index: number) => {
+            const getExtraBindingsForType = (input: InputDescription, index: number) => {
+                const { type, name, components } = input;
                 const label = `${name ? name : `Param ${index + 1}`}`;
-                const extras = {} as {[key:string]: string};
+                const extras = {} as {[key:string]: string | InputDescription[]};
 
                 // represents integer bits (e.g. uint256) for int types, or array length for array types
                 let size = undefined;
@@ -134,6 +137,8 @@ export default defineComponent({
                     size = getExpectedArrayLengthFromParameterType(type);
                 } else if (parameterIsIntegerType(type)) {
                     size = getIntegerBits(type);
+                } else if (parameterTypeIsTupleStruct(type) && components) {
+                    size = toRaw(components).length;
                 }
 
                 const result = type.match(/(\d+)(?=\[)/);
@@ -143,17 +148,22 @@ export default defineComponent({
                     extras['uint-size'] = intSize;
                 } else if (intSize && parameterTypeIsSignedIntArray(type)) {
                     extras['int-size'] = intSize;
+                } else if (parameterTypeIsTupleStruct(type) && components) {
+                    extras['componentDescription'] = toRaw(components);
+                } else if (parameterTypeIsTupleStructArray(type) && components) {
+                    extras['componentDescription'] = toRaw(components);
                 }
 
                 const defaultModelValue = parameterTypeIsBoolean(type) ? null : '';
 
-                return {
+                const bindings = {
                     ...extras,
                     label,
                     size,
                     modelValue: this.inputModels[index] ?? defaultModelValue,
                     name: label.toLowerCase(),
                 };
+                return bindings;
             };
 
             const handleModelValueChange = (type: string, index: number, value: string) => {
@@ -439,7 +449,7 @@ export default defineComponent({
             :key="index"
             v-bind="component.bindings"
             required="true"
-            class="q-pb-lg"
+            class="input-component q-pb-lg"
             @valueParsed="component.handleValueParsed(component.inputType, index, $event)"
             @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
         />

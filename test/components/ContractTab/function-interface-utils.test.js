@@ -145,6 +145,8 @@ describe('function-interface-utils', () => {
             expect(inputIsComplex('uint256'))    .toBe(true);
             expect(inputIsComplex('uint256[12]')).toBe(true);
             expect(inputIsComplex('uint256[]'))  .toBe(true);
+            expect(inputIsComplex('tuple'))      .toBe(true);
+            expect(inputIsComplex('tuple[]'))    .toBe(true);
         });
     });
 
