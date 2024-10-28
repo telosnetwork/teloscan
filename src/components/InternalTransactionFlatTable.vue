@@ -24,18 +24,16 @@ export default {
         page: {
             type: Number,
         },
-        pagesize: {
-            type: Number,
-        },
         filter: {
             type: Object,
             default: () => ({}),
         },
         initialPageSize: {
             type: Number,
-            default: 1,
+            default: 25,
         },
         usePagination: {
+            // when usePagination is false, we set the rowsPerPage to initialPageSize
             type: Boolean,
             default: true,
         },
@@ -84,19 +82,17 @@ export default {
             },
         ];
 
-
         return {
             rows: [],
             loadingRows: [],
             columns,
             transactions: [],
-            pageSize: this.initialPageSize,
             loading: true,
             pagination: {
                 sortBy: 'date',
                 descending: true,
                 page: 1,
-                rowsPerPage: 10,
+                rowsPerPage: 2,
                 rowsNumber: 0,
             },
             page_size_options: [10, 20, 50],
@@ -115,7 +111,8 @@ export default {
         this.columns.filter(t => t.name === 'value')[0].label = this.$t('pages.value');
         this.columns.filter(t => t.name === 'direction')[0].label = this.$t('components.direction');
         if (!this.usePagination) {
-            this.pagination.rowsPerPage = 25;
+            console.log('usePagination is false: ', this.initialPageSize);
+            this.pagination.rowsPerPage = this.initialPageSize;
         }
         this.updateLoadingRows();
     },
@@ -124,7 +121,7 @@ export default {
             handler(_pag) {
                 let pag = _pag;
                 let page = 1;
-                let size = this.page_size_options[0];
+                let size = this.usePagination ? this.page_size_options[0] : this.initialPageSize;
 
                 // we also allow to pass a single number as the page number
                 if (typeof pag === 'number') {
@@ -164,7 +161,7 @@ export default {
                     this.pagination.rowsPerPage = Number(size);
                 }
             } else {
-                this.pagination.rowsPerPage = 0;
+                this.pagination.rowsPerPage = this.initialPageSize;
             }
 
             this.updateLoadingRows();
@@ -173,6 +170,7 @@ export default {
             });
         },
         async onPaginationChange(props) {
+            console.log('onPaginationChange', { props }); // FIXME: remove this debug log
             const { page, rowsPerPage } = props.pagination;
 
             // we need to change the URL to keep the pagination state by changing the this.$route.query.page
@@ -187,6 +185,7 @@ export default {
             });
         },
         async onRequest(props) {
+            console.log('onRequest', props); // FIXME: remove this debug log
             const chainSettings = useChainStore().currentChain.settings;
             this.loading = true;
             this.rows = [];
@@ -234,17 +233,18 @@ export default {
             this.loading = false;
         },
         getPath(props) {
+            console.log('getPath(props)', { props });
             const { page, rowsPerPage, descending } = props.pagination;
             let path;
+            const limit = Math.max(rowsPerPage, this.page_size_options[0]);
+            console.assert(limit > 0, `Rows per page must be greater than 0, got ${limit}`);
+
             const filter = Object.assign({}, this.filter ? this.filter : {});
             if (this.address) {
-                path = `/address/${this.address}/internal`;
+                path = `/address/${this.address}/internal?limit=${limit}`;
             } else {
-                path = '/internal';
+                path = `/internal?limit=${limit}`;
             }
-            path += `?limit=${
-                rowsPerPage === 0 ? 25 : rowsPerPage
-            }`;
 
             if (filter.block) {
                 path += `&block=${filter.block}`;
@@ -260,17 +260,40 @@ export default {
 
             path += (!this.pagination.rowsNumber) ? '&includePagination=true' : '';  // We only need the count once
 
+            console.log('path:', path);
             return path;
         },
         toggleDateFormat() {
             this.showDateAge = !this.showDateAge;
         },
+        toggleAllExpanded() {
+            this.allExpanded = !this.allExpanded;
+            this.rows.forEach((row) => {
+                row.expand = this.allExpanded;
+            });
+            this.saveAllExpanded();
+        },
+        loadAllExpanded() {
+            // we look for the local Storage to see if the user has already expanded all the rows
+            const allExpanded = localStorage.getItem('allExpanded');
+            if (allExpanded) {
+                this.allExpanded = allExpanded === 'true';
+            }
+        },
+        saveAllExpanded() {
+            // we save the state of the allExpanded variable in the local storage
+            localStorage.setItem('allExpanded', this.allExpanded);
+        },
     },
 };
 </script>
 
+if(row.get("timeStamp") != null){
+    long epoch = FormatterUtils.getEpochFromSQLTimestamp(row.get("timeStamp").toString());
+    row.replace("timeStamp", epoch);
+}
+
 <template>
-<div><pre>loading: {{ loading }}</pre></div>
 <q-table
     v-model:pagination="pagination"
     class="c-inttrx-flat__table"
@@ -329,7 +352,7 @@ export default {
                     <BlockField :block="props.row.blockNumber"/>
                 </q-td>
                 <q-td key="date" :props="props">
-                    <DateField :epoch="(props.row.timestamp / 1000)" :force-show-age="showDateAge"/>
+                    <DateField :epoch="props.row.timestamp / 1000" :force-show-age="showDateAge"/>
                 </q-td>
                 <q-td key="type" :props="props">
                     {{ props.row.type }}

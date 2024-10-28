@@ -18,7 +18,7 @@ import TransactionDialog from 'components/TransactionDialog.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 
-import { Pagination, PaginationByKey } from 'src/types';
+import { PaginationByKey } from 'src/types';
 import { useStore } from 'vuex';
 
 const $q = useQuasar();
@@ -163,7 +163,7 @@ function setPagination(page: number, size: number, desc: boolean) {
     parseTransactions();
 }
 
-async function onPaginationChange(settings: { pagination: Pagination}) {
+async function onPaginationChange(settings: { pagination: { sortBy: string; descending: boolean; page: number; rowsPerPage: number; } }) {
     const { page, rowsPerPage, descending } = settings.pagination;
     pagination.value.page = page;
     pagination.value.rowsPerPage = rowsPerPage;
@@ -261,7 +261,8 @@ async function parseTransactions() {
 
 async function getPath() {
     const { page, rowsPerPage, descending } = pagination.value;
-    const limit = rowsPerPage === 0 ? 50 : Math.max(Math.min(rowsPerPage, props.initialPageSize), 10);
+    const limit = rowsPerPage;
+    console.assert(limit > 0, `Rows per page must be greater than 0, got ${limit}`);
     let path = '';
 
     if (props.accountAddress) {
