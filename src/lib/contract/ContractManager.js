@@ -387,10 +387,8 @@ export default class ContractManager {
         } else if (this.nullContractsManager.existsContract(addressLower)) {
             result = this.nullContractsManager.getContractInfo(addressLower);
         } else {
-            result = await this.getContract(addressLower);
-            if (result) {
-                result = this.nullContractsManager.getContractInfo(addressLower);
-            }
+            // We are going to always assume that if the address is a contract, it is already in the cache
+            // Because the indexer API should always return all involved contracts in a query response
         }
         return result;
     }

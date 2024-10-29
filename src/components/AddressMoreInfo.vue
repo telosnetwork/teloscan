@@ -38,40 +38,40 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-<q-card class="c-more-info">
+<q-card class="c-address-more-info">
     <q-card-section v-if="!loadingComplete" >
         <q-skeleton type="text" class="c-overview__skeleton" />
     </q-card-section>
     <q-card-section v-else>
-        <div class="c-more-info__section-label">
+        <div class="c-address-more-info__section-label">
             {{ $t('pages.last') }} {{ $t('pages.transaction_sent') }}
         </div>
         <TransactionField
             color="primary"
             :transaction-hash="lastTxn"
             :truncate="18"
-            class="c-more-info__value"
+            class="c-address-more-info__value"
         />
     </q-card-section>
     <q-card-section v-if="!loadingComplete" >
         <q-skeleton type="text" class="c-overview__skeleton" />
     </q-card-section>
     <q-card-section v-else>
-        <div class="c-more-info__section-label">
+        <div class="c-address-more-info__section-label">
             {{ $t('pages.first') }} {{ $t('pages.transaction_sent') }}
         </div>
         <TransactionField
             color="primary"
             :transaction-hash="firstTxn"
             :truncate="18"
-            class="c-more-info__value"
+            class="c-address-more-info__value"
         />
     </q-card-section>
 </q-card>
 </template>
 
 <style lang="scss">
-.c-more-info {
+.c-address-more-info {
     height:100%;
     &__section-label {
         font-weight: 600;
