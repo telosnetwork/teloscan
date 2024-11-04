@@ -7,6 +7,7 @@ import { contractManager } from 'src/boot/telosApi';
 import { evm } from 'src/boot/evm';
 import { toChecksumAddress } from 'src/lib/utils';
 import { SystemBalance, getSystemBalance } from 'src/lib/balance-utils';
+import { createIconFromData } from 'src/lib/blockies/blockies';
 import { getIcon } from 'src/lib/token-utils';
 import { Token } from 'src/types/Token';
 
@@ -155,6 +156,13 @@ async function loadAccount() {
                         :alt="contract.getName() + ' ERC20 token'"
                         :src="getIcon(contract.logoURI)"
                     />
+                    <img
+                        v-else
+                        :src="createIconFromData(accountAddress)"
+                        alt=""
+                        class="c-address__icon"
+                    >
+                    <!--
                     <q-icon
                         v-else-if="!contract"
                         name="account_circle"
@@ -165,6 +173,7 @@ async function loadAccount() {
                         :name="(contract.supportedInterfaces?.includes('erc721')) ? 'perm_media' : 'source'"
                         size="sm"
                     />
+                    -->
                     <span class="c-address__title">{{ title }}</span>
                     <span class="c-address__hex">{{ accountAddress }}</span>
                     <q-tooltip v-if="fullTitle" anchor="top middle" self="bottom middle">{{ fullTitle }} </q-tooltip>
@@ -419,6 +428,13 @@ async function loadAccount() {
 <style lang="scss">
 .c-address {
     @include page-container;
+
+    &__icon {
+        width: 22px;
+        height: 22px;
+        margin-right: 2px;
+        border-radius: 50%;
+    }
 
     &__info-container{
         margin-bottom: 2.5rem;
