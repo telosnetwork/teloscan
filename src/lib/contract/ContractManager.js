@@ -9,11 +9,10 @@ const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/mai
 const systemContractList =
     'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json';
 
+
 class AddressCacheManager {
     constructor() {
-        this.addressesByNetwork = {};
         this.contractInfoByNetwork = {};
-        this.maxAddresses = 1000;
         this.loadFromLocalStorage();
     }
 
@@ -22,35 +21,14 @@ class AddressCacheManager {
     }
 
     loadFromLocalStorage() {
-        const storedAddresses = localStorage.getItem('noContractAddressesByNetwork');
         const storedContractInfo = localStorage.getItem('contractInfoByNetwork');
-        if (storedAddresses) {
-            this.addressesByNetwork = JSON.parse(storedAddresses);
-        }
         if (storedContractInfo) {
             this.contractInfoByNetwork = JSON.parse(storedContractInfo);
         }
     }
 
     saveToLocalStorage() {
-        localStorage.setItem('noContractAddressesByNetwork', JSON.stringify(this.addressesByNetwork));
         localStorage.setItem('contractInfoByNetwork', JSON.stringify(this.contractInfoByNetwork));
-    }
-
-    addNullAddress(address) {
-        const addressLower = typeof address === 'string' ? address.toLowerCase() : '';
-        const network = this.getCurrentNetwork();
-        if (!this.addressesByNetwork[network]) {
-            this.addressesByNetwork[network] = [];
-        }
-
-        if (!this.exists(addressLower)) {
-            this.addressesByNetwork[network].push(addressLower);
-            if (this.addressesByNetwork[network].length > this.maxAddresses) {
-                this.addressesByNetwork[network] = this.addressesByNetwork[network].slice(-this.maxAddresses);
-            }
-            this.saveToLocalStorage();
-        }
     }
 
     addContractInfo(address, name, symbol = null) {
@@ -66,14 +44,6 @@ class AddressCacheManager {
             this.contractInfoByNetwork[network][addressLower] = info;
             this.saveToLocalStorage();
         }
-
-        this.removeNullAddress(address);
-    }
-
-    exists(address) {
-        const addressLower = typeof address === 'string' ? address.toLowerCase() : '';
-        const network = this.getCurrentNetwork();
-        return this.addressesByNetwork[network] && this.addressesByNetwork[network].includes(addressLower);
     }
 
     existsContract(address) {
@@ -82,35 +52,10 @@ class AddressCacheManager {
         return this.contractInfoByNetwork[network] && this.contractInfoByNetwork[network][addressLower];
     }
 
-    removeNullAddress(address) {
-        const addressLower = typeof address === 'string' ? address.toLowerCase() : '';
-        const network = this.getCurrentNetwork();
-        if (this.addressesByNetwork[network]) {
-            const index = this.addressesByNetwork[network].indexOf(addressLower);
-            if (index !== -1) {
-                this.addressesByNetwork[network].splice(index, 1);
-                this.saveToLocalStorage();
-            }
-        }
-    }
-
-    getAddresses() {
-        const network = this.getCurrentNetwork();
-        return this.addressesByNetwork[network] ? [...this.addressesByNetwork[network]] : [];
-    }
-
     getContractInfo(address) {
         const addressLower = typeof address === 'string' ? address.toLowerCase() : '';
         const network = this.getCurrentNetwork();
         return this.contractInfoByNetwork[network] ? this.contractInfoByNetwork[network][addressLower] : null;
-    }
-
-    clearAddresses() {
-        const network = this.getCurrentNetwork();
-        if (this.addressesByNetwork[network]) {
-            this.addressesByNetwork[network] = [];
-            this.saveToLocalStorage();
-        }
     }
 
     clearContractInfo() {
@@ -141,10 +86,7 @@ export default class ContractManager {
         if (!this.contracts[network]) {
             this.contracts[network] = {};
         }
-        if (this.nullContractsManager.exists(address)) {
-            return null;
-        }
-        return this.contracts[network][address.toLowerCase()];
+        return this.contracts[network][address.toLowerCase()] || null;
     }
 
     setNetworkContract(address, contract) {
@@ -153,9 +95,7 @@ export default class ContractManager {
             this.contracts[network] = {};
         }
         this.contracts[network][address.toLowerCase()] = contract;
-        if (contract === null) {
-            this.nullContractsManager.addNullAddress(address);
-        } else {
+        if (contract) {
             this.nullContractsManager.addContractInfo(address, contract.name, contract.properties?.symbol || null);
         }
     }
@@ -381,27 +321,21 @@ export default class ContractManager {
     }
     async getContractDisplayInfo(address) {
         const addressLower = typeof address === 'string' ? address.toLowerCase() : '';
-        let result;
-        if (this.nullContractsManager.exists(addressLower)) {
-            result = null;
-        } else if (this.nullContractsManager.existsContract(addressLower)) {
-            result = this.nullContractsManager.getContractInfo(addressLower);
+        if (this.nullContractsManager.existsContract(addressLower)) {
+            return this.nullContractsManager.getContractInfo(addressLower);
         } else {
             // We are going to always assume that if the address is a contract, it is already in the cache
             // Because the indexer API should always return all involved contracts in a query response
+            return null;
         }
-        return result;
     }
-    async getContract(address, force) {
+    async getContractForced(address) {
         if (address === null || typeof address !== 'string') {
             return;
         }
         const addressLower = address.toLowerCase();
 
-        if (!force && typeof this.getNetworkContract(addressLower) !== 'undefined') {
-            return this.getNetworkContract(addressLower);
-        }
-
+        // if this function is repeatedly called for the same address, wait for the first call to finish
         if (this.processing.includes(addressLower)) {
             await new Promise(resolve => setTimeout(resolve, 300));
             return await this.getNetworkContract(addressLower);
@@ -430,8 +364,28 @@ export default class ContractManager {
         if(index > -1){
             this.processing.splice(index, 1);
         }
-        return this.factory.buildContract(contract);
+        return this.getContract(address);
     }
+
+    async getContract(address, force) {
+        if (address === null || typeof address !== 'string') {
+            return null;
+        }
+
+        if (force) {
+            return await this.getContractForced(address);
+        }
+
+        const addressLower = address.toLowerCase();
+
+        const cashedContract = this.getNetworkContract(addressLower);
+        if (!force && cashedContract) {
+            return cashedContract;
+        }
+
+        return null;
+    }
+
     async getContractFromAbi(address, abi){
         return new ethers.Contract(address, abi, this.getEthersProvider());
     }
