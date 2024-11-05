@@ -156,10 +156,11 @@ async function loadAccount() {
                         :alt="contract.getName() + ' ERC20 token'"
                         :src="getIcon(contract.logoURI)"
                     />
+                    <!-- Blockies icon for address + {{accountAddress}} -->
                     <img
                         v-else
                         :src="createIconFromData(accountAddress)"
-                        alt=""
+                        :alt="`Blockies icon for address ${accountAddress}`"
                         class="c-address__icon"
                     >
                     <!--
