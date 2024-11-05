@@ -132,7 +132,7 @@ const setValues = async () => {
 
 <style lang="scss">
 .c-method {
-    width: 80px;
+    width: 150px;
     height: 24px;
     text-overflow: ellipsis;
     overflow: hidden;

@@ -591,7 +591,7 @@ const handleResultClick = (item: SearchResult): void => {
         <div class="c-search__results">
             <template
                 v-for="(entry, index) in searchResults"
-                :key="entry.address ?? entry.hash"
+                :key="(entry.address) ?? entry.hash"
             >
                 <div
                     v-if="shouldShowDivider(index)"
