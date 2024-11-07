@@ -11,8 +11,8 @@ import {
     SearchResultUnknown,
 } from 'src/types';
 
-import { createIcon } from '@download/blockies';
 import { computed } from 'vue';
+import { createIconFromData } from 'src/lib/blockies/blockies';
 
 const props = defineProps<{
     entry: SearchResult,
@@ -40,15 +40,7 @@ const item = {
     unknown: asUnknown(props.entry),
 };
 
-const createIconFromData = (data: string) => {
-    // https://github.com/download13/blockies
-    var imgData = createIcon({
-        seed: data,
-        size: 8,
-        scale: 3,
-    }).toDataURL();
-    return imgData;
-};
+
 
 const emit = defineEmits(['click']);
 
