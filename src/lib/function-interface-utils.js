@@ -13,7 +13,7 @@ const asyncInputComponents = {
     UnsignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntArrayInput')),
     UnsignedIntInput: defineAsyncComponent(() => import('components/inputs/UnsignedIntInput')),
     SignedIntArrayInput: defineAsyncComponent(() => import('components/inputs/SignedIntArrayInput')),
-    TupleStructInput: defineAsyncComponent(() => import('components/inputs/TupleStructInput')),
+    TupleStructInput: defineAsyncComponent(() => import('components/inputs/TupleStruct')),
     TupleStructArrayInput: defineAsyncComponent(() => import('components/inputs/TupleStructArrayInput')),
 };
 

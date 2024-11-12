@@ -13,22 +13,17 @@ import { EvmABI, EvmFunctionParam } from 'src/antelope/types';
 import { WEI_PRECISION } from 'src/antelope/wallets/utils';
 import {
     asyncInputComponents,
-    getComponentForInputType,
-    getExpectedArrayLengthFromParameterType,
-    getIntegerBits,
-    inputIsComplex,
-    parameterIsArrayType,
-    parameterIsIntegerType,
-    parameterTypeIsBoolean,
-    parameterTypeIsSignedIntArray,
-    parameterTypeIsTupleStruct,
-    parameterTypeIsTupleStructArray,
-    parameterTypeIsUnsignedIntArray,
 } from 'src/lib/function-interface-utils';
 import TransactionField from 'src/components/TransactionField.vue';
 import LoginModal from 'components/LoginModal.vue';
 import FunctionOutputViewer from 'components/ContractTab/FunctionOutputViewer.vue';
-import { OutputType, OutputValue, InputDescription } from 'src/types';
+import {
+    InputComponent,
+    OutputType,
+    OutputValue,
+    inputComponents,
+} from 'src/types';
+import { getComponentsForAbiInputs } from 'src/lib/function-interface-utils-ts';
 
 interface Opts {
     value?: string;
@@ -97,8 +92,12 @@ export default defineComponent({
             selectDecimals: decimalOptions[0],
             customDecimals: 0,                            // number
             value: '0',                                   // string
-            inputModels: [] as string[],                  // raw input values
-            params: [] as EvmFunctionParam[],             // parsed input values
+            missingInputs: true,                          // boolean
+            models: {
+                inputs: [] as string[],                   // raw input values
+                values: [] as EvmFunctionParam[],         // parsed input values
+            },
+
             valueParam: {
                 'name': 'value',
                 'type': 'amount',
@@ -121,87 +120,69 @@ export default defineComponent({
         functionABI(){
             return `${this.abi.name}(${this.abi.inputs.map((i: { type: never; }) => i.type).join(',')})`;
         },
-        inputComponents() {
-            if (!Array.isArray(this.abi?.inputs)) {
-                return [];
+        inputComponents(): inputComponents {
+            const components = getComponentsForAbiInputs(this.abi?.inputs, this.models) as unknown as inputComponents;
+            return components;
+        },
+        /* missingInputs() { // FIXME: remove
+            console.log('FunctionInterface.missingInputs() ...');
+            const inputs_length = this.abi.inputs.length;
+            const values_length = this.models.values.length;
+            if (inputs_length !== values_length) {
+                console.log('FunctionInterface.missingInputs()', { inputs_length, values_length }); // FIXME: remove
+                return true;
             }
 
-            const getExtraBindingsForType = (input: InputDescription, index: number) => {
-                const { type, name, components } = input;
-                const label = `${name ? name : `Param ${index + 1}`}`;
-                const extras = {} as {[key:string]: string | InputDescription[]};
-
-                // represents integer bits (e.g. uint256) for int types, or array length for array types
-                let size = undefined;
-                if (parameterIsArrayType(type)) {
-                    size = getExpectedArrayLengthFromParameterType(type);
-                } else if (parameterIsIntegerType(type)) {
-                    size = getIntegerBits(type);
-                } else if (parameterTypeIsTupleStruct(type) && components) {
-                    size = toRaw(components).length;
-                }
-
-                const result = type.match(/(\d+)(?=\[)/);
-                const intSize = result ? result[0] : undefined;
-
-                if (intSize && parameterTypeIsUnsignedIntArray(type)) {
-                    extras['uint-size'] = intSize;
-                } else if (intSize && parameterTypeIsSignedIntArray(type)) {
-                    extras['int-size'] = intSize;
-                } else if (parameterTypeIsTupleStruct(type) && components) {
-                    extras['componentDescription'] = toRaw(components);
-                } else if (parameterTypeIsTupleStructArray(type) && components) {
-                    extras['componentDescription'] = toRaw(components);
-                }
-
-                const defaultModelValue = parameterTypeIsBoolean(type) ? null : '';
-
-                const bindings = {
-                    ...extras,
-                    label,
-                    size,
-                    modelValue: this.inputModels[index] ?? defaultModelValue,
-                    name: label.toLowerCase(),
-                };
-                return bindings;
-            };
-
-            const handleModelValueChange = (type: string, index: number, value: string) => {
-                this.inputModels[index] = value;
-
-                if (!inputIsComplex(type)) {
-                    this.params[index] = value;
-                }
-            };
-            const handleValueParsed = (type: string, index: number, value: EvmFunctionParam) => {
-                if (inputIsComplex(type)) {
-                    this.params[index] = value;
-                }
-            };
-
-            return this.abi.inputs.map((input, index) => ({
-                bindings: getExtraBindingsForType(input, index),
-                is: getComponentForInputType(input.type),
-                inputType: input.type,
-                handleModelValueChange: (type: string, index: number, value: string) => handleModelValueChange(type, index, value),
-                handleValueParsed:      (type: string, index: number, value: EvmFunctionParam) => handleValueParsed(type, index, value),
-            }));
-        },
-        missingInputs() {
-            if (this.abi.inputs.length !== this.params.length) {
+            if (inputs_length !== values_length) {
                 return true;
             }
 
             for (let i = 0; i < this.abi.inputs.length; i++) {
-                if (['', null, undefined].includes(this.params[i] as never)) {
+                if (['', null, undefined].includes(this.models.values[i] as never)) {
+                    console.log('FunctionInterface.missingInputs()', { i, value: this.models.values[i] }); // FIXME: remove
                     return true;
                 }
             }
 
+            console.log('FunctionInterface.missingInputs()', { inputs_length, values_length }); // FIXME: remove
             return false;
         },
+        */
     },
     methods: {
+        valueParsed(inputType: string, index: number, value: EvmFunctionParam, component: InputComponent) {
+            console.log('FunctionInterface.valueParsed()', inputType, index, value); // FIXME: remove
+            component.handleValueParsed(inputType, index, value);
+            this.updateMissingInputs();
+        },
+        updateMissingInputs() {
+            console.log('FunctionInterface.updateMissingInputs() ...');
+            const inputs_length = this.abi.inputs.length;
+            const values_length = this.models.values.length;
+            if (inputs_length !== values_length) {
+                console.log('FunctionInterface.updateMissingInputs()', { inputs_length, values_length }); // FIXME: remove
+                this.missingInputs = true;
+                return true;
+            }
+
+            if (inputs_length !== values_length) {
+                this.missingInputs = true;
+                return true;
+            }
+
+            for (let i = 0; i < this.abi.inputs.length; i++) {
+                if (['', null, undefined].includes(this.models.values[i] as never)) {
+                    console.log('FunctionInterface.updateMissingInputs()', { i, value: this.models.values[i] }); // FIXME: remove
+                    this.missingInputs = true;
+                    return true;
+                }
+            }
+
+            const values = this.models.values;
+            console.log('FunctionInterface.updateMissingInputs()', { inputs_length, values_length, values }); // FIXME: remove
+            this.missingInputs = false;
+            return false;
+        },
         showAmountDialog(param: string) {
             this.amountParam = param;
             this.amountDecimals = 18;
@@ -217,7 +198,7 @@ export default defineComponent({
             if (typeof this.amountParam === 'string') {
                 this.value = integerAmount;
             } else {
-                this.params[this.amountParam] = integerAmount as never;
+                this.models.values[this.amountParam] = integerAmount as never;
             }
 
             this.clearAmount();
@@ -272,7 +253,7 @@ export default defineComponent({
         },
         runRead() {
             return this.getEthersFunction()
-                .then(func => func(...this.params)
+                .then(func => func(...this.models.values)
                     .then((response: OutputValue | OutputValue[]) => {
                         this.result = response as unknown as string;
                         this.response = Array.isArray(response) ? response : [response];
@@ -289,8 +270,8 @@ export default defineComponent({
             const contractInstance = toRaw(await this.contract.getContractInstance());
             const func = contractInstance.populateTransaction[this.functionABI];
             const gasEstimater = contractInstance.estimateGas[this.functionABI];
-            const gasLimit = await gasEstimater(...this.params, Object.assign({ from: this.address }, opts));
-            const unsignedTrx = await func(...this.params, opts);
+            const gasLimit = await gasEstimater(...this.models.values, Object.assign({ from: this.address }, opts));
+            const unsignedTrx = await func(...this.models.values, opts);
             const nonce = parseInt(await this.$evm.telos.getNonce(this.address), 16);
             const gasPrice = BigNumber.from(`0x${await this.$evm.telos.getGasPrice()}`);
             unsignedTrx.nonce = nonce;
@@ -366,7 +347,7 @@ export default defineComponent({
                 error,
                 this.contract.address,
                 [this.abi] as EvmABI,
-                this.params,
+                this.models.values,
                 value,
             ).then((result) => {
                 this.hash = result.hash;
@@ -449,8 +430,8 @@ export default defineComponent({
             :key="index"
             v-bind="component.bindings"
             required="true"
-            class="input-component q-pb-lg"
-            @valueParsed="component.handleValueParsed(component.inputType, index, $event)"
+            class="input-component q-pb-md"
+            @valueParsed="valueParsed(component.inputType, index, $event, component)"
             @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
         />
     </template>
