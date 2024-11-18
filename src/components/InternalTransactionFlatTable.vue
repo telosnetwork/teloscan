@@ -111,7 +111,6 @@ export default {
         this.columns.filter(t => t.name === 'value')[0].label = this.$t('pages.value');
         this.columns.filter(t => t.name === 'direction')[0].label = this.$t('components.direction');
         if (!this.usePagination) {
-            console.log('usePagination is false: ', this.initialPageSize);
             this.pagination.rowsPerPage = this.initialPageSize;
         }
         this.updateLoadingRows();
@@ -170,7 +169,6 @@ export default {
             });
         },
         async onPaginationChange(props) {
-            console.log('onPaginationChange', { props }); // FIXME: remove this debug log
             const { page, rowsPerPage } = props.pagination;
 
             // we need to change the URL to keep the pagination state by changing the this.$route.query.page
@@ -185,7 +183,6 @@ export default {
             });
         },
         async onRequest(props) {
-            console.log('onRequest', props); // FIXME: remove this debug log
             const chainSettings = useChainStore().currentChain.settings;
             this.loading = true;
             this.rows = [];
@@ -233,7 +230,6 @@ export default {
             this.loading = false;
         },
         getPath(props) {
-            console.log('getPath(props)', { props });
             const { page, rowsPerPage, descending } = props.pagination;
             let path;
             const limit = Math.max(rowsPerPage, this.page_size_options[0]);
@@ -260,7 +256,6 @@ export default {
 
             path += (!this.pagination.rowsNumber) ? '&includePagination=true' : '';  // We only need the count once
 
-            console.log('path:', path);
             return path;
         },
         toggleDateFormat() {
