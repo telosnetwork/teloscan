@@ -151,6 +151,7 @@ export default {
         overview: 'aperçu',
         more_info: 'plus d\'info',
         transaction_sent: 'txn envoyé',
+        no_transactions_yet: 'Aucune transaction pour le moment',
         first: 'premier',
         last: 'dernier',
         contract_creator: 'créateur de contrat',

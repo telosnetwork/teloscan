@@ -10,6 +10,7 @@ const { t: $t } = useI18n();
 
 const lastTxn = ref('...');
 const firstTxn = ref('...');
+const noTrxYet = ref(false);
 const loadingComplete = ref(false);
 
 const props = defineProps({
@@ -24,11 +25,13 @@ onBeforeMount(async () => {
         const lastTxnQuery = (await indexerApi.get(`address/${props.address}/transactions?limit=1&includePagination=true`) as TransactionQueryData).data;
         if (lastTxnQuery.results.length){
             lastTxn.value = lastTxnQuery.results[0].hash;
+            // use total count to offset query and fetch first transaction
+            const offset = lastTxnQuery.total_count - 1;
+            const firstTxnQuery = (await indexerApi.get(`address/${props.address}/transactions?limit=1&offset=${offset}`) as TransactionQueryData).data;
+            firstTxn.value = firstTxnQuery.results[0].hash;
+        } else {
+            noTrxYet.value = true;
         }
-        // use total count to offset query and fetch first transaction
-        const offset = lastTxnQuery.total_count - 1;
-        const firstTxnQuery = (await indexerApi.get(`address/${props.address}/transactions?limit=1&offset=${offset}`) as TransactionQueryData).data;
-        firstTxn.value = firstTxnQuery.results[0].hash;
         loadingComplete.value = true;
     }catch(e){
         console.error(e);
@@ -41,6 +44,11 @@ onBeforeMount(async () => {
 <q-card class="c-address-more-info">
     <q-card-section v-if="!loadingComplete" >
         <q-skeleton type="text" class="c-overview__skeleton" />
+    </q-card-section>
+    <q-card-section v-else-if="noTrxYet" >
+        <div class="c-address-more-info__section-label">
+            {{ $t('pages.no_transactions_yet') }}
+        </div>
     </q-card-section>
     <q-card-section v-else>
         <div class="c-address-more-info__section-label">
@@ -56,7 +64,7 @@ onBeforeMount(async () => {
     <q-card-section v-if="!loadingComplete" >
         <q-skeleton type="text" class="c-overview__skeleton" />
     </q-card-section>
-    <q-card-section v-else>
+    <q-card-section v-else-if="!noTrxYet">
         <div class="c-address-more-info__section-label">
             {{ $t('pages.first') }} {{ $t('pages.transaction_sent') }}
         </div>
