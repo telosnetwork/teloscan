@@ -32,6 +32,11 @@ export default {
             type: Object,
             required: false,
         },
+        isRoot: {
+            type: Boolean,
+            required: false,
+            default: false,
+        },
     },
     data: () => ({
         root_: '',
@@ -54,6 +59,10 @@ export default {
         // initialization of the translated texts
         this.placeholder = this.createPlaceholder(this.componentDescription);
         this.hint = this.$t('components.inputs.tuple_struct_input_hint');
+
+        if (this.isRoot) {
+            this.isExpanded = true;
+        }
     },
     methods: {
         createInitialFields(componentDescription) {
@@ -126,44 +135,12 @@ export default {
 
             const propertyName = this.componentDescription[index].name;
             this.fields[propertyName] = input;
-            // model is ok only when all the inputs has a non undefined value checking not only the content but the amount of inputs
-            const length = inputs.length;
-            const values = this.models.values.filter(value => value !== undefined).length;
-            const valid = values === length;
-            // FIXME: remove
-            // let modelIsOk = !component.inputs || (length === keys.length && notUndefined === length);
-            // let modelIsOk = false;
-            // if (component.inputs) {
-            //     // (length === keys.length && notUndefined === length);)
-            //     modelIsOk = length === keys.length && notUndefined === length;
-            // }
-
-            console.log(`TupleStruct[${this.root}].handleFieldChange()`, { length, values, valid });                            // FIXME: remove
-            // console.log(`TupleStruct[${this.root}].handleFieldChange()`, { length, keys, notUndefined, modelIsOk });// FIXME: remove
-            // if (valid) {// FIXME: remove
-            //     const modelValue = [...this.models.values.map(r => toRaw(r))];
-            //     console.log(`TupleStruct[${this.root}].handleFieldChange()`, { modelValue, valid });                            // FIXME: remove
-            //     // this.$emit('update:modelValue', modelValue);
-            //     this.valueParsed(type, index, input, component);
-            //     return;
-            // }
 
             // if is not a complex input we can emit the valueParsed event
             if (!inputIsComplex(type)) {
                 this.valueParsed(type, index, input, component);
                 return;
             }
-
-            // this.eventEmittingTimer = setTimeout(() => { // FIXME: remove
-            //     const isUndefined = this.isThereUndefinedValues();
-            //     if (!isUndefined) {
-            //         console.log(`TupleStruct[${this.root}].handleFieldChange`, 'emitting valueParsed');                  // FIXME: remove
-            //         this.$emit('valueParsed', this.fields);
-            //     } else {
-            //         console.log(`TupleStruct[${this.root}].handleFieldChange`, 'emitting valueParsed with undefined');   // FIXME: remove
-            //         this.$emit('valueParsed', undefined);
-            //     }
-            // }, 50);
         },
     },
     computed: {
@@ -219,9 +196,17 @@ export default {
             <div class="tuple-struct__header-text">{{ shapedLabel }}</div>
         </template>
 
-        <q-card>
-            <div class="q-pt-md q-pb-md q-pl-md">
-                <div v-if="isVisible" class="tuple-struct__expanded-fields">
+        <q-card
+            v-if="isVisible"
+            :class="{
+                'tuple-struct__card--expanded-fields': isExpanded,
+                'tuple-struct__card': true,
+            }"
+        >
+            <div
+                class="tuple-struct__card-content"
+            >
+                <div>
                     <template v-for="(component, index) in inputComponents">
                         <component
                             :is="component.is"
@@ -230,6 +215,7 @@ export default {
                             v-bind="component.bindings"
                             required="true"
                             class="input-component q-pb-lg"
+                            :class="{ 'last-element': index === inputComponents.length - 1 }"
                             @valueParsed="valueParsed(component.inputType, index, $event, component)"
                             @update:modelValue="handleFieldChange(component.inputType, index, $event, component, inputComponents)"
                         />
@@ -261,6 +247,13 @@ export default {
     &__header-btn--expanded {
         transform: rotate(180deg);
         transition: transform 0.3s;
+    }
+
+    &__card {
+        padding-top: 16px;
+        padding-left: 16px;
+        padding-left: 16px;
+        transition: margin-right 1.3s;
     }
 
 }

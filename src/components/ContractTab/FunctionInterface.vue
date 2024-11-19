@@ -121,7 +121,8 @@ export default defineComponent({
             return `${this.abi.name}(${this.abi.inputs.map((i: { type: never; }) => i.type).join(',')})`;
         },
         inputComponents(): inputComponents {
-            const components = getComponentsForAbiInputs(this.abi?.inputs, this.models) as unknown as inputComponents;
+            const isRoot = true;
+            const components = getComponentsForAbiInputs(this.abi?.inputs, this.models, isRoot) as unknown as inputComponents;
             return components;
         },
         /* missingInputs() { // FIXME: remove
@@ -463,7 +464,7 @@ export default defineComponent({
 </div>
 </template>
 
-<style>
+<style lang="scss">
 .text-negative.output-container {
     overflow-wrap: break-word;
     word-break: break-all;

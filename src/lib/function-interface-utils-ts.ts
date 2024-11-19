@@ -3,7 +3,7 @@ import { getComponentForInputType, getExpectedArrayLengthFromParameterType, getI
 import { toRaw } from 'vue';
 import { EvmFunctionParam } from 'src/antelope/types';
 
-export function getComponentsForAbiInputs(inputs: InputDescription[], models: {inputs: string[], values: EvmFunctionParam[]}): inputComponents {
+export function getComponentsForAbiInputs(inputs: InputDescription[], models: {inputs: string[], values: EvmFunctionParam[]}, isRoot: boolean): inputComponents {
     // inputs must be an array
     if (!Array.isArray(inputs)) {
         return [];
@@ -48,6 +48,7 @@ export function getComponentsForAbiInputs(inputs: InputDescription[], models: {i
 
         const bindings = {
             ...extras,
+            isRoot,
             label,
             size,
             modelValue: models.inputs[index] ?? defaultModelValue,
