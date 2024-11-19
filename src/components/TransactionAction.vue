@@ -5,6 +5,8 @@ import { useI18n } from 'vue-i18n';
 import { ZERO_ADDRESSES } from 'src/lib/utils';
 import MethodField from 'components/MethodField.vue';
 import AddressField from 'components/AddressField.vue';
+import ValueField from 'components/ValueField.vue';
+import { useChainStore } from 'src/antelope';
 
 const { t: $t } = useI18n();
 
@@ -30,38 +32,25 @@ const props = defineProps({
     },
 });
 
-const methodName = ref('');
-const nativeTooltipText = ref('');
-
 const propValue = computed(() => +(props.trx.value || '0x0'));
+const cases = {
+    FUNCTION_CALL: 'function-call',
+    CONTRACT_CREATION: 'contract-creation',
+    TLOS_TRANSFER: 'tlos-transfer',
+};
+const transactionCase = ref(cases.FUNCTION_CALL);
 
 onMounted(async () => {
     await setValues();
 });
 
 const setValues = async () => {
-    if (
-        !props.trx.parsedTransaction
-        && props.trx.from === ZERO_ADDRESSES
-        && propValue.value
-        && parseInt(props.trx.gasPrice as string) === 0
-    ) {
-        nativeTooltipText.value = $t('pages.transactions.native_deposit_tooltip');
-        methodName.value = $t('pages.transactions.deposit_action_name');
-    } else if (
-        !props.trx.parsedTransaction
-        && props.trx.to === ZERO_ADDRESSES
-        && propValue.value
-        && parseInt(props.trx.gasPrice as string) === 0
-    ) {
-        nativeTooltipText.value = $t('pages.transactions.native_withdraw_tooltip');
-        methodName.value = $t('pages.transactions.withdraw_action_name');
-    } else if (!props.trx.parsedTransaction && props.trx.input === '0x' && propValue.value) {
-        methodName.value = $t('pages.transactions.transfer_tlos_action_name');
-    } else if (!props.trx.parsedTransaction && props.trx.to === null) {
-        methodName.value = $t('pages.transactions.contract_deployment');
-    } else if (props.trx.parsedTransaction) {
-        methodName.value = props.trx.parsedTransaction.name;
+    if (propValue.value > 0 && props.trx.input === '0x') {
+        transactionCase.value = cases.TLOS_TRANSFER;
+    } else if (props.trx.to === null || props.trx.to === ZERO_ADDRESSES) {
+        transactionCase.value = cases.CONTRACT_CREATION;
+    } else {
+        transactionCase.value = cases.FUNCTION_CALL;
     }
 };
 
@@ -70,36 +59,63 @@ const setValues = async () => {
 <template>
 <div class="c-trx-action">
 
-    <q-icon class="c-tlos-transfers__icon list-arrow" name="arrow_right"/>
+    <template v-if="transactionCase === cases.CONTRACT_CREATION">
+        <span class="c-trx-action__text">
+            {{ $t('components.transaction.contract_deployment') }}
+        </span>
+    </template>
 
-    <span class="c-trx-action__text">Call</span>
+    <template v-if="transactionCase === cases.FUNCTION_CALL">
+        <q-icon class="c-tlos-transfers__icon list-arrow" name="arrow_right"/>
 
-    <MethodField
-        class="c-trx-action__method"
-        :separateWords="true"
-        :trx="props.trx"
-        :fullText="true"
-    />
+        <span class="c-trx-action__text">Call</span>
 
-    <span class="c-trx-action__text">Function by</span>
+        <MethodField
+            class="c-trx-action__method"
+            :separateWords="true"
+            :trx="props.trx"
+            :fullText="true"
+        />
 
-    <AddressField
-        :address="props.trx.from ?? ''"
-        :truncate="12"
-    />
+        <span class="c-trx-action__text">Function by</span>
 
-    <span class="c-trx-action__text">on</span>
+        <AddressField
+            :address="props.trx.from ?? ''"
+            :truncate="12"
+        />
 
-    <AddressField
-        :address="props.trx.to ?? ''"
-        :truncate="12"
-    />
+        <span class="c-trx-action__text">on</span>
+
+        <AddressField
+            :address="props.trx.to ?? ''"
+            :truncate="12"
+        />
+    </template>
+
+    <template v-if="transactionCase === cases.TLOS_TRANSFER">
+        <q-icon class="c-tlos-transfers__icon list-arrow" name="arrow_right"/>
+
+        <span class="c-trx-action__text">Transfer</span>
+
+        <ValueField
+            :value="props.trx.value ?? '0x0'"
+            :symbol="useChainStore().currentChain.settings.getSystemToken().symbol"
+        />
+
+        <span class="c-trx-action__text">to</span>
+
+        <AddressField
+            :address="props.trx.to ?? ''"
+            :truncate="12"
+        />
+    </template>
 </div>
 </template>
 
 <style lang="scss">
 .c-trx-action {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     gap: 5px;
     align-items: center;

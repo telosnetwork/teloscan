@@ -6,6 +6,7 @@ import MethodField from 'components/MethodField';
 import InternalTxns from 'components/Transaction/InternalTxns';
 import { formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+import { useChainStore } from 'src/antelope';
 
 export default {
     name: 'InternalTransactionTable',
@@ -158,7 +159,8 @@ export default {
             // this line cleans the table for a second and the components have to be created again (clean)
             this.rows = [];
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
-            let result = await this.$indexerApi.get(this.getPath(props));
+            const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+            let result = await indexerApi.get(this.getPath(props));
             if (this.total === null) {
                 this.pagination.rowsNumber = result.data.total_count;
             }
@@ -167,6 +169,7 @@ export default {
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
             this.transactions = [...result.data.results];
+            const contractManager = useChainStore().currentChain.settings.getContractManager();
             for (const transaction of this.transactions) {
                 try {
                     transaction.transfer = false;
@@ -177,14 +180,15 @@ export default {
                     if(!transaction.to) {
                         continue;
                     }
-                    const contract = await this.$contractManager.getContract(
+                    const contract = await contractManager.getContract(
                         transaction.to,
                     );
                     if (!contract) {
                         continue;
                     }
-                    let traces = await this.$indexerApi.get(
-                        '/transaction/' + transaction.hash + '/internal?limit=1000&sort=ASC&offset=0&includeAbi=1',
+                    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+                    let traces = await indexerApi.get(
+                        '/v1/transaction/' + transaction.hash + '/internal?limit=1000&sort=ASC&offset=0&includeAbi=1',
                     );
                     for(const trace of [...traces.data.results]){
                         trace.hash = trace.transactionHash;
@@ -192,7 +196,7 @@ export default {
                     transaction.traces = traces.data?.results;
                     transaction.contract = contract;
                     transaction.contractAddress = contract.address;
-                    const parsedTransaction = await this.$contractManager.parseContractTransaction(
+                    const parsedTransaction = await contractManager.parseContractTransaction(
                         transaction,
                         transaction.input,
                         contract,
@@ -234,9 +238,9 @@ export default {
             let path;
             const filter = Object.assign({}, this.filter ? this.filter : {});
             if (filter.address) {
-                path = `/address/${filter.address}/transactions`;
+                path = `v1/address/${filter.address}/transactions`;
             } else {
-                path = '/transactions';
+                path = 'v1/transactions';
             }
             path += `?limit=${
                 rowsPerPage === 0 ? 500 : rowsPerPage

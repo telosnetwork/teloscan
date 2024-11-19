@@ -7,6 +7,7 @@ import ValueField from 'components/ValueField.vue';
 import { getDirection } from 'src/lib/transaction-utils';
 import { WEI_PRECISION, formatWei } from 'src/lib/utils';
 import { TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures';
+import { useChainStore } from 'src/antelope';
 
 export default {
     name: 'InternalTransactionFlatTable',
@@ -39,6 +40,11 @@ export default {
         usePagination: {
             type: Boolean,
             default: true,
+        },
+    },
+    computed: {
+        rowsToShow() {
+            return this.loading? this.loadingRows : this.rows;
         },
     },
     data() {
@@ -130,27 +136,37 @@ export default {
     },
     watch: {
         '$route.query.page': {
-            handler(_pag) {
-                let pag = _pag;
-                let page = 1;
-                let size = this.page_size_options[0];
-
-                // we also allow to pass a single number as the page number
-                if (typeof pag === 'number') {
-                    page = pag;
-                } else if (typeof pag === 'string') {
-                    // we also allow to pass a string of two numbers: 'page,rowsPerPage'
-                    const [p, s] = pag.split(',');
-                    page = p;
-                    size = s;
-                }
-
-                this.setPagination(page, size);
+            handler() {
+                this.updateData();
             },
             immediate: true,
         },
+        '$route.query.network': {
+            handler() {
+                this.loading = true;
+                this.rows = [];
+                this.updateData();
+            },
+        },
     },
     methods: {
+        updateData() {
+            const _pag = this.$route.query.page;
+            let pag = _pag;
+            let page = 1;
+            let size = this.page_size_options[0];
+
+            // we also allow to pass a single number as the page number
+            if (typeof pag === 'number') {
+                page = pag;
+            } else if (typeof pag === 'string') {
+                // we also allow to pass a string of two numbers: 'page,rowsPerPage'
+                const [p, s] = pag.split(',');
+                page = p;
+                size = s;
+            }
+            this.setPagination(page, size);
+        },
         getDirection: getDirection,
         updateLoadingRows() {
             this.loadingRows = [];
@@ -201,7 +217,8 @@ export default {
             this.rows = [];
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             const path = this.getPath(props);
-            let result = await this.$indexerApi.get(path);
+            const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+            let result = await indexerApi.get(path);
             if (!this.pagination.rowsNumber) {
                 this.pagination.rowsNumber = result.data.total_count;
             }
@@ -210,8 +227,19 @@ export default {
             this.pagination.sortBy = sortBy;
             this.pagination.descending = descending;
             this.transactions = [...result.data.results];
+            this.transactions.forEach((transaction) => {
+                let timestamp = transaction.timestamp;
+                // This is a workaround to fix the timestamp issue (it should be fixed in the API)
+                // https://github.com/telosnetwork/teloscan-indexer/issues/234
+                if (typeof timestamp === 'string') {
+                    timestamp = new Date(timestamp).getTime() - new Date().getTimezoneOffset() * 60 * 1000;
+                    transaction.timestamp = timestamp;
+                }
+            });
+
             let totalTraces = 0;
             let processedTransactions = 0;
+            const contractManager = useChainStore().currentChain.settings.getContractManager();
             for (const transaction of this.transactions) {
                 try {
                     transaction.transfer = false;
@@ -222,7 +250,7 @@ export default {
                     if(!transaction.to) {
                         continue;
                     }
-                    const contract = await this.$contractManager.getContract(
+                    const contract = await contractManager.getContract(
                         transaction.to,
                     );
                     if (!contract) {
@@ -232,8 +260,9 @@ export default {
                         // we already have enough data
                         break;
                     }
-                    let traces = await this.$indexerApi.get(
-                        '/transaction/' + transaction.hash + '/internal?limit=1000&sort=ASC&offset=0&includeAbi=1',
+                    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+                    let traces = await indexerApi.get(
+                        '/v1/transaction/' + transaction.hash + '/internal?limit=1000&sort=ASC&offset=0&includeAbi=1',
                     );
                     for(const trace of [...traces.data.results]){
                         trace.hash = trace.transactionHash;
@@ -242,7 +271,7 @@ export default {
                     totalTraces += +transaction.traces?.length;
                     transaction.contract = contract;
                     transaction.contractAddress = contract.address;
-                    const parsedTransaction = await this.$contractManager.parseContractTransaction(
+                    const parsedTransaction = contractManager.parseContractTransaction(
                         transaction,
                         transaction.input,
                         contract,
@@ -276,7 +305,7 @@ export default {
                             from: trace.action.from,
                             to: trace.action.to,
                             value: trace.action.value,
-                            symbol: 'TLOS',
+                            symbol: useChainStore().currentChain.settings.getSystemToken().symbol,
                             decimals: WEI_PRECISION,
                         };
                         entries.push(entry);
@@ -292,7 +321,7 @@ export default {
                             from: transaction.from,
                             to: transaction.to,
                             value: transaction.value,
-                            symbol: 'TLOS',
+                            symbol: useChainStore().currentChain.settings.getSystemToken().symbol,
                             decimals: WEI_PRECISION,
                             traces: entries,
                             expand: true,
@@ -330,9 +359,9 @@ export default {
             let path;
             const filter = Object.assign({}, this.filter ? this.filter : {});
             if (this.address) {
-                path = `/address/${this.address}/transactions`;
+                path = `v1/address/${this.address}/transactions`;
             } else {
-                path = '/transactions';
+                path = 'v1/transactions';
             }
             path += `?limit=${
                 rowsPerPage === 0 ? 25 : rowsPerPage
@@ -383,7 +412,7 @@ export default {
 <q-table
     v-model:pagination="pagination"
     class="c-inttrx-flat__table"
-    :rows="loading? loadingRows : rows"
+    :rows="rowsToShow"
     :row-key="row => row.hash"
     :columns="columns"
     :rows-per-page-options="page_size_options"

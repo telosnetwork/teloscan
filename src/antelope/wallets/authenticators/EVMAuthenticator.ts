@@ -6,7 +6,7 @@ import { SendTransactionResult, WriteContractResult } from '@wagmi/core';
 import { BigNumber, ethers } from 'ethers';
 import { createTraceFunction } from 'src/antelope/mocks/FeedbackStore';
 import { CURRENT_CONTEXT, getAntelope, useAccountStore } from 'src/antelope/mocks';
-import { EVMChainSettings } from 'src/antelope/mocks';
+import { TeloscanEVMChainSettings } from 'src/antelope/mocks';
 import { useChainStore } from 'src/antelope/mocks';
 import { useEVMStore } from 'src/antelope/mocks';
 import { isTracingAll, useFeedbackStore } from 'src/antelope/mocks/FeedbackStore';
@@ -55,8 +55,8 @@ export abstract class EVMAuthenticator {
     }
 
     // returns the associated chain settings acording to the label
-    getChainSettings(): EVMChainSettings {
-        return (useChainStore().getChain(this.label).settings as EVMChainSettings);
+    getChainSettings(): TeloscanEVMChainSettings {
+        return (useChainStore().getChain(this.label).settings as TeloscanEVMChainSettings);
     }
 
     async login(network: string, trackAnalyticsEvents?: boolean): Promise<addressString | null> {

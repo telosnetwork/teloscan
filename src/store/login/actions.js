@@ -1,8 +1,10 @@
+import { useChainStore } from 'src/antelope';
+
 export const login = async function(
     { commit, dispatch },
     { idx, account },
 ) {
-    const authenticator = this.$ual.authenticators[idx];
+    const authenticator = useChainStore().currentChain.settings.getUAL()?.authenticators[idx];
     try {
         commit('setLoadingWallet', authenticator.getStyle().text);
         await authenticator.init();
@@ -39,7 +41,7 @@ export const login = async function(
 };
 
 export const autoLogin = async function({ dispatch, commit }, returnUrl) {
-    const { authenticator, idx } = getAuthenticator(this.$ual);
+    const { authenticator, idx } = getAuthenticator(useChainStore().currentChain.settings.getUAL());
     if (authenticator) {
         commit('setAutoLogin', true);
         await dispatch('login', {
@@ -64,7 +66,7 @@ const getAuthenticator = function(ual, wallet = null) {
 
 export const logout = async function({ getters }) {
     if (getters.isNative) {
-        const { authenticator } = getAuthenticator(this.$ual);
+        const { authenticator } = getAuthenticator(useChainStore().currentChain.settings.getUAL());
         try {
             authenticator && (await authenticator.logout());
         } catch (error) {

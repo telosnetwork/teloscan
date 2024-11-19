@@ -4,7 +4,7 @@
 import { ethers } from 'ethers';
 import { EVMAuthenticator, InjectedProviderAuth } from 'src/antelope/wallets';
 import { createTraceFunction } from 'src/antelope/mocks/FeedbackStore';
-import { EVMChainSettings, useChainStore, useFeedbackStore, useAccountStore } from 'src/antelope/mocks';
+import { TeloscanEVMChainSettings, useChainStore, useFeedbackStore, useAccountStore } from 'src/antelope/mocks';
 import { AntelopeError, EthereumProvider, ExceptionError } from 'src/antelope/types';
 import { RpcEndpoint } from 'universal-authenticator-library';
 
@@ -80,7 +80,7 @@ class EVMStore {
         useFeedbackStore().setLoading('evm.switchChainInjected');
         const provider = InjectedProvider;
         if (provider) {
-            const chainSettings = useChainStore().loggedChain.settings as unknown as EVMChainSettings;
+            const chainSettings = useChainStore().loggedChain.settings as unknown as TeloscanEVMChainSettings;
             const chainId = parseInt(chainSettings.getChainId(), 10);
             const chainIdParam = `0x${chainId.toString(16)}`;
             if (!provider.request) {

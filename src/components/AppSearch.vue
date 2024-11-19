@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar';
+import { useChainStore } from 'src/antelope';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-
-import { evm } from 'src/boot/evm';
 
 defineProps<{
     homepageMode?: boolean; // if true, the search bar will be styled for placement on the homepage
@@ -35,8 +34,9 @@ async function search() {
         }
     } else if (searchTerm.value.match(/(^[a-z1-5.]{1,11}[a-z1-5]$)|(^[a-z1-5.]{12}[a-j1-5]$)/)) {
         try {
-            const account = await evm.telos.getEthAccountByTelosAccount(searchTerm.value);
-            $router.push(`/address/${account.address}`);
+            const chain = useChainStore().currentChain;
+            const address = await chain.settings.getEthAccountByNativeAccount(searchTerm.value);
+            $router.push(`/address/${address}`);
             return;
         } catch (e) {
             // in case this was a block that looked like an account name let's try it as a block
