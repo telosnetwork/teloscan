@@ -125,6 +125,7 @@ export default {
         this.columns.filter(t => t.name === 'to')[0].label = this.$t('pages.to');
         this.columns.filter(t => t.name === 'value')[0].label = this.$t('pages.value');
         this.columns.filter(t => t.name === 'count')[0].label = this.$t('pages.count');
+        this.columns.filter(t => t.name === 'direction')[0].label = this.$t('components.direction');
         if (!this.usePagination) {
             this.pagination.rowsPerPage = 25;
             // we need to remove type and count columns
@@ -435,14 +436,10 @@ export default {
                 <template v-if="col.name === 'date'" >
                     <div class="c-inttrx-flat__header-age u-flex--center-y" @click="toggleDateFormat">
                         <a>{{ showDateAge ? col.label: $t('components.date') }}</a>
-                        <q-icon
-                            class="info-icon"
-                            name="far fa-question-circle"
-                        >
-                            <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
-                                {{ $t('components.click_to_change_format') }}
-                            </q-tooltip>
-                        </q-icon>
+                        <q-icon class="info-icon" name="far fa-question-circle" />
+                        <q-tooltip anchor="bottom middle" self="bottom middle" :offset="[0, 36]">
+                            {{ $t('components.click_to_change_format') }}
+                        </q-tooltip>
                     </div>
                 </template>
 

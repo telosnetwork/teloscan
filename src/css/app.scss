@@ -15,7 +15,9 @@ body {
 body.body--light {
     --border-color: #{$grey-3};
     --text-color: #{$dark};
+    --subtitle-color: #{$grey-7};
     --bg-color: white;
+    --bg-hover-color: rgb(233, 236, 239);
     --header-bg-color: {$grey-3};
     --muted-text-color: #{$grey-3};
     --invert-text-color: white;
@@ -32,6 +34,12 @@ body.body--light {
 
     --odd-row-bg-color: #{$grey-3};
 
+    // notify component colors
+    --notify-success: #255B00;
+    --notify-error: #880000;
+    --notify-neutral: #4D4D4D;
+    --notify-info: #008888;
+
     a:hover {
         color: $a-hover-light;
     }
@@ -40,7 +48,9 @@ body.body--light {
 body.body--dark {
     --border-color: #{$grey-9};
     --text-color: white;
+    --subtitle-color: #{$grey-5};
     --bg-color: #181818;
+    --bg-hover-color: #282828;
     --header-bg-color: #{$grey-10};
     --muted-text-color: #{$grey-8};
     --invert-text-color: #{$dark};
@@ -59,9 +69,21 @@ body.body--dark {
 
     --q-dark: #181818;
 
+    // notify component colors
+    --notify-success: #469d0d;
+    --notify-error: #b30909;
+    --notify-neutral: #858585;
+    --notify-info: #15baba;
+
     a:hover {
         color: $a-hover-dark;
     }
+
+    .vjs-tree-node.is-highlight,.vjs-tree-node:hover{
+        background-color:#313436
+    }
+
+    
 }
 
 a {

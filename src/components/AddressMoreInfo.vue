@@ -1,10 +1,14 @@
 <script lang="ts" setup>
-import { onBeforeMount, ref } from 'vue';
+import { onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { TransactionQueryData } from 'src/types/TransactionQueryData';
 
 import TransactionField from 'components/TransactionField.vue';
 import { useChainStore } from 'src/antelope';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+
 
 const { t: $t } = useI18n();
 
@@ -19,7 +23,8 @@ const props = defineProps({
     },
 });
 
-onBeforeMount(async () => {
+const updateData = async () => {
+    loadingComplete.value = false;
     const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
     try{
         const lastTxnQuery = (await indexerApi.get(`v1/address/${props.address}/transactions?limit=1&includePagination=true`) as TransactionQueryData).data;
@@ -31,48 +36,58 @@ onBeforeMount(async () => {
         const firstTxnQuery = (await indexerApi.get(`v1/address/${props.address}/transactions?limit=1&offset=${offset}`) as TransactionQueryData).data;
         firstTxn.value = firstTxnQuery.results[0].hash;
         loadingComplete.value = true;
-    }catch(e){
+    } catch(e) {
         console.error(e);
     }
+};
+
+onBeforeMount(async () => {
+    updateData();
 });
+
+watch(() => route.query.network,
+    () => {
+        updateData();
+    },
+);
 
 </script>
 
 <template>
-<q-card class="c-more-info">
+<q-card class="c-address-more-info">
     <q-card-section v-if="!loadingComplete" >
         <q-skeleton type="text" class="c-overview__skeleton" />
     </q-card-section>
     <q-card-section v-else>
-        <div class="c-more-info__section-label">
+        <div class="c-address-more-info__section-label">
             {{ $t('pages.last') }} {{ $t('pages.transaction_sent') }}
         </div>
         <TransactionField
             color="primary"
             :transaction-hash="lastTxn"
             :truncate="18"
-            class="c-more-info__value"
+            class="c-address-more-info__value"
         />
     </q-card-section>
     <q-card-section v-if="!loadingComplete" >
         <q-skeleton type="text" class="c-overview__skeleton" />
     </q-card-section>
     <q-card-section v-else>
-        <div class="c-more-info__section-label">
+        <div class="c-address-more-info__section-label">
             {{ $t('pages.first') }} {{ $t('pages.transaction_sent') }}
         </div>
         <TransactionField
             color="primary"
             :transaction-hash="firstTxn"
             :truncate="18"
-            class="c-more-info__value"
+            class="c-address-more-info__value"
         />
     </q-card-section>
 </q-card>
 </template>
 
 <style lang="scss">
-.c-more-info {
+.c-address-more-info {
     height:100%;
     &__section-label {
         font-weight: 600;

@@ -94,7 +94,7 @@ export default {
         </div>
     </div>
     <div v-else class="row">
-        <div class="col-12 u-flex--center-y justify-between">
+        <div class="col-12 u-flex--center-y justify-between q-pa-md">
             <div>
                 <q-toggle
                     v-model="human_readable"
@@ -136,7 +136,7 @@ export default {
                 :data="rawLogs"
                 :showLine="false"
                 :deep="depth"
-                class="q-pl-md"
+                class="q-pa-md"
             />
         </div>
     </div>

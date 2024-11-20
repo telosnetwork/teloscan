@@ -2,7 +2,6 @@
 import { computed, ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { ZERO_ADDRESSES } from 'src/lib/utils';
 import MethodField from 'components/MethodField.vue';
 import AddressField from 'components/AddressField.vue';
 import ValueField from 'components/ValueField.vue';
@@ -27,6 +26,7 @@ const props = defineProps({
             to?: string | null;
             input?: string;
             hash?: string;
+            contractAddress?: string | null;
         },
         required: true,
     },
@@ -47,7 +47,7 @@ onMounted(async () => {
 const setValues = async () => {
     if (propValue.value > 0 && props.trx.input === '0x') {
         transactionCase.value = cases.TLOS_TRANSFER;
-    } else if (props.trx.to === null || props.trx.to === ZERO_ADDRESSES) {
+    } else if (props.trx.to === null || props.trx.contractAddress !== null) {
         transactionCase.value = cases.CONTRACT_CREATION;
     } else {
         transactionCase.value = cases.FUNCTION_CALL;

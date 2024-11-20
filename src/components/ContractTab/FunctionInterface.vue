@@ -21,11 +21,14 @@ import {
     parameterIsIntegerType,
     parameterTypeIsBoolean,
     parameterTypeIsSignedIntArray,
+    parameterTypeIsTupleStruct,
+    parameterTypeIsTupleStructArray,
     parameterTypeIsUnsignedIntArray,
 } from 'src/lib/function-interface-utils';
-
 import TransactionField from 'src/components/TransactionField.vue';
 import LoginModal from 'components/LoginModal.vue';
+import FunctionOutputViewer from 'components/ContractTab/FunctionOutputViewer.vue';
+import { OutputType, OutputValue, InputDescription } from 'src/types';
 
 interface Opts {
     value?: string;
@@ -36,11 +39,12 @@ interface Error {
 }
 
 export default defineComponent({
-    name: 'FunctionInterfaceNew',
+    name: 'FunctionInterface',
     components: {
         ...asyncInputComponents,
         TransactionField,
         LoginModal,
+        FunctionOutputViewer,
     },
     props: {
         contract: {
@@ -54,6 +58,10 @@ export default defineComponent({
         runLabel: {
             type: String,
             default: null,
+        },
+        write: {
+            type: Boolean,
+            required: true,
         },
     },
     data : () => {
@@ -79,6 +87,8 @@ export default defineComponent({
             errorMessage: null as string | null,
             decimalOptions,
             result: null as string | null,                // string | null
+            response: [] as OutputValue[],                // OutputData[]
+            abiOutputs: [] as OutputType[],               // OutputType[]
             hash: null as string | null,                  // string | null
             enterAmount: false,                           // boolean
             amountInput: 0,                               // number
@@ -116,9 +126,10 @@ export default defineComponent({
                 return [];
             }
 
-            const getExtraBindingsForType = ({ type, name }: {type: string, name: string}, index: number) => {
+            const getExtraBindingsForType = (input: InputDescription, index: number) => {
+                const { type, name, components } = input;
                 const label = `${name ? name : `Param ${index + 1}`}`;
-                const extras = {} as {[key:string]: string};
+                const extras = {} as {[key:string]: string | InputDescription[]};
 
                 // represents integer bits (e.g. uint256) for int types, or array length for array types
                 let size = undefined;
@@ -126,6 +137,8 @@ export default defineComponent({
                     size = getExpectedArrayLengthFromParameterType(type);
                 } else if (parameterIsIntegerType(type)) {
                     size = getIntegerBits(type);
+                } else if (parameterTypeIsTupleStruct(type) && components) {
+                    size = toRaw(components).length;
                 }
 
                 const result = type.match(/(\d+)(?=\[)/);
@@ -135,17 +148,22 @@ export default defineComponent({
                     extras['uint-size'] = intSize;
                 } else if (intSize && parameterTypeIsSignedIntArray(type)) {
                     extras['int-size'] = intSize;
+                } else if (parameterTypeIsTupleStruct(type) && components) {
+                    extras['componentDescription'] = toRaw(components);
+                } else if (parameterTypeIsTupleStructArray(type) && components) {
+                    extras['componentDescription'] = toRaw(components);
                 }
 
                 const defaultModelValue = parameterTypeIsBoolean(type) ? null : '';
 
-                return {
+                const bindings = {
                     ...extras,
                     label,
                     size,
                     modelValue: this.inputModels[index] ?? defaultModelValue,
                     name: label.toLowerCase(),
                 };
+                return bindings;
             };
 
             const handleModelValueChange = (type: string, index: number, value: string) => {
@@ -211,7 +229,8 @@ export default defineComponent({
             this.showLoginModal = true;
         },
         async run() {
-            if (!this.isLoggedIn){
+            console.log('run');
+            if (!this.isLoggedIn && this.write){
                 this.login();
                 return;
             }
@@ -241,6 +260,7 @@ export default defineComponent({
 
                 return await this.runEVM(opts);
             } catch (e) {
+                console.error(e);
                 this.result = (e as Error).message;
             }
 
@@ -257,8 +277,10 @@ export default defineComponent({
         runRead() {
             return this.getEthersFunction()
                 .then(func => func(...this.params)
-                    .then((response: string) => {
-                        this.result = response;
+                    .then((response: OutputValue | OutputValue[]) => {
+                        this.result = response as unknown as string;
+                        this.response = Array.isArray(response) ? response : [response];
+                        this.abiOutputs = this.abi.outputs as OutputType[];
                         this.errorMessage = null;
                     })
                     .catch((msg: string) => {
@@ -439,7 +461,7 @@ export default defineComponent({
             :key="index"
             v-bind="component.bindings"
             required="true"
-            class="q-pb-lg"
+            class="input-component q-pb-lg"
             @valueParsed="component.handleValueParsed(component.inputType, index, $event)"
             @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
         />
@@ -457,10 +479,13 @@ export default defineComponent({
     <p class="text-negative output-container">
         {{ errorMessage }}
     </p>
-    <div v-if="result !== null" class="output-container">
-        {{ $t('components.contract_tab.result') }} ({{ abi?.outputs.length > 0 ? abi.outputs[0].type : '' }}):
-        <router-link v-if="abi?.outputs?.[0]?.type === 'address'" :to="`/address/${result}`" >{{ result }}</router-link>
-        <template v-else>{{ result }}</template>
+    <div v-if="response.length > 0" class="output-container">
+
+        <FunctionOutputViewer
+            :response="response"
+            :outputs="abiOutputs"
+        />
+
     </div>
     <div v-if="hash" class="output-container">
         {{ $t('components.contract_tab.view_transaction') }}
@@ -468,3 +493,13 @@ export default defineComponent({
     </div>
 </div>
 </template>
+
+<style>
+.text-negative.output-container {
+    overflow-wrap: break-word;
+    word-break: break-all;
+    overflow: hidden;
+    white-space: pre-wrap;
+}
+</style>
+

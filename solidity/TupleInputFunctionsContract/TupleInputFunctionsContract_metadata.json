@@ -1,0 +1,535 @@
+{
+	"compiler": {
+		"version": "0.8.18+commit.87f61d96"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "functionName",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "message",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes32",
+						"name": "dataHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "StructProcessed",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "value",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct TupleInputFunctionsContract.SimpleStruct",
+						"name": "simple",
+						"type": "tuple"
+					}
+				],
+				"name": "process01SimpleStruct",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "value1",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "value2",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct TupleInputFunctionsContract.DoubleUintStruct",
+						"name": "doubleUint",
+						"type": "tuple"
+					}
+				],
+				"name": "process02DoubleUintStruct",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "address",
+								"name": "user",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "amount",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct TupleInputFunctionsContract.AddressUintStruct",
+						"name": "addressUint",
+						"type": "tuple"
+					}
+				],
+				"name": "process03AddressUintStruct",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "id",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "user",
+								"type": "address"
+							},
+							{
+								"internalType": "bool",
+								"name": "isActive",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct TupleInputFunctionsContract.ComplexStruct",
+						"name": "complex",
+						"type": "tuple"
+					}
+				],
+				"name": "process04ComplexStruct",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"components": [
+									{
+										"internalType": "uint256",
+										"name": "value",
+										"type": "uint256"
+									}
+								],
+								"internalType": "struct TupleInputFunctionsContract.SimpleStruct",
+								"name": "simple",
+								"type": "tuple"
+							},
+							{
+								"components": [
+									{
+										"internalType": "address",
+										"name": "user",
+										"type": "address"
+									},
+									{
+										"internalType": "uint256",
+										"name": "amount",
+										"type": "uint256"
+									}
+								],
+								"internalType": "struct TupleInputFunctionsContract.AddressUintStruct",
+								"name": "userInfo",
+								"type": "tuple"
+							},
+							{
+								"internalType": "bool",
+								"name": "isVerified",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct TupleInputFunctionsContract.NestedStruct",
+						"name": "nested",
+						"type": "tuple"
+					}
+				],
+				"name": "process05NestedStruct",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "value",
+						"type": "string"
+					}
+				],
+				"name": "process06String",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "value",
+						"type": "bytes32"
+					}
+				],
+				"name": "process07Bytes32",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "value",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct TupleInputFunctionsContract.SimpleStruct[]",
+						"name": "values",
+						"type": "tuple[]"
+					}
+				],
+				"name": "process08ArrayOfStructs",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256[]",
+						"name": "values",
+						"type": "uint256[]"
+					}
+				],
+				"name": "process09Uint256Array",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string[]",
+						"name": "values",
+						"type": "string[]"
+					}
+				],
+				"name": "process10StringArray",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address[3]",
+						"name": "addresses",
+						"type": "address[3]"
+					}
+				],
+				"name": "process11FixedAddressArray",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "id",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "user",
+								"type": "address"
+							},
+							{
+								"internalType": "bool",
+								"name": "isActive",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct TupleInputFunctionsContract.ComplexStruct[]",
+						"name": "tuples",
+						"type": "tuple[]"
+					}
+				],
+				"name": "process12ArrayOfComplexStructs",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "id",
+								"type": "uint256"
+							},
+							{
+								"internalType": "address",
+								"name": "user",
+								"type": "address"
+							},
+							{
+								"internalType": "bool",
+								"name": "isActive",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct TupleInputFunctionsContract.ComplexStruct[3]",
+						"name": "tuples",
+						"type": "tuple[3]"
+					}
+				],
+				"name": "process13FixedComplexArray",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"components": [
+							{
+								"components": [
+									{
+										"internalType": "uint256",
+										"name": "value",
+										"type": "uint256"
+									}
+								],
+								"internalType": "struct TupleInputFunctionsContract.SimpleStruct",
+								"name": "simple",
+								"type": "tuple"
+							},
+							{
+								"components": [
+									{
+										"internalType": "address",
+										"name": "user",
+										"type": "address"
+									},
+									{
+										"internalType": "uint256",
+										"name": "amount",
+										"type": "uint256"
+									}
+								],
+								"internalType": "struct TupleInputFunctionsContract.AddressUintStruct",
+								"name": "userInfo",
+								"type": "tuple"
+							},
+							{
+								"internalType": "bool",
+								"name": "isVerified",
+								"type": "bool"
+							}
+						],
+						"internalType": "struct TupleInputFunctionsContract.NestedStruct[2]",
+						"name": "tuples",
+						"type": "tuple[2]"
+					}
+				],
+				"name": "process14FixedNestedArray",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"details": "This contract demonstrates functions that take various structs (tuples) and complex data types as input parameters. It is designed to test the interaction with functions that require both simple and complex tuples, as well as arrays.",
+			"events": {
+				"StructProcessed(string,string,bytes32)": {
+					"details": "Event emitted when a function is called."
+				}
+			},
+			"kind": "dev",
+			"methods": {
+				"process01SimpleStruct((uint256))": {
+					"params": {
+						"simple": "Struct with a `value` field."
+					}
+				},
+				"process02DoubleUintStruct((uint256,uint256))": {
+					"params": {
+						"doubleUint": "Struct with `value1` and `value2` fields."
+					}
+				},
+				"process03AddressUintStruct((address,uint256))": {
+					"params": {
+						"addressUint": "Struct with an address and a uint256 field."
+					}
+				},
+				"process04ComplexStruct((uint256,address,bool))": {
+					"params": {
+						"complex": "Struct with `id`, `user`, and `isActive` fields."
+					}
+				},
+				"process05NestedStruct(((uint256),(address,uint256),bool))": {
+					"params": {
+						"nested": "Nested struct containing other structs."
+					}
+				},
+				"process06String(string)": {
+					"params": {
+						"value": "A string field."
+					}
+				},
+				"process07Bytes32(bytes32)": {
+					"params": {
+						"value": "A bytes32 field."
+					}
+				},
+				"process08ArrayOfStructs((uint256)[])": {
+					"params": {
+						"values": "An array of SimpleStruct."
+					}
+				},
+				"process09Uint256Array(uint256[])": {
+					"params": {
+						"values": "An array of uint256 values."
+					}
+				},
+				"process10StringArray(string[])": {
+					"params": {
+						"values": "An array of string values."
+					}
+				},
+				"process11FixedAddressArray(address[3])": {
+					"params": {
+						"addresses": "A fixed-size array of 3 addresses."
+					}
+				},
+				"process12ArrayOfComplexStructs((uint256,address,bool)[])": {
+					"params": {
+						"tuples": "An array of ComplexStruct."
+					}
+				},
+				"process13FixedComplexArray((uint256,address,bool)[3])": {
+					"params": {
+						"tuples": "An array of 3 ComplexStruct."
+					}
+				},
+				"process14FixedNestedArray(((uint256),(address,uint256),bool)[2])": {
+					"params": {
+						"tuples": "An array of 2 NestedStruct."
+					}
+				}
+			},
+			"title": "TupleInputFunctionsContract",
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"process01SimpleStruct((uint256))": {
+					"notice": "Processes a simple tuple with a single uint256 field."
+				},
+				"process02DoubleUintStruct((uint256,uint256))": {
+					"notice": "Processes a tuple with two uint256 fields."
+				},
+				"process03AddressUintStruct((address,uint256))": {
+					"notice": "Processes a tuple with an address and a uint256."
+				},
+				"process04ComplexStruct((uint256,address,bool))": {
+					"notice": "Processes a more complex tuple with three mixed fields."
+				},
+				"process05NestedStruct(((uint256),(address,uint256),bool))": {
+					"notice": "Processes a tuple that contains another nested struct."
+				},
+				"process06String(string)": {
+					"notice": "Processes a struct with a string field."
+				},
+				"process07Bytes32(bytes32)": {
+					"notice": "Processes a struct with a bytes32 field."
+				},
+				"process08ArrayOfStructs((uint256)[])": {
+					"notice": "Processes an array of SimpleStruct."
+				},
+				"process09Uint256Array(uint256[])": {
+					"notice": "Processes an array of uint256 values."
+				},
+				"process10StringArray(string[])": {
+					"notice": "Processes an array of string values."
+				},
+				"process11FixedAddressArray(address[3])": {
+					"notice": "Processes a fixed-size array of addresses."
+				},
+				"process12ArrayOfComplexStructs((uint256,address,bool)[])": {
+					"notice": "Processes an array of complex structs."
+				},
+				"process13FixedComplexArray((uint256,address,bool)[3])": {
+					"notice": "Processes a fixed-size array of tuples with mixed fields."
+				},
+				"process14FixedNestedArray(((uint256),(address,uint256),bool)[2])": {
+					"notice": "Processes a fixed-size array of nested structs."
+				}
+			},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/TupleInputFunctionsContract.sol": "TupleInputFunctionsContract"
+		},
+		"evmVersion": "paris",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/TupleInputFunctionsContract.sol": {
+			"keccak256": "0x6da901f1c951635457ed470d2251df9b4cf56880dcf2a73dfbc99baadf2f4f30",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://7632a797d690d153058db2f5642b6dc7ed15e2d57d4f9d9078acc1003ee85c0b",
+				"dweb:/ipfs/QmU16rx4Uuz19wRjhP5txW3H8mnSre5Z8g5imeaioLKRQZ"
+			]
+		}
+	},
+	"version": 1
+}

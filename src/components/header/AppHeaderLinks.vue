@@ -69,7 +69,7 @@ const telos_bridgeMenuItem = {
 
 const moreSubmenuItems = {
     internal: [
-        // { name: 'export', label: $t('components.header.csv_export') },
+        { name: 'export', label: $t('components.header.csv_export') },
         { name: 'health', label: $t('components.header.health_monitor') },
     ],
     external: [

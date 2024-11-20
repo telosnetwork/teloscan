@@ -4,11 +4,12 @@ import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { toChecksumAddress } from 'src/lib/utils';
+import { SystemBalance, getSystemBalance } from 'src/lib/balance-utils';
+import { createIconFromData } from 'src/lib/blockies/blockies';
 import { getIcon } from 'src/lib/token-utils';
-import Contract from 'src/lib/contract/Contract';
-import { BalanceQueryResponse, BalanceResult } from 'src/types/BalanceResult';
 import { Token } from 'src/types/Token';
 
+import Contract from 'src/lib/contract/Contract';
 import TransactionTable from 'components/TransactionTable.vue';
 import InternalTransactionFlatTable from 'components/InternalTransactionFlatTable.vue';
 import NftTransfersTable from 'components/NftTransfersTable.vue';
@@ -23,8 +24,10 @@ import AddressQR from 'src/components/AddressQR.vue';
 import AddressOverview from 'src/components/AddressOverview.vue';
 import AddressMoreInfo from 'src/components/AddressMoreInfo.vue';
 import ContractMoreInfo from 'src/components/ContractMoreInfo.vue';
-import { useChainStore } from 'src/antelope';
+import ExportLink from 'pages/export/ExportLink.vue';
 
+import { EXPORT_DOWNLOAD_TYPES } from 'src/lib/constants';
+import { useChainStore } from 'src/antelope';
 
 const { t: $t } = useI18n();
 const route = useRoute();
@@ -36,7 +39,7 @@ const tabs = ['transactions', 'collection', 'holders', 'internaltx', 'tokens', '
 const accountLoading = ref(false);
 const title = ref('');
 const fullTitle = ref('');
-const balance = ref('0');
+const balance = ref<SystemBalance>({ balance: '0', tokenQty: '0', fiatValue: 0 });
 const contract = ref<Contract | null>(null);
 const tab = ref(tabs[0]);
 const initialLoadComplete = ref(false);
@@ -45,6 +48,16 @@ const accountAddress = computed(() => route.params.address as string ?? '');
 const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
 const address = computed(() => store.getters['login/address']);
 const isToken = computed(() => contract.value?.isToken() ?? false);
+
+watch(() => route.query.network,
+    () => {
+        initialLoadComplete.value = false;
+        loadAccount().then(() => {
+            initialLoadComplete.value = true;
+        });
+    },
+    { immediate: true },
+);
 
 watch(accountAddress, (newVal, oldVal) => {
     if (newVal !== oldVal) {
@@ -85,22 +98,13 @@ async function loadAccount() {
     if(!accountAddress.value || accountLoading.value){
         return;
     }
-    const contractManager = useChainStore().currentChain.settings.getContractManager();
     accountLoading.value = true;
+    const contractManager = useChainStore().currentChain.settings.getContractManager();
     const tokenList = await contractManager.getTokenList();
-    try {
-        const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
-        const response: BalanceQueryResponse = await indexerApi.get(
-            `/v1/account/${accountAddress.value}/balances?includeAbi=true`,
-            // `/account/${accountAddress.value}/balances?contract=___NATIVE_CURRENCY___&includeAbi=true`,
-        );
-        //TODO restore original api query when contract param query is fixed
-        const systemTokenResult = response.data.results.find((r : BalanceResult) => r.contract === '___NATIVE_CURRENCY___') as BalanceResult;
-
-        // balance.value = (response.data?.results?.length > 0) ? response.data.results[0].balance : '0';
-        balance.value = systemTokenResult ? systemTokenResult.balance : '0';
-    } catch (e) {
-        console.error('Could not get balance: ', e);
+    const fiatPrice = store.getters['chain/tlosPrice'];
+    const result = await getSystemBalance(accountAddress.value, fiatPrice);
+    if (result) {
+        balance.value = result;
     }
     contract.value = null;
     fullTitle.value = '';
@@ -134,27 +138,30 @@ async function loadAccount() {
 </script>
 
 <template>
-<div v-if="accountAddress && !accountLoading" :key="accountAddress" class="c-address q-pt-xl">
+<div v-if="accountAddress" :key="accountAddress" class="c-address q-pt-xl">
     <div class="row justify-between q-mb-lg">
         <div class="col-12">
             <div class="c-address__header">
                 <div class="c-address__header-text-container">
+                    <q-spinner
+                        v-if="accountLoading"
+                        class="c-address__header-spinner"
+                        color="primary"
+                        size="sm"
+                    />
                     <q-img
-                        v-if="contract && contract.supportedInterfaces?.includes('erc20')"
+                        v-else-if="contract && contract.supportedInterfaces?.includes('erc20')"
                         class="c-address__coin-icon"
                         :alt="contract.getName() + ' ERC20 token'"
                         :src="getIcon(contract.logoURI)"
                     />
-                    <q-icon
-                        v-else-if="!contract"
-                        name="account_circle"
-                        size="sm"
-                    />
-                    <q-icon
+                    <!-- Blockies icon for address + {{accountAddress}} -->
+                    <img
                         v-else
-                        :name="(contract.supportedInterfaces?.includes('erc721')) ? 'perm_media' : 'source'"
-                        size="sm"
-                    />
+                        :src="createIconFromData(accountAddress)"
+                        :alt="`Blockies icon for address ${accountAddress}`"
+                        class="c-address__icon"
+                    >
                     <span class="c-address__title">{{ title }}</span>
                     <span class="c-address__hex">{{ accountAddress }}</span>
                     <q-tooltip v-if="fullTitle" anchor="top middle" self="bottom middle">{{ fullTitle }} </q-tooltip>
@@ -182,7 +189,7 @@ async function loadAccount() {
                 :loadingComplete="initialLoadComplete"
             />
         </div>
-        <div class="col-12 col-md-6">
+        <div v-if="accountAddress" class="col-12 col-md-6">
             <ContractMoreInfo
                 v-if="contract"
                 :address="contract?.getCreator() ?? ''"
@@ -192,7 +199,6 @@ async function loadAccount() {
             <AddressMoreInfo
                 v-else
                 :address="accountAddress"
-                :loadingComplete="initialLoadComplete"
             />
         </div>
     </div>
@@ -291,16 +297,26 @@ async function loadAccount() {
             transition-prev="fade"
             keep-alive
         >
-            <q-tab-panel name="transactions">
+            <q-tab-panel
+                name="transactions"
+                class="c-address__panel c-address__panel-transactions"
+            >
                 <TransactionTable
                     v-if="accountAddress"
                     :title="accountAddress"
                     :account-address="accountAddress"
                 />
+                <ExportLink
+                    class="c-address__panel-export-link"
+                    :account="accountAddress"
+                    :type="EXPORT_DOWNLOAD_TYPES.transactions"
+                    :ariaLabel="$t('components.export.download_transactions_csv')"
+                />
             </q-tab-panel>
             <q-tab-panel
                 v-if="contract && contract.supportedInterfaces?.includes('erc721')"
                 name="collection"
+                class="c-address__panel c-address__panel-collection"
             >
                 <NFTList :address="contract.address" filter="contract" />
             </q-tab-panel>
@@ -320,37 +336,71 @@ async function loadAccount() {
                         && toChecksumAddress(accountAddress) === toChecksumAddress(address)
                 "
                 name="approvals"
+                class="c-address__panel c-address__panel-approvals"
             >
                 <ApprovalList type="erc20" :accountAddress="accountAddress" />
             </q-tab-panel>
-            <q-tab-panel name="nfts">
+            <q-tab-panel
+                name="nfts"
+                class="c-address__panel c-address__panel-nfts"
+            >
                 <NFTList :address="accountAddress" filter="account" />
             </q-tab-panel>
-            <q-tab-panel name="tokens">
+            <q-tab-panel
+                name="tokens"
+                class="c-address__panel c-address__panel-tokens"
+            >
                 <TokenList :address="accountAddress"/>
             </q-tab-panel>
-            <q-tab-panel name="tokentxns">
+            <q-tab-panel
+                name="tokentxns"
+                class="c-address__panel c-address__panel-tokentxns"
+            >
                 <NftTransfersTable
                     title="ERC-20 Transfers"
                     token-type="erc20"
                     :initialPageSize="10"
                     :address="accountAddress"
                 />
+                <ExportLink
+                    class="c-address__panel-export-link"
+                    :account="accountAddress"
+                    :type="EXPORT_DOWNLOAD_TYPES.erc20Transfers"
+                    :ariaLabel="$t('components.export.download_erc_20_transfers_csv')"
+                />
             </q-tab-panel>
-            <q-tab-panel name="erc721txns">
+            <q-tab-panel
+                name="erc721txns"
+                class="c-address__panel c-address__panel-erc721txns"
+            >
                 <NftTransfersTable
                     title="ERC-721 Transfers"
                     token-type="erc721"
                     :initialPageSize="10"
                     :address="accountAddress"
                 />
+                <ExportLink
+                    class="c-address__panel-export-link"
+                    :account="accountAddress"
+                    :type="EXPORT_DOWNLOAD_TYPES.erc721Transfers"
+                    :ariaLabel="$t('components.export.download_erc_721_transfers_csv')"
+                />
             </q-tab-panel>
-            <q-tab-panel name="erc1155txns">
+            <q-tab-panel
+                name="erc1155txns"
+                class="c-address__panel c-address__panel-erc1155txns"
+            >
                 <NftTransfersTable
                     title="ERC-1155 Transfers"
                     token-type="erc1155"
                     :initialPageSize="10"
                     :address="accountAddress"
+                />
+                <ExportLink
+                    class="c-address__panel-export-link"
+                    :account="accountAddress"
+                    :type="EXPORT_DOWNLOAD_TYPES.erc1155Transfers"
+                    :ariaLabel="$t('components.export.download_erc_1155_transfers_csv')"
                 />
             </q-tab-panel>
             <q-tab-panel v-if="contract" name="contract">
@@ -365,6 +415,13 @@ async function loadAccount() {
 <style lang="scss">
 .c-address {
     @include page-container;
+
+    &__icon {
+        width: 22px;
+        height: 22px;
+        margin-right: 2px;
+        border-radius: 50%;
+    }
 
     &__info-container{
         margin-bottom: 2.5rem;
@@ -404,6 +461,10 @@ async function loadAccount() {
         align-items: center;
         gap: 12px;
         flex-wrap: wrap;
+        &-spinner {
+            margin-bottom: 3px;
+        }
+
     }
 
     &__header-text-container {
@@ -440,9 +501,16 @@ async function loadAccount() {
         overflow: visible !important;
     }
 
-    // quasar overrides
-    .q-tab-panel {
+    &__panel {
         padding: 0;
+        text-align: end;
+        &-export-link {
+            background-color: var(--invert-text-color);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+            margin-right: 0px;
+        }
     }
 }
 </style>

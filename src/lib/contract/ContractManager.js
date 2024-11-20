@@ -9,8 +9,68 @@ const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/mai
 const systemContractList =
     'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json';
 
+
+class AddressCacheManager {
+    constructor() {
+        this.contractInfoByNetwork = {};
+        this.loadFromLocalStorage();
+    }
+
+    getCurrentNetwork() {
+        return useChainStore().currentChain.settings.getNetwork();
+    }
+
+    loadFromLocalStorage() {
+        const storedContractInfo = localStorage.getItem('contractInfoByNetwork');
+        if (storedContractInfo) {
+            this.contractInfoByNetwork = JSON.parse(storedContractInfo);
+        }
+    }
+
+    saveToLocalStorage() {
+        localStorage.setItem('contractInfoByNetwork', JSON.stringify(this.contractInfoByNetwork));
+    }
+
+    addContractInfo(address, name, symbol = null) {
+        const addressLower = typeof address === 'string' ? address.toLowerCase() : '';
+        const network = this.getCurrentNetwork();
+        if (!this.contractInfoByNetwork[network]) {
+            this.contractInfoByNetwork[network] = {};
+        }
+
+        const cached = this.contractInfoByNetwork[network][addressLower];
+        if (!cached || !cached.name) {
+            const info = symbol ? { name, symbol } : { name };
+            this.contractInfoByNetwork[network][addressLower] = info;
+            this.saveToLocalStorage();
+        }
+    }
+
+    existsContract(address) {
+        const addressLower = typeof address === 'string' ? address.toLowerCase() : '';
+        const network = this.getCurrentNetwork();
+        return this.contractInfoByNetwork[network] && this.contractInfoByNetwork[network][addressLower];
+    }
+
+    getContractInfo(address) {
+        const addressLower = typeof address === 'string' ? address.toLowerCase() : '';
+        const network = this.getCurrentNetwork();
+        return this.contractInfoByNetwork[network] ? this.contractInfoByNetwork[network][addressLower] : null;
+    }
+
+    clearContractInfo() {
+        const network = this.getCurrentNetwork();
+        if (this.contractInfoByNetwork[network]) {
+            this.contractInfoByNetwork[network] = {};
+            this.saveToLocalStorage();
+        }
+    }
+}
+
+
 export default class ContractManager {
     constructor(indexerApi, parser) {
+        this.nullContractsManager = new AddressCacheManager();
         this.contracts = {};
         this.processing = [];
         this.parser = parser;
@@ -18,6 +78,25 @@ export default class ContractManager {
         this.indexerApi = indexerApi;
         this.systemContractList = false;
         this.tokenList = false;
+    }
+
+    getNetworkContract(address) {
+        const network = useChainStore().currentChain.settings.getNetwork();
+        if (!this.contracts[network]) {
+            this.contracts[network] = {};
+        }
+        return this.contracts[network][address.toLowerCase()] || null;
+    }
+
+    setNetworkContract(address, contract) {
+        const network = useChainStore().currentChain.settings.getNetwork();
+        if (!this.contracts[network]) {
+            this.contracts[network] = {};
+        }
+        this.contracts[network][address.toLowerCase()] = contract;
+        if (contract) {
+            this.nullContractsManager.addContractInfo(address, contract.name, contract.properties?.symbol || null);
+        }
     }
 
     getEthersProvider() {
@@ -33,7 +112,7 @@ export default class ContractManager {
             const log = logs[i];
             const sig = log.topics[0].slice(0, 10);
             if(TRANSFER_SIGNATURES.includes(sig)){
-                const contract = await this.getContract(log.address);
+                const contract = await this.getNetworkContract(log.address);
                 if(contract && contract.supportedInterfaces.includes('erc20')){
                     transfers.push({
                         'index': log.logIndex,
@@ -88,7 +167,7 @@ export default class ContractManager {
             if(response.data.results?.length > 0){
                 for(var i = 0; i < response.data.results.length; i++){
                     let nft = response.data.results[i];
-                    this.contracts[address].nfts[nft['tokenId']] = nft;
+                    this.getNetworkContract(address).nfts[nft['tokenId']] = nft;
                 }
                 return response.data.results;
             }
@@ -98,16 +177,16 @@ export default class ContractManager {
     }
     async loadNFT(contract, tokenId){
         let address = contract.address.toLowerCase();
-        if(!this.contracts[address]) {
-            this.contracts[address] = { 'nfts': [] };
-        } else if(this.contracts[address].nfts[tokenId]){
-            return this.contracts[address].nfts[tokenId];
+        if(!this.getNetworkContract(address)) {
+            this.setNetworkContract(address, { 'nfts': [] });
+        } else if(this.getNetworkContract(address).nfts[tokenId]){
+            return this.getNetworkContract(address).nfts[tokenId];
         }
         try {
             // TODO: change endpoint based on contract interfaces
             let response = await this.indexerApi.get(`/v1/contract/${address}/nfts?tokenId=${tokenId}`);
             if(response.data.results?.length > 0){
-                this.contracts[address].nfts[tokenId] = response.data.results[0];
+                this.getNetworkContract(address).nfts[tokenId] = response.data.results[0];
                 return response.data.results[0];
             }
             console.info(`Could load NFT #${tokenId} for ${address} from indexer: no NFT found. Trying fallback...`);
@@ -120,13 +199,13 @@ export default class ContractManager {
         try {
             let contractInstance = await this.getContractFromAbi(contract.address, erc721MetadataAbi);
             let tokenURI = await contractInstance.tokenURI(tokenId);
-            this.contracts[address].nfts[tokenId] = {
+            this.getNetworkContract(address).nfts[tokenId] = {
                 'id': tokenId,
                 'tokenUri': tokenURI,
                 'metadata': null,
                 'imageCache': null,
             };
-            return this.contracts[address].nfts[tokenId];
+            return this.getNetworkContract(address).nfts[tokenId];
         } catch (e) {
             console.error(`Could load NFT #${tokenId} for ${address} from fallback RPC calls: ${e.message}`);
         }
@@ -157,22 +236,26 @@ export default class ContractManager {
         }
         let index = address.toString().toLowerCase();
         if (contractData === null) {
-            this.contracts[index] = null;
+            this.setNetworkContract(index, null);
             return;
         }
         let contract = this.factory.buildContract(contractData);
+
         if(
-            typeof this.contracts[index] === 'undefined'
-            || contract.abi?.length > 0 && !this.contracts[index].abi
-            || contract.abi?.length > 0 && contract.abi.length > this.contracts[index].abi?.length
+            !this.getNetworkContract(index) && contract?.name
+            || contract.abi?.length > 0 && !this.getNetworkContract(index)?.abi
+            || contract.abi?.length > 0 && contract.abi.length > (this.getNetworkContract(index)?.abi?.length || 0)
         ){
-            this.contracts[index] = contract;
+            this.setNetworkContract(index, contract);
         }
     }
 
     addContractsToCache(contracts){
         for(const index in contracts){
-            this.addContractToCache(index, contracts[index]);
+            // skipping non-real contracts
+            if (contracts[index].creator) {
+                this.addContractToCache(index, contracts[index]);
+            }
         }
     }
 
@@ -235,19 +318,26 @@ export default class ContractManager {
         }
         return null;
     }
-    async getContract(address, force) {
+    async getContractDisplayInfo(address) {
+        const addressLower = typeof address === 'string' ? address.toLowerCase() : '';
+        if (this.nullContractsManager.existsContract(addressLower)) {
+            return this.nullContractsManager.getContractInfo(addressLower);
+        } else {
+            // We are going to always assume that if the address is a contract, it is already in the cache
+            // Because the indexer API should always return all involved contracts in a query response
+            return null;
+        }
+    }
+    async getContractForced(address) {
         if (address === null || typeof address !== 'string') {
             return;
         }
         const addressLower = address.toLowerCase();
 
-        if (!force && typeof this.contracts[addressLower] !== 'undefined') {
-            return this.contracts[addressLower];
-        }
-
+        // if this function is repeatedly called for the same address, wait for the first call to finish
         if (this.processing.includes(addressLower)) {
             await new Promise(resolve => setTimeout(resolve, 300));
-            return await this.getContract(address);
+            return await this.getNetworkContract(addressLower);
         }
 
         this.processing.push(addressLower);
@@ -273,8 +363,28 @@ export default class ContractManager {
         if(index > -1){
             this.processing.splice(index, 1);
         }
-        return this.factory.buildContract(contract);
+        return this.getContract(address);
     }
+
+    async getContract(address, force) {
+        if (address === null || typeof address !== 'string') {
+            return null;
+        }
+
+        if (force) {
+            return await this.getContractForced(address);
+        }
+
+        const addressLower = address.toLowerCase();
+
+        const cashedContract = this.getNetworkContract(addressLower);
+        if (!force && cashedContract) {
+            return cashedContract;
+        }
+
+        return null;
+    }
+
     async getContractFromAbi(address, abi){
         return new ethers.Contract(address, abi, this.getEthersProvider());
     }
