@@ -125,43 +125,16 @@ export default defineComponent({
             const components = getComponentsForAbiInputs(this.abi?.inputs, this.models, isRoot) as unknown as inputComponents;
             return components;
         },
-        /* missingInputs() { // FIXME: remove
-            console.log('FunctionInterface.missingInputs() ...');
-            const inputs_length = this.abi.inputs.length;
-            const values_length = this.models.values.length;
-            if (inputs_length !== values_length) {
-                console.log('FunctionInterface.missingInputs()', { inputs_length, values_length }); // FIXME: remove
-                return true;
-            }
-
-            if (inputs_length !== values_length) {
-                return true;
-            }
-
-            for (let i = 0; i < this.abi.inputs.length; i++) {
-                if (['', null, undefined].includes(this.models.values[i] as never)) {
-                    console.log('FunctionInterface.missingInputs()', { i, value: this.models.values[i] }); // FIXME: remove
-                    return true;
-                }
-            }
-
-            console.log('FunctionInterface.missingInputs()', { inputs_length, values_length }); // FIXME: remove
-            return false;
-        },
-        */
     },
     methods: {
         valueParsed(inputType: string, index: number, value: EvmFunctionParam, component: InputComponent) {
-            console.log('FunctionInterface.valueParsed()', inputType, index, value); // FIXME: remove
             component.handleValueParsed(inputType, index, value);
             this.updateMissingInputs();
         },
         updateMissingInputs() {
-            console.log('FunctionInterface.updateMissingInputs() ...');
             const inputs_length = this.abi.inputs.length;
             const values_length = this.models.values.length;
             if (inputs_length !== values_length) {
-                console.log('FunctionInterface.updateMissingInputs()', { inputs_length, values_length }); // FIXME: remove
                 this.missingInputs = true;
                 return true;
             }
@@ -173,14 +146,12 @@ export default defineComponent({
 
             for (let i = 0; i < this.abi.inputs.length; i++) {
                 if (['', null, undefined].includes(this.models.values[i] as never)) {
-                    console.log('FunctionInterface.updateMissingInputs()', { i, value: this.models.values[i] }); // FIXME: remove
                     this.missingInputs = true;
                     return true;
                 }
             }
 
             const values = this.models.values;
-            console.log('FunctionInterface.updateMissingInputs()', { inputs_length, values_length, values }); // FIXME: remove
             this.missingInputs = false;
             return false;
         },
@@ -211,7 +182,6 @@ export default defineComponent({
             this.showLoginModal = true;
         },
         async run() {
-            console.log('run');
             if (!this.isLoggedIn && this.write){
                 this.login();
                 return;

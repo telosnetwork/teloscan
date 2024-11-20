@@ -45,7 +45,6 @@ export default {
         fields: [],
         isVisible: false,
         animationTimer: 0,
-        // eventEmittingTimer: 0, // FIXME: remove
         models: {
             inputs: []/* as string[]*/,                   // raw input values
             values: []/* as EvmFunctionParam[]*/,         // parsed input values
@@ -214,7 +213,7 @@ export default {
                             :key="index"
                             v-bind="component.bindings"
                             required="true"
-                            class="input-component q-pb-lg"
+                            class="tuple-struct__sub-component input-component q-pb-lg"
                             :class="{ 'last-element': index === inputComponents.length - 1 }"
                             @valueParsed="valueParsed(component.inputType, index, $event, component)"
                             @update:modelValue="handleFieldChange(component.inputType, index, $event, component, inputComponents)"
@@ -254,6 +253,11 @@ export default {
         padding-left: 16px;
         padding-left: 16px;
         transition: margin-right 1.3s;
+    }
+
+    &__sub-component {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
     }
 
 }
