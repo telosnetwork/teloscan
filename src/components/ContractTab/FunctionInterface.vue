@@ -150,8 +150,6 @@ export default defineComponent({
                     return true;
                 }
             }
-
-            const values = this.models.values;
             this.missingInputs = false;
             return false;
         },
