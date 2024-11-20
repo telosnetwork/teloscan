@@ -246,6 +246,7 @@ export default class ContractManager {
             !this.getNetworkContract(index) && contract?.name
             || contract.abi?.length > 0 && !this.getNetworkContract(index)?.abi
             || contract.abi?.length > 0 && contract.abi.length > (this.getNetworkContract(index)?.abi?.length || 0)
+            || !!contract.creationInfo?.creator
         ){
             this.setNetworkContract(index, contract);
         }
