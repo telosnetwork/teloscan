@@ -163,18 +163,6 @@ async function loadAccount() {
                         :alt="`Blockies icon for address ${accountAddress}`"
                         class="c-address__icon"
                     >
-                    <!--
-                    <q-icon
-                        v-else-if="!contract"
-                        name="account_circle"
-                        size="sm"
-                    />
-                    <q-icon
-                        v-else
-                        :name="(contract.supportedInterfaces?.includes('erc721')) ? 'perm_media' : 'source'"
-                        size="sm"
-                    />
-                    -->
                     <span class="c-address__title">{{ title }}</span>
                     <span class="c-address__hex">{{ accountAddress }}</span>
                     <q-tooltip v-if="fullTitle" anchor="top middle" self="bottom middle">{{ fullTitle }} </q-tooltip>
