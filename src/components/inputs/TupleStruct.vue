@@ -53,7 +53,6 @@ export default {
     async created() {
         // Initialize fields with empty strings or default values
         this.fields = [...this.componentDescription.map(i => i.name)];
-        console.log(`TupleStruct[${this.root}].created()`, { fields: this.fields });                                   // FIXME: remove
 
         // initialization of the translated texts
         this.placeholder = this.createPlaceholder(this.componentDescription);
@@ -90,22 +89,16 @@ export default {
             return result;
         },
         valueParsed(type/*: string*/, index/*: number*/, value/*: EvmFunctionParam*/, component/*: inputComponents*/) {
-            console.log(`TupleStruct[${this.root}].valueParsed()`, type, index, value);                                   // FIXME: remove
             // we avoid emitting the valueParsed event if the value is not defined
-            // clearTimeout(this.eventEmittingTimer); // FIXME: remove
             component.handleValueParsed(type, index, value);
             this.models.values[index] = value;
-            // const propertyName = this.componentDescription[index].name;
-            // const valueParsed = { ...toRaw(this.modelValue), [propertyName]: value };
             const valueParsed = this.getUpdatedModel();
 
             // we need to emit a correct value only if all fields are defined
             let isUndefined = this.isThereUndefinedValues(valueParsed);
             if (!isUndefined) {
-                console.log(`TupleStruct[${this.root}].valueParsed`, 'emitting valueParsed');                            // FIXME: remove
                 this.$emit('valueParsed', valueParsed);
             } else {
-                console.log(`TupleStruct[${this.root}].valueParsed`, 'emitting valueParsed with undefined');             // FIXME: remove
                 this.$emit('valueParsed', undefined);
             }
         },
@@ -129,7 +122,6 @@ export default {
             return isUndefined;
         },
         handleFieldChange(type/*: string*/, index/*: number*/, input/*: string*/, component/*: inputComponents*/, inputs/*: inputComponents[]*/) {
-            console.log(`TupleStruct[${this.root}].handleFieldChange()`, { type, index, input, inputs });                // FIXME: remove
             component.handleModelValueChange(type, index, input);
 
             const propertyName = this.componentDescription[index].name;
