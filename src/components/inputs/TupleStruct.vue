@@ -121,7 +121,7 @@ export default {
             });
             return isUndefined;
         },
-        handleFieldChange(type/*: string*/, index/*: number*/, input/*: string*/, component/*: inputComponents*/, inputs/*: inputComponents[]*/) {
+        handleFieldChange(type/*: string*/, index/*: number*/, input/*: string*/, component/*: inputComponents*/) {
             component.handleModelValueChange(type, index, input);
 
             const propertyName = this.componentDescription[index].name;
