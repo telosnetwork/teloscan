@@ -35,6 +35,7 @@ export default {
             withdraw_action_name: 'withdraw',
             withdraw_native: 'withdraw (native)',
             x_gas_used_of_y_limit: '{ amount } gas used of { limit } limit',
+            see_all_transactions: 'See all transactions',
         },
         transaction: {
             page_title: 'Transaction Details',
@@ -151,6 +152,7 @@ export default {
         overview: 'overview',
         more_info: 'more info',
         transaction_sent: 'txn sent',
+        no_transactions_yet: 'No transactions yet',
         first: 'first',
         last: 'last',
         contract_creator: 'contract creator',
