@@ -4,7 +4,7 @@ import DateField from 'components/DateField';
 import { formatWei } from 'src/lib/utils';
 import BigDecimal from 'js-big-decimal';
 import { BigNumber, ethers } from 'ethers';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 export default {
     name: 'HolderList',
     components: {

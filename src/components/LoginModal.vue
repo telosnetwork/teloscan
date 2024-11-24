@@ -21,7 +21,7 @@ import {
     getAntelope,
     useAccountStore,
     useChainStore,
-} from 'src/antelope/mocks';
+} from 'src/core/mocks';
 import { providerManager } from 'src/boot/evm';
 
 const $q = useQuasar();

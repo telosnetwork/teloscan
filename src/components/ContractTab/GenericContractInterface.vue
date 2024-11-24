@@ -13,7 +13,7 @@ import { sortAbiFunctionsByName } from 'src/lib/utils';
 import VueJsonPretty from 'vue-json-pretty';
 import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
 import AppHeaderWallet from 'src/components/header/AppHeaderWallet.vue';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 const $q = useQuasar();
 const route = useRoute();

@@ -6,7 +6,7 @@ import { toChecksumAddress } from 'src/lib/utils';
 
 import CopyButton from 'components/CopyButton.vue';
 import { useStore } from 'vuex';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 const props = defineProps({
     address: {

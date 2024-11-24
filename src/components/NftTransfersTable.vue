@@ -15,7 +15,7 @@ import { NftTransferProps, NftTransferData } from 'src/types';
 import { loadTransaction, getDirection } from 'src/lib/transaction-utils';
 import { Pagination } from 'src/types';
 import { useStore } from 'vuex';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 import { useRoute } from 'vue-router';
 
 const $route = useRoute();

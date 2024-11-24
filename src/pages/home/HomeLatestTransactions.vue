@@ -3,14 +3,14 @@ import { computed, onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { BigNumber } from 'ethers/lib/ethers';
 
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
+import { prettyPrintCurrency } from 'src/core/wallets/utils/currency-utils';
 
 import DateField from 'components/DateField.vue';
 import TransactionField from 'components/TransactionField.vue';
 import AddressField from 'src/components/AddressField.vue';
 import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
 import { useQuasar } from 'quasar';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 import { useRoute } from 'vue-router';
 
 const $q = useQuasar();

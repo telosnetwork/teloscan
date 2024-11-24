@@ -8,7 +8,7 @@ import {
 } from 'src/lib/utils';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
-import { CURRENT_CONTEXT, useAccountStore, useChainStore } from 'src/antelope/mocks';
+import { CURRENT_CONTEXT, useAccountStore, useChainStore } from 'src/core/mocks';
 
 const approveABI = [
     {

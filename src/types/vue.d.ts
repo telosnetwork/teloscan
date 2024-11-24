@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { ApiClient } from 'src/antelope/types/Api';
+import { ApiClient } from 'src/core/types/Api';
 import { ProviderManager } from 'src/boot/evm.js';
 import { User } from 'universal-authenticator-library';
 

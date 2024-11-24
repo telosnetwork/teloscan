@@ -3,7 +3,7 @@ import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 import FragmentList from 'components/Transaction/FragmentList';
 import { BigNumber } from 'ethers';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 export default {
     name: 'LogsViewer',

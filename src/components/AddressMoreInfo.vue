@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { TransactionQueryData } from 'src/types/TransactionQueryData';
 
 import TransactionField from 'components/TransactionField.vue';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();

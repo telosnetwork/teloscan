@@ -1,12 +1,12 @@
 import { ethers } from 'ethers';
 
-import { EvmTransaction, EvmTransactionLog } from 'src/antelope/types';
+import { EvmTransaction, EvmTransactionLog } from 'src/core/types';
 import { EvmTransactionExtended, NftTransferData } from 'src/types';
 import { TransactionDescription } from 'ethers/lib/utils';
 import { WEI_PRECISION, formatWei, parseErrorMessage } from 'src/lib/utils';
 
 import { toChecksumAddress } from 'src/lib/utils';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 export const tryToExtractMethod = (abi: {[hash: string]: string }, input: string) => {
     if (!abi || !input) {

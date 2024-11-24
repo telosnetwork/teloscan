@@ -1,6 +1,6 @@
 <script>
 import axios from 'axios';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 // TODO: remove this
 const API_URL = useChainStore().currentChain.settings.getMonitorUrl();

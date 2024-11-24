@@ -10,7 +10,7 @@ import { BlockData } from 'src/types';
 import { ethers } from 'ethers';
 
 import { Pagination } from 'src/types';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 const $q = useQuasar();
 const route = useRoute();

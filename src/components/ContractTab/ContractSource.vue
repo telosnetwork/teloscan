@@ -14,7 +14,7 @@ import { useRoute } from 'vue-router';
 import CopyButton from 'src/components/CopyButton.vue';
 import ContractHeader from 'components/ContractHeader.vue';
 import { MetaData } from 'src/types/MetaData';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 hljs.registerLanguage('json', json);
 hljsDefineSolidity(hljs);

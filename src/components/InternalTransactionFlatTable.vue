@@ -5,7 +5,7 @@ import TransactionField from 'components/TransactionField';
 import AddressField from 'components/AddressField';
 import ValueField from 'components/ValueField.vue';
 import { getDirection } from 'src/lib/transaction-utils';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 export default {
     name: 'InternalTransactionFlatTable',

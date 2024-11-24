@@ -7,10 +7,10 @@ import { copyToClipboard, useQuasar } from 'quasar';
 import { BigNumber } from 'ethers/lib/ethers';
 import { formatUnits } from 'ethers/lib/utils';
 
-import { truncateAddress } from 'src/antelope/wallets/utils/text-utils';
-import { useAccountStore, useChainStore } from 'src/antelope';
-import { WEI_PRECISION } from 'src/antelope/wallets/utils';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
+import { truncateAddress } from 'src/core/wallets/utils/text-utils';
+import { useAccountStore, useChainStore } from 'src/core';
+import { WEI_PRECISION } from 'src/core/wallets/utils';
+import { prettyPrintCurrency } from 'src/core/wallets/utils/currency-utils';
 
 import LoginModal from 'components/LoginModal.vue';
 import OutlineButton from 'components/OutlineButton.vue';

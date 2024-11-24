@@ -1,6 +1,6 @@
 import { BalanceQueryResponse, BalanceResult } from 'src/types/BalanceResult';
 import { WEI_PRECISION, formatWei } from 'src/lib/utils';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 export interface SystemBalance {
     balance: string;

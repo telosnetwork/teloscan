@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { WEI_PRECISION } from 'src/antelope/wallets/utils';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
+import { WEI_PRECISION } from 'src/core/wallets/utils';
+import { prettyPrintCurrency } from 'src/core/wallets/utils/currency-utils';
 import { BigNumber } from 'ethers';
 import { useStore } from 'vuex';
 import { computed, ref, watch } from 'vue';

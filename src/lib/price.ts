@@ -7,9 +7,9 @@ import {
     PriceStats,
     TokenMarketData,
     TokenPrice,
-} from 'src/antelope/types';
-import EVMChainSettings from 'src/antelope/chains/EVMChainSettings';
-import { dateIsWithinXMinutes } from 'src/antelope/stores/utils/date-utils';
+} from 'src/core/types';
+import EVMChainSettings from 'src/core/chains/EVMChainSettings';
+import { dateIsWithinXMinutes } from 'src/core/stores/utils/date-utils';
 
 interface CachedPrice {
     lastFetchTime: number | null,

@@ -8,7 +8,7 @@ import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import ImagePopup from 'src/components/ImagePopup.vue';
 import { NFT, NFT_TYPE } from 'src/types/NFT';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 import { QTableProps, useQuasar } from 'quasar';
 import { useRoute } from 'vue-router';
 

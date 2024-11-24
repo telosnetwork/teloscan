@@ -12,13 +12,13 @@ import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { formatUnits } from 'ethers/lib/utils';
 import { useRoute, useRouter } from 'vue-router';
-import { TeloscanEVMChainSettings, evmSettings, useChainStore } from 'src/antelope';
+import { TeloscanEVMChainSettings, evmSettings, useChainStore } from 'src/core';
 
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import OutlineButton from 'components/OutlineButton.vue';
 import AppSearch from 'components/AppSearch.vue';
-import { CURRENT_CONTEXT } from 'src/antelope/mocks';
+import { CURRENT_CONTEXT } from 'src/core/mocks';
 
 const $route = useRoute();
 const $router = useRouter();

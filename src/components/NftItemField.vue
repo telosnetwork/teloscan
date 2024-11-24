@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { IPFS_GATEWAY, extractNftMetadata } from 'src/antelope/stores/utils/nft-utils';
-import { useChainStore } from 'src/antelope';
+import { IPFS_GATEWAY, extractNftMetadata } from 'src/core/stores/utils/nft-utils';
+import { useChainStore } from 'src/core';
 
 const props = defineProps({
     id: {

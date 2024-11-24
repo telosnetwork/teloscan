@@ -1,5 +1,5 @@
 <script>
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 import { getCompilerOptions } from 'src/lib/contract/ContractVerification';
 import { isValidAddressFormat } from 'src/lib/utils';
 

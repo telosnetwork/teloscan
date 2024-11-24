@@ -27,7 +27,7 @@ import ContractMoreInfo from 'src/components/ContractMoreInfo.vue';
 import ExportLink from 'pages/export/ExportLink.vue';
 
 import { EXPORT_DOWNLOAD_TYPES } from 'src/lib/constants';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 const { t: $t } = useI18n();
 const route = useRoute();

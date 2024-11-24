@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 import TransactionTable from 'components/TransactionTable.vue';
 import BlockOverview from 'components/BlockOverview.vue';
 import { BlockData } from 'src/types';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 const router = useRouter();
 const route = useRoute();

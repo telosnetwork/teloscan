@@ -18,7 +18,7 @@ import TransactionFeeField from 'components/TransactionFeeField.vue';
 
 import { PaginationByKey } from 'src/types';
 import { useStore } from 'vuex';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 const $q = useQuasar();
 const route = useRoute();

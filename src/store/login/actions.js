@@ -1,4 +1,4 @@
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 export const login = async function(
     { commit, dispatch },

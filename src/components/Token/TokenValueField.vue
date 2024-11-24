@@ -2,7 +2,7 @@
 import { getIcon } from 'src/lib/token-utils';
 import { BigNumber } from 'ethers';
 import { formatWei } from 'src/lib/utils';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 export default {
     name: 'TokenValueField',
     props: {

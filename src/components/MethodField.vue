@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 
 import { ZERO_ADDRESSES } from 'src/lib/utils';
 import { useStore } from 'vuex';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 const { t: $t } = useI18n();
 

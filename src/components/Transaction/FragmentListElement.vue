@@ -5,7 +5,7 @@ import ParameterList from 'components/Transaction/ParameterList';
 import AddressField from 'components/AddressField';
 import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 export default {
     name: 'FragmentListElement',

@@ -11,7 +11,7 @@ import { useStore } from 'vuex';
 import { useQuasar } from 'quasar';
 
 import BlockField from 'components/BlockField.vue';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 import { useRoute } from 'vue-router';
 
 const $store = useStore();

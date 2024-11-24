@@ -6,7 +6,7 @@ import DEFAULT_TOKEN_LOGO from 'assets/logo--teloscan.png';
 import TokenGridElement from 'src/components/Token/TokenGridElement';
 import TokenTable from 'src/components/Token/TokenTable';
 import BigDecimal from 'js-big-decimal';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 export default {
     name: 'TokenList',

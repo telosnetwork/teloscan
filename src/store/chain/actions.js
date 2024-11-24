@@ -1,5 +1,5 @@
 import { BigNumber } from 'ethers';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 let rpcId = 0;
 

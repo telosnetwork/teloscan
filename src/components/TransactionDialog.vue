@@ -3,11 +3,11 @@ import { computed, ref } from 'vue';
 import { BigNumber } from 'ethers/lib/ethers';
 import { useI18n } from 'vue-i18n';
 
-import { truncateAddress } from 'src/antelope/wallets/utils/text-utils';
+import { truncateAddress } from 'src/core/wallets/utils/text-utils';
 import { WEI_PRECISION, ZERO_ADDRESSES, formatWei } from 'src/lib/utils';
 
 import OutlineButton from 'src/components/OutlineButton.vue';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 const $i18n = useI18n();
 const $t = $i18n.t;

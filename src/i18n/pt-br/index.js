@@ -481,7 +481,7 @@ export default {
             telos_ecosystem: 'Ecossistema Telos',
             telos_zero_explorer: 'Explorador Telos Zero',
             telos_evm_logo_alt: 'Logo do Telos EVM',
-            telos_wallet: 'Wallet',
+            telos_wallet: 'Wallet/Staking',
             telos_bridge: 'Bridge',
             transactions: 'Transações',
             internal_transactions: 'Transações Internas',

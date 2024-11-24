@@ -8,7 +8,7 @@ import ValueField from 'components/ValueField.vue';
 
 import { EvmTransactionExtended } from 'src/types';
 import { getParsedInternalTransactions } from 'src/lib/transaction-utils';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 
 const { t: $t } = useI18n();

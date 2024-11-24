@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 import OutlineButton from 'components/OutlineButton.vue';
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import AppHeaderLinks from 'components/header/AppHeaderLinks.vue';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 const $q = useQuasar();
 const { t: $t } = useI18n();

@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import MethodField from 'components/MethodField.vue';
 import AddressField from 'components/AddressField.vue';
 import ValueField from 'components/ValueField.vue';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 const { t: $t } = useI18n();
 

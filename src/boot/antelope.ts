@@ -1,6 +1,6 @@
 import { boot } from 'quasar/wrappers';
-import { initAntelope } from 'src/antelope/wallets/init';
-import { evmSettings, useChainStore } from 'src/antelope';
+import { initAntelope } from 'src/core/wallets/init';
+import { evmSettings, useChainStore } from 'src/core';
 
 export default boot(({ app }) => {
     initAntelope(app);

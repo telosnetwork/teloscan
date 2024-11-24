@@ -5,8 +5,8 @@ import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import moment from 'moment';
 
-import { getAntelope, useChainStore } from 'src/antelope';
-import { TELOS_NETWORK_NAMES } from 'src/antelope/mocks/chain-constants';
+import { getAntelope, useChainStore } from 'src/core';
+import { TELOS_NETWORK_NAMES } from 'src/core/mocks/chain-constants';
 import { providerManager } from 'src/boot/evm';
 
 const $store = useStore();

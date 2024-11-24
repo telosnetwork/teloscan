@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 import { EXPORT_DOWNLOAD_TYPES } from 'src/lib/constants';
 
 /**

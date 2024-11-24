@@ -14,7 +14,7 @@ import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 import ERCTransferList from 'components/Transaction/ERCTransferList.vue';
 import TLOSTransferList from 'components/Transaction/TLOSTransferList.vue';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 import TransactionInputViewer from 'components/Transaction/TransactionInputViewer.vue';
 import { DecodedTransactionInput, getParsedInternalTransactions } from 'src/lib/transaction-utils';
 

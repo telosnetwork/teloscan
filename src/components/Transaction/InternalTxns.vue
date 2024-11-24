@@ -3,7 +3,7 @@ import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 import FragmentList from 'components/Transaction/FragmentList.vue';
 import { getParsedInternalTransactions } from 'src/lib/transaction-utils';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 
 export default {

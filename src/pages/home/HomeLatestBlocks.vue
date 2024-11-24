@@ -2,13 +2,13 @@
 import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
+import { prettyPrintCurrency } from 'src/core/wallets/utils/currency-utils';
 import { onMounted, ref, watch } from 'vue';
 import { BlockData } from 'src/types';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { ethers } from 'ethers';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 import { useRoute } from 'vue-router';
 
 type BlockDataOrLoading = BlockData | null;

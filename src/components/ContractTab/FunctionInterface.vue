@@ -7,10 +7,10 @@ import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
 import { LOGIN_DATA_KEY } from 'src/lib/utils';
-import { useAccountStore } from 'src/antelope';
-import { CURRENT_CONTEXT, useChainStore } from 'src/antelope/wallets';
-import { EvmABI, EvmFunctionParam } from 'src/antelope/types';
-import { WEI_PRECISION } from 'src/antelope/wallets/utils';
+import { useAccountStore } from 'src/core';
+import { CURRENT_CONTEXT, useChainStore } from 'src/core/wallets';
+import { EvmABI, EvmFunctionParam } from 'src/core/types';
+import { WEI_PRECISION } from 'src/core/wallets/utils';
 import {
     asyncInputComponents,
 } from 'src/lib/function-interface-utils';

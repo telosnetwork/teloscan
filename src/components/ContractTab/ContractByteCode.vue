@@ -1,6 +1,6 @@
 <script lang="javascript">
 
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 export default {
     name: 'ContractByteCode',
