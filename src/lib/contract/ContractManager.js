@@ -4,7 +4,7 @@ import axios from 'axios';
 import { getTopicHash } from 'src/lib/utils';
 import { ERC1155_TRANSFER_SIGNATURE, TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures.js';
 import { erc1155Abi, erc721MetadataAbi } from 'src/lib/abi';
-import { useChainStore } from 'src/antelope';
+import { getAntelope, useChainStore } from 'src/core';
 const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 const systemContractList =
     'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json';
@@ -78,7 +78,6 @@ export default class ContractManager {
         this.indexerApi = indexerApi;
         this.systemContractList = false;
         this.tokenList = false;
-        this.ethersProvider = new ethers.providers.JsonRpcProvider(process.env.NETWORK_EVM_RPC);
     }
 
     getNetworkContract(address) {
@@ -101,7 +100,7 @@ export default class ContractManager {
     }
 
     getEthersProvider() {
-        return this.ethersProvider;
+        return getAntelope().wallets.getWeb3Provider();
     }
     async getTransfers(raw) {
         if(!raw.logs || raw.logs?.length === 0){
@@ -164,7 +163,7 @@ export default class ContractManager {
     async loadNFTs(contract){
         let address = contract.address.toLowerCase();
         try {
-            let response = await this.indexerApi.get(`/contract/${address}/nfts`);
+            let response = await this.indexerApi.get(`/v1/contract/${address}/nfts`);
             if(response.data.results?.length > 0){
                 for(var i = 0; i < response.data.results.length; i++){
                     let nft = response.data.results[i];
@@ -185,7 +184,7 @@ export default class ContractManager {
         }
         try {
             // TODO: change endpoint based on contract interfaces
-            let response = await this.indexerApi.get(`/contract/${address}/nfts?tokenId=${tokenId}`);
+            let response = await this.indexerApi.get(`/v1/contract/${address}/nfts?tokenId=${tokenId}`);
             if(response.data.results?.length > 0){
                 this.getNetworkContract(address).nfts[tokenId] = response.data.results[0];
                 return response.data.results[0];
@@ -344,7 +343,7 @@ export default class ContractManager {
         this.processing.push(addressLower);
         let contract = null;
         try {
-            let response = await this.indexerApi.get(`/contract/${address}?full=true&includeAbi=true`);
+            let response = await this.indexerApi.get(`/v1/contract/${address}?full=true&includeAbi=true`);
             if(response.data?.success && response.data.results.length > 0){
                 contract = response.data.results[0];
             }

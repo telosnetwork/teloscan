@@ -3,8 +3,6 @@
 import { onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { indexerApi } from 'src/boot/telosApi';
-
 import TransactionField from 'components/TransactionField.vue';
 import ValueField from 'components/ValueField.vue';
 import MethodField from 'components/MethodField.vue';
@@ -17,7 +15,10 @@ import { NftTransferProps, NftTransferData } from 'src/types';
 import { loadTransaction, getDirection } from 'src/lib/transaction-utils';
 import { Pagination } from 'src/types';
 import { useStore } from 'vuex';
+import { useChainStore } from 'src/core';
+import { useRoute } from 'vue-router';
 
+const $route = useRoute();
 const { t: $t } = useI18n();
 const $store = useStore();
 const toggleDisplayDecimals = () => $store.dispatch('general/toggleDisplayDecimals');
@@ -164,7 +165,7 @@ const truncatedId = (id: string) => {
 
 const getPath = (settings: { pagination: Pagination }) => {
     const { page, rowsPerPage, descending } = settings.pagination;
-    let path = `/account/${props.address}/transfers?limit=${
+    let path = `/v1/account/${props.address}/transfers?limit=${
         rowsPerPage === 0 ? 10 : rowsPerPage
     }`;
     path += `&type=${props.tokenType}`;
@@ -182,6 +183,7 @@ const resolveMethodName = async (transfer: NftTransferData) => {
 
 const onRequest = async (settings: { pagination: Pagination}) => {
     loading.value = true;
+    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
 
     const { page, rowsPerPage, sortBy, descending } = settings.pagination;
 
@@ -294,6 +296,10 @@ watch(() => props.tokenType, () => {
     updateLoadingRows();
 },
 { immediate: true });
+
+watch(() => $route.query.network, () => {
+    onRequest({ pagination: pagination.value });
+});
 
 onMounted(() => {
     updateCols();

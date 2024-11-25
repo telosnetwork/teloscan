@@ -1,7 +1,7 @@
 import { InputComponent, inputComponents, InputDescription } from 'src/types';
 import { getComponentForInputType, getExpectedArrayLengthFromParameterType, getIntegerBits, inputIsComplex, parameterIsArrayType, parameterIsIntegerType, parameterTypeIsBoolean, parameterTypeIsSignedIntArray, parameterTypeIsTupleStruct, parameterTypeIsTupleStructArray, parameterTypeIsUnsignedIntArray } from 'src/lib/function-interface-utils';
 import { toRaw } from 'vue';
-import { EvmFunctionParam } from 'src/antelope/types';
+import { EvmFunctionParam } from 'src/core/types';
 
 export function getComponentsForAbiInputs(inputs: InputDescription[], models: {inputs: string[], values: EvmFunctionParam[]}, isRoot: boolean): inputComponents {
     // inputs must be an array

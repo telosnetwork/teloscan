@@ -5,7 +5,7 @@ import TransactionField from 'components/TransactionField';
 import AddressField from 'components/AddressField';
 import ValueField from 'components/ValueField.vue';
 import { getDirection } from 'src/lib/transaction-utils';
-import { useChainStore } from 'src/antelope';
+import { useChainStore } from 'src/core';
 
 export default {
     name: 'InternalTransactionFlatTable',
@@ -36,6 +36,11 @@ export default {
             // when usePagination is false, we set the rowsPerPage to initialPageSize
             type: Boolean,
             default: true,
+        },
+    },
+    computed: {
+        rowsToShow() {
+            return this.loading? this.loadingRows : this.rows;
         },
     },
     data() {
@@ -117,27 +122,37 @@ export default {
     },
     watch: {
         '$route.query.page': {
-            handler(_pag) {
-                let pag = _pag;
-                let page = 1;
-                let size = this.usePagination ? this.page_size_options[0] : this.initialPageSize;
-
-                // we also allow to pass a single number as the page number
-                if (typeof pag === 'number') {
-                    page = pag;
-                } else if (typeof pag === 'string') {
-                    // we also allow to pass a string of two numbers: 'page,rowsPerPage'
-                    const [p, s] = pag.split(',');
-                    page = p;
-                    size = s;
-                }
-
-                this.setPagination(page, size);
+            handler() {
+                this.updateData();
             },
             immediate: true,
         },
+        '$route.query.network': {
+            handler() {
+                this.loading = true;
+                this.rows = [];
+                this.updateData();
+            },
+        },
     },
     methods: {
+        updateData() {
+            const _pag = this.$route.query.page;
+            let pag = _pag;
+            let page = 1;
+            let size = this.page_size_options[0];
+
+            // we also allow to pass a single number as the page number
+            if (typeof pag === 'number') {
+                page = pag;
+            } else if (typeof pag === 'string') {
+                // we also allow to pass a string of two numbers: 'page,rowsPerPage'
+                const [p, s] = pag.split(',');
+                page = p;
+                size = s;
+            }
+            this.setPagination(page, size);
+        },
         getDirection: getDirection,
         updateLoadingRows() {
             this.loadingRows = [];
@@ -188,12 +203,10 @@ export default {
             this.rows = [];
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
             const path = this.getPath(props);
-            let result = await this.$indexerApi.get(path);
-            if (!result.results && result.data?.results) {
-                result = result.data;
-            }
-            if (this.pagination.rowsNumber === 0 && result.total_count) {
-                this.pagination.rowsNumber = result.total_count;
+            const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+            let result = await indexerApi.get(path);
+            if (!this.pagination.rowsNumber) {
+                this.pagination.rowsNumber = result.data.total_count;
             }
             this.pagination.page = page;
             this.pagination.rowsPerPage = rowsPerPage;
@@ -292,7 +305,7 @@ if(row.get("timeStamp") != null){
 <q-table
     v-model:pagination="pagination"
     class="c-inttrx-flat__table"
-    :rows="loading? loadingRows : rows"
+    :rows="rowsToShow"
     :row-key="row => row.hash"
     :columns="columns"
     :rows-per-page-options="page_size_options"

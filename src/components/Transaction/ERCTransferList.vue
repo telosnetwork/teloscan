@@ -5,13 +5,13 @@ import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import { BigNumber } from 'ethers';
 
-import { EvmLogs  } from 'src/antelope/types/EvmLog';
+import { EvmLogs  } from 'src/core/types/EvmLog';
 import AddressField from 'components/AddressField.vue';
 import ValueField from 'components/ValueField.vue';
 import { ERC721Transfer, ERC1155Transfer, ERC20Transfer, TokenBasicData } from 'src/types';
 
-import { contractManager } from 'src/boot/telosApi';
-import { TRANSFER_SIGNATURES } from 'src/antelope/types';
+import { TRANSFER_SIGNATURES } from 'src/core/types';
+import { useChainStore } from 'src/core';
 
 const $q = useQuasar();
 const { t: $t } = useI18n();
@@ -45,6 +45,8 @@ const loadTransfers = async () => {
         emit('transfers-count', 0);
         return;
     }
+
+    const contractManager = useChainStore().currentChain.settings.getContractManager();
 
     const logs = props.logs as EvmLogs;
 

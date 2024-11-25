@@ -26,8 +26,8 @@ body.body--light {
     --active-tab-bg-color: #{$tab-active-light};
     --active-tab-text-color: white;
 
-    --q-primary: #2a8de3 !important;
-    --q-secondary: #8B3F98 !important;
+    // --q-primary: #2a8de3 !important;
+    // --q-secondary: #8B3F98 !important;
 
     --scrollbar-track-bg-color: #{$grey-5};
     --scrollbar-thumb-bg-color: #{$grey-7};
@@ -59,8 +59,8 @@ body.body--dark {
     --active-tab-bg-color: #{#{$tab-active-dark}};
     --active-tab-text-color: white;
 
-    --q-primary: #2a8de3 !important;
-    --q-secondary: #8B3F98 !important;
+//     --q-primary: #2a8de3 !important;
+//     --q-secondary: #8B3F98 !important;
 
     --scrollbar-track-bg-color: #{$grey-10};
     --scrollbar-thumb-bg-color: #{$grey-7};

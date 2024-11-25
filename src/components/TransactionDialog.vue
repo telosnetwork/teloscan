@@ -3,10 +3,11 @@ import { computed, ref } from 'vue';
 import { BigNumber } from 'ethers/lib/ethers';
 import { useI18n } from 'vue-i18n';
 
-import { truncateAddress } from 'src/antelope/wallets/utils/text-utils';
+import { truncateAddress } from 'src/core/wallets/utils/text-utils';
 import { WEI_PRECISION, ZERO_ADDRESSES, formatWei } from 'src/lib/utils';
 
 import OutlineButton from 'src/components/OutlineButton.vue';
+import { useChainStore } from 'src/core';
 
 const $i18n = useI18n();
 const $t = $i18n.t;
@@ -130,7 +131,7 @@ function formatTlos(value: string) {
                     </div>
                     <div>
                         <strong>{{ $t('pages.transactions.transaction_fee_label') }}:</strong>
-                        <p>{{ totalGasFee }} TLOS </p>
+                        <p>{{ totalGasFee }} {{ useChainStore().currentChain.settings.getSystemToken().symbol }}</p>
                     </div>
                     <div>
                         <strong>{{ $t('pages.transactions.gas_info_label') }}:</strong>

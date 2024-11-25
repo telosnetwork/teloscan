@@ -6,6 +6,7 @@ import { BigNumber } from 'ethers';
 import BigDecimal from 'js-big-decimal';
 import { getIcon } from 'src/lib/token-utils';
 import { APPROVAL_SIGNATURES, ERC_APPROVAL_SIGNATURE } from 'src/lib/abi/signature/approval_signatures';
+import { useChainStore } from 'src/core';
 
 const INFINITE = BigNumber.from('115792089237316195423570985008687907853269984665640560039451964907916451577029');
 
@@ -50,7 +51,7 @@ export default {
             for (const log of this.logs) {
                 let sig = log.topics[0].substr(0, 10);
                 if (APPROVAL_SIGNATURES.includes(sig)) {
-                    let contract = await this.$contractManager.getContract(log.address);
+                    let contract = await useChainStore().currentChain.settings.getContractManager().getContract(log.address);
                     if (!contract || contract.supportedInterfaces === null) {
                         continue;
                     }

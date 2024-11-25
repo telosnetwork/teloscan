@@ -5,6 +5,7 @@ import ParameterList from 'components/Transaction/ParameterList';
 import AddressField from 'components/AddressField';
 import { formatWei } from 'src/lib/utils';
 import { BigNumber } from 'ethers';
+import { useChainStore } from 'src/core';
 
 export default {
     name: 'FragmentListElement',
@@ -87,6 +88,9 @@ export default {
                 this.fragment.value && this.fragment.value !== '0.0' ||
                 !this.fragment.name
             );
+        },
+        systemSymbol(){
+            return useChainStore().currentChain.settings.getSystemToken().symbol;
         },
     },
 };
@@ -186,7 +190,7 @@ export default {
                             <span>{{ $t('components.transaction.value_uint256').toLowerCase() }}</span>
                         </div>
                         <div class="col-8">
-                            {{ fragment.value }} TLOS
+                            {{ fragment.value }} {{ systemSymbol }}
                         </div>
                     </div>
                 </div>

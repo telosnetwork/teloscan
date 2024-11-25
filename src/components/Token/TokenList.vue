@@ -6,6 +6,7 @@ import DEFAULT_TOKEN_LOGO from 'assets/logo--teloscan.png';
 import TokenGridElement from 'src/components/Token/TokenGridElement';
 import TokenTable from 'src/components/Token/TokenTable';
 import BigDecimal from 'js-big-decimal';
+import { useChainStore } from 'src/core';
 
 export default {
     name: 'TokenList',
@@ -27,6 +28,17 @@ export default {
     async mounted() {
         await this.loadTokens();
     },
+
+    // if the url network parameter changes, we need to reload the tokens
+    watch: {
+        '$route.query.network': {
+            handler() {
+                this.tokens = false;
+                this.tokensOfficial = false;
+                this.loadTokens();
+            },
+        },
+    },
     methods: {
         checkTokenList(address, tokenList){
             return tokenList.tokens.filter((token) => {
@@ -40,14 +52,16 @@ export default {
                 return;
             }
             this.processing = true;
-            const tokenList = await this.$contractManager.getTokenList();
-            const response = await this.$indexerApi.get(`/account/${this.address}/balances?limit=1000`);
+            const tokenList = await useChainStore().currentChain.settings.getContractManager().getTokenList();
+            const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+            const response = await indexerApi.get(`/v1/account/${this.address}/balances?limit=1000`);
             let tokens = [];
             let tokensOfficial = [];
+            const contractManager = useChainStore().currentChain.settings.getContractManager();
             await Promise.all(await response.data.results.map(async (result) => {
                 let token = this.checkTokenList(result.contract.toLowerCase(), tokenList);
                 if(token){
-                    const contract = await this.$contractManager.getContract(token.address, true);
+                    const contract = await contractManager.getContract(token.address, true);
                     if(!contract || !contract.supportedInterfaces.includes('erc20')){
                         return;
                     }
@@ -72,7 +86,7 @@ export default {
                     tokensOfficial.push(token);
                     return token;
                 } else if(result.contract !== '___NATIVE_CURRENCY___'){
-                    let contract = await this.$contractManager.getContract(result.contract);
+                    let contract = await contractManager.getContract(result.contract);
                     result.address = contract.address;
                     result.name = contract.name;
                     result.symbol = contract.properties?.symbol;

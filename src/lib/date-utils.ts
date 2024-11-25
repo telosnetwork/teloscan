@@ -1,4 +1,4 @@
-import { DAY_SECONDS, HOUR_SECONDS } from 'src/antelope/wallets/utils/date-utils';
+import { DAY_SECONDS, HOUR_SECONDS } from 'src/core/wallets/utils/date-utils';
 
 /**
  * Translates a number of seconds to a natural language time period using the given translation function.

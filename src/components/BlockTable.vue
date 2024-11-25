@@ -4,14 +4,13 @@ import { useRoute, useRouter } from 'vue-router';
 import { onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
-import { indexerApi } from 'src/boot/telosApi';
-
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import { BlockData } from 'src/types';
 import { ethers } from 'ethers';
 
 import { Pagination } from 'src/types';
+import { useChainStore } from 'src/core';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -70,11 +69,12 @@ const columns = [
     },
 ];
 
-watch(() => route.query.page,
-    (pageParam) => {
+watch(() => route.query,
+    () => {
         let page = 1;
         let desc = true;
         let size = page_size_options[0];
+        const pageParam = route.query.page;
 
         // we also allow to pass a single number as the page number
         if (typeof pageParam === 'number') {
@@ -122,6 +122,7 @@ async function onPaginationChange(settings: { pagination: Pagination}) {
 
 async function fetchBlocksPage() {
     const path = getPath();
+    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
     const result = await indexerApi.get(path);
     if (pagination.value.rowsNumber === 0) {
         pagination.value.rowsNumber = result.data?.total_count ?? 0;
@@ -165,7 +166,7 @@ async function parseBlocks() {
 
 function getPath() {
     const { page, rowsPerPage, descending } = pagination.value;
-    let path = `blocks?limit=${
+    let path = `v1/blocks?limit=${
         rowsPerPage === 0 ? 25 : rowsPerPage
     }`;
     path += `&offset=${(page - 1) * rowsPerPage}`;

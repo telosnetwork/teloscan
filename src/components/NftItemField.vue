@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-
-import { indexerApi } from 'src/boot/telosApi';
-import { IPFS_GATEWAY, extractNftMetadata } from 'src/antelope/stores/utils/nft-utils';
+import { IPFS_GATEWAY, extractNftMetadata } from 'src/core/stores/utils/nft-utils';
+import { useChainStore } from 'src/core';
 
 const props = defineProps({
     id: {
@@ -25,6 +24,7 @@ onMounted(() => {
     const contract = props.contract.address;
     const tokenId = props.id;
     const url = `https://api.teloscan.io/v1/contract/${contract}/nfts?tokenId=${tokenId}`;
+    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
     indexerApi.get(url).then(async (response) => {
         const indexerData = response.data.results[0];
 

@@ -1,20 +1,21 @@
 <script setup lang="ts">
-import { computed, onBeforeMount, ref } from 'vue';
+import { computed, onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { BigNumber } from 'ethers/lib/ethers';
 
-import { indexerApi } from 'src/boot/telosApi';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
-import { WEI_PRECISION } from 'src/lib/utils';
+import { prettyPrintCurrency } from 'src/core/wallets/utils/currency-utils';
 
 import DateField from 'components/DateField.vue';
 import TransactionField from 'components/TransactionField.vue';
 import AddressField from 'src/components/AddressField.vue';
 import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
 import { useQuasar } from 'quasar';
+import { useChainStore } from 'src/core';
+import { useRoute } from 'vue-router';
 
 const $q = useQuasar();
 const $i18n = useI18n();
+const $route = useRoute();
 const locale = $i18n.locale.value;
 const { t: $t } = $i18n;
 
@@ -32,10 +33,15 @@ const loading = ref(true);
 
 const truncateHash = computed(() => $q.screen.width > 1024 && $q.screen.width <= 1240 ? 8 : 20);
 
-onBeforeMount(async () => {
-    const response = await indexerApi.get('transactions?limit=6&includeAbi=true');
+const update = async () => {
+    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+    const response = await indexerApi.get('v1/transactions?limit=6');
     transactions.value = response.data.results;
     loading.value = false;
+};
+
+onBeforeMount(async () => {
+    update();
 });
 
 function getTlosValue(value: string) {
@@ -44,12 +50,18 @@ function getTlosValue(value: string) {
         0,
         locale,
         false,
-        'TLOS',
+        useChainStore().currentChain.settings.getSystemToken().symbol,
         false,
-        WEI_PRECISION,
+        useChainStore().currentChain.settings.getSystemToken().decimals,
         true,
     );
 }
+
+watch(() => $route.query, () => {
+    loading.value = true;
+    update();
+});
+
 </script>
 
 <template>

@@ -1,4 +1,4 @@
-import { EvmFunctionParam } from 'src/antelope/types';
+import { EvmFunctionParam } from 'src/core/types';
 import { InputDescription } from 'src/types/AbiFunction';
 
 export interface InputComponent {

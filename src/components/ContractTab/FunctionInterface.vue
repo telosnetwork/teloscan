@@ -7,10 +7,10 @@ import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
 import { LOGIN_DATA_KEY } from 'src/lib/utils';
-import { useAccountStore } from 'src/antelope';
-import { CURRENT_CONTEXT } from 'src/antelope/wallets';
-import { EvmABI, EvmFunctionParam } from 'src/antelope/types';
-import { WEI_PRECISION } from 'src/antelope/wallets/utils';
+import { useAccountStore } from 'src/core';
+import { CURRENT_CONTEXT, useChainStore } from 'src/core/wallets';
+import { EvmABI, EvmFunctionParam } from 'src/core/types';
+import { WEI_PRECISION } from 'src/core/wallets/utils';
 import {
     asyncInputComponents,
 } from 'src/lib/function-interface-utils';
@@ -217,8 +217,12 @@ export default defineComponent({
             this.endLoading();
         },
         async getEthersFunction(provider?: ethers.providers.JsonRpcSigner | ethers.providers.JsonRpcProvider) {
-            const contractInstance = await this.$contractManager.getContractInstance(this.contract, provider);
-            return contractInstance[this.functionABI];
+            const contractInstance = await useChainStore().currentChain.settings.getContractManager().getContractInstance(this.contract, provider);
+            if (!contractInstance) {
+                throw new Error('Contract not found');
+            } else {
+                return contractInstance[this.functionABI];
+            }
         },
         runRead() {
             return this.getEthersFunction()
@@ -241,8 +245,16 @@ export default defineComponent({
             const gasEstimater = contractInstance.estimateGas[this.functionABI];
             const gasLimit = await gasEstimater(...this.models.values, Object.assign({ from: this.address }, opts));
             const unsignedTrx = await func(...this.models.values, opts);
-            const nonce = parseInt(await this.$evm.telos.getNonce(this.address), 16);
-            const gasPrice = BigNumber.from(`0x${await this.$evm.telos.getGasPrice()}`);
+            const chain = useChainStore().currentChain;
+            const evm = chain.settings.getNativeSupport();
+            if (!evm) {
+                // we need to notify the user that the chain does not support native contracts
+                this.errorMessage = this.$t('components.native_not_supported');
+                this.endLoading();
+                return;
+            }
+            const nonce = parseInt(await evm.telos.getNonce(this.address), 16);
+            const gasPrice = BigNumber.from(`0x${await evm.telos.getGasPrice()}`);
             unsignedTrx.nonce = nonce;
             unsignedTrx.gasLimit = gasLimit;
             unsignedTrx.gasPrice = gasPrice;
@@ -285,7 +297,7 @@ export default defineComponent({
             const trxBuffer = Buffer.from(raw.replace(/^0x/, ''), 'hex');
 
             const tx = Transaction.fromSerializedTx(trxBuffer, {
-                common: this.$evm.chainConfig,
+                common: evm.chainConfig,
             });
 
             this.hash = `0x${tx?.hash().toString('hex')}`;
@@ -305,7 +317,7 @@ export default defineComponent({
                 keyMsg = 'notification.neutral_message_custom_call_send';
                 keyErr = 'notification.error_message_custom_call_send';
                 const quantity = ethers.utils.formatUnits(value, WEI_PRECISION);
-                const symbol = 'TLOS';
+                const symbol = useChainStore().currentChain.settings.getSystemToken().symbol;
                 message = this.$t(keyMsg, { name, params, quantity, symbol });
                 error = this.$t(keyErr, { name, params, quantity, symbol });
             }
