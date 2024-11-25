@@ -35,6 +35,7 @@ export default {
             withdraw_action_name: 'Auszahlung',
             withdraw_native: 'Auszahlung (nativ)',
             x_gas_used_of_y_limit: '{ amount } Gas verwendet von { limit } Limit',
+            see_all_transactions: 'Alle Transaktionen anzeigen',
         },
         transaction: {
             page_title: 'Details der Transaktion',
