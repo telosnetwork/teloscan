@@ -4,13 +4,15 @@ import {
     onBeforeMount,
     onBeforeUnmount,
     ref,
+    watch,
 } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useStore } from 'vuex';
 import { useQuasar } from 'quasar';
 
 import BlockField from 'components/BlockField.vue';
-import { indexerApi, telosApi } from 'src/boot/telosApi';
+import { useChainStore } from 'src/core';
+import { useRoute } from 'vue-router';
 
 const $store = useStore();
 const $q = useQuasar();
@@ -60,12 +62,14 @@ function fetchLatestBlock() {
 }
 
 async function fetchTotalTransactions() {
-    const response = await indexerApi.get('/transactions?limit=1&next=-1&offset=0&includeAbi=false&includePagination=true&includeTransfers=false&full=false');
+    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+    const response = await indexerApi.get('/v1/transactions?limit=0&next=-1&offset=0&includeAbi=false&includePagination=true&includeTransfers=false&full=false');
     transactionsCount.value = response.data.total_count;
 }
 
 async function fetchMarketCap() {
     try {
+        const telosApi = useChainStore().currentChain.settings.getTelosApi();
         const response = await telosApi.get('/supply/total');
         const totalSupply = response.data;
         const usdMarketCap = totalSupply * tlosPrice.value;
@@ -100,6 +104,17 @@ function updateFigures() {
         }
     });
 }
+
+const $route = useRoute();
+const lastBlockKnown = ref<number>(0);
+watch(() => $route.query, () => {
+    marketCap.value = 0;
+    transactionsCount.value = 0;
+    initialLoadComplete.value = false;
+    lastBlockKnown.value = latestBlock.value;
+    updateFigures();
+});
+
 </script>
 
 <template>
@@ -109,7 +124,7 @@ function updateFigures() {
             <div class="c-home-info__label-container">
                 <img
                     class="c-home-info__icon"
-                    src="branding/telos.png"
+                    :src="useChainStore().currentChain.settings.getSystemToken().logo"
                     height="14"
                     width="14"
                 >
@@ -141,7 +156,7 @@ function updateFigures() {
                 {{ $t('pages.home.last_finalized_block') }}
             </span>
             <br>
-            <q-skeleton v-if="latestBlock === 0" type="text" class="c-home-info__skeleton" />
+            <q-skeleton v-if="latestBlock === lastBlockKnown" type="text" class="c-home-info__skeleton" />
             <BlockField
                 v-else
                 class="c-home-info__number"

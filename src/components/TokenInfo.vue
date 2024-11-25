@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n';
-import { formatWei } from 'src/antelope/wallets/utils';
+import { formatWei } from 'src/core/wallets/utils';
 
 const { t: $t } = useI18n();
 

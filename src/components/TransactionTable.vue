@@ -6,8 +6,6 @@ import { onBeforeMount, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getDirection } from 'src/lib/transaction-utils';
-import { contractManager, indexerApi } from 'src/boot/telosApi';
-import { WEI_PRECISION } from 'src/lib/utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
@@ -18,8 +16,9 @@ import TransactionDialog from 'components/TransactionDialog.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 
-import { Pagination, PaginationByKey } from 'src/types';
+import { PaginationByKey } from 'src/types';
 import { useStore } from 'vuex';
+import { useChainStore } from 'src/core';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -163,7 +162,7 @@ function setPagination(page: number, size: number, desc: boolean) {
     parseTransactions();
 }
 
-async function onPaginationChange(settings: { pagination: Pagination}) {
+async function onPaginationChange(settings: { pagination: { sortBy: string; descending: boolean; page: number; rowsPerPage: number; } }) {
     const { page, rowsPerPage, descending } = settings.pagination;
     pagination.value.page = page;
     pagination.value.rowsPerPage = rowsPerPage;
@@ -191,8 +190,8 @@ async function parseTransactions() {
 
     try {
         const path = await getPath();
-        let response = await indexerApi.get(path);
-        totalRows.value = response.data.total_count;
+        let response = await useChainStore().currentChain.settings.getIndexerApi().get(path);
+        totalRows.value = response.data?.total_count;
         const results = response.data.results;
 
         pagination.value.rowsPerPage = rowsPerPage;
@@ -213,13 +212,13 @@ async function parseTransactions() {
                     continue;
                 }
 
-                const contract = await contractManager.getContract(transaction.to);
+                const contract = await useChainStore().currentChain.settings.getContractManager().getContract(transaction.to);
 
                 if (!contract) {
                     continue;
                 }
 
-                const parsedTransaction = await contractManager.parseContractTransaction(
+                const parsedTransaction = await useChainStore().currentChain.settings.getContractManager().parseContractTransaction(
                     transaction, transaction.input, contract, true,
                 );
                 if (parsedTransaction) {
@@ -261,18 +260,20 @@ async function parseTransactions() {
 
 async function getPath() {
     const { page, rowsPerPage, descending } = pagination.value;
-    const limit = rowsPerPage === 0 ? 50 : Math.max(Math.min(rowsPerPage, props.initialPageSize), 10);
+    const limit = rowsPerPage;
+    console.assert(limit > 0, `Rows per page must be greater than 0, got ${limit}`);
     let path = '';
 
     if (props.accountAddress) {
-        path = `address/${props.accountAddress}/transactions?limit=${limit}`;
+        path = `v1/address/${props.accountAddress}/transactions?limit=${limit}`;
         path += `&offset=${(page - 1) * rowsPerPage}`;
     } else {
-        path = `transactions?limit=${limit}`;
-        if (page === 1 || pagination.value.initialKey === 0) {
-            let response = await indexerApi.get('transactions?includePagination=true&limit=1');
-            const firstKey = response.data.results[0]?.id || 0;
-            pagination.value.initialKey = firstKey + 1;
+        path = `v1/transactions?limit=${limit}`;
+        if (pagination.value.initialKey === 0) {
+            // in the case of the first query, we need to get the initial key
+            let response = await useChainStore().currentChain.settings.getIndexerApi().get('v1/transactions?includePagination=true&key=0');
+            const next = response.data.next;
+            pagination.value.initialKey = next + 1;
         }
         let currentKey = pagination.value.initialKey - ((page - 1) * rowsPerPage);
         if (currentKey < 0) {
@@ -329,7 +330,6 @@ onBeforeMount(() => {
         {{ $t('pages.transactions.five_hundred_k_disclaimer', { total: totalRows.toLocaleString(locale) }) }}
     </div>
 </div>
-
 
 <q-card>
     <q-table
@@ -450,8 +450,8 @@ onBeforeMount(() => {
                 <q-td key='value' :props="props" class="c-transaction-table__cell">
                     <ValueField
                         :value="props.row.value"
-                        :symbol="'TLOS'"
-                        :decimals="WEI_PRECISION"
+                        :symbol="useChainStore().currentChain.settings.getSystemToken().symbol"
+                        :decimals="useChainStore().currentChain.settings.getSystemToken().decimals"
                     />
                 </q-td>
                 <q-td key='fee' :props="props" class="c-transaction-table__cell">
@@ -515,34 +515,11 @@ onBeforeMount(() => {
         </template>
         <template v-slot:body="">
             <q-tr>
-                <q-td key="preview" class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key="hash" class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key="method" class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key="block"  class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key="date">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td v-if="accountAddress" key="direction">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key="from"  class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key="to"  class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key='value' class="c-transaction-table__cell">
-                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
-                </q-td>
-                <q-td key='fee' class="c-transaction-table__cell">
+                <q-td
+                    v-for="col in columns"
+                    :key="col.name"
+                    class="c-transaction-table__cell"
+                >
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
                 </q-td>
             </q-tr>
@@ -578,7 +555,7 @@ onBeforeMount(() => {
     }
 
     &__cell {
-        padding: 7px 13px !important;
+        padding: 7px 9px !important;
     }
 }
 </style>

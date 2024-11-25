@@ -1,6 +1,6 @@
-import { indexerApi } from 'src/boot/telosApi';
 import { BalanceQueryResponse, BalanceResult } from 'src/types/BalanceResult';
 import { WEI_PRECISION, formatWei } from 'src/lib/utils';
+import { useChainStore } from 'src/core';
 
 export interface SystemBalance {
     balance: string;
@@ -10,8 +10,10 @@ export interface SystemBalance {
 
 export async function getSystemBalance(address: string, fiatPrice: string): Promise<SystemBalance | null> {
     try {
+        const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+
         const response: BalanceQueryResponse = await indexerApi.get(
-            `/account/${address}/balances?includeAbi=true`,
+            `/v1/account/${address}/balances?includeAbi=true`,
         );
         //TODO restore original api query when contract param query is fixed
         const systemTokenResult = response.data.results.find((r : BalanceResult) => r.contract === '___NATIVE_CURRENCY___') as BalanceResult;

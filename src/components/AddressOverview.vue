@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
-import { prettyPrintFiatBalance } from 'src/antelope/wallets/utils';
-import { useChainStore } from 'src/antelope';
+import { prettyPrintFiatBalance } from 'src/core/wallets/utils';
+import { useChainStore } from 'src/core';
 import { SystemBalance } from 'src/lib/balance-utils';
 
 const $store = useStore();
@@ -62,6 +62,12 @@ const systemToken = useChainStore().currentChain.settings.getSystemToken();
     height: 100%;
     &__balance {
         display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    &__balance-value {
+        display: flex;
+        gap: 5px;
     }
     &__label {
         font-weight: 600;

@@ -3,8 +3,6 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
-import { contractManager } from 'src/boot/telosApi';
-import { evm } from 'src/boot/evm';
 import { toChecksumAddress } from 'src/lib/utils';
 import { SystemBalance, getSystemBalance } from 'src/lib/balance-utils';
 import { createIconFromData } from 'src/lib/blockies/blockies';
@@ -29,6 +27,7 @@ import ContractMoreInfo from 'src/components/ContractMoreInfo.vue';
 import ExportLink from 'pages/export/ExportLink.vue';
 
 import { EXPORT_DOWNLOAD_TYPES } from 'src/lib/constants';
+import { useChainStore } from 'src/core';
 
 const { t: $t } = useI18n();
 const route = useRoute();
@@ -40,9 +39,7 @@ const tabs = ['transactions', 'collection', 'holders', 'internaltx', 'tokens', '
 const accountLoading = ref(false);
 const title = ref('');
 const fullTitle = ref('');
-const telosAccount = ref('');
 const balance = ref<SystemBalance>({ balance: '0', tokenQty: '0', fiatValue: 0 });
-const nonce = ref<number | null>(null);
 const contract = ref<Contract | null>(null);
 const tab = ref(tabs[0]);
 const initialLoadComplete = ref(false);
@@ -52,6 +49,15 @@ const isLoggedIn = computed(() => store.getters['login/isLoggedIn']);
 const address = computed(() => store.getters['login/address']);
 const isToken = computed(() => contract.value?.isToken() ?? false);
 
+watch(() => route.query.network,
+    () => {
+        initialLoadComplete.value = false;
+        loadAccount().then(() => {
+            initialLoadComplete.value = true;
+        });
+    },
+    { immediate: true },
+);
 
 watch(accountAddress, (newVal, oldVal) => {
     if (newVal !== oldVal) {
@@ -93,6 +99,7 @@ async function loadAccount() {
         return;
     }
     accountLoading.value = true;
+    const contractManager = useChainStore().currentChain.settings.getContractManager();
     const tokenList = await contractManager.getTokenList();
     const fiatPrice = store.getters['chain/tlosPrice'];
     const result = await getSystemBalance(accountAddress.value, fiatPrice);
@@ -101,7 +108,6 @@ async function loadAccount() {
     }
     contract.value = null;
     fullTitle.value = '';
-    nonce.value = 0;
     title.value = $t('pages.account');
     const force = true;
     const cachedContract = await contractManager.getContract(accountAddress.value, force);
@@ -123,13 +129,6 @@ async function loadAccount() {
         }
     } else {
         contractManager.addContractToCache(accountAddress.value, { address: accountAddress.value });
-        try {
-            const account = await evm.telos.getEthAccount(accountAddress.value);
-            telosAccount.value = account?.account;
-            nonce.value = account?.nonce;
-        } catch (e) {
-            console.info(e);
-        }
     }
 
     accountLoading.value = false;
@@ -163,18 +162,6 @@ async function loadAccount() {
                         :alt="`Blockies icon for address ${accountAddress}`"
                         class="c-address__icon"
                     >
-                    <!--
-                    <q-icon
-                        v-else-if="!contract"
-                        name="account_circle"
-                        size="sm"
-                    />
-                    <q-icon
-                        v-else
-                        :name="(contract.supportedInterfaces?.includes('erc721')) ? 'perm_media' : 'source'"
-                        size="sm"
-                    />
-                    -->
                     <span class="c-address__title">{{ title }}</span>
                     <span class="c-address__hex">{{ accountAddress }}</span>
                     <q-tooltip v-if="fullTitle" anchor="top middle" self="bottom middle">{{ fullTitle }} </q-tooltip>
@@ -202,7 +189,7 @@ async function loadAccount() {
                 :loadingComplete="initialLoadComplete"
             />
         </div>
-        <div class="col-12 col-md-6">
+        <div v-if="accountAddress" class="col-12 col-md-6">
             <ContractMoreInfo
                 v-if="contract"
                 :address="contract?.getCreator() ?? ''"
@@ -212,7 +199,6 @@ async function loadAccount() {
             <AddressMoreInfo
                 v-else
                 :address="accountAddress"
-                :loadingComplete="initialLoadComplete"
             />
         </div>
     </div>

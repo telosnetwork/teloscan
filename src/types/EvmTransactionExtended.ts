@@ -1,7 +1,7 @@
 import { TransactionDescription } from 'ethers/lib/utils';
 
 import Contract from 'src/lib/contract/Contract';
-import { EvmContractFunctionParameter, EvmTransactionParsed } from 'src/antelope/types';
+import { EvmContractFunctionParameter, EvmTransactionParsed } from 'src/core/types';
 
 export interface EvmTransactionExtended extends EvmTransactionParsed {
     contract: Contract | undefined;

@@ -7,12 +7,10 @@ import { copyToClipboard, useQuasar } from 'quasar';
 import { BigNumber } from 'ethers/lib/ethers';
 import { formatUnits } from 'ethers/lib/utils';
 
-import { truncateAddress } from 'src/antelope/wallets/utils/text-utils';
-import { useAccountStore } from 'src/antelope';
-import { indexerApi } from 'src/boot/telosApi';
-import { WEI_PRECISION } from 'src/antelope/wallets/utils';
-import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
-import { IS_TESTNET } from 'src/lib/chain-utils';
+import { truncateAddress } from 'src/core/wallets/utils/text-utils';
+import { useAccountStore, useChainStore } from 'src/core';
+import { WEI_PRECISION } from 'src/core/wallets/utils';
+import { prettyPrintCurrency } from 'src/core/wallets/utils/currency-utils';
 
 import LoginModal from 'components/LoginModal.vue';
 import OutlineButton from 'components/OutlineButton.vue';
@@ -36,9 +34,9 @@ const prettySystemTokenBalance = computed(() =>
         4,
         $i18n.locale.value,
         false,
-        'TLOS',
+        useChainStore().currentChain.settings.getSystemToken().symbol,
         false,
-        WEI_PRECISION,
+        useChainStore().currentChain.settings.getSystemToken().decimals,
         false,
     ),
 );
@@ -54,7 +52,7 @@ const prettyIdentity = computed(() => {
     return truncateAddress(address.value);
 });
 const prettySystemTokenBalanceFiat = computed(() => {
-    if (IS_TESTNET) {
+    if (useChainStore().currentChain.settings.isTestnet()) {
         return '';
     }
     const price = Number($store.getters['chain/tlosPrice']);
@@ -103,8 +101,9 @@ function copyAddress() {
 }
 
 async function fetchUserBalance() {
+    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
     const response = await indexerApi.get(
-        `/account/${address.value}/balances`,
+        `/v1/account/${address.value}/balances`,
     );
     const tlos = response.data?.results?.find(({ contract }: { contract: string }) => contract === '___NATIVE_CURRENCY___');
     userSystemTokenBalanceWei.value = tlos?.balance ?? '0';

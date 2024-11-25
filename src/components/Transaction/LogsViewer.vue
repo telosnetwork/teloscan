@@ -3,6 +3,7 @@ import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 import FragmentList from 'components/Transaction/FragmentList';
 import { BigNumber } from 'ethers';
+import { useChainStore } from 'src/core';
 
 export default {
     name: 'LogsViewer',
@@ -13,7 +14,7 @@ export default {
     methods: {
         async getLogContract(log){
             try {
-                return await this.$contractManager.getContract(log.address);
+                return await useChainStore().currentChain.settings.getContractManager().getContract(log.address);
             } catch (e) {
                 console.error(`Failed to retrieve contract with address ${log.address}: ${e}`);
                 this.$q.notify({
@@ -52,7 +53,7 @@ export default {
             let contract = await this.getLogContract(log);
             if (contract){
                 verified = (contract.isVerified()) ? verified + 1: verified;
-                let parsedLog = await this.$fragmentParser.parseLog(log, contract);
+                let parsedLog = await useChainStore().currentChain.settings.getFragmentParser().parseLog(log, contract);
                 if(parsedLog){
                     this.parsedLogs.push(parsedLog);
                 } else {

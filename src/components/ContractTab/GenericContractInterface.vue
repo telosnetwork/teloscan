@@ -6,7 +6,6 @@ import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import 'vue-json-pretty/lib/styles.css';
 import ContractFactory from 'src/lib/contract/ContractFactory';
-import { contractManager } from 'src/boot/telosApi';
 import { erc721Abi, erc1155Abi } from 'src/lib/abi';
 import erc20Abi from 'erc-20-abi';
 import { sortAbiFunctionsByName } from 'src/lib/utils';
@@ -14,6 +13,7 @@ import { sortAbiFunctionsByName } from 'src/lib/utils';
 import VueJsonPretty from 'vue-json-pretty';
 import FunctionInterface from 'components/ContractTab/FunctionInterface.vue';
 import AppHeaderWallet from 'src/components/header/AppHeaderWallet.vue';
+import { useChainStore } from 'src/core';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -148,7 +148,7 @@ const formatAbiFunctionLists = async () => {
         name: $t('components.contract_tab.unverified_contract'),
         address: address.value,
         abi,
-        manager: contractManager,
+        manager: useChainStore().currentChain.settings.getContractManager(),
     });
     let read = [] as any[];
     let write = [] as any[];
