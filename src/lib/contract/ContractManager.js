@@ -4,7 +4,7 @@ import axios from 'axios';
 import { getTopicHash } from 'src/lib/utils';
 import { ERC1155_TRANSFER_SIGNATURE, TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures.js';
 import { erc1155Abi, erc721MetadataAbi } from 'src/lib/abi';
-import { getAntelope, useChainStore } from 'src/core';
+import { getCore, useChainStore } from 'src/core';
 const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 const systemContractList =
     'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json';
@@ -100,7 +100,7 @@ export default class ContractManager {
     }
 
     getEthersProvider() {
-        return getAntelope().wallets.getWeb3Provider();
+        return getCore().wallets.getWeb3Provider();
     }
     async getTransfers(raw) {
         if(!raw.logs || raw.logs?.length === 0){

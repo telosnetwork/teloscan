@@ -23,5 +23,32 @@ export default route(function (/* { store, ssrContext } */) {
         // quasar.conf.js -> build -> publicPath
         history: createHistory(process.env.VUE_ROUTER_BASE),
     });
+
+    // Add a global navigation guard to detect changes in route.query.network
+    Router.beforeEach((to, from, next) => {
+        const networkChanged = to.query.network !== from.query.network;
+        if (networkChanged) {
+            // Get the deepest matched route record
+            const matchedRoute = to.matched[to.matched.length - 1];
+            if (matchedRoute && matchedRoute.meta && matchedRoute.meta.networkChange) {
+                // If the route has a 'networkChange' label, redirect to that label
+                // only if the network if different from the current one page name
+                if (matchedRoute.meta.networkChange !== from.name) {
+                    // If the network change is to 'home', redirect to the home page
+                    next({ name: matchedRoute.meta.networkChange });
+                } else {
+                    // Otherwise, proceed to the intended route
+                    next();
+                }
+            } else {
+                // Otherwise, proceed to the intended route
+                next();
+            }
+        } else {
+            // If network has not changed, proceed as normal
+            next();
+        }
+    });
+
     return Router;
 });

@@ -217,7 +217,7 @@ export default {
             let processedTransactions = 0;
             let lastTransactionHash = '';
             const totalEntries = [];
-            result.results.forEach((internalTrx) => {
+            result.data.results.forEach((internalTrx) => {
                 if (internalTrx.transactionHash !== lastTransactionHash) {
                     processedTransactions++;
                     lastTransactionHash = internalTrx.transactionHash;
@@ -250,9 +250,9 @@ export default {
 
             const filter = Object.assign({}, this.filter ? this.filter : {});
             if (this.address) {
-                path = `/address/${this.address}/internal?limit=${limit}`;
+                path = `v1/address/${this.address}/internal?limit=${limit}`;
             } else {
-                path = `/internal?limit=${limit}`;
+                path = `v1/internal?limit=${limit}`;
             }
 
             if (filter.block) {
