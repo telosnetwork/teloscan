@@ -1,22 +1,24 @@
 <script lang="ts" setup>
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import moment from 'moment';
 
-import { getAntelope, useChainStore } from 'src/core';
+import { getCore, useChainStore } from 'src/core';
 import { TELOS_NETWORK_NAMES } from 'src/core/mocks/chain-constants';
 import { providerManager } from 'src/boot/evm';
+import { useRoute } from 'vue-router';
 
 const $store = useStore();
 const { t: $t } = useI18n();
 const $q = useQuasar();
+const $route = useRoute();
 
 // computed
 const isNative = computed(() => $store.getters['login/isNative']);
 
-onMounted(async () => {
+const checkNetworkHealth = async () => {
     const network = useChainStore().currentChain.settings.getNetwork();
     if (TELOS_NETWORK_NAMES.includes(network)) {
         const script = document.createElement('script');
@@ -27,7 +29,13 @@ onMounted(async () => {
         document.body.appendChild(script);
     }
     const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
+    const chainName = useChainStore().currentChain.settings.getDisplay();
+    const theme = $q.dark.isActive ? useChainStore().currentChain.settings.getThemes().dark : useChainStore().currentChain.settings.getThemes().light;
     const health = await indexerApi.get('/v1/health');
+    const background = theme?.primary || '#0099FF';
+    const color = theme?.color || 'white';
+    // print in console with background #8B3F98 and white text the following message: Using indexer {health.data.version} with {health.data.secondsBehind} seconds behind
+    console.debug(`%cUsing indexer ${health.data.version} for '${chainName}' with ${health.data.secondsBehind} seconds behind`, `background: ${background}; color: ${color};`);
 
     if (health.data?.secondsBehind > 3) {
         let behindBy = moment(health.data.secondsBehind * 1000).utc().format('HH:mm:ss');
@@ -52,16 +60,20 @@ onMounted(async () => {
             html: true,
         });
     }
+};
+
+onMounted(async () => {
+    // await checkNetworkHealth();
 
     // On login we must set the address and record the provider
-    getAntelope().events.onLoggedOut.subscribe(() => {
+    getCore().events.onLoggedOut.subscribe(() => {
         const loginData = localStorage.getItem('loginData');
         if (isNative.value) {
             if (!loginData) {
                 return;
             }
             const loginObj = JSON.parse(loginData);
-            const wallet = getAntelope().config.authenticatorsGetter().find(a => a.getName() === loginObj.provider);
+            const wallet = getCore().config.authenticatorsGetter().find(a => a.getName() === loginObj.provider);
             wallet?.logout();
         }
         $store.commit('login/setLogin', {});
@@ -70,7 +82,17 @@ onMounted(async () => {
     });
 });
 
+// Watch for changes in the route query to react when network changes
+watch(
+    () => $route.query.network,
+    async (newNetwork, oldNetwork) => {
+        if (newNetwork !== oldNetwork) {
+            await checkNetworkHealth();
+        }
+    },
+);
 </script>
+
 <template>
 <div id="q-app">
     <router-view />

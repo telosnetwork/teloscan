@@ -6,7 +6,7 @@ import { EVMAuthenticator } from 'src/core/wallets';
 import { AntelopeError, addressString } from 'src/core/types';
 import { CURRENT_CONTEXT, TeloscanEVMChainSettings, createTraceFunction, useChainStore } from 'src/core/mocks';
 import { BigNumber } from 'ethers'; 'src/core/mocks/FeedbackStore';
-import { getAntelope } from 'src/core/mocks/AntelopeConfig';
+import { getCore } from 'src/core/mocks/Config';
 import { useFeedbackStore } from 'src/core/mocks';
 import { EvmABI, EvmFunctionParam, Label, TransactionResponse } from 'src/core/types';
 import { subscribeForTransactionReceipt } from 'src/core/wallets/utils/trx-utils';
@@ -60,7 +60,7 @@ class AccountStore {
 
         if (currentAccount) {
             const account = useAccountStore().getAccount(authenticator.label);
-            getAntelope().events.onLoggedIn.next(account);
+            getCore().events.onLoggedIn.next(account);
         }
         return !!currentAccount;
     }
@@ -69,7 +69,7 @@ class AccountStore {
         currentAuthenticator.logout();
         currentAuthenticator = {} as EVMAuthenticator;
         currentAccount = null;
-        getAntelope().events.onLoggedOut.next();
+        getCore().events.onLoggedOut.next();
     }
 
     get loggedAccount() {
@@ -99,7 +99,7 @@ class AccountStore {
         parameters: EvmFunctionParam[],
         value?: BigNumber,
     ): Promise<TransactionResponse>{
-        const ant = getAntelope();
+        const ant = getCore();
         const funcname = 'signCustomTransaction';
         this.trace(funcname, label, contract, abi, parameters, value?.toString());
 
@@ -157,7 +157,7 @@ class AccountStore {
         if (!await useAccountStore().isConnectedToCorrectNetwork(label)) {
             // eslint-disable-next-line no-async-promise-executor
             return new Promise<boolean>(async (resolve) => {
-                const ant = getAntelope();
+                const ant = getCore();
                 const authenticator = useAccountStore().loggedAccount.authenticator as EVMAuthenticator;
                 try {
                     await authenticator.ensureCorrectChain();

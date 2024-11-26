@@ -5,7 +5,7 @@ import { Web3ModalConfig } from '@web3modal/html';
 import { MetamaskAuth, SafePalAuth, WalletConnectAuth, BraveAuth, useChainStore } from 'src/core/wallets';
 import { configureChains, createConfig } from '@wagmi/core';
 import { telos, telosTestnet } from '@wagmi/core/chains';
-import { getAntelope } from 'src/core/mocks/AntelopeConfig';
+import { getCore } from 'src/core/mocks/Config';
 import { App } from 'vue';
 import { AntelopeError } from 'src/core/types';
 
@@ -38,7 +38,7 @@ export function initAntelope(app: App) {
     const explorerExcludedWalletIds = 'ALL' as const; // Web3Modal option excludes all but recomended
     const wagmiOptions: Web3ModalConfig = { projectId, explorerRecommendedWalletIds, explorerExcludedWalletIds };
 
-    const ant = getAntelope();
+    const ant = getCore();
     ant.config.init(app);
 
     // settting notification handlers --

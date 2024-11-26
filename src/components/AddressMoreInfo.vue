@@ -33,7 +33,7 @@ const updateData = async () => {
             lastTxn.value = lastTxnQuery.results[0].hash;
             // use total count to offset query and fetch first transaction
             const offset = lastTxnQuery.total_count - 1;
-            const firstTxnQuery = (await indexerApi.get(`address/${props.address}/transactions?limit=1&offset=${offset}`) as TransactionQueryData).data;
+            const firstTxnQuery = (await indexerApi.get(`v1/address/${props.address}/transactions?limit=1&offset=${offset}`) as TransactionQueryData).data;
             firstTxn.value = firstTxnQuery.results[0].hash;
         } else {
             noTrxYet.value = true;

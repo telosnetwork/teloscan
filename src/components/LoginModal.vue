@@ -5,7 +5,6 @@ import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { Authenticator } from 'universal-authenticator-library';
-
 import {
     LOGIN_EVM,
     LOGIN_NATIVE,
@@ -18,7 +17,7 @@ import {
     AccountModel,
     CURRENT_CONTEXT,
     EvmAccountModel,
-    getAntelope,
+    getCore,
     useAccountStore,
     useChainStore,
 } from 'src/core/mocks';
@@ -40,14 +39,14 @@ const browserSupportsMetaMask = ref(true);
 const isBraveBrowser = ref(false);
 const isIOSMobile = ref(false);
 
-const authenticators = computed(() => getAntelope().config.authenticatorsGetter());
+const authenticators = computed(() => getCore().config.authenticatorsGetter());
 
 onMounted(async () => {
     await detectProvider();
     detectMobile();
 
     // On login we must set the address and record the provider
-    getAntelope().events.onLoggedIn.subscribe((account: AccountModel) => {
+    getCore().events.onLoggedIn.subscribe((account: AccountModel) => {
         const evm_account = account as EvmAccountModel;
         const address = evm_account.account;
         const pr_name = evm_account.authenticator.getName();
@@ -146,7 +145,7 @@ function getIconForWallet(wallet: { getName: () => string; getStyle: () => { ico
 
 async function loginWithAntelope(name:string, autoLogAccount?: string) {
     const label = CURRENT_CONTEXT;
-    const auth = getAntelope().wallets.getAuthenticator(name);
+    const auth = getCore().wallets.getAuthenticator(name);
     if (!auth) {
         console.error(`${name} authenticator not found`);
         return;
