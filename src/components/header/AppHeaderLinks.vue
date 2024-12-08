@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
 import {
+    IS_MAINNET,
+    IS_TESTNET,
     TELOSCAN_MAINNET_URL,
     TELOSCAN_TESTNET_URL,
 } from 'src/lib/chain-utils';
 
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import OutlineButton from 'components/OutlineButton.vue';
-import { useChainStore } from 'src/core';
-import { HeaderMenuEntry } from 'src/core/types';
 
 const $route = useRoute();
 const $router = useRouter();
@@ -23,6 +23,68 @@ defineProps<{
     menuVisibleMobile: boolean;
 }>();
 const emit = defineEmits(['close-menu']);
+
+
+const blockchainSubmenuItems = [
+    { name: 'txsinternal', label: $t('components.header.internal_transactions') },
+    { name: 'transactions', label: $t('components.header.transactions') },
+    { name: 'blocks', label: $t('components.header.blocks') },
+];
+
+const teloscanSwaggerUrl = IS_MAINNET
+    ? 'https://api.teloscan.io/v1/docs'
+    : 'https://api.testnet.teloscan.io/v1/docs';
+
+const telosWalletUrl = IS_MAINNET
+    ? 'https://wallet.telos.net/'
+    : 'https://wallet-dev.telos.net/';
+
+const telosBridgeUrl = IS_MAINNET
+    ? 'https://bridge.telos.net/bridge'
+    : 'https://telos-bridge-testnet.netlify.app/bridge';
+
+const obeUrl = IS_MAINNET
+    ? 'https://explorer.telos.net/'
+    : 'https://explorer-test.telos.net';
+
+const developersSubmenuItems = [
+    {
+        url: teloscanSwaggerUrl,
+        label: $t('components.header.api_documentation'),
+    },
+    {
+        url: 'https://sourcify.dev/',
+        label: $t('components.header.verify_contract_sourcify'),
+    },
+];
+
+const telos_walletMenuItem = {
+    url: telosWalletUrl,
+    label: `${$t('components.header.telos_wallet')}/Staking`,
+};
+
+
+const telos_bridgeMenuItem = {
+    url: telosBridgeUrl,
+    label: $t('components.header.telos_bridge'),
+};
+
+const moreSubmenuItems = {
+    internal: [
+        { name: 'export', label: $t('components.header.csv_export') },
+        { name: 'health', label: $t('components.header.health_monitor') },
+    ],
+    external: [
+        {
+            url: 'https://www.telos.net/ecosystem',
+            label: $t('components.header.telos_ecosystem'),
+        },
+        {
+            url: obeUrl,
+            label: $t('components.header.telos_zero_explorer'),
+        },
+    ],
+};
 
 const networksMenuItems = {
     mainnet: [{
@@ -41,53 +103,12 @@ const moreMenuExpandedMobile = ref(false);
 const networkMenuExpandedMobile = ref(false);
 const showLanguageSwitcher = ref(false);
 
+const highlightBlockchainMenuItem = computed(() => blockchainSubmenuItems.some(({ name }) => name === $route.name));
+const highlightMoreMenuItem = computed(() => moreSubmenuItems.internal.some(({ name }) => name === $route.name));
+
 watch(() => $q.screen, () => {
     closeAllMenus();
 }, { deep: true });
-
-const menuConfig = ref(useChainStore().currentChain.settings.getHeaderMenuConfig());
-
-function updateMenuConfig() {
-    menuConfig.value = useChainStore().currentChain.settings.getHeaderMenuConfig();
-}
-
-watch(() => $route.query.network, () => {
-    updateMenuConfig();
-});
-
-const menuExpandedMobile = ref<Record<string, boolean>>({});
-
-function handleEntryClick(entry: HeaderMenuEntry) {
-    blurActiveElement();
-    closeAllMenus();
-    if (entry.internalLink) {
-        $router.push({ name: entry.internalLink });
-    } else if (entry.externalLink) {
-        window.open(entry.externalLink, '_blank');
-    } else if (entry.trigger) {
-        trigger(entry.trigger);
-    }
-}
-
-function isEntryActive(entry: HeaderMenuEntry): boolean {
-    if (entry.internalLink && $route.name === entry.internalLink) {
-        return true;
-    }
-    if (entry.entries) {
-        return entry.entries.some(subEntry => isEntryActive(subEntry));
-    }
-    return false;
-}
-
-function trigger(action: string) {
-    if (action === 'language') {
-        showLanguageSwitcher.value = true;
-    } else if (action === 'close-menu') {
-        closeAllMenus();
-    } else if (action === 'toggle-dark-mode') {
-        toggleDarkMode();
-    }
-}
 
 function blurActiveElement() {
     (document.activeElement as HTMLElement | null)?.blur();
@@ -107,11 +128,14 @@ function toggleDarkMode() {
 }
 
 function getIsCurrentNetworkMenuItem(url: string) {
-    networksMenuItems.mainnet.forEach((item) => {
-        if (item.url === url) {
-            return true;
-        }
-    });
+    if (url === TELOSCAN_MAINNET_URL) {
+        return IS_MAINNET;
+    }
+
+    if (url === TELOSCAN_TESTNET_URL) {
+        return IS_TESTNET;
+    }
+
     return false;
 }
 
@@ -136,87 +160,208 @@ function goTo(to: string | { name: string }) {
         'c-header-links--visible-mobile shadow-4': menuVisibleMobile && $q.screen.lt.md,
     }"
 >
-    <!-- Iterating over the menu entries -->
-    <li
-        v-for="(entry, index) in menuConfig.entries"
-        :key="entry.label"
+    <!-- Home -->
+    <router-link
         :class="{
             'c-header-links__menu-li': true,
-            'c-header-links__menu-li--expandable': entry.entries,
-            'c-header-links__menu-li--current': isEntryActive(entry),
-            'c-header-links__menu-li--expanded-mobile': menuExpandedMobile[entry.label],
+            'c-header-links__menu-li--current': $route.name === 'home',
         }"
         tabindex="0"
-        @mouseleave="blurActiveElement"
-        @click="entry.entries ? (menuExpandedMobile[entry.label] = !menuExpandedMobile[entry.label]) : handleEntryClick(entry)"
-        @keydown.enter="entry.entries ? (menuExpandedMobile[entry.label] = !menuExpandedMobile[entry.label]) : handleEntryClick(entry)"
+        role="link"
+        :to="{ name: 'home' }"
+        @click="closeAllMenus"
+        @keydown.enter="goTo({ name: 'home' })"
     >
-        <div class="c-header-links__menu-li-text">
-            {{ $t(entry.label) }}
-            <q-icon v-if="entry.entries" name="fas fa-chevron-down" size="12px" />
+        {{ $t('components.header.home') }}
+    </router-link>
+
+    <!-- Blockchain -->
+    <li
+        :class="{
+            'c-header-links__menu-li c-header-links__menu-li--expandable': true,
+            'c-header-links__menu-li--current': highlightBlockchainMenuItem,
+            'c-header-links__menu-li--expanded-mobile': blockchainMenuExpandedMobile,
+        }"
+        tabindex="0"
+        :aria-expanded="$q.screen.lt.md ? blockchainMenuExpandedMobile : undefined"
+        :aria-controls="$q.screen.lt.md ? 'app-header-blockchain-submenu-ul' : undefined"
+        :aria-labelledby="$q.screen.lt.md ? 'app-header-blockchain-submenu-label' : undefined"
+        @mouseleave="blurActiveElement"
+        @click="blockchainMenuExpandedMobile = !blockchainMenuExpandedMobile"
+        @keydown.enter="blockchainMenuExpandedMobile = !blockchainMenuExpandedMobile"
+    >
+        <div id="app-header-blockchain-submenu-label" class="c-header-links__menu-li-text">
+            {{ $t('components.header.blockchain') }}
+            <q-icon name="fas fa-chevron-down" size="12px" />
         </div>
 
-        <!-- Sub menu -->
         <ul
-            v-if="entry.entries"
+            id="app-header-blockchain-submenu-ul"
             :class="{
                 'c-header-links__submenu-ul': true,
                 'shadow-4': $q.screen.gt.sm,
-                'c-header-links__submenu-ul--rightmost': index === menuConfig.entries.length - 1,
+            }"
+        >
+            <router-link
+                v-for="item in blockchainSubmenuItems"
+                :key="`blockchain-submenu-item-${item.name}`"
+                :class="{
+                    'c-header-links__submenu-li': true,
+                    'c-header-links__submenu-li--current': $route.name === item.name,
+                }"
+                tabindex="0"
+                role="link"
+                :to="{ name: item.name }"
+                @click="closeAllMenus"
+                @keydown.enter="goTo({ name: item.name })"
+            >
+                {{ item.label }}
+            </router-link>
+        </ul>
+    </li>
+
+    <!-- Developers -->
+    <li
+        :class="{
+            'c-header-links__menu-li c-header-links__menu-li--expandable': true,
+            'c-header-links__menu-li--expanded-mobile': developersMenuExpandedMobile,
+        }"
+        tabindex="0"
+        :aria-expanded="$q.screen.lt.md ? developersMenuExpandedMobile : undefined"
+        :aria-controls="$q.screen.lt.md ? 'app-header-developers-submenu-ul' : undefined"
+        :aria-labelledby="$q.screen.lt.md ? 'app-header-developers-submenu-label' : undefined"
+        @mouseleave="blurActiveElement"
+        @click="developersMenuExpandedMobile = !developersMenuExpandedMobile"
+        @keydown.enter="developersMenuExpandedMobile = !developersMenuExpandedMobile"
+    >
+        <div id="app-header-developers-submenu-label" class="c-header-links__menu-li-text">
+            {{ $t('components.header.developers') }}
+            <q-icon name="fas fa-chevron-down" size="12px" />
+        </div>
+
+        <ul
+            id="app-header-developers-submenu-ul"
+            :class="{
+                'c-header-links__submenu-ul': true,
+                'shadow-4': $q.screen.gt.sm,
             }"
         >
             <li
-                v-for="subEntry in entry.entries"
-                :key="subEntry.label"
-                :class="{
-                    'c-header-links__submenu-li': true,
-                    'c-header-links__submenu-li--current': isEntryActive(subEntry),
-                }"
+                v-for="item in developersSubmenuItems"
+                :key="`developer-submenu-item-${item.label}`"
+                class="c-header-links__submenu-li"
                 tabindex="0"
-                @click="handleEntryClick(subEntry)"
-                @keydown.enter="handleEntryClick(subEntry)"
+                role="link"
+                @keydown.enter="goTo(item.url)"
             >
-                <!-- Internal links -->
-                <router-link
-                    v-if="subEntry.internalLink"
-                    :to="{ name: subEntry.internalLink }"
-                    @click="closeAllMenus"
-                >
-                    {{ $t(subEntry.label) }}
-                </router-link>
-
-                <!-- External links -->
                 <a
-                    v-else-if="subEntry.externalLink"
-                    :href="subEntry.externalLink"
+                    class="u-flex--center-y"
+                    :href="item.url"
                     target="_blank"
                 >
-                    <div class="u-flex--center-y">
-                        {{ $t(subEntry.label) }}
-                        <q-icon name="fas fa-external-link-alt" size="12px" class="q-ml-sm" />
-                    </div>
+                    {{ item.label }}
+                    <q-icon name="fas fa-external-link-alt" size="12px" class="q-ml-sm" />
                 </a>
+            </li>
+        </ul>
+    </li>
 
-                <!-- Actions (triggers) -->
-                <div
-                    v-else-if="subEntry.trigger"
-                    @click="trigger(subEntry.trigger)"
+    <!-- Telos Wallet -->
+    <li
+        class="c-header-links__menu-li"
+        tabindex="0"
+        role="link"
+        @keydown.enter="goTo(telos_walletMenuItem.url)"
+    >
+        <a :href="telos_walletMenuItem.url" target="_blank">
+            {{ telos_walletMenuItem.label }}
+        </a>
+    </li>
+
+    <!-- Telos Bridge -->
+    <li
+        class="c-header-links__menu-li"
+        tabindex="0"
+        role="link"
+        @keydown.enter="goTo(telos_bridgeMenuItem.url)"
+    >
+        <a :href="telos_bridgeMenuItem.url" target="_blank">
+            {{ telos_bridgeMenuItem.label }}
+        </a>
+    </li>
+
+    <!-- More -->
+    <li
+        :class="{
+            'c-header-links__menu-li c-header-links__menu-li--expandable': true,
+            'c-header-links__menu-li--current': highlightMoreMenuItem,
+            'c-header-links__menu-li--expanded-mobile': moreMenuExpandedMobile,
+        }"
+        tabindex="0"
+        :aria-expanded="$q.screen.lt.md ? moreMenuExpandedMobile : undefined"
+        :aria-controls="$q.screen.lt.md ? 'app-header-more-submenu-ul' : undefined"
+        :aria-labelledby="$q.screen.lt.md ? 'app-header-more-submenu-label' : undefined"
+        @mouseleave="blurActiveElement"
+        @click="moreMenuExpandedMobile = !moreMenuExpandedMobile"
+        @keydown.enter="moreMenuExpandedMobile = !moreMenuExpandedMobile"
+    >
+        <div id="app-header-more-submenu-label" class="c-header-links__menu-li-text">
+            {{ $t('components.header.more') }}
+            <q-icon name="fas fa-chevron-down" size="12px" />
+        </div>
+
+        <ul
+            id="app-header-more-submenu-ul"
+            :class="{
+                'c-header-links__submenu-ul c-header-links__submenu-ul--rightmost': true,
+                'shadow-4': $q.screen.gt.sm,
+            }"
+        >
+            <li
+                class="c-header-links__submenu-li"
+                tabindex="0"
+                role="button"
+                :aria-label="$t('components.header.open_language_switcher')"
+                @keydown.enter="showLanguageSwitcher = true"
+                @click="showLanguageSwitcher = true"
+            >
+                <div class="u-flex--center-y">
+                    {{ $t('global.language') }}
+                    <q-icon name="fas fa-language" size="16px" class="q-ml-sm" />
+                </div>
+            </li>
+
+            <router-link
+                v-for="item in moreSubmenuItems.internal"
+                :key="`more-submenu-item-internal-${item.name}`"
+                :class="{
+                    'c-header-links__submenu-li': true,
+                    'c-header-links__submenu-li--current': $route.name === item.name,
+                }"
+                tabindex="0"
+                :to="{ name: item.name }"
+                @keydown.enter="goTo({ name: item.name })"
+            >
+                {{ item.label }}
+            </router-link>
+
+            <li
+                v-for="item in moreSubmenuItems.external"
+                :key="`more-submenu-item-external-${item.label}`"
+                class="c-header-links__submenu-li"
+                tabindex="0"
+                role="link"
+                @click="goTo(item.url)"
+                @keydown.enter="goTo(item.url)"
+            >
+                <a
+                    class="u-flex--center-y"
+                    :href="item.url"
+                    target="_blank"
                 >
-                    <div class="u-flex--center-y">
-                        {{ $t(subEntry.label) }}
-                        <q-icon
-                            v-if="subEntry.leftIcon"
-                            :name="subEntry.leftIcon"
-                            size="16px"
-                            class="q-ml-sm"
-                        />
-                    </div>
-                </div>
-
-                <!-- Other cases -->
-                <div v-else>
-                    {{ $t(subEntry.label) }}
-                </div>
+                    {{ item.label }}
+                    <q-icon name="fas fa-external-link-alt" size="12px" class="q-ml-sm" />
+                </a>
             </li>
         </ul>
     </li>

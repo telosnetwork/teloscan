@@ -1,5 +1,4 @@
 <script>
-import { useChainStore } from 'src/core';
 import { getCompilerOptions } from 'src/lib/contract/ContractVerification';
 import { isValidAddressFormat } from 'src/lib/utils';
 
@@ -95,8 +94,7 @@ export default {
             }, this.TIME_DELAY);
         },
         getUrl() {
-            // TODO: remove this
-            return `${useChainStore().currentChain.settings.getApiEndpoint()}/contracts/verify`;
+            return `${process.env.TELOS_API_ENDPOINT}/contracts/verify`;
         },
         async submitFormHandler() {
             if (this.$refs.uploader){
@@ -114,8 +112,7 @@ export default {
             const formData = this.getFormData();
             formData.append('files', this.contractInput);
             try{
-                const telosApi = useChainStore().currentChain.settings.getTelosApi();
-                const result = await telosApi.general.post('contracts/verify', formData);
+                const result = await this.$telosApi.general.post('contracts/verify', formData);
                 this.onNotify(result.data);
                 if (result.data.type === 'positive'){
                     this.navToAddress();

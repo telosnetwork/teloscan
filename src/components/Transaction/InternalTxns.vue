@@ -3,7 +3,6 @@ import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
 import FragmentList from 'components/Transaction/FragmentList.vue';
 import { getParsedInternalTransactions } from 'src/lib/transaction-utils';
-import { useChainStore } from 'src/core';
 
 
 export default {
@@ -26,7 +25,7 @@ export default {
     methods: {
         async getContract(address){
             try {
-                return  await useChainStore().currentChain.settings.getContractManager().getContract(address);
+                return  await this.$contractManager.getContract(address);
             } catch (e) {
                 console.error(`Failed to retrieve contract with address ${address}`);
                 // Notify the user
@@ -40,10 +39,6 @@ export default {
     },
     async created() {
         this.loading = true;
-        if (!this.transaction) {
-            this.loading = false;
-            return;
-        }
         const { parsedItxs, itxs } = await getParsedInternalTransactions(this.transaction.hash, this.$t);
         this.parsedItxs = parsedItxs;
         this.itxs = itxs;

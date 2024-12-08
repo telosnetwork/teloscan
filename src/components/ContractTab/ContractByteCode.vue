@@ -1,7 +1,5 @@
 <script lang="javascript">
 
-import { useChainStore } from 'src/core';
-
 export default {
     name: 'ContractByteCode',
     props: {
@@ -22,7 +20,7 @@ export default {
             return;
         }
         try{
-            let bytecode = await useChainStore().currentChain.settings.getHyperionApi().post('/evm', {
+            let bytecode = await this.$evmEndpoint.post('/evm', {
                 jsonrpc: '2.0',
                 id: ++this.rpcId,
                 method: 'eth_getCode',

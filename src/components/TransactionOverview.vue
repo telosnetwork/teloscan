@@ -3,6 +3,8 @@
 import { computed, onMounted, ref, toRaw, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { BlockData, EvmTransactionExtended } from 'src/types';
+import { WEI_PRECISION } from 'src/lib/utils';
+import { indexerApi } from 'src/boot/telosApi';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
@@ -14,7 +16,6 @@ import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 import ERCTransferList from 'components/Transaction/ERCTransferList.vue';
 import TLOSTransferList from 'components/Transaction/TLOSTransferList.vue';
-import { useChainStore } from 'src/core';
 import TransactionInputViewer from 'components/Transaction/TransactionInputViewer.vue';
 import { DecodedTransactionInput, getParsedInternalTransactions } from 'src/lib/transaction-utils';
 
@@ -42,10 +43,9 @@ const showTLOSTransfers = ref(true);
 const moreDetailsHeight = ref<string | number>(0);
 
 const loadBlockData = async () => {
-    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
     try {
         if (blockNumber.value) {
-            const response = await indexerApi.get(`/v1/block/${blockNumber.value}`);
+            const response = await indexerApi.get(`/block/${blockNumber.value}`);
             blockData.value = response.data?.results?.[0] as BlockData;
         }
     } catch (error) {
@@ -72,6 +72,7 @@ async function loadParsedInternalTransactions() {
 
 watch(() => props.trx, async (newTrx) => {
     if (newTrx) {
+        console.log('newTrx', newTrx);
         if (newTrx.to) {
             toAddress.value = newTrx.to;
         } else {
@@ -351,15 +352,11 @@ onMounted(() => {
             <div class="c-trx-overview__row-tooltip">
                 <q-icon class="c-trx-overview__row-tooltip-icon info-icon" name="fas fa-info-circle">
                     <q-tooltip anchor="bottom right" self="top start">
-                        {{ $t('components.transaction.tlos_transfers_tooltip', {
-                            symbol: useChainStore().currentChain.settings.getSystemToken().symbol,
-                        }) }}
+                        {{ $t('components.transaction.tlos_transfers_tooltip') }}
                     </q-tooltip>
                 </q-icon>
             </div>
-            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.tlos_transfers', {
-                symbol: useChainStore().currentChain.settings.getSystemToken().symbol,
-            }) }}</div>
+            <div class="c-trx-overview__row-attribute">{{ $t('components.transaction.tlos_transfers') }}</div>
         </div>
         <div class="c-trx-overview__col-val c-trx-overview__col-val--erc-transfers">
             <TLOSTransferList
@@ -387,8 +384,8 @@ onMounted(() => {
             <template v-else>
                 <ValueField
                     :value="trx.value"
-                    :symbol="useChainStore().currentChain.settings.getSystemToken().symbol"
-                    :decimals="useChainStore().currentChain.settings.getSystemToken().decimals"
+                    :symbol="'TLOS'"
+                    :decimals="WEI_PRECISION"
                 />
             </template>
         </div>

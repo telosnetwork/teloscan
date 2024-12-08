@@ -4,24 +4,28 @@ import {
     onBeforeMount,
     onBeforeUnmount,
     onMounted,
-    ref,
-    watch,
 } from 'vue';
 import { useQuasar } from 'quasar';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { formatUnits } from 'ethers/lib/utils';
-import { useRoute, useRouter } from 'vue-router';
-import { TeloscanEVMChainSettings, evmSettings, useChainStore } from 'src/core';
+import { useRoute } from 'vue-router';
 
+import { useChainStore } from 'src/antelope';
+import {
+    IS_MAINNET,
+    IS_TESTNET,
+    TELOSCAN_MAINNET_URL,
+    TELOSCAN_TESTNET_URL,
+    // BETA_TELOSCAN_MAINNET_URL,
+    // BETA_TELOSCAN_TESTNET_URL,
+} from 'src/lib/chain-utils';
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import OutlineButton from 'components/OutlineButton.vue';
 import AppSearch from 'components/AppSearch.vue';
-import { CURRENT_CONTEXT } from 'src/core/mocks';
 
 const $route = useRoute();
-const $router = useRouter();
 const $q = useQuasar();
 const $store = useStore();
 const $i18n = useI18n();
@@ -35,7 +39,7 @@ const locale = computed(() => $i18n.locale.value);
 const hideSearchBar = computed(() => $route.name ==='home');
 const systemTokenSymbol = computed(() => chainStore.currentChain.settings.getSystemToken().symbol);
 const gasPriceInGwei = computed(() => {
-    if (chainStore.currentChain.settings.isTestnet()) {
+    if (IS_TESTNET) {
         return '';
     }
 
@@ -50,7 +54,7 @@ const gasPriceInGwei = computed(() => {
     return gasGweiNoDecimals.toLocaleString(locale.value);
 });
 const tlosPrice = computed(() => {
-    if (chainStore.currentChain.settings.isTestnet()) {
+    if (IS_TESTNET) {
         return '';
     }
 
@@ -63,7 +67,7 @@ const tlosPrice = computed(() => {
 });
 
 onBeforeMount(() => {
-    if (!chainStore.currentChain.settings.isTestnet()) {
+    if (IS_MAINNET) {
         fetchTlosPrice();
         fetchGasPrice();
     }
@@ -90,70 +94,32 @@ function toggleDarkMode() {
     localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
 }
 
-
-// Multichain
-interface ChainOption {
-    network: string;
-    settings: TeloscanEVMChainSettings;
+function goToTeloscanMainnet() {
+    if (IS_MAINNET) {
+        return;
+    }
+    window.open(TELOSCAN_MAINNET_URL, '_blank');
 }
 
-const chains = [
-    {
-        network: 'telos-evm',
-        settings: evmSettings['telos-evm'],
-    },
-    {
-        network: 'telos-evm-testnet',
-        settings: evmSettings['telos-evm-testnet'],
-    },
-] as ChainOption[];
-
-const selectedNetwork = ref<ChainOption | undefined>(undefined);
-const switchChain = (network: ChainOption) => {
-    selectedNetwork.value = network;
-};
-
-onMounted(() => {
-    const defaultNetwork = Object.keys(evmSettings)[0];
-    let network = new URLSearchParams(window.location.search).get('network');
-    if (network) {
-        const exists = Object.keys(evmSettings).some(key => evmSettings[key].getNetwork() === network);
-        if (!exists) {
-            network = defaultNetwork;
-        }
-    } else {
-        network = defaultNetwork;
+function goToTeloscanTestnet() {
+    if (IS_TESTNET) {
+        return;
     }
-    $router.replace({ query: { ...$route.query, network } });
-    selectedNetwork.value = chains.find(chain => chain.network === network);
-});
-
-watch(selectedNetwork, () => {
-    if (selectedNetwork.value) {
-        chainStore.setChain(CURRENT_CONTEXT, selectedNetwork.value.network);
-        // replace the url to reflect the network
-        $router.replace({ query: { ...$route.query, network: selectedNetwork.value.network } });
-    }
-});
-
-watch(() => chainStore.currentChain, (currentChain) => {
-    selectedNetwork.value = chains.find(chain => chain.network === currentChain.settings.getNetwork());
-});
-
-
+    window.open(TELOSCAN_TESTNET_URL, '_blank');
+}
 </script>
 
 <template>
 <div class="c-header-top-bar">
     <div class="c-header-top-bar__inner-container">
         <div class="c-header-top-bar__left-container">
-            <div v-if="!chainStore.currentChain.settings.isTestnet()" class="text-caption q-mr-md">
+            <div v-if="IS_MAINNET" class="text-caption q-mr-md">
                 <span class="c-header-top-bar__grey-text">
                     {{ $t('components.header.system_token_price', { token: systemTokenSymbol }) }}
                 </span> ${{ tlosPrice }}
             </div>
 
-            <div v-if="!chainStore.currentChain.settings.isTestnet()" class="text-caption u-flex--center-y">
+            <div v-if="IS_MAINNET" class="text-caption u-flex--center-y">
                 <q-icon name="fas fa-gas-pump" class="c-header-top-bar__grey-text q-mr-xs" />
                 <span class="c-header-top-bar__grey-text">
                     {{ $t('components.header.gas') }}:
@@ -185,17 +151,17 @@ watch(() => chainStore.currentChain, (currentChain) => {
                 text-color="primary"
                 :icon-only="true"
             >
-                <img :src="chainStore.currentChain.settings.getSmallLogoPath()" height="24" width="24">
+                <img src="branding/telos.png" height="24" width="24">
 
                 <q-menu>
                     <q-list>
-                        <!--q-item
+                        <q-item
                             clickable
                             role="link"
                             @click="goToTeloscanMainnet"
                             @keydown.enter="goToTeloscanMainnet"
                         >
-                            <q-item-section :class="chainStore.currentChain.settings.isTestnet() ? '' : 'text-primary'">
+                            <q-item-section :class="IS_MAINNET ? 'text-primary' : ''">
                                 Telos Mainnet
                             </q-item-section>
                         </q-item>
@@ -206,28 +172,10 @@ watch(() => chainStore.currentChain, (currentChain) => {
                             @click="goToTeloscanTestnet"
                             @keydown.enter="goToTeloscanTestnet"
                         >
-                            <q-item-section :class="chainStore.currentChain.settings.isTestnet() ? 'text-primary' : ''">
+                            <q-item-section :class="IS_TESTNET ? 'text-primary' : ''">
                                 Telos Testnet
                             </q-item-section>
-                        </q-item-->
-
-                        <template v-for="chain in chains" :key="chain.network">
-                            <q-separator/>
-                            <q-item
-                                clickable
-                                role="link"
-                                @click="switchChain(chain)"
-                                @keydown.enter="switchChain(chain)"
-                            >
-                                <q-item-section :class="selectedNetwork?.network === chain.network ? 'text-primary' : ''">
-                                    <div class="c-header-top-bar__chain-option">
-                                        <img :src="chain.settings.getSmallLogoPath()" height="24" width="24">
-                                        <span>{{  chain.settings.getDisplay() }}</span>
-                                    </div>
-                                </q-item-section>
-                            </q-item>
-                        </template>
-
+                        </q-item>
                     </q-list>
                 </q-menu>
 
@@ -310,12 +258,6 @@ watch(() => chainStore.currentChain, (currentChain) => {
         @media screen and (min-width: $breakpoint-md-min) {
             display: inline-flex;
         }
-    }
-
-    &__chain-option {
-        display: flex;
-        align-items: center;
-        gap: 8px;
     }
 }
 </style>
