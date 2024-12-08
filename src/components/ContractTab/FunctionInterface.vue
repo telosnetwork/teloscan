@@ -110,6 +110,9 @@ export default defineComponent({
         // initialization of the translated texts
         this.decimalOptions[4].label = this.$t('components.contract_tab.custom');
     },
+    async mounted() {
+        this.updateMissingInputs();
+    },
     computed: {
         ...mapGetters('login', [
             'address',
