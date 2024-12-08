@@ -1,5 +1,5 @@
 export * from 'src/core/mocks/AccountStore';
-export * from 'src/core/mocks/AntelopeConfig';
+export * from 'src/core/mocks/CoreConfig';
 export * from 'src/core/mocks/ChainStore';
 export * from 'src/core/mocks/UserStore';
 export * from 'src/core/mocks/ContractStore';

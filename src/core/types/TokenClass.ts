@@ -52,7 +52,7 @@ export interface TokenSourceInfo {
     logoURI?: string;                      // Token logo uri (as used in EVM)
     metadata?: string;                     // Token contract metadata (as used in EVM)
     isSystem: boolean;                     // True if the token is the main system token
-    isNative: boolean;                     // True if the token is a Antelope native blockchain token (false for EVM)
+    isNative: boolean;                     // True if the token is a Core native blockchain token (false for EVM)
     amount?: number | string;              // posible balance amount
     balance?: string;                      // posible balance amount
     fullBalance?: string;                  // posible balance amount

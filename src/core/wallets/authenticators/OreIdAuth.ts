@@ -14,7 +14,7 @@ import {
 } from 'src/core/types';
 import { EVMAuthenticator } from 'src/core/wallets';
 import {
-    AntelopeError,
+    CoreError,
     TokenClass,
     addressString,
     EvmTransactionResponse,
@@ -79,7 +79,7 @@ export class OreIdAuth extends EVMAuthenticator {
         case ChainNetwork.TelosEvmMain:
             return 'telos-evm';
         default:
-            throw new AntelopeError('antelope.evm.error_invalid_chain_network');
+            throw new CoreError('core.evm.error_invalid_chain_network');
         }
     }
 
@@ -91,7 +91,7 @@ export class OreIdAuth extends EVMAuthenticator {
         case 'telos-evm':
             return ChainNetwork.TelosEvmMain;
         default:
-            throw new AntelopeError('antelope.evm.error_invalid_chain_network');
+            throw new CoreError('core.evm.error_invalid_chain_network');
         }
     }
 
@@ -148,7 +148,7 @@ export class OreIdAuth extends EVMAuthenticator {
             this.trace('login', 'trackAnalyticsEvent -> login failed', this.getName(), TELOS_ANALYTICS_EVENT_NAMES.loginFailedOreId);
             chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginFailedOreId);
 
-            throw new AntelopeError('antelope.wallets.error_oreid_no_chain_account', {
+            throw new CoreError('core.wallets.error_oreid_no_chain_account', {
                 networkName,
                 appName,
             });
@@ -184,7 +184,7 @@ export class OreIdAuth extends EVMAuthenticator {
             if (provider) {
                 return provider.getBalance(address);
             } else {
-                throw new AntelopeError('antelope.evm.error_no_provider');
+                throw new CoreError('core.evm.error_no_provider');
             }
         } catch (e) {
             console.error('getSystemTokenBalance', e, address);
@@ -201,7 +201,7 @@ export class OreIdAuth extends EVMAuthenticator {
                 const balance = await erc20Contract.balanceOf(address);
                 return balance;
             } else {
-                throw new AntelopeError('antelope.evm.error_no_provider');
+                throw new CoreError('core.evm.error_no_provider');
             }
         } catch (e) {
             console.error('getERC20TokenBalance', e, address, token);
@@ -219,12 +219,12 @@ export class OreIdAuth extends EVMAuthenticator {
     checkIntegrity(): boolean {
         if (!this.userChainAccount) {
             console.error('Inconsistency error: userChainAccount is null');
-            throw new AntelopeError('antelope.evm.error_no_provider');
+            throw new CoreError('core.evm.error_no_provider');
         }
 
         if (!oreId) {
             console.error('Inconsistency error: oreId is null');
-            throw new AntelopeError('antelope.evm.error_no_provider');
+            throw new CoreError('core.evm.error_no_provider');
         }
 
         return true;
