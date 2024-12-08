@@ -51,6 +51,7 @@ module.exports = {
         'curly': 'error',
         'brace-style': ['error', '1tbs', { 'allowSingleLine': false }],
         'no-restricted-imports': ['error', {
+            'patterns': ['.*'], // disallow relative imports
         }],
         'no-return-assign': ['error', 'always'],
         'no-param-reassign': 'error',

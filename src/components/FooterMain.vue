@@ -1,15 +1,7 @@
 <script setup lang="ts">
-import SocialLinks from 'src/components/SocialLinks.vue';
-import { computed, ref, watch } from 'vue';
-import { useChainStore } from 'src/core';
+import SocialLinks from 'components/SocialLinks';
 import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
-import { useQuasar } from 'quasar';
-import { FooterLinksConfig } from 'src/core/types';
-
-const $q = useQuasar();
 const { t: $t } = useI18n();
-const $route = useRoute();
 
 const toTop = () => {
     window.scrollTo({
@@ -18,20 +10,7 @@ const toTop = () => {
     });
 };
 
-const useChain = useChainStore();
-const columnsConfig = ref<FooterLinksConfig>(useChain.currentChain.settings.getFooterLinks());
 
-// Function to update the configuration when the selected blockchain changes
-function updateColumnsConfig() {
-    columnsConfig.value = useChain.currentChain.settings.getFooterLinks();
-}
-
-// Watch for changes in the chain configuration
-watch(() => $route.query.network, () => {
-    updateColumnsConfig();
-});
-
-const logo = computed(() => $q.dark.isActive ? columnsConfig.value.branding.logoDark : columnsConfig.value.branding.logoLight);
 </script>
 
 <template>
@@ -43,38 +22,41 @@ const logo = computed(() => $q.dark.isActive ? columnsConfig.value.branding.logo
             <div class="c-footer__header">
                 <SocialLinks />
                 <a class="c-footer__back-to-top" @click="toTop">
-                    <q-icon name="fas fa-arrow-up" size="12px" /> {{ $t('components.footer.back_to_top') }}
+                    <q-icon name="fas fa-arrow-up" size="12px" /> {{$t('components.footer.back_to_top')}}
                 </a>
-                <a :href="columnsConfig.branding.url" class="c-footer__brand">
-                    <img
-                        :src="logo"
-                        :alt="columnsConfig.branding.title + ' Logo'"
-                        :class="{
-                            'c-footer__brand-logo': true,
-                            'c-footer__brand-logo--dark': $q.dark.isActive,
-                            'c-footer__brand-logo--light': !$q.dark.isActive,
-                        }"
-                    >
+                <a class="c-footer__brand">
+                    <img :src="require('src/assets/telos-new-logo.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--light">
+                    <img :src="require('src/assets/telos-new-logo--dark.png')" alt="Telos Logo" class="c-footer__brand-logo c-footer__brand-logo--dark">
                 </a>
             </div>
             <div class="c-footer__columns">
-                <!-- Generar columnas dinámicamente -->
-                <div
-                    v-for="(column, columnIndex) in columnsConfig.columns"
-                    :key="`footer-column-${columnIndex}`"
-                    :class="`c-footer__column c-footer__column--${String.fromCharCode(97 + columnIndex)}`"
-                >
-                    <div class="c-footer__column-title">{{ $t(column.title) }}</div>
+                <div class="c-footer__column c-footer__column--a">
+                    <div class="c-footer__column-title">{{$t('components.footer.telos')}}</div>
                     <div class="c-footer__column-items">
-                        <a
-                            v-for="(link, linkIndex) in column.links"
-                            :key="`footer-column-${columnIndex}-link-${linkIndex}`"
-                            class="c-footer__column-item"
-                            :href="link.url"
-                            target="_blank"
-                        >
-                            {{ $t(link.label) }}
-                        </a>
+                        <a class="c-footer__column-item" href="https://www.telos.net/">{{$t('components.footer.telos_homepage')}}</a>
+                        <a class="c-footer__column-item" href="https://wallet.telos.net/">{{$t('components.footer.telos_wallet')}}</a>
+                        <a class="c-footer__column-item" href="https://bridge.telos.net/bridge">{{$t('components.footer.telos_bridge')}}</a>
+                        <a class="c-footer__column-item" href="https://explorer.telos.net/network">{{$t('components.footer.telos_zero_explorer')}}</a>
+                        <a class="c-footer__column-item" href="https://www.telos.net/buy">{{$t('components.footer.buy_telos')}}</a>
+                        <a class="c-footer__column-item" href="https://docs.telos.net/users/knowledge-base/how-to-stake-tlos/">{{$t('components.footer.stake_telos')}}</a>
+                        <a class="c-footer__column-item" href="https://www.telos.net/ecosystem">{{$t('components.footer.telos_ecosystem')}}</a>
+                        <a class="c-footer__column-item" href="https://www.teloscan.io/health">{{$t('components.footer.network_status')}}</a>
+                    </div>
+                </div>
+                <div class="c-footer__column c-footer__column--b">
+                    <div class="c-footer__column-title">{{$t('components.footer.about')}}</div>
+                    <div class="c-footer__column-items">
+                        <a class="c-footer__column-item" href="https://www.telos.net/about">{{$t('components.footer.about_us')}}</a>
+                        <a class="c-footer__column-item" href="http://t.me/HelloTelos">{{$t('components.footer.contactUs')}}</a>
+                    </div>
+                </div>
+                <div class="c-footer__column c-footer__column--c">
+                    <div class="c-footer__column-title">{{$t('components.footer.build')}}</div>
+                    <div class="c-footer__column-items">
+                        <a class="c-footer__column-item" href="https://api.teloscan.io/v1/docs">{{$t('components.footer.api_documentation')}}</a>
+                        <a class="c-footer__column-item" href="https://docs.telos.net/overview/what-is-telos/introduction/">{{$t('components.footer.telos_documentation')}}</a>
+                        <a class="c-footer__column-item" href="https://github.com/telosnetwork">{{$t('components.footer.github')}}</a>
+                        <a class="c-footer__column-item" href="https://www.telos.net/community-resources">{{$t('components.footer.brand_assets')}}</a>
                     </div>
                 </div>
             </div>
@@ -82,6 +64,7 @@ const logo = computed(() => $q.dark.isActive ? columnsConfig.value.branding.logo
     </div>
 </div>
 </template>
+
 <style lang="scss">
 .c-footer {
     z-index: 2;

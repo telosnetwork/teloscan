@@ -8,5 +8,3 @@ export * from 'src/types/SearchTypes';
 export * from 'src/types/TransactionQueryData';
 export * from 'src/types/AbiFunction';
 export * from 'src/types/Token';
-export * from 'src/types/FunctionInterfaces';
-

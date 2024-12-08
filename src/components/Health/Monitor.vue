@@ -1,9 +1,8 @@
 <script>
 import axios from 'axios';
-import { useChainStore } from 'src/core';
-
-// TODO: remove this
-const API_URL = useChainStore().currentChain.settings.getMonitorUrl();
+const API_URL = (process.env.NETWORK_EVM_CHAIN_ID === 40) ?
+    'https://api.monitor.telos.net' :
+    'https://api.monitor-test.telos.net';
 const API_ENDPOINT_TASKS = API_URL + '/tasks';
 const API_ENDPOINT_STATUSES = API_URL + '/task_status';
 const API_ENDPOINT_CATEGORIES = API_URL + '/task_categories';

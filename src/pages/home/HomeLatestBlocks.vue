@@ -2,24 +2,24 @@
 import HomeLatestDataTableRow from 'src/pages/home/HomeLatestDataTableRow.vue';
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
-import { prettyPrintCurrency } from 'src/core/wallets/utils/currency-utils';
-import { onMounted, ref, watch } from 'vue';
+import { prettyPrintCurrency } from 'src/antelope/wallets/utils/currency-utils';
+import { indexerApi } from 'src/boot/telosApi';
+import { onMounted, ref, toRaw } from 'vue';
 import { BlockData } from 'src/types';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 import { ethers } from 'ethers';
-import { useChainStore } from 'src/core';
-import { useRoute } from 'vue-router';
+import { WEI_PRECISION } from 'src/lib/utils';
 
 type BlockDataOrLoading = BlockData | null;
 
 const $q = useQuasar();
 const $i18n = useI18n();
-const $route = useRoute();
 const { t: $t } = $i18n;
 const locale = $i18n.locale.value;
 const blocks = ref<BlockDataOrLoading[]>([null, null, null, null, null, null]);
 const gasPrice = '0x754d490126';
+const CACHE_KEY = 'latest-blocks';
 const blocksCache = ref<{
     range: { start: number },
     relevantBlocks: BlockData[],
@@ -27,6 +27,31 @@ const blocksCache = ref<{
     range: { start: 0 },
     relevantBlocks: [],
 });
+
+function saveCache() {
+    try {
+        const relevantBlocks = toRaw(blocks.value);
+        // if the first block has no transactions, we need to remove it
+        if (relevantBlocks[0]?.transactionsCount === 0) {
+            relevantBlocks.shift();
+        }
+        blocksCache.value.relevantBlocks = relevantBlocks as BlockData[];
+        localStorage.setItem(CACHE_KEY, JSON.stringify(blocksCache.value));
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function loadCache() {
+    const cache = localStorage.getItem(CACHE_KEY);
+    if (cache) {
+        try {
+            blocksCache.value = JSON.parse(cache);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+}
 
 
 async function fetchBlocksWithTransactions(firstPage: BlockData[]) {
@@ -82,7 +107,6 @@ async function fetchBlocksWithTransactions(firstPage: BlockData[]) {
 }
 
 async function fetchBlocksPage(page: number) {
-    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
     const path = getPath(page);
     const result = await indexerApi.get(path);
 
@@ -95,7 +119,9 @@ async function fetchBlocks() {
         blocks.value[0] = response.data.results[0];
         // remove the first block to avoid repeating it
         response.data.results.shift();
-        await fetchBlocksWithTransactions(response.data.results);
+        await fetchBlocksWithTransactions(response.data.results).then(() => {
+            saveCache();
+        });
     } catch (e: unknown) {
         $q.notify({
             type: 'negative',
@@ -107,7 +133,7 @@ async function fetchBlocks() {
 
 function getPath(page = 0) {
     const offset = page * 100;
-    let path = `v1/blocks?limit=6&includePagination&noEmpty=true&offset=${offset}`;
+    let path = `blocks?limit=6&includePagination&noEmpty=true&offset=${offset}`;
     return path;
 }
 
@@ -120,26 +146,22 @@ const gasUsedFor = (block: BlockData) => {
                 wei.isZero() ? 0 : 2, // If it is Zero, then do not show decimals
                 locale,
                 false,
-                useChainStore().currentChain.settings.getSystemToken().symbol,
+                'TLOS',
                 false,
-                useChainStore().currentChain.settings.getSystemToken().decimals,
+                WEI_PRECISION,
                 false,
             );
         } catch (e) {
             console.error(e);
         }
     }
-    return '0.00 ' + useChainStore().currentChain.settings.getSystemToken().symbol;
+    return '0.00 TLOS';
 };
 
 
 // lifecycle
 onMounted(() => {
-    fetchBlocks();
-});
-
-watch(() => $route.query, () => {
-    blocks.value = [null, null, null, null, null, null];
+    loadCache();
     fetchBlocks();
 });
 

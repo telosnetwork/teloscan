@@ -3,10 +3,10 @@
 import { ref, watch, onMounted, computed, toRaw } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { indexerApi } from 'src/boot/telosApi';
 import TransactionTable from 'components/TransactionTable.vue';
 import BlockOverview from 'components/BlockOverview.vue';
 import { BlockData } from 'src/types';
-import { useChainStore } from 'src/core';
 
 const router = useRouter();
 const route = useRoute();
@@ -34,18 +34,16 @@ function nextBlock() {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function visitNativeBlockExplorer(extraData: any) {
-    // TODO: remove this
-    const explorerLink = useChainStore().currentChain.settings.getExplorerUrl();
+    const explorerLink = process.env.NETWORK_EXPLORER;
     window.open(`${explorerLink}/block/${extraData}`, '_blank');
 }
 
 const loadBlockData = async () => {
-    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
     try {
         if (blockNumber.value <= 0) {
             return;
         }
-        const response = await indexerApi.get(`/v1/block/${blockNumber.value}`);
+        const response = await indexerApi.get(`/block/${blockNumber.value}`);
         blockData.value = toRaw(response.data?.results?.[0]) as BlockData;
     } catch (error) {
         console.error('Failed to fetch block data:', error);

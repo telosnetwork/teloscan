@@ -2,15 +2,14 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeMount } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { indexerApi } from 'src/boot/telosApi';
 import { ALLOWED_VIDEO_EXTENSIONS } from 'src/lib/utils';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import ImagePopup from 'src/components/ImagePopup.vue';
 import { NFT, NFT_TYPE } from 'src/types/NFT';
-import { useChainStore } from 'src/core';
 import { QTableProps, useQuasar } from 'quasar';
-import { useRoute } from 'vue-router';
 
 
 
@@ -18,7 +17,6 @@ const allowedFilters = ['contract', 'account'];
 
 const { t : $t } = useI18n();
 const $q = useQuasar();
-const $route = useRoute();
 
 const props = defineProps({
     address: {
@@ -163,7 +161,6 @@ function hasVideo(nft: NFT) {
 
 async function onRequest() {
     loading.value = true;
-    const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
 
     const { page, rowsPerPage, sortBy, descending } = pagination.value;
 
@@ -212,7 +209,7 @@ function getPath(type: string) {
     if(!allowedFilters.includes(queryFilter)){
         queryFilter = 'contract';
     }
-    return `/v1/${queryFilter}/${props.address}/nfts?type=${type}&includeAbi=true&limit=10000&forceMetadata=1&includePagination=true`;
+    return `/${queryFilter}/${props.address}/nfts?type=${type}&includeAbi=true&limit=10000&forceMetadata=1&includePagination=true`;
 }
 
 // Media display
@@ -227,10 +224,6 @@ onMounted(() => {
     if(size){
         previewSize.value = parseInt(size);
     }
-});
-
-watch(() => $route.query.network, () => {
-    onRequest();
 });
 
 </script>

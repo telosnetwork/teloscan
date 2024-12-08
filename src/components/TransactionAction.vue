@@ -5,7 +5,6 @@ import { useI18n } from 'vue-i18n';
 import MethodField from 'components/MethodField.vue';
 import AddressField from 'components/AddressField.vue';
 import ValueField from 'components/ValueField.vue';
-import { useChainStore } from 'src/core';
 
 const { t: $t } = useI18n();
 
@@ -99,7 +98,7 @@ const setValues = async () => {
 
         <ValueField
             :value="props.trx.value ?? '0x0'"
-            :symbol="useChainStore().currentChain.settings.getSystemToken().symbol"
+            :symbol="'TLOS'"
         />
 
         <span class="c-trx-action__text">to</span>

@@ -1,12 +1,13 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue';
+
+import { contractManager } from 'src/boot/telosApi';
 import { getIcon } from 'src/lib/token-utils';
 import { toChecksumAddress } from 'src/lib/utils';
 
 import CopyButton from 'components/CopyButton.vue';
 import { useStore } from 'vuex';
-import { useChainStore } from 'src/core';
 
 const props = defineProps({
     address: {
@@ -52,7 +53,7 @@ const restart = async () => {
     if (!props.address) {
         return;
     }
-    tokenList.value = await useChainStore().currentChain.settings.getContractManager().getTokenList();
+    tokenList.value = await contractManager.getTokenList();
     checksum.value = toChecksumAddress(props.address);
     await loadDisplayInfo();
     await getDisplay();
@@ -114,7 +115,7 @@ const getDisplay = async () => {
 };
 
 const loadDisplayInfo = async () => {
-    let info = await useChainStore().currentChain.settings.getContractManager().getContractDisplayInfo(props.address) ?? { address: props.address };
+    let info = await contractManager.getContractDisplayInfo(props.address);
 
     if (info) {
         contractName.value = info.name ?? '';

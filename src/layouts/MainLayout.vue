@@ -4,17 +4,14 @@ import {
     onBeforeMount,
     onMounted,
     ref,
-    watch,
 } from 'vue';
 import { useRoute } from 'vue-router';
-import { setCssVar, useQuasar } from 'quasar';
+import { useQuasar } from 'quasar';
 
 import AppHeader from 'components/header/AppHeader.vue';
 import FooterMain from 'components/FooterMain.vue';
 
 import { getBrowserName } from 'src/lib/utils';
-import { useChainStore } from 'src/core';
-import { Themes } from 'src/core/types';
 
 const $route = useRoute();
 const $q = useQuasar();
@@ -23,9 +20,8 @@ const scrollY = ref(0);
 const footerHeight = ref(0);
 const margin = ref(50);
 
-
-
 const onHomePage = computed(() => $route.name === 'home');
+
 
 onBeforeMount(() => {
     const $q = useQuasar();
@@ -63,31 +59,6 @@ function showBackToTop() {
     scrollY.value < document.documentElement.scrollHeight - window.innerHeight - footerHeight.value + margin.value;
 }
 
-
-function setTheme(): void {
-    const themes = useChainStore().currentChain.themes as Themes;
-    const chainThemes = useChainStore().currentChain.settings.getThemes() as Themes;
-    const defaultTheme = ($q.dark.isActive ? themes.dark : themes.light) as Record<string, string>;
-    const theme = ($q.dark.isActive ? chainThemes.dark : chainThemes.light) as Record<string, string>;
-    const themeProps = Object.keys(theme);
-    for (let themeVar of themeProps) {
-        if (theme[themeVar]) {
-            setCssVar(themeVar, theme[themeVar]);
-        } else {
-            setCssVar(themeVar, defaultTheme[themeVar]);
-        }
-    }
-}
-
-watch(() => $route.query.network, () => {
-    setTheme();
-},
-{
-    immediate: true,
-});
-watch(() => $q.dark.isActive, () => {
-    setTheme();
-});
 </script>
 
 <template>
@@ -108,7 +79,6 @@ watch(() => $q.dark.isActive, () => {
         :class="{
             'flex flex-center c-main-layout__page-container': true,
             'c-main-layout__page-container--home': onHomePage,
-            [$route.query.network as string]: true,
         }"
     >
         <router-view />
@@ -137,7 +107,7 @@ watch(() => $q.dark.isActive, () => {
 <q-scroll-observer @scroll="scrollHandler" />
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 .c-main-layout {
     --faint-circle-color: rgba(255, 255, 255, 0.1);
@@ -179,35 +149,35 @@ watch(() => $q.dark.isActive, () => {
         height: 320px;
         overflow: hidden;
         background-image:
-        radial-gradient(circle at 0% 170%, var(--q-secondary), transparent 45%),
-            radial-gradient(circle at 100% 130%, var(--q-secondary), transparent 30%),
+        radial-gradient(circle at 0% 170%, $secondary, transparent 45%),
+            radial-gradient(circle at 100% 130%, $secondary, transparent 30%),
             radial-gradient(circle at 100% 0%, var(--q-primary), transparent 30%),
-            radial-gradient(circle at 50% 20%, var(--q-accent), transparent 70%);
+            radial-gradient(circle at 50% 20%, $accent, transparent 70%);
 
         @media screen and (min-width: $breakpoint-sm-min) {
             background-image:
-            radial-gradient(circle at 0% 170%, var(--q-secondary), transparent 45%),
-            radial-gradient(circle at 100% 130%, var(--q-secondary), transparent 30%),
+            radial-gradient(circle at 0% 170%, $secondary, transparent 45%),
+            radial-gradient(circle at 100% 130%, $secondary, transparent 30%),
             radial-gradient(circle at 100% 0%, var(--q-primary), transparent 30%),
-            radial-gradient(circle at 50% 20%, var(--q-accent), transparent 70%)
+            radial-gradient(circle at 50% 20%, $accent, transparent 70%)
         }
 
         @media screen and (min-width: $breakpoint-md-min) {
             height: 400px;
 
             background-image:
-            radial-gradient(circle at 0% 170%, var(--q-secondary), transparent 45%),
-            radial-gradient(circle at 100% 130%, var(--q-secondary), transparent 30%),
+            radial-gradient(circle at 0% 170%, $secondary, transparent 45%),
+            radial-gradient(circle at 100% 130%, $secondary, transparent 30%),
             radial-gradient(circle at 100% 0%, var(--q-primary), transparent 30%),
-            radial-gradient(circle at 50% 20%, var(--q-accent), transparent 70%)
+            radial-gradient(circle at 50% 20%, $accent, transparent 70%)
         }
 
         @media screen and (min-width: $breakpoint-lg-min) {
             background-image:
-                radial-gradient(circle at 0% 170%, var(--q-secondary), transparent 40%),
-                radial-gradient(circle at 100% 140%, var(--q-secondary), transparent 20%),
+                radial-gradient(circle at 0% 170%, $secondary, transparent 40%),
+                radial-gradient(circle at 100% 140%, $secondary, transparent 20%),
                 radial-gradient(circle at 100% 0%, var(--q-primary), transparent 20%),
-                radial-gradient(circle at 50% 20%, var(--q-accent), transparent 90%)
+                radial-gradient(circle at 50% 20%, $accent, transparent 90%)
         }
     }
 
@@ -216,12 +186,12 @@ watch(() => $q.dark.isActive, () => {
         height: 70vh;
 
         background-image:
-            radial-gradient(circle at 112% 75%, var(--q-accent), transparent 20%),
+            radial-gradient(circle at 112% 75%, $accent, transparent 20%),
                 radial-gradient(circle at 98% 100%, var(--q-primary), transparent 20%);
 
         @media screen and (min-width: $breakpoint-lg-min) {
             background-image:
-                radial-gradient(circle at 112% 75%, var(--q-accent), transparent 20%),
+                radial-gradient(circle at 112% 75%, $accent, transparent 20%),
                 radial-gradient(circle at 98% 100%, var(--q-primary), transparent 20%);
         }
     }

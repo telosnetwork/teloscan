@@ -14,7 +14,6 @@ import { useRoute } from 'vue-router';
 import CopyButton from 'src/components/CopyButton.vue';
 import ContractHeader from 'components/ContractHeader.vue';
 import { MetaData } from 'src/types/MetaData';
-import { useChainStore } from 'src/core';
 
 hljs.registerLanguage('json', json);
 hljsDefineSolidity(hljs);
@@ -105,10 +104,9 @@ watch(expanded.value, () => {
 onMounted(async () => {
     let sourceData;
     try {
-        // TODO: remove this
         const checkSumAddress = toChecksumAddress(route.params.address);
         const response = await axios.get(
-            `${useChainStore().currentChain.settings.getTrustedContractsBucket()}/${checkSumAddress}/source.json`,
+            `https://${process.env.VERIFIED_CONTRACTS_BUCKET}.s3.amazonaws.com/${checkSumAddress}/source.json`,
         );
         sourceData = response.data;
         sources.value = sourceData;

@@ -2,7 +2,6 @@
 import { getIcon } from 'src/lib/token-utils';
 import { BigNumber } from 'ethers';
 import { formatWei } from 'src/lib/utils';
-import { useChainStore } from 'src/core';
 export default {
     name: 'TokenValueField',
     props: {
@@ -42,7 +41,7 @@ export default {
         },
         async getLogo(contract){
             let logoURI = '';
-            const tokenList = await useChainStore().currentChain.settings.getContractManager().getTokenList();
+            const tokenList = await this.$contractManager.getTokenList();
             tokenList.tokens.forEach((token) => {
                 if(token.address.toLowerCase() ===  contract.address.toLowerCase()){
                     logoURI = token.logoURI;
@@ -54,7 +53,7 @@ export default {
     async mounted() {
         this.valueRaw = this.value.toLocaleString(0, { useGrouping: false }).replace('.', '');
         if(this.address){
-            const contract = await useChainStore().currentChain.settings.getContractManager().getContract(this.address);
+            const contract = await this.$contractManager.getContract(this.address);
             if(contract){
                 this.valueWei = BigNumber.from(this.value);
                 this.valueShort = this.shorten(this.valueRaw, contract.properties?.decimals);
@@ -68,7 +67,7 @@ export default {
         this.valueShort = formatWei(this.valueRaw, 18, this.truncate);
         this.valueRaw = formatWei(this.valueRaw, 18);
         this.valueWei = this.value;
-        this.symbol = useChainStore().currentChain.settings.getSystemToken().symbol;
+        this.symbol = 'TLOS';
         this.logo = false;
     },
     data(){
@@ -99,12 +98,12 @@ export default {
             <q-tooltip v-if="!showWei">{{ $t('components.transaction.show_total') }}</q-tooltip>
             <q-tooltip v-else >{{ $t('components.transaction.show_wei') }}</q-tooltip>
         </span>
-        <router-link v-if="symbol !== useChainStore().currentChain.settings.getSystemToken().symbol" :to="`/address/${address}`">
+        <router-link v-if="symbol !== 'TLOS'" :to="`/address/${address}`">
             <span>{{ symbol.slice(0, 6) }}</span>
             <span v-if="symbol.length > 6">...</span>
             <q-tooltip>{{ name }}</q-tooltip>
         </router-link>
-        <span v-else> {{ useChainStore().currentChain.settings.getSystemToken().symbol }}</span>
+        <span v-else>TLOS</span>
     </span>
     <span v-else class="clickable" @click="displaySwitch = !displaySwitch">
         <span v-if="!showWei">

@@ -26,19 +26,13 @@ body.body--light {
     --active-tab-bg-color: #{$tab-active-light};
     --active-tab-text-color: white;
 
-    // --q-primary: #2a8de3 !important;
-    // --q-secondary: #8B3F98 !important;
+    --q-primary: #2a8de3 !important;
+    --q-secondary: #8B3F98 !important;
 
     --scrollbar-track-bg-color: #{$grey-5};
     --scrollbar-thumb-bg-color: #{$grey-7};
 
     --odd-row-bg-color: #{$grey-3};
-
-    // notify component colors
-    --notify-success: #255B00;
-    --notify-error: #880000;
-    --notify-neutral: #4D4D4D;
-    --notify-info: #008888;
 
     a:hover {
         color: $a-hover-light;
@@ -59,8 +53,8 @@ body.body--dark {
     --active-tab-bg-color: #{#{$tab-active-dark}};
     --active-tab-text-color: white;
 
-//     --q-primary: #2a8de3 !important;
-//     --q-secondary: #8B3F98 !important;
+    --q-primary: #2a8de3 !important;
+    --q-secondary: #8B3F98 !important;
 
     --scrollbar-track-bg-color: #{$grey-10};
     --scrollbar-thumb-bg-color: #{$grey-7};
@@ -68,12 +62,6 @@ body.body--dark {
     --odd-row-bg-color: #{$grey-10};
 
     --q-dark: #181818;
-
-    // notify component colors
-    --notify-success: #469d0d;
-    --notify-error: #b30909;
-    --notify-neutral: #858585;
-    --notify-info: #15baba;
 
     a:hover {
         color: $a-hover-dark;

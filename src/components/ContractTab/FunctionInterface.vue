@@ -7,23 +7,28 @@ import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
 import { LOGIN_DATA_KEY } from 'src/lib/utils';
-import { useAccountStore } from 'src/core';
-import { CURRENT_CONTEXT, useChainStore } from 'src/core/wallets';
-import { EvmABI, EvmFunctionParam } from 'src/core/types';
-import { WEI_PRECISION } from 'src/core/wallets/utils';
+import { useAccountStore } from 'src/antelope';
+import { CURRENT_CONTEXT } from 'src/antelope/wallets';
+import { EvmABI, EvmFunctionParam } from 'src/antelope/types';
+import { WEI_PRECISION } from 'src/antelope/wallets/utils';
 import {
     asyncInputComponents,
+    getComponentForInputType,
+    getExpectedArrayLengthFromParameterType,
+    getIntegerBits,
+    inputIsComplex,
+    parameterIsArrayType,
+    parameterIsIntegerType,
+    parameterTypeIsBoolean,
+    parameterTypeIsSignedIntArray,
+    parameterTypeIsTupleStruct,
+    parameterTypeIsTupleStructArray,
+    parameterTypeIsUnsignedIntArray,
 } from 'src/lib/function-interface-utils';
 import TransactionField from 'src/components/TransactionField.vue';
 import LoginModal from 'components/LoginModal.vue';
 import FunctionOutputViewer from 'components/ContractTab/FunctionOutputViewer.vue';
-import {
-    InputComponent,
-    OutputType,
-    OutputValue,
-    inputComponents,
-} from 'src/types';
-import { getComponentsForAbiInputs } from 'src/lib/function-interface-utils-ts';
+import { OutputType, OutputValue, InputDescription } from 'src/types';
 
 interface Opts {
     value?: string;
@@ -92,12 +97,8 @@ export default defineComponent({
             selectDecimals: decimalOptions[0],
             customDecimals: 0,                            // number
             value: '0',                                   // string
-            missingInputs: true,                          // boolean
-            models: {
-                inputs: [] as string[],                   // raw input values
-                values: [] as EvmFunctionParam[],         // parsed input values
-            },
-
+            inputModels: [] as string[],                  // raw input values
+            params: [] as EvmFunctionParam[],             // parsed input values
             valueParam: {
                 'name': 'value',
                 'type': 'amount',
@@ -120,39 +121,87 @@ export default defineComponent({
         functionABI(){
             return `${this.abi.name}(${this.abi.inputs.map((i: { type: never; }) => i.type).join(',')})`;
         },
-        inputComponents(): inputComponents {
-            const isRoot = true;
-            const components = getComponentsForAbiInputs(this.abi?.inputs, this.models, isRoot) as unknown as inputComponents;
-            return components;
-        },
-    },
-    methods: {
-        valueParsed(inputType: string, index: number, value: EvmFunctionParam, component: InputComponent) {
-            component.handleValueParsed(inputType, index, value);
-            this.updateMissingInputs();
-        },
-        updateMissingInputs() {
-            const inputs_length = this.abi.inputs.length;
-            const values_length = this.models.values.length;
-            if (inputs_length !== values_length) {
-                this.missingInputs = true;
-                return true;
+        inputComponents() {
+            if (!Array.isArray(this.abi?.inputs)) {
+                return [];
             }
 
-            if (inputs_length !== values_length) {
-                this.missingInputs = true;
+            const getExtraBindingsForType = (input: InputDescription, index: number) => {
+                const { type, name, components } = input;
+                const label = `${name ? name : `Param ${index + 1}`}`;
+                const extras = {} as {[key:string]: string | InputDescription[]};
+
+                // represents integer bits (e.g. uint256) for int types, or array length for array types
+                let size = undefined;
+                if (parameterIsArrayType(type)) {
+                    size = getExpectedArrayLengthFromParameterType(type);
+                } else if (parameterIsIntegerType(type)) {
+                    size = getIntegerBits(type);
+                } else if (parameterTypeIsTupleStruct(type) && components) {
+                    size = toRaw(components).length;
+                }
+
+                const result = type.match(/(\d+)(?=\[)/);
+                const intSize = result ? result[0] : undefined;
+
+                if (intSize && parameterTypeIsUnsignedIntArray(type)) {
+                    extras['uint-size'] = intSize;
+                } else if (intSize && parameterTypeIsSignedIntArray(type)) {
+                    extras['int-size'] = intSize;
+                } else if (parameterTypeIsTupleStruct(type) && components) {
+                    extras['componentDescription'] = toRaw(components);
+                } else if (parameterTypeIsTupleStructArray(type) && components) {
+                    extras['componentDescription'] = toRaw(components);
+                }
+
+                const defaultModelValue = parameterTypeIsBoolean(type) ? null : '';
+
+                const bindings = {
+                    ...extras,
+                    label,
+                    size,
+                    modelValue: this.inputModels[index] ?? defaultModelValue,
+                    name: label.toLowerCase(),
+                };
+                return bindings;
+            };
+
+            const handleModelValueChange = (type: string, index: number, value: string) => {
+                this.inputModels[index] = value;
+
+                if (!inputIsComplex(type)) {
+                    this.params[index] = value;
+                }
+            };
+            const handleValueParsed = (type: string, index: number, value: EvmFunctionParam) => {
+                if (inputIsComplex(type)) {
+                    this.params[index] = value;
+                }
+            };
+
+            return this.abi.inputs.map((input, index) => ({
+                bindings: getExtraBindingsForType(input, index),
+                is: getComponentForInputType(input.type),
+                inputType: input.type,
+                handleModelValueChange: (type: string, index: number, value: string) => handleModelValueChange(type, index, value),
+                handleValueParsed:      (type: string, index: number, value: EvmFunctionParam) => handleValueParsed(type, index, value),
+            }));
+        },
+        missingInputs() {
+            if (this.abi.inputs.length !== this.params.length) {
                 return true;
             }
 
             for (let i = 0; i < this.abi.inputs.length; i++) {
-                if (['', null, undefined].includes(this.models.values[i] as never)) {
-                    this.missingInputs = true;
+                if (['', null, undefined].includes(this.params[i] as never)) {
                     return true;
                 }
             }
-            this.missingInputs = false;
+
             return false;
         },
+    },
+    methods: {
         showAmountDialog(param: string) {
             this.amountParam = param;
             this.amountDecimals = 18;
@@ -168,7 +217,7 @@ export default defineComponent({
             if (typeof this.amountParam === 'string') {
                 this.value = integerAmount;
             } else {
-                this.models.values[this.amountParam] = integerAmount as never;
+                this.params[this.amountParam] = integerAmount as never;
             }
 
             this.clearAmount();
@@ -180,6 +229,7 @@ export default defineComponent({
             this.showLoginModal = true;
         },
         async run() {
+            console.log('run');
             if (!this.isLoggedIn && this.write){
                 this.login();
                 return;
@@ -217,16 +267,12 @@ export default defineComponent({
             this.endLoading();
         },
         async getEthersFunction(provider?: ethers.providers.JsonRpcSigner | ethers.providers.JsonRpcProvider) {
-            const contractInstance = await useChainStore().currentChain.settings.getContractManager().getContractInstance(this.contract, provider);
-            if (!contractInstance) {
-                throw new Error('Contract not found');
-            } else {
-                return contractInstance[this.functionABI];
-            }
+            const contractInstance = await this.$contractManager.getContractInstance(this.contract, provider);
+            return contractInstance[this.functionABI];
         },
         runRead() {
             return this.getEthersFunction()
-                .then(func => func(...this.models.values)
+                .then(func => func(...this.params)
                     .then((response: OutputValue | OutputValue[]) => {
                         this.result = response as unknown as string;
                         this.response = Array.isArray(response) ? response : [response];
@@ -243,18 +289,10 @@ export default defineComponent({
             const contractInstance = toRaw(await this.contract.getContractInstance());
             const func = contractInstance.populateTransaction[this.functionABI];
             const gasEstimater = contractInstance.estimateGas[this.functionABI];
-            const gasLimit = await gasEstimater(...this.models.values, Object.assign({ from: this.address }, opts));
-            const unsignedTrx = await func(...this.models.values, opts);
-            const chain = useChainStore().currentChain;
-            const evm = chain.settings.getNativeSupport();
-            if (!evm) {
-                // we need to notify the user that the chain does not support native contracts
-                this.errorMessage = this.$t('components.native_not_supported');
-                this.endLoading();
-                return;
-            }
-            const nonce = parseInt(await evm.telos.getNonce(this.address), 16);
-            const gasPrice = BigNumber.from(`0x${await evm.telos.getGasPrice()}`);
+            const gasLimit = await gasEstimater(...this.params, Object.assign({ from: this.address }, opts));
+            const unsignedTrx = await func(...this.params, opts);
+            const nonce = parseInt(await this.$evm.telos.getNonce(this.address), 16);
+            const gasPrice = BigNumber.from(`0x${await this.$evm.telos.getGasPrice()}`);
             unsignedTrx.nonce = nonce;
             unsignedTrx.gasLimit = gasLimit;
             unsignedTrx.gasPrice = gasPrice;
@@ -297,7 +335,7 @@ export default defineComponent({
             const trxBuffer = Buffer.from(raw.replace(/^0x/, ''), 'hex');
 
             const tx = Transaction.fromSerializedTx(trxBuffer, {
-                common: evm.chainConfig,
+                common: this.$evm.chainConfig,
             });
 
             this.hash = `0x${tx?.hash().toString('hex')}`;
@@ -317,7 +355,7 @@ export default defineComponent({
                 keyMsg = 'notification.neutral_message_custom_call_send';
                 keyErr = 'notification.error_message_custom_call_send';
                 const quantity = ethers.utils.formatUnits(value, WEI_PRECISION);
-                const symbol = useChainStore().currentChain.settings.getSystemToken().symbol;
+                const symbol = 'TLOS';
                 message = this.$t(keyMsg, { name, params, quantity, symbol });
                 error = this.$t(keyErr, { name, params, quantity, symbol });
             }
@@ -328,7 +366,7 @@ export default defineComponent({
                 error,
                 this.contract.address,
                 [this.abi] as EvmABI,
-                this.models.values,
+                this.params,
                 value,
             ).then((result) => {
                 this.hash = result.hash;
@@ -411,8 +449,8 @@ export default defineComponent({
             :key="index"
             v-bind="component.bindings"
             required="true"
-            class="input-component q-pb-md"
-            @valueParsed="valueParsed(component.inputType, index, $event, component)"
+            class="input-component q-pb-lg"
+            @valueParsed="component.handleValueParsed(component.inputType, index, $event)"
             @update:modelValue="component.handleModelValueChange(component.inputType, index, $event)"
         />
     </template>
@@ -444,7 +482,7 @@ export default defineComponent({
 </div>
 </template>
 
-<style lang="scss">
+<style>
 .text-negative.output-container {
     overflow-wrap: break-word;
     word-break: break-all;

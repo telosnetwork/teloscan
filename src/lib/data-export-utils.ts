@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import { useChainStore } from 'src/core';
+import { exportApi } from 'src/boot/telosApi';
 import { EXPORT_DOWNLOAD_TYPES } from 'src/lib/constants';
 
 /**
@@ -75,7 +75,6 @@ export async function downloadCsv(
     }
 
     try {
-        const exportApi = useChainStore().currentChain.settings.getTelosApi();
         const { data } = await exportApi.get(url);
         csvContent = data;
     } catch (e) {

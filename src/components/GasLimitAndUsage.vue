@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 
 import { BlockData } from 'src/types';
-import { EvmTransactionParsed } from 'src/core/types';
+import { EvmTransactionParsed } from 'src/antelope/types';
 import { useI18n } from 'vue-i18n';
 
 const $i18n = useI18n();

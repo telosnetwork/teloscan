@@ -1,10 +1,8 @@
-import { useChainStore } from 'src/core';
-
 export const login = async function(
     { commit, dispatch },
     { idx, account },
 ) {
-    const authenticator = useChainStore().currentChain.settings.getUAL()?.authenticators[idx];
+    const authenticator = this.$ual.authenticators[idx];
     try {
         commit('setLoadingWallet', authenticator.getStyle().text);
         await authenticator.init();
@@ -41,7 +39,7 @@ export const login = async function(
 };
 
 export const autoLogin = async function({ dispatch, commit }, returnUrl) {
-    const { authenticator, idx } = getAuthenticator(useChainStore().currentChain.settings.getUAL());
+    const { authenticator, idx } = getAuthenticator(this.$ual);
     if (authenticator) {
         commit('setAutoLogin', true);
         await dispatch('login', {
@@ -66,7 +64,7 @@ const getAuthenticator = function(ual, wallet = null) {
 
 export const logout = async function({ getters }) {
     if (getters.isNative) {
-        const { authenticator } = getAuthenticator(useChainStore().currentChain.settings.getUAL());
+        const { authenticator } = getAuthenticator(this.$ual);
         try {
             authenticator && (await authenticator.logout());
         } catch (error) {

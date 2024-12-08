@@ -8,7 +8,6 @@ import ValueField from 'components/ValueField.vue';
 
 import { EvmTransactionExtended } from 'src/types';
 import { getParsedInternalTransactions } from 'src/lib/transaction-utils';
-import { useChainStore } from 'src/core';
 
 
 const { t: $t } = useI18n();
@@ -52,15 +51,13 @@ const loadTransfers = async () => {
 
     tlos_transfers.value = result.parsedItxs
         .map((itx: any, i: number) => ({ ...itx, index: i }))
-        .filter((itx: any) => itx.name === $t('components.transaction.tlos_transfer', {
-            symbol: useChainStore().currentChain.settings.getSystemToken().symbol,
-        }))
+        .filter((itx: any) => itx.name === $t('components.transaction.tlos_transfer'))
         .map((itx: any) => ({
             from: itx.from,
             to: itx.to,
             value: (result.itxs[itx.index] as {action:{value:string}}).action.value,
             token: {
-                symbol: useChainStore().currentChain.settings.getSystemToken().symbol,
+                symbol: 'TLOS',
                 decimals: 18,
             },
         }));

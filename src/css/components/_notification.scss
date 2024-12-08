@@ -1,10 +1,8 @@
 // Mocking external dependencies ---
-body {
-  --notify-success: var(--notify-success, #255B00);
-  --notify-error: var(--notify-error, #880000);
-  --notify-neutral: var(--notify-neutral, #4D4D4D);
-  --notify-info: var(--notify-info, #008888);
-}
+$notify-success: #255B00;
+$notify-error: #880000;
+$notify-neutral: #4D4D4D;
+$notify-info: #008888;
 
 @mixin regular {
   font-family: 'silka-regular', 'Roboto', sans-serif;
@@ -19,7 +17,7 @@ body {
 // --------------
 
 .c-notify {
-  --q-positive: var(--notify-success);
+  --q-positive: #{$notify-success};
   width: 100%;
   max-width: 400px;
   margin: 1rem;
@@ -53,25 +51,25 @@ body {
     --c-notify__checkbox--display: none;
     --c-notify__message--align: center;
     &--success {
-      --notify-color: var(--notify-success);
+      --notify-color: #{$notify-success};
       --c-notify__title--display: flex;
       --c-notify__message--padding: 0 2rem;
       --c-notify__header--animation: consuming-bar 5s linear forwards;
     }
     &--error {
-      --notify-color: var(--notify-error);
+      --notify-color: #{$notify-error};
       --c-notify__title--display: flex;
       --c-notify__message--padding: 0 2rem;
     }
     &--info {
-      --notify-color: var(--notify-info);
+      --notify-color: #{$notify-info};
       --c-notify__title--display: flex;
       --c-notify__message--padding: 0 2rem;
       --c-notify__checkbox--display: block;
       --c-notify__message--align: left;
     }
     &--neutral {
-      --notify-color: var(--notify-neutral);
+      --notify-color: #{$notify-neutral};
       --c-notify__title--display: none;
       --c-notify__message--padding: 1.2rem 2rem;
       --c-notify__header--animation: consuming-bar 5s linear forwards;
