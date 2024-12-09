@@ -34,11 +34,11 @@ const systemToken = useChainStore().currentChain.settings.getSystemToken();
         <q-skeleton type="text" class="c-address-overview__skeleton" />
     </q-card-section>
     <q-card-section v-else>
-        <div class="c-address-overview__label"> TLOS {{ $t('pages.balance') }} </div>
+        <div class="c-address-overview__label"> {{ systemToken.symbol }} {{ $t('pages.balance') }} </div>
         <div class="c-address-overview__balance">
             <img
                 src="branding/telos.png"
-                alt="TLOS"
+                :alt="systemToken.symbol"
                 height="18"
                 width="18"
             >
@@ -62,8 +62,8 @@ const systemToken = useChainStore().currentChain.settings.getSystemToken();
     height: 100%;
     &__balance {
         display: flex;
-        flex-direction: column;
-        gap: 5px;
+        flex-direction: row;
+        gap: 3px;
     }
     &__balance-value {
         display: flex;
