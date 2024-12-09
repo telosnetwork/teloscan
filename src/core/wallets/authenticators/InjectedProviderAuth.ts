@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 import { useEVMStore, useFeedbackStore } from 'src/core';
 import {
-    AntelopeError,
+    CoreError,
     EthereumProvider,
     EvmABI,
     EvmFunctionParam,
@@ -47,20 +47,20 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
                 if (provider) {
                     resolve(provider);
                 } else {
-                    reject(new AntelopeError('antelope.evm.error_no_provider'));
+                    reject(new CoreError('core.evm.error_no_provider'));
                 }
             });
         });
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private handleCatchError(error: any): AntelopeError {
+    private handleCatchError(error: any): CoreError {
         if ('ACTION_REJECTED' === ((error as {code:string}).code)) {
-            return new AntelopeError('antelope.evm.error_transaction_canceled');
+            return new CoreError('core.evm.error_transaction_canceled');
         } else {
             // unknown error we print on console
             console.error(error);
-            return new AntelopeError('antelope.evm.error_send_transaction', { error });
+            return new CoreError('core.evm.error_send_transaction', { error });
         }
     }
 
@@ -171,7 +171,7 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
             if (
                 trackAnalyticsEvents &&
                 isTelos &&
-                error.message !== 'antelope.evm.error_connect_rejected'
+                error.message !== 'core.evm.error_connect_rejected'
             ) {
                 let failedLoginEventName = '';
 
@@ -205,7 +205,7 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
         if (provider) {
             return provider.getBalance(address);
         } else {
-            throw new AntelopeError('antelope.evm.error_no_provider');
+            throw new CoreError('core.evm.error_no_provider');
         }
     }
 
@@ -218,7 +218,7 @@ export abstract class InjectedProviderAuth extends EVMAuthenticator {
                 const balance = await erc20Contract.balanceOf(address);
                 return balance;
             } else {
-                throw new AntelopeError('antelope.evm.error_no_provider');
+                throw new CoreError('core.evm.error_no_provider');
             }
         } catch (e) {
             console.error('getERC20TokenBalance', e, address, token);

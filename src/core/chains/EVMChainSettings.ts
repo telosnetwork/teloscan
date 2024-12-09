@@ -26,7 +26,7 @@ import { ethers } from 'ethers';
 import { toStringNumber } from 'src/core/stores/utils/currency-utils';
 import { dateIsWithinXMinutes } from 'src/core/stores/utils/date-utils';
 import { createTraceFunction } from 'src/core/mocks/FeedbackStore';
-import { getAntelope } from 'src/core';
+import { getCore } from 'src/core';
 import { WEI_PRECISION, PRICE_UPDATE_INTERVAL_IN_MIN } from 'src/core/stores/utils';
 import { BehaviorSubject, filter } from 'rxjs';
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';
@@ -170,7 +170,7 @@ export default abstract class EVMChainSettings implements ChainSettings {
         }
         this.ready = true;
 
-        // this setTimeout is a work arround because we can't call getAntelope() function before it initializes
+        // this setTimeout is a work arround because we can't call getCore() function before it initializes
         setTimeout(() => {
             const timer = setInterval(async () => {
                 try {
@@ -179,7 +179,7 @@ export default abstract class EVMChainSettings implements ChainSettings {
                     clearInterval(timer);
                     console.error('Indexer API not working for this chain:', this.getNetwork(), e);
                 }
-            }, getAntelope().config.indexerHealthCheckInterval);
+            }, getCore().config.indexerHealthCheckInterval);
         }, 1000);
 
         // Update system token price
@@ -243,9 +243,9 @@ export default abstract class EVMChainSettings implements ChainSettings {
         ).subscribe(() => {
             if (!this.indexerHealthWarningShown && !this.isIndexerHealthy()) {
                 this.indexerHealthWarningShown = true;
-                const  ant = getAntelope();
+                const  ant = getCore();
                 ant.config.notifyNeutralMessageHandler(
-                    ant.config.localizationHandler('antelope.chain.indexer_bad_health_warning'),
+                    ant.config.localizationHandler('core.chain.indexer_bad_health_warning'),
                 );
             }
         });
@@ -257,7 +257,7 @@ export default abstract class EVMChainSettings implements ChainSettings {
         } else {
             return (
                 this._indexerHealthState.state.success &&
-                this._indexerHealthState.state.secondsBehind < getAntelope().config.indexerHealthThresholdSeconds
+                this._indexerHealthState.state.secondsBehind < getCore().config.indexerHealthThresholdSeconds
             );
         }
     }

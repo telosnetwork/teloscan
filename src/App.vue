@@ -5,7 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useQuasar } from 'quasar';
 import moment from 'moment';
 
-import { getAntelope, useChainStore } from 'src/core';
+import { getCore, useChainStore } from 'src/core';
 import { TELOS_NETWORK_NAMES } from 'src/core/mocks/chain-constants';
 import { providerManager } from 'src/boot/evm';
 
@@ -54,14 +54,14 @@ onMounted(async () => {
     }
 
     // On login we must set the address and record the provider
-    getAntelope().events.onLoggedOut.subscribe(() => {
+    getCore().events.onLoggedOut.subscribe(() => {
         const loginData = localStorage.getItem('loginData');
         if (isNative.value) {
             if (!loginData) {
                 return;
             }
             const loginObj = JSON.parse(loginData);
-            const wallet = getAntelope().config.authenticatorsGetter().find(a => a.getName() === loginObj.provider);
+            const wallet = getCore().config.authenticatorsGetter().find(a => a.getName() === loginObj.provider);
             wallet?.logout();
         }
         $store.commit('login/setLogin', {});

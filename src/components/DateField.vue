@@ -37,7 +37,7 @@ const friendlyDate = computed(() => {
     const showAgeValue = props.forceShowAge === true || (props.forceShowAge === null && showAge.value);
     if (showAgeValue) {
         const difference = Date.now() - props.epoch * 1000;
-        return $t('antelope.words.time_ago', { time: formatTimePeriod(difference / 1000, $t) });
+        return $t('core.words.time_ago', { time: formatTimePeriod(difference / 1000, $t) });
     }
     const timestamp = moment.unix(props.epoch);
     if (props.utc) {

@@ -1,9 +1,9 @@
-export interface AntelopeErrorPayload {
+export interface CoreErrorPayload {
     [key:string]: unknown
 }
 
-export class AntelopeError extends Error {
-    public payload?: AntelopeErrorPayload;
+export class CoreError extends Error {
+    public payload?: CoreErrorPayload;
     constructor(
         message: string | undefined,
         public _payload?: unknown,

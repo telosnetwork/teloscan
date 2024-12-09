@@ -5,14 +5,14 @@ import { Web3ModalConfig } from '@web3modal/html';
 import { MetamaskAuth, SafePalAuth, WalletConnectAuth, BraveAuth, useChainStore } from 'src/core/wallets';
 import { configureChains, createConfig } from '@wagmi/core';
 import { telos, telosTestnet } from '@wagmi/core/chains';
-import { getAntelope } from 'src/core/mocks/AntelopeConfig';
+import { getCore } from 'src/core/mocks/CoreConfig';
 import { App } from 'vue';
-import { AntelopeError } from 'src/core/types';
+import { CoreError } from 'src/core/types';
 
 /**
  * This function is used to register the EVMAuthenticators that will be used by the app.
  */
-export function initAntelope(app: App) {
+export function initCore(app: App) {
 
     const projectId = process.env.PROJECT_ID || '14ec76c44bae7d461fa0f5fd5f8a9da1';
     const chains = [telos, telosTestnet];
@@ -38,7 +38,7 @@ export function initAntelope(app: App) {
     const explorerExcludedWalletIds = 'ALL' as const; // Web3Modal option excludes all but recomended
     const wagmiOptions: Web3ModalConfig = { projectId, explorerRecommendedWalletIds, explorerExcludedWalletIds };
 
-    const ant = getAntelope();
+    const ant = getCore();
     ant.config.init(app);
 
     // settting notification handlers --
@@ -62,9 +62,9 @@ export function initAntelope(app: App) {
 
     // setting transaction error handler --
     ant.config.setTransactionErrorHandler((err: object) => {
-        if (err instanceof AntelopeError) {
-            const evmErr = err as AntelopeError;
-            if (evmErr.message === 'antelope.evm.error_transaction_canceled') {
+        if (err instanceof CoreError) {
+            const evmErr = err as CoreError;
+            if (evmErr.message === 'core.evm.error_transaction_canceled') {
                 ant.config.notifyNeutralMessageHandler(ant.config.localizationHandler(evmErr.message));
             } else {
                 ant.config.notifyFailureMessage(ant.config.localizationHandler(evmErr.message), evmErr.payload);
