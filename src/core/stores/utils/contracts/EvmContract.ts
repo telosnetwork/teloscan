@@ -1,7 +1,7 @@
 import { BigNumber, ContractInterface, ethers } from 'ethers';
 import { markRaw } from 'vue';
 import {
-    AntelopeError, EvmContractCalldata,
+    CoreError, EvmContractCalldata,
     EvmABI,
     EvmContractCreationInfo,
     EvmContractConstructorData,
@@ -145,7 +145,7 @@ export default class EvmContract {
 
     async getContractInstance() {
         if (!this.abi){
-            throw new AntelopeError('antelope.utils.error_contract_instance');
+            throw new CoreError('core.utils.error_contract_instance');
         }
 
         if (this._contractInstance) {
@@ -183,7 +183,7 @@ export default class EvmContract {
                 console.error(`Failed to parse transaction data ${data} using abi for ${this.address}`);
             }
         }
-        throw new AntelopeError('antelope.utils.error_parsing_transaction');
+        throw new CoreError('core.utils.error_parsing_transaction');
     }
 
     async parseLogs(logs: EvmLogs): Promise<EvmFormatedLog[]> {
@@ -239,10 +239,10 @@ export default class EvmContract {
                 const parsedLog:ethers.utils.LogDescription = eventIface.parseLog(log);
                 return this.formatLog(log, parsedLog);
             } catch(e) {
-                throw new AntelopeError('antelope.utils.error_parsing_log_event', log);
+                throw new CoreError('core.utils.error_parsing_log_event', log);
             }
         } else {
-            throw new AntelopeError('antelope.utils.error_parsing_log_event', log);
+            throw new CoreError('core.utils.error_parsing_log_event', log);
         }
     }
 }

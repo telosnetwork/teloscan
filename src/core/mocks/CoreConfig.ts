@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// Mocking Antelope and Config -----------------------------------
+// Mocking Core and Config -----------------------------------
 import { EVMAuthenticator } from 'src/core/wallets/authenticators/EVMAuthenticator';
-import { AntelopeError, AntelopeErrorPayload } from 'src/core/types';
+import { CoreError, CoreErrorPayload } from 'src/core/types';
 import { App } from 'vue';
 import { Authenticator, RpcEndpoint } from 'universal-authenticator-library';
 import { Subject } from 'rxjs';
@@ -22,7 +22,7 @@ export interface ComplexMessage {
     text: string,
 }
 
-export class AntelopeWallets {
+export class CoreWallets {
     private authenticators: Map<string, EVMAuthenticator> = new Map();
     private web3Provider: ethers.providers.Web3Provider | null = null;
     private web3ProviderInitializationPromise: Promise<ethers.providers.Web3Provider> | null = null;
@@ -64,7 +64,7 @@ export class AntelopeWallets {
                 return this.web3Provider;
             } catch (e) {
                 this.web3ProviderInitializationPromise = null; // Reset to allow retries.
-                throw new AntelopeError('antelope.evn.error_no_provider');
+                throw new CoreError('core.evn.error_no_provider');
             }
         })();
 
@@ -78,17 +78,16 @@ export class AntelopeWallets {
 
 }
 
-export class Config {
-    transactionError(description: string, error: unknown): AntelopeError {
-        if (error instanceof AntelopeError) {
-            return error as AntelopeError;
+export class CoreConfig {
+    transactionError(description: string, error: unknown): CoreError {
+        if (error instanceof CoreError) {
+            return error as CoreError;
         }
         const msgOrObject = this.errorMessageExtractor(error);
-        // if it matches antelope.*.error_*
         if (typeof msgOrObject === 'string') {
-            return new AntelopeError(msgOrObject, { error });
+            return new CoreError(msgOrObject, { error });
         } else {
-            return new AntelopeError(description, { error: msgOrObject });
+            return new CoreError(description, { error: msgOrObject });
         }
     }
 
@@ -107,8 +106,8 @@ export class Config {
     private __notify_successful_trx_handler: (link: string) => void = alert;
     private __notify_success_message_handler: (message: string, payload?: never) => void = alert;
     private __notify_success_copy_handler: () => void = alert;
-    private __notify_failure_message_handler: (message: string, payload?: AntelopeErrorPayload) => void = alert;
-    private __notify_failure_action_handler: (message: string, payload?: AntelopeErrorPayload) => void = alert;
+    private __notify_failure_message_handler: (message: string, payload?: CoreErrorPayload) => void = alert;
+    private __notify_failure_action_handler: (message: string, payload?: CoreErrorPayload) => void = alert;
     private __notify_disconnected_handler: () => void = alert;
     private __notify_neutral_message_handler: (message: string) => (() => void) = () => (() => void 0);
     private __notify_remember_info_handler: (title: string, message: string | ComplexMessage[],
@@ -121,7 +120,7 @@ export class Config {
     private __localization_handler: (key: string, payload?: Record<string, unknown>) => string = (key: string) => key;
 
     // transaction error handler --
-    private __transaction_error_handler: (err: AntelopeError, trxFailed: string) => void = () => void 0;
+    private __transaction_error_handler: (err: CoreError, trxFailed: string) => void = () => void 0;
 
     // error to string handler --
     private __error_message_extractor: (error: unknown) => object | string | null = (error: unknown) => {
@@ -131,15 +130,15 @@ export class Config {
 
             // high priority generic errors
             switch (evmErr.code) {
-            case 'CALL_EXCEPTION':          return 'antelope.evm.error_call_exception';
-            case 'INSUFFICIENT_FUNDS':      return 'antelope.evm.error_insufficient_funds';
-            case 'MISSING_NEW':             return 'antelope.evm.error_missing_new';
-            case 'NONCE_EXPIRED':           return 'antelope.evm.error_nonce_expired';
-            case 'NUMERIC_FAULT':           return 'antelope.evm.error_numeric_fault';
-            case 'REPLACEMENT_UNDERPRICED': return 'antelope.evm.error_replacement_underpriced';
-            case 'TRANSACTION_REPLACED':    return 'antelope.evm.error_transaction_replaced';
-            case 'USER_REJECTED':           return 'antelope.evm.error_user_rejected';
-            case 'ACTION_REJECTED':         return 'antelope.evm.error_transaction_canceled';
+            case 'CALL_EXCEPTION':          return 'core.evm.error_call_exception';
+            case 'INSUFFICIENT_FUNDS':      return 'core.evm.error_insufficient_funds';
+            case 'MISSING_NEW':             return 'core.evm.error_missing_new';
+            case 'NONCE_EXPIRED':           return 'core.evm.error_nonce_expired';
+            case 'NUMERIC_FAULT':           return 'core.evm.error_numeric_fault';
+            case 'REPLACEMENT_UNDERPRICED': return 'core.evm.error_replacement_underpriced';
+            case 'TRANSACTION_REPLACED':    return 'core.evm.error_transaction_replaced';
+            case 'USER_REJECTED':           return 'core.evm.error_user_rejected';
+            case 'ACTION_REJECTED':         return 'core.evm.error_transaction_canceled';
             }
 
             if (typeof error === 'object') {
@@ -182,7 +181,7 @@ export class Config {
 
             // low priority generic errors
             switch (evmErr.code) {
-            case 'UNPREDICTABLE_GAS_LIMIT': return 'antelope.evm.error_unpredictable_gas_limit';
+            case 'UNPREDICTABLE_GAS_LIMIT': return 'core.evm.error_unpredictable_gas_limit';
             }
 
             if (typeof error === 'string') {
@@ -323,11 +322,11 @@ export class Config {
         this.__notify_success_copy_handler = handler;
     }
 
-    public setNotifyFailureMessage(handler: (message: string, payload?: AntelopeErrorPayload) => void) {
+    public setNotifyFailureMessage(handler: (message: string, payload?: CoreErrorPayload) => void) {
         this.__notify_failure_message_handler = handler;
     }
 
-    public setNotifyFailureWithAction(handler: (message: string, payload?: AntelopeErrorPayload) => void) {
+    public setNotifyFailureWithAction(handler: (message: string, payload?: CoreErrorPayload) => void) {
         this.__notify_failure_action_handler = handler;
     }
 
@@ -359,7 +358,7 @@ export class Config {
     }
 
     // setting transaction error handler --
-    public setTransactionErrorHandler(handler: (err: AntelopeError, trxFailed: string) => void) {
+    public setTransactionErrorHandler(handler: (err: CoreError, trxFailed: string) => void) {
         this.__transaction_error_handler = handler;
     }
 
@@ -370,14 +369,14 @@ export class Config {
 
 }
 
-const config = new Config();
-const wallets = new AntelopeWallets();
+const config = new CoreConfig();
+const wallets = new CoreWallets();
 const events = {
     onLoggedIn: new Subject<AccountModel>(),
     onLoggedOut: new Subject<void>(),
     onNetworkChanged: new Subject<{label:string, chain:ChainModel}>(),
 };
-const Antelope = {
+const Core = {
     config,
     wallets,
     events,
@@ -386,9 +385,9 @@ const Antelope = {
 // each time the user changes the network,
 // we need to reset the current web3 provider instance
 events.onNetworkChanged.subscribe(() => {
-    Antelope.wallets.resetWeb3Provider();
+    Core.wallets.resetWeb3Provider();
 });
 
-export const getCore = () => Antelope;
+export const getCore = () => Core;
 // ----------------------------------------------------------------
 

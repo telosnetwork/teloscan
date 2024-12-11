@@ -66,7 +66,7 @@ onMounted(async () => {
 
     const loginObj = JSON.parse(loginData);
     if (loginObj.type === LOGIN_EVM) {
-        loginWithAntelope(loginObj.provider, loginObj.account);
+        loginWithCore(loginObj.provider, loginObj.account);
     } else if (loginObj.type === LOGIN_NATIVE) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const wallet = authenticators.value.find((a: { getName: () => any; }) => a.getName() === loginObj.provider);
@@ -143,7 +143,7 @@ function getIconForWallet(wallet: { getName: () => string; getStyle: () => { ico
     return wallet.getStyle().icon;
 }
 
-async function loginWithAntelope(name:string, autoLogAccount?: string) {
+async function loginWithCore(name:string, autoLogAccount?: string) {
     const label = CURRENT_CONTEXT;
     const auth = getCore().wallets.getAuthenticator(name);
     if (!auth) {
@@ -179,7 +179,7 @@ async function connectMetaMask() {
         return;
     }
 
-    loginWithAntelope(PROVIDER_METAMASK);
+    loginWithCore(PROVIDER_METAMASK);
 }
 
 async function connectBraveWallet() {
@@ -192,11 +192,11 @@ async function connectBraveWallet() {
         });
         return;
     }
-    loginWithAntelope(PROVIDER_BRAVE);
+    loginWithCore(PROVIDER_BRAVE);
 }
 
 function connectWalletConnect() {
-    loginWithAntelope(PROVIDER_WALLET_CONNECT);
+    loginWithCore(PROVIDER_WALLET_CONNECT);
 }
 
 function hideDialog(){

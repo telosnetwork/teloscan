@@ -3,10 +3,10 @@
 // Mocking AccountStore -----------------------------------
 // useAccountStore().getAccount(this.label).account as addressString;
 import { EVMAuthenticator } from 'src/core/wallets';
-import { AntelopeError, addressString } from 'src/core/types';
+import { CoreError, addressString } from 'src/core/types';
 import { CURRENT_CONTEXT, TeloscanEVMChainSettings, createTraceFunction, useChainStore } from 'src/core/mocks';
 import { BigNumber } from 'ethers'; 'src/core/mocks/FeedbackStore';
-import { getCore } from 'src/core/mocks/Config';
+import { getCore } from 'src/core/mocks/CoreConfig';
 import { useFeedbackStore } from 'src/core/mocks';
 import { EvmABI, EvmFunctionParam, Label, TransactionResponse } from 'src/core/types';
 import { subscribeForTransactionReceipt } from 'src/core/wallets/utils/trx-utils';
@@ -104,7 +104,7 @@ class AccountStore {
         this.trace(funcname, label, contract, abi, parameters, value?.toString());
 
         if (! await this.assertNetworkConnection(label)) {
-            throw new AntelopeError('antelope.evm.error_switch_chain_rejected');
+            throw new CoreError('core.evm.error_switch_chain_rejected');
         }
 
         try {
@@ -168,7 +168,7 @@ class AccountStore {
                     }
                 } catch (error) {
                     const message = (error as Error).message;
-                    if (message === 'antelope.evm.error_switch_chain_rejected') {
+                    if (message === 'core.evm.error_switch_chain_rejected') {
                         ant.config.notifyNeutralMessageHandler(message);
                     }
                     resolve(false);

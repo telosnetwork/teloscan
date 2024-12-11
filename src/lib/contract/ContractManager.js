@@ -99,7 +99,7 @@ export default class ContractManager {
         }
     }
 
-    getEthersProvider() {
+    async getEthersProvider() {
         return getCore().wallets.getWeb3Provider();
     }
     async getTransfers(raw) {
@@ -300,13 +300,17 @@ export default class ContractManager {
         return this.tokenList;
     }
 
-    getContractInstance(contract, provider) {
+    async getContractInstance(contract, provider) {
         if (!contract.abi){
             console.error('Cannot create contract instance without ABI !');
             return false;
         }
 
-        return new ethers.Contract(contract.address, contract.abi, provider ? provider : this.getEthersProvider());
+        const _provider = provider ? provider : await this.getEthersProvider();
+        console.assert(_provider, 'No provider available to create contract instance');
+        console.assert(_provider.connection, 'Provider connection not available to create contract instance');
+        console.assert(typeof _provider.connection.url === 'string', 'Provider connection url not available to create contract instance');
+        return new ethers.Contract(contract.address, contract.abi, _provider);
     }
     async getCachedContract(address) {
         if (address === null || typeof address !== 'string') {
@@ -386,6 +390,6 @@ export default class ContractManager {
     }
 
     async getContractFromAbi(address, abi){
-        return new ethers.Contract(address, abi, this.getEthersProvider());
+        return new ethers.Contract(address, abi, await this.getEthersProvider());
     }
 }

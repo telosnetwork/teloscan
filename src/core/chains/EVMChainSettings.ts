@@ -246,7 +246,7 @@ export default abstract class EVMChainSettings implements ChainSettings {
                 this.indexerHealthWarningShown = true;
                 const  ant = getCore();
                 ant.config.notifyNeutralMessageHandler(
-                    ant.config.localizationHandler('antelope.chain.indexer_bad_health_warning'),
+                    ant.config.localizationHandler('core.chain.indexer_bad_health_warning'),
                 );
             }
         });

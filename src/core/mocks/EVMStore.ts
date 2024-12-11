@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 import { EVMAuthenticator, InjectedProviderAuth } from 'src/core/wallets';
 import { createTraceFunction } from 'src/core/mocks/FeedbackStore';
 import { TeloscanEVMChainSettings, useChainStore, useFeedbackStore, useAccountStore } from 'src/core/mocks';
-import { AntelopeError, EthereumProvider, ExceptionError } from 'src/core/types';
+import { CoreError, EthereumProvider, ExceptionError } from 'src/core/types';
 import { RpcEndpoint } from 'universal-authenticator-library';
 
 class EVMStore {
@@ -30,7 +30,7 @@ class EVMStore {
             for (const method of methods) {
                 if (typeof candidate[method] !== 'function') {
                     console.warn(`MetamaskAuth.getProvider: method ${method} not found`);
-                    throw new AntelopeError('antelope.evm.error_invalid_provider');
+                    throw new CoreError('core.evm.error_invalid_provider');
                 }
             }
 
@@ -85,7 +85,7 @@ class EVMStore {
             const chainIdParam = `0x${chainId.toString(16)}`;
             if (!provider.request) {
                 useFeedbackStore().unsetLoading('evm.switchChainInjected');
-                throw new AntelopeError('antelope.evm.error_support_provider_request');
+                throw new CoreError('core.evm.error_support_provider_request');
             }
             try {
                 await provider.request({
@@ -104,7 +104,7 @@ class EVMStore {
                     const rpcUrl = `${p.protocol}://${p.host}:${p.port}${p.path ?? ''}`;
                     try {
                         if (!provider.request) {
-                            throw new AntelopeError('antelope.evm.error_support_provider_request');
+                            throw new CoreError('core.evm.error_support_provider_request');
                         }
                         const payload = {
                             method: 'wallet_addEthereumChain',
@@ -125,24 +125,24 @@ class EVMStore {
                         return true;
                     } catch (e) {
                         if ((e as unknown as ExceptionError).code === 4001) {
-                            throw new AntelopeError('antelope.evm.error_add_chain_rejected');
+                            throw new CoreError('core.evm.error_add_chain_rejected');
                         } else {
                             console.error('Error:', e);
-                            throw new AntelopeError('antelope.evm.error_add_chain');
+                            throw new CoreError('core.evm.error_add_chain');
                         }
                     }
                 } else if ((error as unknown as ExceptionError).code === 4001) {
-                    throw new AntelopeError('antelope.evm.error_switch_chain_rejected');
+                    throw new CoreError('core.evm.error_switch_chain_rejected');
                 } else {
                     console.error('Error:', error);
-                    throw new AntelopeError('antelope.evm.error_switch_chain');
+                    throw new CoreError('core.evm.error_switch_chain');
                 }
             } finally {
                 useFeedbackStore().unsetLoading('evm.switchChainInjected');
             }
         } else {
             useFeedbackStore().unsetLoading('evm.switchChainInjected');
-            throw new AntelopeError('antelope.evm.error_no_provider');
+            throw new CoreError('core.evm.error_no_provider');
         }
     }
 

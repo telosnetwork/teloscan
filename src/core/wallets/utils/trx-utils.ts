@@ -1,7 +1,7 @@
 import { usePlatformStore } from 'src/core';
 import { ethers } from 'ethers';
 import { AccountModel } from 'src/core/mocks';
-import { AntelopeError, TransactionResponse } from 'src/core/types';
+import { CoreError, TransactionResponse } from 'src/core/types';
 import { EVMAuthenticator } from 'src/core/wallets';
 
 
@@ -10,7 +10,7 @@ export async function subscribeForTransactionReceipt(account: AccountModel, resp
     receipt: ethers.providers.TransactionReceipt;
 }> {
     if (account.isNative) {
-        throw new AntelopeError('Not implemented yet for native');
+        throw new CoreError('Not implemented yet for native');
     } else {
         const authenticator = account.authenticator as EVMAuthenticator;
         const provider = await authenticator.web3Provider();
@@ -29,7 +29,7 @@ export async function subscribeForTransactionReceipt(account: AccountModel, resp
                 response.wait = async () => Promise.resolve({} as ethers.providers.TransactionReceipt);
                 return result;
             } else {
-                throw new AntelopeError('antelope.evm.error_no_provider');
+                throw new CoreError('core.evm.error_no_provider');
             }
         }
     }

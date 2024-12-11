@@ -13,16 +13,16 @@ export function formatTimePeriod(seconds: number, $t: (key: string) => string) {
 
     if (seconds < 60) {
         quantity = Math.round(seconds);
-        unit = quantity === 1 ? $t('antelope.words.second') : $t('antelope.words.seconds');
+        unit = quantity === 1 ? $t('core.words.second') : $t('core.words.seconds');
     } else if (seconds < HOUR_SECONDS) {
         quantity = Math.round(seconds / 60);
-        unit = quantity === 1 ? $t('antelope.words.minute') : $t('antelope.words.minutes');
+        unit = quantity === 1 ? $t('core.words.minute') : $t('core.words.minutes');
     } else if (seconds < DAY_SECONDS) {
         quantity = Math.round(seconds / HOUR_SECONDS);
-        unit = quantity === 1 ? $t('antelope.words.hour') : $t('antelope.words.hours');
+        unit = quantity === 1 ? $t('core.words.hour') : $t('core.words.hours');
     } else {
         quantity = Math.round(seconds / DAY_SECONDS);
-        unit = quantity === 1 ? $t('antelope.words.day') : $t('antelope.words.days');
+        unit = quantity === 1 ? $t('core.words.day') : $t('core.words.days');
     }
 
     return `${quantity} ${unit}`;
