@@ -163,6 +163,7 @@ export default abstract class EVMChainSettings implements ChainSettings {
     }
 
     async init(): Promise<void> {
+        console.log('init');
         this.trace('init');
         // this is called only when this chain is needed to avoid initialization of all chains
         if (this.ready) {
@@ -224,12 +225,12 @@ export default abstract class EVMChainSettings implements ChainSettings {
         };
 
         // update indexer health state
-        promise.then((state) => {
+        promise.then((state:IndexerHealthResponse) => {
             this._indexerHealthState.state = state;
             this.indexerChecked$.next(true);
         });
 
-        return promise;
+        return promise as Promise<IndexerHealthResponse>;
     }
 
     /**

@@ -5,7 +5,6 @@ import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { Authenticator } from 'universal-authenticator-library';
-
 import {
     LOGIN_EVM,
     LOGIN_NATIVE,

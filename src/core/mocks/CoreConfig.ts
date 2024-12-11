@@ -8,8 +8,12 @@ import { App } from 'vue';
 import { Authenticator, RpcEndpoint } from 'universal-authenticator-library';
 import { Subject } from 'rxjs';
 import { AccountModel } from 'src/core/mocks/AccountStore';
-import { ChainModel, TeloscanEVMChainSettings, useChainStore } from './ChainStore';
-import { CURRENT_CONTEXT } from '.';
+import {
+    ChainModel,
+    CURRENT_CONTEXT,
+    TeloscanEVMChainSettings,
+    useChainStore,
+} from 'src/core/mocks';
 import { ethers } from 'ethers';
 
 export interface ComplexMessage {
