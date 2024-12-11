@@ -6,6 +6,7 @@ const routes = [
             path: '',
             name: 'home',
             component: () => import('pages/home/HomePage.vue'),
+            meta: { networkChange: null },
         }],
     },
     {
@@ -17,6 +18,7 @@ const routes = [
                 name: 'token',
                 props: route => ({ page: route.query.page, pagesize: route.query.pagesize }),
                 component: () => import('pages/AccountPage.vue'),
+                meta: { networkChange: null },
             },
         ],
     },
@@ -27,6 +29,7 @@ const routes = [
             path: '',
             name: 'sourcify',
             component: () => import('pages/ContractVerification.vue'),
+            meta: { networkChange: 'home' },
         }],
     },
     {
@@ -38,6 +41,7 @@ const routes = [
                 name: 'address',
                 props: route => ({ page: route.query.page, pagesize: route.query.pagesize }),
                 component: () => import('pages/AccountPage.vue'),
+                meta: { networkChange: 'address' },
             },
         ],
     },
@@ -48,6 +52,7 @@ const routes = [
             path: '',
             name: 'transaction',
             component: () => import('pages/TransactionPage.vue'),
+            meta: { networkChange: 'home' },
         }],
     },
     {
@@ -57,6 +62,7 @@ const routes = [
             path: '',
             name: 'transactions',
             component: () => import('pages/TransactionsPage.vue'),
+            meta: { networkChange: null },
         }],
     },
     {
@@ -66,18 +72,18 @@ const routes = [
             path: '',
             name: 'block',
             component: () => import('pages/BlockPage.vue'),
+            meta: { networkChange: 'home' },
         }],
     },
     {
         path: '/blocks',
         component: () => import('layouts/MainLayout.vue'),
-        children: [
-            {
-                path: '',
-                name: 'blocks',
-                component: () => import('pages/BlockListPage.vue'),
-            },
-        ],
+        children: [{
+            path: '',
+            name: 'blocks',
+            component: () => import('pages/BlockListPage.vue'),
+            meta: { networkChange: null },
+        }],
     },
     {
         path: '/holders',
@@ -86,6 +92,7 @@ const routes = [
             path: '',
             name: 'holders',
             component: () => import('pages/Holders.vue'),
+            meta: { networkChange: null },
         }],
     },
     {
@@ -96,6 +103,7 @@ const routes = [
             path: 'inputs',
             name: 'inputs-demo',
             component: () => import('pages/demo/inputs/InputsDemo.vue'),
+            meta: { networkChange: null },
         }],
     },
     {
@@ -105,6 +113,7 @@ const routes = [
             path: '',
             name: 'health',
             component: () => import('pages/HealthPage.vue'),
+            meta: { networkChange: null },
         }],
     },
     {
@@ -118,6 +127,7 @@ const routes = [
             path: '',
             name: 'export',
             component: () => import('pages/export/ExportPage.vue'),
+            meta: { networkChange: null },
         }],
     },
     {
@@ -127,20 +137,11 @@ const routes = [
             path: '',
             name: 'txsinternal',
             component: () => import('pages/InternalTrxPage.vue'),
+            meta: { networkChange: null },
         }],
     },
     {
-        path: '/endpoints',
-        redirect: () => ({ path: '/health' }),
-    },
-    {
-        // if the user falls on a /staking path, we need to redirect the user to https://wallet.telos.net/evm/staking?tab=stake
         path: '/staking',
-        component: () => import('layouts/MainLayout.vue'),
-        hildren: [{
-            path: '',
-            component: () => import('pages/ErrorNotFoundPage.vue'),
-        }],
         beforeEnter() {
             window.location.href = 'https://wallet.telos.net/evm/staking?tab=stake';
         },
@@ -151,6 +152,7 @@ const routes = [
         children: [{
             path: '',
             component: () => import('pages/ErrorNotFoundPage.vue'),
+            meta: { networkChange: null },
         }],
     },
 ];

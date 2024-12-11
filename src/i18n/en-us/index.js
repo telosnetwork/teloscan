@@ -704,7 +704,7 @@ export default {
         neutral_message_custom_call: 'calling <b>{name}</b> with <b>{params} parameters</b>',
         neutral_message_custom_call_send: 'calling <b>{name}</b> with <b>{params} parameters</b>, sending <b>{quantity} {symbol}</b></b>',
     },
-    antelope: {
+    core: {
         contracts: {
             invalid_contract: 'Contract or contract ABI missing',
             contract_data_required: 'Contract data missing',

@@ -27,7 +27,7 @@ import { useContractStore } from 'src/core';
 import { useFeedbackStore } from 'src/core';
 import { usePlatformStore } from 'src/core';
 import {
-    AntelopeError,
+    CoreError,
     EvmABI,
     EvmFunctionParam,
     TokenClass,
@@ -141,7 +141,7 @@ export class WalletConnectAuth extends EVMAuthenticator {
                 const chainSettings = this.getChainSettings();
                 chainSettings.trackAnalyticsEvent(TELOS_ANALYTICS_EVENT_NAMES.loginFailedWalletConnect);
             }
-            throw new AntelopeError('antelope.evm.error_login');
+            throw new CoreError('core.evm.error_login');
         } finally {
             useFeedbackStore().unsetLoading(`${this.getName()}.login`);
         }
@@ -287,9 +287,9 @@ export class WalletConnectAuth extends EVMAuthenticator {
     async transferTokens(token: TokenClass, amount: BigNumber, to: addressString): Promise<SendTransactionResult | WriteContractResult> {
         this.trace('transferTokens', token, amount, to);
         if (!this.sendConfig) {
-            throw new AntelopeError(token.isSystem ?
-                'antelope.wallets.error_system_token_transfer_config' :
-                'antelope.wallets.error_token_transfer_config',
+            throw new CoreError(token.isSystem ?
+                'core.wallets.error_system_token_transfer_config' :
+                'core.wallets.error_token_transfer_config',
             );
         } else {
             if (token.isSystem) {
@@ -493,7 +493,7 @@ export class WalletConnectAuth extends EVMAuthenticator {
             const injected = new InjectedConnector();
             const provider = toRaw(await injected.getProvider());
             if (!provider) {
-                throw new AntelopeError('antelope.evm.error_no_provider');
+                throw new CoreError('core.evm.error_no_provider');
             }
             resolve(provider as unknown as ethers.providers.ExternalProvider);
         });

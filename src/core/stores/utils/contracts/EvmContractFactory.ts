@@ -1,11 +1,11 @@
 import { erc1155Abi, erc20Abi, erc721Abi } from 'src/core/stores/utils/abi';
 import EvmContract from 'src/core/stores/utils/contracts/EvmContract';
-import { AntelopeError, EvmContractCalldata, EvmContractMetadata, EvmContractFactoryData } from 'src/core/types';
+import { CoreError, EvmContractCalldata, EvmContractMetadata, EvmContractFactoryData } from 'src/core/types';
 
 export default class EvmContractFactory {
     buildContract(data: EvmContractFactoryData): EvmContract {
         if (!data || !data.address) {
-            throw new AntelopeError('antelope.contracts.contract_data_required');
+            throw new CoreError('core.contracts.contract_data_required');
         }
 
         let verified = false;

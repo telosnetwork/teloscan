@@ -5,13 +5,13 @@
 import { SendTransactionResult, WriteContractResult } from '@wagmi/core';
 import { BigNumber, ethers } from 'ethers';
 import { createTraceFunction } from 'src/core/mocks/FeedbackStore';
-import { CURRENT_CONTEXT, getAntelope, useAccountStore } from 'src/core/mocks';
+import { CURRENT_CONTEXT, getCore, useAccountStore } from 'src/core/mocks';
 import { TeloscanEVMChainSettings } from 'src/core/mocks';
 import { useChainStore } from 'src/core/mocks';
 import { useEVMStore } from 'src/core/mocks';
 import { isTracingAll, useFeedbackStore } from 'src/core/mocks/FeedbackStore';
 import { usePlatformStore } from 'src/core/mocks';
-import { AntelopeError, EvmABI, EvmFunctionParam, EvmTransactionResponse, ExceptionError, TokenClass, addressString } from 'src/core/types';
+import { CoreError, EvmABI, EvmFunctionParam, EvmTransactionResponse, ExceptionError, TokenClass, addressString } from 'src/core/types';
 
 export abstract class EVMAuthenticator {
 
@@ -74,7 +74,7 @@ export abstract class EVMAuthenticator {
                 return accounts[0] as addressString;
             } else {
                 if (!checkProvider.provider.request) {
-                    throw new AntelopeError('antelope.evm.error_support_provider_request');
+                    throw new CoreError('core.evm.error_support_provider_request');
                 }
                 const accessGranted = await checkProvider.provider.request({ method: 'eth_requestAccounts' });
                 if (accessGranted.length < 1) {
@@ -84,10 +84,10 @@ export abstract class EVMAuthenticator {
             }
         } catch (error) {
             if ((error as unknown as ExceptionError).code === 4001) {
-                throw new AntelopeError('antelope.evm.error_connect_rejected');
+                throw new CoreError('core.evm.error_connect_rejected');
             } else {
                 console.error('Error:', error);
-                throw new AntelopeError('antelope.evm.error_login');
+                throw new CoreError('core.evm.error_login');
             }
         }
     }
@@ -102,10 +102,10 @@ export abstract class EVMAuthenticator {
             return account as addressString;
         } catch (error) {
             if ((error as unknown as ExceptionError).code === 4001) {
-                throw new AntelopeError('antelope.evm.error_connect_rejected');
+                throw new CoreError('core.evm.error_connect_rejected');
             } else {
                 console.error('Error:', error);
-                throw new AntelopeError('antelope.evm.error_login');
+                throw new CoreError('core.evm.error_login');
             }
         }
     }
@@ -119,10 +119,10 @@ export abstract class EVMAuthenticator {
             const showSwitchNotification = !(await this.isConnectedToCorrectChain());
             return useEVMStore().ensureCorrectChain(this).then((result) => {
                 if (showSwitchNotification) {
-                    const ant = getAntelope();
+                    const ant = getCore();
                     const networkName = useChainStore().getChain(this.label).settings.getDisplay();
                     ant.config.notifyNeutralMessageHandler(
-                        ant.config.localizationHandler('antelope.wallets.network_switch_success', { networkName }),
+                        ant.config.localizationHandler('core.wallets.network_switch_success', { networkName }),
                     );
                 }
                 return result;

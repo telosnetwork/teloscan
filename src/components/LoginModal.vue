@@ -5,7 +5,6 @@ import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { Authenticator } from 'universal-authenticator-library';
-
 import {
     LOGIN_EVM,
     LOGIN_NATIVE,
@@ -18,7 +17,7 @@ import {
     AccountModel,
     CURRENT_CONTEXT,
     EvmAccountModel,
-    getAntelope,
+    getCore,
     useAccountStore,
     useChainStore,
 } from 'src/core/mocks';
@@ -40,14 +39,14 @@ const browserSupportsMetaMask = ref(true);
 const isBraveBrowser = ref(false);
 const isIOSMobile = ref(false);
 
-const authenticators = computed(() => getAntelope().config.authenticatorsGetter());
+const authenticators = computed(() => getCore().config.authenticatorsGetter());
 
 onMounted(async () => {
     await detectProvider();
     detectMobile();
 
     // On login we must set the address and record the provider
-    getAntelope().events.onLoggedIn.subscribe((account: AccountModel) => {
+    getCore().events.onLoggedIn.subscribe((account: AccountModel) => {
         const evm_account = account as EvmAccountModel;
         const address = evm_account.account;
         const pr_name = evm_account.authenticator.getName();
@@ -67,7 +66,7 @@ onMounted(async () => {
 
     const loginObj = JSON.parse(loginData);
     if (loginObj.type === LOGIN_EVM) {
-        loginWithAntelope(loginObj.provider, loginObj.account);
+        loginWithCore(loginObj.provider, loginObj.account);
     } else if (loginObj.type === LOGIN_NATIVE) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const wallet = authenticators.value.find((a: { getName: () => any; }) => a.getName() === loginObj.provider);
@@ -144,9 +143,9 @@ function getIconForWallet(wallet: { getName: () => string; getStyle: () => { ico
     return wallet.getStyle().icon;
 }
 
-async function loginWithAntelope(name:string, autoLogAccount?: string) {
+async function loginWithCore(name:string, autoLogAccount?: string) {
     const label = CURRENT_CONTEXT;
-    const auth = getAntelope().wallets.getAuthenticator(name);
+    const auth = getCore().wallets.getAuthenticator(name);
     if (!auth) {
         console.error(`${name} authenticator not found`);
         return;
@@ -180,7 +179,7 @@ async function connectMetaMask() {
         return;
     }
 
-    loginWithAntelope(PROVIDER_METAMASK);
+    loginWithCore(PROVIDER_METAMASK);
 }
 
 async function connectBraveWallet() {
@@ -193,11 +192,11 @@ async function connectBraveWallet() {
         });
         return;
     }
-    loginWithAntelope(PROVIDER_BRAVE);
+    loginWithCore(PROVIDER_BRAVE);
 }
 
 function connectWalletConnect() {
-    loginWithAntelope(PROVIDER_WALLET_CONNECT);
+    loginWithCore(PROVIDER_WALLET_CONNECT);
 }
 
 function hideDialog(){
