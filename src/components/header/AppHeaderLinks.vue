@@ -4,15 +4,11 @@ import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
-import {
-    TELOSCAN_MAINNET_URL,
-    TELOSCAN_TESTNET_URL,
-} from 'src/lib/chain-utils';
-
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import OutlineButton from 'components/OutlineButton.vue';
 import { useChainStore } from 'src/core';
 import { HeaderMenuEntry } from 'src/core/types';
+import { chains, multichainSelectedNetwork, switchChain } from 'src/lib/multichain-utils';
 
 const $route = useRoute();
 const $router = useRouter();
@@ -23,17 +19,6 @@ defineProps<{
     menuVisibleMobile: boolean;
 }>();
 const emit = defineEmits(['close-menu']);
-
-const networksMenuItems = {
-    mainnet: [{
-        url: TELOSCAN_MAINNET_URL,
-        label: 'Telos Mainnet',
-    }],
-    testnet: [{
-        url: TELOSCAN_TESTNET_URL,
-        label: 'Telos Testnet',
-    }],
-};
 
 const blockchainMenuExpandedMobile = ref(false);
 const developersMenuExpandedMobile = ref(false);
@@ -104,28 +89,6 @@ function closeAllMenus() {
 function toggleDarkMode() {
     $q.dark.toggle();
     localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
-}
-
-function getIsCurrentNetworkMenuItem(url: string) {
-    networksMenuItems.mainnet.forEach((item) => {
-        if (item.url === url) {
-            return true;
-        }
-    });
-    return false;
-}
-
-function goTo(to: string | { name: string }) {
-    blurActiveElement();
-    closeAllMenus();
-
-    const httpsRegex = /^https/;
-    if (typeof to === 'string' && httpsRegex.test(to)) {
-        window.open(to, '_blank');
-        return;
-    }
-
-    $router.push(to);
 }
 </script>
 
@@ -249,35 +212,18 @@ function goTo(to: string | { name: string }) {
             }"
         >
             <li
-                v-for="item in networksMenuItems.mainnet"
-                :key="`networks-submenu-item-mainnet-${item.label}`"
+                v-for="chain in chains"
+                :key="chain.network"
                 :class="{
                     'c-header-links__submenu-li': true,
-                    'c-header-links__submenu-li--current': getIsCurrentNetworkMenuItem(item.url),
+                    'c-header-links__submenu-li--current': multichainSelectedNetwork?.network === chain.network
                 }"
                 tabindex="0"
                 role="link"
-                @click="goTo(item.url)"
-                @keydown.enter="goTo(item.url)"
+                @click="switchChain(chain)"
+                @keydown.enter="switchChain(chain)"
             >
-                {{ item.label }}
-            </li>
-
-            <q-separator />
-
-            <li
-                v-for="item in networksMenuItems.testnet"
-                :key="`networks-submenu-item-testnet-${item.label}`"
-                :class="{
-                    'c-header-links__submenu-li': true,
-                    'c-header-links__submenu-li--current': getIsCurrentNetworkMenuItem(item.url),
-                }"
-                tabindex="0"
-                role="link"
-                @click="goTo(item.url)"
-                @keydown.enter="goTo(item.url)"
-            >
-                {{ item.label }}
+                {{ chain.settings.getDisplay() }}
             </li>
         </ul>
     </li>

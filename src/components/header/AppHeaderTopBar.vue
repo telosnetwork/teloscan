@@ -4,24 +4,22 @@ import {
     onBeforeMount,
     onBeforeUnmount,
     onMounted,
-    ref,
-    watch,
 } from 'vue';
 import { useQuasar } from 'quasar';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
 import { formatUnits } from 'ethers/lib/utils';
-import { useRoute, useRouter } from 'vue-router';
-import { TeloscanEVMChainSettings, evmSettings, useChainStore } from 'src/core';
+import { useRoute } from 'vue-router';
+import { useChainStore } from 'src/core';
 
 
 import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import OutlineButton from 'components/OutlineButton.vue';
 import AppSearch from 'components/AppSearch.vue';
-import { CURRENT_CONTEXT } from 'src/core/mocks';
+import { chains, multichainSelectedNetwork, switchChain } from 'src/lib/multichain-utils';
 
 const $route = useRoute();
-const $router = useRouter();
+
 const $q = useQuasar();
 const $store = useStore();
 const $i18n = useI18n();
@@ -90,57 +88,6 @@ function toggleDarkMode() {
     localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
 }
 
-
-// Multichain
-interface ChainOption {
-    network: string;
-    settings: TeloscanEVMChainSettings;
-}
-
-const chains = [
-    {
-        network: 'telos-evm',
-        settings: evmSettings['telos-evm'],
-    },
-    {
-        network: 'telos-evm-testnet',
-        settings: evmSettings['telos-evm-testnet'],
-    },
-] as ChainOption[];
-
-const selectedNetwork = ref<ChainOption | undefined>(undefined);
-const switchChain = (network: ChainOption) => {
-    selectedNetwork.value = network;
-};
-
-onMounted(() => {
-    const defaultNetwork = Object.keys(evmSettings)[0];
-    let network = new URLSearchParams(window.location.search).get('network');
-    if (network) {
-        const exists = Object.keys(evmSettings).some(key => evmSettings[key].getNetwork() === network);
-        if (!exists) {
-            network = defaultNetwork;
-        }
-    } else {
-        network = defaultNetwork;
-    }
-    $router.replace({ query: { ...$route.query, network } });
-    selectedNetwork.value = chains.find(chain => chain.network === network);
-});
-
-watch(selectedNetwork, () => {
-    if (selectedNetwork.value) {
-        chainStore.setChain(CURRENT_CONTEXT, selectedNetwork.value.network);
-        // replace the url to reflect the network
-        $router.replace({ query: { ...$route.query, network: selectedNetwork.value.network } });
-    }
-});
-
-watch(() => chainStore.currentChain, (currentChain) => {
-    selectedNetwork.value = chains.find(chain => chain.network === currentChain.settings.getNetwork());
-});
-
-
 </script>
 
 <template>
@@ -189,28 +136,6 @@ watch(() => chainStore.currentChain, (currentChain) => {
 
                 <q-menu>
                     <q-list>
-                        <!--q-item
-                            clickable
-                            role="link"
-                            @click="goToTeloscanMainnet"
-                            @keydown.enter="goToTeloscanMainnet"
-                        >
-                            <q-item-section :class="chainStore.currentChain.settings.isTestnet() ? '' : 'text-primary'">
-                                Telos Mainnet
-                            </q-item-section>
-                        </q-item>
-                        <q-separator />
-                        <q-item
-                            clickable
-                            role="link"
-                            @click="goToTeloscanTestnet"
-                            @keydown.enter="goToTeloscanTestnet"
-                        >
-                            <q-item-section :class="chainStore.currentChain.settings.isTestnet() ? 'text-primary' : ''">
-                                Telos Testnet
-                            </q-item-section>
-                        </q-item-->
-
                         <template v-for="chain in chains" :key="chain.network">
                             <q-separator/>
                             <q-item
@@ -219,7 +144,7 @@ watch(() => chainStore.currentChain, (currentChain) => {
                                 @click="switchChain(chain)"
                                 @keydown.enter="switchChain(chain)"
                             >
-                                <q-item-section :class="selectedNetwork?.network === chain.network ? 'text-primary' : ''">
+                                <q-item-section :class="multichainSelectedNetwork?.network === chain.network ? 'text-primary' : ''">
                                     <div class="c-header-top-bar__chain-option">
                                         <img :src="chain.settings.getSmallLogoPath()" height="24" width="24">
                                         <span>{{  chain.settings.getDisplay() }}</span>
