@@ -6,7 +6,7 @@ import {
     ref,
     watch,
 } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { setCssVar, useQuasar } from 'quasar';
 
 import AppHeader from 'components/header/AppHeader.vue';
@@ -15,8 +15,11 @@ import FooterMain from 'components/FooterMain.vue';
 import { getBrowserName } from 'src/lib/utils';
 import { useChainStore } from 'src/core';
 import { Themes } from 'src/core/types';
+import { initMultichain } from 'src/lib/multichain-utils';
 
 const $route = useRoute();
+const $router = useRouter();
+
 const $q = useQuasar();
 
 const scrollY = ref(0);
@@ -88,6 +91,11 @@ watch(() => $route.query.network, () => {
 watch(() => $q.dark.isActive, () => {
     setTheme();
 });
+
+onMounted(() => {
+    initMultichain($router, $route);
+});
+
 </script>
 
 <template>
