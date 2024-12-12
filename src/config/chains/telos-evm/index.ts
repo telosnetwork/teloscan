@@ -48,7 +48,7 @@ const W_TOKEN = new TokenClass({
 
 const RPC_ENDPOINT = {
     protocol: 'https',
-    host: 'mainnet.telos.net',
+    host: 'rpc.telos.net',
     port: 443,
     path: '/evm',
 };
