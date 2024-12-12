@@ -58,7 +58,7 @@ const WEI_PRECISION = 18;
 const EXPLORER_URL = 'https://teloscan.io';
 const ECOSYSTEM_URL = 'https://www.telos.net/ecosystem';
 const BRIDGE_URL = 'https://bridge.telos.net/bridge';
-const NETWORK_EVM_ENDPOINT = 'https://mainnet.telos.net';
+const NETWORK_EVM_ENDPOINT = 'https://rpc.telos.net';
 const INDEXER_ENDPOINT = 'https://api.teloscan.io';
 const CONTRACTS_BUCKET = 'https://verified-evm-contracts.s3.amazonaws.com';
 
@@ -68,7 +68,7 @@ declare const fathom: { trackEvent: (eventName: string) => void };
 const NETWORK_CHAIN_ID = '4667b205c6838ef70ff7988f6e8257e8be0e1284a2f59699054a018f743b1d11';
 const NETWORK_PROTOCOL = 'https';
 const NETWORK_PORT = 443;
-const NETWORK_HOST = 'mainnet.telos.net';
+const NETWORK_HOST = 'rpc.telos.net';
 
 export default class TelosEVM extends EVMChainSettings {
     nativeSupport: TelosEvmApi;

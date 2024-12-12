@@ -48,7 +48,7 @@ const W_TOKEN = new TokenClass({
 
 const RPC_ENDPOINT = {
     protocol: 'https',
-    host: 'testnet.telos.net',
+    host: 'rpc.testnet.telos.net',
     port: 443,
     path: '/evm',
 };
@@ -59,7 +59,7 @@ const EXPLORER_URL = 'https://testnet.teloscan.io';
 const ECOSYSTEM_URL = 'https://www.telos.net/ecosystem';
 const BRIDGE_URL = 'https://telos-bridge-testnet.netlify.app/bridge';
 
-const NETWORK_EVM_ENDPOINT = 'https://testnet.telos.net';
+const NETWORK_EVM_ENDPOINT = 'https://rpc.testnet.telos.net';
 const INDEXER_ENDPOINT = 'https://api.testnet.teloscan.io';
 const CONTRACTS_BUCKET = 'https://verified-evm-contracts-testnet.s3.amazonaws.com';
 
@@ -69,7 +69,7 @@ declare const fathom: { trackEvent: (eventName: string) => void };
 const NETWORK_CHAIN_ID = '1eaa0824707c8c16bd25145493bf062aecddfeb56c736f6ba6397f3195f33c9f';
 const NETWORK_PROTOCOL = 'https';
 const NETWORK_PORT = 443;
-const NETWORK_HOST = 'testnet.telos.net';
+const NETWORK_HOST = 'rpc.testnet.telos.net';
 
 
 export default class TelosEVMTestnet extends EVMChainSettings {
