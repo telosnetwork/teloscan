@@ -161,7 +161,7 @@ const config: NetworkConfig =
             {
                 'title': 'components.footer.build',
                 'links': [
-                    { 'label': 'components.footer.api_documentation', 'url': 'https://api.telosscan.io/v1/docs' },
+                    { 'label': 'components.footer.api_documentation', 'url': 'https://api.teloscan.io/v1/docs' },
                     { 'label': 'components.footer.telos_documentation', 'url': 'https://docs.telos.net/overview/what-is-telos/introduction/' },
                     { 'label': 'components.footer.github', 'url': 'https://github.com/telosnetwork' },
                     { 'label': 'components.footer.brand_assets', 'url': 'https://www.telos.net/community-resources' },
@@ -198,7 +198,7 @@ const config: NetworkConfig =
                 'entries': [
                     {
                         'label': 'components.header.api_documentation',
-                        'externalLink': 'https://api.telosscan.io/v1/docs',
+                        'externalLink': 'https://api.teloscan.io/v1/docs',
                     },
                     {
                         'label': 'components.header.verify_contract_sourcify',

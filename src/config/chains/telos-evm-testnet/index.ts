@@ -65,7 +65,7 @@ const config: NetworkConfig =
         'explorer': 'https://testnet.teloscan.io',
         'ecosystem': 'https://www.telos.net/ecosystem',
         'bridge': 'https://telos-bridge-testnet.netlify.app/bridge',
-        'indexer': 'https://api.testnet.telosscan.io',
+        'indexer': 'https://api.testnet.teloscan.io',
         'contractsBucket': 'https://verified-evm-contracts-testnet.s3.amazonaws.com',
         'monitor': 'https://api.monitor-test.telos.net',
     },
