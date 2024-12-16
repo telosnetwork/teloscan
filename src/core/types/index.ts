@@ -14,6 +14,7 @@ export * from 'src/core/types/Filters';
 export * from 'src/core/types/IndexerTypes';
 export * from 'src/core/types/KeyAccounts';
 export * from 'src/core/types/Basic';
+export * from 'src/core/types/NetworkConfig';
 export * from 'src/core/types/NFTClass';
 export * from 'src/core/types/OpenSeaTypes';
 export * from 'src/core/types/PriceData';

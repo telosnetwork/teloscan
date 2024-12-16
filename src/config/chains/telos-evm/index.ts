@@ -1,77 +1,268 @@
 import EVMChainSettings from 'src/core/chains/EVMChainSettings';
 import { RpcEndpoint } from 'universal-authenticator-library';
-import { FooterLinksConfig, HeaderMenuConfig, NativeCurrencyAddress, PriceChartData, SocialLink, Themes, addressString } from 'src/core/types';
+import { FooterLinksConfig, HeaderMenuConfig, NativeCurrencyAddress, NetworkConfig, PriceChartData, SocialLink, Themes, addressString } from 'src/core/types';
 import { TokenClass, TokenSourceInfo } from 'src/core/types';
 import { useUserStore } from 'src/core';
 import { getFiatPriceFromIndexer, getCoingeckoPriceChartData, getCoingeckoUsdPrice } from 'src/lib/price';
 
+declare const fathom: { trackEvent: (eventName: string) => void };
+
 // specific for Telos
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 
-const LOGO = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/telos.png';
-const CHAIN_ID = '40';
-export const NETWORK = 'telos-evm';
-const DISPLAY = 'Telos EVM';
-const TOKEN = new TokenClass({
-    name: 'Telos',
-    symbol: 'TLOS',
-    network: NETWORK,
-    decimals: 18,
-    address: NativeCurrencyAddress,
-    logo: LOGO,
-    logoURI: LOGO,
-    isNative: false,
-    isSystem: true,
-} as TokenSourceInfo);
-
-const S_TOKEN = new TokenClass({
-    name: 'Staked Telos',
-    symbol: 'STLOS',
-    network: NETWORK,
-    decimals: 18,
-    address: '0xB4B01216a5Bc8F1C8A33CD990A1239030E60C905',
-    logo: 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/stlos.png',
-    isNative: false,
-    isSystem: false,
-} as TokenSourceInfo);
-
-const W_TOKEN = new TokenClass({
-    name: 'Wrapped Telos',
-    symbol: 'WTLOS',
-    network: NETWORK,
-    decimals: 18,
-    address: '0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E',
-    logo: 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/wtlos.png',
-    isNative: false,
-    isSystem: false,
-} as TokenSourceInfo);
-
-const RPC_ENDPOINT = {
-    protocol: 'https',
-    host: 'mainnet.telos.net',
-    port: 443,
-    path: '/evm',
+const config: NetworkConfig =
+{
+    'network': 'telos-evm',
+    'display': 'Telos EVM',
+    'chainId': '40',
+    'isTestnet': false,
+    'logos': {
+        'large': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/telos.png',
+        'small': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/telos.png',
+    },
+    'systemTokens': [
+        {
+            'name': 'Telos',
+            'symbol': 'TLOS',
+            'network': 'telos-evm',
+            'decimals': 18,
+            'address': NativeCurrencyAddress,
+            'logo': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/telos.png',
+            'isNative': false,
+            'isSystem': true,
+        },
+        {
+            'name': 'Staked Telos',
+            'symbol': 'STLOS',
+            'network': 'telos-evm',
+            'decimals': 18,
+            'address': '0xB4B01216a5Bc8F1C8A33CD990A1239030E60C905',
+            'logo': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/stlos.png',
+            'isNative': false,
+            'isSystem': false,
+        },
+        {
+            'name': 'Wrapped Telos',
+            'symbol': 'WTLOS',
+            'network': 'telos-evm',
+            'decimals': 18,
+            'address': '0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E',
+            'logo': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/wtlos.png',
+            'isNative': false,
+            'isSystem': false,
+        },
+    ],
+    'escrowContractAddress': '0x95F5713A1422Aa3FBD3DCB8D553945C128ee3855',
+    'apiEndpoints': {
+        'rpc': {
+            'protocol': 'https',
+            'host': 'mainnet.telos.net',
+            'port': 443,
+            'path': '/evm',
+        },
+        'api': 'https://api.telos.net/v1',
+        'hyperion': 'https://mainnet.telos.net',
+        'explorer': 'https://teloscan.io',
+        'ecosystem': 'https://www.telos.net/ecosystem',
+        'bridge': 'https://bridge.telos.net/bridge',
+        'indexer': 'https://api.teloscan.io',
+        'contractsBucket': 'https://verified-evm-contracts.s3.amazonaws.com',
+        'monitor': 'https://api.monitor-test.telos.net',
+    },
+    'priceData': {
+        'coingeckoId': 'telos',
+    },
+    'weiPrecision': 18,
+    'themes': {
+        'light': {
+            'primary': '#2a8de3',
+            'secondary': '#8B3F98',
+            'accent': '#73C58F',
+            'dark': '#1d1d1d',
+            'positive': '#008800',
+            'negative': '#880000',
+            'info': '#31CCEC',
+            'warning': '#F2C037',
+            'notify-success': '#255B00',
+            'notify-error': '#880000',
+            'notify-neutral': '#4D4D4D',
+            'notify-info': '#008888',
+        },
+        'dark': {
+            'primary': '#2a8de3',
+            'secondary': '#8B3F98',
+            'accent': '#73C58F',
+            'dark': '#1d1d1d',
+            'positive': '#008800',
+            'negative': '#880000',
+            'info': '#31CCEC',
+            'warning': '#F2C037',
+            'notify-success': '#469d0d',
+            'notify-error': '#b30909',
+            'notify-neutral': '#858585',
+            'notify-info': '#15baba',
+        },
+    },
+    'socialLinks': [
+        {
+            'name': 'Telegram',
+            'url': 'http://t.me/HelloTelos',
+            'icon': 'telegram',
+            'classSuffix': 'telegram',
+        },
+        {
+            'name': 'X (Twitter)',
+            'url': 'https://twitter.com/HelloTelos',
+            'icon': 'twitter',
+            'classSuffix': 'x-twitter',
+        },
+        {
+            'name': 'YouTube',
+            'url': 'https://www.youtube.com/@TheTelosNetwork',
+            'icon': 'youtube',
+            'classSuffix': 'youtube',
+        },
+        {
+            'name': 'Discord',
+            'url': 'https://discord.gg/telos',
+            'icon': 'discord',
+            'classSuffix': 'discord',
+        },
+    ],
+    'footerLinks': {
+        'chain': 'telos-evm',
+        'branding': {
+            'title': 'Telos Testnet',
+            'logoLight': '/assets/telos-new-logo.png',
+            'logoDark': '/assets/telos-new-logo--dark.png',
+            'url': 'https://testnet.telos.net/',
+        },
+        'columns': [
+            {
+                'title': 'components.footer.telos',
+                'links': [
+                    { 'label': 'components.footer.telos_homepage', 'url': 'https://www.telos.net/' },
+                    { 'label': 'components.footer.telos_wallet', 'url': 'https://wallet.telos.net/' },
+                    { 'label': 'components.footer.telos_bridge', 'url': 'https://bridge.telos.net/bridge' },
+                    { 'label': 'components.footer.telos_zero_explorer', 'url': 'https://explorer.telos.net/network' },
+                    { 'label': 'components.footer.buy_telos', 'url': 'https://www.telos.net/buy' },
+                    { 'label': 'components.footer.stake_telos', 'url': 'https://docs.telos.net/users/knowledge-base/how-to-stake-tlos/' },
+                    { 'label': 'components.footer.telos_ecosystem', 'url': 'https://www.telos.net/ecosystem' },
+                    { 'label': 'components.footer.network_status', 'url': 'https://www.teloscan.io/health' },
+                ],
+            },
+            {
+                'title': 'components.footer.about',
+                'links': [
+                    { 'label': 'components.footer.about_us', 'url': 'https://www.telos.net/about' },
+                    { 'label': 'components.footer.contactUs', 'url': 'http://t.me/HelloTelos' },
+                ],
+            },
+            {
+                'title': 'components.footer.build',
+                'links': [
+                    { 'label': 'components.footer.api_documentation', 'url': 'https://api.telosscan.io/v1/docs' },
+                    { 'label': 'components.footer.telos_documentation', 'url': 'https://docs.telos.net/overview/what-is-telos/introduction/' },
+                    { 'label': 'components.footer.github', 'url': 'https://github.com/telosnetwork' },
+                    { 'label': 'components.footer.brand_assets', 'url': 'https://www.telos.net/community-resources' },
+                ],
+            },
+        ],
+    },
+    'headerMenuConfig': {
+        'chain': 'telos-evm',
+        'entries': [
+            {
+                'label': 'components.header.home',
+                'internalLink': 'home',
+            },
+            {
+                'label': 'components.header.blockchain',
+                'entries': [
+                    {
+                        'label': 'components.header.internal_transactions',
+                        'internalLink': 'txsinternal',
+                    },
+                    {
+                        'label': 'components.header.transactions',
+                        'internalLink': 'transactions',
+                    },
+                    {
+                        'label': 'components.header.blocks',
+                        'internalLink': 'blocks',
+                    },
+                ],
+            },
+            {
+                'label': 'components.header.developers',
+                'entries': [
+                    {
+                        'label': 'components.header.api_documentation',
+                        'externalLink': 'https://api.telosscan.io/v1/docs',
+                    },
+                    {
+                        'label': 'components.header.verify_contract_sourcify',
+                        'externalLink': 'https://sourcify.dev/',
+                    },
+                ],
+            },
+            {
+                'label': 'components.header.telos_wallet',
+                'externalLink': 'https://wallet.telos.net/',
+            },
+            {
+                'label': 'components.header.telos_bridge',
+                'externalLink': 'https://bridge.telos.net/bridge',
+            },
+            {
+                'label': 'components.header.more',
+                'entries': [
+                    {
+                        'label': 'global.language',
+                        'trigger': 'language',
+                        'leftIcon': 'fas fa-language',
+                    },
+                    {
+                        'label': 'components.header.csv_export',
+                        'internalLink': 'export',
+                    },
+                    {
+                        'label': 'components.header.health_monitor',
+                        'internalLink': 'health',
+                    },
+                    {
+                        'label': 'components.header.telos_ecosystem',
+                        'externalLink': 'https://www.telos.net/ecosystem',
+                    },
+                    {
+                        'label': 'components.header.telos_zero_explorer',
+                        'externalLink': 'https://explorer.telos.net',
+                    },
+                ],
+            },
+        ],
+    },
+    'buyMoreTokenLink': 'https://www.telos.net/buy',
+    'nativeUalChain': {
+        'chainId': '4667b205c6838ef70ff7988f6e8257e8be0e1284a2f59699054a018f743b1d11',
+        'rpcEndpoints': [
+            {
+                'protocol': 'https',
+                'host': 'mainnet.telos.net',
+                'port': 443,
+            },
+        ],
+    },
 };
-const ESCROW_CONTRACT_ADDRESS = '0x95F5713A1422Aa3FBD3DCB8D553945C128ee3855';
-const API_ENDPOINT = 'https://api.telos.net/v1';
-const WEI_PRECISION = 18;
-const EXPLORER_URL = 'https://teloscan.io';
-const ECOSYSTEM_URL = 'https://www.telos.net/ecosystem';
-const BRIDGE_URL = 'https://bridge.telos.net/bridge';
-const NETWORK_EVM_ENDPOINT = 'https://mainnet.telos.net';
-const INDEXER_ENDPOINT = 'https://api.teloscan.io';
-const CONTRACTS_BUCKET = 'https://verified-evm-contracts.s3.amazonaws.com';
 
-declare const fathom: { trackEvent: (eventName: string) => void };
+console.log('telos-evm:', config);
 
-// UAL chain
-const NETWORK_CHAIN_ID = '4667b205c6838ef70ff7988f6e8257e8be0e1284a2f59699054a018f743b1d11';
-const NETWORK_PROTOCOL = 'https';
-const NETWORK_PORT = 443;
-const NETWORK_HOST = 'mainnet.telos.net';
 
 export default class TelosEVM extends EVMChainSettings {
     nativeSupport: TelosEvmApi;
+    _systemToken: TokenClass = new TokenClass(config.systemTokens[0] as TokenSourceInfo);
+    _stakedSystemToken: TokenClass = new TokenClass(config.systemTokens[1] as TokenSourceInfo);
+    _wrappedSystemToken: TokenClass = new TokenClass(config.systemTokens[2] as TokenSourceInfo);
     constructor(network: string) {
         super(network);
         this.nativeSupport = new TelosEvmApi({
@@ -82,31 +273,30 @@ export default class TelosEVM extends EVMChainSettings {
             telosPrivateKeys: [],
             fetch,
         });
-        console.assert(network === NETWORK, `Network name mismatch: '${network}' !== '${NETWORK}'`);
     }
 
     getNetwork(): string {
-        return NETWORK;
+        return config.network;
     }
 
     getChainId(): string {
-        return CHAIN_ID;
+        return config.chainId;
     }
 
     getDisplay(): string {
-        return DISPLAY;
+        return config.display;
     }
 
     getHyperionEndpoint(): string {
-        return NETWORK_EVM_ENDPOINT;
+        return config.apiEndpoints.hyperion;
     }
 
     getRPCEndpoint(): RpcEndpoint {
-        return RPC_ENDPOINT;
+        return config.apiEndpoints.rpc;
     }
 
     getApiEndpoint(): string {
-        return API_ENDPOINT;
+        return config.apiEndpoints.api;
     }
 
     getPriceData(): Promise<PriceChartData> {
@@ -114,19 +304,19 @@ export default class TelosEVM extends EVMChainSettings {
     }
 
     getSystemToken(): TokenClass {
-        return TOKEN;
+        return this._systemToken;
     }
 
     getStakedSystemToken(): TokenClass {
-        return S_TOKEN;
+        return this._stakedSystemToken;
     }
 
     getWrappedSystemToken(): TokenClass {
-        return W_TOKEN;
+        return this._wrappedSystemToken;
     }
 
     getEscrowContractAddress(): addressString {
-        return ESCROW_CONTRACT_ADDRESS;
+        return config.escrowContractAddress as addressString;
     }
 
     async getUsdPrice(): Promise<number> {
@@ -144,228 +334,67 @@ export default class TelosEVM extends EVMChainSettings {
     }
 
     getLargeLogoPath(): string {
-        return LOGO;
+        return config.logos.large;
     }
 
     getSmallLogoPath(): string {
-        return LOGO;
+        return config.logos.small;
     }
 
     getWeiPrecision(): number {
-        return WEI_PRECISION;
+        return config.weiPrecision;
     }
 
     getExplorerUrl(): string {
-        return EXPLORER_URL;
+        return config.apiEndpoints.explorer;
     }
 
     getEcosystemUrl(): string {
-        return ECOSYSTEM_URL;
+        return config.apiEndpoints.ecosystem;
     }
 
     getThemes(): Themes {
-        return {
-            light: {
-                primary: '#2a8de3',
-                secondary: '#8B3F98',
-                accent: '#73C58F',
-                dark: '#1d1d1d',
-                positive: '#008800',
-                negative: '#880000',
-                info: '#31CCEC',
-                warning: '#F2C037',
-                'notify-success': '#255B00',
-                'notify-error': '#880000',
-                'notify-neutral': '#4D4D4D',
-                'notify-info': '#008888',
-            },
-            dark: {
-                primary: '#2a8de3',
-                secondary: '#8B3F98',
-                accent: '#73C58F',
-                dark: '#1d1d1d',
-                positive: '#008800',
-                negative: '#880000',
-                info: '#31CCEC',
-                warning: '#F2C037',
-                'notify-success': '#469d0d',
-                'notify-error': '#b30909',
-                'notify-neutral': '#858585',
-                'notify-info': '#15baba',
-            },
-        };
+        return config.themes;
     }
 
     getSocialLinks(): SocialLink[] {
-        return [
-            {
-                name: 'Telegram',
-                url: 'http://t.me/HelloTelos',
-                icon: 'telegram',
-                classSuffix: 'telegram',
-            },
-            {
-                name: 'X (Twitter)',
-                url: 'https://twitter.com/HelloTelos',
-                icon: 'twitter',
-                classSuffix: 'x-twitter',
-            },
-            {
-                name: 'YouTube',
-                url: 'https://www.youtube.com/@TheTelosNetwork',
-                icon: 'youtube',
-                classSuffix: 'youtube',
-            },
-            {
-                name: 'Discord',
-                url: 'https://discord.gg/telos',
-                icon: 'discord',
-                classSuffix: 'discord',
-            },
-        ];
+        return config.socialLinks;
     }
 
     getFooterLinks(): FooterLinksConfig {
-        return {
-            chain: 'telos-evm',
-            branding: {
-                title: 'Telos Testnet',
-                logoLight: '/assets/telos-new-logo.png',
-                logoDark: '/assets/telos-new-logo--dark.png',
-                url: 'https://testnet.telos.net/',
-            },
-            columns: [
-                {
-                    title: 'components.footer.telos',
-                    links: [
-                        { label: 'components.footer.telos_homepage', url: 'https://www.telos.net/' },
-                        { label: 'components.footer.telos_wallet', url: 'https://wallet.telos.net/' },
-                        { label: 'components.footer.telos_bridge', url: 'https://bridge.telos.net/bridge' },
-                        { label: 'components.footer.telos_zero_explorer', url: 'https://explorer.telos.net/network' },
-                        { label: 'components.footer.buy_telos', url: 'https://www.telos.net/buy' },
-                        { label: 'components.footer.stake_telos', url: 'https://docs.telos.net/users/knowledge-base/how-to-stake-tlos/' },
-                        { label: 'components.footer.telos_ecosystem', url: 'https://www.telos.net/ecosystem' },
-                        { label: 'components.footer.network_status', url: 'https://www.teloscan.io/health' },
-                    ],
-                },
-                {
-                    title: 'components.footer.about',
-                    links: [
-                        { label: 'components.footer.about_us', url: 'https://www.telos.net/about' },
-                        { label: 'components.footer.contactUs', url: 'http://t.me/HelloTelos' },
-                    ],
-                },
-                {
-                    title: 'components.footer.build',
-                    links: [
-                        { label: 'components.footer.api_documentation', url: 'https://api.teloscan.io/v1/docs' },
-                        { label: 'components.footer.telos_documentation', url: 'https://docs.telos.net/overview/what-is-telos/introduction/' },
-                        { label: 'components.footer.github', url: 'https://github.com/telosnetwork' },
-                        { label: 'components.footer.brand_assets', url: 'https://www.telos.net/community-resources' },
-                    ],
-                },
-            ],
-        };
+        return config.footerLinks;
     }
 
     getHeaderMenuConfig(): HeaderMenuConfig {
-        return {
-            chain: 'telos-evm',
-            entries: [
-                {
-                    label: 'components.header.home',
-                    internalLink: 'home',
-                },
-                {
-                    label: 'components.header.blockchain',
-                    entries: [
-                        {
-                            label: 'components.header.internal_transactions',
-                            internalLink: 'txsinternal',
-                        },
-                        {
-                            label: 'components.header.transactions',
-                            internalLink: 'transactions',
-                        },
-                        {
-                            label: 'components.header.blocks',
-                            internalLink: 'blocks',
-                        },
-                    ],
-                },
-                {
-                    label: 'components.header.developers',
-                    entries: [
-                        {
-                            label: 'components.header.api_documentation',
-                            externalLink: 'https://api.teloscan.io/v1/docs',
-                        },
-                        {
-                            label: 'components.header.verify_contract_sourcify',
-                            externalLink: 'https://sourcify.dev/',
-                        },
-                    ],
-                },
-                {
-                    label: 'components.header.telos_wallet',
-                    externalLink: 'https://wallet.telos.net/',
-                },
-                {
-                    label: 'components.header.telos_bridge',
-                    externalLink: 'https://bridge.telos.net/bridge',
-                },
-                {
-                    label: 'components.header.more',
-                    entries: [
-                        {
-                            label: 'global.language',
-                            trigger: 'language',
-                            leftIcon: 'fas fa-language',
-                        },
-                        {
-                            label: 'components.header.csv_export',
-                            internalLink: 'export',
-                        },
-                        {
-                            label: 'components.header.health_monitor',
-                            internalLink: 'health',
-                        },
-                        {
-                            label: 'components.header.telos_ecosystem',
-                            externalLink: 'https://www.telos.net/ecosystem',
-                        },
-                        {
-                            label: 'components.header.telos_zero_explorer',
-                            externalLink: 'https://explorer.telos.net',
-                        },
-                    ],
-                },
-            ],
-        };
+        return config.headerMenuConfig;
     }
 
     getBridgeUrl(): string {
-        return BRIDGE_URL;
+        return config.apiEndpoints.bridge;
     }
 
     getTrustedContractsBucket(): string {
-        return CONTRACTS_BUCKET;
+        return config.apiEndpoints.contractsBucket;
     }
 
     getBuyMoreOfTokenLink(): string {
-        return 'https://www.telos.net/buy';
+        return config.buyMoreTokenLink;
     }
 
     getSystemTokens(): TokenClass[] {
-        return [TOKEN, S_TOKEN, W_TOKEN];
+        return [
+            this.getSystemToken(),
+            this.getStakedSystemToken(),
+            this.getWrappedSystemToken(),
+        ];
     }
 
     getIndexerApiEndpoint(): string {
-        return INDEXER_ENDPOINT;
+        return config.apiEndpoints.indexer as string;
     }
 
     hasIndexerSupport(): boolean {
-        return true;
+        return config.apiEndpoints.indexer !== undefined;
     }
 
     trackAnalyticsEvent(eventName: string): void {
@@ -383,16 +412,7 @@ export default class TelosEVM extends EVMChainSettings {
     }
 
     getNativeUALChain() {
-        return {
-            chainId: NETWORK_CHAIN_ID,
-            rpcEndpoints: [
-                {
-                    protocol: NETWORK_PROTOCOL,
-                    host: NETWORK_HOST,
-                    port: NETWORK_PORT,
-                },
-            ],
-        };
+        return config.nativeUalChain;
     }
 
     async getEthAccountByNativeAccount(native: string): Promise<string> {
@@ -405,7 +425,7 @@ export default class TelosEVM extends EVMChainSettings {
     }
 
     getMonitorUrl(): string {
-        return 'https://api.monitor-test.telos.net';
+        return config.apiEndpoints.monitor as string;
     }
 
 }
