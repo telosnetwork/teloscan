@@ -142,17 +142,18 @@ watch(() => route.query,
         let page = p ? Number(p) : 0;
         let size = rowsPerPage ? Number(rowsPerPage) : pagination.value.rowsPerPage;
         let desc = sort ? sort === 'DESC' : true;
-
+        console.log('TransactionTable.watch() ->', { query, page, size, desc });
         setPagination(page, size, desc);
     },
     { immediate: true },
 );
 
 function setPagination(page: number, size: number, desc: boolean) {
+    console.log('TransactionTable.setPagination(1) ->', { page, size, desc });
     pagination.value.page = page;
     pagination.value.rowsPerPage = size;
     pagination.value.descending = desc;
-
+    console.log('TransactionTable.setPagination(2) ->', { initialKey: pagination.value.initialKey, pagination: pagination.value, page });
     if (pagination.value.initialKey > 0) {
         // key is page pages away from the initial key
         const zero_base_page = page - 1;
@@ -201,6 +202,7 @@ async function parseTransactions() {
         if (results.length > 0) {
             const firstItemKey = results[0].id;
             pagination.value.initialKey = firstItemKey + 1;
+            console.log('TransactionTable.parseTransactions() ->', { firstItemKey, initialKey: pagination.value.initialKey });
         }
 
         transactions.splice(0, transactions.length, ...results);
@@ -271,9 +273,11 @@ async function getPath() {
         path = `v1/transactions?limit=${limit}`;
         if (pagination.value.initialKey === 0) {
             // in the case of the first query, we need to get the initial key
-            let response = await useChainStore().currentChain.settings.getIndexerApi().get('v1/transactions?includePagination=true&key=0');
-            const next = response.data.next;
-            pagination.value.initialKey = next + 1;
+            console.log('TransactionTable.getPath() ->', { initialKey: pagination.value.initialKey });
+            let response = await useChainStore().currentChain.settings.getIndexerApi().get('/v1/transactions?limit=6');
+            const next = response.data.results[0].id;
+            pagination.value.initialKey = next;
+            console.log('TransactionTable.getPath() ->', { initialKey: pagination.value.initialKey, response, next });
         }
         let currentKey = pagination.value.initialKey - ((page - 1) * rowsPerPage);
         if (currentKey < 0) {
