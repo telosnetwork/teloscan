@@ -12,8 +12,8 @@ const sharedEnv = {
 
 const TESTNET = {
     ...sharedEnv,
-    APP_NAME: 'Teloscan (testnet)',
-    NETWORK_EVM_NAME: 'telos-evm-testnet',
+    APP_NAME: 'Teloscan zkEVM (testnet)',
+    NETWORK_EVM_NAME: 'telos-zkevm-testnet', // 'telos-zkevm-testnet', telos-evm-testnet
 };
 
 const MAINNET = {

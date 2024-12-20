@@ -11,6 +11,7 @@ import { ethers } from 'ethers';
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 import { AxiosInstance } from 'axios';
 import ContractManager from 'src/lib/contract/ContractManager';
+import TelosZkEVM from 'src/config/chains/telos-zkevm-testnet';
 
 export interface TeloscanEVMChainSettings {
     getStakedSystemToken(): TokenClass;
@@ -21,6 +22,8 @@ export interface TeloscanEVMChainSettings {
     getRPCEndpoint: () => RpcEndpoint;
     getEscrowContractAddress: () => string;
     getNetwork: () => string;
+    getTokenListUrl: () => string;
+    getSystemContractsListUrl: () => string;
     getSystemToken: () => TokenClass;
     getExplorerUrl: () => string;
     getSmallLogoPath: () => string;
@@ -44,6 +47,7 @@ export interface TeloscanEVMChainSettings {
 }
 
 export const evmSettings: { [network: string]: TeloscanEVMChainSettings } = {
+    'telos-zkevm-testnet': new TelosZkEVM('telos-zkevm-testnet'),
     'telos-evm': new TelosEVM('telos-evm'),
     'telos-evm-testnet': new TelosEVMTestnet('telos-evm-testnet'),
 };

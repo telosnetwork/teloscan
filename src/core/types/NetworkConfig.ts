@@ -147,6 +147,13 @@ export interface NetworkConfig {
             port: number;
         }[];
     };
+
+    // url of the token tokenlist
+    tokenListUrl: string;
+
+    // url of the system tokenlist
+    systemContractsListUrl: string;
+
 }
 
 

@@ -5,7 +5,7 @@ import { getTopicHash } from 'src/lib/utils';
 import { ERC1155_TRANSFER_SIGNATURE, TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures.js';
 import { erc1155Abi, erc721MetadataAbi } from 'src/lib/abi';
 import { getCore, useChainStore } from 'src/core';
-const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
+// const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 const systemContractList =
     'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json';
 
@@ -18,6 +18,14 @@ class AddressCacheManager {
 
     getCurrentNetwork() {
         return useChainStore().currentChain.settings.getNetwork();
+    }
+
+    getTokenListUrl() {
+        return useChainStore().currentChain.settings.getTokenListUrl();
+    }
+
+    getSystemContractsListUrl() {
+        return useChainStore().currentChain.settings.getSystemContractsListUrl();
     }
 
     loadFromLocalStorage() {
@@ -260,7 +268,7 @@ export default class ContractManager {
     }
 
     async loadTokenList() {
-        const results = await axios.get(tokenList);
+        const results = await axios.get(this.getTokenListUrl());
         const { tokens } = results.data;
         results.data.tokens = (tokens ?? []).filter(({ chainId }) => +chainId === +useChainStore().currentChain.settings.getChainId());
 

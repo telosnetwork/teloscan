@@ -56,12 +56,12 @@ const config: NetworkConfig =
     'apiEndpoints': {
         'rpc': {
             'protocol': 'https',
-            'host': 'testnet.telos.net',
+            'host': 'rpc.testnet.telos.net',
             'port': 443,
             'path': '/evm',
         },
         'api': 'https://api-dev.telos.net/v1',
-        'hyperion': 'https://testnet.telos.net',
+        'hyperion': 'https://rpc.testnet.telos.net',
         'explorer': 'https://testnet.teloscan.io',
         'ecosystem': 'https://www.telos.net/ecosystem',
         'bridge': 'https://telos-bridge-testnet.netlify.app/bridge',
@@ -103,6 +103,8 @@ const config: NetworkConfig =
             'notify-info': '#0099FF',
         },
     },
+    'tokenListUrl': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json',
+    'systemContractsListUrl': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json',
     'socialLinks': [
         {
             'name': 'X (Twitter)',
@@ -195,7 +197,7 @@ const config: NetworkConfig =
         'rpcEndpoints': [
             {
                 'protocol': 'https',
-                'host': 'testnet.telos.net',
+                'host': 'rpc.testnet.telos.net',
                 'port': 443,
             },
         ],
@@ -335,6 +337,14 @@ export default class TelosEVM extends EVMChainSettings {
             this.getStakedSystemToken(),
             this.getWrappedSystemToken(),
         ];
+    }
+
+    getTokenListUrl(): string {
+        return config.tokenListUrl;
+    }
+
+    getSystemContractsListUrl(): string {
+        return config.systemContractsListUrl;
     }
 
     getIndexerApiEndpoint(): string {

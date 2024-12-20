@@ -20,7 +20,7 @@ export const fetchTlosPrice = async function({ commit }) {
         const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
         const symbol = useChainStore().currentChain.settings.getSystemToken().symbol;
         const response = await indexerApi.get(`/v1/tokens/marketdata?tokens=${symbol}&vs=usd`);
-        const tlosPrice = parseFloat(response.data?.results[0].price).toFixed(4);
+        const tlosPrice = parseFloat(response.data?.results[0].price ?? '0.0').toFixed(4);
         commit('setTlosPrice', tlosPrice);
     } catch (error) {
         console.error('fetchTlosPrice: ', error.message);

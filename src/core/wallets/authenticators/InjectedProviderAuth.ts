@@ -21,7 +21,8 @@ import {
     wtlosAbiWithdraw,
 } from 'src/core/types';
 import { BraveAuthName, EVMAuthenticator, MetamaskAuthName, SafePalAuthName } from 'src/core/wallets';
-import { TELOS_ANALYTICS_EVENT_NAMES, TELOS_NETWORK_NAMES } from 'src/core/mocks/chain-constants';
+import { TELOS_ANALYTICS_EVENT_NAMES } from 'src/core/mocks/chain-constants';
+import { TELOS_NETWORK_NAMES } from 'src/config/chains';
 
 export abstract class InjectedProviderAuth extends EVMAuthenticator {
     onReady = new BehaviorSubject<boolean>(false);

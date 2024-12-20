@@ -1,5 +1,6 @@
 import { evmSettings, TeloscanEVMChainSettings, useChainStore } from 'src/core';
 import { CURRENT_CONTEXT } from 'src/core/mocks';
+import { TELOS_NETWORK_NAMES } from 'src/config/chains';
 import { ref, watch } from 'vue';
 import { RouteLocationNormalizedLoaded, Router } from 'vue-router';
 
@@ -9,18 +10,12 @@ export interface ChainOption {
     extern: boolean;
 }
 
-export const chains = [
-    {
-        network: 'telos-evm',
-        settings: evmSettings['telos-evm'],
-        extern: true,
-    },
-    {
-        network: 'telos-evm-testnet',
-        settings: evmSettings['telos-evm-testnet'],
-        extern: true,
-    },
-] as ChainOption[];
+export const chains = TELOS_NETWORK_NAMES.map(network => ({
+    network,
+    settings: evmSettings[network],
+    extern: true,
+} as ChainOption));
+
 
 export const multichainSelectedNetwork = ref<ChainOption | undefined>(undefined);
 
