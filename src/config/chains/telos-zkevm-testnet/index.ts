@@ -60,6 +60,7 @@ const config: NetworkConfig =
             'protocol': 'https',
             'host': 'zkrpc.testnet.telos.net',
             'port': 8124,
+            'path': '',
         },
         'api': 'https://zktest.teloscan.io/v1',
         'hyperion': 'https://mainnet.telos.net/',
