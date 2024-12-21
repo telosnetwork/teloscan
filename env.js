@@ -25,8 +25,8 @@ const chains = {
         ...sharedEnv,
         APP_NAME: 'Teloscan zkEVM (testnet)',
         NETWORK_EVM_NAME: 'telos-zkevm-testnet',
-    }
-}
+    },
+};
 
 const env = chains[process.env.NETWORK?.toLowerCase()] || chains.testnet;
 
