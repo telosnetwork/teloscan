@@ -20,14 +20,6 @@ class AddressCacheManager {
         return useChainStore().currentChain.settings.getNetwork();
     }
 
-    getTokenListUrl() {
-        return useChainStore().currentChain.settings.getTokenListUrl();
-    }
-
-    getSystemContractsListUrl() {
-        return useChainStore().currentChain.settings.getSystemContractsListUrl();
-    }
-
     loadFromLocalStorage() {
         const storedContractInfo = localStorage.getItem('contractInfoByNetwork');
         if (storedContractInfo) {
@@ -94,6 +86,14 @@ export default class ContractManager {
             this.contracts[network] = {};
         }
         return this.contracts[network][address.toLowerCase()] || null;
+    }
+
+    getTokenListUrl() {
+        return useChainStore().currentChain.settings.getTokenListUrl();
+    }
+
+    getSystemContractsListUrl() {
+        return useChainStore().currentChain.settings.getSystemContractsListUrl();
     }
 
     setNetworkContract(address, contract) {
