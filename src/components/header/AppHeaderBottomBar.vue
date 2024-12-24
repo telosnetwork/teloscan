@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
@@ -10,6 +10,7 @@ import { useChainStore } from 'src/core';
 
 const $q = useQuasar();
 const { t: $t } = useI18n();
+
 
 defineProps<{
     topBarHidden: boolean;
@@ -27,7 +28,10 @@ watchEffect(() => {
 function scrollHandler(info: { direction: string; }) {
     menuBottomBarHidden.value = info.direction === 'down';
 }
+const settings = computed(() => useChainStore().currentChain.settings);
+
 </script>
+
 
 <template>
 <div
@@ -41,19 +45,15 @@ function scrollHandler(info: { direction: string; }) {
         <router-link to="/" class="c-header-bottom-bar__logo-container">
             <div class="c-header-bottom-bar__logo-image-container">
                 <img
+                    v-if="!$q.dark.isActive"
                     :alt="$t('components.header.telos_evm_logo_alt')"
-                    src="/branding/telos-scan.png"
-                    height="32"
+                    :src="settings.getThemes().light['title-image']"
                 >
-            </div>
-
-            <div class="c-header-bottom-bar__logo-text-container">
-                <span class="c-header-bottom-bar__logo-text">
-                    Teloscan
-                </span>
-                <span v-if="useChainStore().currentChain.settings.isTestnet()" class="c-header-bottom-bar__testnet-indicator">
-                    Testnet
-                </span>
+                <img
+                    v-if="-$q.dark.isActive"
+                    :alt="$t('components.header.telos_evm_logo_alt')"
+                    :src="settings.getThemes().dark['title-image']"
+                >
             </div>
         </router-link>
 

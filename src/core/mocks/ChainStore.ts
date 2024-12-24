@@ -4,23 +4,27 @@
 declare const fathom: { trackEvent: (eventName: string) => void };
 
 import { RpcEndpoint, UAL } from 'universal-authenticator-library';
-import { TokenClass, Theme, Themes, SocialLink, FooterLinksConfig, HeaderMenuConfig } from 'src/core/types';
+import { TokenClass, Theme, Themes, SocialLink, FooterLinksConfig, HeaderMenuConfig, HeaderIndicators } from 'src/core/types';
 import TelosEVM from 'src/config/chains/telos-evm';
 import TelosEVMTestnet from 'src/config/chains/telos-evm-testnet';
 import { ethers } from 'ethers';
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 import { AxiosInstance } from 'axios';
 import ContractManager from 'src/lib/contract/ContractManager';
+import TelosZkEVM from 'src/config/chains/telos-zkevm-testnet';
 
 export interface TeloscanEVMChainSettings {
     getStakedSystemToken(): TokenClass;
     getWrappedSystemToken: () => TokenClass;
     getChainId: () => string;
     getDisplay: () => string;
+    getApplicationTitle: () => string;
     trackAnalyticsEvent: (name: string) => void;
     getRPCEndpoint: () => RpcEndpoint;
     getEscrowContractAddress: () => string;
     getNetwork: () => string;
+    getTokenListUrl: () => string;
+    getSystemContractsListUrl: () => string;
     getSystemToken: () => TokenClass;
     getExplorerUrl: () => string;
     getSmallLogoPath: () => string;
@@ -31,6 +35,7 @@ export interface TeloscanEVMChainSettings {
     getThemes: () => Themes;
     getSocialLinks: () => SocialLink[];
     getFooterLinks: () => FooterLinksConfig;
+    getHeaderIndicators: () => HeaderIndicators;
     getHeaderMenuConfig: () => HeaderMenuConfig;
     // Telos Specific
     getEthAccountByNativeAccount: (account: string) => Promise<string>;
@@ -44,6 +49,7 @@ export interface TeloscanEVMChainSettings {
 }
 
 export const evmSettings: { [network: string]: TeloscanEVMChainSettings } = {
+    'telos-zkevm-testnet': new TelosZkEVM('telos-zkevm-testnet'),
     'telos-evm': new TelosEVM('telos-evm'),
     'telos-evm-testnet': new TelosEVMTestnet('telos-evm-testnet'),
 };

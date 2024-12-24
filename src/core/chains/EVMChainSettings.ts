@@ -288,6 +288,10 @@ export default abstract class EVMChainSettings implements ChainSettings {
         return `~/assets/${this.network}/logo_sm.svg`;
     }
 
+    getTokensLogoURL(): string {
+        return `~/assets/${this.network}/tokens`;
+    }
+
     abstract getSystemToken(): TokenClass;
     abstract getStakedSystemToken(): TokenClass;
     abstract getWrappedSystemToken(): TokenClass;

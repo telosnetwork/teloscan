@@ -42,7 +42,8 @@ import {
 import { EVMAuthenticator } from 'src/core/wallets';
 import { RpcEndpoint } from 'universal-authenticator-library';
 import { toRaw } from 'vue';
-import { TELOS_ANALYTICS_EVENT_NAMES, TELOS_NETWORK_NAMES } from 'src/core/mocks/chain-constants';
+import { TELOS_ANALYTICS_EVENT_NAMES } from 'src/core/mocks/chain-constants';
+import { TELOS_NETWORK_NAMES } from 'src/config/chains';
 
 const name = 'WalletConnect';
 
