@@ -66,7 +66,7 @@ async function fetchLatestBlock() {
 
 async function fetchTotalTransactions() {
     const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
-    const response = await indexerApi.get('/v1/transactions?limit=0&next=-1&offset=0&includeAbi=false&includePagination=true&includeTransfers=false&full=false');
+    const response = await indexerApi.get('/v1/transactions?limit=1&offset=0&includeAbi=false&includePagination=true&includeTransfers=false&full=false');
     transactionsCount.value = response.data.total_count;
 }
 

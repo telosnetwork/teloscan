@@ -213,12 +213,29 @@ const sortCriteria = (a: SearchResult, b: SearchResult): number => {
     }
 };
 
+const getSearchResultRaw = (result: SearchResultRaw[] | string): SearchResultRaw[] => {
+    if (typeof result === 'string') {
+        try {
+            const obj = JSON.parse(result);
+            return obj as SearchResultRaw[];
+        } catch (e) {
+            return [{
+                type: 'unknown',
+                address: result,
+            }] as never as SearchResultRaw[];
+        }
+    } else {
+        return result as SearchResultRaw[];
+    }
+};
+
+
 const goToFirstResultNow = (query: string) => {
     const endpoint = useChainStore().currentChain.settings.getIndexerApiEndpoint();
     const url = `${endpoint}/api?module=search&action=search&query=${query}&offset=1`;
     loading.value = true;
     axios.get(url).then((response) => {
-        const result = response.data.result.map((entry: SearchResultRaw) => convertRawToProcessedResult(entry));
+        const result = getSearchResultRaw(response.data.result).map((entry: SearchResultRaw) => convertRawToProcessedResult(entry));
         loading.value = false;
         handleResultClick(result[0]);
     }).catch((error) => {
@@ -236,7 +253,7 @@ const fetchResults = (query: string): Observable<SearchResult[]> => {
     return new Observable<SearchResult[]>((observer) => {
         loading.value = true;
         axios.get(url).then((response) => {
-            const result = response.data.result.map((entry: SearchResultRaw) => convertRawToProcessedResult(entry));
+            const result = getSearchResultRaw(response.data.result).map((entry: SearchResultRaw) => convertRawToProcessedResult(entry));
             result.sort(sortCriteria);
             loading.value = false;
             observer.next(result);
