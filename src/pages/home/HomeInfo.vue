@@ -61,9 +61,7 @@ onBeforeUnmount(() => {
 async function fetchLatestBlock() {
     const provider = await getCore().wallets.getWeb3Provider();
     const blockNumber = await provider.getBlockNumber();
-    console.log('Latest block number:', blockNumber);
     latestBlock.value = blockNumber;
-    // $store.dispatch('chain/fetchLatestBlock'); // FIXME: remove me
 }
 
 async function fetchTotalTransactions() {
