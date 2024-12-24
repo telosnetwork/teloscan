@@ -94,13 +94,13 @@ function toggleDarkMode() {
 <div class="c-header-top-bar">
     <div class="c-header-top-bar__inner-container">
         <div class="c-header-top-bar__left-container">
-            <div v-if="!chainStore.currentChain.settings.isTestnet()" class="text-caption q-mr-md">
+            <div v-if="chainStore.currentChain.settings.getHeaderIndicators().price" class="text-caption q-mr-md">
                 <span class="c-header-top-bar__grey-text">
                     {{ $t('components.header.system_token_price', { token: systemTokenSymbol }) }}
                 </span> ${{ tlosPrice }}
             </div>
 
-            <div v-if="!chainStore.currentChain.settings.isTestnet()" class="text-caption u-flex--center-y">
+            <div v-if="chainStore.currentChain.settings.getHeaderIndicators().gasPrice" class="text-caption u-flex--center-y">
                 <q-icon name="fas fa-gas-pump" class="c-header-top-bar__grey-text q-mr-xs" />
                 <span class="c-header-top-bar__grey-text">
                     {{ $t('components.header.gas') }}:

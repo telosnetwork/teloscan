@@ -118,6 +118,12 @@ export interface NetworkConfig {
         }[];
     };
 
+    // Header data indicators
+    headerIndicators: {
+        price: boolean;
+        gasPrice: boolean;
+    };
+
     // Header menu configuration
     headerMenuConfig: {
         chain: string;

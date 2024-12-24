@@ -29,6 +29,7 @@ export const getCoingeckoUsdPrice = async (
         priceCache[tokenId].lastPrice !== null
     ) {
         // If less than a minute has passed since the last fetch, return the cached price.
+        console.debug(`Returning cached price for ${tokenId}: ${priceCache[tokenId].lastPrice}`);
         return priceCache[tokenId].lastPrice as number;
     }
 

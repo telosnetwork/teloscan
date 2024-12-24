@@ -1,6 +1,6 @@
 import EVMChainSettings from 'src/core/chains/EVMChainSettings';
 import { RpcEndpoint } from 'universal-authenticator-library';
-import { FooterLinksConfig, HeaderMenuConfig, NativeCurrencyAddress, NetworkConfig, PriceChartData, SocialLink, Themes, addressString } from 'src/core/types';
+import { FooterLinksConfig, HeaderIndicators, HeaderMenuConfig, NativeCurrencyAddress, NetworkConfig, PriceChartData, SocialLink, Themes, addressString } from 'src/core/types';
 import { TokenClass, TokenSourceInfo } from 'src/core/types';
 import { useUserStore } from 'src/core';
 import { getFiatPriceFromIndexer, getCoingeckoPriceChartData, getCoingeckoUsdPrice } from 'src/lib/price';
@@ -159,6 +159,10 @@ const config: NetworkConfig =
             },
         ],
     },
+    'headerIndicators': {
+        'price': false,
+        'gasPrice': false,
+    },
     'headerMenuConfig': {
         'chain': 'telos-zkevm-testnet',
         'entries': [
@@ -207,9 +211,6 @@ const config: NetworkConfig =
         ],
     },
 };
-
-console.log('telos-zkevm-testnet:', config);
-
 
 export default class TelosZkEVM extends EVMChainSettings {
     nativeSupport: TelosEvmApi;
@@ -270,6 +271,10 @@ export default class TelosZkEVM extends EVMChainSettings {
 
     getEscrowContractAddress(): addressString {
         return config.escrowContractAddress as addressString;
+    }
+
+    getHeaderIndicators(): HeaderIndicators {
+        return config.headerIndicators;
     }
 
     async getUsdPrice(): Promise<number> {

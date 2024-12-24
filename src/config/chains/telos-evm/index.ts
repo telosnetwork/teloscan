@@ -1,6 +1,6 @@
 import EVMChainSettings from 'src/core/chains/EVMChainSettings';
 import { RpcEndpoint } from 'universal-authenticator-library';
-import { FooterLinksConfig, HeaderMenuConfig, NativeCurrencyAddress, NetworkConfig, PriceChartData, SocialLink, Themes, addressString } from 'src/core/types';
+import { FooterLinksConfig, HeaderIndicators, HeaderMenuConfig, NativeCurrencyAddress, NetworkConfig, PriceChartData, SocialLink, Themes, addressString } from 'src/core/types';
 import { TokenClass, TokenSourceInfo } from 'src/core/types';
 import { useUserStore } from 'src/core';
 import { getFiatPriceFromIndexer, getCoingeckoPriceChartData, getCoingeckoUsdPrice } from 'src/lib/price';
@@ -173,6 +173,10 @@ const config: NetworkConfig =
             },
         ],
     },
+    'headerIndicators': {
+        'price': true,
+        'gasPrice': true,
+    },
     'headerMenuConfig': {
         'chain': 'telos-evm',
         'entries': [
@@ -259,9 +263,6 @@ const config: NetworkConfig =
     },
 };
 
-console.log('telos-evm:', config);
-
-
 export default class TelosEVM extends EVMChainSettings {
     nativeSupport: TelosEvmApi;
     _systemToken: TokenClass = new TokenClass(config.systemTokens[0] as TokenSourceInfo);
@@ -323,6 +324,10 @@ export default class TelosEVM extends EVMChainSettings {
         return config.escrowContractAddress as addressString;
     }
 
+    getHeaderIndicators(): HeaderIndicators {
+        return config.headerIndicators;
+    }
+
     async getUsdPrice(): Promise<number> {
         if (this.hasIndexerSupport() && this.isIndexerHealthy()) {
             const nativeTokenSymbol = this.getSystemToken().symbol;
@@ -333,8 +338,7 @@ export default class TelosEVM extends EVMChainSettings {
                 return fiatPrice;
             }
         }
-
-        return await getCoingeckoUsdPrice('telos');
+        return await getCoingeckoUsdPrice(config.priceData.coingeckoId);
     }
 
     getLargeLogoPath(): string {
