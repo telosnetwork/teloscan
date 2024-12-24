@@ -73,6 +73,7 @@ export interface NetworkConfig {
             'notify-error': string;
             'notify-neutral': string;
             'notify-info': string;
+            'title-image': string;
         };
         dark: {
             primary: string;
@@ -87,6 +88,7 @@ export interface NetworkConfig {
             'notify-error': string;
             'notify-neutral': string;
             'notify-info': string;
+            'title-image': string;
         };
     };
 

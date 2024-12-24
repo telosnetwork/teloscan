@@ -77,9 +77,9 @@ const config: NetworkConfig =
     'weiPrecision': 18,
     'themes': {
         'light': {
-            'primary': '#2ae8d3',
-            'secondary': '#8FB398',
-            'accent': '#7583CF',
+            'primary': '#4b95aa',
+            'secondary': '#5b8cde',
+            'accent': '#ffa1e4',
             'dark': '#1d1d1d',
             'positive': '#008800',
             'negative': '#880000',
@@ -89,6 +89,7 @@ const config: NetworkConfig =
             'notify-error': '#880000',
             'notify-neutral': '#4D4D4D',
             'notify-info': '#008888',
+            'title-image': '/branding/teloszk-teloscan-logo.png',
         },
         'dark': {
             'primary': '#4b95aa',
@@ -103,11 +104,11 @@ const config: NetworkConfig =
             'notify-error': '#b30909',
             'notify-neutral': '#858585',
             'notify-info': '#15baba',
+            'title-image': '/branding/teloszk-teloscan-logo--dark.png',
         },
     },
     'tokenListUrl': 'https://raw.githubusercontent.com/telosnetwork/token-list/refs/heads/main/teloszkevm.tokenlist.json',
     'systemContractsListUrl': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json',
-
     'socialLinks': [
         {
             'name': 'Telegram',
