@@ -14,6 +14,7 @@ const config: NetworkConfig =
 {
     'network': 'telos-evm',
     'display': 'Telos EVM',
+    'title': 'TelosEVM Explorer',
     'chainId': '40',
     'isTestnet': false,
     'logos': {
@@ -87,7 +88,7 @@ const config: NetworkConfig =
             'notify-error': '#880000',
             'notify-neutral': '#4D4D4D',
             'notify-info': '#008888',
-            'title-image': '/branding/telos-teloscan-logo-testnet.png',
+            'title-image': '/branding/telos-teloscan-logo.png',
         },
         'dark': {
             'primary': '#2a8de3',
@@ -102,7 +103,7 @@ const config: NetworkConfig =
             'notify-error': '#b30909',
             'notify-neutral': '#858585',
             'notify-info': '#15baba',
-            'title-image': '/branding/telos-teloscan-logo-testnet--dark.png',
+            'title-image': '/branding/telos-teloscan-logo--dark.png',
         },
     },
     'tokenListUrl': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json',
@@ -290,6 +291,10 @@ export default class TelosEVM extends EVMChainSettings {
 
     getDisplay(): string {
         return config.display;
+    }
+
+    getApplicationTitle(): string {
+        return config.title;
     }
 
     getHyperionEndpoint(): string {

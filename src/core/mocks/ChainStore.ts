@@ -18,6 +18,7 @@ export interface TeloscanEVMChainSettings {
     getWrappedSystemToken: () => TokenClass;
     getChainId: () => string;
     getDisplay: () => string;
+    getApplicationTitle: () => string;
     trackAnalyticsEvent: (name: string) => void;
     getRPCEndpoint: () => RpcEndpoint;
     getEscrowContractAddress: () => string;

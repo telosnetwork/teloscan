@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import type { LatestContainerOptions } from 'src/types';
@@ -9,6 +9,7 @@ import HomeLatestDataContainer from 'src/pages/home/HomeLatestDataContainer.vue'
 import HomeLatestBlocks from 'src/pages/home/HomeLatestBlocks.vue';
 import HomeLatestTransactions from 'src/pages/home/HomeLatestTransactions.vue';
 import AppSearch from 'src/components/AppSearch.vue';
+import { useChainStore } from 'src/core';
 
 const { t: $t } = useI18n();
 
@@ -28,6 +29,9 @@ const right_options = ref<LatestContainerOptions>({
     },
 });
 
+
+const appTitle = computed(() => useChainStore().currentChain.settings.getApplicationTitle());
+
 </script>
 
 <template>
@@ -35,7 +39,7 @@ const right_options = ref<LatestContainerOptions>({
     <div class="c-home__top-text-row row">
         <div class="col-12 text-center">
             <h5 class="text-weight-bolder q-my-none">
-                {{ $t('pages.home.telos_evm_explorer') }}
+                {{ appTitle }}
             </h5>
         </div>
     </div>

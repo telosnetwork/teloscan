@@ -14,6 +14,7 @@ const config: NetworkConfig =
 {
     'network': 'telos-zkevm-testnet',
     'display': 'TelosZKEVM (Testnet)',
+    'title': 'Telos zkEVM Testnet Explorer',
     'chainId': '1310',
     'isTestnet': true,
     'logos': {
@@ -239,6 +240,10 @@ export default class TelosZkEVM extends EVMChainSettings {
 
     getDisplay(): string {
         return config.display;
+    }
+
+    getApplicationTitle(): string {
+        return config.title;
     }
 
     getHyperionEndpoint(): string {

@@ -5,6 +5,9 @@ export interface NetworkConfig {
     // A human-readable name for display purposes
     display: string;
 
+    // the title of the site
+    title: string;
+
     // The chain ID associated with this network
     chainId: string;
 
