@@ -279,6 +279,10 @@ async function getPath() {
         if (currentKey < 0) {
             currentKey = rowsPerPage + 1;
         }
+        if (props.block) {
+            // the scope will be set by the block property
+            currentKey += 1000;
+        }
         path += `&key=${currentKey}`;
     }
 
@@ -307,8 +311,19 @@ function setHighlightMethod(val: string) {
 
 const updateLoadingRows = () => {
     loadingRows.value = [];
-    for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
+    for (let i = 1; i <= pagination.value.rowsPerPage; i++) {
         loadingRows.value.push(i);
+    }
+    // however, if we alrady have some rows but we don't have enough to fill the page we adjust the number of loading rows to be displayed
+    if (
+        rows.value.length > 0 &&
+        rows.value.length < pagination.value.rowsPerPage &&
+        rows.value.length !== loadingRows.value.length
+    ) {
+        loadingRows.value = [];
+        for (let i = 1; i <= pagination.value.rowsPerPage - rows.value.length; i++) {
+            loadingRows.value.push(i);
+        }
     }
 };
 
