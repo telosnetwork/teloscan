@@ -119,7 +119,7 @@ watch(() => props.value, () => {
 </script>
 
 <template>
-<span class="c-value-field" @click="toggleDisplayDecimals()">
+<div class="c-value-field" @click="toggleDisplayDecimals()">
     <template v-if="useFixedDecimals">
         {{ fixed_decimals }}
     </template>
@@ -127,11 +127,10 @@ watch(() => props.value, () => {
         {{ dynamic_decimals }}
     </template>
     <q-tooltip>{{ tooltip_decimals }}</q-tooltip>
-</span>
+</div>
 </template>
 <style scoped>
 .c-value-field {
-    display: inline-block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

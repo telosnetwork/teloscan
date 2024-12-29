@@ -226,7 +226,9 @@ onBeforeMount(() => {
     :rows-per-page-options="page_size_options"
     @request="onPaginationChange"
 >
+    <!-- header template -->
     <template v-slot:header="props">
+        <!--pre>{{ props }}</pre-->
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 <template v-if="col.name === 'date'">
@@ -238,7 +240,7 @@ onBeforeMount(() => {
                         </q-tooltip>
                     </div>
                 </template>
-                <template v-if="col.name === 'method'">
+                <template v-else-if="col.name === 'method'">
                     <div class="u-flex--center-y">
                         {{ col.label }}
                     </div>
@@ -246,6 +248,12 @@ onBeforeMount(() => {
                     <q-tooltip anchor="bottom middle" self="top middle" max-width="10rem">
                         {{ $t('components.blocks.executed_based_on_decoded_data') }}
                     </q-tooltip>
+                </template>
+                <template v-else>
+                    <!-- default header -->
+                    <div class="u-flex--center-y">
+                        {{ col.label }}
+                    </div>
                 </template>
             </q-th>
         </q-tr>
