@@ -90,7 +90,7 @@ const config: NetworkConfig =
             'notify-error': '#880000',
             'notify-neutral': '#4D4D4D',
             'notify-info': '#008888',
-            'title-image': '/branding/teloszk-teloscan-logo.png',
+            'title-image': '/branding/teloszk-teloscan-logo-testnet.png',
         },
         'dark': {
             'primary': '#4b95aa',
@@ -105,7 +105,7 @@ const config: NetworkConfig =
             'notify-error': '#b30909',
             'notify-neutral': '#858585',
             'notify-info': '#15baba',
-            'title-image': '/branding/teloszk-teloscan-logo--dark.png',
+            'title-image': '/branding/teloszk-teloscan-logo-testnet--dark.png',
         },
     },
     'tokenListUrl': 'https://raw.githubusercontent.com/telosnetwork/token-list/refs/heads/main/teloszkevm.tokenlist.json',

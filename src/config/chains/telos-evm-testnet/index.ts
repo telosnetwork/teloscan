@@ -88,7 +88,7 @@ const config: NetworkConfig =
             'notify-error': '#990000',
             'notify-neutral': '#4D4D4D',
             'notify-info': '#006699',
-            'title-image': '/branding/telos-teloscan-logo.png',
+            'title-image': '/branding/telos-teloscan-logo-testnet.png',
         },
         'dark': {
             'primary': '#00AA77',
@@ -103,7 +103,7 @@ const config: NetworkConfig =
             'notify-error': '#FF0000',
             'notify-neutral': '#858585',
             'notify-info': '#0099FF',
-            'title-image': '/branding/telos-teloscan-logo--dark.png',
+            'title-image': '/branding/telos-teloscan-logo-testnet--dark.png',
         },
     },
     'tokenListUrl': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json',
