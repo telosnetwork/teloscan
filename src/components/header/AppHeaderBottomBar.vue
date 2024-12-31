@@ -47,13 +47,23 @@ const settings = computed(() => useChainStore().currentChain.settings);
                 <img
                     v-if="!$q.dark.isActive"
                     :alt="$t('components.header.telos_evm_logo_alt')"
-                    :src="settings.getThemes().light['title-image']"
+                    :src="settings.getBranding().icon"
+                    class="c-header-bottom-bar__logo-image"
                 >
                 <img
                     v-if="-$q.dark.isActive"
                     :alt="$t('components.header.telos_evm_logo_alt')"
-                    :src="settings.getThemes().dark['title-image']"
+                    :src="settings.getBranding().icon"
+                    class="c-header-bottom-bar__logo-image"
                 >
+            </div>
+            <div class="c-header-bottom-bar__logo-text-container">
+                <span class="c-header-bottom-bar__logo-text">
+                    {{ settings.getBranding().text }}
+                </span>
+                <span v-if="settings.isTestnet()" class="c-header-bottom-bar__testnet-indicator">
+                    Testnet
+                </span>
             </div>
         </router-link>
 
@@ -120,6 +130,12 @@ const settings = computed(() => useChainStore().currentChain.settings);
         align-items: center;
     }
 
+    &__logo-image {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
+    }
+
     &__logo-text-container {
         display: flex;
         flex-direction: column;
@@ -148,6 +164,7 @@ const settings = computed(() => useChainStore().currentChain.settings);
         color: var(--grey-text-color);
         position: relative;
         top: -4px;
+        margin-left: 2px;
 
         @media screen and (min-width: $breakpoint-md-min) {
             position: static;

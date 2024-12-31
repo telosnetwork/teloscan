@@ -15,6 +15,10 @@ const config: NetworkConfig =
     'network': 'telos-evm-testnet',
     'display': 'Telos EVM (Testnet)',
     'title': 'TelosEVM Testnet Explorer',
+    'branding': {
+        'text': 'Teloscan',
+        'icon': '/branding/telos-scan.png',
+    },
     'chainId': '41',
     'isTestnet': true,
     'logos': {
@@ -88,7 +92,7 @@ const config: NetworkConfig =
             'notify-error': '#990000',
             'notify-neutral': '#4D4D4D',
             'notify-info': '#006699',
-            'title-image': '/branding/telos-teloscan-logo.png',
+            'title-image': '/branding/telos-teloscan-logo-testnet.png',
         },
         'dark': {
             'primary': '#00AA77',
@@ -103,7 +107,7 @@ const config: NetworkConfig =
             'notify-error': '#FF0000',
             'notify-neutral': '#858585',
             'notify-info': '#0099FF',
-            'title-image': '/branding/telos-teloscan-logo--dark.png',
+            'title-image': '/branding/telos-teloscan-logo-testnet--dark.png',
         },
     },
     'tokenListUrl': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json',
@@ -236,8 +240,16 @@ export default class TelosEVM extends EVMChainSettings {
         return config.chainId;
     }
 
+    isTestnet() {
+        return config.isTestnet;
+    }
+
     getDisplay(): string {
         return config.display;
+    }
+
+    getBranding(): { text: string; icon: string } {
+        return config.branding;
     }
 
     getApplicationTitle(): string {

@@ -8,6 +8,12 @@ export interface NetworkConfig {
     // the title of the site
     title: string;
 
+    // App header branding name
+    branding: {
+        icon: string;
+        text: string;
+    };
+
     // The chain ID associated with this network
     chainId: string;
 

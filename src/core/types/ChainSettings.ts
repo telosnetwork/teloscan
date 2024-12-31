@@ -10,6 +10,7 @@ export interface ChainSettings {
     getSystemToken(): TokenClass;
     getTokenList(): Promise<TokenClass[]>;
     getDisplay(): string;
+    getBranding(): { text: string; icon: string };
     getSmallLogoPath(): string;
     getLargeLogoPath(): string;
     getChainId(): string;
