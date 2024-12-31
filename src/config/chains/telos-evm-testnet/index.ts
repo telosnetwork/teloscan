@@ -15,6 +15,10 @@ const config: NetworkConfig =
     'network': 'telos-evm-testnet',
     'display': 'Telos EVM (Testnet)',
     'title': 'TelosEVM Testnet Explorer',
+    'branding': {
+        'text': 'Teloscan',
+        'icon': '/branding/telos-scan.png',
+    },
     'chainId': '41',
     'isTestnet': true,
     'logos': {
@@ -236,8 +240,16 @@ export default class TelosEVM extends EVMChainSettings {
         return config.chainId;
     }
 
+    isTestnet() {
+        return config.isTestnet;
+    }
+
     getDisplay(): string {
         return config.display;
+    }
+
+    getBranding(): { text: string; icon: string } {
+        return config.branding;
     }
 
     getApplicationTitle(): string {

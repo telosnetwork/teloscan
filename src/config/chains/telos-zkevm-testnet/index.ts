@@ -15,6 +15,10 @@ const config: NetworkConfig =
     'network': 'telos-zkevm-testnet',
     'display': 'TelosZKEVM (Testnet)',
     'title': 'Telos zkEVM Testnet Explorer',
+    'branding': {
+        'text': 'zkEVM',
+        'icon': '/branding/teloszk-icon.png',
+    },
     'chainId': '1310',
     'isTestnet': true,
     'logos': {
@@ -238,8 +242,16 @@ export default class TelosZkEVM extends EVMChainSettings {
         return config.chainId;
     }
 
+    isTestnet() {
+        return config.isTestnet;
+    }
+
     getDisplay(): string {
         return config.display;
+    }
+
+    getBranding(): { text: string; icon: string } {
+        return config.branding;
     }
 
     getApplicationTitle(): string {

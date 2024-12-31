@@ -271,11 +271,6 @@ export default abstract class EVMChainSettings implements ChainSettings {
         return false;
     }
 
-    // only testnet chains should override this
-    isTestnet() {
-        return false;
-    }
-
     getNetwork(): string {
         return this.network;
     }
@@ -296,8 +291,10 @@ export default abstract class EVMChainSettings implements ChainSettings {
     abstract getStakedSystemToken(): TokenClass;
     abstract getWrappedSystemToken(): TokenClass;
     abstract getEscrowContractAddress(): addressString;
+    abstract isTestnet(): boolean;
     abstract getChainId(): string;
     abstract getDisplay(): string;
+    abstract getBranding(): { text: string; icon: string };
     abstract getHyperionEndpoint(): string;
     abstract getRPCEndpoint(): RpcEndpoint;
     abstract getApiEndpoint(): string;
