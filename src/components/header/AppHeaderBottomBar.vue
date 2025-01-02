@@ -61,9 +61,6 @@ const settings = computed(() => useChainStore().currentChain.settings);
                 <span class="c-header-bottom-bar__logo-text">
                     {{ settings.getBranding().text }}
                 </span>
-                <span v-if="settings.isTestnet()" class="c-header-bottom-bar__testnet-indicator">
-                    Testnet
-                </span>
             </div>
         </router-link>
 
