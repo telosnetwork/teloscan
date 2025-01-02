@@ -16,14 +16,14 @@ const config: NetworkConfig =
     'display': 'TelosZKEVM (Testnet)',
     'title': 'Telos zkEVM Testnet Explorer',
     'branding': {
-        'text': 'zkEVM',
-        'icon': '/branding/teloszk-icon.png',
+        'text': 'Teloscan',
+        'icon': '/branding/teloscan-logo.png',
     },
     'chainId': '1310',
     'isTestnet': true,
     'logos': {
-        'large': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/telos-zkevm-logo-256.png',
-        'small': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/telos-zkevm-logo-32.png',
+        'large': '/branding/network-icon-teloszk.svg',
+        'small': '/branding/network-icon-teloszk.svg',
     },
     'systemTokens': [
         {
@@ -167,6 +167,7 @@ const config: NetworkConfig =
     'headerIndicators': {
         'price': false,
         'gasPrice': false,
+        'testnet': 'zkEVM Testnet',
     },
     'headerMenuConfig': {
         'chain': 'telos-zkevm-testnet',
