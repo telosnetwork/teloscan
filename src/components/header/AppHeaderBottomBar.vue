@@ -45,13 +45,6 @@ const settings = computed(() => useChainStore().currentChain.settings);
         <router-link to="/" class="c-header-bottom-bar__logo-container">
             <div class="c-header-bottom-bar__logo-image-container">
                 <img
-                    v-if="!$q.dark.isActive"
-                    :alt="$t('components.header.telos_evm_logo_alt')"
-                    :src="settings.getBranding().icon"
-                    class="c-header-bottom-bar__logo-image"
-                >
-                <img
-                    v-if="-$q.dark.isActive"
                     :alt="$t('components.header.telos_evm_logo_alt')"
                     :src="settings.getBranding().icon"
                     class="c-header-bottom-bar__logo-image"
@@ -64,8 +57,16 @@ const settings = computed(() => useChainStore().currentChain.settings);
             </div>
         </router-link>
 
+        <div v-if="$q.screen.lt.md && settings.getHeaderIndicators().testnet" class="text-caption u-flex--center-y">
+            <span
+                class="c-header-bottom-bar__testnet-network"
+            >
+                {{ settings.getHeaderIndicators().testnet }}
+            </span>
+        </div>
+
         <nav class="c-header-bottom-bar__right-container">
-            <AppHeaderWallet v-if="$q.screen.lt.md" class="q-mr-sm" />
+            <AppHeaderWallet v-if="$q.screen.lt.md" :icon-only="true" class="q-mr-sm" />
 
             <OutlineButton
                 text-color="default"
@@ -111,6 +112,20 @@ const settings = computed(() => useChainStore().currentChain.settings);
 
     &--hidden:not(:focus-within) {
         transform: translateY(-100%);
+    }
+
+    &__testnet-network {
+        display: flex;
+        align-items: center;
+
+        color: var(--grey-text-color);
+
+        height: 32px;
+        padding: 0 12px;
+        flex-shrink: 0;
+
+        border-radius: 3px;
+        border: 1px solid var(--border-color);
     }
 
     &__logo-container {

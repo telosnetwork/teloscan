@@ -462,6 +462,7 @@ export default {
             blockchain: 'Blockchain',
             blocks: 'Blocs',
             connect_wallet: 'Connecter Portefeuille',
+            connect: 'Connecter',
             copy_address: 'Copier l\'adresse',
             csv_export: 'Exportation CSV',
             developers: 'Développeurs',

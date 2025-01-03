@@ -14,7 +14,7 @@ const config: NetworkConfig =
 {
     'network': 'telos-evm',
     'display': 'Telos EVM',
-    'title': 'TelosEVM Explorer',
+    'title': 'Telos EVM Explorer',
     'branding': {
         'text': 'Teloscan',
         'icon': '/branding/teloscan-logo.png',

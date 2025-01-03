@@ -13,7 +13,7 @@ import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 const config: NetworkConfig =
 {
     'network': 'telos-zkevm-testnet',
-    'display': 'TelosZKEVM (Testnet)',
+    'display': 'Telos zkEVM (Testnet)',
     'title': 'Telos zkEVM Testnet Explorer',
     'branding': {
         'text': 'Teloscan',
@@ -27,7 +27,7 @@ const config: NetworkConfig =
     },
     'systemTokens': [
         {
-            'name': 'Telos ZKEVM',
+            'name': 'Telos zkEVM',
             'symbol': 'tTLOS',
             'network': 'telos-zkevm-testnet',
             'decimals': 18,
@@ -167,7 +167,7 @@ const config: NetworkConfig =
     'headerIndicators': {
         'price': false,
         'gasPrice': false,
-        'testnet': 'zkEVM Testnet',
+        'testnet': 'Telos zkEVM Testnet',
     },
     'headerMenuConfig': {
         'chain': 'telos-zkevm-testnet',
