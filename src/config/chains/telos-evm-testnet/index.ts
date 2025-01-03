@@ -149,7 +149,7 @@ const config: NetworkConfig =
     'headerIndicators': {
         'price': false,
         'gasPrice': false,
-        'testnet': 'Telos EVM Testnet',
+        'testnet': true,
     },
     'headerMenuConfig': {
         'chain': 'telos-evm-testnet',

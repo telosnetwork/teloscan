@@ -58,12 +58,10 @@ const settings = computed(() => useChainStore().currentChain.settings);
         </router-link>
 
         <div v-if="$q.screen.lt.md && settings.getHeaderIndicators().testnet" class="text-caption u-flex--center-y">
-            <span
-                class="c-header-bottom-bar__testnet-network"
-            >
-                {{ settings.getHeaderIndicators().testnet }}
-            </span>
+            <span class="c-header-bottom-bar__testnet-network" > Testnet </span>
         </div>
+
+        <q-space/>
 
         <nav class="c-header-bottom-bar__right-container">
             <AppHeaderWallet v-if="$q.screen.lt.md" :icon-only="true" class="q-mr-sm" />
@@ -190,8 +188,9 @@ const settings = computed(() => useChainStore().currentChain.settings);
         height: 100%;
         margin: 0 auto;
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: center;
+        gap: 8px;
     }
 
     &__right-container {

@@ -108,11 +108,7 @@ function toggleDarkMode() {
             </div>
 
             <div v-if="chainStore.currentChain.settings.getHeaderIndicators().testnet" class="text-caption u-flex--center-y">
-                <span
-                    class="c-header-top-bar__testnet-network"
-                >
-                    {{ chainStore.currentChain.settings.getHeaderIndicators().testnet }}
-                </span>
+                <span class="c-header-top-bar__testnet-network" > Testnet </span>
             </div>
         </div>
 

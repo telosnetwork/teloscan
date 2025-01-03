@@ -16,7 +16,7 @@ const config: NetworkConfig =
     'display': 'Telos zkEVM (Testnet)',
     'title': 'Telos zkEVM Testnet Explorer',
     'branding': {
-        'text': 'Teloscan',
+        'text': 'Telos zkEVM',
         'icon': '/branding/teloscan-logo.png',
     },
     'chainId': '1310',
@@ -50,9 +50,9 @@ const config: NetworkConfig =
         {
             'name': 'Wrapped Telos',
             'symbol': 'WTLOS',
-            'network': 'telos-evm',
+            'network': 'telos-zkevm-testnet',
             'decimals': 18,
-            'address': '0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E',
+            'address': '0x8a247460a15661ff1f5615035f41653222189d9d',
             'logo': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/wtlos.png',
             'isNative': false,
             'isSystem': false,
@@ -167,7 +167,7 @@ const config: NetworkConfig =
     'headerIndicators': {
         'price': false,
         'gasPrice': false,
-        'testnet': 'Telos zkEVM Testnet',
+        'testnet': true,
     },
     'headerMenuConfig': {
         'chain': 'telos-zkevm-testnet',

@@ -81,6 +81,11 @@ onMounted(async () => {
         localStorage.removeItem('loginData');
         providerManager.setProvider(null);
     });
+
+    // if the network is testnet we include the word testnet in the title of the page
+    if (useChainStore().currentChain.settings.isTestnet()) {
+        document.title = `${document.title} Testnet`;
+    }
 });
 
 // Watch for changes in the route query to react when network changes
