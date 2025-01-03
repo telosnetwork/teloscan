@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
+import AppHeaderWallet from 'components/header/AppHeaderWallet.vue';
 import LanguageSwitcherModal from 'components/header/LanguageSwitcherModal.vue';
 import OutlineButton from 'components/OutlineButton.vue';
 import { useChainStore } from 'src/core';
@@ -252,6 +253,11 @@ function toggleDarkMode() {
             {{ $t(`components.header.switch_to_${$q.dark.isActive ? 'light' : 'dark'}_theme`) }}
         </OutlineButton>
     </li>
+
+    <!-- Connect Wallet -->
+    <li v-if="$q.screen.lt.md" class="c-header-links__menu-li">
+        <AppHeaderWallet class="c-header-links__connect-wallet" />
+    </li>
 </ul>
 
 <LanguageSwitcherModal :show="showLanguageSwitcher" @hide="showLanguageSwitcher = false" />
@@ -422,7 +428,8 @@ function toggleDarkMode() {
         }
     }
 
-    &__theme-toggle {
+    &__theme-toggle,
+    &__connect-wallet {
         width: 100%;
     }
 }

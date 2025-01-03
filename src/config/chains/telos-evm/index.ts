@@ -14,16 +14,16 @@ const config: NetworkConfig =
 {
     'network': 'telos-evm',
     'display': 'Telos EVM',
-    'title': 'TelosEVM Explorer',
+    'title': 'Telos EVM Explorer',
     'branding': {
         'text': 'Teloscan',
-        'icon': '/branding/telos-scan.png',
+        'icon': '/branding/teloscan-logo.png',
     },
     'chainId': '40',
     'isTestnet': false,
     'logos': {
-        'large': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/telos.png',
-        'small': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/telos.png',
+        'large': '/branding/network-icon-telosevm.svg',
+        'small': '/branding/network-icon-telosevm.svg',
     },
     'systemTokens': [
         {
@@ -181,6 +181,7 @@ const config: NetworkConfig =
     'headerIndicators': {
         'price': true,
         'gasPrice': true,
+        'testnet': false,
     },
     'headerMenuConfig': {
         'chain': 'telos-evm',

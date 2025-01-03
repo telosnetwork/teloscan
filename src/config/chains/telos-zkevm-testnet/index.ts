@@ -13,21 +13,21 @@ import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 const config: NetworkConfig =
 {
     'network': 'telos-zkevm-testnet',
-    'display': 'TelosZKEVM (Testnet)',
+    'display': 'Telos zkEVM (Testnet)',
     'title': 'Telos zkEVM Testnet Explorer',
     'branding': {
-        'text': 'zkEVM',
-        'icon': '/branding/teloszk-icon.png',
+        'text': 'Telos zkEVM',
+        'icon': '/branding/teloscan-logo.png',
     },
     'chainId': '1310',
     'isTestnet': true,
     'logos': {
-        'large': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/telos-zkevm-logo-256.png',
-        'small': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/telos-zkevm-logo-32.png',
+        'large': '/branding/network-icon-teloszk.svg',
+        'small': '/branding/network-icon-teloszk.svg',
     },
     'systemTokens': [
         {
-            'name': 'Telos ZKEVM',
+            'name': 'Telos zkEVM',
             'symbol': 'tTLOS',
             'network': 'telos-zkevm-testnet',
             'decimals': 18,
@@ -50,9 +50,9 @@ const config: NetworkConfig =
         {
             'name': 'Wrapped Telos',
             'symbol': 'WTLOS',
-            'network': 'telos-evm',
+            'network': 'telos-zkevm-testnet',
             'decimals': 18,
-            'address': '0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E',
+            'address': '0x8a247460a15661ff1f5615035f41653222189d9d',
             'logo': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/wtlos.png',
             'isNative': false,
             'isSystem': false,
@@ -167,6 +167,7 @@ const config: NetworkConfig =
     'headerIndicators': {
         'price': false,
         'gasPrice': false,
+        'testnet': true,
     },
     'headerMenuConfig': {
         'chain': 'telos-zkevm-testnet',

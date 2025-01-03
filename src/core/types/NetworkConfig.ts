@@ -1,3 +1,5 @@
+import { HeaderIndicators } from 'src/core/types/PriceData';
+
 export interface NetworkConfig {
     // The unique network identifier
     network: string;
@@ -128,10 +130,7 @@ export interface NetworkConfig {
     };
 
     // Header data indicators
-    headerIndicators: {
-        price: boolean;
-        gasPrice: boolean;
-    };
+    headerIndicators: HeaderIndicators;
 
     // Header menu configuration
     headerMenuConfig: {

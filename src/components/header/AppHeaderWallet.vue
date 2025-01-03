@@ -21,6 +21,10 @@ const $i18n = useI18n();
 const locale = $i18n.locale.value;
 const $q = useQuasar();
 
+const props = defineProps<{
+    iconOnly?: boolean;
+}>();
+
 const showLoginModal = ref(false);
 const userSystemTokenBalanceWei = ref('0');
 
@@ -115,24 +119,36 @@ async function fetchUserBalance() {
     text-color="default"
     class="c-app-header-wallet__main-button"
     v-bind="$attrs"
+    :icon-only="props.iconOnly"
     @click="handleWalletButtonClick"
 >
     <template v-if="!isLoggedIn">
-        {{ $t('components.header.connect_wallet') }}
+        <template v-if="!props.iconOnly">
+            {{ $t('components.header.connect_wallet') }}
+        </template>
 
         <q-icon
             name="far fa-circle"
             size="10px"
-            class="c-app-header-wallet__circle-icon"
+            :class="{
+                'c-app-header-wallet__circle-icon': true,
+                'c-app-header-wallet__circle-icon--icon-only': props.iconOnly,
+            }"
         />
     </template>
 
     <template v-else>
-        {{ prettyIdentity }}
+        <template v-if="!props.iconOnly">
+            {{ prettyIdentity }}
+        </template>
         <q-icon
             name="fas fa-circle"
             size="10px"
-            class="c-app-header-wallet__circle-icon c-app-header-wallet__circle-icon--logged-in"
+            :class="{
+                'c-app-header-wallet__circle-icon': true,
+                'c-app-header-wallet__circle-icon--logged-in': true,
+                'c-app-header-wallet__circle-icon--icon-only': props.iconOnly,
+            }"
         />
         <q-menu>
             <q-list>
@@ -220,6 +236,10 @@ async function fetchUserBalance() {
 
         &--logged-in {
             color: $green;
+        }
+
+        &--icon-only {
+            margin-left: 0;
         }
     }
 

@@ -45,13 +45,6 @@ const settings = computed(() => useChainStore().currentChain.settings);
         <router-link to="/" class="c-header-bottom-bar__logo-container">
             <div class="c-header-bottom-bar__logo-image-container">
                 <img
-                    v-if="!$q.dark.isActive"
-                    :alt="$t('components.header.telos_evm_logo_alt')"
-                    :src="settings.getBranding().icon"
-                    class="c-header-bottom-bar__logo-image"
-                >
-                <img
-                    v-if="-$q.dark.isActive"
                     :alt="$t('components.header.telos_evm_logo_alt')"
                     :src="settings.getBranding().icon"
                     class="c-header-bottom-bar__logo-image"
@@ -61,14 +54,17 @@ const settings = computed(() => useChainStore().currentChain.settings);
                 <span class="c-header-bottom-bar__logo-text">
                     {{ settings.getBranding().text }}
                 </span>
-                <span v-if="settings.isTestnet()" class="c-header-bottom-bar__testnet-indicator">
-                    Testnet
-                </span>
             </div>
         </router-link>
 
+        <div v-if="$q.screen.lt.md && settings.getHeaderIndicators().testnet" class="text-caption u-flex--center-y">
+            <span class="c-header-bottom-bar__testnet-network" > Testnet </span>
+        </div>
+
+        <q-space/>
+
         <nav class="c-header-bottom-bar__right-container">
-            <AppHeaderWallet v-if="$q.screen.lt.md" class="q-mr-sm" />
+            <AppHeaderWallet v-if="$q.screen.lt.md" :icon-only="true" class="q-mr-sm" />
 
             <OutlineButton
                 text-color="default"
@@ -114,6 +110,20 @@ const settings = computed(() => useChainStore().currentChain.settings);
 
     &--hidden:not(:focus-within) {
         transform: translateY(-100%);
+    }
+
+    &__testnet-network {
+        display: flex;
+        align-items: center;
+
+        color: var(--grey-text-color);
+
+        height: 32px;
+        padding: 0 12px;
+        flex-shrink: 0;
+
+        border-radius: 3px;
+        border: 1px solid var(--border-color);
     }
 
     &__logo-container {
@@ -178,8 +188,9 @@ const settings = computed(() => useChainStore().currentChain.settings);
         height: 100%;
         margin: 0 auto;
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: center;
+        gap: 8px;
     }
 
     &__right-container {
