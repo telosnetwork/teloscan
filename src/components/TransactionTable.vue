@@ -142,7 +142,6 @@ watch(() => route.query,
         let page = p ? Number(p) : 0;
         let size = rowsPerPage ? Number(rowsPerPage) : pagination.value.rowsPerPage;
         let desc = sort ? sort === 'DESC' : true;
-
         setPagination(page, size, desc);
     },
     { immediate: true },
@@ -152,7 +151,6 @@ function setPagination(page: number, size: number, desc: boolean) {
     pagination.value.page = page;
     pagination.value.rowsPerPage = size;
     pagination.value.descending = desc;
-
     if (pagination.value.initialKey > 0) {
         // key is page pages away from the initial key
         const zero_base_page = page - 1;
@@ -271,13 +269,17 @@ async function getPath() {
         path = `v1/transactions?limit=${limit}`;
         if (pagination.value.initialKey === 0) {
             // in the case of the first query, we need to get the initial key
-            let response = await useChainStore().currentChain.settings.getIndexerApi().get('v1/transactions?includePagination=true&key=0');
-            const next = response.data.next;
-            pagination.value.initialKey = next + 1;
+            let response = await useChainStore().currentChain.settings.getIndexerApi().get('/v1/transactions?limit=6');
+            const next = response.data.results[0].id;
+            pagination.value.initialKey = next;
         }
         let currentKey = pagination.value.initialKey - ((page - 1) * rowsPerPage);
         if (currentKey < 0) {
             currentKey = rowsPerPage + 1;
+        }
+        if (props.block) {
+            // the scope will be set by the block property
+            currentKey += 1000;
         }
         path += `&key=${currentKey}`;
     }
@@ -307,8 +309,19 @@ function setHighlightMethod(val: string) {
 
 const updateLoadingRows = () => {
     loadingRows.value = [];
-    for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
+    for (let i = 1; i <= pagination.value.rowsPerPage; i++) {
         loadingRows.value.push(i);
+    }
+    // however, if we alrady have some rows but we don't have enough to fill the page we adjust the number of loading rows to be displayed
+    if (
+        rows.value.length > 0 &&
+        rows.value.length < pagination.value.rowsPerPage &&
+        rows.value.length !== loadingRows.value.length
+    ) {
+        loadingRows.value = [];
+        for (let i = 1; i <= pagination.value.rowsPerPage - rows.value.length; i++) {
+            loadingRows.value.push(i);
+        }
     }
 };
 

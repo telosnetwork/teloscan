@@ -1,5 +1,3 @@
-export const TELOS_CHAIN_IDS = ['40', '41'];
-export const TELOS_NETWORK_NAMES = ['telos-evm', 'telos-evm-testnet'];
 export const TELOS_ANALYTICS_EVENT_NAMES = {
     loginStarted: 'Login Started',
     loginSuccessful: 'Login Successful',

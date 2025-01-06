@@ -11,7 +11,7 @@ import { useStore } from 'vuex';
 import { useQuasar } from 'quasar';
 
 import BlockField from 'components/BlockField.vue';
-import { useChainStore } from 'src/core';
+import { getCore, useChainStore } from 'src/core';
 import { useRoute } from 'vue-router';
 
 const $store = useStore();
@@ -25,10 +25,11 @@ const marketCap = ref(0);
 const transactionsCount = ref(0);
 const initialLoadComplete = ref(false);
 
+const showPrice = computed(() => useChainStore().currentChain.settings.getHeaderIndicators().price);
 const tlosPrice = computed(() => $store.getters['chain/tlosPrice']); // no need to fetch TLOS price, it is already fetched on a timer in AppHeaderTopBar.vue
-const latestBlock = computed(() => $store.getters['chain/latestBlock']);
+const latestBlock = ref<number>(0);
 const tlosPriceText = computed(() =>
-    tlosPrice.value === 0 ? '--' : `$${tlosPrice.value.toLocaleString(locale, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`,
+    (tlosPrice.value === 0 || !showPrice.value) ? '--' : `$${tlosPrice.value.toLocaleString(locale, { minimumFractionDigits: 4, maximumFractionDigits: 4 })}`,
 );
 const marketCapText = computed(() =>
     marketCap.value === 0 ? '--' : `$${marketCap.value.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
@@ -57,13 +58,15 @@ onBeforeUnmount(() => {
     }
 });
 
-function fetchLatestBlock() {
-    $store.dispatch('chain/fetchLatestBlock');
+async function fetchLatestBlock() {
+    const provider = await getCore().wallets.getWeb3Provider();
+    const blockNumber = await provider.getBlockNumber();
+    latestBlock.value = blockNumber;
 }
 
 async function fetchTotalTransactions() {
     const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
-    const response = await indexerApi.get('/v1/transactions?limit=0&next=-1&offset=0&includeAbi=false&includePagination=true&includeTransfers=false&full=false');
+    const response = await indexerApi.get('/v1/transactions?limit=1&offset=0&includeAbi=false&includePagination=true&includeTransfers=false&full=false');
     transactionsCount.value = response.data.total_count;
 }
 
@@ -83,9 +86,15 @@ async function fetchMarketCap() {
 
 let milliseconds = 500;
 function updateFigures() {
-    fetchTlosPrice(); // This makes the Price to load before anything else
+    const usePrice = useChainStore().currentChain.settings.getHeaderIndicators().price;
+    if (usePrice) {
+        fetchTlosPrice(); // This makes the Price to load before anything else
+    } else {
+        // this prevents the loading for the price to even show
+        initialLoadComplete.value = true;
+    }
     return Promise.all([
-        fetchMarketCap(),
+        usePrice ? fetchMarketCap() : Promise.resolve(),
         fetchLatestBlock(),
         fetchTotalTransactions(),
     ]).then(() => {

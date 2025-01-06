@@ -6,7 +6,8 @@ import { useQuasar } from 'quasar';
 import moment from 'moment';
 
 import { getCore, useChainStore } from 'src/core';
-import { TELOS_NETWORK_NAMES } from 'src/core/mocks/chain-constants';
+
+import { TELOS_NETWORK_NAMES } from 'src/config/chains';
 import { providerManager } from 'src/boot/evm';
 import { useRoute } from 'vue-router';
 
@@ -80,6 +81,11 @@ onMounted(async () => {
         localStorage.removeItem('loginData');
         providerManager.setProvider(null);
     });
+
+    // if the network is testnet we include the word testnet in the title of the page
+    if (useChainStore().currentChain.settings.isTestnet()) {
+        document.title = `${document.title} Testnet`;
+    }
 });
 
 // Watch for changes in the route query to react when network changes

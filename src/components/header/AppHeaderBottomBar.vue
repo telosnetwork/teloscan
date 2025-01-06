@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
 
@@ -10,6 +10,7 @@ import { useChainStore } from 'src/core';
 
 const $q = useQuasar();
 const { t: $t } = useI18n();
+
 
 defineProps<{
     topBarHidden: boolean;
@@ -27,7 +28,10 @@ watchEffect(() => {
 function scrollHandler(info: { direction: string; }) {
     menuBottomBarHidden.value = info.direction === 'down';
 }
+const settings = computed(() => useChainStore().currentChain.settings);
+
 </script>
+
 
 <template>
 <div
@@ -42,23 +46,25 @@ function scrollHandler(info: { direction: string; }) {
             <div class="c-header-bottom-bar__logo-image-container">
                 <img
                     :alt="$t('components.header.telos_evm_logo_alt')"
-                    src="/branding/telos-scan.png"
-                    height="32"
+                    :src="settings.getBranding().icon"
+                    class="c-header-bottom-bar__logo-image"
                 >
             </div>
-
             <div class="c-header-bottom-bar__logo-text-container">
                 <span class="c-header-bottom-bar__logo-text">
-                    Teloscan
-                </span>
-                <span v-if="useChainStore().currentChain.settings.isTestnet()" class="c-header-bottom-bar__testnet-indicator">
-                    Testnet
+                    {{ settings.getBranding().text }}
                 </span>
             </div>
         </router-link>
 
+        <div v-if="$q.screen.lt.md && settings.getHeaderIndicators().testnet" class="text-caption u-flex--center-y">
+            <span class="c-header-bottom-bar__testnet-network" > Testnet </span>
+        </div>
+
+        <q-space/>
+
         <nav class="c-header-bottom-bar__right-container">
-            <AppHeaderWallet v-if="$q.screen.lt.md" class="q-mr-sm" />
+            <AppHeaderWallet v-if="$q.screen.lt.md" :icon-only="true" class="q-mr-sm" />
 
             <OutlineButton
                 text-color="default"
@@ -106,6 +112,20 @@ function scrollHandler(info: { direction: string; }) {
         transform: translateY(-100%);
     }
 
+    &__testnet-network {
+        display: flex;
+        align-items: center;
+
+        color: var(--grey-text-color);
+
+        height: 32px;
+        padding: 0 12px;
+        flex-shrink: 0;
+
+        border-radius: 3px;
+        border: 1px solid var(--border-color);
+    }
+
     &__logo-container {
         display: flex;
         align-items: center;
@@ -118,6 +138,12 @@ function scrollHandler(info: { direction: string; }) {
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    &__logo-image {
+        width: 32px;
+        height: 32px;
+        object-fit: contain;
     }
 
     &__logo-text-container {
@@ -148,6 +174,7 @@ function scrollHandler(info: { direction: string; }) {
         color: var(--grey-text-color);
         position: relative;
         top: -4px;
+        margin-left: 2px;
 
         @media screen and (min-width: $breakpoint-md-min) {
             position: static;
@@ -161,8 +188,9 @@ function scrollHandler(info: { direction: string; }) {
         height: 100%;
         margin: 0 auto;
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
         align-items: center;
+        gap: 8px;
     }
 
     &__right-container {

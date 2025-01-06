@@ -10,18 +10,24 @@ const sharedEnv = {
     PROJECT_ID: '14ec76c44bae7d461fa0f5fd5f8a9da1',
 };
 
-const TESTNET = {
-    ...sharedEnv,
-    APP_NAME: 'Teloscan (testnet)',
-    NETWORK_EVM_NAME: 'telos-evm-testnet',
+const chains = {
+    testnet: {
+        ...sharedEnv,
+        APP_NAME: 'Teloscan (testnet)',
+        NETWORK_EVM_NAME: 'telos-evm-testnet',
+    },
+    mainnet: {
+        ...sharedEnv,
+        APP_NAME: 'Teloscan',
+        NETWORK_EVM_NAME: 'telos-evm',
+    },
+    zkevm_testnet: {
+        ...sharedEnv,
+        APP_NAME: 'Teloscan zkEVM (testnet)',
+        NETWORK_EVM_NAME: 'telos-zkevm-testnet',
+    },
 };
 
-const MAINNET = {
-    ...sharedEnv,
-    APP_NAME: 'Teloscan',
-    NETWORK_EVM_NAME: 'telos-evm',
-};
-
-const env = process.env.NETWORK === 'mainnet' ? MAINNET : TESTNET;
+const env = chains[process.env.NETWORK?.toLowerCase()] || chains.testnet;
 
 module.exports = env;

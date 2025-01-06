@@ -94,17 +94,21 @@ function toggleDarkMode() {
 <div class="c-header-top-bar">
     <div class="c-header-top-bar__inner-container">
         <div class="c-header-top-bar__left-container">
-            <div v-if="!chainStore.currentChain.settings.isTestnet()" class="text-caption q-mr-md">
+            <div v-if="chainStore.currentChain.settings.getHeaderIndicators().price" class="text-caption q-mr-md">
                 <span class="c-header-top-bar__grey-text">
                     {{ $t('components.header.system_token_price', { token: systemTokenSymbol }) }}
                 </span> ${{ tlosPrice }}
             </div>
 
-            <div v-if="!chainStore.currentChain.settings.isTestnet()" class="text-caption u-flex--center-y">
+            <div v-if="chainStore.currentChain.settings.getHeaderIndicators().gasPrice" class="text-caption u-flex--center-y">
                 <q-icon name="fas fa-gas-pump" class="c-header-top-bar__grey-text q-mr-xs" />
                 <span class="c-header-top-bar__grey-text">
                     {{ $t('components.header.gas') }}:
                 </span>&nbsp;{{ gasPriceInGwei }} gwei
+            </div>
+
+            <div v-if="chainStore.currentChain.settings.getHeaderIndicators().testnet" class="text-caption u-flex--center-y">
+                <span class="c-header-top-bar__testnet-network" > Testnet </span>
             </div>
         </div>
 
@@ -175,6 +179,21 @@ function toggleDarkMode() {
 
     &__grey-text {
         color: var(--grey-text-color);
+    }
+
+    &__testnet-network {
+        display: flex;
+        align-items: center;
+
+        color: var(--grey-text-color);
+
+        height: 32px;
+        padding: 0 12px;
+        flex-shrink: 0;
+
+        border-radius: 3px;
+        border: 1px solid var(--border-color);
+
     }
 
     &__inner-container {

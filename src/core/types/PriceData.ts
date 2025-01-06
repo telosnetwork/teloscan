@@ -29,3 +29,9 @@ export interface PriceStats {
 }
 
 
+export interface HeaderIndicators {
+  price: boolean;
+  gasPrice: boolean;
+  testnet: boolean;
+}
+

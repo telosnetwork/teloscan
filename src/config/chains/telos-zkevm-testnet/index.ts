@@ -12,30 +12,31 @@ import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 
 const config: NetworkConfig =
 {
-    'network': 'telos-evm',
-    'display': 'Telos EVM',
-    'title': 'Telos EVM Explorer',
+    'network': 'telos-zkevm-testnet',
+    'display': 'Telos zkEVM (Testnet)',
+    'title': 'Telos zkEVM Testnet Explorer',
     'branding': {
-        'text': 'Teloscan',
+        'text': 'Telos zkEVM',
         'icon': '/branding/teloscan-logo.png',
     },
-    'chainId': '40',
-    'isTestnet': false,
+    'chainId': '1310',
+    'isTestnet': true,
     'logos': {
-        'large': '/branding/network-icon-telosevm.svg',
-        'small': '/branding/network-icon-telosevm.svg',
+        'large': '/branding/network-icon-teloszk.svg',
+        'small': '/branding/network-icon-teloszk.svg',
     },
     'systemTokens': [
         {
-            'name': 'Telos',
-            'symbol': 'TLOS',
-            'network': 'telos-evm',
+            'name': 'Telos zkEVM',
+            'symbol': 'tTLOS',
+            'network': 'telos-zkevm-testnet',
             'decimals': 18,
             'address': NativeCurrencyAddress,
-            'logo': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/telos.png',
+            'logo': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/telos-zkevm-logo-32.png',
             'isNative': false,
             'isSystem': true,
         },
+        // FIXME: missing staked and wrapped tokens. Do they even exist?
         {
             'name': 'Staked Telos',
             'symbol': 'STLOS',
@@ -49,28 +50,29 @@ const config: NetworkConfig =
         {
             'name': 'Wrapped Telos',
             'symbol': 'WTLOS',
-            'network': 'telos-evm',
+            'network': 'telos-zkevm-testnet',
             'decimals': 18,
-            'address': '0xD102cE6A4dB07D247fcc28F366A623Df0938CA9E',
+            'address': '0x8a247460a15661ff1f5615035f41653222189d9d',
             'logo': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/wtlos.png',
             'isNative': false,
             'isSystem': false,
         },
     ],
-    'escrowContractAddress': '0x95F5713A1422Aa3FBD3DCB8D553945C128ee3855',
+    // FIXME: missing escrowContractAddress
+    'escrowContractAddress': '',
     'apiEndpoints': {
         'rpc': {
             'protocol': 'https',
-            'host': 'rpc.telos.net',
+            'host': 'zkrpc.testnet.telos.net',
             'port': 443,
-            'path': '/evm',
+            'path': '',
         },
         'api': 'https://api.telos.net/v1',
-        'hyperion': 'https://rpc.telos.net',
-        'explorer': 'https://teloscan.io',
+        'hyperion': 'https://mainnet.telos.net/',
+        'explorer': 'https://zktest.teloscan.io',
         'ecosystem': 'https://www.telos.net/ecosystem',
         'bridge': 'https://bridge.telos.net/bridge',
-        'indexer': 'https://api.teloscan.io',
+        'indexer': 'https://api.zktest.teloscan.io/',
         'contractsBucket': 'https://verified-evm-contracts.s3.amazonaws.com',
         'monitor': 'https://api.monitor-test.telos.net',
     },
@@ -80,9 +82,9 @@ const config: NetworkConfig =
     'weiPrecision': 18,
     'themes': {
         'light': {
-            'primary': '#2a8de3',
-            'secondary': '#8B3F98',
-            'accent': '#73C58F',
+            'primary': '#4b95aa',
+            'secondary': '#5b8cde',
+            'accent': '#ffa1e4',
             'dark': '#1d1d1d',
             'positive': '#008800',
             'negative': '#880000',
@@ -92,12 +94,12 @@ const config: NetworkConfig =
             'notify-error': '#880000',
             'notify-neutral': '#4D4D4D',
             'notify-info': '#008888',
-            'title-image': '/branding/telos-teloscan-logo.png',
+            'title-image': '/branding/teloszk-teloscan-logo-testnet.png',
         },
         'dark': {
-            'primary': '#2a8de3',
-            'secondary': '#8B3F98',
-            'accent': '#73C58F',
+            'primary': '#4b95aa',
+            'secondary': '#5b8cde',
+            'accent': '#ffa1e4',
             'dark': '#1d1d1d',
             'positive': '#008800',
             'negative': '#880000',
@@ -107,10 +109,10 @@ const config: NetworkConfig =
             'notify-error': '#b30909',
             'notify-neutral': '#858585',
             'notify-info': '#15baba',
-            'title-image': '/branding/telos-teloscan-logo--dark.png',
+            'title-image': '/branding/teloszk-teloscan-logo-testnet--dark.png',
         },
     },
-    'tokenListUrl': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json',
+    'tokenListUrl': 'https://raw.githubusercontent.com/telosnetwork/token-list/refs/heads/main/teloszkevm.tokenlist.json',
     'systemContractsListUrl': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json',
     'socialLinks': [
         {
@@ -139,7 +141,7 @@ const config: NetworkConfig =
         },
     ],
     'footerLinks': {
-        'chain': 'telos-evm',
+        'chain': 'telos-zkevm-testnet',
         'branding': {
             'title': 'Telos Testnet',
             'logoLight': '/assets/telos-new-logo.png',
@@ -150,41 +152,25 @@ const config: NetworkConfig =
             {
                 'title': 'components.footer.telos',
                 'links': [
-                    { 'label': 'components.footer.telos_homepage', 'url': 'https://www.telos.net/' },
-                    { 'label': 'components.footer.telos_wallet', 'url': 'https://wallet.telos.net/' },
-                    { 'label': 'components.footer.telos_bridge', 'url': 'https://bridge.telos.net/bridge' },
-                    { 'label': 'components.footer.telos_zero_explorer', 'url': 'https://explorer.telos.net/network' },
-                    { 'label': 'components.footer.buy_telos', 'url': 'https://www.telos.net/buy' },
-                    { 'label': 'components.footer.stake_telos', 'url': 'https://docs.telos.net/users/knowledge-base/how-to-stake-tlos/' },
-                    { 'label': 'components.footer.telos_ecosystem', 'url': 'https://www.telos.net/ecosystem' },
-                    { 'label': 'components.footer.network_status', 'url': 'https://www.teloscan.io/health' },
+                    { 'label': 'components.footer.telos_homepage', 'url': 'https://zkevm.telos.net/' },
                 ],
             },
             {
                 'title': 'components.footer.about',
                 'links': [
-                    { 'label': 'components.footer.about_us', 'url': 'https://www.telos.net/about' },
+                    { 'label': 'components.footer.about_us', 'url': 'https://zkevm.telos.net/' },
                     { 'label': 'components.footer.contactUs', 'url': 'http://t.me/HelloTelos' },
-                ],
-            },
-            {
-                'title': 'components.footer.build',
-                'links': [
-                    { 'label': 'components.footer.api_documentation', 'url': 'https://api.teloscan.io/v1/docs' },
-                    { 'label': 'components.footer.telos_documentation', 'url': 'https://docs.telos.net/overview/what-is-telos/introduction/' },
-                    { 'label': 'components.footer.github', 'url': 'https://github.com/telosnetwork' },
-                    { 'label': 'components.footer.brand_assets', 'url': 'https://www.telos.net/community-resources' },
                 ],
             },
         ],
     },
     'headerIndicators': {
-        'price': true,
-        'gasPrice': true,
-        'testnet': false,
+        'price': false,
+        'gasPrice': false,
+        'testnet': true,
     },
     'headerMenuConfig': {
-        'chain': 'telos-evm',
+        'chain': 'telos-zkevm-testnet',
         'entries': [
             {
                 'label': 'components.header.home',
@@ -208,49 +194,12 @@ const config: NetworkConfig =
                 ],
             },
             {
-                'label': 'components.header.developers',
-                'entries': [
-                    {
-                        'label': 'components.header.api_documentation',
-                        'externalLink': 'https://api.teloscan.io/v1/docs',
-                    },
-                    {
-                        'label': 'components.header.verify_contract_sourcify',
-                        'externalLink': 'https://sourcify.dev/',
-                    },
-                ],
-            },
-            {
-                'label': 'components.header.telos_wallet',
-                'externalLink': 'https://wallet.telos.net/',
-            },
-            {
-                'label': 'components.header.telos_bridge',
-                'externalLink': 'https://bridge.telos.net/bridge',
-            },
-            {
                 'label': 'components.header.more',
                 'entries': [
                     {
                         'label': 'global.language',
                         'trigger': 'language',
                         'leftIcon': 'fas fa-language',
-                    },
-                    {
-                        'label': 'components.header.csv_export',
-                        'internalLink': 'export',
-                    },
-                    {
-                        'label': 'components.header.health_monitor',
-                        'internalLink': 'health',
-                    },
-                    {
-                        'label': 'components.header.telos_ecosystem',
-                        'externalLink': 'https://www.telos.net/ecosystem',
-                    },
-                    {
-                        'label': 'components.header.telos_zero_explorer',
-                        'externalLink': 'https://explorer.telos.net',
                     },
                 ],
             },
@@ -269,7 +218,7 @@ const config: NetworkConfig =
     },
 };
 
-export default class TelosEVM extends EVMChainSettings {
+export default class TelosZkEVM extends EVMChainSettings {
     nativeSupport: TelosEvmApi;
     _systemToken: TokenClass = new TokenClass(config.systemTokens[0] as TokenSourceInfo);
     _stakedSystemToken: TokenClass = new TokenClass(config.systemTokens[1] as TokenSourceInfo);
@@ -356,7 +305,8 @@ export default class TelosEVM extends EVMChainSettings {
                 return fiatPrice;
             }
         }
-        return await getCoingeckoUsdPrice(config.priceData.coingeckoId);
+
+        return await getCoingeckoUsdPrice('telos');
     }
 
     getLargeLogoPath(): string {
