@@ -103,6 +103,7 @@ export default {
             page_size_options: [10, 20, 50],
             showDateAge: true,
             allExpanded: false,
+            timer: null,
         };
     },
     async created() {
@@ -137,21 +138,25 @@ export default {
     },
     methods: {
         updateData() {
-            const _pag = this.$route.query.page;
-            let pag = _pag;
-            let page = 1;
-            let size = this.page_size_options[0];
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => {
+                // we need to wait a bit to allow the URL to be updated
+                const _pag = this.$route.query.page;
+                let pag = _pag;
+                let page = 1;
+                let size = this.page_size_options[0];
 
-            // we also allow to pass a single number as the page number
-            if (typeof pag === 'number') {
-                page = pag;
-            } else if (typeof pag === 'string') {
-                // we also allow to pass a string of two numbers: 'page,rowsPerPage'
-                const [p, s] = pag.split(',');
-                page = p;
-                size = s;
-            }
-            this.setPagination(page, size);
+                // we also allow to pass a single number as the page number
+                if (typeof pag === 'number') {
+                    page = pag;
+                } else if (typeof pag === 'string') {
+                    // we also allow to pass a string of two numbers: 'page,rowsPerPage'
+                    const [p, s] = pag.split(',');
+                    page = p;
+                    size = s;
+                }
+                this.setPagination(page, size);
+            }, 100);
         },
         getDirection: getDirection,
         updateLoadingRows() {
