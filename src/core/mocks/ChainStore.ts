@@ -4,7 +4,7 @@
 declare const fathom: { trackEvent: (eventName: string) => void };
 
 import { RpcEndpoint, UAL } from 'universal-authenticator-library';
-import { TokenClass, Theme, Themes, SocialLink, FooterLinksConfig, HeaderMenuConfig, HeaderIndicators } from 'src/core/types';
+import { TokenClass, Theme, Themes, SocialLink, FooterLinksConfig, HeaderMenuConfig, HeaderIndicators, BrandingType } from 'src/core/types';
 import TelosEVM from 'src/config/chains/telos-evm';
 import TelosEVMTestnet from 'src/config/chains/telos-evm-testnet';
 import { ethers } from 'ethers';
@@ -18,7 +18,7 @@ export interface TeloscanEVMChainSettings {
     getWrappedSystemToken: () => TokenClass;
     getChainId: () => string;
     getDisplay: () => string;
-    getBranding: () => { icon: string; text: string };
+    getBranding: () => BrandingType;
     getApplicationTitle: () => string;
     trackAnalyticsEvent: (name: string) => void;
     getRPCEndpoint: () => RpcEndpoint;
