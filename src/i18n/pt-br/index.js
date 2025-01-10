@@ -473,6 +473,8 @@ export default {
             home: 'Início',
             more: 'Mais',
             network: 'Rede',
+            accounts: 'Contas',
+            accounts_title: 'Principais contas por saldo de {symbol}',
             open_language_switcher: 'Abrir o seletor de idioma',
             search_failed: 'A busca falhou, insira um termo de pesquisa válido.',
             search_placeholder: 'Pesquise qualquer coisa no Telos',

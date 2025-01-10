@@ -205,6 +205,10 @@ const config: NetworkConfig =
                         'label': 'components.header.blocks',
                         'internalLink': 'blocks',
                     },
+                    {
+                        'label': 'components.header.accounts',
+                        'internalLink': 'accounts',
+                    },
                 ],
             },
             {

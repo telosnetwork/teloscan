@@ -5,6 +5,8 @@ import { formatWei } from 'src/lib/utils';
 import BigDecimal from 'js-big-decimal';
 import { BigNumber, ethers } from 'ethers';
 import { useChainStore } from 'src/core';
+import { NativeCurrencyAddress } from 'src/core/types';
+
 export default {
     name: 'HolderList',
     components: {
@@ -105,13 +107,28 @@ export default {
             this.loading = false;
         },
         getPath(props) {
+            // Decide base path depending on whether contract is the native address
             const { page, rowsPerPage, descending } = props.pagination;
-            let path = `/v1/token/${this.contract.address}/holders?limit=${
+            let basePath = '';
+
+            if (this.contract.address === NativeCurrencyAddress) {
+                basePath = '/v1/balances';
+            } else {
+                basePath = `/v1/token/${this.contract.address}/holders`;
+            }
+
+            let path = `${basePath}?limit=${
                 rowsPerPage === 0 ? 10 : rowsPerPage
             }`;
-            path += `&includeAbi=true&offset=${(page - 1) * rowsPerPage}`;
+            path += '&includeAbi=true';
+            path += `&offset=${(page - 1) * rowsPerPage}`;
             path += '&includePagination=true';
-            path = (!this.showSystemContracts) ? path + '&not=' + this.systemContractsList : path;
+
+            // Optionally exclude system contracts if showSystemContracts is false
+            if (!this.showSystemContracts) {
+                path += '&not=' + this.systemContractsList;
+            }
+
             path += `&sort=${descending ? 'desc' : 'asc'}`;
             return path;
         },
@@ -285,19 +302,10 @@ export default {
     </template>
     <template v-slot:body="">
         <q-tr>
-            <q-td key="holder">
-                <q-skeleton type="text" class="c-trx-overview__skeleton" />
-            </q-td>
-            <q-td key="balance">
-                <q-skeleton type="text" class="c-trx-overview__skeleton" />
-            </q-td>
-            <q-td key="telos_supply_share">
-                <q-skeleton type="text" class="c-trx-overview__skeleton" />
-            </q-td>
-            <q-td key="supply_share" >
-                <q-skeleton type="text" class="c-trx-overview__skeleton" />
-            </q-td>
-            <q-td key="updated">
+            <q-td
+                v-for="col in columns"
+                :key="col.name"
+            >
                 <q-skeleton type="text" class="c-trx-overview__skeleton" />
             </q-td>
         </q-tr>

@@ -473,6 +473,8 @@ export default {
             home: 'Heim',
             more: 'Mehr',
             network: 'Netzwerk',
+            accounts: 'Konten',
+            accounts_title: 'Top-Konten nach {symbol}-Saldo',
             open_language_switcher: 'open language switcher',
             search_failed: 'Suche fehlgeschlagen, bitte geben Sie einen gültigen Suchbegriff ein.',
             search_placeholder: 'Suche alles auf Telos',

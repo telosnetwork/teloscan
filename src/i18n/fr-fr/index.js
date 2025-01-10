@@ -473,6 +473,8 @@ export default {
             home: 'Accueil',
             more: 'Plus',
             network: 'Réseau',
+            accounts: 'Comptes',
+            accounts_title: 'Comptes principaux par solde de {symbol}',
             open_language_switcher: 'Ouvrir le sélécteur de language',
             search_failed: 'La recherche a échoué, veuillez saisir des mots clés de recherche corrects.',
             search_placeholder: 'Adresse, Tx, Bloc',
