@@ -473,7 +473,7 @@ export default {
             home: 'Inicio',
             more: 'Más',
             network: 'Red',
-            accounts: 'Cuentas',
+            accounts: 'Cuentas principales',
             accounts_title: 'Principales cuentas por saldo de {symbol}',
             open_language_switcher: 'Abrir el selector de idioma',
             search_failed: 'La búsqueda falló, ingrese un término de búsqueda válido.',

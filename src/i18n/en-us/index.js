@@ -476,7 +476,7 @@ export default {
             home: 'Home',
             more: 'More',
             network: 'Network',
-            accounts: 'Accounts',
+            accounts: 'Top Accounts',
             accounts_title: 'Top Accounts by {symbol} Balance',
             open_language_switcher: 'Open language switcher',
             search_failed: 'Search failed, please enter a valid search term.',
