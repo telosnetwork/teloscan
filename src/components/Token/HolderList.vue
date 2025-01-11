@@ -1,6 +1,7 @@
 <script>
 import AddressField from 'components/AddressField';
 import DateField from 'components/DateField';
+import MinimumVersionRequired from 'components/MinimumVersionRequired';
 import { formatWei } from 'src/lib/utils';
 import BigDecimal from 'js-big-decimal';
 import { BigNumber, ethers } from 'ethers';
@@ -12,6 +13,7 @@ export default {
     components: {
         AddressField,
         DateField,
+        MinimumVersionRequired,
     },
     props: {
         contract: {
@@ -25,14 +27,35 @@ export default {
         }
     },
     async mounted() {
+        console.log('-- HolderList mounted() 1 -- ', {
+            weHaveIndexerSupport: this.weHaveIndexerSupport,
+            version: useChainStore().currentChain.settings.indexerHealthState.version,
+        });
         let list = await useChainStore().currentChain.settings.getContractManager().getSystemContractsList();
         for(const contract in list.contracts){
             this.systemContractsList += list.contracts[contract].address + ',';
         }
         this.systemContractsList.substr(this.systemContractsList.length -2, this.systemContractsList.length - 1);
-        await this.onRequest({
-            pagination: this.pagination,
+        this.weHaveIndexerSupport = useChainStore().currentChain.settings.hasIndexerSupportOver(this.minimumVersion);
+        this.settings.indexerReady$.subscribe(() => {
+            this.weHaveIndexerSupport = useChainStore().currentChain.settings.hasIndexerSupportOver(this.minimumVersion);
+            console.log('------ indexerReady$ -------', {
+                weHaveIndexerSupport: this.weHaveIndexerSupport,
+                version: useChainStore().currentChain.settings.indexerHealthState.version,
+            });
+            this.onRequest({
+                pagination: this.pagination,
+            });
         });
+
+    },
+    computed: {
+        settings() {
+            return useChainStore().currentChain.settings;
+        },
+        state() {
+            return this.settings.indexerHealthState;
+        },
     },
     data() {
         let columns = [
@@ -67,6 +90,9 @@ export default {
             columns.splice(3, 1);
         }
         return {
+            weHaveIndexerSupport: false,
+            minimumVersion: '1.2.9', // "1.2.9 - adding /v1/balances endpoint"
+            // https://github.com/telosnetwork/teloscan-indexer/commit/14a712c3353566b2ba82a13a5336e4199e3476bf
             columns: columns,
             holders: [],
             loadingRows: [],
@@ -84,7 +110,13 @@ export default {
         };
     },
     methods: {
+        hasIndexerSupport() {
+            return this.weHaveIndexerSupport;
+        },
         async onRequest(props) {
+            if (!this.weHaveIndexerSupport) {
+                return;
+            }
             this.loading = true;
 
             const { page, rowsPerPage, sortBy, descending } = props.pagination;
@@ -157,160 +189,168 @@ export default {
 </script>
 
 <template>
-<q-table
-    v-if="!loading"
-    v-model:pagination="pagination"
-    :rows="holders"
-    :rows-per-page-label="$t('global.records_per_page')"
-    :binary-state-sort="true"
-    :row-key="row => row.address"
-    :columns="columns"
-    :rows-per-page-options="[10, 20, 50]"
-    @request="onRequest"
->
-    <template v-slot:header="props">
-        <q-tr :props="props">
-            <q-th
-                v-for="col in props.cols"
-                :key="col.name"
-                :props="props"
-            >
-                <div class="u-flex--center-y">
-                    {{ col.label }}
-                </div>
-            </q-th>
-        </q-tr>
-    </template>
-    <template v-slot:body="props">
-        <q-tr :props="props">
-            <q-td key="holder" :props="props">
-                <AddressField
-                    :key="props.row.address + 'c'"
-                    :address="props.row.address"
-                    :truncate="18"
-                    :useHighlight="false"
-                />
-            </q-td>
-            <q-td key="balance" :props="props">
-                <span v-if="contract?.properties?.decimals">
-                    {{ displayBalance(props.row.balance, contract.properties?.decimals) }}
-                </span>
-                <span v-else>
-                    {{ props.row.balance }}
-                </span>
-            </q-td>
-            <q-td key="telos_supply_share" :props="props">
-                <span v-if="contract?.properties?.supply">
-                    <span>
-                        {{ displaySupplyShare(
-                            formatWei(
-                                props.row.balance,
-                                contract.properties?.decimals,
-                                contract.properties?.decimals
-                            ),
-                            formatWei(
-                                contract.properties.supply,
-                                contract.properties?.decimals,
-                                contract.properties?.decimals
-                            ),
-                            contract.properties?.decimals,
-                            2,
-                        )}}
+<template v-if="!weHaveIndexerSupport">
+    <MinimumVersionRequired
+        class="c-minimum-version-required"
+        required="1.2.9"
+    />
+</template>
+<template v-else>
+    <q-table
+        v-if="!loading"
+        v-model:pagination="pagination"
+        :rows="holders"
+        :rows-per-page-label="$t('global.records_per_page')"
+        :binary-state-sort="true"
+        :row-key="row => row.address"
+        :columns="columns"
+        :rows-per-page-options="[10, 20, 50]"
+        @request="onRequest"
+    >
+        <template v-slot:header="props">
+            <q-tr :props="props">
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
+                    <div class="u-flex--center-y">
+                        {{ col.label }}
+                    </div>
+                </q-th>
+            </q-tr>
+        </template>
+        <template v-slot:body="props">
+            <q-tr :props="props">
+                <q-td key="holder" :props="props">
+                    <AddressField
+                        :key="props.row.address + 'c'"
+                        :address="props.row.address"
+                        :truncate="18"
+                        :useHighlight="false"
+                    />
+                </q-td>
+                <q-td key="balance" :props="props">
+                    <span v-if="contract?.properties?.decimals">
+                        {{ displayBalance(props.row.balance, contract.properties?.decimals) }}
                     </span>
-                    <q-tooltip>
-                        {{ displaySupplyShare(
-                            formatWei(
-                                props.row.balance,
-                                contract.properties?.decimals,
-                                contract.properties?.decimals
-                            ),
-                            formatWei(
-                                contract.properties.supply,
-                                contract.properties?.decimals,
-                                contract.properties?.decimals
-                            ),
-                            contract.properties?.decimals,
-                            false,
-                        )}}
-                    </q-tooltip>
-                </span>
-            </q-td>
-            <q-td v-if="contract?.properties?.total_supply_ibc" key="supply_share" :props="props">
-                <span>
-                    <span>
-                        {{ displaySupplyShare(
-                            formatWei(
-                                props.row.balance,
-                                contract.properties?.decimals,
-                                contract.properties?.decimals
-                            ),
-                            contract.properties?.total_supply_ibc, // Already formatted
-                            contract.properties?.decimals,
-                            2,
-                        )}}
+                    <span v-else>
+                        {{ props.row.balance }}
                     </span>
-                    <q-tooltip>
-                        {{ displaySupplyShare(
-                            formatWei(
-                                props.row.balance,
+                </q-td>
+                <q-td key="telos_supply_share" :props="props">
+                    <span v-if="contract?.properties?.supply">
+                        <span>
+                            {{ displaySupplyShare(
+                                formatWei(
+                                    props.row.balance,
+                                    contract.properties?.decimals,
+                                    contract.properties?.decimals
+                                ),
+                                formatWei(
+                                    contract.properties.supply,
+                                    contract.properties?.decimals,
+                                    contract.properties?.decimals
+                                ),
                                 contract.properties?.decimals,
-                                contract.properties?.decimals
-                            ),
-                            contract.properties?.total_supply_ibc, // Already formatted
-                            contract.properties?.decimals,
-                            false,
-                        )}}
-                    </q-tooltip>
-                </span>
-            </q-td>
-            <q-td key="updated" :props="props">
-                <DateField :epoch="props.row.updated / 1000" />
-            </q-td>
-        </q-tr>
-    </template>
-    <template v-if="holders.length > 0" v-slot:bottom-row>
-        <q-toggle
-            v-model="showSystemContracts"
-            :label="$t('components.holders.show_system_contracts')"
-            color="primary"
-            checked-icon="visibility"
-            unchecked-icon="visibility_off"
-            @update:model-value="onRequest({pagination: pagination})"
-        />
-    </template>
-</q-table>
-<q-table
-    v-else
-    v-model:pagination="pagination"
-    :rows="loadingRows"
-    :rows-per-page-label="$t('global.records_per_page')"
-    :columns="columns"
-    :rows-per-page-options="[10, 20, 50]"
->
-    <template v-slot:header="props">
-        <q-tr :props="props">
-            <q-th
-                v-for="col in props.cols"
-                :key="col.name"
-                :props="props"
-            >
-                <div class="u-flex--center-y">
-                    {{ col.label }}
-                </div>
-            </q-th>
-        </q-tr>
-    </template>
-    <template v-slot:body="">
-        <q-tr>
-            <q-td
-                v-for="col in columns"
-                :key="col.name"
-            >
-                <q-skeleton type="text" class="c-trx-overview__skeleton" />
-            </q-td>
-        </q-tr>
-    </template>
-</q-table>
+                                2,
+                            )}}
+                        </span>
+                        <q-tooltip>
+                            {{ displaySupplyShare(
+                                formatWei(
+                                    props.row.balance,
+                                    contract.properties?.decimals,
+                                    contract.properties?.decimals
+                                ),
+                                formatWei(
+                                    contract.properties.supply,
+                                    contract.properties?.decimals,
+                                    contract.properties?.decimals
+                                ),
+                                contract.properties?.decimals,
+                                false,
+                            )}}
+                        </q-tooltip>
+                    </span>
+                </q-td>
+                <q-td v-if="contract?.properties?.total_supply_ibc" key="supply_share" :props="props">
+                    <span>
+                        <span>
+                            {{ displaySupplyShare(
+                                formatWei(
+                                    props.row.balance,
+                                    contract.properties?.decimals,
+                                    contract.properties?.decimals
+                                ),
+                                contract.properties?.total_supply_ibc, // Already formatted
+                                contract.properties?.decimals,
+                                2,
+                            )}}
+                        </span>
+                        <q-tooltip>
+                            {{ displaySupplyShare(
+                                formatWei(
+                                    props.row.balance,
+                                    contract.properties?.decimals,
+                                    contract.properties?.decimals
+                                ),
+                                contract.properties?.total_supply_ibc, // Already formatted
+                                contract.properties?.decimals,
+                                false,
+                            )}}
+                        </q-tooltip>
+                    </span>
+                </q-td>
+                <q-td key="updated" :props="props">
+                    <DateField :epoch="props.row.updated / 1000" />
+                </q-td>
+            </q-tr>
+        </template>
+        <template v-if="holders.length > 0" v-slot:bottom-row>
+            <q-toggle
+                v-model="showSystemContracts"
+                :label="$t('components.holders.show_system_contracts')"
+                color="primary"
+                checked-icon="visibility"
+                unchecked-icon="visibility_off"
+                @update:model-value="onRequest({pagination: pagination})"
+            />
+        </template>
+    </q-table>
+    <q-table
+        v-else
+        v-model:pagination="pagination"
+        :rows="loadingRows"
+        :rows-per-page-label="$t('global.records_per_page')"
+        :columns="columns"
+        :rows-per-page-options="[10, 20, 50]"
+    >
+        <template v-slot:header="props">
+            <q-tr :props="props">
+                <q-th
+                    v-for="col in props.cols"
+                    :key="col.name"
+                    :props="props"
+                >
+                    <div class="u-flex--center-y">
+                        {{ col.label }}
+                    </div>
+                </q-th>
+            </q-tr>
+        </template>
+        <template v-slot:body="">
+            <q-tr>
+                <q-td
+                    v-for="col in columns"
+                    :key="col.name"
+                >
+                    <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+            </q-tr>
+        </template>
+    </q-table>
+</template>
 </template>
 
 <style scoped lang="sass">
@@ -326,5 +366,6 @@ export default {
 @media only screen and (max-width: 764px)
     .q-table .q-toggle
         display: none
-
+.c-minimum-version-required
+    align-self: center
 </style>

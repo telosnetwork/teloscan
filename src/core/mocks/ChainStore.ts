@@ -4,7 +4,7 @@
 declare const fathom: { trackEvent: (eventName: string) => void };
 
 import { RpcEndpoint, UAL } from 'universal-authenticator-library';
-import { TokenClass, Theme, Themes, SocialLink, FooterLinksConfig, HeaderMenuConfig, HeaderIndicators } from 'src/core/types';
+import { TokenClass, Theme, Themes, SocialLink, FooterLinksConfig, HeaderMenuConfig, HeaderIndicators, IndexerHealthResponse } from 'src/core/types';
 import TelosEVM from 'src/config/chains/telos-evm';
 import TelosEVMTestnet from 'src/config/chains/telos-evm-testnet';
 import { ethers } from 'ethers';
@@ -12,6 +12,7 @@ import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 import { AxiosInstance } from 'axios';
 import ContractManager from 'src/lib/contract/ContractManager';
 import TelosZkEVM from 'src/config/chains/telos-zkevm-testnet';
+import { Observable } from 'rxjs';
 
 export interface TeloscanEVMChainSettings {
     getStakedSystemToken(): TokenClass;
@@ -38,6 +39,7 @@ export interface TeloscanEVMChainSettings {
     getFooterLinks: () => FooterLinksConfig;
     getHeaderIndicators: () => HeaderIndicators;
     getHeaderMenuConfig: () => HeaderMenuConfig;
+    hasIndexerSupportOver(version:string): boolean;
     // Telos Specific
     getEthAccountByNativeAccount: (account: string) => Promise<string>;
     getNativeSupport(): TelosEvmApi | null;
@@ -47,6 +49,8 @@ export interface TeloscanEVMChainSettings {
     getContractManager(): ContractManager;
     getUAL(): UAL | null;
     getMonitorUrl(): string;
+    indexerHealthState: IndexerHealthResponse;
+    indexerReady$: Observable<boolean>;
 }
 
 export const evmSettings: { [network: string]: TeloscanEVMChainSettings } = {

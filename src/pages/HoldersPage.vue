@@ -75,6 +75,8 @@ onMounted(() => {
     }
     &__main-content {
         padding: 0px;
+        display: flex;
+        flex-direction: column;
     }
 }
 
