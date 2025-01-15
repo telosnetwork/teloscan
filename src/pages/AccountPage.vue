@@ -321,7 +321,11 @@ async function loadAccount() {
                 <NFTList :address="contract.address" filter="contract" />
             </q-tab-panel>
             <q-tab-panel v-if="isToken" name="holders">
-                <HolderList v-if="contract" :contract="contract" />
+                <HolderList
+                    v-if="contract"
+                    :contract="contract"
+                    :columns="['rank','holder','quantity','percentage_bar','value']"
+                />
             </q-tab-panel>
             <q-tab-panel v-else name="internaltx">
                 <InternalTransactionFlatTable

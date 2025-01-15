@@ -6,6 +6,7 @@ export * from 'src/core/types/ChainInfo';
 export * from 'src/core/types/ChainSettings';
 export * from 'src/core/types/EvmBlockData';
 export * from 'src/core/types/EvmContractData';
+export * from 'src/core/types/EvmHolders';
 export * from 'src/core/types/EvmLog';
 export * from 'src/core/types/EvmRexDeposit';
 export * from 'src/core/types/EvmTransaction';

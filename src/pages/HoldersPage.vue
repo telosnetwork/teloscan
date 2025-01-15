@@ -1,44 +1,16 @@
 <script setup lang="ts">
+// src/pages/HoldersPage.vue
 
-import { computed, onMounted, ref } from 'vue';
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useChainStore } from 'src/core';
 import HolderList from 'components/Token/HolderList.vue';
-import { NativeCurrencyAddress } from 'src/core/types';
 
 
-interface Properties {
-  name: string,
-  supply: string,
-  symbol: string,
-  holders: string,
-  decimals: string,
-  holders_updated: string,
-}
 
 const { t: $t } = useI18n();
 const systemToken = computed(() => useChainStore().currentChain.settings.getSystemToken());
 const symbol = computed(() => systemToken.value.symbol);
-const contract = ref<{address:string, properties:Properties}>(({
-    address: NativeCurrencyAddress,
-    properties: {
-        name: '',
-        supply: '1000000000000000000000000000000',
-        symbol: symbol.value,
-        holders: '0',
-        decimals: '18',
-        holders_updated: '0',
-    },
-}));
-
-onMounted(() => {
-    useChainStore().currentChain.settings.getTelosApi().get('supply/total').then((res) => {
-        contract.value.properties.supply = Number(res.data).toFixed(systemToken.value.decimals).split('.').join('');
-    });
-    contract.value.properties.name = systemToken.value.name;
-    contract.value.properties.symbol = systemToken.value.symbol;
-    contract.value.properties.decimals = systemToken.value.decimals.toString();
-});
 
 </script>
 
@@ -51,7 +23,7 @@ onMounted(() => {
     <div class="c-holders__main-container">
         <div class="c-holders__main-content">
             <HolderList
-                :contract="contract"
+                :columns="['rank','address','tag_name','balance','percentage','txn_count']"
             />
         </div>
     </div>

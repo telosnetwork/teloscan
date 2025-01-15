@@ -1,5 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" setup>
+// src/components/TransactionTable.vue
 import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
 import { onBeforeMount, ref, watch } from 'vue';

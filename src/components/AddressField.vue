@@ -114,7 +114,7 @@ const getDisplay = async () => {
 };
 
 const loadDisplayInfo = async () => {
-    let info = await useChainStore().currentChain.settings.getContractManager().getContractDisplayInfo(props.address);
+    let info = useChainStore().currentChain.settings.getContractManager().getContractDisplayInfo(props.address);
 
     if (info) {
         contractName.value = info.name ?? '';

@@ -29,6 +29,11 @@ import {
 
 export const NativeCurrencyAddress = '___NATIVE_CURRENCY___';
 
+export interface ContractDisplayInfo {
+  name: string;
+  symbol?: string;
+}
+
 export type AccountCreatorInfo = {
   creator: string;
   timestamp: string;
