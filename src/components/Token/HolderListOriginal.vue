@@ -2,12 +2,11 @@
 <!-- src/components/Token/HolderList.vue -->
 <script lang="ts" setup>
 // We import the needed libraries
-import { ref, toRaw, computed, onBeforeMount, onMounted, Ref, watch } from 'vue';
+import { ref, computed, onBeforeMount, onMounted, Ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Pagination } from 'src/types'; // Existing Pagination type
 import AddressField from 'components/AddressField.vue';
 import MinimumVersionRequired from 'components/MinimumVersionRequired.vue';
-// import TablePagination from 'src/components/Token/TablePagination.vue';
 import BigDecimal from 'js-big-decimal';
 import { BigNumber, ethers } from 'ethers';
 import { useChainStore } from 'src/core';
@@ -17,18 +16,7 @@ import {
     NativeCurrencyAddress,
     ContractDisplayInfo,
 } from 'src/core/types';
-import {
-    pagination,            // Reactive pagination object. Represents current pagination state
-    onPaginationChange,
-    default_rows_per_page_options,
-    setRouterInstances,
-} from 'src/lib/pagination';
 import { useRouter, useRoute } from 'vue-router';
-// Router to handle query parameters
-const router = useRouter();
-const route = useRoute();
-
-setRouterInstances(router, route);
 
 defineOptions({
     name: 'HolderList',
@@ -37,29 +25,33 @@ defineOptions({
 // Default decimals
 const DEFAULT_DECIMALS = 18;
 
+// default pagination options
+const rows_per_page_options = [10, 25, 50];
+const default_rows_per_pages = 25;
+
 // Default columns if user does not provide any
 const defaultColumns = ['rank', 'holder', 'balance', 'percentage_bar'];
 
-type Alignment = 'left' | 'center' | 'right';
+    type Alignment = 'left' | 'center' | 'right';
 
-interface ContractProps {
-    address: string
-    properties?: {
-        decimals?: number
-        supply?: string
-        total_supply_ibc?: string
-        symbol?: string
-        price?: string
+    interface ContractProps {
+        address: string
+        properties?: {
+            decimals?: number
+            supply?: string
+            total_supply_ibc?: string
+            symbol?: string
+            price?: string
+        }
     }
-}
 
-interface TableColumn {
-    name: string
-    label: string
-    align: Alignment
-    field: string
-    sortable?: boolean
-}
+    interface TableColumn {
+        name: string
+        label: string
+        align: Alignment
+        field: string
+        sortable?: boolean
+    }
 
 // We define the props, including a new 'columns' array
 const props = withDefaults(
@@ -114,6 +106,14 @@ const loading = ref(true);
 const systemContractsList = ref('');
 const showSystemContracts = ref(false);
 
+// Pagination
+const pagination = ref<Pagination>({
+    sortBy: 'balance',
+    descending: true,
+    page: 1,
+    rowsPerPage: 25,
+    rowsNumber: 0,
+});
 
 // Chain settings
 const chainSettings = computed(() => useChainStore().currentChain.settings);
@@ -214,16 +214,66 @@ const updateLoadingRows = () => {
     }
 };
 
+// Router to handle query parameters
+const router = useRouter();
+const route = useRoute();
 
+// this function takes current pagination values and push them to the URL
+const updateUrlParams = () => {
+    const query = { ...route.query };
+    const newPage = pagination.value.page;
+    const newRows = pagination.value.rowsPerPage;
 
+    // If page is 1, remove param; otherwise set it
+    if (newPage !== 1 || newRows !== default_rows_per_pages) {
+        // only if they are different from each other
+        if (query.p !== newPage.toString()) {
+            query.p = newPage.toString();
+        }
+        if (query.ps !== newRows.toString()) {
+            query.ps = newRows.toString();
+        }
+    } else {
+        delete query.p;
+        delete query.ps;
+    }
+
+    console.log('HolderList.updateUrlParams()', { query });
+
+    router.replace({ query });
+};
+
+// this function takes the URL query and updates the pagination values
+const takeUrlParams = () => {
+    const query = route.query;
+    if (query.p) {
+        pagination.value.page = parseInt(query.p as string, 10);
+    } else {
+        pagination.value.page = 1;
+    }
+    if (query.ps) {
+        pagination.value.rowsPerPage = parseInt(query.ps as string, 10);
+    } else {
+        pagination.value.rowsPerPage = default_rows_per_pages;
+    }
+    console.log('HolderList.takeUrlParams()', { query, pagination: pagination.value });
+};
+
+const onPaginationChange = (props: { pagination: Pagination }) => {
+    console.log('HolderList.onPaginationChange()', { props_pagination: props.pagination, pagination: pagination.value });
+    pagination.value = props.pagination;
+    updateUrlParams();
+};
 
 // Update URL query if pagination changes
 watch(
-    () => [pagination.value?.page, pagination.value?.rowsPerPage],
+    () => [route.query.p, route.query.ps],
     () => {
-        console.log('HoldersList.watch() page:', pagination.value?.page, 'rowsPerPage:', pagination.value?.rowsPerPage);
-        onRequest();
+        console.log('HolderList.watch(route.query)', { query: route.query, pagination: pagination.value });
+        takeUrlParams();
+        onRequest({ pagination: pagination.value });
     },
+    { deep: true, immediate: true },
 );
 
 onBeforeMount(() => {
@@ -231,6 +281,14 @@ onBeforeMount(() => {
 });
 
 onMounted(async () => {
+    // If we have query params on mount, reflect them in pagination
+    if (route.query.p) {
+        pagination.value.page = parseInt(route.query.p as string, 10);
+    }
+    if (route.query.ps) {
+        pagination.value.rowsPerPage = parseInt(route.query.ps as string, 10);
+    }
+
     // Build a list of system contracts
     const list = await chainSettings.value.getContractManager().getSystemContractsList();
     for (const c in list.contracts) {
@@ -255,8 +313,7 @@ onMounted(async () => {
     // Listen for indexer readiness
     chainSettings.value.indexerReady$.subscribe(() => {
         weHaveIndexerSupport.value = chainSettings.value.hasIndexerSupportOver(minimumVersion);
-        console.log('HoldersList.onMounted() --> chainSettings.value.indexerReady$', { pagination: pagination.value });
-        onRequest();
+        onRequest({ pagination: pagination.value });
     });
 
     // Retrieve total supply from chain for system token
@@ -277,41 +334,29 @@ onMounted(async () => {
 });
 
 // Our method for requesting the data
-let counter = 0;
-
-// bouce onRequest
-let timer = setTimeout(() => { /**/ }, 0);
-function onRequest() {
-    console.log('HolderList.onRequest() BOUNCING');
-    clearTimeout(timer);
-    timer = setTimeout(doRequest, 500);
-}
-async function doRequest() {
+async function onRequest(props: { pagination: Pagination }) {
     if (!weHaveIndexerSupport.value) {
         return;
     }
-    counter++;
-    if (counter > 6) {
-        console.error('HolderList.onRequest() - too many requests');
-        return;
-    }
-    console.log('HolderList.onRequest()', counter, { pagination: pagination.value });
+    console.log('HolderList.onRequest()', { props_pagination: props.pagination, pagination: pagination.value });
 
-    // const { page, rowsPerPage, sortBy, descending } = props.pagination;
+    const { page, rowsPerPage, sortBy, descending } = props.pagination;
     const indexerApi = chainSettings.value.getIndexerApi();
 
-    // pagination.value.page = page;
-    // pagination.value.rowsPerPage = rowsPerPage;
-    // pagination.value.sortBy = sortBy;
-    // pagination.value.descending = descending;
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = rowsPerPage;
+    pagination.value.sortBy = sortBy;
+    pagination.value.descending = descending;
 
     updateLoadingRows();
     loading.value = true;
+
     const response = await indexerApi.get(getPath()) as { data?: IndexerHoldersResponse };
 
     if (response.data?.total_count && pagination.value.rowsNumber !== response.data?.total_count) {
         pagination.value.rowsNumber = response.data.total_count;
     }
+
     const resultHolders: EvmHolder[] = [];
     for (const entry of response.data?.results || []) {
         const holder: EvmHolder = {
@@ -347,7 +392,7 @@ function getPath(): string {
     }
 
     path += `&sort=${descending ? 'desc' : 'asc'}`;
-    // console.log('HolderList.getPath()', { page, rowsPerPage, path });
+    console.log('HolderList.getPath()', { page, rowsPerPage, path });
     return path;
 }
 
@@ -477,7 +522,6 @@ function calculateDollarValue(row: EvmHolder): string {
 <template v-else>
     <div class="c-holder-list">
         <!-- Table with data -->
-        <!-- @request="onPaginationChange" -->
         <q-table
             v-if="!loading"
             v-model:pagination="pagination"
@@ -486,18 +530,12 @@ function calculateDollarValue(row: EvmHolder): string {
             :columns="tableColumns"
             :rows-per-page-label="$t('global.records_per_page')"
             :binary-state-sort="true"
-            :hide-bottom='false'
             :row-key="row => row.address"
-            :rows-per-page-options="default_rows_per_page_options"
+            :rows-per-page-options="rows_per_page_options"
+            @request="onPaginationChange"
         >
             <!-- Table header -->
             <template v-slot:header="props">
-                <!-- Table pagination buttons in header -->
-                <!--q-tr>
-                    <q-td :colspan="tableColumns.length">
-                        <TablePagination/>
-                    </q-td>
-                </q-tr-->
                 <q-tr :props="props">
                     <q-th
                         v-for="col in props.cols"
@@ -616,13 +654,16 @@ function calculateDollarValue(row: EvmHolder): string {
                 </q-tr>
             </template>
 
-            <!-- Bottom row with table pagination buttons -->
-            <template v-slot:bottom-row>
-                <!--q-tr>
-                    <q-td :colspan="tableColumns.length">
-                        <TablePagination/>
-                    </q-td>
-                </q-tr-->
+            <!-- Bottom row toggle for system contracts -->
+            <template v-if="holders.length > 0" v-slot:bottom-row>
+                <q-toggle
+                    v-model="showSystemContracts"
+                    :label="$t('components.holders.show_system_contracts')"
+                    color="primary"
+                    checked-icon="visibility"
+                    unchecked-icon="visibility_off"
+                    @update:model-value="onPaginationChange({ pagination: pagination })"
+                />
             </template>
         </q-table>
 
@@ -633,7 +674,7 @@ function calculateDollarValue(row: EvmHolder): string {
             :rows="loadingRows"
             :columns="tableColumns"
             :rows-per-page-label="$t('global.records_per_page')"
-            :rows-per-page-options="[10, 25, 50, 100]"
+            :rows-per-page-options="rows_per_page_options"
         >
             <template v-slot:header="props">
                 <q-tr :props="props">
@@ -672,7 +713,7 @@ function calculateDollarValue(row: EvmHolder): string {
 </template>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
     .c-holder-list {
         &__cell {
             padding: 7px 9px !important;
