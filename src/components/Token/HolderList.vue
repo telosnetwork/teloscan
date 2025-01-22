@@ -2,12 +2,11 @@
 <!-- src/components/Token/HolderList.vue -->
 <script lang="ts" setup>
 // We import the needed libraries
-import { ref, toRaw, computed, onBeforeMount, onMounted, Ref, watch } from 'vue';
+import { ref, computed, onBeforeMount, onMounted, Ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Pagination } from 'src/types'; // Existing Pagination type
 import AddressField from 'components/AddressField.vue';
 import MinimumVersionRequired from 'components/MinimumVersionRequired.vue';
-// import TablePagination from 'src/components/Token/TablePagination.vue';
+import TablePagination from 'src/components/Token/TablePagination.vue';
 import BigDecimal from 'js-big-decimal';
 import { BigNumber, ethers } from 'ethers';
 import { useChainStore } from 'src/core';
@@ -19,16 +18,9 @@ import {
 } from 'src/core/types';
 import {
     pagination,            // Reactive pagination object. Represents current pagination state
-    onPaginationChange,
     default_rows_per_page_options,
-    setRouterInstances,
+    setPaginationTotalNumber,
 } from 'src/lib/pagination';
-import { useRouter, useRoute } from 'vue-router';
-// Router to handle query parameters
-const router = useRouter();
-const route = useRoute();
-
-setRouterInstances(router, route);
 
 defineOptions({
     name: 'HolderList',
@@ -214,18 +206,6 @@ const updateLoadingRows = () => {
     }
 };
 
-
-
-
-// Update URL query if pagination changes
-watch(
-    () => [pagination.value?.page, pagination.value?.rowsPerPage],
-    () => {
-        console.log('HoldersList.watch() page:', pagination.value?.page, 'rowsPerPage:', pagination.value?.rowsPerPage);
-        onRequest();
-    },
-);
-
 onBeforeMount(() => {
     updateLoadingRows();
 });
@@ -276,41 +256,52 @@ onMounted(async () => {
     });
 });
 
-// Our method for requesting the data
-let counter = 0;
+// Internal pagination model
+const pagination_model = {
+    sortBy: 'balance',
+    descending: true,
+    page: 1,
+    rowsPerPage: 25,
+    rowsNumber: 0,
+};
 
-// bouce onRequest
-let timer = setTimeout(() => { /**/ }, 0);
-function onRequest() {
-    console.log('HolderList.onRequest() BOUNCING');
-    clearTimeout(timer);
-    timer = setTimeout(doRequest, 500);
-}
-async function doRequest() {
+// Update URL query if pagination changes
+watch(
+    () => pagination.value,
+    (a) => {
+        pagination_model.page = pagination.value.page;
+        pagination_model.rowsPerPage = pagination.value.rowsPerPage;
+        pagination_model.rowsNumber = pagination.value.rowsNumber || 0;
+        onRequest();
+    },
+    { deep: true },
+);
+// Our method for requesting the data
+const last = {
+    path: '',
+};
+async function onRequest() {
     if (!weHaveIndexerSupport.value) {
         return;
     }
-    counter++;
-    if (counter > 6) {
-        console.error('HolderList.onRequest() - too many requests');
-        return;
-    }
-    console.log('HolderList.onRequest()', counter, { pagination: pagination.value });
 
-    // const { page, rowsPerPage, sortBy, descending } = props.pagination;
     const indexerApi = chainSettings.value.getIndexerApi();
 
-    // pagination.value.page = page;
-    // pagination.value.rowsPerPage = rowsPerPage;
-    // pagination.value.sortBy = sortBy;
-    // pagination.value.descending = descending;
+    const new_path = getPath();
+    if (new_path === last.path) {
+        return;
+    } else {
+        last.path = new_path;
+    }
 
+    // prepare skeleton rows
     updateLoadingRows();
     loading.value = true;
-    const response = await indexerApi.get(getPath()) as { data?: IndexerHoldersResponse };
 
-    if (response.data?.total_count && pagination.value.rowsNumber !== response.data?.total_count) {
-        pagination.value.rowsNumber = response.data.total_count;
+    const response = await indexerApi.get(new_path) as { data?: IndexerHoldersResponse };
+    if (response.data?.total_count && pagination_model.rowsNumber !== response.data?.total_count) {
+        pagination_model.rowsNumber = response.data.total_count;
+        setPaginationTotalNumber(pagination_model.rowsNumber);
     }
     const resultHolders: EvmHolder[] = [];
     for (const entry of response.data?.results || []) {
@@ -323,7 +314,6 @@ async function doRequest() {
     }
     holders.value = resultHolders;
     loading.value = false;
-    console.log('HolderList.onRequest()', { loading: loading.value, holders: holders.value });
 }
 
 // Build the URL path for the request
@@ -347,7 +337,6 @@ function getPath(): string {
     }
 
     path += `&sort=${descending ? 'desc' : 'asc'}`;
-    // console.log('HolderList.getPath()', { page, rowsPerPage, path });
     return path;
 }
 
@@ -477,27 +466,26 @@ function calculateDollarValue(row: EvmHolder): string {
 <template v-else>
     <div class="c-holder-list">
         <!-- Table with data -->
-        <!-- @request="onPaginationChange" -->
         <q-table
             v-if="!loading"
-            v-model:pagination="pagination"
+            v-model:pagination="pagination_model"
             class="c-holder-list__table"
             :rows="holders"
             :columns="tableColumns"
             :rows-per-page-label="$t('global.records_per_page')"
             :binary-state-sort="true"
-            :hide-bottom='false'
+            :hide-bottom='true'
             :row-key="row => row.address"
             :rows-per-page-options="default_rows_per_page_options"
         >
             <!-- Table header -->
             <template v-slot:header="props">
                 <!-- Table pagination buttons in header -->
-                <!--q-tr>
+                <q-tr>
                     <q-td :colspan="tableColumns.length">
                         <TablePagination/>
                     </q-td>
-                </q-tr-->
+                </q-tr>
                 <q-tr :props="props">
                     <q-th
                         v-for="col in props.cols"
@@ -618,11 +606,11 @@ function calculateDollarValue(row: EvmHolder): string {
 
             <!-- Bottom row with table pagination buttons -->
             <template v-slot:bottom-row>
-                <!--q-tr>
-                    <q-td :colspan="tableColumns.length">
+                <q-tr>
+                    <q-td :colspan="tableColumns.length" class="pagination-container">
                         <TablePagination/>
                     </q-td>
-                </q-tr-->
+                </q-tr>
             </template>
         </q-table>
 
@@ -673,40 +661,44 @@ function calculateDollarValue(row: EvmHolder): string {
 </template>
 
 <style lang="scss">
-    .c-holder-list {
-        &__cell {
-            padding: 7px 9px !important;
-            &-content {
-                display: flex;
-                align-items: flex-start;
-                flex-direction: column;
-                &-num {
-                    font-size: 14px;
-                    font-weight: 500;
-                }
+.q-table .q-td.pagination-container {
+    padding: 4px 14px;
+}
+
+.c-holder-list {
+    &__cell {
+        padding: 7px 9px !important;
+        &-content {
+            display: flex;
+            align-items: flex-start;
+            flex-direction: column;
+            &-num {
+                font-size: 14px;
+                font-weight: 500;
             }
         }
     }
+}
 
+.q-table .q-toggle {
+    font-size: 12px;
+    position: absolute;
+    bottom: 4px;
+}
+
+.sortable {
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+@media only screen and (max-width: 764px) {
     .q-table .q-toggle {
-        font-size: 12px;
-        position: absolute;
-        bottom: 4px;
+        display: none;
     }
+}
 
-    .sortable {
-        height: 60px;
-        display: flex;
-        align-items: center;
-    }
-
-    @media only screen and (max-width: 764px) {
-        .q-table .q-toggle {
-            display: none;
-        }
-    }
-
-    .c-minimum-version-required {
-        align-self: center;
-    }
+.c-minimum-version-required {
+    align-self: center;
+}
 </style>

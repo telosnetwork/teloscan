@@ -5,45 +5,77 @@ import {
     default_rows_per_page_options,
     onPaginationChange,
     setRouterInstances,
+    // setRouterInstances,
 } from 'src/lib/pagination';
-import { useRouter, useRoute } from 'vue-router';
+import { Pagination } from 'src/types';
+// import { useRouter, useRoute } from 'vue-router';
 
-import { computed } from 'vue';
+import { onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 // Available rows per page options (10, 25, 50, etc.)
 const rowsPerPageOptions = default_rows_per_page_options;
+const isOnLastPage = ref(false);
+const endRow = ref(0);
+const isOnFirstPage = ref(true);
+const startRow = ref(0);
 
-// Compute the first row number displayed on the current page
-const startRow = computed(() => {
-    if (pagination.value.rowsNumber === 0) {
-        return 0;
-    }
-    return (pagination.value.page - 1) * pagination.value.rowsPerPage + 1;
+// Internal pagination model
+const pagination_model = {
+    sortBy: 'balance',
+    descending: true,
+    page: 1,
+    rowsPerPage: 25,
+    rowsNumber: 0,
+};
+
+watch(
+    () => pagination.value,
+    (a) => {
+        console.log('TablePagination.watch() page:', pagination.value?.page, 'rowsPerPage:', pagination.value?.rowsPerPage, 'a:', a);
+        updatePaginationModel();
+    },
+);
+
+const updatePaginationModel = () => {
+    pagination_model.page = pagination.value.page;
+    pagination_model.rowsPerPage = pagination.value.rowsPerPage;
+    pagination_model.rowsNumber = pagination.value.rowsNumber || 0;
+    isOnLastPage.value = pagination_model.page === Math.ceil(
+        (pagination_model.rowsNumber ?? 0) / pagination_model.rowsPerPage,
+    );
+    endRow.value = Math.min(
+        pagination_model.page * pagination_model.rowsPerPage,
+        pagination_model.rowsNumber ?? 0,
+    );
+    isOnFirstPage.value = pagination_model.page <= 1;
+    startRow.value = (pagination_model.rowsNumber === 0) ? 0 : (pagination_model.page - 1) * pagination_model.rowsPerPage + 1;
+    console.log('TablePagination.updatePaginationModel()', {
+        pagination_model: JSON.parse(JSON.stringify(pagination_model)),
+        isOnLastPage: isOnLastPage.value,
+        endRow: endRow.value,
+        isOnFirstPage: isOnFirstPage.value,
+        startRow: startRow.value,
+    });
+};
+
+
+onMounted(() => {
+    updatePaginationModel();
 });
 
-// Compute the last row number displayed on the current page
-const endRow = computed(() => Math.min(
-    pagination.value.page * pagination.value.rowsPerPage,
-    pagination.value.rowsNumber ?? 0,
-));
-
-// Check if we are on the first page
-const isOnFirstPage = computed(() => pagination.value.page <= 1);
-
-// Check if we are on the last page
-const isOnLastPage = computed(() => {
-    const lastPage = Math.ceil(
-        (pagination.value.rowsNumber ?? 0)/ pagination.value.rowsPerPage,
-    ) || 1;
-    return pagination.value.page >= lastPage;
-});
+// setPaginationChange
+const setPaginationChange = (props: { pagination: Pagination }) => {
+    onPaginationChange(props);
+    updatePaginationModel();
+};
 
 // Go to first page
 const goToFirstPage = () => {
     if (isOnFirstPage.value) {
         return;
     }
-    onPaginationChange({
+    setPaginationChange({
         pagination: {
             ...pagination.value,
             page: 1,
@@ -56,7 +88,7 @@ const goToPreviousPage = () => {
     if (isOnFirstPage.value) {
         return;
     }
-    onPaginationChange({
+    setPaginationChange({
         pagination: {
             ...pagination.value,
             page: pagination.value.page - 1,
@@ -69,7 +101,7 @@ const goToNextPage = () => {
     if (isOnLastPage.value) {
         return;
     }
-    onPaginationChange({
+    setPaginationChange({
         pagination: {
             ...pagination.value,
             page: pagination.value.page + 1,
@@ -85,7 +117,7 @@ const goToLastPage = () => {
     const lastPage = Math.ceil(
         (pagination.value.rowsNumber ?? 0) / pagination.value.rowsPerPage,
     ) || 1;
-    onPaginationChange({
+    setPaginationChange({
         pagination: {
             ...pagination.value,
             page: lastPage,
@@ -94,10 +126,8 @@ const goToLastPage = () => {
 };
 
 // Called when user changes rows-per-page in the <select>
-const onRowsPerPageChange = (event: number) => {
-    console.log('TablePagination.onRowsPerPageChange()', { event });
-    const newValue = event;
-    onPaginationChange({
+const onRowsPerPageChange = (newValue: number) => {
+    setPaginationChange({
         pagination: {
             ...pagination.value,
             rowsPerPage: newValue,
@@ -107,7 +137,9 @@ const onRowsPerPageChange = (event: number) => {
     });
 };
 
-setRouterInstances(useRouter(), useRoute());
+onMounted(() => {
+    setRouterInstances(useRouter(), useRoute());
+});
 
 </script>
 
@@ -116,26 +148,14 @@ setRouterInstances(useRouter(), useRoute());
 <div class="c-table-pagination">
     <div class="c-table-pagination__page-size">
         <span class="c-table-pagination__page-size-label">Records per page:</span>
-        <!--select
-            class="c-table-pagination__page-size-select"
-            :value="pagination.rowsPerPage"
-            @change="onRowsPerPageChange($event)"
-        >
-            <option
-                v-for="option in rowsPerPageOptions"
-                :key="option"
-                :value="option"
-            >
-                {{ option }}
-            </option>
-        </select-->
         <q-btn
             flat
             dense
             round
-            color="primary"
+            color="default"
             :label="pagination.rowsPerPage"
             rightIcon="chevron_down"
+            class="c-table-pagination__page-size-select"
         >
             <q-menu cover anchor="center middle">
                 <q-item
@@ -159,11 +179,11 @@ setRouterInstances(useRouter(), useRoute());
 
     <div class="c-table-pagination__nav">
         <!-- Go to first page -->
-        <!-- <q-btn push color="white" text-color="primary" round icon="card_giftcard" /> -->
         <q-btn
             flat
             dense
             round
+            class="c-table-pagination__nav-button c-table-pagination__nav-button--first"
             :disabled="pagination.page === 1"
             icon="first_page"
             @click="goToFirstPage()"
@@ -174,6 +194,7 @@ setRouterInstances(useRouter(), useRoute());
             flat
             dense
             round
+            class="c-table-pagination__nav-button c-table-pagination__nav-button--prev"
             :disabled="pagination.page === 1"
             icon="chevron_left"
             @click="goToPreviousPage()"
@@ -184,6 +205,7 @@ setRouterInstances(useRouter(), useRoute());
             flat
             dense
             round
+            class="c-table-pagination__nav-button c-table-pagination__nav-button--next"
             icon="chevron_right"
             @click="goToNextPage()"
         />
@@ -193,6 +215,7 @@ setRouterInstances(useRouter(), useRoute());
             flat
             dense
             round
+            class="c-table-pagination__nav-button c-table-pagination__nav-button--last"
             icon="last_page"
             @click="goToLastPage()"
         />
@@ -210,14 +233,14 @@ setRouterInstances(useRouter(), useRoute());
     &__page-size {
         display: flex;
         align-items: center;
-        margin-right: 16px;
+        margin-right: 9px;
 
         &-label {
             margin-right: 6px;
         }
 
         &-select {
-            padding: 4px 8px;
+            padding-left: 5px;
         }
     }
 
@@ -232,31 +255,18 @@ setRouterInstances(useRouter(), useRoute());
     &__nav {
         display: flex;
         align-items: center;
+        color: var(--pagination-buttons-color);
+    }
 
-        &-button {
-            margin: 0 3px;
-            padding: 4px 8px;
-            cursor: pointer;
-            border: 1px solid #ccc;
-            background: #333;
-            color: #fff;
-            border-radius: 4px;
-
-            &:disabled {
-                opacity: 0.4;
-                cursor: not-allowed;
-            }
-
-            /* BEM variants for different arrows */
-            // &--first {
-            // }
-            // &--prev  {
-            // }
-            // &--next  {
-            // }
-            // &--last  {
-            // }
+    &__page-size-select {
+        .q-focus-helper {
+            display: none;
         }
+    }
+
+    .q-select__dropdown-icon {
+        padding-right: 7px;
+        padding-left: 6px;
     }
 }
 </style>
