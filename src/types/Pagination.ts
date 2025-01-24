@@ -3,7 +3,7 @@ export type Pagination = {
     descending: boolean;
     page: number;
     rowsPerPage: number;
-    rowsNumber: number;
+    rowsNumber?: number;
 }
 
 
