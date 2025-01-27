@@ -13,7 +13,7 @@ defineProps({
     },
 });
 
-const current = ref('...');
+const current = ref('N/A');
 const settings = computed(() => useChainStore().currentChain.settings);
 const state = computed(() => settings.value.indexerHealthState);
 

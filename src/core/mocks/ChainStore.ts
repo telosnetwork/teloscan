@@ -14,6 +14,8 @@ import ContractManager from 'src/lib/contract/ContractManager';
 import TelosZkEVM from 'src/config/chains/telos-zkevm-testnet';
 import { Observable } from 'rxjs';
 
+export const INDEXER_SUPPORT_TIME_OUT = 5000;
+
 export interface TeloscanEVMChainSettings {
     getStakedSystemToken(): TokenClass;
     getWrappedSystemToken: () => TokenClass;

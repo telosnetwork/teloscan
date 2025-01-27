@@ -324,7 +324,7 @@ async function loadAccount() {
                 <HolderList
                     v-if="contract"
                     :contract="contract"
-                    :columns="['rank','holder','quantity','percentage_bar','value']"
+                    :columns="['holder','quantity','percentage_bar','value']"
                 />
             </q-tab-panel>
             <q-tab-panel v-else name="internaltx">

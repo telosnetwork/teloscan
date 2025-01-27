@@ -9,7 +9,7 @@ import MinimumVersionRequired from 'components/MinimumVersionRequired.vue';
 import TablePagination from 'src/components/Token/TablePagination.vue';
 import BigDecimal from 'js-big-decimal';
 import { BigNumber, ethers } from 'ethers';
-import { useChainStore } from 'src/core';
+import { INDEXER_SUPPORT_TIME_OUT, useChainStore } from 'src/core';
 import {
     EvmHolder,
     IndexerHoldersResponse,
@@ -239,6 +239,12 @@ onMounted(async () => {
         onRequest();
     });
 
+    setTimeout(() => {
+        console.log('HoldersList.onMounted() --> setTimeout() !!!!');
+        weHaveIndexerSupport.value = false;
+        loading.value = false;
+    }, INDEXER_SUPPORT_TIME_OUT);
+
     // Retrieve total supply from chain for system token
     chainSettings.value.getTelosApi().get('supply/total').then((res) => {
         if (systemTokenContract.value.properties) {
@@ -282,6 +288,7 @@ const last = {
 };
 async function onRequest() {
     if (!weHaveIndexerSupport.value) {
+        console.log('onRequest() NO INDEXER; ----------------');
         return;
     }
 
@@ -296,6 +303,7 @@ async function onRequest() {
 
     // prepare skeleton rows
     updateLoadingRows();
+    console.log('loading.value = true; ----------------');
     loading.value = true;
 
     const response = await indexerApi.get(new_path) as { data?: IndexerHoldersResponse };
@@ -314,6 +322,7 @@ async function onRequest() {
     }
     holders.value = resultHolders;
     loading.value = false;
+    console.log('loading.value = false; ----------------');
 }
 
 // Build the URL path for the request
