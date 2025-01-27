@@ -261,7 +261,11 @@ export default class ContractManager {
     addContractsToCache(contracts){
         for(const index in contracts){
             // skipping non-real contracts
-            if (contracts[index].creator) {
+            if (
+                contracts[index].creator ||
+                contracts[index].name ||
+                contracts[index].calldata
+            ) {
                 this.addContractToCache(index, contracts[index]);
             }
         }

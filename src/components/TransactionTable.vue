@@ -19,6 +19,7 @@ import TransactionFeeField from 'components/TransactionFeeField.vue';
 import { PaginationByKey } from 'src/types';
 import { useStore } from 'vuex';
 import { useChainStore } from 'src/core';
+import { BigNumber } from 'ethers';
 
 const $q = useQuasar();
 const route = useRoute();
@@ -209,18 +210,30 @@ async function parseTransactions() {
                 if (transaction.input === '0x' || !transaction.to) {
                     continue;
                 }
-
                 const contract = await useChainStore().currentChain.settings.getContractManager().getContract(transaction.to);
-
                 if (!contract) {
                     continue;
                 }
-
                 const parsedTransaction = await useChainStore().currentChain.settings.getContractManager().parseContractTransaction(
                     transaction, transaction.input, contract, true,
                 );
                 if (parsedTransaction) {
                     transaction.parsedTransaction = parsedTransaction;
+                } else {
+                    if (response.data.abi) {
+                        const abi = response.data.abi as {[sighash: string]: string};
+                        const value_str: string = transaction.value === '0x0' ? '0' : transaction.value ?? '0';
+                        const value = BigNumber.from(value_str);
+                        const sighash = transaction.input.slice(0, 10);
+                        const signature = abi[sighash] as string;
+                        const name = signature.split('(')[0].replace('function ', '');
+                        transaction.parsedTransaction = {
+                            name,
+                            sighash,
+                            signature,
+                            value,
+                        };
+                    }
                 }
                 transaction.contract = contract;
             } catch (e: any) {
