@@ -86,12 +86,12 @@ const routes = [
         }],
     },
     {
-        path: '/holders',
+        path: '/accounts',
         component: () => import('layouts/MainLayout.vue'),
         children: [{
             path: '',
-            name: 'holders',
-            component: () => import('pages/Holders.vue'),
+            name: 'accounts',
+            component: () => import('pages/HoldersPage.vue'),
             meta: { networkChange: null },
         }],
     },

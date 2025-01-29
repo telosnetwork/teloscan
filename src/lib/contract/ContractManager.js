@@ -334,7 +334,7 @@ export default class ContractManager {
         }
         return null;
     }
-    async getContractDisplayInfo(address) {
+    getContractDisplayInfo(address) {
         const addressLower = typeof address === 'string' ? address.toLowerCase() : '';
         if (this.nullContractsManager.existsContract(addressLower)) {
             return this.nullContractsManager.getContractInfo(addressLower);

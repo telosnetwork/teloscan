@@ -40,6 +40,8 @@ body.body--light {
     --notify-neutral: #4D4D4D;
     --notify-info: #008888;
 
+    --pagination-buttons-color: #{$grey-8};
+
     a:hover {
         color: $a-hover-light;
     }
@@ -79,11 +81,13 @@ body.body--dark {
         color: $a-hover-dark;
     }
 
+    --pagination-buttons-color: #{$grey-8};
+
     .vjs-tree-node.is-highlight,.vjs-tree-node:hover{
         background-color:#313436
     }
 
-    
+
 }
 
 a {

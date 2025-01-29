@@ -28,7 +28,7 @@ import { dateIsWithinXMinutes } from 'src/core/stores/utils/date-utils';
 import { createTraceFunction } from 'src/core/mocks/FeedbackStore';
 import { getCore } from 'src/core';
 import { WEI_PRECISION, PRICE_UPDATE_INTERVAL_IN_MIN } from 'src/core/stores/utils';
-import { BehaviorSubject, filter } from 'rxjs';
+import { BehaviorSubject, filter, take } from 'rxjs';
 import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 
 import ContractManager from 'src/lib/contract/ContractManager';
@@ -87,6 +87,12 @@ export default abstract class EVMChainSettings implements ChainSettings {
 
     // This observable is used to check if the indexer health state was already checked
     indexerChecked$ = new BehaviorSubject(false);
+
+    // This observable is used to check if the indexer is ready
+    indexerReady$ = this.indexerChecked$.pipe(
+        filter(checked => checked),
+        take(1),
+    );
 
     // This function is used to trace the execution of the code
     trace = createTraceFunction('EVMChainSettings');
@@ -265,6 +271,56 @@ export default abstract class EVMChainSettings implements ChainSettings {
 
     get indexerHealthState(): IndexerHealthResponse {
         return this._indexerHealthState.state;
+    }
+
+    hasIndexerSupportOver(version:string): boolean {
+        // version is a string like '1.2.3'
+        console.log('hasIndexerSupportOver', this.indexerHealthState.version, version);
+        if (this.indexerHealthState.version === undefined) {
+            return false;
+        } else {
+            const pass = this.compareVersions(this.indexerHealthState.version, version) >= 0;
+            if (!pass) {
+                console.error('Indexer API version not supported for this chain:', {
+                    network: this.network,
+                    version: this.indexerHealthState.version,
+                    required: version,
+                });
+            }
+            return pass;
+        }
+    }
+
+    compareVersions(v1: string, v2: string): number {
+        // We divide in parts A, B and C, and convert to number.
+        // If any part does not exist or is not a number, we use 0 by default
+        const [major1, minor1, patch1] = v1.split('.').map(num => parseInt(num, 10) || 0);
+        const [major2, minor2, patch2] = v2.split('.').map(num => parseInt(num, 10) || 0);
+
+        // Compare from left to right
+        if (major1 > major2) {
+            return 1;
+        }
+        if (major1 < major2) {
+            return -1;
+        }
+
+        if (minor1 > minor2) {
+            return 1;
+        }
+        if (minor1 < minor2) {
+            return -1;
+        }
+
+        if (patch1 > patch2) {
+            return 1;
+        }
+        if (patch1 < patch2) {
+            return -1;
+        }
+
+        // If we reach here, they are equal
+        return 0;
     }
 
     isNative() {

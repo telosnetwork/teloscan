@@ -149,6 +149,7 @@ export interface IndexerHealthResponse {
     blockNumber: number;
     blockTimestamp: string;
     secondsBehind: number;
+    version: string;
 }
 
 export interface IndexerTokenHoldersResponse {
