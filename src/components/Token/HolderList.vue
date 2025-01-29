@@ -210,6 +210,8 @@ onBeforeMount(() => {
     updateLoadingRows();
 });
 
+let timer = setTimeout(() => { /**/ }, 0);
+
 onMounted(async () => {
     // Build a list of system contracts
     const list = await chainSettings.value.getContractManager().getSystemContractsList();
@@ -232,18 +234,19 @@ onMounted(async () => {
     // Check indexer support
     weHaveIndexerSupport.value = chainSettings.value.hasIndexerSupportOver(minimumVersion);
 
+    if (!weHaveIndexerSupport.value) {
+        timer = setTimeout(() => {
+            weHaveIndexerSupport.value = false;
+            loading.value = false;
+        }, INDEXER_SUPPORT_TIME_OUT);
+    }
+
     // Listen for indexer readiness
     chainSettings.value.indexerReady$.subscribe(() => {
         weHaveIndexerSupport.value = chainSettings.value.hasIndexerSupportOver(minimumVersion);
-        console.log('HoldersList.onMounted() --> chainSettings.value.indexerReady$', { pagination: pagination.value });
+        clearTimeout(timer);
         onRequest();
     });
-
-    setTimeout(() => {
-        console.log('HoldersList.onMounted() --> setTimeout() !!!!');
-        weHaveIndexerSupport.value = false;
-        loading.value = false;
-    }, INDEXER_SUPPORT_TIME_OUT);
 
     // Retrieve total supply from chain for system token
     chainSettings.value.getTelosApi().get('supply/total').then((res) => {
@@ -288,7 +291,6 @@ const last = {
 };
 async function onRequest() {
     if (!weHaveIndexerSupport.value) {
-        console.log('onRequest() NO INDEXER; ----------------');
         return;
     }
 
@@ -301,9 +303,8 @@ async function onRequest() {
         last.path = new_path;
     }
 
-    // prepare skeleton rows
+    // Prepare skeleton rows
     updateLoadingRows();
-    console.log('loading.value = true; ----------------');
     loading.value = true;
 
     const response = await indexerApi.get(new_path) as { data?: IndexerHoldersResponse };
@@ -311,19 +312,30 @@ async function onRequest() {
         pagination_model.rowsNumber = response.data.total_count;
         setPaginationTotalNumber(pagination_model.rowsNumber);
     }
+
+    // Calculate the starting rank based on current page and rowsPerPage
+    const startRank = (pagination.value.page - 1) * pagination.value.rowsPerPage;
+
     const resultHolders: EvmHolder[] = [];
+    let i = 0;
     for (const entry of response.data?.results || []) {
+        // Compute a consecutive rank
+        const rank = startRank + i + 1;
+
         const holder: EvmHolder = {
-            rank: 0,
+            rank,
             txn_count: 0,
             ...(entry as Partial<EvmHolder>),
         } as EvmHolder;
         resultHolders.push(holder);
+
+        i++;
     }
+
     holders.value = resultHolders;
     loading.value = false;
-    console.log('loading.value = false; ----------------');
 }
+
 
 // Build the URL path for the request
 function getPath(): string {

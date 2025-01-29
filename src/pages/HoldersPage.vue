@@ -23,7 +23,7 @@ const symbol = computed(() => systemToken.value.symbol);
     <div class="c-holders__main-container">
         <div class="c-holders__main-content">
             <HolderList
-                :columns="['address','tag_name','balance','percentage']"
+                :columns="['rank', 'address','tag_name','balance','percentage']"
             />
         </div>
     </div>
