@@ -96,13 +96,13 @@ const contract: Ref<ContractProps> = ref<ContractProps>(
 );
 
 // Minimum version for the indexer
-const minimumVersion = '1.2.9';
+const minimumVersion = '1.2.11';
 
 // Reactive references
 const weHaveIndexerSupport = ref(false);
 const holders = ref<EvmHolder[]>([]);
 const loadingRows = ref<number[]>([]);
-const loading = ref(true);
+const loading = ref(false);
 const systemContractsList = ref('');
 const showSystemContracts = ref(false);
 
@@ -245,7 +245,9 @@ onMounted(async () => {
     chainSettings.value.indexerReady$.subscribe(() => {
         weHaveIndexerSupport.value = chainSettings.value.hasIndexerSupportOver(minimumVersion);
         clearTimeout(timer);
-        onRequest();
+        if (!loading.value) {
+            onRequest();
+        }
     });
 
     // Retrieve total supply from chain for system token
@@ -324,7 +326,7 @@ async function onRequest() {
 
         const holder: EvmHolder = {
             rank,
-            txn_count: 0,
+            txnCount: -1,
             ...(entry as Partial<EvmHolder>),
         } as EvmHolder;
         resultHolders.push(holder);
@@ -332,8 +334,64 @@ async function onRequest() {
         i++;
     }
 
+    // fetching the transaction count for each holder
+    const addresses = response.data?.results.map(entry => entry.address) || [];
+
     holders.value = resultHolders;
     loading.value = false;
+
+    fetchTxnCount(addresses);
+}
+
+interface TxnCountPair {
+    address: string
+    count: number
+}
+
+async function fetchTxnCount(addresses: string[]) {
+    // Step 1: Load local cache from localStorage
+    const localStorageKey = 'txnCountCache';
+    let txnCountCache: Record<string, number> = {};
+    const cachedData = localStorage.getItem(localStorageKey);
+    if (cachedData) {
+        try {
+            txnCountCache = JSON.parse(cachedData);
+        } catch (error) {
+            // If parsing fails, fallback to an empty object
+            txnCountCache = {};
+        }
+    }
+
+    // Step 2: For each address, if present in cache, set holders directly
+    for (const address of addresses) {
+        const holderIndex = holders.value.findIndex(h => h.address === address);
+        if (holderIndex !== -1 && txnCountCache[address] !== undefined) {
+            holders.value[holderIndex].txnCount = txnCountCache[address];
+        }
+    }
+
+    // Step 3: Perform the API request
+    const indexerApi = chainSettings.value.getIndexerApi();
+    const params = `${addresses.join(',')}`;
+    const txnCounts: TxnCountPair[] = (await indexerApi.get(`/v1/transactions/count?holders=${params}`))
+        .data?.results || [];
+
+    // Step 4: Update the cache with new data
+    for (const item of txnCounts) {
+        txnCountCache[item.address] = item.count;
+    }
+
+    // Save updated cache to localStorage
+    localStorage.setItem(localStorageKey, JSON.stringify(txnCountCache));
+
+    // Step 5: For each address, set the final value in holders
+    for (const address of addresses) {
+        const holderIndex = holders.value.findIndex(h => h.address === address);
+        const txnCount = txnCountCache[address] || 0;
+        if (holderIndex !== -1) {
+            holders.value[holderIndex].txnCount = txnCount;
+        }
+    }
 }
 
 
@@ -481,7 +539,7 @@ function calculateDollarValue(row: EvmHolder): string {
 <template v-if="!weHaveIndexerSupport && !loading">
     <MinimumVersionRequired
         class="c-minimum-version-required"
-        required="1.2.9"
+        :required="minimumVersion"
     />
 </template>
 <template v-else>
@@ -609,7 +667,12 @@ function calculateDollarValue(row: EvmHolder): string {
 
                         <!-- txn_count -->
                         <div v-else-if="col.name === 'txn_count'">
-                            {{ props.row.txn_count }}
+                            <q-skeleton
+                                v-if="props.row.txnCount === -1"
+                                type="text"
+                                class="c-trx-overview__skeleton"
+                            />
+                            <span v-else>{{ props.row.txnCount }}</span>
                         </div>
 
                         <!-- value -->
@@ -641,10 +704,18 @@ function calculateDollarValue(row: EvmHolder): string {
             v-model:pagination="pagination"
             :rows="loadingRows"
             :columns="tableColumns"
+            :hide-bottom='true'
             :rows-per-page-label="$t('global.records_per_page')"
-            :rows-per-page-options="[10, 25, 50, 100]"
+            :rows-per-page-options="default_rows_per_page_options"
         >
+            <!-- Table header -->
             <template v-slot:header="props">
+                <!-- Table pagination buttons in header -->
+                <q-tr>
+                    <q-td :colspan="tableColumns.length">
+                        <TablePagination/>
+                    </q-td>
+                </q-tr>
                 <q-tr :props="props">
                     <q-th
                         v-for="col in props.cols"
@@ -673,6 +744,14 @@ function calculateDollarValue(row: EvmHolder): string {
                         class="c-holder-list__cell"
                     >
                         <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                    </q-td>
+                </q-tr>
+            </template>
+            <!-- Bottom row with table pagination buttons -->
+            <template v-slot:bottom-row>
+                <q-tr>
+                    <q-td :colspan="tableColumns.length" class="pagination-container">
+                        <TablePagination/>
                     </q-td>
                 </q-tr>
             </template>
