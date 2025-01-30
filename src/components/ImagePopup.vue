@@ -56,10 +56,6 @@ watch(isPopupVisible, (value) => {
     }
 });
 
-watch(() => props.previewSize, () => {
-    console.log('props.previewSize', props.previewSize);
-});
-
 </script>
 
 <template>

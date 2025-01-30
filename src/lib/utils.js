@@ -41,10 +41,8 @@ export function formatWei(bn, tokenDecimals, displayDecimals) {
             const parts = str.split('.');
             return parts[0] + '.' + parts[1].slice(0, displayDecimals);
         }
-        console.log('formatWei()', { str, bn, tokenDecimals, displayDecimals });
         return str;
     } catch (e) {
-        console.log('formatWei()', { bn, tokenDecimals, displayDecimals, e });
         console.error('formatWei() error', e);
         return '0';
     }

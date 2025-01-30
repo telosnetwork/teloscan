@@ -5,7 +5,7 @@ export interface EvmHolder {
     address: string;
     balance: string;
     updated: number;
-    trxCount: number;
+    txnCount: number;
 }
 
 export interface IndexerHoldersResponse {
