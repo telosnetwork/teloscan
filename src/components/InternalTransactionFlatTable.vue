@@ -33,7 +33,7 @@ export default {
             default: 25,
         },
         usePagination: {
-            // when usePagination is false, we set the rowsPerPage to initialPageSize
+            // when usePagination is false, we use initialPageSize and we don't show the pagination controls
             type: Boolean,
             default: true,
         },
