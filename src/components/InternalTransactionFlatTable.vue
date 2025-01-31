@@ -135,8 +135,20 @@ export default {
                 this.updateData();
             },
         },
+        // each time the address changes, we clear the pagination
+        address() {
+            this.clearPagination();
+        },
     },
     methods: {
+        clearPagination() {
+            this.pagination = {
+                ...this.pagination,
+                page: 1,
+                rowsPerPage: this.initialPageSize,
+                rowsNumber: 0,
+            };
+        },
         updateData() {
             clearTimeout(this.timer);
             this.timer = setTimeout(() => {
@@ -154,6 +166,9 @@ export default {
                     const [p, s] = pag.split(',');
                     page = p;
                     size = s;
+                } else {
+                    // we are in the first page loading for the first time, so we clear the pagination
+                    this.clearPagination();
                 }
                 this.setPagination(page, size);
             }, 100);
@@ -279,32 +294,9 @@ export default {
         toggleDateFormat() {
             this.showDateAge = !this.showDateAge;
         },
-        toggleAllExpanded() {
-            this.allExpanded = !this.allExpanded;
-            this.rows.forEach((row) => {
-                row.expand = this.allExpanded;
-            });
-            this.saveAllExpanded();
-        },
-        loadAllExpanded() {
-            // we look for the local Storage to see if the user has already expanded all the rows
-            const allExpanded = localStorage.getItem('allExpanded');
-            if (allExpanded) {
-                this.allExpanded = allExpanded === 'true';
-            }
-        },
-        saveAllExpanded() {
-            // we save the state of the allExpanded variable in the local storage
-            localStorage.setItem('allExpanded', this.allExpanded);
-        },
     },
 };
 </script>
-
-if(row.get("timeStamp") != null){
-    long epoch = FormatterUtils.getEpochFromSQLTimestamp(row.get("timeStamp").toString());
-    row.replace("timeStamp", epoch);
-}
 
 <template>
 <q-table
