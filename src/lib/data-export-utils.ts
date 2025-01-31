@@ -75,7 +75,7 @@ export async function downloadCsv(
     }
 
     try {
-        const exportApi = useChainStore().currentChain.settings.getTelosApi();
+        const exportApi = useChainStore().currentChain.settings.getIndexerApi();
         const { data } = await exportApi.get(url);
         csvContent = data;
     } catch (e) {
