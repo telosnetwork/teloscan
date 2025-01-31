@@ -111,6 +111,7 @@ watch(() => props.transaction, async (newTrx) => {
             />
         </div>
     </div>
+    <q-skeleton v-if="loading" />
 </div>
 </template>
 

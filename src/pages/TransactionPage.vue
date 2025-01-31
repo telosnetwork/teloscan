@@ -123,7 +123,7 @@ const nextTransaction = () => {
                     </q-card>
 
                     <!-- Transaction Overview -->
-                    <div v-else class="c-transactions__panel-content--overview c-transactions__panel-content">
+                    <div v-else-if="tab === 'overview'" class="c-transactions__panel-content--overview c-transactions__panel-content">
                         <TransactionOverview
                             :trx="trx"
                         />
