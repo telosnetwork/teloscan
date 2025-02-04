@@ -173,6 +173,11 @@ const config: NetworkConfig =
                         'label': 'components.header.blocks',
                         'internalLink': 'blocks',
                     },
+                    {
+                        'label': 'components.header.accounts',
+                        'internalLink': 'accounts',
+                        'requiresVersion': '1.2.11',
+                    },
                 ],
             },
             {
