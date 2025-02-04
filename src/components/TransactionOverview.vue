@@ -367,6 +367,7 @@ onMounted(() => {
                 :transaction="trx"
                 @transfers-count="setTLOSTransfersCount"
             />
+            <q-skeleton v-else type="text" class="c-trx-overview__skeleton" />
         </div>
     </div>
 

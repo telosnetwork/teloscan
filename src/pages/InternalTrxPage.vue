@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
@@ -9,7 +9,14 @@ import AddressField from 'components/AddressField.vue';
 
 const { t: $t } = useI18n();
 const route = useRoute();
-const address = computed(() => route.query.a as string);
+/// const address = computed(() => route.query.a as string);
+const address = ref<string>(route.query.a as string);
+
+// watch the route url and if it chenges update the address
+watch(() => route.query.a, () => {
+    address.value = route.query.a as string ? route.query.a as string : '';
+},
+{ immediate: true });
 
 </script>
 
