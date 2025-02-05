@@ -7,6 +7,13 @@ export interface TransactionQueryData {
     }
 }
 
+export interface InternalTransactionQueryData {
+    data: {
+        results: { transactionHash: string}[];
+        total_count: number;
+    }
+}
+
 export type OutputValue = string | string[] | BigNumber | BigNumber[] | number | number[] | boolean | boolean[] | null;
 
 export interface OutputType {
