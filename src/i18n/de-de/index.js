@@ -242,6 +242,8 @@ export default {
         click_to_toggle_media_size: 'Klicken, um die Mediengröße umzuschalten',
         toggle_expand: 'Passform auf Bildschirm oder Originalgröße umschalten',
         close: 'Schließen',
+        no_matching_entries: 'Keine passenden Einträge',
+        please_try_again_later: 'Bitte versuchen Sie es später erneut',
         input_viewer: {
             name: 'Name',
             type: 'Typ',

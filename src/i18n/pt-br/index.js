@@ -242,6 +242,8 @@ export default {
         click_to_toggle_media_size: 'Clique para alternar o tamanho da mídia',
         toggle_expand: 'Alternar ajuste à tela ou tamanho original',
         close: 'Fechar',
+        no_matching_entries: 'Nenhuma entrada correspondente',
+        please_try_again_later: 'Por favor, tente novamente mais tarde',
         input_viewer: {
             name: 'Nome',
             type: 'Tipo',
