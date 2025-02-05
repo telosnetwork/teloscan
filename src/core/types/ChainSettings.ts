@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { RpcEndpoint } from 'universal-authenticator-library';
-import { PriceChartData, TokenClass } from 'src/core/types';
+import { BrandingType, PriceChartData, TokenClass } from 'src/core/types';
 
 export interface ChainSettings {
     init(): Promise<void>;
@@ -10,7 +10,7 @@ export interface ChainSettings {
     getSystemToken(): TokenClass;
     getTokenList(): Promise<TokenClass[]>;
     getDisplay(): string;
-    getBranding(): { text: string; icon: string };
+    getBranding(): BrandingType;
     getSmallLogoPath(): string;
     getLargeLogoPath(): string;
     getChainId(): string;

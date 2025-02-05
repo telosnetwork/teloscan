@@ -86,10 +86,13 @@ onMounted(async () => {
         providerManager.setProvider(null);
     });
 
-    // if the network is testnet we include the word testnet in the title of the page
-    if (useChainStore().currentChain.settings.isTestnet()) {
+    if (useChainStore().currentChain.settings.getBranding().tab) {
+        document.title = useChainStore().currentChain.settings.getBranding().tab;
+    } else if (useChainStore().currentChain.settings.isTestnet()) {
+        // if the network is testnet we include the word testnet in the title of the page
         document.title = `${document.title} Testnet`;
     }
+
 });
 
 // Watch for changes in the route query to react when network changes

@@ -52,3 +52,9 @@ export interface HeaderMenuConfig {
   entries: HeaderMenuEntry[];
 }
 
+export interface BrandingType {
+  text: string,
+  icon: string,
+  tab: string,
+}
+
