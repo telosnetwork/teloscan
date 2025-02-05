@@ -156,6 +156,7 @@ export default {
         overview: 'overview',
         more_info: 'more info',
         transaction_sent: 'txn sent',
+        int_transaction_sent: 'internal txn sent',
         no_transactions_yet: 'No transactions yet',
         first: 'first',
         last: 'last',
