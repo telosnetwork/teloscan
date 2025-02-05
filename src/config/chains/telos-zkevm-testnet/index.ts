@@ -1,6 +1,6 @@
 import EVMChainSettings from 'src/core/chains/EVMChainSettings';
 import { RpcEndpoint } from 'universal-authenticator-library';
-import { FooterLinksConfig, HeaderIndicators, HeaderMenuConfig, NativeCurrencyAddress, NetworkConfig, PriceChartData, SocialLink, Themes, addressString } from 'src/core/types';
+import { BrandingType, FooterLinksConfig, HeaderIndicators, HeaderMenuConfig, NativeCurrencyAddress, NetworkConfig, PriceChartData, SocialLink, Themes, addressString } from 'src/core/types';
 import { TokenClass, TokenSourceInfo } from 'src/core/types';
 import { useUserStore } from 'src/core';
 import { getFiatPriceFromIndexer, getCoingeckoPriceChartData, getCoingeckoUsdPrice } from 'src/lib/price';
@@ -16,6 +16,7 @@ const config: NetworkConfig =
     'display': 'Telos zkEVM (Testnet)',
     'title': 'Telos zkEVM Testnet Explorer',
     'branding': {
+        'tab': 'Teloscan zkEVM Testnet',
         'text': 'Telos zkEVM',
         'icon': '/branding/teloscan-logo.png',
     },
@@ -251,7 +252,7 @@ export default class TelosZkEVM extends EVMChainSettings {
         return config.display;
     }
 
-    getBranding(): { text: string; icon: string } {
+    getBranding(): BrandingType {
         return config.branding;
     }
 

@@ -20,6 +20,7 @@ import {
     addressString,
     IndexerTransfersFilter,
     IndexerAccountTransfersResponse,
+    BrandingType,
 } from 'src/core/types';
 import EvmContract from 'src/core/stores/utils/contracts/EvmContract';
 import { ethers } from 'ethers';
@@ -350,7 +351,7 @@ export default abstract class EVMChainSettings implements ChainSettings {
     abstract isTestnet(): boolean;
     abstract getChainId(): string;
     abstract getDisplay(): string;
-    abstract getBranding(): { text: string; icon: string };
+    abstract getBranding(): BrandingType;
     abstract getHyperionEndpoint(): string;
     abstract getRPCEndpoint(): RpcEndpoint;
     abstract getApiEndpoint(): string;

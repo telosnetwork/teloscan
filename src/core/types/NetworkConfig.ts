@@ -12,6 +12,7 @@ export interface NetworkConfig {
 
     // App header branding name
     branding: {
+        tab: string;
         icon: string;
         text: string;
     };
