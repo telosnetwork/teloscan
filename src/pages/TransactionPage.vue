@@ -23,7 +23,7 @@ const trx = ref<EvmTransactionExtended | null>(null);
 const updateData = async () => {
     trx.value = await loadTransaction(hash.value);
     trxNotFound.value = !trx.value;
-    if (!trx.value) {
+    if (!trx.value || !route.query.tab) {
         tab.value = defaultTab;
     }
 };
