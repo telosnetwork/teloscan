@@ -4,6 +4,7 @@ import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import AddressField from 'components/AddressField';
 import ValueField from 'components/ValueField.vue';
+import EmptyTableSign from 'components/EmptyTableSign.vue';
 import { getDirection } from 'src/lib/transaction-utils';
 import { useChainStore } from 'src/core';
 
@@ -15,6 +16,7 @@ export default {
         DateField,
         BlockField,
         ValueField,
+        EmptyTableSign,
     },
     props: {
         address: {
@@ -308,6 +310,9 @@ export default {
     :rows-per-page-options="page_size_options"
     @request="onPaginationChange"
 >
+    <template v-slot:no-data>
+        <EmptyTableSign />
+    </template>
     <template v-if="!usePagination" v-slot:bottom>
         <q-card-actions
             align="center"

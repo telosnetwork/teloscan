@@ -7,6 +7,8 @@ import { ALLOWED_VIDEO_EXTENSIONS } from 'src/lib/utils';
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import ImagePopup from 'src/components/ImagePopup.vue';
+import EmptyTableSign from 'components/EmptyTableSign.vue';
+
 import { NFT, NFT_TYPE } from 'src/types/NFT';
 import { useChainStore } from 'src/core';
 import { QTableProps, useQuasar } from 'quasar';
@@ -247,6 +249,9 @@ watch(() => $route.query.network, () => {
         :columns="columns"
         :rows-per-page-options="[10, 20, 50]"
     >
+        <template v-slot:no-data>
+            <EmptyTableSign />
+        </template>
         <template v-slot:header="props">
             <q-tr :props="props">
                 <q-th

@@ -9,6 +9,8 @@ import MethodField from 'components/MethodField.vue';
 import AddressField from 'components/AddressField.vue';
 import NftItemField from 'components/NftItemField.vue';
 import DateField from 'components/DateField.vue';
+import EmptyTableSign from 'components/EmptyTableSign.vue';
+
 import { formatWei, toChecksumAddress } from 'src/lib/utils';
 import { NftTransferProps, NftTransferData } from 'src/types';
 
@@ -320,6 +322,9 @@ onMounted(() => {
     :rows-per-page-options="[10, 20, 50]"
     @request="onRequest"
 >
+    <template v-slot:no-data>
+        <EmptyTableSign />
+    </template>
     <template v-slot:header="props">
         <q-tr :props="props">
             <q-th
