@@ -142,9 +142,8 @@ export default abstract class EVMChainSettings implements ChainSettings {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const self = this;
         this.indexer.interceptors.response.use(function (response) {
-            if(response.data?.abi?.length > 0){
+            if(response.data?.abi){
                 for (const [key, value] of Object.entries(response.data.abi)) {
-                    self.getContractManager().parser.addFunctionInterface(key, value);
                     self.getFragmentParser().addFunctionInterface(key, value);
                 }
             }
