@@ -227,7 +227,9 @@ async function parseTransactions() {
                         const value = BigNumber.from(value_str);
                         const sighash = transaction.input.slice(0, 10);
                         const signature = abi[sighash] as string;
-                        const name = signature.split('(')[0].replace('function ', '');
+                        const name = typeof signature === 'string' ?
+                            signature.split('(')[0].replace('function ', '') :
+                            sighash;
                         transaction.parsedTransaction = {
                             name,
                             sighash,
