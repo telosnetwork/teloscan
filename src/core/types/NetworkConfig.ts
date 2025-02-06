@@ -1,4 +1,5 @@
 import { HeaderIndicators } from 'src/core/types/PriceData';
+import { HeaderMenuEntry } from './Theme';
 
 export interface NetworkConfig {
     // The unique network identifier
@@ -136,20 +137,7 @@ export interface NetworkConfig {
     // Header menu configuration
     headerMenuConfig: {
         chain: string;
-        entries: {
-            label: string;
-            internalLink?: string;
-            externalLink?: string;
-            trigger?: string;
-            leftIcon?: string;
-            entries?: {
-                label: string;
-                trigger?: string;
-                leftIcon?: string;
-                internalLink?: string;
-                externalLink?: string;
-            }[];
-        }[];
+        entries: HeaderMenuEntry[];
     };
 
     // Link to buy more tokens

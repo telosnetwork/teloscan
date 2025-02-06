@@ -4,6 +4,7 @@ import DateField from 'components/DateField';
 import TransactionField from 'components/TransactionField';
 import AddressField from 'components/AddressField';
 import ValueField from 'components/ValueField.vue';
+import EmptyTableSign from 'components/EmptyTableSign.vue';
 import { getDirection } from 'src/lib/transaction-utils';
 import { useChainStore } from 'src/core';
 
@@ -15,6 +16,7 @@ export default {
         DateField,
         BlockField,
         ValueField,
+        EmptyTableSign,
     },
     props: {
         address: {
@@ -33,7 +35,7 @@ export default {
             default: 25,
         },
         usePagination: {
-            // when usePagination is false, we set the rowsPerPage to initialPageSize
+            // when usePagination is false, we use initialPageSize and we don't show the pagination controls
             type: Boolean,
             default: true,
         },
@@ -103,6 +105,7 @@ export default {
             page_size_options: [10, 20, 50],
             showDateAge: true,
             allExpanded: false,
+            timer: null,
         };
     },
     async created() {
@@ -134,24 +137,43 @@ export default {
                 this.updateData();
             },
         },
+        // each time the address changes, we clear the pagination
+        address() {
+            this.clearPagination();
+        },
     },
     methods: {
+        clearPagination() {
+            this.pagination = {
+                ...this.pagination,
+                page: 1,
+                rowsPerPage: this.initialPageSize,
+                rowsNumber: 0,
+            };
+        },
         updateData() {
-            const _pag = this.$route.query.page;
-            let pag = _pag;
-            let page = 1;
-            let size = this.page_size_options[0];
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => {
+                // we need to wait a bit to allow the URL to be updated
+                const _pag = this.$route.query.page;
+                let pag = _pag;
+                let page = 1;
+                let size = this.page_size_options[0];
 
-            // we also allow to pass a single number as the page number
-            if (typeof pag === 'number') {
-                page = pag;
-            } else if (typeof pag === 'string') {
-                // we also allow to pass a string of two numbers: 'page,rowsPerPage'
-                const [p, s] = pag.split(',');
-                page = p;
-                size = s;
-            }
-            this.setPagination(page, size);
+                // we also allow to pass a single number as the page number
+                if (typeof pag === 'number') {
+                    page = pag;
+                } else if (typeof pag === 'string') {
+                    // we also allow to pass a string of two numbers: 'page,rowsPerPage'
+                    const [p, s] = pag.split(',');
+                    page = p;
+                    size = s;
+                } else {
+                    // we are in the first page loading for the first time, so we clear the pagination
+                    this.clearPagination();
+                }
+                this.setPagination(page, size);
+            }, 100);
         },
         getDirection: getDirection,
         updateLoadingRows() {
@@ -274,32 +296,9 @@ export default {
         toggleDateFormat() {
             this.showDateAge = !this.showDateAge;
         },
-        toggleAllExpanded() {
-            this.allExpanded = !this.allExpanded;
-            this.rows.forEach((row) => {
-                row.expand = this.allExpanded;
-            });
-            this.saveAllExpanded();
-        },
-        loadAllExpanded() {
-            // we look for the local Storage to see if the user has already expanded all the rows
-            const allExpanded = localStorage.getItem('allExpanded');
-            if (allExpanded) {
-                this.allExpanded = allExpanded === 'true';
-            }
-        },
-        saveAllExpanded() {
-            // we save the state of the allExpanded variable in the local storage
-            localStorage.setItem('allExpanded', this.allExpanded);
-        },
     },
 };
 </script>
-
-if(row.get("timeStamp") != null){
-    long epoch = FormatterUtils.getEpochFromSQLTimestamp(row.get("timeStamp").toString());
-    row.replace("timeStamp", epoch);
-}
 
 <template>
 <q-table
@@ -311,6 +310,9 @@ if(row.get("timeStamp") != null){
     :rows-per-page-options="page_size_options"
     @request="onPaginationChange"
 >
+    <template v-slot:no-data>
+        <EmptyTableSign />
+    </template>
     <template v-if="!usePagination" v-slot:bottom>
         <q-card-actions
             align="center"

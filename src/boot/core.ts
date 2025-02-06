@@ -7,7 +7,6 @@ export default boot(({ app }) => {
 
     const defaultNetwork = Object.keys(evmSettings)[0];
     let network = new URLSearchParams(window.location.search).get('network') ?? process.env.NETWORK_EVM_NAME;
-    console.log('Multichain initMultichain()', { network, NETWORK_EVM_NAME: process.env.NETWORK_EVM_NAME });
     if (network) {
         const exists = Object.keys(evmSettings).some(key => evmSettings[key].getNetwork() === network);
         if (!exists) {

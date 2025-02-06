@@ -86,17 +86,26 @@ export default {
                     tokensOfficial.push(token);
                     return token;
                 } else if(result.contract !== '___NATIVE_CURRENCY___'){
-                    let contract = await contractManager.getContract(result.contract);
-                    result.address = contract.address;
-                    result.name = contract.name;
-                    result.symbol = contract.properties?.symbol;
-                    result.decimals = contract.properties?.decimals;
-                    result.price = contract.properties?.price || 0;
-                    result.contract = contract;
-                    result.logoURI = DEFAULT_TOKEN_LOGO;
-                    result.fullBalance = `${formatWei(result.balance, result.contract.properties?.decimals)}`;
-                    result.balance = `${formatWei(result.balance, result.contract.properties?.decimals, 4)}`;
-                    tokens.push(result);
+                    try {
+                        let contract = await contractManager.getContract(result.contract);
+                        result.address = contract.address;
+                        result.name = contract.name;
+                        result.symbol = contract.properties?.symbol;
+                        result.decimals = contract.properties?.decimals;
+                        result.price = contract.properties?.price || 0;
+                        result.contract = contract;
+                        result.logoURI = DEFAULT_TOKEN_LOGO;
+                        result.fullBalance = `${formatWei(result.balance, result.contract.properties?.decimals)}`;
+                        result.balance = `${formatWei(result.balance, result.contract.properties?.decimals, 4)}`;
+                        tokens.push(result);
+                    } catch (e) {
+                        console.error('Error loading token', {
+                            error: e,
+                            contract: result.contract,
+                            token: result,
+                        });
+                        return result;
+                    }
                     return result;
                 }
             }));

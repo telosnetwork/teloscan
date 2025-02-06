@@ -32,15 +32,20 @@ export const LOGIN_DATA_KEY = 'loginData';
 export const DEFAULT_CHAIN_ID = '40'; // Telos Mainnet
 
 export function formatWei(bn, tokenDecimals, displayDecimals) {
-    const amount = BigNumber.from(bn);
-    const formatted = ethers.utils.formatUnits(amount.toString(), (tokenDecimals || WEI_PRECISION));
-    let str = formatted.toString();
-    str = str.padEnd(str.length + displayDecimals, '0');
-    if(displayDecimals > 0 && str.includes('.')) {
-        const parts = str.split('.');
-        return parts[0] + '.' + parts[1].slice(0, displayDecimals);
+    try {
+        const amount = BigNumber.from(bn);
+        const formatted = ethers.utils.formatUnits(amount.toString(), (tokenDecimals || WEI_PRECISION));
+        let str = formatted.toString();
+        str = str.padEnd(str.length + displayDecimals, '0');
+        if(displayDecimals > 0 && str.includes('.')) {
+            const parts = str.split('.');
+            return parts[0] + '.' + parts[1].slice(0, displayDecimals);
+        }
+        return str;
+    } catch (e) {
+        console.error('formatWei() error', e);
+        return '0';
     }
-    return str;
 }
 
 export function isValidAddressFormat(ethAddressString) {

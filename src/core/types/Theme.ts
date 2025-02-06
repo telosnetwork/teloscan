@@ -40,11 +40,12 @@ export interface FooterLinksConfig {
 export interface HeaderMenuEntry {
   label: string;
   trigger?: string;
+  requiresVersion?: string;
   internalLink?: string;
   externalLink?: string;
-  entries?: HeaderMenuEntry[];
   rightIcon?: string;
   leftIcon?: string;
+  entries?: HeaderMenuEntry[];
 }
 
 export interface HeaderMenuConfig {

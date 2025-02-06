@@ -73,7 +73,7 @@ const config: NetworkConfig =
         'explorer': 'https://zktest.teloscan.io',
         'ecosystem': 'https://www.telos.net/ecosystem',
         'bridge': 'https://bridge.telos.net/bridge',
-        'indexer': 'https://api.zktest.teloscan.io/',
+        'indexer': 'https://api.zktest.teloscan.io',
         'contractsBucket': 'https://verified-evm-contracts.s3.amazonaws.com',
         'monitor': 'https://api.monitor-test.telos.net',
     },
@@ -191,6 +191,11 @@ const config: NetworkConfig =
                     {
                         'label': 'components.header.blocks',
                         'internalLink': 'blocks',
+                    },
+                    {
+                        'label': 'components.header.accounts',
+                        'internalLink': 'accounts',
+                        'requiresVersion': '1.2.11',
                     },
                 ],
             },

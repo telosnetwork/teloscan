@@ -10,6 +10,7 @@ export default class FragmentParser {
         this.eventInterfaces = events_overrides;
         this.processing = [];
         this.evmEndpoint = evmEndpoint;
+        this.id = Math.floor(Math.random() * 100);
     }
 
     async addEventInterface(hex, signature){
@@ -19,7 +20,8 @@ export default class FragmentParser {
         this.eventInterfaces[hex] = signature;
     }
     async addFunctionInterface(hex, signature){
-        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, hex)) {
+        if (!signature) {
+            console.warn('indexer provides an incorrect abi value', { hex, signature });
             return;
         }
         this.functionInterfaces[hex] = signature;
@@ -27,20 +29,10 @@ export default class FragmentParser {
 
     async getFunctionInterface(data) {
         let prefix = data.toLowerCase().slice(0, 10);
-        if(prefix === '0x'){
-            return;
+        let funcName = this.functionInterfaces[prefix];
+        if (typeof funcName === 'string') {
+            return new ethers.utils.Interface([funcName]);
         }
-        if (Object.prototype.hasOwnProperty.call(this.functionInterfaces, prefix)) {
-            return new ethers.utils.Interface([this.functionInterfaces[prefix]]);
-        }
-        if(this.processing.includes(data)){
-            await new Promise(resolve => setTimeout(resolve, 300));
-            let result = await this.getFunctionInterface(data);
-            return result;
-        }
-        this.processing.push(data);
-
-        this.functionInterfaces[prefix] = '';
         return false;
     }
     async getEventInterface(data) {

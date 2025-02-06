@@ -141,6 +141,11 @@ export default class ContractManager {
         if (data === '0x' || !data || !contract) {
             return false;
         }
+
+        const functionIface = await this.parser.getFunctionInterface(data);
+        if (!functionIface) {
+            return false;
+        }
         if (contract.getInterface()) {
             try {
                 let transaction = await contract.getInterface().parseTransaction({ data });
@@ -154,15 +159,12 @@ export default class ContractManager {
             }
         }
         try {
-            const functionIface = await this.parser.getFunctionInterface(data);
-            if (functionIface) {
-                let transaction = functionIface.parseTransaction({ data });
-                if(!transfers){
-                    return transaction;
-                }
-                transaction.transfers = await this.getTransfers(raw);
+            let transaction = functionIface.parseTransaction({ data });
+            if(!transfers){
                 return transaction;
             }
+            transaction.transfers = await this.getTransfers(raw);
+            return transaction;
         } catch (e) {
             console.warn(`Unable to parse transaction data using abi for ${contract.address}: ${e}`);
         }
@@ -261,7 +263,11 @@ export default class ContractManager {
     addContractsToCache(contracts){
         for(const index in contracts){
             // skipping non-real contracts
-            if (contracts[index].creator) {
+            if (
+                contracts[index].creator ||
+                contracts[index].name ||
+                contracts[index].calldata
+            ) {
                 this.addContractToCache(index, contracts[index]);
             }
         }
@@ -330,7 +336,7 @@ export default class ContractManager {
         }
         return null;
     }
-    async getContractDisplayInfo(address) {
+    getContractDisplayInfo(address) {
         const addressLower = typeof address === 'string' ? address.toLowerCase() : '';
         if (this.nullContractsManager.existsContract(addressLower)) {
             return this.nullContractsManager.getContractInfo(addressLower);

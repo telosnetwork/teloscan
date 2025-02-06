@@ -23,7 +23,7 @@ const trx = ref<EvmTransactionExtended | null>(null);
 const updateData = async () => {
     trx.value = await loadTransaction(hash.value);
     trxNotFound.value = !trx.value;
-    if (!trx.value) {
+    if (!trx.value || !route.query.tab) {
         tab.value = defaultTab;
     }
 };
@@ -123,7 +123,7 @@ const nextTransaction = () => {
                     </q-card>
 
                     <!-- Transaction Overview -->
-                    <div v-else class="c-transactions__panel-content--overview c-transactions__panel-content">
+                    <div v-else-if="tab === 'overview'" class="c-transactions__panel-content--overview c-transactions__panel-content">
                         <TransactionOverview
                             :trx="trx"
                         />
