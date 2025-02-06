@@ -37,6 +37,7 @@ watch(
 );
 
 const updatePaginationModel = () => {
+    console.log('TablePagination.updatePaginationModel()', pagination.value); // FIXME: Remove
     pagination_model.page = pagination.value.page;
     pagination_model.rowsPerPage = pagination.value.rowsPerPage;
     pagination_model.rowsNumber = pagination.value.rowsNumber || 0;

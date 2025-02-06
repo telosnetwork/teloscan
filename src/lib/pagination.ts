@@ -89,6 +89,7 @@ export const takeUrlParams = () => {
         const value = { ...internal_pagination };
         pagination.value = value;
     }
+
 };
 
 export const onPaginationChange = (props: { pagination: Pagination }) => {
@@ -96,6 +97,7 @@ export const onPaginationChange = (props: { pagination: Pagination }) => {
         internal_pagination.page === props.pagination.page &&
         internal_pagination.rowsPerPage === props.pagination.rowsPerPage &&
         internal_pagination.sortBy === props.pagination.sortBy &&
+        internal_pagination.rowsNumber === props.pagination.rowsNumber &&
         internal_pagination.descending === props.pagination.descending
     ) {
         // No change
@@ -104,6 +106,7 @@ export const onPaginationChange = (props: { pagination: Pagination }) => {
     // internal_pagination.page = props.pagination.page;
     internal_pagination.page = props.pagination.page;
     internal_pagination.rowsPerPage = props.pagination.rowsPerPage;
+    internal_pagination.rowsNumber = props.pagination.rowsNumber;
     pagination.value.rowsNumber = internal_pagination.rowsNumber;
     pagination.value.rowsPerPage = internal_pagination.rowsPerPage;
     pagination.value.descending = internal_pagination.descending;
@@ -115,10 +118,10 @@ export const onPaginationChange = (props: { pagination: Pagination }) => {
 
 // set pagination total number
 export const setPaginationTotalNumber = (total: number) => {
-    internal_pagination.rowsNumber = total;
     onPaginationChange({
         pagination: {
             ...internal_pagination,
+            rowsNumber: total,
         },
     });
 };
