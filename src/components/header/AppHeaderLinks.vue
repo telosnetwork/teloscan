@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useI18n } from 'vue-i18n';
@@ -91,6 +91,24 @@ function toggleDarkMode() {
     $q.dark.toggle();
     localStorage.setItem('darkModeEnabled', $q.dark.isActive.toString());
 }
+
+// Chain settings
+const chainSettings = computed(() => useChainStore().currentChain.settings);
+
+function showEntry(entry: HeaderMenuEntry): boolean {
+    // If it doesn't require a version, show it
+    if (!entry.requiresVersion) {
+        return true;
+    }
+
+    const minimumVersion = entry.requiresVersion;
+    const weHaveIndexerSupport = ref(chainSettings.value.hasIndexerSupportOver(minimumVersion));
+    chainSettings.value.indexerReady$.subscribe(() => {
+        weHaveIndexerSupport.value = chainSettings.value.hasIndexerSupportOver(minimumVersion);
+    });
+
+    return weHaveIndexerSupport.value;
+}
 </script>
 
 <template>
@@ -129,59 +147,63 @@ function toggleDarkMode() {
                 'c-header-links__submenu-ul--rightmost': index === menuConfig.entries.length - 1,
             }"
         >
-            <li
+            <template
                 v-for="subEntry in entry.entries"
                 :key="subEntry.label"
-                :class="{
-                    'c-header-links__submenu-li': true,
-                    'c-header-links__submenu-li--current': isEntryActive(subEntry),
-                }"
-                tabindex="0"
-                @click="handleEntryClick(subEntry)"
-                @keydown.enter="handleEntryClick(subEntry)"
             >
-                <!-- Internal links -->
-                <router-link
-                    v-if="subEntry.internalLink"
-                    :to="{ name: subEntry.internalLink }"
-                    @click="closeAllMenus"
+                <li
+                    v-if="showEntry(subEntry)"
+                    :class="{
+                        'c-header-links__submenu-li': true,
+                        'c-header-links__submenu-li--current': isEntryActive(subEntry),
+                    }"
+                    tabindex="0"
+                    @click="handleEntryClick(subEntry)"
+                    @keydown.enter="handleEntryClick(subEntry)"
                 >
-                    {{ $t(subEntry.label) }}
-                </router-link>
-
-                <!-- External links -->
-                <a
-                    v-else-if="subEntry.externalLink"
-                    :href="subEntry.externalLink"
-                    target="_blank"
-                >
-                    <div class="u-flex--center-y">
+                    <!-- Internal links -->
+                    <router-link
+                        v-if="subEntry.internalLink"
+                        :to="{ name: subEntry.internalLink }"
+                        @click="closeAllMenus"
+                    >
                         {{ $t(subEntry.label) }}
-                        <q-icon name="fas fa-external-link-alt" size="12px" class="q-ml-sm" />
-                    </div>
-                </a>
+                    </router-link>
 
-                <!-- Actions (triggers) -->
-                <div
-                    v-else-if="subEntry.trigger"
-                    @click="trigger(subEntry.trigger)"
-                >
-                    <div class="u-flex--center-y">
+                    <!-- External links -->
+                    <a
+                        v-else-if="subEntry.externalLink"
+                        :href="subEntry.externalLink"
+                        target="_blank"
+                    >
+                        <div class="u-flex--center-y">
+                            {{ $t(subEntry.label) }}
+                            <q-icon name="fas fa-external-link-alt" size="12px" class="q-ml-sm" />
+                        </div>
+                    </a>
+
+                    <!-- Actions (triggers) -->
+                    <div
+                        v-else-if="subEntry.trigger"
+                        @click="trigger(subEntry.trigger)"
+                    >
+                        <div class="u-flex--center-y">
+                            {{ $t(subEntry.label) }}
+                            <q-icon
+                                v-if="subEntry.leftIcon"
+                                :name="subEntry.leftIcon"
+                                size="16px"
+                                class="q-ml-sm"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Other cases -->
+                    <div v-else>
                         {{ $t(subEntry.label) }}
-                        <q-icon
-                            v-if="subEntry.leftIcon"
-                            :name="subEntry.leftIcon"
-                            size="16px"
-                            class="q-ml-sm"
-                        />
                     </div>
-                </div>
-
-                <!-- Other cases -->
-                <div v-else>
-                    {{ $t(subEntry.label) }}
-                </div>
-            </li>
+                </li>
+            </template>
         </ul>
     </li>
 

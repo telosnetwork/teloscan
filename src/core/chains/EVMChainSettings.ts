@@ -169,7 +169,6 @@ export default abstract class EVMChainSettings implements ChainSettings {
     }
 
     async init(): Promise<void> {
-        console.log('init');
         this.trace('init');
         // this is called only when this chain is needed to avoid initialization of all chains
         if (this.ready) {
@@ -275,7 +274,6 @@ export default abstract class EVMChainSettings implements ChainSettings {
 
     hasIndexerSupportOver(version:string): boolean {
         // version is a string like '1.2.3'
-        console.log('hasIndexerSupportOver', this.indexerHealthState.version, version);
         if (this.indexerHealthState.version === undefined) {
             return false;
         } else {

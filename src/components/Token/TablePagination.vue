@@ -31,13 +31,13 @@ const pagination_model = {
 
 watch(
     () => pagination.value,
-    (a) => {
-        console.log('TablePagination.watch() page:', pagination.value?.page, 'rowsPerPage:', pagination.value?.rowsPerPage, 'a:', a);
+    () => {
         updatePaginationModel();
     },
 );
 
 const updatePaginationModel = () => {
+    console.log('TablePagination.updatePaginationModel()', pagination.value); // FIXME: Remove
     pagination_model.page = pagination.value.page;
     pagination_model.rowsPerPage = pagination.value.rowsPerPage;
     pagination_model.rowsNumber = pagination.value.rowsNumber || 0;
@@ -50,13 +50,6 @@ const updatePaginationModel = () => {
     );
     isOnFirstPage.value = pagination_model.page <= 1;
     startRow.value = (pagination_model.rowsNumber === 0) ? 0 : (pagination_model.page - 1) * pagination_model.rowsPerPage + 1;
-    console.log('TablePagination.updatePaginationModel()', {
-        pagination_model: JSON.parse(JSON.stringify(pagination_model)),
-        isOnLastPage: isOnLastPage.value,
-        endRow: endRow.value,
-        isOnFirstPage: isOnFirstPage.value,
-        startRow: startRow.value,
-    });
 };
 
 

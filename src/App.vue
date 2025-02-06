@@ -38,7 +38,7 @@ const checkNetworkHealth = async () => {
     // print in console with background #8B3F98 and white text the following message: Using indexer {health.data.version} with {health.data.secondsBehind} seconds behind
     console.debug(
         `%cUsing indexer ${health.data.version} for '${chainName}' ` +
-        (health.data?.secondsBehind > 3 ? `%cwith ${health.data.secondsBehind} seconds behind` : ''),
+        (health.data?.secondsBehind > 3 ? `with ${health.data.secondsBehind} seconds behind` : ''),
         `background: ${background}; color: ${color};`,
     );
 
