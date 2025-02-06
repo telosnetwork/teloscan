@@ -141,6 +141,11 @@ export default class ContractManager {
         if (data === '0x' || !data || !contract) {
             return false;
         }
+
+        const functionIface = await this.parser.getFunctionInterface(data);
+        if (!functionIface) {
+            return false;
+        }
         if (contract.getInterface()) {
             try {
                 let transaction = await contract.getInterface().parseTransaction({ data });
@@ -154,15 +159,12 @@ export default class ContractManager {
             }
         }
         try {
-            const functionIface = await this.parser.getFunctionInterface(data);
-            if (functionIface) {
-                let transaction = functionIface.parseTransaction({ data });
-                if(!transfers){
-                    return transaction;
-                }
-                transaction.transfers = await this.getTransfers(raw);
+            let transaction = functionIface.parseTransaction({ data });
+            if(!transfers){
                 return transaction;
             }
+            transaction.transfers = await this.getTransfers(raw);
+            return transaction;
         } catch (e) {
             console.warn(`Unable to parse transaction data using abi for ${contract.address}: ${e}`);
         }
