@@ -159,13 +159,13 @@ const columnsDict: Record<string, TableColumn> = {
     percentage: {
         name: 'percentage',
         field: 'percentage',
-        label: 'percentage',
+        label: 'Percentage',
         align: 'left',
     },
     percentage_bar: {
         name: 'percentage_bar',
         field: 'percentage_bar',
-        label: 'percentage',
+        label: 'Percentage',
         align: 'left',
     },
     txn_count: {
@@ -574,13 +574,6 @@ function calculateDollarValue(row: EvmHolder): string {
                     >
                         <div class="u-flex--center-y">
                             {{ col.label }}
-                            <!-- Add downward arrow for 'balance' or 'quantity' columns -->
-                            <q-icon
-                                v-if="col.name === 'balance' || col.name === 'quantity'"
-                                name="arrow_downward"
-                                size="16px"
-                                class="q-ml-xs"
-                            />
                         </div>
                     </q-th>
                 </q-tr>
