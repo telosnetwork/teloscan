@@ -1,304 +1,299 @@
-<script>
-import BlockField from 'components/BlockField';
-import DateField from 'components/DateField';
-import TransactionField from 'components/TransactionField';
-import AddressField from 'components/AddressField';
-import ValueField from 'components/ValueField.vue';
-import EmptyTableSign from 'components/EmptyTableSign.vue';
-import { getDirection } from 'src/lib/transaction-utils';
+<script lang='ts' setup>
+import { ref, computed, onMounted, watch, withDefaults, defineProps } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import BlockField from 'src/components/BlockField.vue';
+import DateField from 'src/components/DateField.vue';
+import TransactionField from 'src/components/TransactionField.vue';
+import AddressField from 'src/components/AddressField.vue';
+import ValueField from 'src/components/ValueField.vue';
+import EmptyTableSign from 'src/components/EmptyTableSign.vue';
+import TablePagination from 'src/components/TablePagination.vue';
+import { getDirection as importedGetDirection } from 'src/lib/transaction-utils';
 import { useChainStore } from 'src/core';
+import {
+    PaginationByKey,
+} from 'src/types';
+import { readPaginationFromURL, writePaginationToURL } from 'src/lib/pagination';
 
-export default {
-    name: 'InternalTransactionFlatTable',
-    components: {
-        TransactionField,
-        AddressField,
-        DateField,
-        BlockField,
-        ValueField,
-        EmptyTableSign,
-    },
-    props: {
-        address: {
-            type: String,
-            required: true,
-        },
-        page: {
-            type: Number,
-        },
-        filter: {
-            type: Object,
-            default: () => ({}),
-        },
-        initialPageSize: {
-            type: Number,
-            default: 25,
-        },
-        usePagination: {
-            // when usePagination is false, we use initialPageSize and we don't show the pagination controls
-            type: Boolean,
-            default: true,
-        },
-    },
-    computed: {
-        rowsToShow() {
-            return this.loading? this.loadingRows : this.rows;
-        },
-    },
-    data() {
-        const columns = [
-            {
-                name: 'hash',
-                label: 'hash',
-                align: 'left',
-            },
-            {
-                name: 'block',
-                label: 'block',
-                align: 'left',
-            },
-            {
-                name: 'date',
-                label: 'date',
-                align: 'left',
-            },
-            {
-                name: 'type',
-                label: 'type',
-                align: 'left',
-            },
-            {
-                name: 'from',
-                label: 'from',
-                align: 'left',
-            },
-            {
-                name: 'direction',
-                label: 'direction',
-                align: 'left',
-            },
-            {
-                name: 'to',
-                label: 'to',
-                align: 'left',
-            },
-            {
-                name: 'value',
-                label: 'value',
-                align: 'right',
-            },
-        ];
+// Define interfaces
+interface Column {
+    name: string;
+    label: string;
+    align: string;
+}
 
-        return {
-            rows: [],
-            loadingRows: [],
-            columns,
-            transactions: [],
-            loading: true,
-            pagination: {
-                sortBy: 'date',
-                descending: true,
-                page: 1,
-                rowsPerPage: 2,
-                rowsNumber: 0,
-            },
-            page_size_options: [10, 20, 50],
-            showDateAge: true,
-            allExpanded: false,
-            timer: null,
-        };
-    },
-    async created() {
-        // initialization of the translated texts
-        this.columns.filter(t => t.name === 'hash')[0].label = this.$t('components.tx_hash');
-        this.columns.filter(t => t.name === 'block')[0].label = this.$t('components.block');
-        this.columns.filter(t => t.name === 'date')[0].label = this.$t('components.age');
-        this.columns.filter(t => t.name === 'type')[0].label = this.$t('components.approvals.type');
-        this.columns.filter(t => t.name === 'from')[0].label = this.$t('pages.from');
-        this.columns.filter(t => t.name === 'to')[0].label = this.$t('pages.to');
-        this.columns.filter(t => t.name === 'value')[0].label = this.$t('pages.value');
-        this.columns.filter(t => t.name === 'direction')[0].label = this.$t('components.direction');
-        if (!this.usePagination) {
-            this.pagination.rowsPerPage = this.initialPageSize;
-        }
-        this.updateLoadingRows();
-    },
-    watch: {
-        '$route.query.page': {
-            handler() {
-                this.updateData();
-            },
-            immediate: true,
-        },
-        '$route.query.network': {
-            handler() {
-                this.loading = true;
-                this.rows = [];
-                this.updateData();
-            },
-        },
-        // each time the address changes, we clear the pagination
-        address() {
-            this.clearPagination();
-        },
-    },
-    methods: {
-        clearPagination() {
-            this.pagination = {
-                ...this.pagination,
-                page: 1,
-                rowsPerPage: this.initialPageSize,
-                rowsNumber: 0,
-            };
-        },
-        updateData() {
-            clearTimeout(this.timer);
-            this.timer = setTimeout(() => {
-                // we need to wait a bit to allow the URL to be updated
-                const _pag = this.$route.query.page;
-                let pag = _pag;
-                let page = 1;
-                let size = this.page_size_options[0];
+interface TransactionRow {
+    trx: 'even' | 'odd';
+    hash: string;
+    blockNumber: number;
+    timestamp: number;
+    type: string;
+    from: string;
+    to: string;
+    value: number | string;
+    symbol: string;
+    decimals: number;
+}
 
-                // we also allow to pass a single number as the page number
-                if (typeof pag === 'number') {
-                    page = pag;
-                } else if (typeof pag === 'string') {
-                    // we also allow to pass a string of two numbers: 'page,rowsPerPage'
-                    const [p, s] = pag.split(',');
-                    page = p;
-                    size = s;
-                } else {
-                    // we are in the first page loading for the first time, so we clear the pagination
-                    this.clearPagination();
-                }
-                this.setPagination(page, size);
-            }, 100);
-        },
-        getDirection: getDirection,
-        updateLoadingRows() {
-            this.loadingRows = [];
-            for (var i = 1; i <= this.pagination.rowsPerPage; i++) {
-                this.loadingRows.push(i);
-            }
-        },
-        popstate(event) {
-            const page = event.state.pagination.page;
-            const size = event.state.pagination.size;
-            this.setPagination(page, size);
-        },
-        setPagination(page, size) {
-            if (page) {
-                this.pagination.page = Number(page);
-            }
+interface ResponseRow {
+    transactionHash: string;
+    blockNumber: number;
+    timestamp: number;
+    action: {
+        callType: string;
+        from: string;
+        to: string;
+        value: number | string;
+    };
+}
 
-            if (this.usePagination) {
-                if (size) {
-                    this.pagination.rowsPerPage = Number(size);
-                }
-            } else {
-                this.pagination.rowsPerPage = this.initialPageSize;
-            }
+interface Props {
+    address: string;
+    page?: number;
+    filter?: Record<string, string>;
+    initialPageSize?: number;
+    usePagination?: boolean;
+}
 
-            this.updateLoadingRows();
-            this.onRequest({
-                pagination: this.pagination,
-            });
-        },
-        async onPaginationChange(props) {
-            const { page, rowsPerPage } = props.pagination;
+// Define props with defaults
+const props = withDefaults(defineProps<Props>(), {
+    filter: () => ({}),
+    initialPageSize: 25,
+    usePagination: true,
+});
 
-            // we need to change the URL to keep the pagination state by changing the this.$route.query.page
-            // with a string like 'page,rowsPerPage'
-            this.$router.push({
-                // taking care to preserve the current #hash anchor and the current query parameters
-                hash: window.location.hash,
-                query: {
-                    ...this.$route.query,
-                    page: `${page},${rowsPerPage}`,
-                },
-            });
-        },
-        async onRequest(props) {
-            const chainSettings = useChainStore().currentChain.settings;
-            this.loading = true;
-            this.rows = [];
-            const { page, rowsPerPage, sortBy, descending } = props.pagination;
-            const path = this.getPath(props);
-            const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
-            let result = await indexerApi.get(path);
-            if (!this.pagination.rowsNumber) {
-                this.pagination.rowsNumber = result.data.total_count;
-            }
-            this.pagination.page = page;
-            this.pagination.rowsPerPage = rowsPerPage;
-            this.pagination.sortBy = sortBy;
-            this.pagination.descending = descending;
-
-            // Process the result data
-            let processedTransactions = 0;
-            let lastTransactionHash = '';
-            const totalEntries = [];
-            result.data.results.forEach((internalTrx) => {
-                if (internalTrx.transactionHash !== lastTransactionHash) {
-                    processedTransactions++;
-                    lastTransactionHash = internalTrx.transactionHash;
-                }
-                const entry = {
-                    trx: processedTransactions % 2 === 0 ? 'even' : 'odd',
-                    hash: internalTrx.transactionHash,
-                    blockNumber: internalTrx.blockNumber,
-                    timestamp: internalTrx.timestamp,
-                    type: internalTrx.action.callType,
-                    from: internalTrx.action.from,
-                    to: internalTrx.action.to,
-                    value: internalTrx.action.value,
-                    symbol: chainSettings.getSystemToken().symbol,
-                    decimals: chainSettings.getSystemToken().decimals,
-                };
-                totalEntries.push(entry);
-
-            });
-
-            this.rows = totalEntries;
-
-            this.loading = false;
-        },
-        getPath(props) {
-            const { page, rowsPerPage, descending } = props.pagination;
-            let path;
-            const limit = Math.max(rowsPerPage, this.page_size_options[0]);
-            console.assert(limit > 0, `Rows per page must be greater than 0, got ${limit}`);
-
-            const filter = Object.assign({}, this.filter ? this.filter : {});
-            if (this.address) {
-                path = `v1/address/${this.address}/internal?limit=${limit}`;
-            } else {
-                path = `v1/internal?limit=${limit}`;
-            }
-
-            if (filter.block) {
-                path += `&block=${filter.block}`;
-            }
-
-            if (filter.hash) {
-                path += `&hash=${filter.hash}`;
-            }
-
-            path += `&offset=${(page - 1) * rowsPerPage}`;
-            path += `&sort=${descending ? 'desc' : 'asc'}`;
-            path += '&includeAbi=1&full=1';
-
-            path += (!this.pagination.rowsNumber) ? '&includePagination=true' : '';  // We only need the count once
-
-            return path;
-        },
-        toggleDateFormat() {
-            this.showDateAge = !this.showDateAge;
-        },
-    },
+// Import router and i18n utilities
+const route = useRoute();
+const router = useRouter();
+const routers = {
+    router,
+    route,
 };
+const { t: $t } = useI18n();
+
+// Define reactive state variables
+const rows = ref<TransactionRow[]>([]);
+const loadingRows = ref<number[]>([]);
+const columns = ref<Column[]>([
+    {
+        name: 'hash',
+        label: 'hash',
+        align: 'left',
+    },
+    {
+        name: 'block',
+        label: 'block',
+        align: 'left',
+    },
+    {
+        name: 'date',
+        label: 'date',
+        align: 'left',
+    },
+    {
+        name: 'type',
+        label: 'type',
+        align: 'left',
+    },
+    {
+        name: 'from',
+        label: 'from',
+        align: 'left',
+    },
+    {
+        name: 'direction',
+        label: 'direction',
+        align: 'left',
+    },
+    {
+        name: 'to',
+        label: 'to',
+        align: 'left',
+    },
+    {
+        name: 'value',
+        label: 'value',
+        align: 'right',
+    },
+]);
+const loading = ref(true);
+const pagination = ref<PaginationByKey>({
+    key: 0,
+    page: 1,
+    descending: true,
+    rowsPerPage: props.initialPageSize,
+    rowsNumber: 0,
+    initialKey: 0,
+});
+const table = 'internal';
+const entryName = 'transactions';
+const page_size_options = [10, 25, 50];
+const showDateAge = ref(true);
+
+// Computed property: if loading, show loading rows; otherwise, show actual rows
+const rowsToShow = computed(() => loading.value ? loadingRows.value : rows.value);
+
+// Expose imported getDirection function for template use
+const getDirection = importedGetDirection;
+
+// Lifecycle hook: on component mount
+onMounted(() => {
+    // Initialize translated texts for columns
+    columns.value.filter(t => t.name === 'hash')[0].label = $t('components.tx_hash');
+    columns.value.filter(t => t.name === 'block')[0].label = $t('components.block');
+    columns.value.filter(t => t.name === 'date')[0].label = $t('components.age');
+    columns.value.filter(t => t.name === 'type')[0].label = $t('components.approvals.type');
+    columns.value.filter(t => t.name === 'from')[0].label = $t('pages.from');
+    columns.value.filter(t => t.name === 'to')[0].label = $t('pages.to');
+    columns.value.filter(t => t.name === 'value')[0].label = $t('pages.value');
+    columns.value.filter(t => t.name === 'direction')[0].label = $t('components.direction');
+
+    // If pagination is disabled, set rowsPerPage to initialPageSize
+    if (!props.usePagination) {
+        pagination.value.rowsPerPage = props.initialPageSize;
+    }
+    updateLoadingRows();
+});
+
+// Watch for changes in the route query 'page' and update data accordingly
+watch(
+    () => route.query,
+    () => {
+        const { page, rowsPerPage } = readPaginationFromURL(props.initialPageSize, { router, route });
+        setPagination(page, rowsPerPage);
+    },
+    { immediate: true, deep: true },
+);
+
+// Watch for changes in the address prop to clear pagination
+watch(
+    () => props.address,
+    () => {
+        clearPagination();
+    },
+);
+
+// Method to clear the pagination state
+function clearPagination(): void {
+    pagination.value.page = 1;
+    pagination.value.rowsPerPage = props.initialPageSize;
+    pagination.value.rowsNumber = 0;
+}
+
+// Method to update the loading rows based on the current rowsPerPage
+function updateLoadingRows(): void {
+    loadingRows.value = [];
+    for (let i = 1; i <= pagination.value.rowsPerPage; i++) {
+        loadingRows.value.push(i);
+    }
+}
+
+// Method to set the pagination state and request new data
+function setPagination(page: number, size: number): void {
+    if (page) {
+        pagination.value.page = Number(page);
+    }
+    if (props.usePagination) {
+        if (size) {
+            pagination.value.rowsPerPage = Number(size);
+        }
+    } else {
+        pagination.value.rowsPerPage = props.initialPageSize;
+    }
+    updateLoadingRows();
+    onRequest();
+}
+
+// Method to handle pagination changes from the UI
+async function onPaginationChange (settings: { pagination: PaginationByKey }) {
+    const { page, rowsPerPage, descending } = settings.pagination;
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = rowsPerPage;
+    pagination.value.descending = descending;
+
+    // Write pagination state to URL using the library function
+    writePaginationToURL(page, rowsPerPage, props.initialPageSize, routers);
+
+    await onRequest();
+}
+
+// Method to fetch data from the API based on current pagination and filters
+async function onRequest(): Promise<void> {
+    const chainStore = useChainStore();
+    const chainSettings = chainStore.currentChain.settings;
+    loading.value = true;
+    rows.value = [];
+    const { page, rowsPerPage, descending } = pagination.value;
+    const path = getPath();
+    const indexerApi = chainSettings.getIndexerApi();
+    const result = await indexerApi.get(path);
+    if (!pagination.value.rowsNumber) {
+        pagination.value.rowsNumber = result.data.total_count;
+    }
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = rowsPerPage;
+    pagination.value.descending = descending;
+
+    // Process the result data and build table rows
+    let processedTransactions = 0;
+    let lastTransactionHash = '';
+    const totalEntries: TransactionRow[] = [];
+    result.data.results.forEach((internalTrx: ResponseRow) => {
+        if (internalTrx.transactionHash !== lastTransactionHash) {
+            processedTransactions++;
+            lastTransactionHash = internalTrx.transactionHash;
+        }
+        const entry: TransactionRow = {
+            trx: processedTransactions % 2 === 0 ? 'even' : 'odd',
+            hash: internalTrx.transactionHash,
+            blockNumber: internalTrx.blockNumber,
+            timestamp: internalTrx.timestamp,
+            type: internalTrx.action.callType,
+            from: internalTrx.action.from,
+            to: internalTrx.action.to,
+            value: internalTrx.action.value,
+            symbol: chainSettings.getSystemToken().symbol,
+            decimals: chainSettings.getSystemToken().decimals,
+        };
+        totalEntries.push(entry);
+    });
+    rows.value = totalEntries;
+    loading.value = false;
+}
+
+// Method to construct the API path based on pagination and filters
+function getPath(): string {
+    const { page, rowsPerPage, descending } = pagination.value;
+    let path = '';
+    const limit = Math.max(rowsPerPage, page_size_options[0]);
+    console.assert(limit > 0, `Rows per page must be greater than 0, got ${limit}`);
+    const filter = props.filter ? { ...props.filter } : {};
+    if (props.address) {
+        path = `v1/address/${props.address}/internal?limit=${limit}`;
+    } else {
+        path = `v1/internal?limit=${limit}`;
+    }
+    if (filter.block) {
+        path += `&block=${filter.block}`;
+    }
+    if (filter.hash) {
+        path += `&hash=${filter.hash}`;
+    }
+    path += `&offset=${(page - 1) * rowsPerPage}`;
+    path += `&sort=${descending ? 'desc' : 'asc'}`;
+    path += '&includeAbi=1&full=1';
+    path += (!pagination.value.rowsNumber) ? '&includePagination=true' : '';
+    return path;
+}
+
+// Method to toggle the date format display
+function toggleDateFormat(): void {
+    showDateAge.value = !showDateAge.value;
+}
+
 </script>
+
 
 <template>
 <q-table
@@ -306,9 +301,9 @@ export default {
     class="c-inttrx-flat__table"
     :rows="rowsToShow"
     :row-key="row => row.hash"
-    :columns="columns"
+    :columns="(columns as any)"
     :rows-per-page-options="page_size_options"
-    @request="onPaginationChange"
+    :hide-bottom="usePagination"
 >
     <template v-slot:no-data>
         <EmptyTableSign />
@@ -325,6 +320,19 @@ export default {
         </q-card-actions>
     </template>
     <template v-slot:header="props">
+        <!-- Table pagination buttons in header -->
+        <q-tr v-if="usePagination">
+            <q-td :colspan="columns.length">
+                <TablePagination
+                    position="top"
+                    :pageOptions="page_size_options"
+                    :table="table"
+                    :entryName="entryName"
+                    :pagination="pagination"
+                    @update="onPaginationChange"
+                />
+            </q-td>
+        </q-tr>
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 <template v-if="col.name === 'date'" >
@@ -399,6 +407,21 @@ export default {
                 </q-td>
             </q-tr>
         </template>
+    </template>
+    <!-- Bottom row with table pagination buttons -->
+    <template v-if="usePagination" v-slot:bottom-row>
+        <q-tr>
+            <q-td :colspan="columns.length" class="pagination-container">
+                <TablePagination
+                    position="bottom"
+                    :pageOptions="page_size_options"
+                    :table="table"
+                    :entryName="entryName"
+                    :pagination="pagination"
+                    @update="onPaginationChange"
+                />
+            </q-td>
+        </q-tr>
     </template>
 </q-table>
 </template>

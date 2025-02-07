@@ -1,22 +1,41 @@
 <script lang="ts" setup>
+// src/components/BlockTable.vue
+
 import { useQuasar } from 'quasar';
-import { useRoute, useRouter } from 'vue-router';
-import { onBeforeMount, ref, watch } from 'vue';
+import {
+    useRoute,
+    useRouter,
+} from 'vue-router';
+import {
+    onBeforeMount,
+    ref,
+    watch,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
 import EmptyTableSign from 'components/EmptyTableSign.vue';
-import { BlockData } from 'src/types';
+import TablePagination from 'src/components/TablePagination.vue';
+import {
+    BlockData,
+    PaginationByKey,
+} from 'src/types';
 import { ethers } from 'ethers';
 
-import { Pagination } from 'src/types';
 import { useChainStore } from 'src/core';
+
+import {
+    writePaginationToURL,
+    readPaginationFromURL,
+} from 'src/lib/pagination';
 
 const $q = useQuasar();
 const route = useRoute();
 const router = useRouter();
 const { t: $t } = useI18n();
+const table = 'blocks';
+const entryName = 'blocks';
 
 export interface BlockTableProps {
     title: string;
@@ -37,16 +56,16 @@ const showDateAge = ref(true);
 const blocks: BlockData[] = [];
 const page_size_options = [10, 25, 50, 100];
 
-const pagination = ref<Pagination>(
-    {
-        sortBy: 'number',
-        descending: true,
-        page: 1,
-        rowsPerPage: props.initialPageSize || 25,
-        rowsNumber: 0,
-    },
-);
+const pagination = ref<PaginationByKey>({
+    key: 0,
+    page: 1,
+    descending: true,
+    rowsPerPage: props.initialPageSize,
+    rowsNumber: 0,
+    initialKey: 0,
+});
 
+// Define las columnas de la tabla
 const columns = [
     {
         name: 'block',
@@ -70,32 +89,21 @@ const columns = [
     },
 ];
 
-watch(() => route.query,
+watch(
+    () => route.query,
     () => {
-        let page = 1;
-        let desc = true;
-        let size = page_size_options[0];
-        const pageParam = route.query.page;
-
-        // we also allow to pass a single number as the page number
-        if (typeof pageParam === 'number') {
-            page = pageParam;
-        } else if (typeof pageParam === 'string') {
-            // we also allow to pass a string of two numbers: 'page,rowsPerPage'
-            const [p, s, d] = pageParam.split(',');
-            page = Number(p);
-            size = Number(s);
-            desc = (!d || d.toUpperCase() !== 'ASC');
-        }
-
-        setPagination(page, size, desc);
+        const { page, rowsPerPage } = readPaginationFromURL(props.initialPageSize, { router, route });
+        setPagination(page, rowsPerPage, true);
     },
-    { immediate: true },
+    { immediate: true, deep: true },
 );
 
-watch(() => props.showEmptyBlocks, () => {
-    parseBlocks();
-}, { immediate: true },
+watch(
+    () => props.showEmptyBlocks,
+    () => {
+        onRequest();
+    },
+    { immediate: true },
 );
 
 function setPagination(page: number, size: number, desc: boolean) {
@@ -106,20 +114,13 @@ function setPagination(page: number, size: number, desc: boolean) {
         pagination.value.rowsPerPage = size;
     }
     pagination.value.descending = desc;
-    parseBlocks();
+    onRequest();
 }
 
-async function onPaginationChange(settings: { pagination: Pagination}) {
-    const { page, rowsPerPage, descending } = settings.pagination;
-    router.push({
-        hash: window.location.hash,
-        query: {
-            ...route.query,
-            page: `${page},${rowsPerPage},${(descending) ? 'DESC' : 'ASC'}`,
-        },
-    });
+async function onPaginationChange(settings: { pagination: PaginationByKey }) {
+    const { page, rowsPerPage } = settings.pagination;
+    writePaginationToURL(page, rowsPerPage, props.initialPageSize, { router, route });
 }
-
 
 async function fetchBlocksPage() {
     const path = getPath();
@@ -131,26 +132,21 @@ async function fetchBlocksPage() {
     return result;
 }
 
-async function parseBlocks() {
-    if(loading.value){
+async function onRequest() {
+    if (loading.value) {
         return;
     }
     loading.value = true;
-    const { page, rowsPerPage, sortBy, descending } = pagination.value;
+    const { page, rowsPerPage, descending } = pagination.value;
 
     try {
         let response = await fetchBlocksPage();
 
         pagination.value.page = page;
         pagination.value.rowsPerPage = rowsPerPage;
-        pagination.value.sortBy = sortBy;
         pagination.value.descending = descending;
 
-        blocks.splice(
-            0,
-            blocks.length,
-            ...response.data.results,
-        );
+        blocks.splice(0, blocks.length, ...response.data.results);
         rows.value = blocks;
         loading.value = false;
         rows.value = blocks;
@@ -158,22 +154,19 @@ async function parseBlocks() {
         $q.notify({
             type: 'negative',
             message: $t('components.transaction.load_error'),
-            caption: (e as {message:string}).message,
+            caption: (e as { message: string }).message,
         });
         loading.value = false;
     }
 }
 
-
 function getPath() {
     const { page, rowsPerPage, descending } = pagination.value;
-    let path = `v1/blocks?limit=${
-        rowsPerPage === 0 ? 25 : rowsPerPage
-    }`;
+    let path = `v1/blocks?limit=${rowsPerPage === 0 ? 25 : rowsPerPage}`;
     path += `&offset=${(page - 1) * rowsPerPage}`;
     path += `&sort=${descending ? 'desc' : 'asc'}`;
     path += '&includePagination=true';
-    if (!props.showEmptyBlocks){
+    if (!props.showEmptyBlocks) {
         path += '&noEmpty=true';
     }
 
@@ -199,7 +192,7 @@ function getGasUsed(gasUsed: string) {
 
 const updateLoadingRows = () => {
     loadingRows.value = [];
-    for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
+    for (let i = 1; i <= pagination.value.rowsPerPage; i++) {
         loadingRows.value.push(i);
     }
 };
@@ -211,6 +204,7 @@ watch(() => pagination.value.rowsPerPage, () => {
 onBeforeMount(() => {
     updateLoadingRows();
 });
+
 
 </script>
 
@@ -225,14 +219,26 @@ onBeforeMount(() => {
     :row-key="row => row.blockNumber"
     :columns="(columns as any)"
     :rows-per-page-options="page_size_options"
-    @request="onPaginationChange"
+    :hide-bottom="true"
 >
     <template v-slot:no-data>
         <EmptyTableSign />
     </template>
     <!-- header template -->
     <template v-slot:header="props">
-        <!--pre>{{ props }}</pre-->
+        <!-- Table pagination buttons in header -->
+        <q-tr>
+            <q-td :colspan="columns.length">
+                <TablePagination
+                    position="top"
+                    :pageOptions="page_size_options"
+                    :table="table"
+                    :entryName="entryName"
+                    :pagination="pagination"
+                    @update="onPaginationChange"
+                />
+            </q-td>
+        </q-tr>
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 <template v-if="col.name === 'date'">
@@ -289,6 +295,21 @@ onBeforeMount(() => {
             </q-td>
         </q-tr>
     </template>
+    <!-- Bottom row with table pagination buttons -->
+    <template v-slot:bottom-row>
+        <q-tr>
+            <q-td :colspan="columns.length" class="pagination-container">
+                <TablePagination
+                    position="bottom"
+                    :pageOptions="page_size_options"
+                    :table="table"
+                    :entryName="entryName"
+                    :pagination="pagination"
+                    @update="onPaginationChange"
+                />
+            </q-td>
+        </q-tr>
+    </template>
 </q-table>
 <q-table
     v-else
@@ -299,8 +320,22 @@ onBeforeMount(() => {
     :rows-per-page-label="$t('global.records_per_page')"
     :columns="(columns as any)"
     :rows-per-page-options="page_size_options"
+    :hide-bottom="true"
 >
     <template v-slot:header="props">
+        <!-- Table pagination buttons in header -->
+        <q-tr>
+            <q-td :colspan="columns.length">
+                <TablePagination
+                    position="top"
+                    :pageOptions="page_size_options"
+                    :table="table"
+                    :entryName="entryName"
+                    :pagination="pagination"
+                    @update="onPaginationChange"
+                />
+            </q-td>
+        </q-tr>
         <q-tr :props="props">
             <q-th v-for="col in props.cols" :key="col.name" :props="props">
                 <template v-if="col.name === 'date'">
@@ -337,6 +372,21 @@ onBeforeMount(() => {
             </q-td>
             <q-td key='gasUsed' class="c-block-table__td-gas-used">
                 <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+        </q-tr>
+    </template>
+    <!-- Bottom row with table pagination buttons -->
+    <template v-slot:bottom-row>
+        <q-tr>
+            <q-td :colspan="columns.length" class="pagination-container">
+                <TablePagination
+                    position="bottom"
+                    :pageOptions="page_size_options"
+                    :table="table"
+                    :entryName="entryName"
+                    :pagination="pagination"
+                    @update="onPaginationChange"
+                />
             </q-td>
         </q-tr>
     </template>

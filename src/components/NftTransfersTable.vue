@@ -1,6 +1,10 @@
 <!-- eslint-disable no-case-declarations -->
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import {
+    onMounted,
+    ref,
+    watch,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import TransactionField from 'components/TransactionField.vue';
@@ -10,17 +14,37 @@ import AddressField from 'components/AddressField.vue';
 import NftItemField from 'components/NftItemField.vue';
 import DateField from 'components/DateField.vue';
 import EmptyTableSign from 'components/EmptyTableSign.vue';
+import TablePagination from 'src/components/TablePagination.vue';
 
-import { formatWei, toChecksumAddress } from 'src/lib/utils';
-import { NftTransferProps, NftTransferData } from 'src/types';
+import {
+    formatWei,
+    toChecksumAddress,
+} from 'src/lib/utils';
+import {
+    NftTransferProps,
+    NftTransferData,
+    PaginationByKey,
+} from 'src/types';
 
-import { loadTransaction, getDirection } from 'src/lib/transaction-utils';
-import { Pagination } from 'src/types';
+import {
+    loadTransaction,
+    getDirection,
+} from 'src/lib/transaction-utils';
 import { useStore } from 'vuex';
 import { useChainStore } from 'src/core';
-import { useRoute } from 'vue-router';
+import {
+    useRoute,
+    useRouter,
+} from 'vue-router';
+import { writePaginationToURL } from 'src/lib/pagination';
 
-const $route = useRoute();
+// Import router and i18n utilities
+const route = useRoute();
+const router = useRouter();
+const routers = {
+    router,
+    route,
+};
 const { t: $t } = useI18n();
 const $store = useStore();
 const toggleDisplayDecimals = () => $store.dispatch('general/toggleDisplayDecimals');
@@ -81,15 +105,17 @@ const loadingCols = ref<Array<number>>([]);
 const showDateAge = ref(true);
 const highlightMethod = ref('');
 
-const pagination = ref<Pagination>(
-    {
-        sortBy: 'number',
-        descending: true,
-        page: 1,
-        rowsPerPage: props.initialPageSize || 10,
-        rowsNumber: 0,
-    },
-);
+const pagination = ref<PaginationByKey>({
+    key: 0,
+    page: 1,
+    descending: true,
+    rowsPerPage: props.initialPageSize,
+    rowsNumber: 0,
+    initialKey: 0,
+});
+const table = props.tokenType;
+const entryName = 'transfers';
+const page_size_options = [10, 25, 50];
 
 const columns = [
     {
@@ -153,6 +179,19 @@ const columns = [
     align: string,
 }[];
 
+// Method to handle pagination changes from the UI
+async function onPaginationChange(settings: { pagination: PaginationByKey }) {
+    const { page, rowsPerPage, descending } = settings.pagination;
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = rowsPerPage;
+    pagination.value.descending = descending;
+
+    // Write pagination state to URL using the library function
+    writePaginationToURL(page, rowsPerPage, props.initialPageSize, routers);
+
+    await onRequest();
+}
+
 function setHighlightMethod(val: string) {
     highlightMethod.value = val;
 }
@@ -165,8 +204,8 @@ const truncatedId = (id: string) => {
     }
 };
 
-const getPath = (settings: { pagination: Pagination }) => {
-    const { page, rowsPerPage, descending } = settings.pagination;
+const getPath = () => {
+    const { page, rowsPerPage, descending } = pagination.value;
     let path = `/v1/account/${props.address}/transfers?limit=${
         rowsPerPage === 0 ? 10 : rowsPerPage
     }`;
@@ -183,21 +222,16 @@ const resolveMethodName = async (transfer: NftTransferData) => {
     rows.value = [...rows.value];
 };
 
-const onRequest = async (settings: { pagination: Pagination}) => {
-    loading.value = true;
+const onRequest = async () => {
     const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
 
-    const { page, rowsPerPage, sortBy, descending } = settings.pagination;
-
-    let response = await indexerApi.get(getPath(settings)) as { data: TransfersResponse };
+    loading.value = true;
+    const path = getPath();
+    let response = await indexerApi.get(path) as { data: TransfersResponse };
     if (!pagination.value.rowsNumber && response.data?.total_count) {
         pagination.value.rowsNumber = response.data.total_count;
     }
 
-    pagination.value.page = page;
-    pagination.value.rowsPerPage = rowsPerPage;
-    pagination.value.sortBy = sortBy;
-    pagination.value.descending = descending;
     updateLoadingRows();
 
     let newTransfers = [] as NftTransferData[];
@@ -299,14 +333,24 @@ watch(() => props.tokenType, () => {
 },
 { immediate: true });
 
-watch(() => $route.query.network, () => {
-    onRequest({ pagination: pagination.value });
+watch(() => route.query.network, () => {
+    onRequest();
+});
+
+watch(() => route.query.tab, (newTab) => {
+    const doWrite =
+        newTab === 'tokentxns' && props.tokenType === 'erc20' ||
+        newTab === 'erc721txns' && props.tokenType === 'erc721' ||
+        newTab === 'erc1155txns' && props.tokenType === 'erc1155';
+    if (doWrite) {
+        writePaginationToURL(pagination.value.page, pagination.value.rowsPerPage, props.initialPageSize, routers);
+    }
 });
 
 onMounted(() => {
     updateCols();
     updateLoadingRows();
-    onRequest({ pagination: pagination.value });
+    onRequest();
 });
 
 </script>
@@ -317,15 +361,29 @@ onMounted(() => {
     v-model:pagination="pagination"
     :rows="rows"
     :row-key="row => row.hash"
-    :columns="columns"
+    :columns="(columns as any)"
     :rows-per-page-label="$t('global.records_per_page')"
-    :rows-per-page-options="[10, 20, 50]"
-    @request="onRequest"
+    :rows-per-page-options="page_size_options"
+    :hide-bottom="true"
 >
     <template v-slot:no-data>
         <EmptyTableSign />
     </template>
+
     <template v-slot:header="props">
+        <!-- Table pagination buttons in header -->
+        <q-tr>
+            <q-td :colspan="columns.length">
+                <TablePagination
+                    position="top"
+                    :pageOptions="page_size_options"
+                    :table="table"
+                    :entryName="entryName"
+                    :pagination="pagination"
+                    @update="onPaginationChange"
+                />
+            </q-td>
+        </q-tr>
         <q-tr :props="props">
             <q-th
                 v-for="col in props.cols"
@@ -440,17 +498,47 @@ onMounted(() => {
             </q-td>
         </q-tr>
     </template>
+
+    <!-- Bottom row with table pagination buttons -->
+    <template v-slot:bottom-row>
+        <q-tr>
+            <q-td :colspan="columns.length" class="pagination-container">
+                <TablePagination
+                    position="bottom"
+                    :pageOptions="page_size_options"
+                    :table="table"
+                    :entryName="entryName"
+                    :pagination="pagination"
+                    @update="onPaginationChange"
+                />
+            </q-td>
+        </q-tr>
+    </template>
 </q-table>
 <q-table
     v-else
     v-model:pagination="pagination"
     :rows="loadingRows"
     :row-key="row => row.hash"
-    :columns="columns"
+    :columns="(columns as any)"
     :rows-per-page-label="$t('global.records_per_page')"
-    :rows-per-page-options="[10, 20, 50]"
+    :rows-per-page-options="page_size_options"
+    :hide-bottom="true"
 >
     <template v-slot:header="props">
+        <!-- Table pagination buttons in header -->
+        <q-tr>
+            <q-td :colspan="columns.length">
+                <TablePagination
+                    position="top"
+                    :pageOptions="page_size_options"
+                    :table="table"
+                    :entryName="entryName"
+                    :pagination="pagination"
+                    @update="onPaginationChange"
+                />
+            </q-td>
+        </q-tr>
         <q-tr :props="props">
             <q-th
                 v-for="col in props.cols"
@@ -481,6 +569,22 @@ onMounted(() => {
         <q-tr>
             <q-td v-for="col in loadingCols" :key="col">
                 <q-skeleton type="text" class="c-trx-overview__skeleton" />
+            </q-td>
+        </q-tr>
+    </template>
+
+    <!-- Bottom row with table pagination buttons -->
+    <template v-slot:bottom-row>
+        <q-tr>
+            <q-td :colspan="columns.length" class="pagination-container">
+                <TablePagination
+                    position="bottom"
+                    :pageOptions="page_size_options"
+                    :table="table"
+                    :entryName="entryName"
+                    :pagination="pagination"
+                    @update="onPaginationChange"
+                />
             </q-td>
         </q-tr>
     </template>

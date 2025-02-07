@@ -1,6 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeMount } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { ALLOWED_VIDEO_EXTENSIONS } from 'src/lib/utils';
 
@@ -8,19 +8,32 @@ import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
 import ImagePopup from 'src/components/ImagePopup.vue';
 import EmptyTableSign from 'components/EmptyTableSign.vue';
+import TablePagination from 'src/components/TablePagination.vue';
 
 import { NFT, NFT_TYPE } from 'src/types/NFT';
 import { useChainStore } from 'src/core';
 import { QTableProps, useQuasar } from 'quasar';
-import { useRoute } from 'vue-router';
+import {
+    useRoute,
+    useRouter,
+} from 'vue-router';
+import { PaginationByKey } from 'src/types';
+import { writePaginationToURL } from 'src/lib/pagination';
 
 
 
 const allowedFilters = ['contract', 'account'];
+const initialPageSize = 10;
 
-const { t : $t } = useI18n();
+// Import router and i18n utilities
+const route = useRoute();
+const router = useRouter();
+const routers = {
+    router,
+    route,
+};
+const { t: $t } = useI18n();
 const $q = useQuasar();
-const $route = useRoute();
 
 const props = defineProps({
     address: {
@@ -38,13 +51,19 @@ const columns = ref<QTableProps['columns']>([]);
 const loading = ref(true);
 const showWithoutMetadata = ref(false);
 const nfts = ref<NFT[]>([]);
+const allNFTs = ref<NFT[]>([]);
 const loadingRows = ref<Array<number>>([]);
-const pagination = ref({
-    sortBy: '',
-    descending: true,
+const pagination = ref<PaginationByKey>({
+    key: 0,
     page: 1,
-    rowsPerPage: 10,
+    descending: true,
+    rowsPerPage: initialPageSize,
+    rowsNumber: 0,
+    initialKey: 0,
 });
+const table = 'nft';
+const entryName = 'items';
+const page_size_options = [10, 25, 50];
 
 watch(() => props.filter, () => {
     setupColumns();
@@ -112,16 +131,39 @@ function setupColumns() {
     ];
 }
 
-onBeforeMount(() => {
+function updateLoadingRows() {
     for (var i = 1; i <= pagination.value.rowsPerPage; i++) {
         loadingRows.value.push(i);
     }
-});
+}
 
 onMounted(async () => {
-    await onRequest();
     setupColumns();
+    updateLoadingRows();
+    await onRequest();
 });
+
+async function onPaginationChange (settings: { pagination: PaginationByKey }) {
+    const { page, rowsPerPage } = settings.pagination;
+    writePaginationToURL(page, rowsPerPage, initialPageSize, routers);
+    setPagination(page, rowsPerPage);
+}
+
+function updateNftsBasedOnPagination() {
+    // acording to new pagination, take the list of nfts corresponding to the current page from the allNFTs list
+    const start = (pagination.value.page - 1) * pagination.value.rowsPerPage;
+    const end = start + pagination.value.rowsPerPage;
+    nfts.value = allNFTs.value.slice(start, end);
+}
+
+// Method to set the pagination state and request new data
+function setPagination(page: number, size: number): void {
+    if (route.query.tab === 'nfts' || route.query.tab === 'collection') {
+        pagination.value.page = page;
+        pagination.value.rowsPerPage = size;
+        updateNftsBasedOnPagination();
+    }
+}
 
 function getMedia(nft: NFT) {
     if(
@@ -167,7 +209,7 @@ async function onRequest() {
     loading.value = true;
     const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
 
-    const { page, rowsPerPage, sortBy, descending } = pagination.value;
+    const { page, rowsPerPage, descending } = pagination.value;
 
     const erc721 = await indexerApi.get(getPath(NFT_TYPE.ERC721));
     const erc1155 = await indexerApi.get(getPath(NFT_TYPE.ERC1155));
@@ -179,8 +221,8 @@ async function onRequest() {
 
     pagination.value.page = page;
     pagination.value.rowsPerPage = rowsPerPage;
-    pagination.value.sortBy = sortBy;
     pagination.value.descending = descending;
+    pagination.value.rowsNumber = response.data.total_count;
 
     let nftsArr = [];
     for (let nft of response.data.results) {
@@ -205,7 +247,8 @@ async function onRequest() {
         nft.tokenUri = (nft.tokenUri) ? nft.tokenUri.replace('ipfs://', 'https://ipfs.io/ipfs/') : null;
         nftsArr.push(nft);
     }
-    nfts.value = nftsArr;
+    allNFTs.value = nftsArr;
+    updateNftsBasedOnPagination();
     loading.value = false;
 }
 
@@ -231,8 +274,14 @@ onMounted(() => {
     }
 });
 
-watch(() => $route.query.network, () => {
+watch(() =>route.query.network, () => {
     onRequest();
+});
+
+watch(() => route.query.tab, (newTab) => {
+    if (newTab === 'nfts' || newTab === 'collection') {
+        writePaginationToURL(pagination.value.page, pagination.value.rowsPerPage, initialPageSize, routers);
+    }
 });
 
 </script>
@@ -247,12 +296,26 @@ watch(() => $route.query.network, () => {
         :binary-state-sort="true"
         :row-key="row => row.contract + row.tokenId"
         :columns="columns"
-        :rows-per-page-options="[10, 20, 50]"
+        :rows-per-page-options="page_size_options"
+        :hide-bottom="true"
     >
         <template v-slot:no-data>
             <EmptyTableSign />
         </template>
         <template v-slot:header="props">
+            <!-- Table pagination buttons in header -->
+            <q-tr>
+                <q-td :colspan="props.cols.length">
+                    <TablePagination
+                        position="top"
+                        :pageOptions="page_size_options"
+                        :table="table"
+                        :entryName="entryName"
+                        :pagination="pagination"
+                        @update="onPaginationChange"
+                    />
+                </q-td>
+            </q-tr>
             <q-tr :props="props">
                 <q-th
                     v-for="col in props.cols"
@@ -262,7 +325,7 @@ watch(() => $route.query.network, () => {
                     <div v-if="col.name==='media'" class="u-flex--center-y" @click="toggleMediaSize">
                         <a>{{ col.label }}</a>
                         <q-icon class="info-icon q-ml-xs" name="far fa-question-circle"/>
-                        <q-tooltip v-it="$q.screen.gt.md" anchor="bottom middle" self="top middle">
+                        <q-tooltip v-if="$q.screen.gt.md" anchor="bottom middle" self="top middle">
                             {{ $t('components.click_to_toggle_media_size') }}
                         </q-tooltip>
                     </div>
@@ -377,15 +440,31 @@ watch(() => $route.query.network, () => {
             </q-tr>
         </template>
         <template v-slot:bottom-row>
-            <q-toggle
-                v-model="showWithoutMetadata"
-                :label="$t('components.nfts.show_without_metadata')"
-                :class="(nfts.length > 0) ? '' : 'right'"
-                color="primary"
-                checked-icon="visibility"
-                unchecked-icon="visibility_off"
-                @update:model-value="onRequest()"
-            />
+            <q-tr>
+                <q-td :colspan="columns?.length" class="pagination-container">
+                    <TablePagination
+                        position="bottom"
+                        :pageOptions="page_size_options"
+                        :table="table"
+                        :entryName="entryName"
+                        :pagination="pagination"
+                        @update="onPaginationChange"
+                    />
+                </q-td>
+            </q-tr>
+            <q-tr>
+                <q-td>
+                    <q-toggle
+                        v-model="showWithoutMetadata"
+                        :label="$t('components.nfts.show_without_metadata')"
+                        :class="(nfts.length > 0) ? '' : 'right'"
+                        color="primary"
+                        checked-icon="visibility"
+                        unchecked-icon="visibility_off"
+                        @update:model-value="onRequest()"
+                    />
+                </q-td>
+            </q-tr>
         </template>
     </q-table>
     <q-table
@@ -394,9 +473,23 @@ watch(() => $route.query.network, () => {
         :rows="loadingRows"
         :rows-per-page-label="$t('global.records_per_page')"
         :columns="columns"
-        :rows-per-page-options="[10, 20, 50]"
+        :rows-per-page-options="page_size_options"
+        :hide-bottom="true"
     >
         <template v-slot:header="props">
+            <!-- Table pagination buttons in header -->
+            <q-tr>
+                <q-td :colspan="props.cols.length">
+                    <TablePagination
+                        position="top"
+                        :pageOptions="page_size_options"
+                        :table="table"
+                        :entryName="entryName"
+                        :pagination="pagination"
+                        @update="onPaginationChange"
+                    />
+                </q-td>
+            </q-tr>
             <q-tr :props="props">
                 <q-th
                     v-for="col in props.cols"
@@ -440,6 +533,20 @@ watch(() => $route.query.network, () => {
                 </q-td>
                 <q-td key="metadata">
                     <q-skeleton type="text" class="c-trx-overview__skeleton" />
+                </q-td>
+            </q-tr>
+        </template>
+        <template v-slot:bottom-row>
+            <q-tr>
+                <q-td :colspan="columns?.length" class="pagination-container">
+                    <TablePagination
+                        position="bottom"
+                        :pageOptions="page_size_options"
+                        :table="table"
+                        :entryName="entryName"
+                        :pagination="pagination"
+                        @update="onPaginationChange"
+                    />
                 </q-td>
             </q-tr>
         </template>

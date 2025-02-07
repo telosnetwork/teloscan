@@ -1,26 +1,46 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <!-- src/components/Token/HolderList.vue -->
 <script lang="ts" setup>
-// We import the needed libraries
-import { ref, computed, onBeforeMount, onMounted, Ref, watch } from 'vue';
+import {
+    ref,
+    computed,
+    onBeforeMount,
+    onMounted,
+    Ref,
+    watch,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import AddressField from 'components/AddressField.vue';
 import MinimumVersionRequired from 'components/MinimumVersionRequired.vue';
-import TablePagination from 'src/components/Token/TablePagination.vue';
+import TablePagination from 'src/components/TablePagination.vue';
 import BigDecimal from 'js-big-decimal';
-import { BigNumber, ethers } from 'ethers';
-import { INDEXER_SUPPORT_TIME_OUT, useChainStore } from 'src/core';
+import {
+    BigNumber,
+    ethers,
+} from 'ethers';
+import {
+    INDEXER_SUPPORT_TIME_OUT,
+    useChainStore,
+} from 'src/core';
 import {
     EvmHolder,
     IndexerHoldersResponse,
     NativeCurrencyAddress,
     ContractDisplayInfo,
 } from 'src/core/types';
+import { PaginationByKey } from 'src/types';
+import { readPaginationFromURL, writePaginationToURL } from 'src/lib/pagination';
 import {
-    pagination,            // Reactive pagination object. Represents current pagination state
-    default_rows_per_page_options,
-    setPaginationTotalNumber,
-} from 'src/lib/pagination';
+    useRoute,
+    useRouter,
+} from 'vue-router';
+
+const route = useRoute();
+const router = useRouter();
+const routers = {
+    router,
+    route,
+};
 
 defineOptions({
     name: 'HolderList',
@@ -31,6 +51,10 @@ const DEFAULT_DECIMALS = 18;
 
 // Default columns if user does not provide any
 const defaultColumns = ['rank', 'holder', 'balance', 'percentage_bar'];
+const initialPageSize = 25;
+const page_size_options = [10, 25, 50, 100];
+const table = 'holders';
+const entryName = 'holders';
 
 type Alignment = 'left' | 'center' | 'right';
 
@@ -103,9 +127,9 @@ const weHaveIndexerSupport = ref(false);
 const holders = ref<EvmHolder[]>([]);
 const loadingRows = ref<number[]>([]);
 const loading = ref(false);
+const ready = ref(false);
 const systemContractsList = ref('');
 const showSystemContracts = ref(false);
-
 
 // Chain settings
 const chainSettings = computed(() => useChainStore().currentChain.settings);
@@ -244,6 +268,7 @@ onMounted(async () => {
     // Listen for indexer readiness
     chainSettings.value.indexerReady$.subscribe(() => {
         weHaveIndexerSupport.value = chainSettings.value.hasIndexerSupportOver(minimumVersion);
+        ready.value = true;
         clearTimeout(timer);
         if (!loading.value) {
             onRequest();
@@ -267,26 +292,49 @@ onMounted(async () => {
     });
 });
 
-// Internal pagination model
-const pagination_model = {
-    sortBy: 'balance',
-    descending: true,
+const pagination = ref<PaginationByKey>({
+    key: 0,
     page: 1,
-    rowsPerPage: 25,
+    descending: true,
+    rowsPerPage: initialPageSize,
     rowsNumber: 0,
-};
+    initialKey: 0,
+});
 
-// Update URL query if pagination changes
-watch(
-    () => pagination.value,
-    (a) => {
-        pagination_model.page = pagination.value.page;
-        pagination_model.rowsPerPage = pagination.value.rowsPerPage;
-        pagination_model.rowsNumber = pagination.value.rowsNumber || 0;
-        onRequest();
+// Watch route query to update pagination using the library's read function
+watch(() => route.query,
+    () => {
+        // Read pagination state from URL
+        const { page, rowsPerPage } = readPaginationFromURL(initialPageSize, routers);
+        // Update pagination state; ignore sort since it never changes
+        setPagination(page, rowsPerPage, pagination.value.descending);
     },
-    { deep: true },
+    { immediate: true },
 );
+
+function setPagination (page: number, size: number, desc: boolean) {
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = size;
+    pagination.value.descending = desc;
+    if (pagination.value.initialKey > 0) {
+        // Key is pages away from the initial key (using 1-indexed page)
+        const zeroBasePage = page - 1;
+        pagination.value.key = pagination.value.initialKey - (zeroBasePage * pagination.value.rowsPerPage);
+    }
+    onRequest();
+}
+
+async function onPaginationChange (settings: { pagination: { sortBy: string; descending: boolean; page: number; rowsPerPage: number; } }) {
+    const { page, rowsPerPage, descending } = settings.pagination;
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = rowsPerPage;
+
+    // Write pagination state to URL using the library function
+    writePaginationToURL(page, rowsPerPage, initialPageSize, routers);
+
+    await onRequest();
+}
+
 // Our method for requesting the data
 const last = {
     path: '',
@@ -310,9 +358,8 @@ async function onRequest() {
     loading.value = true;
 
     const response = await indexerApi.get(new_path) as { data?: IndexerHoldersResponse };
-    if (response.data?.total_count && pagination_model.rowsNumber !== response.data?.total_count) {
-        pagination_model.rowsNumber = response.data.total_count;
-        setPaginationTotalNumber(pagination_model.rowsNumber);
+    if (response.data?.total_count && pagination.value.rowsNumber !== response.data?.total_count) {
+        pagination.value.rowsNumber = response.data.total_count;
     }
 
     // Calculate the starting rank based on current page and rowsPerPage
@@ -536,7 +583,7 @@ function calculateDollarValue(row: EvmHolder): string {
 </script>
 
 <template>
-<template v-if="!weHaveIndexerSupport && !loading">
+<template v-if="ready && !weHaveIndexerSupport && !loading">
     <MinimumVersionRequired
         class="c-minimum-version-required"
         :required="minimumVersion"
@@ -546,8 +593,8 @@ function calculateDollarValue(row: EvmHolder): string {
     <div class="c-holder-list">
         <!-- Table with data -->
         <q-table
-            v-if="!loading"
-            v-model:pagination="pagination_model"
+            v-if="ready && !loading"
+            v-model:pagination="pagination"
             class="c-holder-list__table"
             :rows="holders"
             :columns="tableColumns"
@@ -555,14 +602,21 @@ function calculateDollarValue(row: EvmHolder): string {
             :binary-state-sort="true"
             :hide-bottom='true'
             :row-key="row => row.address"
-            :rows-per-page-options="default_rows_per_page_options"
+            :rows-per-page-options="page_size_options"
         >
             <!-- Table header -->
             <template v-slot:header="props">
                 <!-- Table pagination buttons in header -->
                 <q-tr>
                     <q-td :colspan="tableColumns.length">
-                        <TablePagination/>
+                        <TablePagination
+                            position="top"
+                            :pageOptions="page_size_options"
+                            :table="table"
+                            :entryName="entryName"
+                            :pagination="pagination"
+                            @update="onPaginationChange"
+                        />
                     </q-td>
                 </q-tr>
                 <q-tr :props="props">
@@ -685,7 +739,14 @@ function calculateDollarValue(row: EvmHolder): string {
             <template v-slot:bottom-row>
                 <q-tr>
                     <q-td :colspan="tableColumns.length" class="pagination-container">
-                        <TablePagination/>
+                        <TablePagination
+                            position="bottom"
+                            :pageOptions="page_size_options"
+                            :table="table"
+                            :entryName="entryName"
+                            :pagination="pagination"
+                            @update="onPaginationChange"
+                        />
                     </q-td>
                 </q-tr>
             </template>
@@ -699,14 +760,21 @@ function calculateDollarValue(row: EvmHolder): string {
             :columns="tableColumns"
             :hide-bottom='true'
             :rows-per-page-label="$t('global.records_per_page')"
-            :rows-per-page-options="default_rows_per_page_options"
+            :rows-per-page-options="page_size_options"
         >
             <!-- Table header -->
             <template v-slot:header="props">
                 <!-- Table pagination buttons in header -->
                 <q-tr>
                     <q-td :colspan="tableColumns.length">
-                        <TablePagination/>
+                        <TablePagination
+                            position="top"
+                            :pageOptions="page_size_options"
+                            :table="table"
+                            :entryName="entryName"
+                            :pagination="pagination"
+                            @update="onPaginationChange"
+                        />
                     </q-td>
                 </q-tr>
                 <q-tr :props="props">
@@ -744,7 +812,14 @@ function calculateDollarValue(row: EvmHolder): string {
             <template v-slot:bottom-row>
                 <q-tr>
                     <q-td :colspan="tableColumns.length" class="pagination-container">
-                        <TablePagination/>
+                        <TablePagination
+                            position="bottom"
+                            :pageOptions="page_size_options"
+                            :table="table"
+                            :entryName="entryName"
+                            :pagination="pagination"
+                            @update="onPaginationChange"
+                        />
                     </q-td>
                 </q-tr>
             </template>
@@ -794,4 +869,18 @@ function calculateDollarValue(row: EvmHolder): string {
 .c-minimum-version-required {
     align-self: center;
 }
+
+.c-holder-list {
+    &__spinner-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+        padding: 15px;
+    }
+    &__spinner {
+        flex-grow: 1;
+    }
+}
+
 </style>
