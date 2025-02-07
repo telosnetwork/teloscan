@@ -540,10 +540,8 @@ function calculateDollarValue(row: EvmHolder): string {
 <template>
 <template v-if="!ready">
     <q-card class="c-holder-list__spinner-container">
-        <q-spinner-dots
+        <q-skeleton
             class="c-holder-list__spinner"
-            color="primary"
-            size="40px"
         />
     </q-card>
 </template>
@@ -806,10 +804,17 @@ function calculateDollarValue(row: EvmHolder): string {
     align-self: center;
 }
 
-.c-holder-list__spinner-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100px;
+.c-holder-list {
+    &__spinner-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+        padding: 15px;
+    }
+    &__spinner {
+        flex-grow: 1;
+    }
 }
+
 </style>
