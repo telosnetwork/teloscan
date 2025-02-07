@@ -2,11 +2,17 @@
 import AddressField from 'src/components/AddressField';
 import AddToWallet from 'src/components/AddToWallet';
 import ValueField from 'components/ValueField.vue';
+import EmptyTableSign from 'components/EmptyTableSign.vue';
 import { mapActions } from 'vuex';
 
 export default {
     name: 'TokenTable',
-    components: { AddressField, AddToWallet, ValueField },
+    components: {
+        AddressField,
+        AddToWallet,
+        ValueField,
+        EmptyTableSign,
+    },
     props: {
         tokens: {
             type: Array,
@@ -66,6 +72,9 @@ export default {
     :loading="!(rows)"
     :rows-per-page-options="[0]"
 >
+    <template v-slot:no-data>
+        <EmptyTableSign />
+    </template>
 
     <template v-slot:header="props">
         <q-tr :props="props">
