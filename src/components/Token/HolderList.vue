@@ -538,14 +538,7 @@ function calculateDollarValue(row: EvmHolder): string {
 </script>
 
 <template>
-<template v-if="!ready">
-    <q-card class="c-holder-list__spinner-container">
-        <q-skeleton
-            class="c-holder-list__spinner"
-        />
-    </q-card>
-</template>
-<template v-else-if="!weHaveIndexerSupport && !loading">
+<template v-if="ready && !weHaveIndexerSupport && !loading">
     <MinimumVersionRequired
         class="c-minimum-version-required"
         :required="minimumVersion"
@@ -555,7 +548,7 @@ function calculateDollarValue(row: EvmHolder): string {
     <div class="c-holder-list">
         <!-- Table with data -->
         <q-table
-            v-if="!loading"
+            v-if="ready && !loading"
             v-model:pagination="pagination_model"
             class="c-holder-list__table"
             :rows="holders"
