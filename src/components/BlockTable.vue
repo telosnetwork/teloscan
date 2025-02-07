@@ -6,7 +6,7 @@ import { useI18n } from 'vue-i18n';
 
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
-import EmptyTableSign from 'components/EmptyTableSign';
+import EmptyTableSign from 'components/EmptyTableSign.vue';
 import { BlockData } from 'src/types';
 import { ethers } from 'ethers';
 
