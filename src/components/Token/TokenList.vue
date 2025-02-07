@@ -6,6 +6,7 @@ import DEFAULT_TOKEN_LOGO from 'assets/logo--teloscan.png';
 import TokenGridElement from 'src/components/Token/TokenGridElement';
 import TokenTable from 'src/components/Token/TokenTable';
 import BigDecimal from 'js-big-decimal';
+import EmptyTableSign from 'components/EmptyTableSign';
 import { useChainStore } from 'src/core';
 
 export default {
@@ -16,7 +17,11 @@ export default {
             required: true,
         },
     },
-    components: { TokenGridElement, TokenTable },
+    components: {
+        TokenGridElement,
+        TokenTable,
+        EmptyTableSign,
+    },
     data() {
         return {
             processing: false,
@@ -139,8 +144,7 @@ export default {
 </div>
 <div v-else-if="tokensOfficial.length === 0 && tokens?.length === 0" class="row">
     <div class="col-12 flex items-center justify-center">
-        <q-icon class="fa fa-info-circle" size="md" />
-        <h5 class="text-center  q-mb-xl q-mt-xl q-ml-md"> {{ $t('components.no_balances_found') }}</h5>
+        <EmptyTableSign />
     </div>
 </div>
 <div v-else>

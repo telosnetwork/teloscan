@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n';
 
 import BlockField from 'components/BlockField.vue';
 import DateField from 'components/DateField.vue';
+import EmptyTableSign from 'components/EmptyTableSign.vue';
 import { BlockData } from 'src/types';
 import { ethers } from 'ethers';
 
@@ -226,6 +227,9 @@ onBeforeMount(() => {
     :rows-per-page-options="page_size_options"
     @request="onPaginationChange"
 >
+    <template v-slot:no-data>
+        <EmptyTableSign />
+    </template>
     <!-- header template -->
     <template v-slot:header="props">
         <!--pre>{{ props }}</pre-->
