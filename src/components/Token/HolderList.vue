@@ -103,6 +103,7 @@ const weHaveIndexerSupport = ref(false);
 const holders = ref<EvmHolder[]>([]);
 const loadingRows = ref<number[]>([]);
 const loading = ref(false);
+const ready = ref(false);
 const systemContractsList = ref('');
 const showSystemContracts = ref(false);
 
@@ -244,6 +245,7 @@ onMounted(async () => {
     // Listen for indexer readiness
     chainSettings.value.indexerReady$.subscribe(() => {
         weHaveIndexerSupport.value = chainSettings.value.hasIndexerSupportOver(minimumVersion);
+        ready.value = true;
         clearTimeout(timer);
         if (!loading.value) {
             onRequest();
@@ -536,7 +538,16 @@ function calculateDollarValue(row: EvmHolder): string {
 </script>
 
 <template>
-<template v-if="!weHaveIndexerSupport && !loading">
+<template v-if="!ready">
+    <q-card class="c-holder-list__spinner-container">
+        <q-spinner-dots
+            class="c-holder-list__spinner"
+            color="primary"
+            size="40px"
+        />
+    </q-card>
+</template>
+<template v-else-if="!weHaveIndexerSupport && !loading">
     <MinimumVersionRequired
         class="c-minimum-version-required"
         :required="minimumVersion"
@@ -793,5 +804,12 @@ function calculateDollarValue(row: EvmHolder): string {
 
 .c-minimum-version-required {
     align-self: center;
+}
+
+.c-holder-list__spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
 }
 </style>
