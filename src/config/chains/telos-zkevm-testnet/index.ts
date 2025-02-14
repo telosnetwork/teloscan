@@ -170,6 +170,7 @@ const config: NetworkConfig =
         'gasPrice': false,
         'testnet': true,
     },
+    'secondsBehindThreshold': 10,
     'headerMenuConfig': {
         'chain': 'telos-zkevm-testnet',
         'entries': [
@@ -299,6 +300,10 @@ export default class TelosZkEVM extends EVMChainSettings {
 
     getHeaderIndicators(): HeaderIndicators {
         return config.headerIndicators;
+    }
+
+    getIndexerSecondsBehindThreshold(): number {
+        return config.secondsBehindThreshold || 3;
     }
 
     async getUsdPrice(): Promise<number> {

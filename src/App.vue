@@ -31,6 +31,7 @@ const checkNetworkHealth = async () => {
     }
     const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
     const chainName = useChainStore().currentChain.settings.getDisplay();
+    const threshold = useChainStore().currentChain.settings.getIndexerSecondsBehindThreshold();
     const theme = $q.dark.isActive ? useChainStore().currentChain.settings.getThemes().dark : useChainStore().currentChain.settings.getThemes().light;
     const health = await indexerApi.get('/v1/health');
     const background = theme?.primary || '#0099FF';
@@ -42,7 +43,7 @@ const checkNetworkHealth = async () => {
         `background: ${background}; color: ${color};`,
     );
 
-    if (health.data?.secondsBehind > 3) {
+    if (health.data?.secondsBehind > threshold) {
         let behindBy = moment(health.data.secondsBehind * 1000).utc().format('HH:mm:ss');
         if (health.data?.secondsBehind > 86400) {
             const behindByHours = Math.round(health.data.secondsBehind / 60 / 60);
