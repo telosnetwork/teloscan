@@ -13,7 +13,7 @@ import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 const config: NetworkConfig =
 {
     'network': 'telos-evm',
-    'display': 'Telos EVM',
+    'display': 'Telos EVM Mainnet',
     'title': 'Telos EVM Explorer',
     'branding': {
         'tab': 'Teloscan',
