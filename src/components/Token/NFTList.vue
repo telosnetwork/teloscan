@@ -62,7 +62,7 @@ const pagination = ref<PaginationByKey>({
     initialKey: 0,
 });
 const table = 'nft';
-const entryName = 'items';
+const entryName = $t('components.table_pagination.items');
 const page_size_options = [10, 25, 50];
 
 watch(() => props.filter, () => {

@@ -244,6 +244,18 @@ export default {
         close: 'Fermer',
         no_matching_entries: 'Aucune entrée correspondante',
         please_try_again_later: 'Veuillez réessayer plus tard',
+        table_pagination: {
+            showing_items_from_x_to_y: 'Affichage des éléments de { startRow } à { endRow } sur un total de { rowsNumber } { entryName }',
+            records_per_page: 'Enregistrements par page',
+            first: 'Premier',
+            current_page: 'Page { currentPage } sur { totalPages }',
+            last: 'Dernier',
+            holders: 'propriétaires',
+            blocks: 'blocs',
+            transactions: 'transactions',
+            transfers: 'transferts',
+            items: 'collectionnables',
+        },
         input_viewer: {
             name: 'Nom',
             type: 'Type',

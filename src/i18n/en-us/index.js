@@ -247,6 +247,18 @@ export default {
         close: 'Close',
         no_matching_entries: 'No matching entries',
         please_try_again_later: 'Please try again later',
+        table_pagination: {
+            showing_items_from_x_to_y: 'Showing items from { startRow } to { endRow } out of a total of { rowsNumber } { entryName }',
+            records_per_page: 'Records per page',
+            first: 'First',
+            current_page: 'Page { currentPage } of { totalPages }',
+            last: 'Last',
+            holders: 'holders',
+            blocks: 'blocks',
+            transactions: 'transactions',
+            transfers: 'transfers',
+            items: 'collectibles',
+        },
         input_viewer: {
             name: 'Name',
             type: 'Type',

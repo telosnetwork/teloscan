@@ -7,15 +7,19 @@ import {
     watch,
 } from 'vue';
 
-// Available rows per page options (10, 25, 50, etc.)
+import { useI18n } from 'vue-i18n';
+const $i18n = useI18n();
+const locale = $i18n.locale.value;
+const { t: $t } = useI18n();
+
 const isOnLastPage = ref(false);
 const endRow = ref(0);
 const isOnFirstPage = ref(true);
-const startRow = ref(0);
-const rowsNumber = ref(0);
+const startRow = ref('0');
+const rowsNumber = ref('0');
 // pages variables
-const currentPage = ref(1);
-const totalPages = ref(0);
+const currentPage = ref('1');
+const totalPages = ref('0');
 
 // emits 'update' event with the new pagination state
 const emit = defineEmits(['update']);
@@ -59,16 +63,16 @@ const updatePaginationModel = () => {
     isOnLastPage.value = pagination_model.page === Math.ceil(
         (pagination_model.rowsNumber ?? 0) / pagination_model.rowsPerPage,
     );
+    isOnFirstPage.value = pagination_model.page <= 1;
     endRow.value = Math.min(
         pagination_model.page * pagination_model.rowsPerPage,
         pagination_model.rowsNumber ?? 0,
-    );
-    rowsNumber.value = pagination_model.rowsNumber ?? 0;
-    isOnFirstPage.value = pagination_model.page <= 1;
-    startRow.value = (pagination_model.rowsNumber === 0) ? 0 : (pagination_model.page - 1) * pagination_model.rowsPerPage + 1;
+    ).toLocaleString(locale);
+    rowsNumber.value = (pagination_model.rowsNumber ?? 0).toLocaleString(locale);
+    startRow.value = ((pagination_model.rowsNumber === 0) ? 0 : (pagination_model.page - 1) * pagination_model.rowsPerPage + 1).toLocaleString(locale);
     // pages
-    currentPage.value = pagination_model.page;
-    totalPages.value = Math.ceil(pagination_model.rowsNumber / pagination_model.rowsPerPage);
+    currentPage.value = pagination_model.page.toLocaleString(locale);
+    totalPages.value = Math.ceil(pagination_model.rowsNumber / pagination_model.rowsPerPage).toLocaleString(locale);
 };
 
 onMounted(() => {
@@ -155,12 +159,17 @@ const onRowsPerPageChange = (newValue: number) => {
 <div class="c-table-pagination">
     <div v-if="position==='top'" class="c-table-pagination__info">
         <span class="c-table-pagination__info-range">
-            Showing items from {{ startRow }} to {{ endRow }} out of a total of {{ rowsNumber }} {{ entryName }}
+            {{ $t('components.table_pagination.showing_items_from_x_to_y', {
+                startRow,
+                endRow,
+                rowsNumber,
+                entryName,
+            }) }}
         </span>
     </div>
 
     <div v-if="position==='bottom'" class="c-table-pagination__page-size">
-        <span class="c-table-pagination__page-size-label">Records per page:</span>
+        <span class="c-table-pagination__page-size-label">{{ $t('components.table_pagination.records_per_page') }}:</span>
         <q-btn
             flat
             dense
@@ -198,7 +207,7 @@ const onRowsPerPageChange = (newValue: number) => {
             }"
             @click="goToFirstPage()"
         >
-            First
+            {{ $t('components.table_pagination.first') }}
         </q-btn>
 
         <!-- Go to previous page -->
@@ -224,7 +233,10 @@ const onRowsPerPageChange = (newValue: number) => {
                 'c-table-pagination__nav-button--disabled': true,
             }"
         >
-            Page {{ currentPage }} of {{ totalPages }}
+            {{ $t('components.table_pagination.current_page', {
+                currentPage,
+                totalPages
+            }) }}
         </q-btn>
 
         <!-- Go to next page -->
@@ -251,7 +263,7 @@ const onRowsPerPageChange = (newValue: number) => {
             }"
             @click="goToLastPage()"
         >
-            Last
+            {{ $t('components.table_pagination.last') }}
         </q-btn>
     </div>
 </div>

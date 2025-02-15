@@ -127,7 +127,7 @@ const pagination = ref<PaginationByKey>({
     initialKey: 0,
 });
 const table = 'internal';
-const entryName = 'transactions';
+const entryName = $t('components.table_pagination.transactions');
 const page_size_options = [10, 25, 50];
 const showDateAge = ref(true);
 

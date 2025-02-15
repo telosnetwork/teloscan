@@ -114,7 +114,7 @@ const pagination = ref<PaginationByKey>({
     initialKey: 0,
 });
 const table = props.tokenType;
-const entryName = 'transfers';
+const entryName = $t('components.table_pagination.transfers');
 const page_size_options = [10, 25, 50];
 
 const columns = [

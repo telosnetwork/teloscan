@@ -35,7 +35,7 @@ const route = useRoute();
 const router = useRouter();
 const { t: $t } = useI18n();
 const table = 'blocks';
-const entryName = 'blocks';
+const entryName = $t('components.table_pagination.blocks');
 
 export interface BlockTableProps {
     title: string;

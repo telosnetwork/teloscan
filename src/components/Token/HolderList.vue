@@ -41,6 +41,7 @@ const routers = {
     router,
     route,
 };
+const { t: $t, locale } = useI18n();
 
 defineOptions({
     name: 'HolderList',
@@ -54,7 +55,7 @@ const defaultColumns = ['rank', 'holder', 'balance', 'percentage_bar'];
 const initialPageSize = 25;
 const page_size_options = [10, 25, 50, 100];
 const table = 'holders';
-const entryName = 'holders';
+const entryName = $t('components.table_pagination.holders');
 
 type Alignment = 'left' | 'center' | 'right';
 
@@ -85,9 +86,6 @@ const props = withDefaults(
         }>(),
     {},
 );
-
-// Access i18n
-const { t: $t, locale } = useI18n();
 
 // We will keep track of the system token from chain settings
 const systemToken = computed(() => useChainStore().currentChain.settings.getSystemToken());

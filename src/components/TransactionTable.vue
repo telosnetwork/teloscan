@@ -60,7 +60,7 @@ const showDateAge = ref(true);
 const showTotalGasFee = ref(true);
 const highlightMethod = ref('');
 const totalRows = ref(0);
-const entryName = 'transactions';
+const entryName = $t('components.table_pagination.transactions');
 const table = 'transactions';
 
 const transactions: any[] = [];
