@@ -18,7 +18,7 @@ import {
     useRouter,
 } from 'vue-router';
 import { PaginationByKey } from 'src/types';
-import { writePaginationToURL } from 'src/lib/pagination';
+import { readPaginationFromURL, writePaginationToURL } from 'src/lib/pagination';
 
 
 
@@ -138,8 +138,10 @@ function updateLoadingRows() {
 }
 
 onMounted(async () => {
-    setupColumns();
-    updateLoadingRows();
+    // Read pagination state from URL
+    const { page, rowsPerPage } = readPaginationFromURL(initialPageSize, routers);
+    // Update pagination state; ignore sort since it never changes
+    setPagination(page, rowsPerPage);
     await onRequest();
 });
 
@@ -206,6 +208,8 @@ function hasVideo(nft: NFT) {
 }
 
 async function onRequest() {
+    setupColumns();
+    updateLoadingRows();
     loading.value = true;
     const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
 

@@ -160,8 +160,12 @@ onMounted(() => {
 watch(
     () => route.query,
     () => {
-        const { page, rowsPerPage } = readPaginationFromURL(props.initialPageSize, { router, route });
-        setPagination(page, rowsPerPage);
+        if (props.usePagination) {
+            const { page, rowsPerPage } = readPaginationFromURL(props.initialPageSize, { router, route });
+            setPagination(page, rowsPerPage);
+        } else {
+            clearPagination();
+        }
     },
     { immediate: true, deep: true },
 );
@@ -179,6 +183,10 @@ function clearPagination(): void {
     pagination.value.page = 1;
     pagination.value.rowsPerPage = props.initialPageSize;
     pagination.value.rowsNumber = 0;
+    if (route.query.tab === 'internaltx') {
+        writePaginationToURL(1, props.initialPageSize, props.initialPageSize, routers);
+    }
+    setPagination(1, props.initialPageSize);
 }
 
 // Method to update the loading rows based on the current rowsPerPage

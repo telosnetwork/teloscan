@@ -36,7 +36,7 @@ import {
     useRoute,
     useRouter,
 } from 'vue-router';
-import { writePaginationToURL } from 'src/lib/pagination';
+import { readPaginationFromURL, writePaginationToURL } from 'src/lib/pagination';
 
 // Import router and i18n utilities
 const route = useRoute();
@@ -179,6 +179,19 @@ const columns = [
     align: string,
 }[];
 
+
+function setPagination (page: number, size: number) {
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = size;
+    if (pagination.value.initialKey > 0) {
+        // Key is pages away from the initial key (using 1-indexed page)
+        const zeroBasePage = page - 1;
+        pagination.value.key = pagination.value.initialKey - (zeroBasePage * pagination.value.rowsPerPage);
+    }
+    updateColumns();
+    onRequest();
+}
+
 // Method to handle pagination changes from the UI
 async function onPaginationChange(settings: { pagination: PaginationByKey }) {
     const { page, rowsPerPage, descending } = settings.pagination;
@@ -290,7 +303,7 @@ const updateLoadingRows = () => {
     }
 };
 
-const updateCols = () => {
+const updateColumns = () => {
     let exclude = [] as string[];
 
     switch (props.tokenType) {
@@ -320,7 +333,7 @@ const updateCols = () => {
 };
 
 watch(() => columns, () => {
-    updateCols();
+    updateColumns();
 });
 
 watch(() => pagination.value.rowsPerPage, () => {
@@ -328,7 +341,7 @@ watch(() => pagination.value.rowsPerPage, () => {
 });
 
 watch(() => props.tokenType, () => {
-    updateCols();
+    updateColumns();
     updateLoadingRows();
 },
 { immediate: true });
@@ -348,9 +361,22 @@ watch(() => route.query.tab, (newTab) => {
 });
 
 onMounted(() => {
-    updateCols();
+    updateColumns();
     updateLoadingRows();
-    onRequest();
+    const tab = route.query.tab;
+    const doWrite =
+        tab === 'tokentxns' && props.tokenType === 'erc20' ||
+        tab === 'erc721txns' && props.tokenType === 'erc721' ||
+        tab === 'erc1155txns' && props.tokenType === 'erc1155';
+    if (doWrite) {
+        // Read pagination state from URL
+        const { page, rowsPerPage } = readPaginationFromURL(props.initialPageSize, routers);
+        // Update pagination state; ignore sort since it never changes
+        setPagination(page, rowsPerPage);
+    } else {
+        // load page 1
+        onRequest();
+    }
 });
 
 </script>

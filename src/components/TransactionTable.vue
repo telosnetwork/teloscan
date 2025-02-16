@@ -143,21 +143,9 @@ function updateColumns () {
     }
 }
 
-// Watch route query to update pagination using the library's read function
-watch(() => route.query,
-    () => {
-        // Read pagination state from URL
-        const { page, rowsPerPage } = readPaginationFromURL(props.initialPageSize, routers);
-        // Update pagination state; ignore sort since it never changes
-        setPagination(page, rowsPerPage, pagination.value.descending);
-    },
-    { immediate: true },
-);
-
-function setPagination (page: number, size: number, desc: boolean) {
+function setPagination (page: number, size: number) {
     pagination.value.page = page;
     pagination.value.rowsPerPage = size;
-    pagination.value.descending = desc;
     if (pagination.value.initialKey > 0) {
         // Key is pages away from the initial key (using 1-indexed page)
         const zeroBasePage = page - 1;
@@ -168,10 +156,9 @@ function setPagination (page: number, size: number, desc: boolean) {
 }
 
 async function onPaginationChange (settings: { pagination: PaginationByKey }) {
-    const { page, rowsPerPage, descending } = settings.pagination;
+    const { page, rowsPerPage } = settings.pagination;
     pagination.value.page = page;
     pagination.value.rowsPerPage = rowsPerPage;
-    pagination.value.descending = descending;
 
     // Write pagination state to URL using the library function
     writePaginationToURL(page, rowsPerPage, props.initialPageSize, routers);
@@ -353,12 +340,33 @@ onBeforeMount(() => {
     updateLoadingRows();
 });
 
+function readPaginationFromURLAndDoRequest() {
+    if (route.query.tab === 'transactions' || !route.query.tab || route.path === '/txs') {
+        // Read pagination state from URL
+        const { page, rowsPerPage } = readPaginationFromURL(props.initialPageSize, routers);
+        // Update pagination state; ignore sort since it never changes
+        setPagination(page, rowsPerPage);
+    } else {
+        // Reset pagination state
+        setPagination(1, props.initialPageSize);
+    }
+}
+
 onMounted(() => {
-    // Read pagination state from URL
-    const { page, rowsPerPage } = readPaginationFromURL(props.initialPageSize, routers);
-    // Update pagination state; ignore sort since it never changes
-    setPagination(page, rowsPerPage, pagination.value.descending);
+    readPaginationFromURLAndDoRequest();
 });
+
+
+// Watch for changes in the route query 'page' and update data accordingly
+watch(
+    () => route.query,
+    () => {
+        if (route.path === '/txs') {
+            readPaginationFromURLAndDoRequest();
+        }
+    },
+    { immediate: true, deep: true },
+);
 
 </script>
 

@@ -205,8 +205,10 @@ const columnsDict: Record<string, TableColumn> = {
 };
 
 // This computed array transforms the visibleColumns into an array of Quasar columns
-const tableColumns = computed<TableColumn[]>(() =>
-    visibleColumns.value.map((colName) => {
+const tableColumns = ref<TableColumn[]>([]);
+
+const updateColumns = () => {
+    const newColumns: TableColumn[] = visibleColumns.value.map((colName) => {
         if (columnsDict[colName]) {
             return columnsDict[colName];
         }
@@ -217,8 +219,17 @@ const tableColumns = computed<TableColumn[]>(() =>
             label: colName,
             align: 'left',
         };
-    }),
-);
+    });
+    tableColumns.value = newColumns;
+
+    // Remove the value column if no price is provided
+    if (!contract.value.properties?.price) {
+        const index = tableColumns.value.findIndex(col => col.name === 'value');
+        if (index !== -1) {
+            tableColumns.value.splice(index, 1);
+        }
+    }
+};
 
 // Prepare skeleton rows (loading placeholders)
 const updateLoadingRows = () => {
@@ -230,6 +241,7 @@ const updateLoadingRows = () => {
 
 onBeforeMount(() => {
     updateLoadingRows();
+    updateColumns();
 });
 
 let timer = setTimeout(() => { /**/ }, 0);
@@ -243,14 +255,6 @@ onMounted(async () => {
     // Remove trailing comma
     if (systemContractsList.value.endsWith(',')) {
         systemContractsList.value = systemContractsList.value.slice(0, -1);
-    }
-
-    // Remove the value column if no price is provided
-    if (!contract.value.properties?.price) {
-        const index = tableColumns.value.findIndex(col => col.name === 'value');
-        if (index !== -1) {
-            tableColumns.value.splice(index, 1);
-        }
     }
 
     // Check indexer support
@@ -269,7 +273,7 @@ onMounted(async () => {
         ready.value = true;
         clearTimeout(timer);
         if (!loading.value) {
-            onRequest();
+            readPaginationFromURLAndDoRequest();
         }
     });
 
@@ -299,21 +303,38 @@ const pagination = ref<PaginationByKey>({
     initialKey: 0,
 });
 
-// Watch route query to update pagination using the library's read function
-watch(() => route.query,
-    () => {
+function readPaginationFromURLAndDoRequest() {
+    if (route.query.tab === 'holders' || !route.query.tab || route.path === '/accounts') {
         // Read pagination state from URL
         const { page, rowsPerPage } = readPaginationFromURL(initialPageSize, routers);
         // Update pagination state; ignore sort since it never changes
-        setPagination(page, rowsPerPage, pagination.value.descending);
+        setPagination(page, rowsPerPage);
+    } else {
+        // Reset pagination state
+        setPagination(1, initialPageSize);
+    }
+}
+
+// Watch for changes in the route query 'page' and update data accordingly
+watch(
+    () => route.query,
+    () => {
+        if (route.path === '/accounts') {
+            readPaginationFromURLAndDoRequest();
+        }
     },
-    { immediate: true },
+    { immediate: true, deep: true },
 );
 
-function setPagination (page: number, size: number, desc: boolean) {
+watch(() => route.query.tab, (newTab) => {
+    if (newTab === 'holders') {
+        writePaginationToURL(pagination.value.page, pagination.value.rowsPerPage, initialPageSize, routers);
+    }
+});
+
+function setPagination (page: number, size: number) {
     pagination.value.page = page;
     pagination.value.rowsPerPage = size;
-    pagination.value.descending = desc;
     if (pagination.value.initialKey > 0) {
         // Key is pages away from the initial key (using 1-indexed page)
         const zeroBasePage = page - 1;
