@@ -303,7 +303,10 @@ export default class TelosZkEVM extends EVMChainSettings {
     }
 
     getIndexerSecondsBehindThreshold(): number {
-        return config.secondsBehindThreshold || 3;
+        if (isNaN(config.secondsBehindThreshold)) {
+            throw new Error('Invalid secondsBehindThreshold value');
+        }
+        return config.secondsBehindThreshold;
     }
 
     async getUsdPrice(): Promise<number> {
