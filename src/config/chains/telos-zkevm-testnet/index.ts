@@ -170,7 +170,7 @@ const config: NetworkConfig =
         'gasPrice': false,
         'testnet': true,
     },
-    'secondsBehindThreshold': 10,
+    'secondsBehindThreshold': 20,
     'headerMenuConfig': {
         'chain': 'telos-zkevm-testnet',
         'entries': [
