@@ -107,7 +107,6 @@ const checkProxy = async () => {
             // Fetch the ABI of the implementation contract.
             const contractResponse = await indexerApi.get(`/v1/contract/${rawAddress}`);
             proxyImplementationAbi.value = contractResponse.data.contracts[checksumImplementation].abi;
-            debugger;
         }
     } catch (err) {
         console.error('Error reading storage slot for proxy detection:', err);
