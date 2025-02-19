@@ -184,6 +184,7 @@ const config: NetworkConfig =
         'gasPrice': true,
         'testnet': false,
     },
+    'secondsBehindThreshold': 5,
     'headerMenuConfig': {
         'chain': 'telos-evm',
         'entries': [
@@ -350,6 +351,13 @@ export default class TelosEVM extends EVMChainSettings {
 
     getHeaderIndicators(): HeaderIndicators {
         return config.headerIndicators;
+    }
+
+    getIndexerSecondsBehindThreshold(): number {
+        if (isNaN(config.secondsBehindThreshold)) {
+            throw new Error('Invalid secondsBehindThreshold value');
+        }
+        return config.secondsBehindThreshold;
     }
 
     async getUsdPrice(): Promise<number> {
