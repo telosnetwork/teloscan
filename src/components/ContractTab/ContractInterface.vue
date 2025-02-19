@@ -23,6 +23,7 @@ onMounted(async () => {
     const readFunctions: AbiFunction[] = [];
     const writeFunctions: AbiFunction[] = [];
 
+    debugger;
     props.contract.abi.forEach((abiItem: AbiFunction) => {
         if (abiItem.type !== 'function') {
             return;
