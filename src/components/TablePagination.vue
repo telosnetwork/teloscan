@@ -178,6 +178,8 @@ const onRowsPerPageChange = (newValue: number) => {
             :label="pagination.rowsPerPage"
             rightIcon="chevron_down"
             class="c-table-pagination__page-size-select"
+            aria-haspopup="true"
+            aria-label="Select rows per page"
         >
             <q-menu cover anchor="center middle">
                 <q-item
@@ -205,6 +207,7 @@ const onRowsPerPageChange = (newValue: number) => {
                 'c-table-pagination__nav-button--first': true,
                 'c-table-pagination__nav-button--disabled': isOnFirstPage,
             }"
+            aria-label="First page"
             @click="goToFirstPage()"
         >
             {{ $t('components.table_pagination.first') }}
@@ -220,6 +223,7 @@ const onRowsPerPageChange = (newValue: number) => {
                 'c-table-pagination__nav-button--disabled': isOnFirstPage,
             }"
             icon="chevron_left"
+            aria-label="Previous page"
             @click="goToPreviousPage()"
         />
 
@@ -227,11 +231,14 @@ const onRowsPerPageChange = (newValue: number) => {
         <q-btn
             flat
             no-caps
+            no-ripple
             :class="{
                 'c-table-pagination__nav-button': true,
                 'c-table-pagination__nav-button--current': true,
-                'c-table-pagination__nav-button--disabled': true,
+                'c-table-pagination__nav-button--disabled': false,
             }"
+            aria-current="page"
+            aria-disabled="true"
         >
             {{ $t('components.table_pagination.current_page', {
                 currentPage,
@@ -249,6 +256,7 @@ const onRowsPerPageChange = (newValue: number) => {
                 'c-table-pagination__nav-button--disabled': isOnLastPage,
             }"
             icon="chevron_right"
+            aria-label="Next page"
             @click="goToNextPage()"
         />
 
@@ -261,6 +269,7 @@ const onRowsPerPageChange = (newValue: number) => {
                 'c-table-pagination__nav-button--last': true,
                 'c-table-pagination__nav-button--disabled': isOnLastPage,
             }"
+            aria-label="Last page"
             @click="goToLastPage()"
         >
             {{ $t('components.table_pagination.last') }}
@@ -331,6 +340,27 @@ const onRowsPerPageChange = (newValue: number) => {
                 color: var(--disabled-text-color);
                 &:hover {
                     background-color: transparent;
+                }
+            }
+            &--current {
+                background-color: var(--tab-bg-color) !important;
+                transition: none !important;
+                &:hover,
+                &:active,
+                &:focus {
+                    cursor: default !important;
+                    background-color: var(--tab-bg-color) !important;
+                    opacity: 1 !important;
+                    transition: none !important;
+                }
+                .q-btn__content {
+                    transition: none !important;
+                }
+                /* Also disable internal Quasar ripple/focus helper elements */
+                .q-ripple,
+                .q-focus-helper,
+                .q-btn__ripple {
+                    display: none !important;
                 }
             }
         }
