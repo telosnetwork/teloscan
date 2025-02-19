@@ -34,7 +34,6 @@ yarn.lock
 *.ntvs*
 *.njsproj
 *.sln
-.vscode/settings.json
 
 .env
 
