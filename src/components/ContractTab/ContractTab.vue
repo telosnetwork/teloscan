@@ -72,7 +72,7 @@ const getContractAbi = () => {
     if (isProxy.value) {
         return {
             abi: proxyImplementationAbi.value,
-            address: proxyImplementation.value,
+            address: props.contract.address,
         };
     }
     return props.contract;
