@@ -3,10 +3,11 @@
 // src/components/TransactionTable.vue
 import { useQuasar } from 'quasar';
 import { useRoute, useRouter } from 'vue-router';
-import { onBeforeMount, ref, watch } from 'vue';
+import { onBeforeMount, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 import { getDirection } from 'src/lib/transaction-utils';
+import { writePaginationToURL, readPaginationFromURL } from 'src/lib/pagination';
 
 import AddressField from 'components/AddressField.vue';
 import BlockField from 'components/BlockField.vue';
@@ -17,6 +18,7 @@ import TransactionDialog from 'components/TransactionDialog.vue';
 import TransactionField from 'components/TransactionField.vue';
 import TransactionFeeField from 'components/TransactionFeeField.vue';
 import EmptyTableSign from 'components/EmptyTableSign.vue';
+import TablePagination from 'src/components/TablePagination.vue';
 
 import { PaginationByKey } from 'src/types';
 import { useStore } from 'vuex';
@@ -26,6 +28,10 @@ import { BigNumber } from 'ethers';
 const $q = useQuasar();
 const route = useRoute();
 const router = useRouter();
+const routers = {
+    router,
+    route,
+};
 const $i18n = useI18n();
 const { t: $t } = $i18n;
 const locale = $i18n.locale.value;
@@ -38,7 +44,7 @@ interface Props {
     title?: string;
     initialPageSize?: number,
     block?: number,
-    accountAddress?: string;
+    accountAddress?: string,
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -49,25 +55,25 @@ const props = withDefaults(defineProps<Props>(), {
 
 const rows = ref<Array<any>>([]);
 const loadingRows = ref<Array<number>>([]);
-const loading =  ref(false);
+const loading = ref(false);
 const showDateAge = ref(true);
 const showTotalGasFee = ref(true);
 const highlightMethod = ref('');
 const totalRows = ref(0);
+const entryName = $t('components.table_pagination.transactions');
+const table = 'transactions';
 
 const transactions: any[] = [];
 const page_size_options = [10, 25, 50, 100];
 
-const pagination = ref<PaginationByKey>(
-    {
-        key: 0,
-        page: 0,
-        descending: true,
-        rowsPerPage: props.initialPageSize,
-        rowsNumber: 0,
-        initialKey: 0,
-    },
-);
+const pagination = ref<PaginationByKey>({
+    key: 0,
+    page: 1,
+    descending: true,
+    rowsPerPage: props.initialPageSize,
+    rowsNumber: 0,
+    initialKey: 0,
+});
 
 const columns = [
     {
@@ -123,8 +129,8 @@ const columns = [
     },
 ];
 
-function updateColumns() {
-    // we only need the direction column if we are looking at a specific account
+function updateColumns () {
+    // Only show the direction column if looking at a specific account
     const index = columns.findIndex(col => col.name === 'direction');
     if (!props.accountAddress && index !== -1) {
         columns.splice(index, 1);
@@ -137,52 +143,30 @@ function updateColumns() {
     }
 }
 
-watch(() => route.query,
-    (query) => {
-        // key=1232322&rowsPerPage=50&sort=DESC
-        const { p, rowsPerPage, sort } = query;
-
-        let page = p ? Number(p) : 0;
-        let size = rowsPerPage ? Number(rowsPerPage) : pagination.value.rowsPerPage;
-        let desc = sort ? sort === 'DESC' : true;
-        setPagination(page, size, desc);
-    },
-    { immediate: true },
-);
-
-function setPagination(page: number, size: number, desc: boolean) {
+function setPagination (page: number, size: number) {
     pagination.value.page = page;
     pagination.value.rowsPerPage = size;
-    pagination.value.descending = desc;
     if (pagination.value.initialKey > 0) {
-        // key is page pages away from the initial key
-        const zero_base_page = page - 1;
-        pagination.value.key = pagination.value.initialKey - (zero_base_page * pagination.value.rowsPerPage);
+        // Key is pages away from the initial key (using 1-indexed page)
+        const zeroBasePage = page - 1;
+        pagination.value.key = pagination.value.initialKey - (zeroBasePage * pagination.value.rowsPerPage);
     }
     updateColumns();
-    parseTransactions();
+    onRequest();
 }
 
-async function onPaginationChange(settings: { pagination: { sortBy: string; descending: boolean; page: number; rowsPerPage: number; } }) {
-    const { page, rowsPerPage, descending } = settings.pagination;
+async function onPaginationChange (settings: { pagination: PaginationByKey }) {
+    const { page, rowsPerPage } = settings.pagination;
     pagination.value.page = page;
     pagination.value.rowsPerPage = rowsPerPage;
-    pagination.value.descending = descending;
 
-    router.push({
-        hash: window.location.hash,
-        query: {
-            ...route.query,
-            p: page,
-            rowsPerPage,
-            sort: descending ? 'DESC' : 'ASC',
-        },
-    });
+    // Write pagination state to URL using the library function
+    writePaginationToURL(page, rowsPerPage, props.initialPageSize, routers);
 
-    await parseTransactions();
+    await onRequest();
 }
 
-async function parseTransactions() {
+async function onRequest () {
     if (loading.value) {
         return;
     }
@@ -223,14 +207,14 @@ async function parseTransactions() {
                     transaction.parsedTransaction = parsedTransaction;
                 } else {
                     if (response.data.abi) {
-                        const abi = response.data.abi as {[sighash: string]: string};
-                        const value_str: string = transaction.value === '0x0' ? '0' : transaction.value ?? '0';
-                        const value = BigNumber.from(value_str);
+                        const abi = response.data.abi as { [sighash: string]: string };
+                        const valueStr: string = transaction.value === '0x0' ? '0' : transaction.value ?? '0';
+                        const value = BigNumber.from(valueStr);
                         const sighash = transaction.input.slice(0, 10);
                         const signature = abi[sighash] as string;
-                        const name = typeof signature === 'string' ?
-                            signature.split('(')[0].replace('function ', '') :
-                            sighash;
+                        const name = typeof signature === 'string'
+                            ? signature.split('(')[0].replace('function ', '')
+                            : sighash;
                         transaction.parsedTransaction = {
                             name,
                             sighash,
@@ -273,7 +257,7 @@ async function parseTransactions() {
     }
 }
 
-async function getPath() {
+async function getPath () {
     const { page, rowsPerPage, descending } = pagination.value;
     const limit = rowsPerPage;
     console.assert(limit > 0, `Rows per page must be greater than 0, got ${limit}`);
@@ -285,7 +269,7 @@ async function getPath() {
     } else {
         path = `v1/transactions?limit=${limit}`;
         if (pagination.value.initialKey === 0) {
-            // in the case of the first query, we need to get the initial key
+            // In the case of the first query, get the initial key
             let response = await useChainStore().currentChain.settings.getIndexerApi().get('/v1/transactions?limit=6');
             const next = response.data.results[0].id;
             pagination.value.initialKey = next;
@@ -295,7 +279,7 @@ async function getPath() {
             currentKey = rowsPerPage + 1;
         }
         if (props.block) {
-            // the scope will be set by the block property
+            // The scope will be set by the block property
             currentKey += 1000;
         }
         path += `&key=${currentKey}`;
@@ -312,15 +296,15 @@ async function getPath() {
     return path;
 }
 
-function toggleDateFormat() {
+function toggleDateFormat () {
     showDateAge.value = !showDateAge.value;
 }
 
-function toggleGasValue() {
+function toggleGasValue () {
     showTotalGasFee.value = !showTotalGasFee.value;
 }
 
-function setHighlightMethod(val: string) {
+function setHighlightMethod (val: string) {
     highlightMethod.value = val;
 }
 
@@ -329,7 +313,7 @@ const updateLoadingRows = () => {
     for (let i = 1; i <= pagination.value.rowsPerPage; i++) {
         loadingRows.value.push(i);
     }
-    // however, if we alrady have some rows but we don't have enough to fill the page we adjust the number of loading rows to be displayed
+    // Adjust loading rows if there are not enough rows to fill the page
     if (
         rows.value.length > 0 &&
         rows.value.length < pagination.value.rowsPerPage &&
@@ -346,10 +330,43 @@ watch(() => pagination.value.rowsPerPage, () => {
     updateLoadingRows();
 });
 
+watch(() => route.query.tab, (newTab) => {
+    if (newTab === 'transactions') {
+        writePaginationToURL(pagination.value.page, pagination.value.rowsPerPage, props.initialPageSize, routers);
+    }
+});
+
 onBeforeMount(() => {
     updateLoadingRows();
 });
 
+function readPaginationFromURLAndDoRequest() {
+    if (route.query.tab === 'transactions' || !route.query.tab || route.path === '/txs') {
+        // Read pagination state from URL
+        const { page, rowsPerPage } = readPaginationFromURL(props.initialPageSize, routers);
+        // Update pagination state; ignore sort since it never changes
+        setPagination(page, rowsPerPage);
+    } else {
+        // Reset pagination state
+        setPagination(1, props.initialPageSize);
+    }
+}
+
+onMounted(() => {
+    readPaginationFromURLAndDoRequest();
+});
+
+
+// Watch for changes in the route query 'page' and update data accordingly
+watch(
+    () => route.query,
+    () => {
+        if (route.path === '/txs') {
+            readPaginationFromURLAndDoRequest();
+        }
+    },
+    { immediate: true, deep: true },
+);
 
 </script>
 
@@ -371,12 +388,25 @@ onBeforeMount(() => {
         :row-key="row => row.hash"
         :columns="(columns as any)"
         :rows-per-page-options="page_size_options"
-        @request="onPaginationChange"
+        :hide-bottom="true"
     >
         <template v-slot:no-data>
             <EmptyTableSign />
         </template>
         <template v-slot:header="props">
+            <!-- Table pagination buttons in header -->
+            <q-tr>
+                <q-td :colspan="columns.length">
+                    <TablePagination
+                        position="top"
+                        :pageOptions="page_size_options"
+                        :table="table"
+                        :entryName="entryName"
+                        :pagination="pagination"
+                        @update="onPaginationChange"
+                    />
+                </q-td>
+            </q-tr>
             <q-tr :props="props">
                 <q-th
                     v-for="col in props.cols"
@@ -496,6 +526,21 @@ onBeforeMount(() => {
                 </q-td>
             </q-tr>
         </template>
+        <!-- Bottom row with table pagination buttons -->
+        <template v-slot:bottom-row>
+            <q-tr>
+                <q-td :colspan="columns.length" class="pagination-container">
+                    <TablePagination
+                        position="bottom"
+                        :pageOptions="page_size_options"
+                        :table="table"
+                        :entryName="entryName"
+                        :pagination="pagination"
+                        @update="onPaginationChange"
+                    />
+                </q-td>
+            </q-tr>
+        </template>
     </q-table>
     <q-table
         v-else
@@ -504,8 +549,22 @@ onBeforeMount(() => {
         :rows-per-page-label="$t('global.records_per_page')"
         :columns="(columns as any)"
         :rows-per-page-options="page_size_options"
+        :hide-bottom="true"
     >
         <template v-slot:header="props">
+            <!-- Table pagination buttons in header -->
+            <q-tr>
+                <q-td :colspan="columns.length">
+                    <TablePagination
+                        position="top"
+                        :pageOptions="page_size_options"
+                        :table="table"
+                        :entryName="entryName"
+                        :pagination="pagination"
+                        @update="onPaginationChange"
+                    />
+                </q-td>
+            </q-tr>
             <q-tr :props="props">
                 <q-th
                     v-for="col in props.cols"
@@ -557,10 +616,26 @@ onBeforeMount(() => {
                 </q-td>
             </q-tr>
         </template>
+        <!-- Bottom row with table pagination buttons -->
+        <template v-slot:bottom-row>
+            <q-tr>
+                <q-td :colspan="columns.length" class="pagination-container">
+                    <TablePagination
+                        position="bottom"
+                        :pageOptions="page_size_options"
+                        :table="table"
+                        :entryName="entryName"
+                        :pagination="pagination"
+                        @update="onPaginationChange"
+                    />
+                </q-td>
+            </q-tr>
+        </template>
     </q-table>
 </q-card>
 
 </template>
+
 <style lang="scss">
 
 .direction {

@@ -79,13 +79,14 @@ watch(() => route.query.tab, (newTab) => {
 });
 
 watch(tab, (newTab) => {
-    router.push({ query: { tab: newTab } });
+    // push the new tab conserving the pagination query
+    router.push({ query: { ...route.query, tab: newTab } });
 });
 
 watch(isLoggedIn, (value) => {
     // if user logs out while on approvals tab return to transactions
     if (!value && tab.value === 'approvals'){
-        router.push({ query: { tab: 'transactions' } });
+        router.push({ query: { ...route.query, tab: 'transactions' } });
     }
 });
 
