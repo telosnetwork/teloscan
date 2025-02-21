@@ -1,26 +1,47 @@
 <!-- eslint-disable @typescript-eslint/no-unused-vars -->
 <!-- src/components/Token/HolderList.vue -->
 <script lang="ts" setup>
-// We import the needed libraries
-import { ref, computed, onBeforeMount, onMounted, Ref, watch } from 'vue';
+import {
+    ref,
+    computed,
+    onBeforeMount,
+    onMounted,
+    Ref,
+    watch,
+} from 'vue';
 import { useI18n } from 'vue-i18n';
 import AddressField from 'components/AddressField.vue';
 import MinimumVersionRequired from 'components/MinimumVersionRequired.vue';
-import TablePagination from 'src/components/Token/TablePagination.vue';
+import TablePagination from 'src/components/TablePagination.vue';
 import BigDecimal from 'js-big-decimal';
-import { BigNumber, ethers } from 'ethers';
-import { INDEXER_SUPPORT_TIME_OUT, useChainStore } from 'src/core';
+import {
+    BigNumber,
+    ethers,
+} from 'ethers';
+import {
+    INDEXER_SUPPORT_TIME_OUT,
+    useChainStore,
+} from 'src/core';
 import {
     EvmHolder,
     IndexerHoldersResponse,
     NativeCurrencyAddress,
     ContractDisplayInfo,
 } from 'src/core/types';
+import { PaginationByKey } from 'src/types';
+import { readPaginationFromURL, writePaginationToURL } from 'src/lib/pagination';
 import {
-    pagination,            // Reactive pagination object. Represents current pagination state
-    default_rows_per_page_options,
-    setPaginationTotalNumber,
-} from 'src/lib/pagination';
+    useRoute,
+    useRouter,
+} from 'vue-router';
+
+const route = useRoute();
+const router = useRouter();
+const routers = {
+    router,
+    route,
+};
+const { t: $t, locale } = useI18n();
 
 defineOptions({
     name: 'HolderList',
@@ -31,6 +52,10 @@ const DEFAULT_DECIMALS = 18;
 
 // Default columns if user does not provide any
 const defaultColumns = ['rank', 'holder', 'balance', 'percentage_bar'];
+const initialPageSize = 25;
+const page_size_options = [10, 25, 50, 100];
+const table = 'holders';
+const entryName = $t('components.table_pagination.holders');
 
 type Alignment = 'left' | 'center' | 'right';
 
@@ -61,9 +86,6 @@ const props = withDefaults(
         }>(),
     {},
 );
-
-// Access i18n
-const { t: $t, locale } = useI18n();
 
 // We will keep track of the system token from chain settings
 const systemToken = computed(() => useChainStore().currentChain.settings.getSystemToken());
@@ -106,7 +128,6 @@ const loading = ref(false);
 const ready = ref(false);
 const systemContractsList = ref('');
 const showSystemContracts = ref(false);
-
 
 // Chain settings
 const chainSettings = computed(() => useChainStore().currentChain.settings);
@@ -184,8 +205,10 @@ const columnsDict: Record<string, TableColumn> = {
 };
 
 // This computed array transforms the visibleColumns into an array of Quasar columns
-const tableColumns = computed<TableColumn[]>(() =>
-    visibleColumns.value.map((colName) => {
+const tableColumns = ref<TableColumn[]>([]);
+
+const updateColumns = () => {
+    const newColumns: TableColumn[] = visibleColumns.value.map((colName) => {
         if (columnsDict[colName]) {
             return columnsDict[colName];
         }
@@ -196,8 +219,17 @@ const tableColumns = computed<TableColumn[]>(() =>
             label: colName,
             align: 'left',
         };
-    }),
-);
+    });
+    tableColumns.value = newColumns;
+
+    // Remove the value column if no price is provided
+    if (!contract.value.properties?.price) {
+        const index = tableColumns.value.findIndex(col => col.name === 'value');
+        if (index !== -1) {
+            tableColumns.value.splice(index, 1);
+        }
+    }
+};
 
 // Prepare skeleton rows (loading placeholders)
 const updateLoadingRows = () => {
@@ -209,6 +241,7 @@ const updateLoadingRows = () => {
 
 onBeforeMount(() => {
     updateLoadingRows();
+    updateColumns();
 });
 
 let timer = setTimeout(() => { /**/ }, 0);
@@ -222,14 +255,6 @@ onMounted(async () => {
     // Remove trailing comma
     if (systemContractsList.value.endsWith(',')) {
         systemContractsList.value = systemContractsList.value.slice(0, -1);
-    }
-
-    // Remove the value column if no price is provided
-    if (!contract.value.properties?.price) {
-        const index = tableColumns.value.findIndex(col => col.name === 'value');
-        if (index !== -1) {
-            tableColumns.value.splice(index, 1);
-        }
     }
 
     // Check indexer support
@@ -248,7 +273,7 @@ onMounted(async () => {
         ready.value = true;
         clearTimeout(timer);
         if (!loading.value) {
-            onRequest();
+            readPaginationFromURLAndDoRequest();
         }
     });
 
@@ -269,26 +294,66 @@ onMounted(async () => {
     });
 });
 
-// Internal pagination model
-const pagination_model = {
-    sortBy: 'balance',
-    descending: true,
+const pagination = ref<PaginationByKey>({
+    key: 0,
     page: 1,
-    rowsPerPage: 25,
+    descending: true,
+    rowsPerPage: initialPageSize,
     rowsNumber: 0,
-};
+    initialKey: 0,
+});
 
-// Update URL query if pagination changes
+function readPaginationFromURLAndDoRequest() {
+    if (route.query.tab === 'holders' || !route.query.tab || route.path === '/accounts') {
+        // Read pagination state from URL
+        const { page, rowsPerPage } = readPaginationFromURL(initialPageSize, routers);
+        // Update pagination state; ignore sort since it never changes
+        setPagination(page, rowsPerPage);
+    } else {
+        // Reset pagination state
+        setPagination(1, initialPageSize);
+    }
+}
+
+// Watch for changes in the route query 'page' and update data accordingly
 watch(
-    () => pagination.value,
-    (a) => {
-        pagination_model.page = pagination.value.page;
-        pagination_model.rowsPerPage = pagination.value.rowsPerPage;
-        pagination_model.rowsNumber = pagination.value.rowsNumber || 0;
-        onRequest();
+    () => route.query,
+    () => {
+        if (route.path === '/accounts') {
+            readPaginationFromURLAndDoRequest();
+        }
     },
-    { deep: true },
+    { immediate: true, deep: true },
 );
+
+watch(() => route.query.tab, (newTab) => {
+    if (newTab === 'holders') {
+        writePaginationToURL(pagination.value.page, pagination.value.rowsPerPage, initialPageSize, routers);
+    }
+});
+
+function setPagination (page: number, size: number) {
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = size;
+    if (pagination.value.initialKey > 0) {
+        // Key is pages away from the initial key (using 1-indexed page)
+        const zeroBasePage = page - 1;
+        pagination.value.key = pagination.value.initialKey - (zeroBasePage * pagination.value.rowsPerPage);
+    }
+    onRequest();
+}
+
+async function onPaginationChange (settings: { pagination: { sortBy: string; descending: boolean; page: number; rowsPerPage: number; } }) {
+    const { page, rowsPerPage, descending } = settings.pagination;
+    pagination.value.page = page;
+    pagination.value.rowsPerPage = rowsPerPage;
+
+    // Write pagination state to URL using the library function
+    writePaginationToURL(page, rowsPerPage, initialPageSize, routers);
+
+    await onRequest();
+}
+
 // Our method for requesting the data
 const last = {
     path: '',
@@ -312,9 +377,8 @@ async function onRequest() {
     loading.value = true;
 
     const response = await indexerApi.get(new_path) as { data?: IndexerHoldersResponse };
-    if (response.data?.total_count && pagination_model.rowsNumber !== response.data?.total_count) {
-        pagination_model.rowsNumber = response.data.total_count;
-        setPaginationTotalNumber(pagination_model.rowsNumber);
+    if (response.data?.total_count && pagination.value.rowsNumber !== response.data?.total_count) {
+        pagination.value.rowsNumber = response.data.total_count;
     }
 
     // Calculate the starting rank based on current page and rowsPerPage
@@ -549,7 +613,7 @@ function calculateDollarValue(row: EvmHolder): string {
         <!-- Table with data -->
         <q-table
             v-if="ready && !loading"
-            v-model:pagination="pagination_model"
+            v-model:pagination="pagination"
             class="c-holder-list__table"
             :rows="holders"
             :columns="tableColumns"
@@ -557,14 +621,21 @@ function calculateDollarValue(row: EvmHolder): string {
             :binary-state-sort="true"
             :hide-bottom='true'
             :row-key="row => row.address"
-            :rows-per-page-options="default_rows_per_page_options"
+            :rows-per-page-options="page_size_options"
         >
             <!-- Table header -->
             <template v-slot:header="props">
                 <!-- Table pagination buttons in header -->
                 <q-tr>
                     <q-td :colspan="tableColumns.length">
-                        <TablePagination/>
+                        <TablePagination
+                            position="top"
+                            :pageOptions="page_size_options"
+                            :table="table"
+                            :entryName="entryName"
+                            :pagination="pagination"
+                            @update="onPaginationChange"
+                        />
                     </q-td>
                 </q-tr>
                 <q-tr :props="props">
@@ -687,7 +758,14 @@ function calculateDollarValue(row: EvmHolder): string {
             <template v-slot:bottom-row>
                 <q-tr>
                     <q-td :colspan="tableColumns.length" class="pagination-container">
-                        <TablePagination/>
+                        <TablePagination
+                            position="bottom"
+                            :pageOptions="page_size_options"
+                            :table="table"
+                            :entryName="entryName"
+                            :pagination="pagination"
+                            @update="onPaginationChange"
+                        />
                     </q-td>
                 </q-tr>
             </template>
@@ -701,14 +779,21 @@ function calculateDollarValue(row: EvmHolder): string {
             :columns="tableColumns"
             :hide-bottom='true'
             :rows-per-page-label="$t('global.records_per_page')"
-            :rows-per-page-options="default_rows_per_page_options"
+            :rows-per-page-options="page_size_options"
         >
             <!-- Table header -->
             <template v-slot:header="props">
                 <!-- Table pagination buttons in header -->
                 <q-tr>
                     <q-td :colspan="tableColumns.length">
-                        <TablePagination/>
+                        <TablePagination
+                            position="top"
+                            :pageOptions="page_size_options"
+                            :table="table"
+                            :entryName="entryName"
+                            :pagination="pagination"
+                            @update="onPaginationChange"
+                        />
                     </q-td>
                 </q-tr>
                 <q-tr :props="props">
@@ -746,7 +831,14 @@ function calculateDollarValue(row: EvmHolder): string {
             <template v-slot:bottom-row>
                 <q-tr>
                     <q-td :colspan="tableColumns.length" class="pagination-container">
-                        <TablePagination/>
+                        <TablePagination
+                            position="bottom"
+                            :pageOptions="page_size_options"
+                            :table="table"
+                            :entryName="entryName"
+                            :pagination="pagination"
+                            @update="onPaginationChange"
+                        />
                     </q-td>
                 </q-tr>
             </template>

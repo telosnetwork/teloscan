@@ -244,6 +244,18 @@ export default {
         close: 'Schließen',
         no_matching_entries: 'Keine passenden Einträge',
         please_try_again_later: 'Bitte versuchen Sie es später erneut',
+        table_pagination: {
+            showing_items_from_x_to_y: 'Zeige Elemente von { startRow } bis { endRow } aus insgesamt { rowsNumber } { entryName }',
+            records_per_page: 'Einträge pro Seite',
+            first: 'Erste',
+            current_page: 'Seite { currentPage } von { totalPages }',
+            last: 'Letzte',
+            holders: 'Besitzer',
+            blocks: 'Blöcke',
+            transactions: 'Transaktionen',
+            transfers: 'Überweisungen',
+            items: 'Sammlerstücke',
+        },
         input_viewer: {
             name: 'Name',
             type: 'Typ',

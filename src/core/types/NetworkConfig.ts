@@ -134,6 +134,9 @@ export interface NetworkConfig {
     // Header data indicators
     headerIndicators: HeaderIndicators;
 
+    // How many seconds we need to consider indexer behind
+    secondsBehindThreshold: number;
+
     // Header menu configuration
     headerMenuConfig: {
         chain: string;

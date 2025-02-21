@@ -8,6 +8,7 @@ import TokenTable from 'src/components/Token/TokenTable';
 import BigDecimal from 'js-big-decimal';
 import EmptyTableSign from 'components/EmptyTableSign';
 import { useChainStore } from 'src/core';
+import { writePaginationToURL } from 'src/lib/pagination';
 
 export default {
     name: 'TokenList',
@@ -43,8 +44,20 @@ export default {
                 this.loadTokens();
             },
         },
+
+        // watch tab parameter and if it is tab=tokens then writePaginationToURL(1, props.initialPageSize, props.initialPageSize, routers);+
+        '$route.query.tab': {
+            handler() {
+                if (this.$route.query.tab === 'tokens') {
+                    this.clearPagination();
+                }
+            },
+        },
     },
     methods: {
+        clearPagination() {
+            writePaginationToURL(1, 10, 10, { route: this.$route, router: this.$router });
+        },
         checkTokenList(address, tokenList){
             return tokenList.tokens.filter((token) => {
                 if(address.toLowerCase() === token.address.toLowerCase()){

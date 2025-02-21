@@ -1,74 +1,78 @@
-<script>
-import AddressField from 'src/components/AddressField';
-import AddToWallet from 'src/components/AddToWallet';
-import ValueField from 'components/ValueField.vue';
-import EmptyTableSign from 'components/EmptyTableSign.vue';
-import { mapActions } from 'vuex';
+<script lang='ts' setup>
+// src/components/Token/TokenTable.vue
 
-export default {
-    name: 'TokenTable',
-    components: {
-        AddressField,
-        AddToWallet,
-        ValueField,
-        EmptyTableSign,
-    },
-    props: {
-        tokens: {
-            type: Array,
-            required: true,
-        },
-    },
-    data() {
-        const columns = [
-            {
-                name: 'icon',
-                label: '',
-                align: 'left',
-            },
-            {
-                name: 'name',
-                label: this.$t('global.name'),
-                align: 'left',
-            },
-            {
-                name: 'symbol',
-                label: this.$t('global.symbol'),
-                align: 'left',
-            },
-            {
-                name: 'balance',
-                label: this.$t('components.balance'),
-                align: 'left',
-            },
-            {
-                name: 'usd',
-                label: this.$t('components.usd_value'),
-                align: 'left',
-            },
-            {
-                name: 'action',
-                label: this.$t('global.action'),
-                align: 'left',
-            },
-        ];
+import { ref } from 'vue';
+import { defineProps } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useStore } from 'vuex';
+import AddressField from 'src/components/AddressField.vue';
+import AddToWallet from 'src/components/AddToWallet.vue';
+import ValueField from 'src/components/ValueField.vue';
+import EmptyTableSign from 'src/components/EmptyTableSign.vue';
 
-        return {
-            rows: [... this.tokens],
-            columns,
-        };
+// Define the interface for a Token
+interface Token {
+    [key: string]: string,
+}
+
+// Define component props
+const props = defineProps<{
+    tokens: Token[],
+}>();
+
+// Initialize i18n translation function
+const { t: $t } = useI18n();
+
+// Create a reactive copy of tokens for rows
+const rows = ref([...props.tokens]);
+
+// Define table columns with translations
+const columns = [
+    {
+        name: 'icon',
+        label: '',
+        align: 'left',
     },
-    methods: {
-        ...mapActions('general', ['toggleDisplayDecimals']),
+    {
+        name: 'name',
+        label: $t('global.name'),
+        align: 'left',
     },
-};
+    {
+        name: 'symbol',
+        label: $t('global.symbol'),
+        align: 'left',
+    },
+    {
+        name: 'balance',
+        label: $t('components.balance'),
+        align: 'left',
+    },
+    {
+        name: 'usd',
+        label: $t('components.usd_value'),
+        align: 'left',
+    },
+    {
+        name: 'action',
+        label: $t('global.action'),
+        align: 'left',
+    },
+];
+
+// Setup Vuex store
+const store = useStore();
+
+// Map Vuex action to toggle display decimals
+const toggleDisplayDecimals = (): Promise<never> => store.dispatch('general/toggleDisplayDecimals') as Promise<never>;
+
 </script>
 
 <template>
 <q-table
     :rows="rows"
     :row-key="row => row.address"
-    :columns="columns"
+    :columns="(columns as any)"
     :loading="!(rows)"
     :rows-per-page-options="[0]"
 >

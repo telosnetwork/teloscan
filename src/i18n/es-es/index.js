@@ -244,6 +244,18 @@ export default {
         close: 'Cerrar',
         no_matching_entries: 'No hay entradas coincidentes',
         please_try_again_later: 'Por favor, inténtalo de nuevo más tarde',
+        table_pagination: {
+            showing_items_from_x_to_y: 'Mostrando elementos desde { startRow } hasta { endRow } de un total de { rowsNumber } { entryName }',
+            records_per_page: 'Registros por página',
+            first: 'Primero',
+            current_page: 'Página { currentPage } de { totalPages }',
+            last: 'Último',
+            holders: 'propietarios',
+            blocks: 'bloques',
+            transactions: 'transacciones',
+            transfers: 'transferencias',
+            items: 'coleccionables',
+        },
         input_viewer: {
             name: 'Nombre',
             type: 'Tipo',

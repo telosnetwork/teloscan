@@ -50,6 +50,7 @@ export interface TeloscanEVMChainSettings {
     getSocialLinks: () => SocialLink[];
     getFooterLinks: () => FooterLinksConfig;
     getHeaderIndicators: () => HeaderIndicators;
+    getIndexerSecondsBehindThreshold: () => number;
     getHeaderMenuConfig: () => HeaderMenuConfig;
     hasIndexerSupportOver(version:string): boolean;
     // Telos Specific

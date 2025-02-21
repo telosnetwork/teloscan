@@ -27,8 +27,12 @@ onMounted(() => {
     const indexerApi = useChainStore().currentChain.settings.getIndexerApi();
     indexerApi.get(url).then(async (response) => {
         const indexerData = response.data.results[0];
+        if (!indexerData) {
+            console.warn('Indexer return NFT not found', { contract, tokenId });
+            return;
+        }
 
-        indexerData.tokenUri = ((indexerData.tokenUri as string) ?? '').replace('ipfs://', IPFS_GATEWAY);
+        indexerData.tokenUri = ((indexerData?.tokenUri as string) ?? '').replace('ipfs://', IPFS_GATEWAY);
         if (typeof indexerData.metadata === 'string') {
             try {
                 indexerData.metadata = JSON.parse(indexerData.metadata);

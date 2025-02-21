@@ -101,7 +101,7 @@ class EVMStore {
 
                 if (chainNotAddedCodes.includes((error as unknown as ExceptionError).code)) {  // 'Chain <hex chain id> hasn't been added'
                     const p:RpcEndpoint = chainSettings.getRPCEndpoint();
-                    const rpcUrl = `${p.protocol}://${p.host}:${p.port}${p.path ?? ''}`;
+                    const rpcUrl = `${p.protocol}://${p.host}`;
                     try {
                         if (!provider.request) {
                             throw new CoreError('core.evm.error_support_provider_request');
