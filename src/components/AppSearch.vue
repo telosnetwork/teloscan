@@ -24,6 +24,7 @@ import {
 import { Observable, debounceTime, fromEvent, map, of, switchMap, tap } from 'rxjs';
 import { useRouter } from 'vue-router';
 import { useChainStore } from 'src/core';
+import { trim } from 'lodash';
 
 const props = defineProps<{
     homepageMode?: boolean; // if true, the search bar will be styled for placement on the homepage
@@ -230,8 +231,9 @@ const getSearchResultRaw = (result: SearchResultRaw[] | string): SearchResultRaw
 };
 
 
-const goToFirstResultNow = (query: string) => {
+const goToFirstResultNow = (rawQuery: string) => {
     const endpoint = useChainStore().currentChain.settings.getIndexerApiEndpoint();
+    const query = trim(rawQuery);
     const url = `${endpoint}/api?module=search&action=search&query=${query}&offset=1`;
     loading.value = true;
     axios.get(url).then((response) => {
@@ -244,7 +246,8 @@ const goToFirstResultNow = (query: string) => {
     });
 };
 
-const fetchResults = (query: string): Observable<SearchResult[]> => {
+const fetchResults = (rawQuery: string): Observable<SearchResult[]> => {
+    const query = trim(rawQuery);
     if (query.length < 3) {
         return of([] as SearchResult[]);
     }
