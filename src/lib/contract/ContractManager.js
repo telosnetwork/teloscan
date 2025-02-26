@@ -1,7 +1,7 @@
 import ContractFactory from 'src/lib/contract/ContractFactory';
 import { ethers } from 'ethers';
 import axios from 'axios';
-import { getTopicHash } from 'src/lib/utils';
+import { getTopicHash, toChecksumAddress } from 'src/lib/utils';
 import { ERC1155_TRANSFER_SIGNATURE, TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures.js';
 import { erc1155Abi, erc721MetadataAbi } from 'src/lib/abi';
 import { getCore, useChainStore } from 'src/core';
@@ -85,7 +85,8 @@ export default class ContractManager {
         if (!this.contracts[network]) {
             this.contracts[network] = {};
         }
-        return this.contracts[network][address.toLowerCase()] || null;
+        const result = this.contracts[network][address.toLowerCase()] || null;
+        return result;
     }
 
     getTokenListUrl() {
@@ -240,7 +241,7 @@ export default class ContractManager {
         return (sig === ERC1155_TRANSFER_SIGNATURE) ? 'erc1155' : type;
     }
 
-    addContractToCache(address, contractData){
+    async addContractToCache(address, contractData){
         if(!address){
             return;
         }
@@ -250,6 +251,9 @@ export default class ContractManager {
             return;
         }
         let contract = this.factory.buildContract(contractData);
+        if (contractData.verified) {
+            contract.verified = true;
+        }
         if(
             !this.getNetworkContract(index) && contract?.name
             || contract.abi?.length > 0 && !this.getNetworkContract(index)?.abi
@@ -260,7 +264,7 @@ export default class ContractManager {
         }
     }
 
-    addContractsToCache(contracts){
+    async addContractsToCache(contracts){
         for(const index in contracts){
             // skipping non-real contracts
             if (
@@ -268,7 +272,7 @@ export default class ContractManager {
                 contracts[index].name ||
                 contracts[index].calldata
             ) {
-                this.addContractToCache(index, contracts[index]);
+                await this.addContractToCache(index, contracts[index]);
             }
         }
     }
@@ -361,6 +365,7 @@ export default class ContractManager {
         this.processing.push(addressLower);
         let contract = null;
         try {
+            // The contract may be registered in the indexer as a contract, but may not be verified
             let response = await this.indexerApi.get(`/v1/contract/${address}?full=true&includeAbi=true`);
             if(response.data?.success && response.data.results.length > 0){
                 contract = response.data.results[0];
@@ -373,10 +378,10 @@ export default class ContractManager {
             if(index > -1){
                 this.processing.splice(index, 1);
             }
-            this.addContractToCache(address, null);
+            await this.addContractToCache(address, null);
             return;
         }
-        this.addContractToCache(address, contract);
+        await this.addContractToCache(address, contract);
         let index = this.processing.indexOf(addressLower);
         if(index > -1){
             this.processing.splice(index, 1);
@@ -390,12 +395,29 @@ export default class ContractManager {
         }
 
         if (force) {
-            return await this.getContractForced(address);
+            const contract = await this.getContractForced(address);
+            // now we need to check if the contract is verified
+            if (contract) {
+                try {
+                    const checkSumAddress = toChecksumAddress(address);
+                    await axios.get(
+                        `${useChainStore().currentChain.settings.getTrustedContractsBucket()}/${checkSumAddress}/source.json`,
+                    );
+                    contract.verified = true;
+                    // stored again with the verified flag
+                    this.addContractToCache(address, contract);
+                } catch (e) {
+                    // if fetching the source.json fails, the contract is not verified
+                    contract.verified = false;
+                }
+            }
+            return contract;
         }
 
         const addressLower = address.toLowerCase();
 
         const cashedContract = this.getNetworkContract(addressLower);
+
         if (!force && cashedContract) {
             return cashedContract;
         }
