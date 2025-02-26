@@ -430,7 +430,6 @@ function showEntry(entry: HeaderMenuEntry): boolean {
         transition: 0.2s ease all;
         border-radius: 8px;
         min-width: max-content;
-
         display: list-item;
         text-align: -webkit-match-parent;
         color: var(--text-color);
