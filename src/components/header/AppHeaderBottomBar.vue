@@ -94,7 +94,7 @@ const settings = computed(() => useChainStore().currentChain.settings);
     left: 0;
     right: 0;
     height: var(--bottom-bar-height);
-    min-height: 52px; /* Add minimum height for Safari */
+    min-height: var(--bottom-bar-height); /* Add minimum height for Safari */
 
     background: var(--background-color);
     border-bottom: 1px solid var(--border-color);

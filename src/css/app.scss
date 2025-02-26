@@ -101,16 +101,6 @@ a {
     max-width: 100%;
 }
 
-/* Fix for Safari navbar submenu display */
-.c-header-links__submenu-ul {
-  min-width: 230px !important; /* Wide enough for most menu items */
-}
-
-/* Extra width for Developer menu (which has longer items) */
-.c-header-links__menu-li:nth-child(3) .c-header-links__submenu-ul {
-  min-width: 320px !important; /* Extra wide for this specific menu */
-}
-
 .q-tab--inactive {
     opacity: unset;
 }
