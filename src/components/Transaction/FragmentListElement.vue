@@ -103,9 +103,9 @@ export default {
         class="shadow-1 q-mb-md"
     >
         <template v-slot:header>
-            <div class="flex items-center justify-between">
-                <div class="flex items-center col-shrink">
-                    <strong v-if="fragment.name">
+            <div class="flex items-center justify-between flex-no-wrap">
+                <div class="flex items-center col-shrink overflow-hidden">
+                    <strong v-if="fragment.name" class="overflow-hidden">
                         <span v-if="fragment.name.length > 190">{{ fragment.name.substring(0, 190) }}...</span>
                         <span v-else>{{ fragment.name }}</span>
                     </strong>
@@ -122,7 +122,7 @@ export default {
                         class="q-ml-xs"
                     />
                 </div>
-                <div>
+                <div class="flex-none q-ml-md">
                     <small>
                         <AddressField
                             v-if="address"
@@ -222,7 +222,7 @@ body.body--dark .c-fragment-list-element  .negative {
 .c-fragment-list-element {
     margin-bottom: 24px;
     .col-shrink {
-        max-width: 90%;
+        max-width: 70%;
         word-break: break-all;
     }
     &__head {
