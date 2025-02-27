@@ -285,32 +285,32 @@ body.body--dark .c-fragment-list-element  .negative {
                 max-width: 100%;
             }
         }
-        
+
         /* Fix for expansion item header on mobile */
         .q-expansion-item__container {
             /* Reduce padding on the side to give more space for text */
             .q-item__section--side {
                 padding-right: 0;
             }
-            
+
             /* Fix expansion item header layout on mobile */
             .q-item__section--main {
                 .flex.items-center.justify-between {
                     flex-wrap: wrap;
-                    
+
                     /* Ensure contract name has enough space */
                     .flex-none {
                         margin-left: 0;
                         margin-top: 0.5rem;
                         width: 100%;
                     }
-                    
+
                     /* Fix function name overflow */
                     .col-shrink {
                         width: 100%;
                         max-width: 100%;
                     }
-                    
+
                     strong {
                         overflow: hidden;
                         word-break: break-word;
@@ -325,11 +325,11 @@ body.body--dark .c-fragment-list-element  .negative {
         &__head {
             font-size: 0.9em;
         }
-        
+
         /* For smaller screens, reduce font size further in expansion items */
         .q-expansion-item__container {
             font-size: 0.85em;
-            
+
             strong {
                 line-height: 1.2;
             }
