@@ -49,7 +49,7 @@ const { t: $t } = useI18n();
 const $store = useStore();
 const toggleDisplayDecimals = () => $store.dispatch('general/toggleDisplayDecimals');
 
-// ---------------------
+
 interface TransfersResponse {
     code: number;
     success: boolean;
@@ -89,7 +89,7 @@ interface TransferData {
     timestamp: string;
 }
 
-// ---------------------
+
 
 const props = withDefaults(defineProps<NftTransferProps>(), {
     title: '',
