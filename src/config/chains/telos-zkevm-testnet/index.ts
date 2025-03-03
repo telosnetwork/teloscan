@@ -20,7 +20,7 @@ const config: NetworkConfig =
         'text': 'Telos zkEVM',
         'icon': '/branding/teloscan-logo.png',
     },
-    'chainId': '1310',
+    'chainId': '331',
     'isTestnet': true,
     'logos': {
         'large': '/branding/network-icon-teloszk.svg',
