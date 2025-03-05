@@ -5,6 +5,7 @@ import { getTopicHash } from 'src/lib/utils';
 import { ERC1155_TRANSFER_SIGNATURE, TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures.js';
 import { erc1155Abi, erc721MetadataAbi } from 'src/lib/abi';
 import { getCore, useChainStore } from 'src/core';
+import { toChecksumAddress } from 'src/lib/utils';
 // const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 const systemContractList =
     'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json';
@@ -78,6 +79,7 @@ export default class ContractManager {
         this.indexerApi = indexerApi;
         this.systemContractList = false;
         this.tokenList = false;
+        this.abisCache = {};
     }
 
     getNetworkContract(address) {
@@ -390,7 +392,31 @@ export default class ContractManager {
         }
 
         if (force) {
-            return await this.getContractForced(address);
+            const contract = await this.getContractForced(address);
+            // ABI taken from sourcify.dev -------------------------------
+            const checkSumAddress = toChecksumAddress(address);
+            if (!this.abisCache[checkSumAddress]) {
+                try {
+                    const response = await axios.get(
+                        `${useChainStore().currentChain.settings.getTrustedContractsBucket()}/${checkSumAddress}/source.json`,
+                    );
+                    const metadata_file = response.data.files.find(file => file.name === 'metadata.json');
+                    if (metadata_file) {
+                        const metadata = JSON.parse(metadata_file.content);
+                        const abi = metadata.output.abi;
+                        if (abi) {
+                            this.abisCache[checkSumAddress] = abi;
+                            contract.abi = this.abisCache[checkSumAddress];
+                            contract.autoloadedAbi = false;
+                        }
+                    }
+                } catch (e) {
+                    console.error(`Could not retrieve contract ABI for ${address}: ${e.message}`);
+                }
+            }
+            contract.abi = this.abisCache[checkSumAddress] || contract.abi;
+            // ----------------------------------------------------
+            return contract;
         }
 
         const addressLower = address.toLowerCase();
