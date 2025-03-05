@@ -594,6 +594,10 @@ export default {
             reset: 'Réinitialiser',
             start_block: 'Bloc de Début',
             transactions: 'Transactions',
+            invalid_date_range: 'Plage de dates invalide',
+            date_range_exceeds_limit: 'La plage de dates dépasse la limite d\'un an',
+            invalid_block_range: 'Plage de blocs invalide',
+            block_range_exceeds_limit: 'La plage de blocs dépasse la limite de {limit} blocs',
         },
     },
     evm_wallet: {
