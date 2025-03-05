@@ -71,7 +71,41 @@ function processOutputResponse(response: OutputValue[], outputs: OutputType[]): 
 // Procesar la respuesta
 const processedResponse = ref<OutputResult>({});
 
+function isBasicTypeResponse(output: OutputResult, indentLevel: number): boolean {
+    let isSimple = true;
+    if (indentLevel > 1) {
+        isSimple = false;
+    } else if (Object.keys(output).length > 1) {
+        isSimple = false;
+    } else {
+        const result = output[Object.keys(output)[0]] as OutputResult;
+        if (typeof result === 'object' && result !== null && typeof result.value === 'undefined') {
+            isSimple = false;
+        }
+    }
+    return isSimple;
+}
+
+function formatBasicOutput(output: OutputResult): string {
+    const data = output[Object.keys(output)[0]] as OutputData;
+    if (data.type === 'address') {
+        return `<a href="/address/${data.value}">${data.value}</a>`;
+    } else if (data.type === 'address[]') {
+        const addresses = (typeof data.value === 'string' ? [data.value] : data.value) as string[];
+        return `[${addresses.map(address => `<a href="/address/${address}">${address}</a>`).join(', ')}]`;
+    } else {
+        if (Array.isArray(data.value)) {
+            return `[${data.value.join(', ')}]`;
+        } else {
+            return `${data.value}`;
+        }
+    }
+}
+
 function formatOutput(output: OutputResult, indentLevel = 1): string {
+    if (isBasicTypeResponse(output, indentLevel)) {
+        return formatBasicOutput(output);
+    }
     const indent = ' '.repeat(indentLevel * 4);
     let json = '{\n';
     let first = true;
