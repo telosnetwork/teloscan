@@ -79,7 +79,7 @@ const dateRange = computed(() => ({
 const isNumber = (val: string) => /^\d+$/.test(val);
 const addressIsValid = computed(() => !!parseAddressString(accountModel.value));
 
-// Updated date range validation: complete, in orden y menor o igual a un año
+// Updated date range validation: complete, in order, and less than or equal to one year
 const dateRangeIsValid = computed(() => {
     if (!startDateModel.value || !endDateModel.value) {
         return false;
@@ -92,7 +92,7 @@ const dateRangeIsValid = computed(() => {
     return (end.getTime() - start.getTime()) <= ONE_YEAR_MS;
 });
 
-// Updated block range validation: complete, en orden y menor o igual a un año de bloques
+// Updated block range validation: complete, in order, and less than or equal to one year of blocks
 const blockRangeIsValid = computed(() => {
     if (!isNumber(startBlockModel.value) || !isNumber(endBlockModel.value)) {
         return false;
