@@ -365,8 +365,7 @@ export default class ContractManager {
         this.processing.push(addressLower);
         let contract = null;
         try {
-            // The contract may be registered in the indexer as a contract, but may not be verified
-            let response = await this.indexerApi.get(`/v1/contract/${address}?full=true&includeAbi=true`);
+            let response = await this.indexerApi.get(`/v1/contract/${address}`);
             if(response.data?.success && response.data.results.length > 0){
                 contract = response.data.results[0];
             }

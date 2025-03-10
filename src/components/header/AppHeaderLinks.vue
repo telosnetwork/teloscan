@@ -286,6 +286,18 @@ function showEntry(entry: HeaderMenuEntry): boolean {
 </template>
 
 <style lang="scss">
+
+.is-safari {
+    // Safari-specific CSS
+    .c-header-links__submenu-ul {
+        min-width: 230px !important;
+    }
+
+    .c-header-links__menu-li:nth-child(3) .c-header-links__submenu-ul {
+        min-width: 320px !important;
+    }
+}
+
 .c-header-links {
     $this: &;
 
@@ -430,7 +442,6 @@ function showEntry(entry: HeaderMenuEntry): boolean {
         transition: 0.2s ease all;
         border-radius: 8px;
         min-width: max-content;
-
         display: list-item;
         text-align: -webkit-match-parent;
         color: var(--text-color);
