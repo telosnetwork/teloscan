@@ -100,7 +100,6 @@ async function loadAccount() {
         return;
     }
     accountLoading.value = true;
-    console.log('AccountPAge.vue accountLoading.value = true;'); // FIXME: remove
     const contractManager = useChainStore().currentChain.settings.getContractManager();
     const tokenList = await contractManager.getTokenList();
     const fiatPrice = store.getters['chain/tlosPrice'];
@@ -121,7 +120,6 @@ async function loadAccount() {
                     contract.value.issuer = token.issuer;
                     contract.value.issuer_link = token.issuer_link;
                     contract.value.logoURI = token.logoURI;
-                    // contract.value.setVerified(true); // FIXME
                 }
             });
         }
@@ -134,7 +132,6 @@ async function loadAccount() {
     }
 
     accountLoading.value = false;
-    console.log('AccountPAge.vue accountLoading.value = false;'); // FIXME: remove
     fullTitle.value = contract.value?.getName() ?? '';
 }
 

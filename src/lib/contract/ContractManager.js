@@ -241,7 +241,7 @@ export default class ContractManager {
         return (sig === ERC1155_TRANSFER_SIGNATURE) ? 'erc1155' : type;
     }
 
-    async addContractToCache(address, contractData){
+    addContractToCache(address, contractData){
         if(!address){
             return;
         }
@@ -264,7 +264,7 @@ export default class ContractManager {
         }
     }
 
-    async addContractsToCache(contracts){
+    addContractsToCache(contracts){
         for(const index in contracts){
             // skipping non-real contracts
             if (
@@ -272,7 +272,7 @@ export default class ContractManager {
                 contracts[index].name ||
                 contracts[index].calldata
             ) {
-                await this.addContractToCache(index, contracts[index]);
+                this.addContractToCache(index, contracts[index]);
             }
         }
     }
@@ -378,10 +378,10 @@ export default class ContractManager {
             if(index > -1){
                 this.processing.splice(index, 1);
             }
-            await this.addContractToCache(address, null);
+            this.addContractToCache(address, null);
             return;
         }
-        await this.addContractToCache(address, contract);
+        this.addContractToCache(address, contract);
         let index = this.processing.indexOf(addressLower);
         if(index > -1){
             this.processing.splice(index, 1);
