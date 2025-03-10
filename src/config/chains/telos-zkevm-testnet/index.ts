@@ -13,11 +13,11 @@ import { TelosEvmApi } from '@telosnetwork/telosevm-js';
 const config: NetworkConfig =
 {
     'network': 'telos-zkevm-testnet',
-    'display': 'Ether zkEVM (Testnet)',
-    'title': 'Ether zkEVM Testnet Explorer',
+    'display': 'Telos zkEVM (Testnet)',
+    'title': 'Telos zkEVM Testnet Explorer',
     'branding': {
         'tab': 'Teloscan zkEVM Testnet',
-        'text': 'Ether zkEVM',
+        'text': 'Telos zkEVM',
         'icon': '/branding/teloscan-logo.png',
     },
     'chainId': '331',
