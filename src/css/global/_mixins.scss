@@ -23,9 +23,9 @@
     cursor: pointer;
     height: 22px;
     width: 22px;
-    color: white;
-    background-color: $grey;
-    border: solid 1.25px $grey;
+    color: var(--text-color);
+    background-color: var(--tab-bg-color);
+    border: solid 1.25px var(--border-color);
     border-radius: 6px;
     display: flex;
     justify-content: center;
@@ -35,6 +35,11 @@
     }
     &--right {
         padding-left: 1px;
+    }
+    &--disabled {
+        cursor: not-allowed;
+        color: var(--muted-text-color);
+        border-color: var(--muted-text-color);
     }
     .q-dark & {
         color: rgb(8, 29, 53);

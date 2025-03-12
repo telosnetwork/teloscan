@@ -35,6 +35,8 @@ export interface EvmTransaction {
     to: string | null; // null if contract creation
     v: string;
     value: string; // string representation of hex number
+    prevTxHash: string | null; // hash of the previous transaction in the same contract
+    nextTxHash: string | null; // hash of the next transaction in the same contract
 }
 
 export interface EvmTransactionParsed extends EvmTransaction {
