@@ -604,6 +604,10 @@ export default {
             reset: 'Reset',
             start_block: 'Start Block',
             transactions: 'Transactions',
+            invalid_date_range: 'Invalid date range',
+            date_range_exceeds_limit: 'Date range exceeds one year limit',
+            invalid_block_range: 'Invalid block range',
+            block_range_exceeds_limit: 'Block range exceeds limit of {limit} blocks',
         },
     },
     evm_wallet: {
