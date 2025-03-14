@@ -1,11 +1,10 @@
 import ContractFactory from 'src/lib/contract/ContractFactory';
 import { ethers } from 'ethers';
 import axios from 'axios';
-import { getTopicHash } from 'src/lib/utils';
+import { getTopicHash, toChecksumAddress } from 'src/lib/utils';
 import { ERC1155_TRANSFER_SIGNATURE, TRANSFER_SIGNATURES } from 'src/lib/abi/signature/transfer_signatures.js';
 import { erc1155Abi, erc721MetadataAbi } from 'src/lib/abi';
 import { getCore, useChainStore } from 'src/core';
-import { toChecksumAddress } from 'src/lib/utils';
 // const tokenList = 'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.tokenlist.json';
 const systemContractList =
     'https://raw.githubusercontent.com/telosnetwork/token-list/main/telosevm.systemcontractlist.json';
@@ -87,7 +86,8 @@ export default class ContractManager {
         if (!this.contracts[network]) {
             this.contracts[network] = {};
         }
-        return this.contracts[network][address.toLowerCase()] || null;
+        const result = this.contracts[network][address.toLowerCase()] || null;
+        return result;
     }
 
     getTokenListUrl() {
@@ -252,6 +252,9 @@ export default class ContractManager {
             return;
         }
         let contract = this.factory.buildContract(contractData);
+        if (contractData.verified) {
+            contract.verified = true;
+        }
         if(
             !this.getNetworkContract(index) && contract?.name
             || contract.abi?.length > 0 && !this.getNetworkContract(index)?.abi
@@ -397,9 +400,11 @@ export default class ContractManager {
             const checkSumAddress = toChecksumAddress(address);
             if (!this.abisCache[checkSumAddress]) {
                 try {
+                    // also this way we check if the contract is verified
                     const response = await axios.get(
                         `${useChainStore().currentChain.settings.getTrustedContractsBucket()}/${checkSumAddress}/source.json`,
                     );
+                    contract.verified = true;
                     const metadata_file = response.data.files.find(file => file.name === 'metadata.json');
                     if (metadata_file) {
                         const metadata = JSON.parse(metadata_file.content);
@@ -410,8 +415,12 @@ export default class ContractManager {
                             contract.autoloadedAbi = false;
                         }
                     }
+                    // stored again with the verified flag
+                    this.addContractToCache(address, contract);
                 } catch (e) {
                     console.error(`Could not retrieve contract ABI for ${address}: ${e.message}`);
+                    // if fetching the source.json fails, the contract is not verified
+                    contract.verified = false;
                 }
             }
             contract.abi = this.abisCache[checkSumAddress] || contract.abi;
@@ -422,6 +431,7 @@ export default class ContractManager {
         const addressLower = address.toLowerCase();
 
         const cashedContract = this.getNetworkContract(addressLower);
+
         if (!force && cashedContract) {
             return cashedContract;
         }

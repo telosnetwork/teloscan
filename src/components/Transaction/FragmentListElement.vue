@@ -103,9 +103,9 @@ export default {
         class="shadow-1 q-mb-md"
     >
         <template v-slot:header>
-            <div class="flex items-center justify-between">
-                <div class="flex items-center col-shrink">
-                    <strong v-if="fragment.name">
+            <div class="flex items-center justify-between flex-no-wrap">
+                <div class="flex items-center col-shrink overflow-hidden">
+                    <strong v-if="fragment.name" class="overflow-hidden">
                         <span v-if="fragment.name.length > 190">{{ fragment.name.substring(0, 190) }}...</span>
                         <span v-else>{{ fragment.name }}</span>
                     </strong>
@@ -122,7 +122,7 @@ export default {
                         class="q-ml-xs"
                     />
                 </div>
-                <div>
+                <div class="flex-none q-ml-md">
                     <small>
                         <AddressField
                             v-if="address"
@@ -222,7 +222,7 @@ body.body--dark .c-fragment-list-element  .negative {
 .c-fragment-list-element {
     margin-bottom: 24px;
     .col-shrink {
-        max-width: 90%;
+        max-width: 70%;
         word-break: break-all;
     }
     &__head {
@@ -285,12 +285,54 @@ body.body--dark .c-fragment-list-element  .negative {
                 max-width: 100%;
             }
         }
+
+        /* Fix for expansion item header on mobile */
+        .q-expansion-item__container {
+            /* Reduce padding on the side to give more space for text */
+            .q-item__section--side {
+                padding-right: 0;
+            }
+
+            /* Fix expansion item header layout on mobile */
+            .q-item__section--main {
+                .flex.items-center.justify-between {
+                    flex-wrap: wrap;
+
+                    /* Ensure contract name has enough space */
+                    .flex-none {
+                        margin-left: 0;
+                        margin-top: 0.5rem;
+                        width: 100%;
+                    }
+
+                    /* Fix function name overflow */
+                    .col-shrink {
+                        width: 100%;
+                        max-width: 100%;
+                    }
+
+                    strong {
+                        overflow: hidden;
+                        word-break: break-word;
+                    }
+                }
+            }
+        }
     }
 }
 @media only screen and (max-width: 400px){
     .c-fragment-list-element {
         &__head {
             font-size: 0.9em;
+        }
+
+        /* For smaller screens, reduce font size further in expansion items */
+        .q-expansion-item__container {
+            font-size: 0.85em;
+
+            strong {
+                line-height: 1.2;
+            }
         }
     }
 }

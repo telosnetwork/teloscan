@@ -120,7 +120,6 @@ async function loadAccount() {
                     contract.value.issuer = token.issuer;
                     contract.value.issuer_link = token.issuer_link;
                     contract.value.logoURI = token.logoURI;
-                    contract.value.setVerified(true);
                 }
             });
         }

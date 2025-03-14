@@ -94,6 +94,7 @@ const settings = computed(() => useChainStore().currentChain.settings);
     left: 0;
     right: 0;
     height: var(--bottom-bar-height);
+    min-height: var(--bottom-bar-height); /* Add minimum height for Safari */
 
     background: var(--background-color);
     border-bottom: 1px solid var(--border-color);
@@ -186,6 +187,7 @@ const settings = computed(() => useChainStore().currentChain.settings);
     &__inner-container {
         max-width: 1200px;
         height: 100%;
+        min-height: var(--nav-min-height);
         margin: 0 auto;
         display: flex;
         justify-content: flex-start;

@@ -5,6 +5,7 @@ import {
     onMounted,
     ref,
     watch,
+    nextTick,
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
@@ -17,10 +18,9 @@ import { downloadCsv } from 'src/lib/data-export-utils';
 import { useNotifications } from 'src/boot/errorHandling';
 
 import AddressInput from 'src/components/inputs/AddressInput.vue';
-import { nextTick } from 'vue';
 
 declare const hcaptcha: {
-    /* eslint-disable-next-line no-unused-vars */
+    // eslint-disable-next-line no-unused-vars
     render: (id: string, options: { sitekey: string; theme: string; callback: string }) => void;
 };
 
@@ -52,13 +52,15 @@ const downloadRangeTypes = {
 };
 
 const RESULTS_LIMIT = 10000;
+// Maximum allowed ranges (same as in server validations)
+const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
+const ONE_YEAR_BLOCKS = 63072000;
 
 // data
 const accountModel = ref('');
 const accountInputRef = ref<null | typeof AddressInput>(null);
 const typeSelectModel = ref(exportTypes[0]);
 const downloadRangeType = ref(downloadRangeTypes.date);
-// const dateRange = ref({ to: '', from: '' });
 const startDateModel = ref('');
 const endDateModel = ref('');
 const startBlockModel = ref('');
@@ -73,19 +75,65 @@ const dateRange = computed(() => ({
     to: endDateModel.value,
 }));
 
+// Check if string is a valid number
 const isNumber = (val: string) => /^\d+$/.test(val);
 const addressIsValid = computed(() => !!parseAddressString(accountModel.value));
-const dateRangeIsValid = computed(() => dateRange.value.from && dateRange.value.to && dateRange.value.from <= dateRange.value.to);
-const blockRangeIsValid = computed(() =>
-    isNumber(startBlockModel.value) &&
-    isNumber(endBlockModel.value) &&
-    parseInt(startBlockModel.value) <= parseInt(endBlockModel.value) &&
-    parseInt(startBlockModel.value) >= 0);
 
-// We must show an error only if both fields of the selected range type are not empty and are also invalid
-const showErrorMessages = computed(() =>
-    (downloadRangeType.value === downloadRangeTypes.date && !dateRangeIsValid.value && dateRange.value.from && dateRange.value.to) ||
-    (downloadRangeType.value === downloadRangeTypes.block && !blockRangeIsValid.value && startBlockModel.value && endBlockModel.value));
+// Updated date range validation: complete, in order, and less than or equal to one year
+const dateRangeIsValid = computed(() => {
+    if (!startDateModel.value || !endDateModel.value) {
+        return false;
+    }
+    if (startDateModel.value > endDateModel.value) {
+        return false;
+    }
+    const start = new Date(startDateModel.value);
+    const end = new Date(endDateModel.value);
+    return (end.getTime() - start.getTime()) <= ONE_YEAR_MS;
+});
+
+// Updated block range validation: complete, in order, and less than or equal to one year of blocks
+const blockRangeIsValid = computed(() => {
+    if (!isNumber(startBlockModel.value) || !isNumber(endBlockModel.value)) {
+        return false;
+    }
+    const start = parseInt(startBlockModel.value);
+    const end = parseInt(endBlockModel.value);
+    if (start > end) {
+        return false;
+    }
+    return (end - start) <= ONE_YEAR_BLOCKS;
+});
+
+// Computed property to show detailed range error messages
+const rangeErrorMessage = computed(() => {
+    if (downloadRangeType.value === downloadRangeTypes.date) {
+        if (!startDateModel.value || !endDateModel.value) {
+            return '';
+        }
+        if (startDateModel.value > endDateModel.value) {
+            return $t('components.export.invalid_date_range');
+        }
+        const start = new Date(startDateModel.value);
+        const end = new Date(endDateModel.value);
+        if ((end.getTime() - start.getTime()) > ONE_YEAR_MS) {
+            return $t('components.export.date_range_exceeds_limit');
+        }
+    } else if (downloadRangeType.value === downloadRangeTypes.block) {
+        if (!startBlockModel.value || !endBlockModel.value) {
+            return '';
+        }
+        const start = parseInt(startBlockModel.value);
+        const end = parseInt(endBlockModel.value);
+        if (start > end) {
+            return $t('components.export.invalid_block_range');
+        }
+        if ((end - start) > ONE_YEAR_BLOCKS) {
+            return $t('components.export.block_range_exceeds_limit', { limit: ONE_YEAR_BLOCKS.toLocaleString() });
+        }
+    }
+    return '';
+});
 
 const enableDownloadButton = computed(() =>
     addressIsValid.value &&
@@ -93,8 +141,10 @@ const enableDownloadButton = computed(() =>
     (
         (downloadRangeType.value === downloadRangeTypes.date && dateRangeIsValid.value) ||
         (downloadRangeType.value === downloadRangeTypes.block && blockRangeIsValid.value)
-    ));
+    ),
+);
 
+// For text input binding with date values
 const startDateTextInputModel = computed(() => startDateModel.value);
 const endDateTextInputModel = computed(() => endDateModel.value);
 
@@ -119,14 +169,12 @@ watch(typeSelectModel, () => {
     }
 }, { immediate: true });
 
-
 // methods
 function resetOptions() {
     accountModel.value = '';
     typeSelectModel.value = exportTypes[0];
     startBlockModel.value = '';
     endBlockModel.value = '';
-
 
     nextTick(() => {
         accountInputRef.value?.resetValidation();
@@ -186,11 +234,9 @@ function hCaptchaSuccessHandler(token: string) {
 }
 
 onMounted(() => {
-    // hCaptcha requires this global function
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    (window as any).teloscanHCaptchaSuccessHandler = hCaptchaSuccessHandler;
-    (window as any).teloscanHCaptchaLoadHandler = hCaptchaLoadHandler;
-    /* eslint-enable */
+    // hCaptcha requires these global functions
+    window.teloscanHCaptchaSuccessHandler = hCaptchaSuccessHandler;
+    window.teloscanHCaptchaLoadHandler = hCaptchaLoadHandler;
 
     const hcaptchaScript = document.createElement('script');
     hcaptchaScript.src = 'https://js.hcaptcha.com/1/api.js';
@@ -209,102 +255,101 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    delete (window as any).teloscanHCaptchaSuccessHandler;
-    delete (window as any).teloscanHCaptchaLoadHandler;
-    /* eslint-enable */
+    delete window.teloscanHCaptchaSuccessHandler;
+    delete window.teloscanHCaptchaLoadHandler;
 });
 </script>
 
 <template>
-<div class="c-export-page">
-    <div class="c-export-page__header">
-        <h1 class="c-export-page__header-title">
+<div class='c-export-page'>
+    <div class='c-export-page__header'>
+        <h1 class='c-export-page__header-title'>
             {{ $t('components.export.page_header') }}
         </h1>
     </div>
 
-    <q-card class="c-export-page__content">
+    <q-card class='c-export-page__content'>
         <form>
-            <div class="c-export-page__container">
-                <div class="c-export-page__row c-export-page__row--break">
-                    <div class="c-export-page__col">
-                        <div class="c-export-page__row c-export-page__value-container">
+            <div class='c-export-page__container'>
+                <div class='c-export-page__row c-export-page__row--break'>
+                    <div class='c-export-page__col'>
+                        <div class='c-export-page__row c-export-page__value-container'>
                             <q-select
-                                v-model="typeSelectModel"
-                                :options="exportTypes"
-                                color="secondary"
-                                class="c-export-page__value"
-                                :label="$t('components.export.export_type')"
+                                v-model='typeSelectModel'
+                                :options='exportTypes'
+                                color='secondary'
+                                class='c-export-page__value'
+                                :label='$t("components.export.export_type")'
                             />
                         </div>
-                        <div class="c-export-page__row c-export-page__value-container">
+                        <div class='c-export-page__row c-export-page__value-container'>
                             <AddressInput
-                                ref="accountInputRef"
-                                v-model="accountModel"
-                                :label="$t('pages.account')"
-                                class="c-export-page__value"
-                                required="required"
-                                name="export-account"
+                                ref='accountInputRef'
+                                v-model='accountModel'
+                                :label='$t("pages.account")'
+                                class='c-export-page__value'
+                                required='required'
+                                name='export-account'
                             />
                         </div>
                     </div>
-                    <div class="c-export-page__col">
-                        <div class="c-export-page__row c-export-page__value-container">
-                            <div class="c-export-page__value">
+                    <div class='c-export-page__col'>
+                        <div class='c-export-page__row c-export-page__value-container'>
+                            <div class='c-export-page__value'>
                                 {{ $t('components.export.choose_download_option') }}
                                 <br>
                                 <q-radio
-                                    v-model="downloadRangeType"
-                                    :val="downloadRangeTypes.date"
-                                    :label="$t('components.export.date_range')"
-                                    color="secondary"
+                                    v-model='downloadRangeType'
+                                    :val='downloadRangeTypes.date'
+                                    :label='$t("components.export.date_range")'
+                                    color='secondary'
                                 />
                                 <q-radio
-                                    v-model="downloadRangeType"
-                                    :val="downloadRangeTypes.block"
-                                    :label="$t('components.export.block_range')"
-                                    color="secondary"
+                                    v-model='downloadRangeType'
+                                    :val='downloadRangeTypes.block'
+                                    :label='$t("components.export.block_range")'
+                                    color='secondary'
                                 />
                             </div>
                         </div>
+                        <!-- Display range error message if any -->
                         <div
-                            v-if="showErrorMessages"
-                            class="c-export-page__row c-export-page__invalid-range"
+                            v-if='rangeErrorMessage'
+                            class='c-export-page__row c-export-page__invalid-range'
                         >
-                            {{ $t('components.export.invalid_range') }}
+                            {{ rangeErrorMessage }}
                         </div>
                         <div
-                            v-if="downloadRangeType === downloadRangeTypes.date"
-                            :class="{
-                                'c-export-page__row': true,
-                                'c-export-page__value-container': true,
-                                'c-export-page__value-container--error': showErrorMessages,
-                            }"
+                            v-if='downloadRangeType === downloadRangeTypes.date'
+                            :class='{
+                                "c-export-page__row": true,
+                                "c-export-page__value-container": true,
+                                "c-export-page__value-container--error": rangeErrorMessage !== ""
+                            }'
                         >
                             <q-input
-                                v-model="startDateTextInputModel"
-                                :label="`${$t('components.export.start_date')}*`"
-                                name="export-data-start-date"
-                                type="text"
-                                :color="showErrorMessages ? 'negative' : 'secondary'"
-                                required="required"
-                                class="c-export-page__value"
-                                error-message="Invalid date range"
+                                v-model='startDateTextInputModel'
+                                :label='`${$t("components.export.start_date")}*`'
+                                name='export-data-start-date'
+                                type='text'
+                                :color="rangeErrorMessage !== '' ? 'negative' : 'secondary'"
+                                required='required'
+                                class='c-export-page__value'
+                                error-message='Invalid date range'
                             >
                                 <template v-slot:append>
-                                    <q-icon name="event" class="cursor-pointer">
-                                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                    <q-icon name='event' class='cursor-pointer'>
+                                        <q-popup-proxy cover transition-show='scale' transition-hide='scale'>
                                             <q-date
-                                                v-model="startDateModel"
+                                                v-model='startDateModel'
                                                 minimal
-                                                color="secondary"
+                                                color='secondary'
                                             >
-                                                <div class="row items-center justify-end">
+                                                <div class='row items-center justify-end'>
                                                     <q-btn
                                                         v-close-popup
-                                                        :label="$t('global.close')"
-                                                        color="primary"
+                                                        :label='$t("global.close")'
+                                                        color='primary'
                                                         flat
                                                     />
                                                 </div>
@@ -314,27 +359,27 @@ onBeforeUnmount(() => {
                                 </template>
                             </q-input>
                             <q-input
-                                v-model="endDateTextInputModel"
-                                :label="`${$t('components.export.end_date')}*`"
-                                name="export-data-end-date"
-                                type="text"
-                                :color="showErrorMessages ? 'negative' : 'secondary'"
-                                required="required"
-                                class="c-export-page__value"
+                                v-model='endDateTextInputModel'
+                                :label='`${$t("components.export.end_date")}*`'
+                                name='export-data-end-date'
+                                type='text'
+                                :color="rangeErrorMessage !== '' ? 'negative' : 'secondary'"
+                                required='required'
+                                class='c-export-page__value'
                             >
                                 <template v-slot:append>
-                                    <q-icon name="event" class="cursor-pointer">
-                                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                    <q-icon name='event' class='cursor-pointer'>
+                                        <q-popup-proxy cover transition-show='scale' transition-hide='scale'>
                                             <q-date
-                                                v-model="endDateModel"
+                                                v-model='endDateModel'
                                                 minimal
-                                                color="secondary"
+                                                color='secondary'
                                             >
-                                                <div class="row items-center justify-end">
+                                                <div class='row items-center justify-end'>
                                                     <q-btn
                                                         v-close-popup
-                                                        :label="$t('global.close')"
-                                                        color="primary"
+                                                        :label='$t("global.close")'
+                                                        color='primary'
                                                         flat
                                                     />
                                                 </div>
@@ -347,72 +392,71 @@ onBeforeUnmount(() => {
 
                         <div
                             v-else
-                            :class="{
-                                'c-export-page__row': true,
-                                'c-export-page__value-container': true,
-                                'c-export-page__value-container--error': showErrorMessages
-                            }"
+                            :class='{
+                                "c-export-page__row": true,
+                                "c-export-page__value-container": true,
+                                "c-export-page__value-container--error": rangeErrorMessage !== ""
+                            }'
                         >
                             <q-input
-                                v-model="startBlockModel"
-                                :label="`${$t('components.export.start_block')}*`"
-                                name="export-data-start-block"
-                                type="number"
-                                :color="showErrorMessages ? 'negative' : 'secondary'"
-                                required="required"
-                                class="c-export-page__value"
+                                v-model='startBlockModel'
+                                :label='`${$t("components.export.start_block")}*`'
+                                name='export-data-start-block'
+                                type='number'
+                                :color="rangeErrorMessage !== '' ? 'negative' : 'secondary'"
+                                required='required'
+                                class='c-export-page__value'
                             />
                             <q-input
-                                v-model="endBlockModel"
-                                :label="`${$t('components.export.end_block')}*`"
-                                name="export-data-end-block"
-                                type="number"
-                                :color="showErrorMessages ? 'negative' : 'secondary'"
-                                required="required"
-                                class="c-export-page__value"
+                                v-model='endBlockModel'
+                                :label='`${$t("components.export.end_block")}*`'
+                                name='export-data-end-block'
+                                type='number'
+                                :color="rangeErrorMessage !== '' ? 'negative' : 'secondary'"
+                                required='required'
+                                class='c-export-page__value'
                             />
                         </div>
                     </div>
                 </div>
 
-                <div class="c-export-page__row c-export-page__row--separator"></div>
+                <div class='c-export-page__row c-export-page__row--separator'></div>
 
-                <div class="c-export-page__row">
-                    <div class="c-export-page__col c-export-page__value-container">
-                        <div class="c-export-page__value flex items-center c-export-page__limit-notice">
-                            <q-icon name="info" class="q-mr-sm" />
+                <div class='c-export-page__row'>
+                    <div class='c-export-page__col c-export-page__value-container'>
+                        <div class='c-export-page__value flex items-center c-export-page__limit-notice'>
+                            <q-icon name='info' class='q-mr-sm' />
                             {{ $t('components.export.limit_notice', { amount: RESULTS_LIMIT.toLocaleString() }) }}
                         </div>
                     </div>
                 </div>
 
-                <div class="c-export-page__row">
-                    <div class="c-export-page__col c-export-page__value-container">
-                        <div class="c-export-page__value c-export-page__captcha-container">
-                            <q-spinner class="c-export-page__captcha-spinner" size="md" aria-hidden="true" />
-
-                            <div id="export-page-captcha" class="c-export-page__captcha"></div>
+                <div class='c-export-page__row'>
+                    <div class='c-export-page__col c-export-page__value-container'>
+                        <div class='c-export-page__value c-export-page__captcha-container'>
+                            <q-spinner class='c-export-page__captcha-spinner' size='md' aria-hidden='true' />
+                            <div id='export-page-captcha' class='c-export-page__captcha'></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="c-export-page__row">
-                    <div class="c-export-page__buttons c-export-page__value-container">
+                <div class='c-export-page__row'>
+                    <div class='c-export-page__buttons c-export-page__value-container'>
                         <q-btn
-                            :disable="!enableDownloadButton"
-                            :label="$t('components.export.download_csv')"
-                            :loading="exportIsLoading"
-                            icon="download"
-                            color="secondary"
-                            class="c-export-page__btn"
-                            @click="download"
+                            :disable='!enableDownloadButton'
+                            :label='$t("components.export.download_csv")'
+                            :loading='exportIsLoading'
+                            icon='download'
+                            color='secondary'
+                            class='c-export-page__btn'
+                            @click='download'
                         />
                         <q-btn
-                            :label="$t('components.export.reset')"
+                            :label='$t("components.export.reset")'
                             flat
-                            class="c-export-page__btn"
-                            color="secondary"
-                            @click="resetOptions"
+                            class='c-export-page__btn'
+                            color='secondary'
+                            @click='resetOptions'
                         />
                     </div>
                 </div>
@@ -460,7 +504,7 @@ onBeforeUnmount(() => {
     }
 
     &__captcha {
-        z-index: 5
+        z-index: 5;
     }
 
     &__limit-notice {
@@ -474,7 +518,6 @@ onBeforeUnmount(() => {
         &--separator {
             display: none;
         }
-
         &--break {
             flex-direction: column;
         }
@@ -510,4 +553,5 @@ onBeforeUnmount(() => {
             border-radius: 4px;
         }
     }
-}</style>
+}
+</style>
