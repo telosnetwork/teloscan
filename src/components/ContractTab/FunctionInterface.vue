@@ -424,12 +424,12 @@ export default defineComponent({
         :loading="loading"
         :label="runLabel"
         :disabled="missingInputs"
-        class="run-button q-mb-md"
+        class="run-button q-mb-sm"
         color="primary"
         icon="send"
         @click="run"
     />
-    <p class="text-negative output-container">
+    <p v-if="errorMessage" class="text-negative output-container">
         {{ errorMessage }}
     </p>
     <div v-if="response.length > 0" class="output-container">

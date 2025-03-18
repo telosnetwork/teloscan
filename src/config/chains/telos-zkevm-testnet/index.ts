@@ -20,7 +20,7 @@ const config: NetworkConfig =
         'text': 'Telos zkEVM',
         'icon': '/branding/teloscan-logo.png',
     },
-    'chainId': '1310',
+    'chainId': '331',
     'isTestnet': true,
     'logos': {
         'large': '/branding/network-icon-teloszk.svg',
@@ -28,8 +28,8 @@ const config: NetworkConfig =
     },
     'systemTokens': [
         {
-            'name': 'Telos zkEVM',
-            'symbol': 'tTLOS',
+            'name': 'Ether zkEVM',
+            'symbol': 'ETH',
             'network': 'telos-zkevm-testnet',
             'decimals': 18,
             'address': NativeCurrencyAddress,
@@ -49,11 +49,11 @@ const config: NetworkConfig =
             'isSystem': false,
         },
         {
-            'name': 'Wrapped Telos',
-            'symbol': 'WTLOS',
+            'name': 'Wrapped Ether',
+            'symbol': 'WETH',
             'network': 'telos-zkevm-testnet',
             'decimals': 18,
-            'address': '0x8a247460a15661ff1f5615035f41653222189d9d',
+            'address': '0x6F222704E3DDc4F482423a7E54f84E0c30dF9da1',
             'logo': 'https://raw.githubusercontent.com/telosnetwork/token-list/main/logos/wtlos.png',
             'isNative': false,
             'isSystem': false,

@@ -96,6 +96,12 @@ onMounted(() => {
     initMultichain($router, $route);
 });
 
+// tries to detect if the browser is Safari and adds a class to the body
+if (navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome')) {
+    document.body.classList.add('is-safari');
+}
+
+
 </script>
 
 <template>
