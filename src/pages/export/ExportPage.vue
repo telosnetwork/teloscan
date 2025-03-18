@@ -277,7 +277,7 @@ onBeforeUnmount(() => {
                             <q-select
                                 v-model='typeSelectModel'
                                 :options='exportTypes'
-                                color='secondary'
+                                color='primary'
                                 class='c-export-page__value'
                                 :label='$t("components.export.export_type")'
                             />
@@ -302,13 +302,13 @@ onBeforeUnmount(() => {
                                     v-model='downloadRangeType'
                                     :val='downloadRangeTypes.date'
                                     :label='$t("components.export.date_range")'
-                                    color='secondary'
+                                    color='primary'
                                 />
                                 <q-radio
                                     v-model='downloadRangeType'
                                     :val='downloadRangeTypes.block'
                                     :label='$t("components.export.block_range")'
-                                    color='secondary'
+                                    color='primary'
                                 />
                             </div>
                         </div>
@@ -332,7 +332,7 @@ onBeforeUnmount(() => {
                                 :label='`${$t("components.export.start_date")}*`'
                                 name='export-data-start-date'
                                 type='text'
-                                :color="rangeErrorMessage !== '' ? 'negative' : 'secondary'"
+                                :color="rangeErrorMessage !== '' ? 'negative' : 'primary'"
                                 required='required'
                                 class='c-export-page__value'
                                 error-message='Invalid date range'
@@ -343,7 +343,7 @@ onBeforeUnmount(() => {
                                             <q-date
                                                 v-model='startDateModel'
                                                 minimal
-                                                color='secondary'
+                                                color='primary'
                                             >
                                                 <div class='row items-center justify-end'>
                                                     <q-btn
@@ -363,7 +363,7 @@ onBeforeUnmount(() => {
                                 :label='`${$t("components.export.end_date")}*`'
                                 name='export-data-end-date'
                                 type='text'
-                                :color="rangeErrorMessage !== '' ? 'negative' : 'secondary'"
+                                :color="rangeErrorMessage !== '' ? 'negative' : 'primary'"
                                 required='required'
                                 class='c-export-page__value'
                             >
@@ -373,7 +373,7 @@ onBeforeUnmount(() => {
                                             <q-date
                                                 v-model='endDateModel'
                                                 minimal
-                                                color='secondary'
+                                                color='primary'
                                             >
                                                 <div class='row items-center justify-end'>
                                                     <q-btn
@@ -403,7 +403,7 @@ onBeforeUnmount(() => {
                                 :label='`${$t("components.export.start_block")}*`'
                                 name='export-data-start-block'
                                 type='number'
-                                :color="rangeErrorMessage !== '' ? 'negative' : 'secondary'"
+                                :color="rangeErrorMessage !== '' ? 'negative' : 'primary'"
                                 required='required'
                                 class='c-export-page__value'
                             />
@@ -412,7 +412,7 @@ onBeforeUnmount(() => {
                                 :label='`${$t("components.export.end_block")}*`'
                                 name='export-data-end-block'
                                 type='number'
-                                :color="rangeErrorMessage !== '' ? 'negative' : 'secondary'"
+                                :color="rangeErrorMessage !== '' ? 'negative' : 'primary'"
                                 required='required'
                                 class='c-export-page__value'
                             />
@@ -447,7 +447,7 @@ onBeforeUnmount(() => {
                             :label='$t("components.export.download_csv")'
                             :loading='exportIsLoading'
                             icon='download'
-                            color='secondary'
+                            color='primary'
                             class='c-export-page__btn'
                             @click='download'
                         />
@@ -455,7 +455,7 @@ onBeforeUnmount(() => {
                             :label='$t("components.export.reset")'
                             flat
                             class='c-export-page__btn'
-                            color='secondary'
+                            color='primary'
                             @click='resetOptions'
                         />
                     </div>
