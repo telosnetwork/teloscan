@@ -78,6 +78,7 @@ export default class ContractManager {
         this.indexerApi = indexerApi;
         this.systemContractList = false;
         this.tokenList = false;
+        this.abisCache = {};
     }
 
     getNetworkContract(address) {
@@ -395,21 +396,35 @@ export default class ContractManager {
 
         if (force) {
             const contract = await this.getContractForced(address);
-            // now we need to check if the contract is verified
-            if (contract) {
+            // ABI taken from sourcify.dev -------------------------------
+            const checkSumAddress = toChecksumAddress(address);
+            if (!this.abisCache[checkSumAddress]) {
                 try {
-                    const checkSumAddress = toChecksumAddress(address);
-                    await axios.get(
+                    // also this way we check if the contract is verified
+                    const response = await axios.get(
                         `${useChainStore().currentChain.settings.getTrustedContractsBucket()}/${checkSumAddress}/source.json`,
                     );
                     contract.verified = true;
+                    const metadata_file = response.data.files.find(file => file.name === 'metadata.json');
+                    if (metadata_file) {
+                        const metadata = JSON.parse(metadata_file.content);
+                        const abi = metadata.output.abi;
+                        if (abi) {
+                            this.abisCache[checkSumAddress] = abi;
+                            contract.abi = this.abisCache[checkSumAddress];
+                            contract.autoloadedAbi = false;
+                        }
+                    }
                     // stored again with the verified flag
                     this.addContractToCache(address, contract);
                 } catch (e) {
+                    console.error(`Could not retrieve contract ABI for ${address}: ${e.message}`);
                     // if fetching the source.json fails, the contract is not verified
                     contract.verified = false;
                 }
             }
+            contract.abi = this.abisCache[checkSumAddress] || contract.abi;
+            // ----------------------------------------------------
             return contract;
         }
 
