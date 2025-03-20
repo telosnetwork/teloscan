@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, toRaw, watch, computed } from 'vue';
 import { sortAbiFunctionsByName } from 'src/lib/utils';
 import { AbiFunction } from 'src/types/AbiFunction';
 
@@ -20,10 +20,21 @@ const props = defineProps({
 const functions = ref({ read: [] as AbiFunction[], write: [] as AbiFunction[] });
 
 onMounted(async () => {
+    updateFunction();
+});
+
+watch(() => props.contract, () => {
+    updateFunction();
+});
+
+const functionsList = computed(() => props.write ? functions.value.write : functions.value.read);
+
+function updateFunction() {
     const readFunctions: AbiFunction[] = [];
     const writeFunctions: AbiFunction[] = [];
 
-    props.contract.abi.forEach((abiItem: AbiFunction) => {
+    props.contract.abi.forEach((_abiItem: AbiFunction) => {
+        const abiItem = toRaw(_abiItem);
         if (abiItem.type !== 'function') {
             return;
         }
@@ -39,15 +50,18 @@ onMounted(async () => {
         read: sortAbiFunctionsByName(readFunctions),
         write: sortAbiFunctionsByName(writeFunctions),
     };
-});
+}
 </script>
 
 <template>
 <div class="c-contract-interface q-pt-md">
     <AppHeaderWallet v-if="props.write" class="c-login-button c-contract-interface__login"/>
-    <q-list class="c-contract-interface__container">
+    <q-list
+        v-if="functionsList.length > 0"
+        class="c-contract-interface__container"
+    >
         <q-expansion-item
-            v-for="func in (props.write ? functions.write : functions.read)"
+            v-for="func in functionsList"
             :key="func.name"
             :label="func.name"
             class="shadow-2 q-mb-md"
@@ -65,6 +79,13 @@ onMounted(async () => {
             </q-card>
         </q-expansion-item>
     </q-list>
+    <q-item v-else>
+        <q-item-section>
+            <q-item-label>{{
+                props.write ? $t('components.contract_tab.no_functions_write') : $t('components.contract_tab.no_functions_read')
+            }}</q-item-label>
+        </q-item-section>
+    </q-item>
     <small v-if="props.contract.autoloadedAbi" class="row q-pb-md items-start flex text-grey no-wrap">
         <q-icon name="info" size="12px" class="q-mr-xs q-mt-xs" />
         <span>{{ $t('components.contract_tab.abi_loaded_from_interface') }}</span>

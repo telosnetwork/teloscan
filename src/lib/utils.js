@@ -66,6 +66,11 @@ export function toChecksumAddress(address) {
         return address;
     }
 
+    if (typeof address !== 'string') {
+        console.error(`utils.toChecksumAddress() address must be a string but got ${typeof address}`, { address });
+        throw new Error('toChecksumAddress: must pass a string');
+    }
+
     let addy = address.toLowerCase().replace('0x', '');
     if (addy.length !== 40) {
         addy = addy.padStart(40, '0');

@@ -194,7 +194,7 @@ const setMetaData = (data: any) => {
         </p>
         <p>
             <span>{{ $t('components.contract_tab.verified_contract_source') }}</span>
-            <a href="https://sourcify.dev/" target="_blank">
+            <a href="https://sourcify.dev/#/verifier" target="_blank">
                 {{ $t('components.contract_tab.here') }}
             </a>
         </p>

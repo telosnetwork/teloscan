@@ -52,7 +52,7 @@ export default {
     },
     methods: {
         navigate(){
-            window.open('https://sourcify.dev', '_blank');
+            window.open('https://sourcify.dev/#/verifier', '_blank');
         },
     },
 };
