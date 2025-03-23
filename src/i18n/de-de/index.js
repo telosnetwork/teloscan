@@ -43,6 +43,10 @@ export default {
             logs: 'Protokolle',
             internal: 'Interne Transaktionen',
             not_found: 'Transaktion nicht gefunden',
+            previous: 'Vorherige Transaktion des Absenders',
+            next: 'Nächste Transaktion des Absenders',
+            not_previous: 'Keine vorherige Transaktion des Absenders',
+            not_next: 'Keine nächste Transaktion des Absenders',
         },
         internaltrx: {
             page_title: 'Interne Transaktionen des Vertrags',

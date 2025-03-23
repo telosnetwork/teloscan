@@ -40,9 +40,6 @@ const showEmptyBlocks = ref(false);
 
     &__header {
         @include page-header;
-        &-nav-btn {
-            @include page-header-nav-btn;
-        }
     }
 
     &__tabs {
