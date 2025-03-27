@@ -187,7 +187,7 @@ const formatAbiFunctionLists = async () => {
             <p class="c-gcontract-interface__header-paragraph">
                 <span>
                     {{ $t('components.contract_tab.verified_contract_source') }}
-                    <a href="https://sourcify.dev/" target="_blank">
+                    <a href="https://sourcify.dev/#/verifier" target="_blank">
                         {{ $t('components.contract_tab.here') }}
                     </a>
                 </span>
