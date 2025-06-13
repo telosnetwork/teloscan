@@ -43,6 +43,10 @@ export default {
             logs: 'Journaux',
             internal: 'Transactions internes',
             not_found: 'Transaction non trouvée',
+            previous: 'Transaction précédente par l\'expéditeur',
+            next: 'Transaction suivante par l\'expéditeur',
+            not_previous: 'Aucune transaction précédente par l\'expéditeur',
+            not_next: 'Aucune transaction suivante par l\'expéditeur',
         },
         internaltrx: {
             page_title: 'Transactions internes du contrat',

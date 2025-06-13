@@ -43,6 +43,10 @@ export default {
             logs: 'Registros',
             internal: 'Transacciones Internas',
             not_found: 'Transacción no encontrada',
+            previous: 'Transacción anterior del remitente',
+            next: 'Siguiente transacción del remitente',
+            not_previous: 'No hay transacción anterior del remitente',
+            not_next: 'No hay siguiente transacción del remitente',
         },
         internaltrx: {
             page_title: 'Transacciones internas del contrato',

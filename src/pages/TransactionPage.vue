@@ -19,38 +19,36 @@ const tab = ref<string>(route.query.tab as string || defaultTab);
 const trxNotFound = ref(false);
 const hash = ref('');
 const trx = ref<EvmTransactionExtended | null>(null);
+const prevTxHash = ref<string | null>(null);
+const nextTxHash = ref<string | null>(null);
 
 const updateData = async () => {
+    console.log('TransactionPage: updateData() loadTransaction(hash.value)', hash.value);
     trx.value = await loadTransaction(hash.value);
     trxNotFound.value = !trx.value;
     if (!trx.value || !route.query.tab) {
         tab.value = defaultTab;
     }
+    prevTxHash.value = trx.value?.prevTxHash || null;
+    nextTxHash.value = trx.value?.nextTxHash || null;
+    console.log('TransactionPage: updateData()', prevTxHash.value, nextTxHash.value);
 };
+
 
 watch(() => route.params.hash, async (newValue) => {
     if (!newValue || hash.value === newValue) {
+        console.log('TransactionPage: watch route.params.hash (SKIP)', newValue, hash.value);
         return;
     }
     hash.value = typeof newValue === 'string' ? newValue : newValue[0];
+    console.log('TransactionPage: watch route.params.hash', newValue, hash.value);
     updateData();
 }, { immediate: true });
 
-watch(() => route.query, () => {
-    updateData();
-});
-
 watch(tab, (newTab) => {
+    console.log('TransactionPage: watch tab', newTab);
     router.replace({ query: { ...route.query, tab: newTab } });
 });
-
-const prevTransaction = () => {
-    console.error('prevTransaction() NOT IMPLEMENTED');
-};
-
-const nextTransaction = () => {
-    console.error('nextTransaction() NOT IMPLEMENTED');
-};
 
 </script>
 
@@ -61,11 +59,39 @@ const nextTransaction = () => {
 
     <div class="c-transactions__header">
         <span class="c-transactions__header-title">{{ $t('pages.transaction.page_title') }}</span>
-        <div class="c-transactions__header-nav-btn c-transactions__header-nav-btn--left" @click="prevTransaction">
+
+        <!-- navigation to previous transaction -->
+        <router-link
+            v-if="prevTxHash"
+            :to="{ name: 'transaction', params: { hash: prevTxHash } }"
+            class="c-transactions__header-nav-btn c-transactions__header-nav-btn--left"
+        >
             <i class="fa fa-chevron-left small"></i>
+            <q-tooltip>{{ $t('pages.transaction.previous') }} </q-tooltip>
+        </router-link>
+        <div
+            v-else
+            class="c-transactions__header-nav-btn c-transactions__header-nav-btn--left c-transactions__header-nav-btn--disabled"
+        >
+            <i class="fa fa-chevron-left small"></i>
+            <q-tooltip>{{ $t('pages.transaction.not_previous') }} </q-tooltip>
         </div>
-        <div class="c-transactions__header-nav-btn c-transactions__header-nav-btn--right" @click="nextTransaction">
+
+        <!-- navigation to next transaction -->
+        <router-link
+            v-if="nextTxHash"
+            :to="{ name: 'transaction', params: { hash: nextTxHash } }"
+            class="c-transactions__header-nav-btn c-transactions__header-nav-btn--right"
+        >
             <i class="fa fa-chevron-right small"></i>
+            <q-tooltip>{{ $t('pages.transaction.next') }} </q-tooltip>
+        </router-link>
+        <div
+            v-else
+            class="c-transactions__header-nav-btn c-transactions__header-nav-btn--right c-transactions__header-nav-btn--disabled"
+        >
+            <i class="fa fa-chevron-right small"></i>
+            <q-tooltip>{{ $t('pages.transaction.not_next') }} </q-tooltip>
         </div>
     </div>
 
@@ -160,9 +186,10 @@ const nextTransaction = () => {
 
     &__header {
         @include page-header;
+        flex-direction: row;
+        gap: 5px;
         &-nav-btn {
             @include page-header-nav-btn;
-            display: none; // remove this line to enable the buttons
         }
     }
 
