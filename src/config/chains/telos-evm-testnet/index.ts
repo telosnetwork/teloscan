@@ -67,7 +67,7 @@ const config: NetworkConfig =
             'path': '/evm',
         },
         'api': 'https://api-dev.telos.net/v1',
-        'hyperion': 'https://rpc.testnet.telos.net',
+        'hyperion': 'https://testnet.telos.net',
         'explorer': 'https://testnet.teloscan.io',
         'ecosystem': 'https://www.telos.net/ecosystem',
         'bridge': 'https://telos-bridge-testnet.netlify.app/bridge',
@@ -234,7 +234,7 @@ export default class TelosEVM extends EVMChainSettings {
             endpoint: this.getHyperionEndpoint(),
             chainId: parseInt(this.getChainId()),
             ethPrivateKeys: [],
-            telosContract: this.getEscrowContractAddress(),
+            telosContract: 'eosio.evm',
             telosPrivateKeys: [],
             fetch,
         });
