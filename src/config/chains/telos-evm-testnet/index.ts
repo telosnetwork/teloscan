@@ -216,7 +216,7 @@ const config: NetworkConfig =
         'rpcEndpoints': [
             {
                 'protocol': 'https',
-                'host': 'rpc.testnet.telos.net',
+                'host': 'testnet.telos.net',
                 'port': 443,
             },
         ],

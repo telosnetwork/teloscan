@@ -12,6 +12,7 @@ import { useAccountStore, useChainStore } from 'src/core';
 import { WEI_PRECISION } from 'src/core/wallets/utils';
 import { prettyPrintCurrency } from 'src/core/wallets/utils/currency-utils';
 
+
 import LoginModal from 'components/LoginModal.vue';
 import OutlineButton from 'components/OutlineButton.vue';
 
@@ -82,6 +83,7 @@ function handleWalletButtonClick() {
 }
 
 function logout() {
+    $store.dispatch('login/logout');
     useAccountStore().logout();
 }
 
