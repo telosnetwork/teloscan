@@ -1,4 +1,5 @@
 import { useChainStore } from 'src/core';
+import { LOGIN_DATA_KEY } from 'src/lib/utils';
 
 export const login = async function(
     { commit, dispatch },
@@ -56,7 +57,7 @@ export const autoLogin = async function({ dispatch, commit }, returnUrl) {
 const getAuthenticator = function(ual, wallet = null) {
     const authWallet = wallet || localStorage.getItem('autoLogin');
     const idx = ual.authenticators.findIndex(
-        auth => auth.constructor.name === authWallet,
+        auth => auth.constructor.name.toLowerCase() === authWallet.toLowerCase(),
     );
     return {
         authenticator: ual.authenticators[idx],
@@ -64,16 +65,21 @@ const getAuthenticator = function(ual, wallet = null) {
     };
 };
 
-export const logout = async function({ getters }) {
+export const logout = async function({ getters, commit }) {
     if (getters.isNative) {
-        const { authenticator } = getAuthenticator(useChainStore().currentChain.settings.getUAL());
+        const loginData = JSON.parse(localStorage.getItem(LOGIN_DATA_KEY));
+        const { authenticator } = getAuthenticator(useChainStore().currentChain.settings.getUAL(), loginData.provider);
         try {
             authenticator && (await authenticator.logout());
         } catch (error) {
             console.error('Authenticator logout error', error);
         }
 
+        commit('setLogin', {});
+        localStorage.removeItem(LOGIN_DATA_KEY);
         localStorage.removeItem('autoLogin');
+        localStorage.removeItem('account');
+        localStorage.removeItem('returning');
 
         if (this.$router.currentRoute.path !== '/') {
             this.$router.push({ path: '/' });

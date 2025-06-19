@@ -2,7 +2,7 @@
 <!-- eslint-disable no-unused-vars -->
 <!-- eslint-disable max-len -->
 <script lang="ts">
-import { defineComponent, toRaw } from 'vue';
+import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
 import { BigNumber, ethers } from 'ethers';
 import { Transaction } from '@ethereumjs/tx';
@@ -243,7 +243,12 @@ export default defineComponent({
                 );
         },
         async runNative(opts: Opts) {
-            const contractInstance = toRaw(await this.contract.getContractInstance());
+            const contractInstance = await useChainStore().currentChain.settings.getContractManager().getContractInstance(this.contract, null);
+            if (!contractInstance) {
+                this.errorMessage = this.$t('global.internal_error');
+                this.endLoading();
+                return;
+            }
             const func = contractInstance.populateTransaction[this.functionABI];
             const gasEstimater = contractInstance.estimateGas[this.functionABI];
             const gasLimit = await gasEstimater(...this.models.values, Object.assign({ from: this.address }, opts));
@@ -263,7 +268,7 @@ export default defineComponent({
             unsignedTrx.gasPrice = gasPrice;
 
             if (opts.value) {
-                unsignedTrx.value = opts.value;
+                unsignedTrx.value = BigNumber.from(opts.value);
             }
 
             const raw = ethers.utils.serializeTransaction(unsignedTrx);
