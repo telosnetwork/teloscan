@@ -66,7 +66,6 @@ const getAuthenticator = function(ual, wallet = null) {
 };
 
 export const logout = async function({ getters, commit }) {
-    debugger;
     if (getters.isNative) {
         const loginData = JSON.parse(localStorage.getItem(LOGIN_DATA_KEY));
         const { authenticator } = getAuthenticator(useChainStore().currentChain.settings.getUAL(), loginData.provider);
